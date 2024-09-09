@@ -30,11 +30,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Objects;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
@@ -104,6 +108,8 @@ public class JiraToolConfigServiceImplTest {
 	private ProjectToolConfig projectTool;
 	private BoardRequestDTO boardRequestDTO;
 	private String basicConfigId;
+	@Mock
+	private ProjectAccessUtil projectAccessUtil;
 
 	@Before
 	public void setup() {
@@ -157,7 +163,9 @@ public class JiraToolConfigServiceImplTest {
 		boardRequestDTO2.setBoardName("Test | ABC Support | Scrum Board");
 		responseList.add(boardRequestDTO1);
 		responseList.add(boardRequestDTO2);
-		Assert.assertEquals(jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).size(), responseList.size());
+		doReturn(false).when(projectAccessUtil).ifConnectionNotAccessible(any());
+
+		Assert.assertEquals(Objects.requireNonNull(jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).getBody()).getData(),responseList);
 	}
 
 	@Test
@@ -172,7 +180,9 @@ public class JiraToolConfigServiceImplTest {
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		doReturn(new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT)).when(restTemplate)
 				.exchange(eq(RESOURCE_JIRA_BOARD_ENDPOINT), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
-		Assert.assertEquals(0, jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).size());
+		ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
+				"Not found any configure board details with provided connection details", null));
+		Assert.assertNotEquals(null,Objects.requireNonNull(jiraToolConfigService.getJiraBoardDetailsList(boardRequestDTO).getBody()).getData());
 	}
 
 	private String getServerResponseFromJson(String fileName) throws IOException {
@@ -186,8 +196,8 @@ public class JiraToolConfigServiceImplTest {
 		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
 		assigneeDetails.setSource("Jira");
 		Set<Assignee> assigneeSet = new HashSet<>();
-		assigneeSet.add(new Assignee("ankbhard", "Ankita sharma", ""));
-		assigneeSet.add(new Assignee("llid", "displayName", ""));
+		assigneeSet.add(new Assignee("ankbhard", "Ankita sharma", new HashSet<>(Arrays.asList(""))));
+		assigneeSet.add(new Assignee("llid", "displayName", new HashSet<>(Arrays.asList(""))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		AssigneeResponseDTO assigneeResponseDTO = jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);

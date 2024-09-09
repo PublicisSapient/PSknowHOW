@@ -85,6 +85,20 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	List<AccountHierarchy> findByLabelNameAndBasicProjectConfigId(String labelName, ObjectId basicProjectConfigId);
 
 	/**
+	 * Find by label and project configId and release state.
+	 *
+	 * @param labelName
+	 *            the label name
+	 * @param basicProjectConfigId
+	 *            the basic project config id
+	 * @param releaseState
+	 *            the release state
+	 * @return the {@link AccountHierarchy} list
+	 */
+	List<AccountHierarchy> findByLabelNameAndBasicProjectConfigIdAndReleaseStateOrderByEndDateDesc(String labelName,
+			ObjectId basicProjectConfigId, String releaseState);
+
+	/**
 	 * Find by label and nodeId.
 	 *
 	 * @param labelName
@@ -188,4 +202,13 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	void deleteByIdIn(List<ObjectId> ids);
 
 	void deleteByBasicProjectConfigIdAndLabelNameIn(ObjectId basicProjectConfigId, List<String> labelName);
+
+	/**
+	 * find by basic config id
+	 *
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return List of Hierarchies
+	 */
+	List<AccountHierarchy> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 }

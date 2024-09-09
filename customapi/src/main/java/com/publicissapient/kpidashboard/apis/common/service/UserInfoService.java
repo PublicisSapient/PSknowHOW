@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -159,19 +160,11 @@ public interface UserInfoService {
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 
 	// ----auth Service Methods started---------
-	List<UserInfoDTO> findAllUnapprovedUsersForCentralAuth();
+	List<CentralUserInfoDTO> findAllUnapprovedUsersForCentralAuth();
 
-	boolean updateUserApprovalStatus(String user);
+	boolean updateUserApprovalStatus(String userNameRequest);
 
 	boolean deleteFromCentralAuthUser(String user);
-
-	/**
-	 * getUser info from cental auth
-	 * 
-	 * @param username
-	 * @return
-	 */
-	UserInfo getCentralAuthUserInfo(String username);
 
 	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username);
 
@@ -187,5 +180,10 @@ public interface UserInfoService {
 	 * @return
 	 */
 	UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail);
+
+	/**
+	 * all unapproved users from central auth and also flag which is not whitelist domain as per properties
+	 */
+	List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers();
 
 }

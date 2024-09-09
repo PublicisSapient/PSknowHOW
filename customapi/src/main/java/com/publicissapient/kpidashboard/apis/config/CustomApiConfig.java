@@ -157,10 +157,6 @@ public class CustomApiConfig {// NOPMD
 	private String feedbackEmailSubject;
 	@Value("${approval.categories.emailSubject}")
 	private String approvalEmailSubject;
-
-	@Value("${issueCount.story.categories}")
-	private List<String> issueCountStoryCategories;
-
 	@Value("${certhostpath}")
 	private String hostPath;
 
@@ -235,7 +231,7 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	private String repoToolUpdateConnectionUrl;
-	private Boolean isRepoToolEnable;
+	private Boolean isGitlabFieldEnable;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
 	private String repoToolDeleteRepoUrl;
@@ -250,6 +246,24 @@ public class CustomApiConfig {// NOPMD
 	private List<String> cycleTimeRange;
 	private List<Character> aesKeyValue;
 	private int sprintCountForKpiCalculation;
+	private String rnrRecommendationApiKey;
+	private String rnrRecommendationUrl;
+
+	public String getRnrRecommendationUrl() {
+		return rnrRecommendationUrl;
+	}
+
+	public void setRnrRecommendationUrl(String rnrRecommendationUrl) {
+		this.rnrRecommendationUrl = rnrRecommendationUrl;
+	}
+
+	public String getRnrRecommendationApiKey() {
+		return rnrRecommendationApiKey;
+	}
+
+	public void setRnrRecommendationApiKey(String rnrRecommendationApiKey) {
+		this.rnrRecommendationApiKey = rnrRecommendationApiKey;
+	}
 
 	public List<Character> getAesKeyValue() {
 		return aesKeyValue;
@@ -258,9 +272,28 @@ public class CustomApiConfig {// NOPMD
 	public void setAesKeyValue(List<Character> aesKeyValue) {
 		this.aesKeyValue = aesKeyValue;
 	}
+
 	@Value("${exposed_api_key}")
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
+
+	@Value("${max-age-seconds}")
+	private long maxAgeInSeconds;
+	@Value("${include-subdomains}")
+	private boolean includeSubDomains;
+
+	@Value("${zephyrCloudBaseUrl}")
+	private String zephyrCloudBaseUrl;
+
+	public String getRepoToolMembersUrl() {
+		return repoToolMembersUrl;
+	}
+
+	public void setRepoToolMembersUrl(String repoToolMembersUrl) {
+		this.repoToolMembersUrl = repoToolMembersUrl;
+	}
+
+	private String repoToolMembersUrl;
 
 	public String getRepoToolReworkRateUrl() {
 		return repoToolReworkRateUrl;
@@ -285,8 +318,6 @@ public class CustomApiConfig {// NOPMD
 	public void setCycleTimeRange(List<String> cycleTimeRange) {
 		this.cycleTimeRange = cycleTimeRange;
 	}
-
-
 
 	public List<String> getLeadTimeRange() {
 		return leadTimeRange;
@@ -376,12 +407,12 @@ public class CustomApiConfig {// NOPMD
 		return repoToolDeleteRepoUrl;
 	}
 
-	public Boolean getIsRepoToolEnable() {
-		return isRepoToolEnable;
+	public Boolean getIsGitlabFieldEnable() {
+		return isGitlabFieldEnable;
 	}
 
-	public void setIsRepoToolEnable(Boolean isRepoToolEnable) {
-		this.isRepoToolEnable = isRepoToolEnable;
+	public void setIsGitlabFieldEnable(Boolean isGitlabFieldEnable) {
+		this.isGitlabFieldEnable = isGitlabFieldEnable;
 	}
 
 	public String getRepoToolAPIKey() {
@@ -807,14 +838,6 @@ public class CustomApiConfig {// NOPMD
 		this.corsFilterValidOrigin = corsFilterValidOrigin;
 	}
 
-	public List<String> getIssueCountStoryCategories() {
-		return issueCountStoryCategories;
-	}
-
-	public void setIssueCountStoryCategories(List<String> issueCountStoryCategories) {
-		this.issueCountStoryCategories = issueCountStoryCategories;
-	}
-
 	/**
 	 * get maxPendingRequestsPerUsername
 	 *
@@ -1220,5 +1243,29 @@ public class CustomApiConfig {// NOPMD
 
 	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
 		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
+	}
+
+	public long getMaxAgeInSeconds() {
+		return maxAgeInSeconds;
+	}
+
+	public void setMaxAgeInSeconds(long maxAgeInSeconds) {
+		this.maxAgeInSeconds = maxAgeInSeconds;
+	}
+
+	public boolean isIncludeSubDomains() {
+		return includeSubDomains;
+	}
+
+	public void setIncludeSubDomains(boolean includeSubDomains) {
+		this.includeSubDomains = includeSubDomains;
+	}
+
+	public String getZephyrCloudBaseUrl() {
+		return zephyrCloudBaseUrl;
+	}
+
+	public void setZephyrCloudBaseUrl(String zephyrCloudBaseUrl) {
+		this.zephyrCloudBaseUrl = zephyrCloudBaseUrl;
 	}
 }

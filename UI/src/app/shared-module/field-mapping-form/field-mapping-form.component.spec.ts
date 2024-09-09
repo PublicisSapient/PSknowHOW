@@ -429,6 +429,14 @@ describe('FieldMappingFormComponent', () => {
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
     component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'releases'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'releases'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData;
     component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'default'});
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
@@ -659,21 +667,6 @@ describe('FieldMappingFormComponent', () => {
     expect(component.form.controls[component.selectedField].value.length).toEqual(2);
   })
 
-  it('should create a dynamic download link and trigger a click event', () => {
-    const fileName = 'test.json';
-    const text = '{"key": "value"}';
-
-    spyOn(document, 'createElement').and.callThrough();
-    const spy = spyOn(document, 'dispatchEvent');
-
-    // Change the access modifier of the 'setting' property from private to public
-    (component as any).setting.element.dynamicDownload = document.createElement('a');
-
-    const element = (component as any).setting.element.dynamicDownload;
-    (component as any).dyanmicDownloadByHtmlTag({fileName, text});
-    expect(element.getAttribute('download')).toBe(fileName);
-  });
-
   it('should preapare field mapping history',()=>{
     component.isHistoryPopup = {
       field1 : false,
@@ -714,6 +707,24 @@ describe('FieldMappingFormComponent', () => {
     }
     component.onMouseOut("f1");
     expect(component.isHistoryPopup['f1']).toBeFalse();
+  })
+
+  it('should scroll based on position ',()=>{
+    component.bodyScrollPosition = 400;
+    component.scrollToPosition();
+    expect(component.populateDropdowns).toBeFalsy();
+  })
+
+  it('should compare field mapping whn value is object',()=>{
+    const re1 =component.compareValues({key1 : "value2"},{key1 : "value1"})
+    expect(re1).toBeFalsy();
+
+    const re2 =component.compareValues({key1 : "value2"},{key1 : "value1",key2 : "value2"})
+    expect(re2).toBeFalsy();
+
+    const re3 =component.compareValues({key1 : "value1"},{key1 : "value1"})
+    expect(re3).toBeTruthy();
+
   })
 
 });

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class RepoToolRepositories {
@@ -35,6 +36,7 @@ public class RepoToolRepositories {
     private List<IndividualCommitsCount> individualCommitsCount;
     private List<Branches> branchesCommitsCount;
     private List<Branches> branches;
+    private Map<String, Double> mergeRequestsPT;
     private String filteredBranch;
     private double repositoryReworkRateGrade;
 

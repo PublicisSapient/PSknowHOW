@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.apache.commons.lang3.StringUtils;
@@ -243,8 +244,8 @@ public class GitLabClient {
 
 	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList, JSONArray jsonArray,
 			ProjectBasicConfig projectBasicConfig) {
-		long closedDate = 0;
 		for (Object jsonObj : jsonArray) {
+			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
 			String title = getString(mergReqObj, GitLabConstants.RESP_TITLE);
 			String state = getString(mergReqObj, GitLabConstants.RESP_STATE);
@@ -252,10 +253,10 @@ public class GitLabClient {
 			boolean isClosed = Boolean.parseBoolean(getString(mergReqObj, GitLabConstants.RESP_CLOSED));
 			long createdDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_CREATED_AT));
 			long updatedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_UPDATED_AT));
-			if (getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT) != null) {
-				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT));
+			if (getString(mergReqObj, GitLabConstants.RESP_MERGED_AT) != null) {
+				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_MERGED_AT));
 			}
-
+			String mergeUrl = getString(mergReqObj, GitLabConstants.WEB_URL);
 			String fromBranch = getString(mergReqObj, GitLabConstants.RESP_SOURCE_BRANCH);
 			String toBranch = getString(mergReqObj, GitLabConstants.RESP_TARGET_BRANCH);
 			String repoSlug = "NA";
@@ -287,6 +288,7 @@ public class GitLabClient {
 			}
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeReq.setReviewers(reviewersList);
+			mergeReq.setMergeRequestUrl(mergeUrl);
 			mergeRequestList.add(mergeReq);
 		}
 	}

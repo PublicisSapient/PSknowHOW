@@ -25,14 +25,17 @@ import { HttpService } from './http.service';
 import { ExcelService } from './excel.service';
 import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-
+import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 @Injectable()
 export class HelperService {
     isKanban = false;
     grossMaturityObj = {};
     public passMaturityToFilter;
+    selectedFilterArray: any = [];
+    selectedFilters: any = {}
 
-    constructor(private httpService: HttpService, private excelService: ExcelService,private sharedService : SharedService) {
+    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router) {
         this.passMaturityToFilter = new EventEmitter();
     }
 
@@ -56,7 +59,6 @@ export class HelperService {
                 downloadJson.selectedMap[filterData[0].label].push(filterData[0].filterData[i].nodeId);
             }
         }
-
         return this.httpService.downloadExcel(downloadJson, kpiId);
 
     }
@@ -68,16 +70,13 @@ export class HelperService {
         const kpiRequestObject = <any>{};
 
         kpiRequestObject.kpiList = <any>[];
-        for (let i = 0; i < masterData?.kpiList?.length; i++) {
-            const obj = { ...masterData.kpiList[i] };
+        for (let i = 0; i < masterData?.length; i++) {
+            const obj = { ...masterData[i]?.kpiDetail };
             obj['chartType'] = '';
             let condition = obj.kpiSource === kpiSource && obj.kanban === isKanban;
 
             if (type && type !== '' && !isNaN(type)) {
                 condition = (obj.groupId && obj.groupId === type) && condition;
-            }
-            if (obj?.kpiCategory) {
-                condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
             }
 
             if (kpiIdsForCurrentBoard && kpiIdsForCurrentBoard.length && obj?.kpiId) {
@@ -88,7 +87,13 @@ export class HelperService {
                 if (obj.videoLink) {
                     delete obj.videoLink;
                 }
-                kpiRequestObject.kpiList.push(obj);
+                if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
+                    if (obj.isEnabled && obj.shown) {
+                        kpiRequestObject.kpiList.push(obj);
+                    }
+                } else {
+                    kpiRequestObject.kpiList.push(obj);
+                }
             }
         }
 
@@ -393,9 +398,33 @@ export class HelperService {
 
 
     sortAlphabetically(objArray) {
-        if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a?.data?.localeCompare(b?.data));
+        if (objArray && objArray.length > 1) {
+            objArray.sort((a, b) => {
+                const aName = a.nodeName || a.data || a.date || a;
+                const bName = b.nodeName || b.data || b.date || b;
+                return aName.localeCompare(bName);
+            });
         }
+        return objArray;
+    }
+
+    sortByField(objArray, propArr): any {
+        objArray.sort((a, b) => {
+            if (objArray?.[0]?.[propArr[0]] && propArr[0].indexOf('Date') === -1) {
+                const propA = a[propArr[0]];
+                const propB = b[propArr[0]];
+                return propA.localeCompare(propB);
+            }
+        });
+
+        objArray.sort((a, b) => {
+            if (objArray?.[0]?.[propArr[1]] && propArr[1].indexOf('Date') !== -1) {
+                const propA = new Date(a[propArr[1]].substring(0, a[propArr[1]].indexOf('T')));
+                const propB = new Date(b[propArr[1]].substring(0, b[propArr[1]].indexOf('T')));
+                return +propB - +propA;
+            }
+        });
+
         return objArray;
     }
 
@@ -541,107 +570,107 @@ export class HelperService {
     /** sync shown property of project level and user level */
     makeSyncShownProjectLevelAndUserLevelKpis(projectLevelKpi, userLevelKpi) {
         Object.keys(userLevelKpi).forEach(boards => {
-          if (Array.isArray(userLevelKpi[boards])) {
-            userLevelKpi[boards].forEach(boardA => {
-              const boardB = projectLevelKpi[boards]?.find(b => b.boardId === boardA.boardId);
-              if (boardB) {
-                boardA.kpis.forEach(kpiA => {
-                  const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);
-                  if (kpiB) {
-                    kpiA.shown = kpiB.shown;
-                  }
+            if (Array.isArray(userLevelKpi[boards])) {
+                userLevelKpi[boards].forEach(boardA => {
+                    const boardB = projectLevelKpi[boards]?.find(b => b.boardId === boardA.boardId);
+                    if (boardB) {
+                        boardA.kpis.forEach(kpiA => {
+                            const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);
+                            if (kpiB) {
+                                kpiA.shown = kpiB.shown;
+                            }
+                        });
+                    }
                 });
-              }
-            });
-          }
+            }
         });
         return userLevelKpi
-      }
+    }
 
-    getGlobalConfig(){
-        this.httpService.getConfigDetails().subscribe(res=>{
-          if(res && res['success']){
-            this.sharedService.setGlobalConfigData(res['data']);
-          }
+    getGlobalConfig() {
+        this.httpService.getConfigDetails().subscribe(res => {
+            if (res) {
+                this.sharedService.setGlobalConfigData(res);
+            }
         })
-      }
+    }
 
-    windowReload(){
+    windowReload() {
         window.location.reload();
     }
 
-   
-    drop(event: CdkDragDrop<string[]>,updatedContainer,navigationTabs,upDatedConfigData,configGlobalData,extraKpis?) {
+
+    drop(event: CdkDragDrop<string[]>, updatedContainer, navigationTabs, upDatedConfigData, configGlobalData, extraKpis?) {
         if (event?.previousIndex !== event.currentIndex) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-            if(updatedContainer.width === 'half'){
-            const updatedTabsDetails = navigationTabs.find(tabs=>tabs['label'].toLowerCase() === updatedContainer['label'].toLowerCase());
-            updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
+            if (updatedContainer.width === 'half') {
+                const updatedTabsDetails = navigationTabs.find(tabs => tabs['label'].toLowerCase() === updatedContainer['label'].toLowerCase());
+                updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'], ...updatedTabsDetails['kpiPart2'], ...updatedTabsDetails['fullWidthKpis']];
             }
             upDatedConfigData = [];
-            navigationTabs.forEach(tabs=>{
-            upDatedConfigData  = upDatedConfigData.concat(tabs['kpis']);
+            navigationTabs.forEach(tabs => {
+                upDatedConfigData = upDatedConfigData.concat(tabs['kpis']);
             })
             upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
             const disabledKpis = configGlobalData.filter(item => item.shown && !item.isEnabled);
             disabledKpis.map((kpi, index) => kpi.order = upDatedConfigData.length + index + 3);
             const hiddenkpis = configGlobalData.filter(item => !item.shown);
             hiddenkpis.map((kpi, index) => kpi.order = upDatedConfigData.length + disabledKpis.length + index + 3);
-            if(extraKpis){
-                this.sharedService.kpiListNewOrder.next([extraKpis,...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
-            }else{
+            if (extraKpis) {
+                this.sharedService.kpiListNewOrder.next([extraKpis, ...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
+            } else {
                 this.sharedService.kpiListNewOrder.next([...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
             }
-            
-        }
-     }
 
-     createCombinations(arr1, arr2) {
+        }
+    }
+
+    createCombinations(arr1, arr2) {
         let arr = [];
         for (let i = 0; i < arr1?.length; i++) {
-          for (let j = 0; j < arr2?.length; j++) {
-            arr.push({ filter1: arr1[i], filter2: arr2[j] });
-          }
+            for (let j = 0; j < arr2?.length; j++) {
+                arr.push({ filter1: arr1[i], filter2: arr2[j] });
+            }
         }
         return arr;
-      }
+    }
 
-      makeUniqueArrayList(arr) {
+    makeUniqueArrayList(arr) {
         let uniqueArray = [];
         for (let i = 0; i < arr?.length; i++) {
-          const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
-          if (idx == -1) {
-            uniqueArray = [...uniqueArray, arr[i]];
-            uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
-            uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
-          } else {
-            uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-            uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-          }
+            const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
+            if (idx == -1) {
+                uniqueArray = [...uniqueArray, arr[i]];
+                uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
+                uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
+            } else {
+                uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+                uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+            }
         }
         return uniqueArray;
-      }
+    }
 
-      async getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
+    async getKpiCommentsCount(kpiCommentsCountObj, nodes, level, nodeChildId, updatedConfigGlobalData, kpiId) {
         let requestObj = {
-          "nodes": nodes,
-          "level": level,
-          "nodeChildId": nodeChildId,
-          'kpiIds': []
+            "nodes": [...nodes],
+            "level": level,
+            "nodeChildId": nodeChildId,
+            'kpiIds': []
         };
         if (kpiId) {
-          requestObj['kpiIds'] = [kpiId];
-          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
-            kpiCommentsCountObj[kpiId] = res[kpiId];
-          });
+            requestObj['kpiIds'] = [kpiId];
+            await this.getKpiCommentsHttp(requestObj).then((res: object) => {
+                kpiCommentsCountObj[kpiId] = res[kpiId];
+            });
         } else {
-          requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
-          await this.getKpiCommentsHttp(requestObj).then((res: object) => {
-            kpiCommentsCountObj = res;
-          });
+            requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
+            await this.getKpiCommentsHttp(requestObj).then((res: object) => {
+                kpiCommentsCountObj = res;
+            });
         }
         return kpiCommentsCountObj
-      }
+    }
 
     createBackupOfFiltersSelection(filterbackup, tab, subFilter) {
         let savedDetails = this.sharedService.getAddtionalFilterBackup();
@@ -654,6 +683,24 @@ export class HelperService {
             savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { [subFilter]: combineSubFilterValues } } } };
         }
         this.sharedService.setAddtionalFilterBackup(savedDetails);
+    }
+
+    setBackupOfFilterSelectionState = (selectedFilterObj) => {
+        if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
+            this.selectedFilters = { ...selectedFilterObj };
+        } else if (selectedFilterObj) {
+            this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
+        } else {
+            this.selectedFilters = null;
+        }
+    }
+
+    getBackupOfFilterSelectionState = (prop = null) => {
+        if (prop) {
+            return this.selectedFilters[prop];
+        } else {
+            return this.selectedFilters;
+        }
     }
 
     setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {
@@ -701,5 +748,45 @@ export class HelperService {
         this.createBackupOfFiltersSelection(kpiSelectedFilterObj, tab, subFilter);
         this.sharedService.setKpiSubFilterObj(kpiSelectedFilterObj);
         return kpiSelectedFilterObj;
+    }
+
+    logoutHttp() {
+        this.httpService.logout().subscribe((responseData) => {
+            if (responseData?.success) {
+                if (!environment['AUTHENTICATION_SERVICE']) {
+                    this.isKanban = false;
+                    // Set blank selectedProject after logged out state
+                    this.sharedService.setSelectedProject(null);
+                    this.sharedService.setCurrentUserDetails({});
+                    this.sharedService.setVisibleSideBar(false);
+                    this.sharedService.setAddtionalFilterBackup({});
+                    this.sharedService.setKpiSubFilterObj({});
+                    localStorage.clear();
+                    this.router.navigate(['./authentication/login']);
+                } else {
+                    let obj = {
+                        'resource': environment.RESOURCE
+                    };
+                    this.httpService.getUserValidation(obj).toPromise()
+                        .then((response) => {
+                            if (response && !response['success']) {
+                                let redirect_uri = window.location.href;
+                                window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+                            }
+                        })
+                        .catch((error) => {
+                            console.log("cookie not clear on error");
+                        });
+                }
+            }
+        })
+    }
+
+    getObjectKeys(obj) {
+        if (obj && Object.keys(obj).length) {
+          return Object.keys(obj);
+        } else {
+          return [];
+        }
     }
 }

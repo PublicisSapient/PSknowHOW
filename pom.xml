@@ -22,7 +22,7 @@
     <packaging>pom</packaging>
     <groupId>com.publicissapient.kpidashboard</groupId>
     <artifactId>Kpidashboard</artifactId>
-    <version>9.1.0-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
 
     <properties>
         <docker.useConfigFile>false</docker.useConfigFile>
@@ -280,7 +280,8 @@
                                     <tag>${project.version}</tag>
                                     <buildArgs>
                                         <NOTIFICATION_CONSUMER_JAR_FILE>kafka-consumers/notification-consumer/target/notification-consumer-exec.jar</NOTIFICATION_CONSUMER_JAR_FILE>
-                                        </buildArgs>
+                                        <APPLICATION_PROPERTIES_FILE>kafka-consumers/notification-consumer/src/main/resources/application.properties</APPLICATION_PROPERTIES_FILE>
+                                    </buildArgs>
                                 </configuration>
                             </execution>
                         </executions>
@@ -325,3 +326,4 @@
     </build>
 
 </project>
+

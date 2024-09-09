@@ -12,17 +12,33 @@
           "name": "PSknowHOW",
           "pickupTimeRepoScore": 0,
           "pickupTimeRepoHours": 0,
-          "pickupTimeMergeRequestPT": [
-            {
-              "link": 0
-            }
-          ],
+          "mergeRequestsPT": {
+            "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1345": 23.939444444444444,
+            "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1348": 0.028333333333333332,
+            "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1319": 119.09555555555555
+          },
           "branches": [
             {
               "name": "master",
               "average": 30176.5,
               "mergeRequests": 5,
               "lines_change": 60710.0,
+              "mergeRequestsPT": {
+                "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1345": 23.939444444444444,
+                "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1348": 0.028333333333333332,
+                "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1319": 119.09555555555555,
+                "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1331": 1.086111111111111
+              },
+              "users": [
+                {
+                  "email": "99163630+hirbabar@users.noreply.github.com",
+                  "average": 454814
+                },
+                {
+                  "email": "akshat.shrivastav@publicissapient.com",
+                  "average": 3086.8333333333335
+                }
+              ],
               "merge_requests": [
                 {
                   "id": "1466332986",
@@ -120,9 +136,12 @@
 
       "users": [
         {
-          "email": "string",
-          "grade": 0,
-          "hours": 0
+          "email": "99163630+hirbabar@users.noreply.github.com",
+          "average": 454814
+        },
+        {
+          "email": "akshat.shrivastav@publicissapient.com",
+          "average": 3086.8333333333335
         }
       ],
       "date_label": "2023-07-01"

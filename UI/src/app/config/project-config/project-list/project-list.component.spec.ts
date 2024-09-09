@@ -235,7 +235,7 @@ describe('ProjectListComponent', () => {
   it('should navigate to basic-config on click of "New"', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.newProject();
-    expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/BasicConfig']);
+    expect(component.isNewProject).toBeTruthy();
   });
 
   it('should navigate to basic-config on click of "Edit"', () => {
@@ -399,7 +399,7 @@ describe('ProjectListComponent', () => {
   });
 
 
-  
+
   it("should route on tool component on edit button ",()=>{
 
     component.cols = [
@@ -433,11 +433,12 @@ describe('ProjectListComponent', () => {
       name: 'JIRAPROJ',
       type: 'Scrum',
     };
+    const tabNum = 2;
     const navigateSpy = spyOn(router, 'navigate');
     spyOn(sharedService , 'setSelectedProject');
-    component.editConfiguration(fakeProject);
+    component.editConfiguration(fakeProject, tabNum);
     expect(sharedService.setSelectedProject).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ToolMenu']);
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ConfigSettings/63b3f9098ec44416b3ce9699'], { queryParams: { tab: 2 } });
   })
 
   it("should get success response while getting project list",()=>{
@@ -487,7 +488,7 @@ describe('ProjectListComponent', () => {
   })
 
   it("should project list zero while getting project list",()=>{
-   
+
     spyOn(httpService,'getProjectListData').and.returnValue(of(projectListData.data));
     component.getData();
     expect(component.loading).toBeFalse();
@@ -501,68 +502,68 @@ describe('ProjectListComponent', () => {
         ROLE_SUPERADMIN: true,
         ROLE_PROJECT_ADMIN: false
       };
-  
+
       // Act
       component.checkUserIsAdminOrSuperAdmin();
-  
+
       // Assert
       expect(component.isAdminOrSuperAdmin).toBeTrue();
     });
-  
+
     it('should set isAdminOrSuperAdmin to true if roleAccess contains ROLE_PROJECT_ADMIN', () => {
       // Arrange
       component.roleAccess = {
         ROLE_SUPERADMIN: false,
         ROLE_PROJECT_ADMIN: true
       };
-  
+
       // Act
       component.checkUserIsAdminOrSuperAdmin();
-  
+
       // Assert
       expect(component.isAdminOrSuperAdmin).toBeTrue();
     });
-  
+
     it('should set isAdminOrSuperAdmin to false if roleAccess does not contain ROLE_SUPERADMIN or ROLE_PROJECT_ADMIN', () => {
       // Arrange
       component.roleAccess = {
         ROLE_SUPERADMIN: false,
         ROLE_PROJECT_ADMIN: false
       };
-  
+
       // Act
       component.checkUserIsAdminOrSuperAdmin();
-  
+
       // Assert
       expect(component.isAdminOrSuperAdmin).toBeTrue();
     });
-  
+
     it('should set isAdminOrSuperAdmin to true if authorities contains ROLE_SUPERADMIN', () => {
       // Arrange
       component.authorities = ['ROLE_SUPERADMIN'];
-  
+
       // Act
       component.checkUserIsAdminOrSuperAdmin();
-  
+
       // Assert
       expect(component.isAdminOrSuperAdmin).toBeTrue();
     });
-  
+
     it('should set isAdminOrSuperAdmin to false if authorities does not contain ROLE_SUPERADMIN', () => {
       // Arrange
       component.authorities = ['ROLE_USER'];
-  
+
       // Act
       component.checkUserIsAdminOrSuperAdmin();
-  
+
       // Assert
       expect(component.isAdminOrSuperAdmin).toBeFalse();
     });
-  
+
     it('should set isAdminOrSuperAdmin to false if roleAccess and authorities are empty', () => {
       // Act
       component.checkUserIsAdminOrSuperAdmin();
-  
+
       // Assert
       expect(component.isAdminOrSuperAdmin).toBeFalse();
     });
@@ -579,7 +580,7 @@ describe('ProjectListComponent', () => {
         ],
         authorities : []
       }
-   
+
   ])
 
   const spyobj = spyOn(component,'checkUserIsAdminOrSuperAdmin')

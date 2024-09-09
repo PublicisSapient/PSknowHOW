@@ -100,10 +100,8 @@ export class AccessMgmtComponent implements OnInit {
 	}
 
 	mouseEnter(event, item, node) {
-		// console.log(event, item, accessLevel);
 		const accessLevel = node.accessLevel;
 		if (this.allProjectsData?.length) {
-			// console.log(this.allProjectsData);
 			if (accessLevel.toLowerCase() === 'project') {
 				const tooltipProject = this.allProjectsData?.filter((proj) => proj.id === item.itemId);
 				this.toolTipHtml = `<span>Project: ${tooltipProject[0].projectName}</span><br/>`;
@@ -163,10 +161,9 @@ export class AccessMgmtComponent implements OnInit {
 			this.rolesData = roles;
 			if (this.rolesData['success']) {
 				this.roleList = roles.data.map((role) => ({
-						label: role.roleName,
+						label: role.displayName,
 						value: role.roleName,
 					}));
-
 				this.searchRoleList = [
 					{
 						label: 'Select Role',
@@ -297,7 +294,7 @@ export class AccessMgmtComponent implements OnInit {
 		}
 
 		if (!this.displayDuplicateProject) {
-			this.httpService.updateAccess(userData, userData.username).subscribe((response) => {
+			this.httpService.updateAccess(userData).subscribe((response) => {
 				if (response['success']) {
 					if(this.showAddUserForm){
 						this.showAddUserForm = false;
@@ -338,7 +335,6 @@ export class AccessMgmtComponent implements OnInit {
 			this.addedProjectsOrNodes = this.addedProjectsOrNodes.filter((items) => (items.accessItems = items.accessItems.filter((item, index, self) => index === self.findIndex((t) => t.itemId !== accessItem.valueRemoved.val[0].code))));
 		} else {
 			// clear filters clicked
-			console.log('clear filters clicked');
 			this.addedProjectsOrNodes = [];
 		}
 
@@ -378,7 +374,9 @@ export class AccessMgmtComponent implements OnInit {
 
 
 	deleteAccessReq(userName, isSuperAdmin) {
-		this.httpService.deleteAccess(userName).subscribe(response => {
+		this.httpService.deleteAccess({
+			userName : userName,
+		  }).subscribe(response => {
 			this.accessDeletionStatus(response, isSuperAdmin);
 		}, error => {
 			this.accessDeletionStatus(error, isSuperAdmin);

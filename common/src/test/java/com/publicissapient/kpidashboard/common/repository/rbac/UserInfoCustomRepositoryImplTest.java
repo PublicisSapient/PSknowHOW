@@ -54,7 +54,7 @@ public class UserInfoCustomRepositoryImplTest {
 
 		when(operations.find(any(Query.class), eq(UserInfo.class))).thenReturn(Collections.emptyList());
 		// Call the method and assert the result
-		List<UserInfo> result = userInfoCustomRepository.findAdminUserOfProject("basicConfigId");
+		List<UserInfo> result = userInfoCustomRepository.findAdminUserOfProject(List.of("basicConfigId"));
 		userInfoCustomRepository.findByProjectAccess("basicConfigId");
 
 		// Assert the result or perform further verifications

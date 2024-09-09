@@ -23,6 +23,7 @@ import java.util.Set;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import org.bson.types.ObjectId;
 
 /**
  * @author pankumar8
@@ -36,10 +37,11 @@ public interface SprintDataProcessor {
 	 *            projectConfig
 	 * @param boardId
 	 *            boardId
+	 * @param processorId
 	 * @return Set of SprintDetails
 	 * @throws IOException
 	 * 		throws io exception
 	 */
-	Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+	Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, ObjectId processorId)
 			throws IOException;
 }

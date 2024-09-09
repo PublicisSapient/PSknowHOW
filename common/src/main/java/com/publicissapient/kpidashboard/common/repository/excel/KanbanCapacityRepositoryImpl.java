@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -31,6 +32,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 
 /**
@@ -45,22 +47,50 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 	private MongoOperations operations;
 
 	@Override
-	public List<KanbanCapacity> findIssuesByType(Map<String, List<ObjectId>> mapOfFilters, String dateFrom,
-			String dateTo) {
+	public List<KanbanCapacity> findIssuesByType(Map<String, Object> mapOfFilters, String dateFrom, String dateTo) {
 		Criteria criteria = new Criteria();
 		DateTime startDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateFrom).withTime(0, 0, 0, 0);
 		DateTime endDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateTo).withTime(0, 0, 0, 0);
 		// map of common filters Project and Sprint
-		for (Map.Entry<String, List<ObjectId>> entry : mapOfFilters.entrySet()) {
-			if (CollectionUtils.isNotEmpty(entry.getValue())) {
-				criteria = criteria.and(entry.getKey()).in(entry.getValue());
+		for (Map.Entry<String, Object> entry : mapOfFilters.entrySet()) {
+			String key = entry.getKey();
+			if (ObjectUtils.isNotEmpty(entry.getValue())
+					&& !key.equalsIgnoreCase("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")
+					&& !key.equalsIgnoreCase("additionalFilterCapacityList.filterId")) {
+				if (entry.getValue() instanceof List<?>) {
+					List<ObjectId> value = (List<ObjectId>) entry.getValue();
+					criteria = criteria.and(key).in(value);
+				} else {
+					criteria = criteria.and(key).in(entry.getValue());
+				}
+
 			}
 		}
 		criteria = criteria.and(START_DATE).lte(endDateTime.withTime(0, 0, 0, 0));
 		criteria = criteria.and(END_DATE).gte(startDateTime.withTime(0, 0, 0, 0));
 
 		Query query = new Query(criteria);
-		return operations.find(query, KanbanCapacity.class);
+		List<KanbanCapacity> kanbanCapacityList = operations.find(query, KanbanCapacity.class);
+		if (mapOfFilters.containsKey("additionalFilterCapacityList.nodeCapacityList.additionalFilterId")) {
+			kanbanCapacityList.stream().forEach(capacityKpiData -> {
+				if (CollectionUtils.isNotEmpty(capacityKpiData.getAdditionalFilterCapacityList())) {
+					List<String> additionalFilter = (List<String>) mapOfFilters
+							.get("additionalFilterCapacityList.nodeCapacityList.additionalFilterId");
+					List<String> upperCaseKey = ((List<String>) mapOfFilters
+							.get("additionalFilterCapacityList.filterId")).stream().map(String::toUpperCase).toList();
+					capacityKpiData.setCapacity(capacityKpiData.getAdditionalFilterCapacityList().stream()
+							.filter(additionalFilterCapacity -> upperCaseKey
+									.contains(additionalFilterCapacity.getFilterId().toUpperCase()))
+							.flatMap(
+									additionalFilterCapacity -> additionalFilterCapacity.getNodeCapacityList().stream())
+							.filter(leaf -> additionalFilter.contains(leaf.getAdditionalFilterId()))
+							.mapToDouble(LeafNodeCapacity::getAdditionalFilterCapacity).sum());
+				} else {
+					capacityKpiData.setCapacity(0D);
+				}
+			});
+		}
+		return kanbanCapacityList;
 
 	}
 

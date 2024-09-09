@@ -1069,7 +1069,7 @@
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 22 ,
-    "groupId" : 1 ,
+    "groupId" : 2 ,
     "kpiSource": "BitBucket",
     "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
     "thresholdValue" : "55" ,
@@ -1117,7 +1117,7 @@
     "defaultOrder" : 23 ,
     "kpiSource": "BitBucket",
     "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
-    "groupId" : 1 ,
+    "groupId" : 2 ,
     "thresholdValue" : "55" ,
     "kanban" : false ,
     "chartType" : "grouped_column_plus_line" ,
@@ -1350,7 +1350,7 @@
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
     "xaxisLabel" : "Months" ,
-    "yaxisLabel" : "Count(Days)" ,
+    "yaxisLabel" : "Cost of Delay" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -4238,8 +4238,8 @@
       ],
       "maturityLevels": []
     },
-    "xAxisLabel": "Weeks",
-    "yAxisLabel": "Hours",
+    "xaxisLabel": "Weeks",
+    "yaxisLabel": "Hours",
     "isPositiveTrend": false,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
@@ -4453,7 +4453,7 @@
     "calculateMaturity": true,
     "hideOverallFilter": true,
     "maturityRange": [
-      "-1",
+      "1-2",
       "2-4",
       "5-8",
       "8-10",
@@ -4526,5 +4526,71 @@
         }
       ]
     }
+  },
+  {
+    "kpiId" : "kpi178" ,
+    "kpiName" : "Defect Count By" ,
+    "isDeleted" : "False" ,
+    "defaultOrder" : 1 ,
+    "kpiCategory" : "Release" ,
+    "kpiSubCategory" : "Quality" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
+    "groupId" : 9 ,
+    "kanban" : false ,
+    "chartType" : "chartWithFilter" ,
+    "kpiInfo" : {
+      "definition" : "It shows the breakup of all defects tagged to a release grouped by Status, Priority, or RCA.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/144146433/Release+Defect+count+by"
+          }
+        }
+      ]
+    } ,
+    "isAdditionalFilterSupport" : false ,
+    "kpiFilter" : "" ,
+    "boxType" : "chart" ,
+    "calculateMaturity" : false
+  },
+  {
+    "kpiId" : "kpi179" ,
+    "kpiName" : "Release Plan" ,
+    "maxValue" : "" ,
+    "kpiUnit" : "Count" ,
+    "isDeleted" : "False" ,
+    "defaultOrder" : 1 ,
+    "kpiCategory" : "Release" ,
+    "kpiSubCategory" : "Speed" ,
+    "kpiSource": "Jira",
+    "combinedKpiSource": "Jira/Azure",
+    "groupId" : 9 ,
+    "thresholdValue" : "" ,
+    "kanban" : false ,
+    "chartType" : "CumulativeMultilineChart" ,
+    "kpiInfo" : {
+      "definition" : "Displays the cumulative daily planned dues of the release based on the due dates of work items within the release scope.\n\nAdditionally, it provides an overview of the entire release scope.",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/147652609/Release+Release+Plan"
+          }
+        }
+      ]
+    } ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "Count" ,
+    "kpiWidth" : 100 ,
+    "isPositiveTrend" : true ,
+    "showTrend" : false ,
+    "isAdditionalFilterSupport" : false ,
+    "kpiFilter" : "radioButton" ,
+    "boxType" : "chart" ,
+    "calculateMaturity" : false
   }
 ]

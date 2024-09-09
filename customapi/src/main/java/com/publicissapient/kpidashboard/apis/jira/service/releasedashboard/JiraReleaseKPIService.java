@@ -98,7 +98,7 @@ public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 	}
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
-		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
+		return jiraService.getJiraIssuesCustomHistoryForCurrentRelease();
 	}
 
 }

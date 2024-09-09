@@ -174,7 +174,7 @@ padding: 0.75rem !important;
     min-width: 100px;
 }
 
-:host ::ng-deep th .p-multiselect-panel{
+:host ::ng-deep th .custom-select .p-multiselect-panel{
     left:-200px !important;
     max-width: 250px;
 }
@@ -219,9 +219,9 @@ padding: 0.75rem !important;
 :host::ng-deep.kpi-table.p-datatable .p-datatable-thead > tr > th{
     top: 0;
     position: sticky;
-    /* z-index: 1; */
+    /* z-index: 1; 
     padding: 0px;
-    border: none;
+    border: none;*/
 }
 
 :host::ng-deep.kpi-table.p-datatable .p-datatable-thead > tr > th.dragged{
@@ -296,4 +296,8 @@ padding: 0.75rem !important;
 .subKPi{
     display: flex;
     flex-direction: column;
+}
+
+:host ::ng-deep .p-datatable-scrollable .p-datatable-wrapper{
+    min-height: 300px;
 }

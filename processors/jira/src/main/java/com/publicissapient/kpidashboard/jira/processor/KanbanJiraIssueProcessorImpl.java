@@ -96,7 +96,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
 	@Override
-	public KanbanJiraIssue convertToKanbanJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+	public KanbanJiraIssue convertToKanbanJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, ObjectId processorId)
 			throws JSONException {
 
 		KanbanJiraIssue jiraIssue = null;
@@ -107,7 +107,6 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		}
 
 		Map<String, String> issueEpics = new HashMap<>();
-		ObjectId jiraIssueId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 		if (null == fieldMapping) {
@@ -121,7 +120,8 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		IssueField epic = fields.get(fieldMapping.getEpicName());
 
 		if (issueTypeNames
-				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || StringUtils.isNotEmpty(boardId)) {
+				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))
+				|| StringUtils.isNotEmpty(boardId)) {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 			jiraIssue = getKanbanJiraIssue(projectConfig, issueId);
 
@@ -132,7 +132,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 			setRCA(fieldMapping, issue, jiraIssue, fields);
 
 			// collectorId
-			jiraIssue.setProcessorId(jiraIssueId);
+			jiraIssue.setProcessorId(processorId);
 			// ID
 			jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
 			// Type
@@ -220,7 +220,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	}
 
 	void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
-										 List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
 			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash).collect(Collectors.toList());
@@ -349,21 +349,20 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	private void setRCA(FieldMapping fieldMapping, Issue issue, KanbanJiraIssue jiraIssue,
 			Map<String, IssueField> fields) {
 		List<String> rcaList = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(
-				fieldMapping.getKanbanRCACountIssueType()) && fieldMapping.getKanbanRCACountIssueType().stream()
-				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
-			if (null != fieldMapping.getRootCauseIdentifier() && StringUtils.isNotEmpty(
-					fieldMapping.getRootCauseIdentifier())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getKanbanRCACountIssueType()) && fieldMapping
+				.getKanbanRCACountIssueType().stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
+			if (null != fieldMapping.getRootCauseIdentifier()
+					&& StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier())) {
 				if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 					List<String> commonLabel = issue.getLabels().stream()
 							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
 					if (CollectionUtils.isNotEmpty(commonLabel)) {
 						rcaList.addAll(commonLabel);
 					}
-				} else if (fieldMapping.getRootCauseIdentifier().trim()
-						.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD) && fields.get(
-						fieldMapping.getRootCause().trim()) != null && fields.get(fieldMapping.getRootCause().trim())
-						.getValue() != null) {
+				} else if (fieldMapping.getRootCause() != null
+						&& fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+						&& fields.get(fieldMapping.getRootCause().trim()) != null
+						&& fields.get(fieldMapping.getRootCause().trim()).getValue() != null) {
 					rcaList.addAll(getRootCauses(fieldMapping, fields));
 				}
 			} else {
@@ -505,22 +504,9 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 			if (StringUtils.isNotBlank(estimationField) && fields.get(estimationField) != null
 					&& fields.get(estimationField).getValue() != null
 					&& !JiraProcessorUtil.deodeUTF8String(fields.get(estimationField).getValue()).isEmpty()) {
-				if (JiraConstants.ACTUAL_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
-					value = ((Double) fields.get(estimationField).getValue()) / 3600D;
-					valueString = String.valueOf(value.doubleValue());
-				} else if (JiraConstants.BUFFERED_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
-					if (fields.get(estimationField).getValue() instanceof Integer) {
-						value = ((Double) fields.get(estimationField).getValue()) / 3600D;
-					} else {
-						value = ((Double) (fields.get(estimationField).getValue()));
-					}
-					valueString = String.valueOf(value.doubleValue());
+				value = calculateEstimation(fields.get(estimationField), estimationCriteria);
+				valueString = String.valueOf(value);
 
-				} else if (JiraConstants.STORY_POINT.equalsIgnoreCase(estimationCriteria)) {
-					value = Double
-							.parseDouble(JiraProcessorUtil.deodeUTF8String(fields.get(estimationField).getValue()));
-					valueString = String.valueOf(value.doubleValue());
-				}
 			}
 		} else {
 			// by default storypoints
@@ -533,6 +519,19 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		}
 		jiraIssue.setEstimate(valueString);
 		jiraIssue.setStoryPoints(value);
+	}
+
+	private Double calculateEstimation(IssueField estimationField, String estimationCriteria) {
+		if (JiraConstants.ACTUAL_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
+			return (estimationField.getValue() instanceof Integer) ? ((Integer) estimationField.getValue()) / 3600D
+					: ((Double) estimationField.getValue());
+		} else if (JiraConstants.BUFFERED_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
+			return (estimationField.getValue() instanceof Integer) ? ((Integer) estimationField.getValue()) / 3600D
+					: ((Double) estimationField.getValue());
+		} else if (JiraConstants.STORY_POINT.equalsIgnoreCase(estimationCriteria)) {
+			return Double.parseDouble(JiraProcessorUtil.deodeUTF8String(estimationField.getValue()));
+		}
+		return 0.0; // Default value if none of the criteria match
 	}
 
 	private void setEpicIssueData(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue,

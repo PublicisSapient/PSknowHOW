@@ -65,6 +65,7 @@ describe('JiraConfigComponent', () => {
   const fakeProjectKeyList = require('../../../../test/resource/fakeProjectKeyList.json');
   const fakeBranchesForProject = require('../../../../test/resource/fakeBranchesForProject.json');
   const fakeConfiguredTools = require('../../../../test/resource/fakeConfiguredTools.json');
+  const fakeCompleteHiearchyData = require('../../../../test/resource/fakeCompleteHierarchyData.json');
   const fakeSelectedTool = [{
     id: '5fc086b9410df80001701334',
     toolName: 'Jira',
@@ -186,6 +187,7 @@ describe('JiraConfigComponent', () => {
     sharedService.setSelectedToolConfig(fakeSelectedTool);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
+    localStorage.setItem('completeHierarchyData', JSON.stringify(fakeCompleteHiearchyData));
   });
 
 
@@ -471,6 +473,9 @@ describe('JiraConfigComponent', () => {
       ]
     };
     component.configuredTools = fakeConfiguredTools;
+    component.showAddNewBtn = true;
+    component.isConfigureTool = false;
+    component.toolForm = new UntypedFormGroup({});
     spyOn(httpService, 'deleteProjectToolConfig').and.returnValue(of({"message":"Tool deleted successfully","success":true}));
     component.deleteTool(tool);
     tick();
@@ -495,6 +500,7 @@ describe('JiraConfigComponent', () => {
           null
       ]
     };
+    spyOn(component, 'handleToolConfiguration');
     component.connections = fakeJiraConnections.data;
     component.editTool(tool);
     expect(component.isEdit).toBeTruthy();
@@ -783,8 +789,12 @@ describe('JiraConfigComponent', () => {
     const templateList = fakeTemplateList;
     component.selectedProject = {
       id: "641cc51bd830154a05d77370",
-      Type: "kanban"
+      type: "kanban"
     }
+    component.jiraTemplate = [];
+    component.toolForm = new UntypedFormGroup({
+      metadataTemplateCode : new UntypedFormControl()
+    })
     spyOn(httpService, 'getJiraTemplate').and.returnValue(of(templateList))
     component.getJiraTemplate()
     expect(component.jiraTemplate.length).toBeGreaterThan(0);
@@ -2093,4 +2103,66 @@ describe('JiraConfigComponent', () => {
     tick();
     expect(spy).toHaveBeenCalled();
   }))
+
+  it('should give error on getting jenkins job name', fakeAsync(() => {
+    const connectionId = '331231231';
+    const errResponse = {
+      success: false,
+      error: {
+        message: 'No Jenkins Job found'
+      }
+    }
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    spyOn(httpService, 'getJenkinsJobNameList').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add');
+    component.getJenkinsJobNames(connectionId);
+    tick()
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should get azure data when selecting connection', () => {
+    const fakeConnection = {
+      id: '5fc643cd11193836e6545560',
+      type: 'Sonar',
+      connectionName: 'Test Internal -Sonar Connection',
+      cloudEnv: false,
+    };
+    component.toolForm = new UntypedFormGroup({
+      team : new UntypedFormControl()
+    })
+    // component.toolForm.controls['jobType'].setValue({ name: 'Deploy' })
+    component.urlParam = 'Azure';
+    const spyobj = spyOn(component,'fetchTeams')
+    component.isLoading = false;
+    component.onConnectionSelect(fakeConnection);
+    fixture.detectChanges();
+    expect(spyobj).toHaveBeenCalled();
+  });
+
+  it('should give error while fetching boards', fakeAsync(() => {
+    component.urlParam = 'Jira'
+    component.initializeFields(component.urlParam);
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    const err = {
+      success: false,
+      message: 'Error in fetching boards'
+    }
+    component.toolForm = new UntypedFormGroup({
+      'boards': new UntypedFormControl(),
+    })
+    component.boardsData = [];
+    fixture.detectChanges();
+    spyOn(httpService, 'getAllBoards').and.returnValue(of(err));
+    const spy = spyOn(messageService, 'add');
+    component.fetchBoards(component);
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }));
 });

@@ -20,11 +20,11 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,9 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -49,7 +51,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 
+ *
  * @author prigupta8
  * @implNote {@link KpiIntegrationServiceImpl }
  */
@@ -76,7 +78,7 @@ public class SonarServiceR {
 
 	/**
 	 * Process Sonar KPI request for Kanban projects
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @return {@code List<KpiElement>}
 	 */
@@ -116,7 +118,24 @@ public class SonarServiceR {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
-				calculateKPIAggregatedMetrics(kpiRequest, responseList, treeAggregatorDetail);
+				ExecutorService executorService = Executors
+						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+				List<CompletableFuture<Void>> futures = new ArrayList<>();
+				for (KpiElement kpiElement : kpiRequest.getKpiList()) {
+					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+						try {
+							calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiElement,
+									treeAggregatorDetail);
+						} catch (Exception e) {
+							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+						}
+					}, executorService);
+					futures.add(future);
+				}
+				CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+				allFutures.join(); // Wait for all tasks to complete
+				executorService.shutdown();
 
 				List<KpiElement> missingKpis = filterKips(origRequestedKpis, responseList);
 				responseList.addAll(missingKpis);
@@ -134,7 +153,7 @@ public class SonarServiceR {
 
 	/**
 	 * Calculates all KPI aggregated metrics
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param kpiElement
@@ -164,7 +183,7 @@ public class SonarServiceR {
 
 	/**
 	 * Sets KPI reponse List into KnowHow Cache
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId
@@ -187,18 +206,6 @@ public class SonarServiceR {
 			log.info("[JIRA][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
 					kpiRequest.getIds());
 		return cachedData;
-	}
-
-	private void calculateKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			TreeAggregatorDetail treeAggregatorDetail) {
-		for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-			try {
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
-			} catch (ApplicationException e) {
-				log.error("[SONAR][{}]. Error while KPI calculation for data. No data found {} {}",
-						kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), e.getStackTrace());
-			}
-		}
 	}
 
 	private List<KpiElement> filterKips(List<KpiElement> origRequestedKpis, List<KpiElement> responseList) {

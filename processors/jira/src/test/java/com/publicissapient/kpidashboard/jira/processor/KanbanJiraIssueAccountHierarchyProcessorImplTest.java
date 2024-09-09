@@ -89,9 +89,7 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 	@Test
 	public void createAccountHierarchy() {
 		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
-		when(kanbanAccountHierarchyRepo.findAll()).thenReturn(accountHierarchyList);
-		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(any(), any()))
-				.thenReturn(accountHierarchies);
+		when(kanbanAccountHierarchyRepo.findByBasicProjectConfigId(any())).thenReturn(accountHierarchyList);
 		Assert.assertEquals(1, createKanbanAccountHierarchy
 				.createKanbanAccountHierarchy(kanbanJiraIssues.get(0), createProjectConfig()).size());
 	}

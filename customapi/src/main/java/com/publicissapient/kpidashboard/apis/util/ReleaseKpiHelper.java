@@ -18,15 +18,20 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import static com.publicissapient.kpidashboard.apis.util.KPIExcelUtility.roundingOff;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 import lombok.extern.slf4j.Slf4j;
@@ -75,4 +80,46 @@ public final class ReleaseKpiHelper {
 		return filteredJiraIssue;
 
 	}
+
+	/**
+	 * Get Sum of StoryPoint for List of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            List<JiraIssue>
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Sum of Story Points
+	 */
+	public static Double getStoryPoint(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		double ticketEstimate = 0.0d;
+		ticketEstimate = getTicketEstimate(jiraIssueList, fieldMapping, ticketEstimate);
+		return roundingOff(ticketEstimate);
+	}
+
+	/**
+	 * Get Sum of StoryPoint for List of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            List<JiraIssue>
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Sum of Story Point
+	 */
+	public static double getTicketEstimate(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping, double ticketEstimate) {
+		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
+			if (org.apache.commons.lang.StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				ticketEstimate = jiraIssueList.stream()
+						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
+			} else {
+				double totalOriginalEstimate = jiraIssueList.stream().mapToDouble(
+								jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
+						.sum();
+				double inHours = totalOriginalEstimate / 60;
+				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}
+		return ticketEstimate;
+	}
+
 }

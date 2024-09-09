@@ -81,9 +81,7 @@
 </form>
 <div class="save-container p-mt-5 p-mb-1">
     <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3" icon="pi pi-save"
-        iconPos="left" label="Save" (click)="save()" [disabled]="disableSave || form.invalid || !isFormDirty"></button>
-    <!-- <button pButton pRipple type="button" class="p-button-lg p-button-primary p-mr-3" icon="pi pi-download"
-        iconPos="left" label="Export" (click)="export()" [disabled]="form.invalid"></button> -->
+        iconPos="left" label="Save" (click)="save()" [disabled]=" form.invalid || !form.dirty"></button>
 </div>
 
 <!-- Search Dialog -->
@@ -101,7 +99,7 @@
         <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
             <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown"
                 [style]="{'width':'436px', 'max-width': '100%', 'font-size': '14px'}" [options]="fieldMappingMultiSelectValues"
-                defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip">
+                defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip" optionDisabled="disabled">
             </p-multiSelect>
         </div>
     </div>

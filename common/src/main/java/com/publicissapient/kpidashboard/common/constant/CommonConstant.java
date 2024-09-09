@@ -68,6 +68,7 @@ public final class CommonConstant {
 	public static final String REJECTION_RESOLUTION = "rejectionResolution";
 	public static final String QA_ROOT_CAUSE = "qaRootCause";
 	public static final String UAT_DEFECT = "uatdefect";
+	public static final String FILTERS = "filters";
 
 	public static final String TICKET_CLOSED_STATUS = "ticketClosedStatus";
 	public static final String TICKET_LIVE_STATUS = "ticketLiveStatus";
@@ -194,7 +195,6 @@ public final class CommonConstant {
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
-	public static final String REPO_TOOLS = "RepoTool";
     public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
 	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
@@ -234,6 +234,7 @@ public final class CommonConstant {
 	public static final String JIRASTORYIDENTIFICATIONKPI129="jiraStoryIdentificationKPI129";
 	public static final String JIRASTORYIDENTIFICATIONKPI166="jiraStoryIdentificationKPI166";
 	public static final String JIRASTORYIDENTIFICATIONKPI40="jiraStoryIdentificationKpi40";
+	public static final String JIRASTORYCATEGORYKPI40="jiraStoryCategoryKpi40";
 	public static final String JIRA_STORY_IDENTIFICATION_KPI164="jiraStoryIdentificationKPI164";
 
 	public static final String STORYFIRSTSTATUSKPI148="storyFirstStatusKPI148";
@@ -330,6 +331,17 @@ public final class CommonConstant {
 	public static final String ACCESS_ALERT_NOTIFICATION = "accessAlertNotification";
 
 	public static final String ERROR_ALERT_NOTIFICATION = "errorAlertNotification";
+
+	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$";//Username can only contain letters and numbers Maximum length is 30 and min is 4 characters
+
+	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
+    public static final String PARENT_STORY_ID = "parentStoryId";
+	public static final String NUMBER = "number";
+
+	//-- auth-N-auth changes ends here --
+
 
 	private CommonConstant() {
 

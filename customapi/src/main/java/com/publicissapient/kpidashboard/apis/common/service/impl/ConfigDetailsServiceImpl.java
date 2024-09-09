@@ -51,7 +51,7 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setHierarchySelectionCount(customApiConfig.getHierarchySelectionCount());
 		configDetails.setDateRangeFilter(dateRangeFilter);
 		configDetails.setNoOfDataPoints(customApiConfig.getSprintCountForFilters());
-		configDetails.setRepoToolFlag(customApiConfig.getIsRepoToolEnable());
+		configDetails.setGitlabToolFieldFlag(customApiConfig.getIsGitlabFieldEnable());
 		configDetails.setSprintCountForKpiCalculation(customApiConfig.getSprintCountForKpiCalculation());
 		return configDetails;
 	}

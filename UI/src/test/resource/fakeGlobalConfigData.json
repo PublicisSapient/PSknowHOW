@@ -422,6 +422,66 @@
               "yaxisLabel": "Count"
             },
             "shown": true
+          }, {
+            "kpiId": "kpi54",
+            "kpiName": "Ticket Open vs Closed rate by Priority",
+            "isEnabled": true,
+            "order": 1,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c2685a",
+              "kpiId": "kpi54",
+              "kpiName": "Ticket Open vs Closed rate by Priority",
+              "defaultOrder": 1,
+              "kpiUnit": "Tickets",
+              "chartType": "grouped_column_plus_line",
+              "showTrend": true,
+              "isPositiveTrend": false,
+              "lineLegend": "Closed Tickets",
+              "barLegend": "Open Tickets",
+              "calculateMaturity": false,
+              "kpiSource": "Jira",
+              "kanban": true,
+              "groupId": 1,
+              "kpiInfo": {
+                "definition": "Ticket Open vs Closed rate by Priority gives a comparison of new tickets getting raised vs number of tickets getting closed grouped by issue type during a defined period.",
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "This can be filtered based on issue type"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "If the No. of tickets closed are more than the No. of tickets opened in the latest time period, the KPI is considered having a positive trend."
+                  }
+                ]
+              },
+              "kpiFilter": "multiSelectDropDown",
+              "aggregationCriteria": "sum",
+              "trendCalculation": [
+                {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "<"
+                },
+                {
+                  "type": "Neutral",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "="
+                },
+                {
+                  "type": "Downwards",
+                  "lhs": "value",
+                  "operator": ">"
+                }
+              ],
+              "trendCalculative": true,
+              "squadSupport": true,
+              "xaxisLabel": "Weeks",
+              "yaxisLabel": "Count"
+            },
+            "shown": true
           }]
         },
         {
@@ -769,6 +829,32 @@
                 "isDeleted": "False",
                 "defaultOrder": 1,
                 "kpiCategory": "Kpi Maturity",
+                "showTrend": false,
+                "calculateMaturity": false,
+                "trendCalculative": false,
+                "squadSupport": false
+              },
+              "shown": true
+            }
+          ]
+        },
+        {
+          "boardId": 12,
+          "boardName": "Dora",
+          "kpis": [
+            {
+              "kpiId": "kpi14",
+              "kpiName": "Defect Injection Rate",
+              "isEnabled": true,
+              "order": 1,
+              "kpiDetail": {
+                "id": "63320976b7f239ac93c26877",
+                "kpiId": "kpi14",
+                "groupId": 2,
+                "kpiName": "Defect Injection Rate",
+                "isDeleted": "False",
+                "defaultOrder": 1,
+                "kpiCategory": "dora",
                 "showTrend": false,
                 "calculateMaturity": false,
                 "trendCalculative": false,

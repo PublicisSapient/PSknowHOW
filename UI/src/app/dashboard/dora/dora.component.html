@@ -21,7 +21,7 @@
     <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
       <div class="clearfix">
         <div class="right-container col">
-          <div class="p-grid p-justify-center p-ai-center p-pt-3 p-px-2">
+          <div class="p-grid p-justify-center p-ai-center p-pt-3 p-px-2 p-m-0">
             <div class="kpi-summary p-mr-2 position-relative" *ngIf="kpiConfigData['kpi116']">
               <h4 class="p-m-0 p-text-center">Change Failure Rate</h4>
               <div *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData1">
@@ -130,7 +130,7 @@
             </div>
 
           </div>
-          <div class="p-grid p-justify-center p-pt-3 p-px-2">
+          <div class="p-grid p-justify-center p-pt-3 p-px-2 p-m-0">
             <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
               <div class="p-sm-6" *ngIf="kpiConfigData['kpi116']">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi116']"
@@ -232,7 +232,7 @@
                 </div>
               </ng-template>
             </ng-container>
-         
+
               <div class="p-sm-6" *ngIf="kpiConfigData['kpi156']">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi156']"
                   [trendData]="kpiTrendsObj['kpi156']" [dropdownArr]="kpiDropdowns['kpi156']"

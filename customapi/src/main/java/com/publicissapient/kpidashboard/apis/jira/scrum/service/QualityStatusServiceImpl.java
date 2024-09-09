@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.transformIterSprintdetail;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -58,10 +58,12 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -69,8 +71,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.transformIterSprintdetail;
 
 @Component
 @Slf4j
@@ -83,6 +83,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String COMPLETED_ISSUES = "completedIssue";
+	private static final String NOT_APPLICABLE = "N/A";
 	public static final DecimalFormat decformat = new DecimalFormat("#0.00");
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -146,11 +147,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
 				sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
-					if (defectTypes.contains(sprintIssue.getTypeName())) {
-						totalSprintReportDefects.add(sprintIssue.getNumber());
-					} else {
-						totalSprintReportStories.add(sprintIssue.getNumber());
-					}
+					seperateDefectAndStories(sprintIssue, defectTypes, totalSprintReportDefects, totalSprintReportStories);
 				});
 
 				Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -163,19 +160,23 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				List<String> typeNameList = fieldMapping.getJiraItrQSIssueTypeKPI133();
 
 				if (CollectionUtils.isNotEmpty(totalIssue)) {
-					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(totalIssue, totalJiraIssueList);
+					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(totalIssue,
+							totalJiraIssueList);
 					Set<JiraIssue> sprintReportIssueList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), filteredJiraIssue);
 
 					sprintReportIssueList = getTypeNameFilterJiraIssueList(defectTypes, typeNameList,
-							sprintReportIssueList);
+							sprintReportIssueList);//has present sprint issue based on getJiraItrQSIssueTypeKPI133 and defectType
+
+
+					sprintReportIssueList = getLableFilteredJiraIssues(fieldMapping, defectTypes, sprintReportIssueList);
 
 					// fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
 							totalSprintReportStories, uniqueProjectMap);
 
-					// filter defects which is issue type not coming in sprint report
+					// filter defects whose issue type not coming in sprint report
 					List<JiraIssue> subTaskDefects = linkedDefects.stream()
 							.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
 							.collect(Collectors.toList());
@@ -194,18 +195,23 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 
 					jiraIssueLinkedStories = getJiraIssueLinkedStories(typeNameList, jiraIssueLinkedStories);
 
+					Set<JiraIssue> jiraIssueLinkedStoriesSet = new HashSet<>(jiraIssueLinkedStories);
+
 					List<JiraIssue> totalIssues = new ArrayList<>();
 					totalIssues.addAll(sprintReportIssueList);
 					totalIssues.addAll(subTaskDefects);
+					jiraIssueLinkedStoriesSet = getLableFilteredJiraIssues(fieldMapping, defectTypes, jiraIssueLinkedStoriesSet);
 					resultListMap.put(TOTAL_ISSUES, totalIssues);
-					resultListMap.put(LINKED_ISSUES, new ArrayList<>(jiraIssueLinkedStories));
+					resultListMap.put(LINKED_ISSUES, new ArrayList<>(jiraIssueLinkedStoriesSet));
 				}
 				if (CollectionUtils.isNotEmpty(completedIssue)) {
-					List<JiraIssue> completedIssueList = IterationKpiHelper.getFilteredJiraIssue(completedIssue, totalJiraIssueList);
+					List<JiraIssue> completedIssueList = IterationKpiHelper.getFilteredJiraIssue(completedIssue,
+							totalJiraIssueList);
 					Set<JiraIssue> completedJiraIssue = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);
 					completedJiraIssue = getTypeNameFilterJiraIssueList(defectTypes, typeNameList, completedJiraIssue);
+					completedJiraIssue = getLableFilteredJiraIssues(fieldMapping, defectTypes, completedJiraIssue);
 					resultListMap.put(COMPLETED_ISSUES, new ArrayList<>(completedJiraIssue));
 				} else
 					resultListMap.put(COMPLETED_ISSUES, new ArrayList<>());
@@ -214,6 +220,25 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 		}
 		return resultListMap;
 
+	}
+
+	private static Set<JiraIssue> getLableFilteredJiraIssues(FieldMapping fieldMapping, List<String> defectTypes,
+			Set<JiraIssue> jiraIssueSet) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI133()) && CollectionUtils.isNotEmpty(defectTypes)) {
+			jiraIssueSet = jiraIssueSet.stream()
+					.filter(jiraIssue -> defectTypes.contains(jiraIssue.getTypeName()) || fieldMapping
+							.getJiraLabelsKPI133().stream().anyMatch(label -> jiraIssue.getLabels().contains(label)))
+					.collect(Collectors.toSet());
+		}
+		return jiraIssueSet;
+	}
+
+	private static void seperateDefectAndStories(SprintIssue sprintIssue, List<String> defectTypes, Set<String> totalSprintReportDefects, Set<String> totalSprintReportStories) {
+		if (defectTypes.contains(sprintIssue.getTypeName())) {
+			totalSprintReportDefects.add(sprintIssue.getNumber());
+		} else {
+			totalSprintReportStories.add(sprintIssue.getNumber());
+		}
 	}
 
 	private static List<JiraIssue> getJiraIssueLinkedStories(List<String> typeNameList,
@@ -244,7 +269,8 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
 
 		String startDate = latestSprint.getSprintFilter().getStartDate();
 
@@ -263,6 +289,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 			Map<String, List<String>> configPriority = customApiConfig.getPriority();
 			Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 			Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
+
 			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint,
 					fieldMapping.getDefectPriorityKPI133());
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getIncludeRCAForKPI133());
@@ -309,6 +336,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				List<JiraIssue> linkedStoriesJiraIssueList = allStory.stream()
 						.filter(jiraIssue -> linkedStoriesSet.contains(jiraIssue.getNumber()))
 						.collect(Collectors.toList());
+
 				// adding all LinkedStories
 				closedPlusOpenLinkedStories.addAll(linkedStoriesJiraIssueList);
 				// Removing duplicates if any
@@ -379,7 +407,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 							jiraIssue1 -> jiraIssue1.getNumber() + " ( " + jiraIssue1.getPriority() + " ) ",
 							JiraIssue::getUrl));
 			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
-			jiraIssueModalObject.setDefectInjectRate((double) defects.size());
+			jiraIssueModalObject.setDefectInjectRate(String.valueOf(defects.size()));
 			jiraIssueModalObject
 					.setDefectDensity(String.valueOf(calculateDefectDensity(jiraIssueList, defects, fieldMapping)));
 			if (jiraIssueModalObject.getIssueSize() == null)
@@ -552,6 +580,12 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 			});
 			jiraIssueModalObject.setLinkedStories(linkedStoriesMap);
 			jiraIssueModalObject.setLinkedStoriesSize(storyPoint.get().toString());
+		} else {
+			Map<String, String> dummyMap = new HashMap<>();
+			dummyMap.put(NOT_APPLICABLE, NOT_APPLICABLE);
+			jiraIssueModalObject.setLinkedDefefect(dummyMap);
+			jiraIssueModalObject.setDefectInjectRate(NOT_APPLICABLE);
+			jiraIssueModalObject.setDefectDensity(NOT_APPLICABLE);
 		}
 	}
 }

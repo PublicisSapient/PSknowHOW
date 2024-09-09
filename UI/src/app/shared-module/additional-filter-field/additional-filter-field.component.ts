@@ -85,7 +85,7 @@ export class AdditionalFilterFieldComponent implements OnInit {
           code: element.filterId
         });
 
-        if (element['identifyFrom'] && element['identifyFrom'].length) {
+        if (element['identifyFrom']?.length) {
           if (!this.fieldMappingForm.controls[element.filterId + 'Identifier']) {
             this.fieldMappingForm.addControl(element.filterId + 'Identifier', this.formBuilder.control(''));
             this.fieldMappingForm.controls[element.filterId + 'Identifier'].setValue(element['identifyFrom']);

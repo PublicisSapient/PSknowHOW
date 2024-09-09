@@ -71,29 +71,31 @@ public class AuthenticationServiceTest {
 	public void setUp() {
 		authentication.setUsername("Test");
 		authentication.setPassword("Ps123");
+		authentication.setEmail("abc@example.com");
+		authentication.setApproved(false);
 	}
 
 	@Test
 	public void testOldPwAuthentication() throws Exception {
 		final String pw = "pass1";
 
-		Authentication nonHashPass = new Authentication("u1", pw, "abc@xyz.com");
+		Authentication nonHashPass = new Authentication("four", pw, "abc@xyz.com");
 		Field pwField = nonHashPass.getClass().getDeclaredField("password");
 		pwField.setAccessible(true);
 		pwField.set(nonHashPass, pw);
 		nonHashPass.setApproved(true);
 		when(authRepo.findByUsername(Mockito.anyString())).thenReturn(nonHashPass);
-		Assertions.assertNotNull(authService.authenticate("u1", "pass1"));
+		Assertions.assertNotNull(authService.authenticate("four", "pass1"));
 	}
 
 	@Test
 	public void testHashedPwAuthentication() throws Exception {
 		final String pw = "pass1";
 
-		Authentication auth = new Authentication("u1", pw, "abc@xyz.com");
+		Authentication auth = new Authentication("u123", pw, "abc@xyz.com");
 		auth.setApproved(true);
 		when(authRepo.findByUsername(Mockito.anyString())).thenReturn(auth);
-		Assertions.assertNotNull(authService.authenticate("u1", "pass1"));
+		Assertions.assertNotNull(authService.authenticate("u123", "pass1"));
 	}
 
 	@Test
@@ -313,9 +315,13 @@ public class AuthenticationServiceTest {
 	@Test
 	public void getAuthenticationByApprovedTest() {
 		List<Authentication> authenticationList = new ArrayList<>();
-		authenticationList.add(authentication);
-		when(authRepo.findByApproved(true)).thenReturn(authenticationList);
-		Assertions.assertTrue(authService.getAuthenticationByApproved(true).iterator().hasNext());
+		Authentication user1 = new Authentication("u1", "pw", "abc@xyz.com");
+		Authentication user2 = new Authentication("u2", "pw", "u2@example.com");
+		authenticationList.add(user1);
+		authenticationList.add(user2);
+		when(authRepo.findByApproved(false)).thenReturn(authenticationList);
+		when(authProperties.getWhiteListDomainForEmail()).thenReturn(new ArrayList<>(List.of("example.com")));
+		Assertions.assertNotNull(authService.getAuthenticationByApproved(false));
 	}
 
 

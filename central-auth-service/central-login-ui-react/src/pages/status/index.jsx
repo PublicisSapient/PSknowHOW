@@ -18,12 +18,12 @@ const StatusPage = () => {
                     localStorage.setItem('user_details', JSON.stringify({ email: response.data.data.email, isAuthenticated: true }));
                     let defaultAppUrl = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_PSKnowHOW : process.env.REACT_APP_PSKnowHOW;
                     if(!redirectUri){
-                        window.location.href = defaultAppUrl + '?authToken=' + authToken;
+                        window.location.href = defaultAppUrl;
                     }else{
                         if(redirectUri.indexOf('?') === -1){
-                            window.location.href = `${redirectUri}?authToken=${authToken}`;
+                            window.location.href = `${redirectUri}`;
                         }else{
-                            window.location.href = `${redirectUri}&authToken=${authToken}`;
+                            window.location.href = `${redirectUri}`;
                         }
                     }
                 } else {
@@ -59,7 +59,7 @@ const StatusPage = () => {
     }
 
     return (
-        <div className="componentContainer w-full h-screen flex items-center text-center">
+        <div className="componentContainer w-full flex items-center text-center">
             {message === 'Login Successful' &&
                 <div id="status" className='w-full h-2/3 m-auto text-center text-green-500'>
                     <div className='w-full h-1/3 flex items-center text-center'><FaCircleCheck className='m-auto text-6xl' /></div>

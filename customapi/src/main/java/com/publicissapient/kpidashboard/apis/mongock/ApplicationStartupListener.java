@@ -49,6 +49,7 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 		configHelperService.loadFieldMappingStructure();
 		configHelperService.loadUserBoardConfig();
 		configHelperService.loadAllProjectToolConfig();
+		configHelperService.loadAllFilters();
 		configHelperService.loadConfigData();
 		configHelperService.loadToolConfig();
 		simplePolicyDefinition.init();

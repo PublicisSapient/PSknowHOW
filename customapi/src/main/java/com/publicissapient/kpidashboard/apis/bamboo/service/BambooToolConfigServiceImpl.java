@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -116,15 +117,11 @@ public class BambooToolConfigServiceImpl {
 			HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 			try {
 				connectionService.validateConnectionFlag(connection);
-				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-				if (response.getStatusCode() == HttpStatus.OK) {
-					parseBranchesResponse(responseDTOList, response);
+				if (StringUtils.isNotBlank(jobNameKey)) { // Add input validation for jobNameKey
+					apiCallToGetBranches(responseDTOList, url, httpEntity);
 				} else {
-					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
-							statusCode);
+					log.error("Invalid jobNameKey: {}", jobNameKey);
 				}
-
 			} catch (Exception exception) {
 				isClientException(connection, exception);
 				log.error("Error while fetching BambooBranchesNameAndKeys from {}:  {}", url, exception.getMessage());
@@ -132,6 +129,24 @@ public class BambooToolConfigServiceImpl {
 			return responseDTOList;
 		}
 		return responseDTOList;
+	}
+
+	/**
+	 * this method is used to call the api to get branches
+	 * @param responseDTOList
+	 * @param url
+	 * @param httpEntity
+	 * @throws ParseException
+	 */
+	private void apiCallToGetBranches(List<BambooBranchesResponseDTO> responseDTOList, String url, HttpEntity<?> httpEntity) throws ParseException {
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+		if (response.getStatusCode() == HttpStatus.OK) {
+			parseBranchesResponse(responseDTOList, response);
+		} else {
+			String statusCode = response.getStatusCode().toString();
+			log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
+					statusCode);
+		}
 	}
 
 	/**

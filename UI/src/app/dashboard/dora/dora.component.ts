@@ -12,7 +12,6 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 })
 export class DoraComponent implements OnInit {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
-  masterData;
   filterData = [];
   jenkinsKpiData = {};
   jiraKpiData = {};
@@ -51,7 +50,6 @@ export class DoraComponent implements OnInit {
     tableValues: []
   };
   kpiExcelData;
-  isGlobalDownload = false;
   kpiTrendsObj = {};
   selectedTab = 'dora';
   showCommentIcon = false;
@@ -130,8 +128,9 @@ export class DoraComponent implements OnInit {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
-    if (this.updatedConfigGlobalData?.length === 0) {
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+    const shownKpis = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+    if (shownKpis?.length === 0) {
       this.noKpis = true;
     } else {
       this.noKpis = false;
@@ -171,12 +170,14 @@ export class DoraComponent implements OnInit {
     const nodes = [...this.filterApplyData?.['selectedMap']['project']];
     const level = this.filterApplyData?.level;
     const nodeChildId = '';
-    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
   }
 
   receiveSharedData($event) {
     this.isTooltip = '';
-    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
+    if (this.service.getSelectedLevel() && this.service.getSelectedLevel()['hierarchyLevelName']) {
+      this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelName'].toLowerCase() === 'project' ? true : false;
+    }
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
       if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {
@@ -185,7 +186,6 @@ export class DoraComponent implements OnInit {
     }
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
     this.processKpiConfigData();
-    this.masterData = $event.masterData;
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
     this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -193,7 +193,7 @@ export class DoraComponent implements OnInit {
       this.noTabAccess = false;
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
-      if (this.masterData && Object.keys(this.masterData).length) {
+      if (this.configGlobalData?.length > 0) {
         this.groupJenkinsKpi(kpiIdsForCurrentBoard);
         this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
@@ -217,16 +217,16 @@ export class DoraComponent implements OnInit {
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData?.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jenkins' && obj.kpiCategory?.toLowerCase() == 'dora') {
-        groupIdSet.add(obj.groupId);
+    this.updatedConfigGlobalData?.forEach((obj) => {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jenkins' && obj['kpiDetail'].kpiCategory?.toLowerCase() == 'dora') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
 
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'dora');
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'dora');
         if (this.kpiJenkins?.kpiList?.length > 0) {
           for (let i = 0; i < this.kpiJenkins?.kpiList?.length; i++) {
             this.kpiJenkins.kpiList[i]['filterDuration'] = {
@@ -245,16 +245,16 @@ export class DoraComponent implements OnInit {
     this.jiraKpiData = {};
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData?.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory?.toLowerCase() == 'dora') {
-        groupIdSet.add(obj.groupId);
+    this.updatedConfigGlobalData?.forEach((obj) => {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory?.toLowerCase() == 'dora') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
 
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Dora');
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Dora');
         if (this.kpiJira?.kpiList?.length > 0) {
           this.postJiraKpi(this.kpiJira, 'jira');
         }
@@ -379,11 +379,6 @@ export class DoraComponent implements OnInit {
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
-
-    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-    // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
     this.setMaturityColor(kpiId, this.kpiSelectedFilterObj[kpiId]);
   }
 
@@ -456,7 +451,7 @@ export class DoraComponent implements OnInit {
     if (idx !== -1) {
       this.allKpiArray.splice(idx, 1);
     }
-    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
     if (currentKPIGroup?.kpiList?.length > 0) {
       const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
       switch (kpiSource) {

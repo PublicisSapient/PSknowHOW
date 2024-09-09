@@ -33,6 +33,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.mongock.data.FiltersDataFactory;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +71,7 @@ import com.publicissapient.kpidashboard.common.repository.application.KpiCategor
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
+import org.springframework.http.ResponseEntity;
 
 /**
  * @author yasbano
@@ -102,6 +111,10 @@ public class UserBoardConfigServiceImplTest {
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private UserInfoCustomRepository userInfoCustomRepository;
+	@Mock
+	private FiltersRepository filtersRepository;
+	@Mock
+	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
 
 
 	private List<KpiCategory> kpiCategoryList;
@@ -117,6 +130,9 @@ public class UserBoardConfigServiceImplTest {
 		ProjectListRequested projectListRequested = new ProjectListRequested();
 		projectListRequested.setBasicProjectConfigIds(Arrays.asList("proj1","proj2"));
 		listOfReqProjects = projectListRequested;
+		FiltersDataFactory filtersDataFactory=FiltersDataFactory.newInstance();
+		when(configHelperService.loadAllFilters()).thenReturn(filtersDataFactory.getFiltersList());
+//		when()
 	}
 
 	@Test
@@ -138,9 +154,12 @@ public class UserBoardConfigServiceImplTest {
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
 		when(userInfoCustomRepository.findAdminUserOfProject(any())).thenReturn(new ArrayList<>());
-		UserBoardConfigDTO response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
+		ResponseEntity<ServiceResponse> response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
 		assertNotNull(response);
-		assertEquals(response.getUsername(), username);
+		assertNotNull(response.getBody());
+		assertNotNull(response.getBody().getData());
+		UserBoardConfigDTO boardConfigDTOResponse = (UserBoardConfigDTO) response.getBody().getData();
+		assertEquals(boardConfigDTOResponse.getUsername(), username);
 	}
 	@Test
 	public void testSaveSuperAdminUserBoardConfig() {
@@ -149,9 +168,9 @@ public class UserBoardConfigServiceImplTest {
 		UserBoardConfigDTO userBoardConfigDTO = convertToUserBoardConfigDTO(getData(username, true));
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
-		UserBoardConfigDTO response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
-		assertNotNull(response);
-		assertEquals(response.getUsername(), username);
+		ResponseEntity<ServiceResponse> response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
+		assertNotNull(response.getBody());
+		assertNotNull(response.getBody().getData());
 	}
 
 	@Test
@@ -365,10 +384,68 @@ public class UserBoardConfigServiceImplTest {
 				.filter(master -> (!master.getKanban() && "Backlog".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
+		when(userInfoCustomRepository.findAdminUserOfProject(anyList())).thenReturn(createDummyAdminUsers());
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig(listOfReqProjects);
+
+
 		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 6, "Previously 4 kpis now 5");
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
+	}
+
+	private List<UserInfo> createDummyAdminUsers() {
+		//Arrays.asList("proj1","proj2")
+		List<UserInfo> users = Arrays.asList(
+				createUserInfo("poorao", Arrays.asList(
+						createProjectAccess("ROLE_PROJECT_ADMIN", Arrays.asList(
+								createAccessNode("project", Arrays.asList(
+										createAccessItem("proj1", "proj1"),
+										createAccessItem("proj2", "proj2")
+								))
+						))
+				)),
+				createUserInfo("andtejas", Arrays.asList(
+						createProjectAccess("ROLE_PROJECT_ADMIN", Arrays.asList(
+								createAccessNode("project", Arrays.asList(
+										createAccessItem("proj2", "proj2")
+								))
+						))
+				)),
+				createUserInfo("palaggar2", Arrays.asList(
+						createProjectAccess("ROLE_SUPERADMIN", Arrays.asList(
+								createAccessNode("project", Arrays.asList(
+										createAccessItem("proj2","proj2" )
+								))
+						))
+				))
+		);
+		return users;
+	}
+
+	private UserInfo createUserInfo(String name, List<ProjectsAccess> projectsAccess){
+		UserInfo info= new UserInfo();
+		info.setUsername(name);
+		info.setProjectsAccess(projectsAccess);
+		return info;
+	}
+	private ProjectsAccess createProjectAccess(String name, List<AccessNode> list){
+		ProjectsAccess node= new ProjectsAccess();
+		node.setRole(name);
+		node.setAccessNodes(list);
+		return node;
+	}
+
+	private AccessNode createAccessNode(String name, List<AccessItem> list){
+		AccessNode node= new AccessNode();
+		node.setAccessLevel(name);
+		node.setAccessItems(list);
+		return node;
+	}
+	private AccessItem createAccessItem(String id, String name) {
+		AccessItem accessItem = new AccessItem();
+		accessItem.setItemId(id);
+		accessItem.setItemName(name);
+		return accessItem;
 	}
 
 	@Test
@@ -469,6 +546,7 @@ public class UserBoardConfigServiceImplTest {
 				.filter(master -> (!master.getKanban() && "Backlog".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
+		when(userInfoCustomRepository.findAdminUserOfProject(any())).thenReturn(new ArrayList<>());
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig(listOfReqProjects);
 		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 6, "Previously 4 kpis now 5");
 		assertNotNull(userBoardConfigDTO);

@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-conditional-input',
   templateUrl: './conditional-input.component.html',
   styleUrls: ['./conditional-input.component.css']
 })
-export class ConditionalInputComponent implements OnInit {
+export class ConditionalInputComponent implements OnChanges {
   @Input() id;
   @Input() fieldConfig;
   @Input() valueObj;
@@ -13,15 +13,14 @@ export class ConditionalInputComponent implements OnInit {
   finalValue = [];
   templateData = [];
   templateLabels = [];
-  constructor() { }
 
-  ngOnInit(): void {
-    if (this.valueObj && this.valueObj.length) {
-      this.templateLabels = this.valueObj.map((val) => val.labelValue);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.valueObj && this.valueObj.length) {
+      this.templateLabels = this.templateLabelToLowercase(this.valueObj.map((val) => val.labelValue));
       this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
       this.finalValue = [...this.templateData];
       this.valueObj.forEach(element => {
-        let opt = this.fieldConfig.options.filter((opt) => opt.labelValue === element.labelValue)[0];
+        let opt = this.fieldConfig.options.filter((opt) => opt.labelValue === element.labelValue.toLowerCase())[0];
         if (opt) {
           opt['countValue'] = element.countValue;
         }
@@ -29,8 +28,10 @@ export class ConditionalInputComponent implements OnInit {
     }
   }
 
+  templateLabelToLowercase = (arr: []) => arr.map((val: any) => val.toLowerCase());
+
   setValue(event) {
-    this.templateLabels = event.value.map((val) => val.labelValue);
+    this.templateLabels = this.templateLabelToLowercase(event.value.map((val) => val.labelValue));
     this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
     let selectedOption = this.templateData.filter((opt) => opt.labelValue === event.itemValue.labelValue)[0];
     if (selectedOption) {

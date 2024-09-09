@@ -15,8 +15,14 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
+<ng-container *featureFlag="'NEW_UI_SWITCH'">
+  <div class="ui-switch-container"
+    *ngIf="router.url.indexOf('authentication') === -1 && router.url.indexOf('config') === -1">
+    <span class="p-mr-6"> New experience (ON) | Legacy view (OFF)</span>
+    <p-inputSwitch [(ngModel)]="newUI" (onChange)="uiSwitch($event, true)"></p-inputSwitch>
+  </div>
+</ng-container>
 <router-outlet></router-outlet>
 <ng-container *ngIf="loadingRouteConfig">
-<app-page-loader></app-page-loader>
+  <app-page-loader></app-page-loader>
 </ng-container>

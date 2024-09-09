@@ -65,7 +65,9 @@ public class ProjectToolConfig extends BasicModel {
 	private String newRelicApiQuery;
 	private List<String> newRelicAppNames;
 	private String createdAt;
+	private String createdBy;
 	private String updatedAt;
+	private String updatedBy;
 	private boolean queryEnabled;
 	private String boardQuery;
 	private List<BoardDetails> boards;
@@ -107,6 +109,8 @@ public class ProjectToolConfig extends BasicModel {
 
 	// Sonar SDM ID use for GS
 	private String gitLabSdmID;
+
+	private List<String> gitLabID;
 
 	// jiraIterationCompletionStatusCustomField field mapping update identifier
 	private boolean azureIterationStatusFieldUpdate;

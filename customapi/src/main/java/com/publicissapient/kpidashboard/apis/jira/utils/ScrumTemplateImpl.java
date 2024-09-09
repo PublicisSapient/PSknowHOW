@@ -100,16 +100,17 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 		// simple line chart aggregation
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.FIRST_TIME_PASS_RATE);
 		kpiElement.setTrendValueList(trendValues);
 		// end of simple line chart aggregation
 
 		// Use these methods instead of above if kpi is line+filter, groupcolumn,
 		// grouped column+filter,column,column + filter
-		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.AVERAGE_RESOLUTION_TIME);
+		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.CREATED_VS_RESOLVED_DEFECTS);
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
-				KPICode.AVERAGE_RESOLUTION_TIME);
+				KPICode.CREATED_VS_RESOLVED_DEFECTS);
 		Map<String, Map<String, List<DataCount>>> issueTypeProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((issueType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()

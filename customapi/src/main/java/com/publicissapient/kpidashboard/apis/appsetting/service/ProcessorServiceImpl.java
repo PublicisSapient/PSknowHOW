@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Context;
@@ -83,24 +84,15 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
 		List<Processor> listProcessor = new ArrayList<>();
-		Boolean repoToolFlag = customApiConfig.getIsRepoToolEnable();
 		processorRepository.findAll().iterator().forEachRemaining(p -> {
 			if (null != p) {
-				String processorName = p.getProcessorName();
-				boolean isRepoTool = processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS);
-				boolean shouldAddToList = (repoToolFlag.equals(Boolean.FALSE) && !isRepoTool)
-						|| (repoToolFlag.equals(Boolean.TRUE)
-								&& !processorName.equalsIgnoreCase(ProcessorConstants.GITLAB)
-								&& !processorName.equalsIgnoreCase(ProcessorConstants.GITHUB)
-								&& !processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET)
-								&& !processorName.equalsIgnoreCase(ProcessorConstants.AZUREREPO));
-				if (shouldAddToList) {
-					listProcessor.add(p);
-				}
+				listProcessor.add(p);
 			}
 		});
 		log.debug("Returning list of Processors having size: {}", listProcessor.size());
@@ -112,12 +104,19 @@ public class ProcessorServiceImpl implements ProcessorService {
 			ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
 
 		String url = processorUrlConfig.getProcessorUrl(processorName);
+		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
+				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		boolean isSuccess = true;
 		int statuscode = HttpStatus.NOT_FOUND.value();
 		String body = "";
-		if (processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
-			statuscode = repoToolsConfigService
-					.triggerScanRepoToolProject(processorExecutionBasicConfig.getProjectBasicConfigIds());
+		boolean isSCMToolEnabled = false;
+		String projectBasicConfigId = "";
+		if (processorExecutionBasicConfig != null) {
+			projectBasicConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
+			isSCMToolEnabled = configHelperService.getProjectConfig(projectBasicConfigId).isDeveloperKpiEnabled();
+		}
+		if (scmToolList.contains(processorName) && isSCMToolEnabled) {
+			statuscode = repoToolsConfigService.triggerScanRepoToolProject(processorName, projectBasicConfigId);
 		} else {
 			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 					.getRequest();

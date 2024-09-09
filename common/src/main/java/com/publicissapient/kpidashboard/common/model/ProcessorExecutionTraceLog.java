@@ -24,6 +24,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.ErrorDetail;
 import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 
 import lombok.Data;
@@ -51,6 +52,8 @@ public class ProcessorExecutionTraceLog {
 	private Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType;
 	private boolean lastEnableAssigneeToggleState;
 	private String boardId;
+	private String firstRunDate;
+	private boolean dataMismatch;
 	private boolean progressStats;
 	private boolean executionOngoing;
 	private String errorMessage;
@@ -58,4 +61,8 @@ public class ProcessorExecutionTraceLog {
 	private List<ProgressStatus> progressStatusList;
 
 	Map<String, String> boardWiseLastSyncDate;
+	//save any resource not found error
+	private List<ErrorDetail> errorDetailList;
+	private boolean executionWarning;
+	private long executionResumesAt;
 }

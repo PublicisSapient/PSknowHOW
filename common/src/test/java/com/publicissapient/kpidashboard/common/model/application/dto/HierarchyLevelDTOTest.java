@@ -63,8 +63,7 @@ public class HierarchyLevelDTOTest {
         assertEquals("Hierarchy Level Name", actualHierarchyLevelDTO.getHierarchyLevelName());
         assertEquals(1, actualHierarchyLevelDTO.getLevel());
         assertSame(stringSet, actualHierarchyLevelDTO.getSuggestions());
-        assertEquals("HierarchyLevelDTO(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name,"
-                + " suggestions=[])", actualToStringResult);
+        assertEquals("HierarchyLevelDTO(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyLevelInfo=null, suggestions=[])", actualToStringResult);
     }
 
     /**

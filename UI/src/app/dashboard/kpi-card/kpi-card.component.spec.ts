@@ -16,6 +16,7 @@ describe('KpiCardComponent', () => {
   let sharedService: SharedService;
   let httpService: HttpService;
   let authService: GetAuthorizationService
+  let mockService: jasmine.SpyObj<SharedService>;
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
@@ -58,6 +59,7 @@ describe('KpiCardComponent', () => {
     sharedService = TestBed.inject(SharedService);
     httpService = TestBed.inject(HttpService);
     authService = TestBed.inject(GetAuthorizationService);
+    mockService = jasmine.createSpyObj(SharedService, ['selectedFilterOptionObs', 'getSelectedTab']);
     fixture.detectChanges();
   });
 
@@ -612,5 +614,233 @@ describe('KpiCardComponent', () => {
     expect(component.checkIfViewer).toBe(true);
   });
 
-  
+  it('should handle Overall values correctly for kpi72', () => {
+    const filterData = {
+      kpi72: {
+        filter2: ['Overall'],
+        filter3: ['Other'],
+        filter4: ['OtherFilters']
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi72',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    expect(component.filterOptions["filter2"]).toEqual('Overall');
+  });
+
+
+  it('should handle Overall values in filter1 correctly for kpi72', () => {
+    const filterData = {
+      kpi72: {
+        filter1: ['Overall'],
+        filter2: ['Other'],
+        filter3: ['OtherFilters']
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi72',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    expect(component.filterOptions["filter1"]).toEqual('Overall');
+  });
+
+  it('should handle other key values in filter1 correctly for kpi72', () => {
+    const filterData = {
+      kpi72: {
+        filter3: ['option3'],
+        filter2: ['Overall']
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi72',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+  });
+
+  it('should handle Overall values in filter1 correctly for kpi72', () => {
+    const filterData = {
+      kpi72: {
+        filter: ['OtherFilters','Overall'],
+        filter1: ['Overall'],
+        filter2: ['Other'],
+        
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi72',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    expect(component.filterOptions["filter1"]).toEqual('Overall');
+  });
+
+  it('should handle Overall values in filter1 correctly for non kpi72', () => {
+    const filterData = {
+      kpi7: {
+        filter: ['OtherFilters','Overall'],
+        filter1: ['Overall'],
+        filter2: ['Other'],
+        
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi7',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi7',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    expect(component.filterOptions["filter1"]).toEqual(['Overall']);
+  });
+
+  it('should get getColorCssClasses',()=>{
+    const rValue = component.getColorCssClasses(0);
+    expect(rValue).toBeDefined();
+  })
+
+
+describe('hasData', () => {
+  beforeEach(() => {
+    component.sprintDetailsList = [
+      { hoverList: [{ field1: null, field2: 'data' }] },
+      { hoverList: [{ field1: undefined, field2: 'data' }] },
+      { hoverList: [{ field1: 'data', field2: null }] },
+    ];
+  });
+
+  it('should return true if the field is not null or undefined in the hoverList of the selected tab', () => {
+    component.selectedTabIndex = 0;
+    expect(component.hasData('field2')).toBe(true);
+  });
+
+  it('should return false if the field is null in the hoverList of the selected tab', () => {
+    component.selectedTabIndex = 0;
+    expect(component.hasData('field1')).toBe(false);
+  });
+
+  it('should return false if the field is undefined in the hoverList of the selected tab', () => {
+    component.selectedTabIndex = 1;
+    expect(component.hasData('field1')).toBe(false);
+  });
+
+  it('should return true if the field is not null or undefined in the hoverList of the selected tab', () => {
+    component.selectedTabIndex = 2;
+    expect(component.hasData('field1')).toBe(true);
+  });
+
+  it('should handle out of bounds selectedTabIndex gracefully', () => {
+    component.selectedTabIndex = 3;  // Out of bounds
+    expect(() => component.hasData('field1')).toThrow();
+  });
+
+});
+
+it("should return execution date of processor",()=>{
+  const tracelog = [{
+    processorName : 'Jira',
+    executionSuccess : false,
+    executionEndedAt : '2023-01-04T06:02:20'
+  }]
+  spyOn(component,'findTraceLogForTool').and.returnValue(tracelog);
+  const resp = component.showExecutionDate('Jira')
+  expect(resp).not.toBe("NA")
+})
+
+it('should find tracelog for specfic tool',()=>{
+  spyOn(sharedService,'getProcessorLogDetails').and.returnValue([{
+    processorName : 'jira',
+    executionSuccess : false,
+    executionEndedAt : '2023-01-04T06:02:20'
+  }])
+  const toolDetails = component.findTraceLogForTool("jira");
+  expect(toolDetails).toBeDefined();
+})
+
 });

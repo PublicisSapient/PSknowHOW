@@ -18,158 +18,143 @@
 
 <main class="container" *ngIf="assigneeList?.length > 0 && filterData else noData">
 
-    <!-- filter section -->
-    <section class="filter-header">
-        <div class="p-d-flex p-align-center p-jc-between p-w-100">
-            <ng-container *ngIf="selectedUser === 'Overall' else assignee">
-                <ng-container *ngFor="let filter of filterData">
-                    <ng-container [ngSwitch]="filter?.filterType">
-                        <div class="filters" *ngSwitchCase="'singleSelect'">
-                            <span class="p-float-label">
-                                <p-dropdown [showClear]="true" [style]="{'min-width' : '180px', 'font-size' : '16px'}"
-                                    [(ngModel)]="filters[filter?.filterKey]" [autoDisplayFirst]="false"
-                                    [options]="filter.options"
-                                    (onChange)="handleSingleSelectChange($event,filter?.filterKey)"
-                                    [disabled]="!filter.options || !filter.options.length || (filter.options.length === 1 && filter.options[0] === 'Unassigned')"></p-dropdown>
-                                <label for="dropdown">Domain</label>
-                            </span>
-                        </div>
-                    </ng-container>
-
-                </ng-container>
-            </ng-container>
-            <ng-template #assignee>
-                <button pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-rounded"
-                    (click)="setSelectedUser('Overall','')"></button>
-            </ng-template>
-
-            <div class="user-filter" [ngClass]="{'p-mt-2': selectedUser === 'Overall'}">
-                <button (click)="setSelectedUser(null,'Unassigned')" [pTooltip]="'Unassigned'" tooltipPosition="bottom"
-                    class="assignee unassignedBtn">
-                    <i class="pi pi-user-minus" style="font-size: 1rem"></i>
-                </button>
-
-                <div class="" style="width: 70vw; max-height: 50px;overflow-x: auto; display: inline-block;">
-                    <div class="btn-wrapper" style="width: fit-content; max-height: 100%; display: flex;">
-                        <button *ngFor="let assignee of assigneeList" [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
-                            (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
-                            [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
-                            [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" class="assignee"
-                            >
-                            {{getNameInitials(assignee.assigneeName)}}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- <div class="assignee-scroller">
-                    <p-carousel [value]="assigneeList" [numVisible]="16" [numScroll]="16">
-                        <ng-template let-assignee pTemplate="item">
-                            <div [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
-                                [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}"
-                                (click)="handleTabChange(assignee.assigneeId, assignee.assigneeName)"
-                                [pTooltip]="assignee.assigneeName" tooltipPosition="bottom" class="assignee">
-                                {{getNameInitials(assignee.assigneeName)}}
-                            </div>
-                        </ng-template>
-                    </p-carousel>
-                </div> -->
+  <!-- filter section -->
+  <section class="filter-header">
+    <div class="p-d-flex p-align-center p-jc-between p-w-100">
+      <ng-container *ngIf="selectedUser === 'Overall' else assignee">
+        <ng-container *ngFor="let filter of filterData">
+          <ng-container [ngSwitch]="filter?.filterType">
+            <div class="filters" *ngSwitchCase="'singleSelect'">
+              <span class="p-float-label">
+                <p-dropdown [showClear]="true" [style]="{'min-width' : '180px', 'font-size' : '16px'}"
+                  [(ngModel)]="filters[filter?.filterKey]" [autoDisplayFirst]="false" [options]="filter.options"
+                  (onChange)="handleSingleSelectChange($event,filter?.filterKey)"
+                  [disabled]="!filter.options || !filter.options.length || (filter.options.length === 1 && filter.options[0] === 'Unassigned')"></p-dropdown>
+                <label for="dropdown">Domain</label>
+              </span>
             </div>
-            <button class="assignee" (click)="handleViewExpandCollapse()">
-                <i class=" fas" [ngClass]="{'fa-compress' : displayModal , 'fa-expand': !displayModal}"></i>
+          </ng-container>
+
+        </ng-container>
+      </ng-container>
+      <ng-template #assignee>
+        <button pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-rounded"
+          (click)="setSelectedUser('Overall','')"></button>
+      </ng-template>
+
+      <div class="user-filter" [ngClass]="{'p-mt-2': selectedUser === 'Overall'}">
+        <button (click)="setSelectedUser(null,'Unassigned')" [pTooltip]="'Unassigned'" tooltipPosition="bottom"
+          class="assignee unassignedBtn">
+          <i class="pi pi-user-minus" style="font-size: 1rem"></i>
+        </button>
+
+        <div class="" style="width: 70vw; max-height: 50px;overflow-x: auto; display: inline-block;">
+          <div class="btn-wrapper" style="width: fit-content; max-height: 100%; display: flex;">
+            <button *ngFor="let assignee of assigneeList"
+              [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
+              (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)" [pTooltip]="assignee.assigneeName"
+              tooltipPosition="bottom" [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}"
+              class="assignee">
+              {{getNameInitials(assignee.assigneeName)}}
             </button>
+          </div>
         </div>
-    </section>
+      </div>
+      <button class="assignee" (click)="handleViewExpandCollapse()">
+        <i class=" fas" [ngClass]="{'fa-compress' : displayModal , 'fa-expand': !displayModal}"></i>
+      </button>
+    </div>
+  </section>
 
-    <!-- assignee capacity info -->
-    <section *ngIf="selectedUserInfo" class="selected-user-info">
-        <span class="p-mr-5">
-            <h4 class="p-mb-1 font-grey font-bold">{{selectedUserInfo.assigneeName}}</h4>
-            <p class="p-mt-2 font-bold">{{selectedUserInfo.role !== 'Unassigned' ? selectedUserInfo.role : '-' }}</p>
-        </span>
-        <sapn *ngFor="let col of columns" class="p-mr-5">
-            <h4 class="p-mb-1 font-grey font-bold">{{col}}</h4>
-            <p class="p-mt-2 font-bold" *ngIf="col !== 'Remaining Work'">
-                {{convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'],selectedUserInfo.cardDetails[col]['unit'])}}
-                {{(selectedUserInfo.cardDetails[col]['unit'] !== 'day' && selectedUserInfo.cardDetails[col]['value'] !==
-                '-') ? selectedUserInfo.cardDetails[col]['unit'] : ''}}
-                {{selectedUserInfo.cardDetails[col]['value1'] ? ' / ' + selectedUserInfo.cardDetails[col]['value1'] +'
-                '+ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] :
-                '' : ''}}
-            </p>
-            <p class="p-mt-2 font-bold"
-                *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] !== '-'">
-                {{ convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'],
-                selectedUserInfo.cardDetails[col]['unit']) }} / {{
-                convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value1'],selectedUserInfo.cardDetails[col]['unit1'])
-                }}
-                {{ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] :
-                '' }}
-            </p>
-            <p class="p-mt-2 font-bold"
-                *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] === '-'">
-                -
-            </p>
-        </sapn>
-    </section>
+  <!-- assignee capacity info -->
+  <section *ngIf="selectedUserInfo" class="selected-user-info">
+    <span class="p-mr-5">
+      <h4 class="p-mb-1 font-grey font-bold">{{selectedUserInfo.assigneeName}}</h4>
+      <p class="p-mt-2 font-bold">{{selectedUserInfo.role !== 'Unassigned' ? selectedUserInfo.role : '-' }}</p>
+    </span>
+    <sapn *ngFor="let col of columns" class="p-mr-5">
+      <h4 class="p-mb-1 font-grey font-bold">{{col}}</h4>
+      <p class="p-mt-2 font-bold" *ngIf="col !== 'Remaining Work'">
+        {{convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'],selectedUserInfo.cardDetails[col]['unit'])}}
+        {{(selectedUserInfo.cardDetails[col]['unit'] !== 'day' && selectedUserInfo.cardDetails[col]['value'] !==
+        '-') ? selectedUserInfo.cardDetails[col]['unit'] : ''}}
+        {{selectedUserInfo.cardDetails[col]['value1'] ? ' / ' + selectedUserInfo.cardDetails[col]['value1'] +'
+        '+ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] :
+        '' : ''}}
+      </p>
+      <p class="p-mt-2 font-bold"
+        *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] !== '-'">
+        {{ convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'],
+        selectedUserInfo.cardDetails[col]['unit']) }} / {{
+        convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value1'],selectedUserInfo.cardDetails[col]['unit1'])
+        }}
+        {{ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] :
+        '' }}
+      </p>
+      <p class="p-mt-2 font-bold"
+        *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] === '-'">
+        -
+      </p>
+    </sapn>
+  </section>
 
-    <!-- Capacity Info table -->
-    <section class="p-p-3 user-info-section" *ngIf="selectedUser === 'Overall' else userInfo">
-        <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}"
-            (sortFunction)="customSort($event)" [customSort]="true" [scrollable]="true"
-            [scrollHeight]="onFullScreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)'">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th pSortableColumn="Team Member" scope="col">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col" scope="col">
-                        {{col}} <p-sortIcon field="code"></p-sortIcon>
-                    </th>
-                </tr>
-                <tr>
-                    <th scope="col">{{totals['Team Member']}}</th>
-                    <th *ngFor="let col of columns" scope="col">
-                        {{convertToHoursIfTime(totals[col]?.value, totals[col]?.unit)}} {{totals[col]?.unit !== 'day' ?
-                        totals[col]?.unit : ''}}
-                        {{totals[col]?.unit1 ? ' / ' + convertToHoursIfTime(totals[col]?.value1, totals[col]?.unit1) +'
-                        '+ (totals[col]?.unit1 != 'day' ?
-                        totals[col]?.unit1 : '') : ''}}
-                    </th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-assignee>
-                <tr>
-                    <td> <span class="user-name">{{assignee.assigneeName}}</span></td>
-                    <td *ngFor="let col of columns">
-                        {{convertToHoursIfTime(assignee.cardDetails[col]['value'],assignee.cardDetails[col]['unit'])}}
-                        {{(assignee.cardDetails[col]['unit'] !== 'day' && assignee.cardDetails[col]['value'] !== '-') ?
-                        assignee.cardDetails[col]['unit'] : ''}}
-                        {{assignee.cardDetails[col]['value1'] ? (' / ' +
-                        convertToHoursIfTime(assignee.cardDetails[col]['value1'],assignee.cardDetails[col]['unit1']) +'
-                        '+ ((assignee.cardDetails[col]['unit1'] !== 'day' && assignee.cardDetails[col]['value1'] !==
-                        '-') ? assignee.cardDetails[col]['unit1'] :'') ): ''}}
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </section>
+  <!-- Capacity Info table -->
+  <section class="p-p-3 user-info-section" *ngIf="selectedUser === 'Overall' else userInfo">
+    <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}"
+      (sortFunction)="customSort($event)" [customSort]="true" [scrollable]="true"
+      [scrollHeight]="onFullScreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="Team Member" scope="col">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>
+          <th *ngFor="let col of columns" [pSortableColumn]="col" scope="col">
+            {{col}} <p-sortIcon field="code"></p-sortIcon>
+          </th>
+        </tr>
+        <tr>
+          <th scope="col">{{totals['Team Member']}}</th>
+          <th *ngFor="let col of columns" scope="col">
+            {{convertToHoursIfTime(totals[col]?.value, totals[col]?.unit)}} {{totals[col]?.unit !== 'day' ?
+            totals[col]?.unit : ''}}
+            {{totals[col]?.unit1 ? ' / ' + convertToHoursIfTime(totals[col]?.value1, totals[col]?.unit1) +'
+            '+ (totals[col]?.unit1 != 'day' ?
+            totals[col]?.unit1 : '') : ''}}
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-assignee>
+        <tr>
+          <td> <span class="user-name">{{assignee.assigneeName}}</span></td>
+          <td *ngFor="let col of columns">
+            {{convertToHoursIfTime(assignee.cardDetails[col]['value'],assignee.cardDetails[col]['unit'])}}
+            {{(assignee.cardDetails[col]['unit'] !== 'day' && assignee.cardDetails[col]['value'] !== '-') ?
+            assignee.cardDetails[col]['unit'] : ''}}
+            {{assignee.cardDetails[col]['value1'] ? (' / ' +
+            convertToHoursIfTime(assignee.cardDetails[col]['value1'],assignee.cardDetails[col]['unit1']) +'
+            '+ ((assignee.cardDetails[col]['unit1'] !== 'day' && assignee.cardDetails[col]['value1'] !==
+            '-') ? assignee.cardDetails[col]['unit1'] :'') ): ''}}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
 
-    <!-- Assignee Issue details -->
-    <ng-template #userInfo>
-        <section class="user-info p-m-2">
-            <app-assignee-board [issueDataList]="currentAssigneeissueData" [standUpStatusFilter]="standUpStatusFilter"
-                [onFullScreen]="onFullScreen" [kpiData]="kpiData"
-                (reloadKPITab)="reloadKPI($event)"></app-assignee-board>
-        </section>
-    </ng-template>
+  <!-- Assignee Issue details -->
+  <ng-template #userInfo>
+    <section class="user-info p-m-2">
+      <app-assignee-board [issueDataList]="currentAssigneeissueData" [standUpStatusFilter]="standUpStatusFilter"
+        [onFullScreen]="onFullScreen" [kpiData]="kpiData" (reloadKPITab)="reloadKPI($event)"></app-assignee-board>
+    </section>
+  </ng-template>
 </main>
 <ng-template #noData>
-    <div *ngIf="!loader" class="noDataDiv">
-        <button pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-rounded p-mr-4" *ngIf="onFullScreen"
-                    (click)="backToIterationTab()"></button>
-        <h1>No Data Available</h1>
+  <div *ngIf="!loader" class="noDataDiv">
+    <button pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-rounded p-mr-4" *ngIf="onFullScreen"
+      (click)="backToIterationTab()"></button>
+    <h1>No Data Available</h1>
+  </div>
+  <div *ngIf="loader" class="noDataDiv">
+    <div class="overlay">
+      <div class="loading-img"></div>
     </div>
-    <div *ngIf="loader" class="noDataDiv">
-        <div class="overlay">
-            <div class="loading-img"></div>
-        </div>
-    </div>
+  </div>
 </ng-template>

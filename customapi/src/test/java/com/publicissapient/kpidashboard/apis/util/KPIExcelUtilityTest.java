@@ -40,9 +40,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testng.Assert;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
@@ -52,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.model.DSRValidationData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
@@ -69,6 +72,9 @@ public class KPIExcelUtilityTest {
 
 	@InjectMocks
 	KPIExcelUtility excelUtility;
+
+	@Mock
+	CustomApiConfig customApiConfig;
 	private List<JiraIssue> jiraIssues;
 	private List<TestCaseDetails> testCaseDetailsList;
 
@@ -141,71 +147,59 @@ public class KPIExcelUtilityTest {
 	@Test
 	public void populatePickupTimeExcelData_ValidData_PopulatesKPIExcelData() {
 		// Arrange
-		String projectName = "Project1";
-		List<Map<String, Double>> repoWiseMRList = new ArrayList<>();
-		Map<String, Double> repoWiseMap1 = new HashMap<>();
-		repoWiseMap1.put("Week1", 5.0);
-		repoWiseMap1.put("Week2", 8.0);
-		repoWiseMRList.add(repoWiseMap1);
-
-		List<String> repoList = Arrays.asList("Repo1");
-		List<String> branchList = Arrays.asList("Branch1");
+		RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+		repoToolValidationData.setProjectName("Project1");
+		repoToolValidationData.setPickupTime(10.0d);
+		repoToolValidationData.setDate("Week");
+		repoToolValidationData.setRepoUrl("repoUrl");
+		repoToolValidationData.setBranchName("master");
+		repoToolValidationData.setDeveloperName("developer");
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 
 		// Act
-		excelUtility.populatePickupTimeExcelData(projectName, repoWiseMRList, repoList, branchList, kpiExcelData);
+		excelUtility.populatePickupTimeExcelData(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
-		assertEquals(2, kpiExcelData.size());
+		assertEquals(1, kpiExcelData.size());
 	}
 
 	@Test
 	public void populatePRSizeExcelData_ValidData_PopulatesKPIExcelData() {
 		// Arrange
-		String projectName = "Project1";
-		List<Map<String, Long>> repoWiseMRList = new ArrayList<>();
-		Map<String, Long> repoWiseMap1 = new HashMap<>();
-		repoWiseMap1.put("Week1", 5L);
-		repoWiseMap1.put("Week2", 8L);
-		repoWiseMRList.add(repoWiseMap1);
-
-		List<String> repoList = Arrays.asList("Repo1");
-		List<String> branchList = Arrays.asList("Branch1");
+		RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+		repoToolValidationData.setProjectName("Project1");
+		repoToolValidationData.setPrSize(10L);
+		repoToolValidationData.setDate("Week");
+		repoToolValidationData.setRepoUrl("repoUrl");
+		repoToolValidationData.setBranchName("master");
+		repoToolValidationData.setDeveloperName("developer");
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 
 		// Act
-		excelUtility.populatePRSizeExcelData(projectName, repoWiseMRList, repoList, branchList, kpiExcelData);
+		excelUtility.populatePRSizeExcelData(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
-		assertEquals(2, kpiExcelData.size());
+		assertEquals(1, kpiExcelData.size());
 	}
 
 	@Test
 	public void populateCodeCommit_ValidData_PopulatesKPIExcelData() {
 		// Arrange
-		String projectName = "Project1";
-		List<Map<String, Long>> repoWiseCommitList = new ArrayList<>();
-		Map<String, Long> repoWiseCommitMap1 = new HashMap<>();
-		repoWiseCommitMap1.put("Week1", 10L);
-		repoWiseCommitMap1.put("Week2", 15L);
-		repoWiseCommitList.add(repoWiseCommitMap1);
-
-		List<Map<String, Long>> repoWiseMergeRequestList = new ArrayList<>();
-		Map<String, Long> repoWiseMergeMap1 = new HashMap<>();
-		repoWiseMergeMap1.put("Week1", 3L);
-		repoWiseMergeMap1.put("Week2", 5L);
-		repoWiseMergeRequestList.add(repoWiseMergeMap1);
-
-		List<String> repoList = Arrays.asList("Repo1");
-		List<String> branchList = Arrays.asList("Branch1");
+		RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+		repoToolValidationData.setProjectName("Project1");
+		repoToolValidationData.setCommitCount(10L);
+		repoToolValidationData.setMrCount(2L);
+		repoToolValidationData.setDate("Week");
+		repoToolValidationData.setRepoUrl("repoUrl");
+		repoToolValidationData.setBranchName("master");
+		repoToolValidationData.setDeveloperName("developer");
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 
 		// Act
-		excelUtility.populateCodeCommit(projectName, repoWiseCommitList, repoList, branchList, kpiExcelData,
-				repoWiseMergeRequestList);
+		excelUtility.populateCodeCommit(Arrays.asList(repoToolValidationData), kpiExcelData);
 
 		// Assert
-		assertEquals(2, kpiExcelData.size());
+		assertEquals(1, kpiExcelData.size());
 	}
 
 	@Test
@@ -250,7 +244,7 @@ public class KPIExcelUtilityTest {
 		excelUtility.populateRefinementRejectionExcelData(excelDataList, jiraIssues, weekAndTypeMap, jiraDateMap);
 
 		// Assert
-		assertEquals(44, excelDataList.size());
+		assertEquals(45, excelDataList.size());
 	}
 
 	@Test
@@ -510,7 +504,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssues, excelDataList, fieldMapping);
 
 		// Assert
-		assertEquals(44, excelDataList.size());
+		assertEquals(45, excelDataList.size());
 	}
 
 	@Test
@@ -525,7 +519,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssues, excelDataList, fieldMapping);
 
 		// Assert
-		assertEquals(44, excelDataList.size());
+		assertEquals(45, excelDataList.size());
 	}
 
 	@Test
@@ -540,7 +534,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateBacklogCountExcelData(jiraIssues, excelDataList);
 
 		// Assert
-		assertEquals(44, excelDataList.size());
+		assertEquals(45, excelDataList.size());
 	}
 
 	@Test
@@ -749,11 +743,22 @@ public class KPIExcelUtilityTest {
 		String sprint = "Sprint1";
 		List<String> storyIds = Arrays.asList("STORY1", "STORY2");
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
-
+		List<String> priority = new ArrayList<>();
+		Map<String, List<String>> pr = new HashMap<>();
+		priority.add("p4-minor");
+		priority.add("4");
+		priority.add("p4");
+		priority.add("minor");
+		priority.add("Low");
+		pr.put("p4-minor", priority);
+		customApiConfig.setPriority(pr);
 		Map<String, JiraIssue> issueData = defects.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
-
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
-		KPIExcelUtility.populateDefectRelatedExcelData(sprint, defects, kpiExcelData, "kpi28");
+		KPIExcelUtility.populateDefectRelatedExcelData(sprint, defects, kpiExcelData, "kpi28", customApiConfig);
 
 		// Assert
 		assertEquals(1, kpiExcelData.size());

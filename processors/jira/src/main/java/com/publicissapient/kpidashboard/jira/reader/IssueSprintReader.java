@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
@@ -73,6 +74,8 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 	private String sprintId;
 	private ReaderRetryHelper retryHelper;
     ProcessorJiraRestClient client;
+	@Value("#{jobParameters['processorId']}")
+	private String processorId;
 
 	public void initializeReader(String sprintId) {
 		log.info("**** Jira Issue fetch started * * *");
@@ -106,6 +109,7 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 				readData.setIssue(issue);
 				readData.setProjectConfFieldMapping(projectConfFieldMapping);
 				readData.setSprintFetch(true);
+				readData.setProcessorId(new ObjectId(processorId));
 			}
 
 			if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {

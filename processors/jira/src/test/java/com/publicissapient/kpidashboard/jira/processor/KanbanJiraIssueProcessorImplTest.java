@@ -20,6 +20,7 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -126,10 +128,14 @@ public class KanbanJiraIssueProcessorImplTest {
 	@Mock
 	private AssigneeDetails assigneeDetails;
 
+	@Mock
+	private IssueField issueField;
+
 	Set<Assignee> assigneeSetToSave = new HashSet<>();
 
 	@Before
 	public void setup() throws URISyntaxException, JSONException {
+		issueField = mock(IssueField.class);
 		fieldMapping = getMockFieldMapping();
 		projectConfigsList = getMockProjectConfig();
 		projectToolConfigs = getMockProjectToolConfig();
@@ -150,21 +156,19 @@ public class KanbanJiraIssueProcessorImplTest {
 
 	@Test
 	public void convertToJiraIssue() throws JSONException {
-		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
-		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
 		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
 		when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(any(), any())).thenReturn(new KanbanJiraIssue());
 //		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
 		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
 				.thenReturn(getMockAdditionalFilterFromJiraIssue());
 		Assert.assertEquals(KanbanJiraIssue.class, (transformFetchedIssueToKanbanJiraIssue
-				.convertToKanbanJiraIssue(issues.get(0), projectConfFieldMapping, "111")).getClass());
+				.convertToKanbanJiraIssue(issues.get(0), projectConfFieldMapping, "111", new ObjectId("5e16c126e4b098db673cc372"))).getClass());
 
 	}
 	@Test
 	public void convertToJiraIssueWhenException() throws JSONException {
 		Assert.assertEquals(null, (transformFetchedIssueToKanbanJiraIssue
-				.convertToKanbanJiraIssue(null, projectConfFieldMapping, "111")));
+				.convertToKanbanJiraIssue(null, projectConfFieldMapping, "111", new ObjectId("5e16c126e4b098db673cc372"))));
 
 	}
 	@Test
@@ -425,5 +429,46 @@ public class KanbanJiraIssueProcessorImplTest {
 		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked",FieldMapping.class,KanbanJiraIssue.class,Map.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToKanbanJiraIssue,fieldMapping,jiraIssue,fields);
+	}
+	@Test
+	public void testCalculateEstimationForActualEstimation() throws Exception {
+		when(issueField.getValue()).thenReturn(7200);
+
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class, String.class);
+		method.setAccessible(true);
+
+		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, JiraConstants.ACTUAL_ESTIMATION);
+		Assert.assertEquals(2.0, estimation, 0.001);
+	}
+
+	@Test
+	public void testCalculateEstimationForBufferedEstimation() throws Exception {
+		when(issueField.getValue()).thenReturn(3600);
+
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class, String.class);
+		method.setAccessible(true);
+
+		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, JiraConstants.BUFFERED_ESTIMATION);
+		Assert.assertEquals(1.0, estimation, 0.001);
+	}
+
+	@Test
+	public void testCalculateEstimationForStoryPoint() throws Exception {
+		when(issueField.getValue()).thenReturn("3.0");
+
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class, String.class);
+		method.setAccessible(true);
+
+		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, JiraConstants.STORY_POINT);
+		Assert.assertEquals(3.0, estimation, 0.001);
+	}
+
+	@Test
+	public void testCalculateEstimationForUnknownCriteria() throws Exception {
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class, String.class);
+		method.setAccessible(true);
+
+		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, "UnknownCriteria");
+		Assert.assertEquals(0.0, estimation, 0.001);
 	}
 }

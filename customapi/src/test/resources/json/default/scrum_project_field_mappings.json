@@ -10,6 +10,8 @@
     "6335363749794a18e8a4479b",
     "sprintName" : "customfield_12700",
     "jiradefecttype" : [ "Defect", "Bug" ],
+    "jiraIssueTypeExcludeKPI124" : [ "Exclude Bug"],
+    "jiraIssueTypeExcludeKPI75" : [ "Exclude Bug"],
     "jiraIssueTypeNames" : [ "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesAVR" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueEpicType" : [ ],
@@ -33,6 +35,7 @@
     "jiraDodKPI37" : ["Closed", "Ready for Delivery"],
     "jiraDodKPI142" : ["Closed"],
     "jiraDodKPI144" : ["Closed"],
+    "jiraDodKPI143" : ["Closed"],
     "jiraDefectCreatedStatusKPI14" : "Open",
     "jiraDefectRejectionStatusAVR" : "Closed",
     "jiraDefectRejectionStatusKPI28" : "Close",
@@ -67,6 +70,7 @@
     "jiraStoryIdentification" : [ ],
     "jiraStoryIdentificationKPI129" : [ "Story", "Enabler Story" ],
     "jiraStoryIdentificationKpi40" : [ "Story", "Enabler Story" ],
+    "jiraStoryCategoryKpi40" : [ "Story", "Enabler Story" ],
     "jiraLiveStatusKPI152" : "Closed",
     "jiraLiveStatusKPI151" : "Closed",
     "jiraLiveStatusKPI3" : ["Closed"],
@@ -181,8 +185,8 @@
     "jiraIssueWaitStateKPI170": [ "Open", "On Hold", "Code Review" ],
     "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"],
     "jiraIssueRiskTypeKPI176": ["Risk"],
-    "jiraIssueDependencyTypeKPI176": ["Dependency"]
-
+    "jiraIssueDependencyTypeKPI176": ["Dependency"],
+    "jiraLabelsQAKPI111" : ["Java", "UI" ]
   },
   {
     "_id":
@@ -201,6 +205,7 @@
     "storyFirstStatus" : "Open",
     "jiraDodKPI142" : ["Closed"],
     "jiraDodKPI144" : ["Closed"],
+    "jiraDodKPI143" : ["Closed"],
     "storyFirstStatusKPI148" : "Open",
     "storyFirstStatusKPI171" : "Open",
     "rootCause" : "customfield_19121",
@@ -233,6 +238,7 @@
     "jiraBugRaisedByIdentification" : "",
     "jiraBugRaisedByValue" : [ ],
     "jiraBugRaisedByCustomField" : "",
+    "releaseListKPI150" : [ "KnowHOW v9.0.0 (duration 62.0 days)" ],
     "jiraIssueTypeKPI35" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraDefectRemovalIssueTypeKPI34" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraStoryPointsCustomField" : "customfield_20803",
@@ -363,6 +369,8 @@
     "jiraIssueWaitStateKPI170": [ "Open", "On Hold", "Code Review" ],
     "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"],
     "jiraIssueRiskTypeKPI176": ["Risk"],
-    "jiraIssueDependencyTypeKPI176": ["Dependency"]
+    "jiraIssueDependencyTypeKPI176": ["Dependency"],
+    "jiraLabelsQAKPI111" : ["Java", "UI" ],
+    "jiraLabelsKPI133" : ["Java", "UI" ]
   }
 ]

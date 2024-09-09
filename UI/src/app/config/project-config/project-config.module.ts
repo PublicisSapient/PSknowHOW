@@ -34,6 +34,7 @@ import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { RippleModule } from 'primeng/ripple';
 import { DialogModule } from 'primeng/dialog';
+import { TabViewModule } from 'primeng/tabview';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -52,6 +53,8 @@ import { ToolMenuComponent } from './tool-menu/tool-menu.component';
 import { ProjectListComponent } from './project-list/project-list.component';
 import { FieldMappingComponent } from './field-mapping/field-mapping.component';
 import { ConnectionListComponent } from './connection-list/connection-list.component';
+import { ConfigSettingsComponent } from './config-settings/config-settings.component';
+import { ProjectSettingsComponent } from './project-settings/project-settings.component'
 import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { BlockUIModule } from 'primeng/blockui';
 import { PanelModule } from 'primeng/panel';
@@ -59,6 +62,8 @@ import { SharedModuleModule } from 'src/app/shared-module/shared-module.module';
 import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { PasswordModule } from 'primeng/password';
+import {StepsModule} from 'primeng/steps';
+import { SplitButtonModule } from 'primeng/splitbutton';
 @NgModule({
   declarations: [ProjectConfigComponent,
     BasicConfigComponent,
@@ -66,11 +71,14 @@ import { PasswordModule } from 'primeng/password';
     ProjectListComponent,
     FieldMappingComponent,
     ConnectionListComponent,
+    ConfigSettingsComponent,
+    ProjectSettingsComponent,
     FieldMappingComponent,
     JiraConfigComponent],
   imports: [
     ProjectConfigRoutingModule,
     CommonModule,
+    StepsModule,
     RouterModule,
     ReactiveFormsModule,
     FormsModule,
@@ -102,7 +110,9 @@ import { PasswordModule } from 'primeng/password';
     SharedModuleModule,
     BadgeModule,
     RadioButtonModule,
-    PasswordModule
+    PasswordModule,
+    SplitButtonModule,
+    TabViewModule,
   ],
   providers: [MessageService, ConfirmationService]
 })

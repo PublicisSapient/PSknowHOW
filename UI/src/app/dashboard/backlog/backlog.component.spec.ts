@@ -2104,15 +2104,31 @@ describe('BacklogComponent', () => {
         component.configGlobalData.push({
             kpiId: 'kpi120',
             isEnabled: false,
-            shown: true
-
+            shown: true,
+            kpiName: 'Iteration Commitment',
+            order: 1,
+            subCategoryBoard: 'Iteration Review',
+            kpiDetail: {
+                subCategoryBoard: 'Iteration Review',
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi120',
+                kpiName: 'Iteration Commitment',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                kanban: true,
+                groupId: 4,
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
+                kpiSubCategory: 'Iteration Review'
+            },
         });
-        component.processKpiConfigData();
-        expect(component.noKpis).toBeFalse();
         component.configGlobalData[0]['isEnabled'] = false;
         component.configGlobalData[0]['shown'] = false;
         component.processKpiConfigData();
         expect(Object.keys(component.kpiConfigData).length).toBe(configGlobalData.length);
+        expect(component.noKpis).toBeFalse();
     });
 
     it('should call groupKpi methods on selecting filter', () => {
@@ -2177,16 +2193,22 @@ describe('BacklogComponent', () => {
             kpiId: 'kpi17',
             kpiName: 'Unit Test Coverage'
         }];
-        component.masterData = {
-            kpiList: [{
+        component.updatedConfigGlobalData = [
+            {
                 kpiId: 'kpi17',
-                kanban: false,
-                kpiSource: 'Jira',
-                kpiCategory: 'Backlog',
-                groupId: 1
-            }]
-        };
-        const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
+                kpiName: 'Unit Test Coverage',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kanban: false,
+                    kpiSource: 'Jira',
+                    kpiCategory: 'Backlog',
+                    groupId: 1
+                },
+                shown: true
+            }
+        ];
+        const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });;
         const postJiraSpy = spyOn(component, 'postJiraKpi');
         component.groupJiraKpi(['kpi17']);
         expect(postJiraSpy).toHaveBeenCalled();
@@ -2198,15 +2220,21 @@ describe('BacklogComponent', () => {
             kpiId: 'kpi17',
             kpiName: 'Unit Test Coverage'
         }];
-        component.masterData = {
-            kpiList: [{
+        component.updatedConfigGlobalData = [
+            {
                 kpiId: 'kpi17',
-                kanban: false,
-                kpiSource: 'Jira',
-                kpiCategory: 'Backlog',
-                groupId: 1
-            }]
-        };
+                kpiName: 'Unit Test Coverage',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kanban: false,
+                    kpiSource: 'Jira',
+                    kpiCategory: 'Backlog',
+                    groupId: 1
+                },
+                shown: true
+            }
+        ];
         component.kpiJira = {
             kpiList : []
         }
@@ -2417,39 +2445,6 @@ describe('BacklogComponent', () => {
         component.downloadExcel('kpi14', 'Lead Time', false, false);
         expect(spy).toHaveBeenCalled();
     });
-
-    it('should return video link for kpi', () => {
-        component.masterData = {
-            kpiList: [
-                {
-                    kpiId: 'kpi14',
-                    videoLink: {
-                        disabled: false,
-                        videoUrl: 'www.google.com'
-                    }
-                }
-            ]
-        };
-        const result = component.isVideoLinkAvailable('kpi14');
-        expect(result).toBeTrue();
-    });
-
-    it('should not return video link for kpi', () => {
-        component.masterData = {
-            kpiList: [
-                {
-                    kpiId: 'kpi14',
-                    videoLink: {
-                        disabled: false,
-                        videoUrl: ''
-                    }
-                }
-            ]
-        };
-        const result = component.isVideoLinkAvailable('kpi14');
-        expect(result).toBeFalse()
-    });
-
 
     it('should check if kpi exists', () => {
         component.allKpiArray = [{
@@ -4287,5 +4282,209 @@ describe('typeOf', () => {
     });
   });
 
+  it('should apply aggrefaration logic for non progress-bar chart ', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "f1",
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                        "value": 1,
+                    }]
+                }
+            ]
+        }
+
+        ]
+    }];
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    component.kpiSelectedFilterObj['kpi124'] = {f1 : ["value1"],f2 : ["value2"]}
+
+    spyOn(component, 'createTrendData')
+    spyOn(helperService, 'applyAggregationLogic')
+    component.getChartData('kpi124', 0, 'sum')
+    expect(component.kpiChartData['kpi124']).toBeUndefined();
+})
+
+it('should apply aggrefaration logic for progress-bar chart ', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "f1",
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                        "value": 1,
+                    }]
+                }
+            ]
+        }
+
+        ]
+    }];
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    spyOn(component,'getChartType').and.returnValue('progress-bar');
+    component.kpiSelectedFilterObj['kpi124'] = {f1 : ["value1"],f2 : ["value2"]}
+
+    spyOn(component, 'createTrendData')
+    spyOn(component, 'applyAggregationLogicForProgressBar')
+    component.getChartData('kpi124', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+})
+
+it('should get chart data when have one filter', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "f1",
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                        "value": 1,
+                    }]
+                }
+            ]
+        }
+
+        ]
+    }];
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    spyOn(component,'getChartType').and.returnValue('progress-bar');
+    component.kpiSelectedFilterObj['kpi124'] = {f1 : ["f1"]}
+
+    spyOn(component, 'createTrendData')
+    spyOn(component, 'applyAggregationLogicForProgressBar')
+    component.getChartData('kpi124', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+})
+
+it('should get chart data when have no filter', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "Overall",
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                        "value": 1,
+                    }]
+                }
+            ]
+        }
+
+        ]
+    }];
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    spyOn(component,'getChartType').and.returnValue('progress-bar');
+    component.kpiSelectedFilterObj['kpi124'] = {}
+
+    spyOn(component, 'createTrendData')
+    spyOn(component, 'applyAggregationLogicForProgressBar')
+    component.getChartData('kpi124', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+})
+  
+    it('should handle kpi171 without filter2', () => {
+      const kpiId = 'kpi171';
+      const trendValueList = { value: [
+        {filter1 : 'Enabler Story', data :[
+            {
+                "label": "Intake - DOR",
+                "value": 28,
+                "value1": 1,
+                "unit": "d",
+                "unit1": "issues",
+                "modalValues": [
+                    {
+                        "spill": false,
+                        "preClosed": false,
+                        "Issue Id": "DTS-30246",
+                    }
+                ]
+            },
+            {
+                "label": "DOD - Live",
+                "value": 0,
+                "value1": 0,
+                "unit": "d",
+                "unit1": "issues",
+                "modalValues": []
+            }
+        ]},
+        {filter1 : 'bug',data :[
+            {
+                "label": "Intake - DOR",
+                "value": 28,
+                "value1": 1,
+                "unit": "d",
+                "unit1": "issues",
+                "modalValues": [
+                    {
+                        "spill": false,
+                        "preClosed": false,
+                        "Issue Id": "DTS-30246",
+                    }
+                ]
+            },
+        ]},
+      ] };
+  
+        component.kpiSelectedFilterObj = {
+            [kpiId]: {
+                filter1 : "Past Month",
+                filter2 : ['Enabler Story','bug']
+            }
+        };
+  
+      component.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
+  
+      expect(component.kpiChartData).toBeDefined();
+    });
+
+
 });
+
+
+
 

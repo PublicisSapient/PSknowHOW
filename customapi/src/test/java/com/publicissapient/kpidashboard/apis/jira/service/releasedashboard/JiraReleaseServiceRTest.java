@@ -17,6 +17,7 @@ package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -24,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -34,8 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,8 +62,10 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraNonTrendKPIServiceFactory;
+import com.publicissapient.kpidashboard.apis.jira.model.ReleaseSpecification;
 import com.publicissapient.kpidashboard.apis.jira.scrum.service.release.ReleaseBurnUpServiceImpl;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -69,6 +74,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -161,7 +167,8 @@ public class JiraReleaseServiceRTest {
 		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
 				.thenReturn(new ArrayList<KpiElement>());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean()))
+				.thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
@@ -199,7 +206,8 @@ public class JiraReleaseServiceRTest {
 				.collect(Collectors.toList()));
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean()))
+				.thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(anyString(), anyList()))
@@ -259,7 +267,8 @@ public class JiraReleaseServiceRTest {
 				.collect(Collectors.toList()));
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
-		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean())).thenReturn(accountHierarchyDataList);
+		when(kpiHelperService.getAuthorizedFilteredList(any(), any(), anyBoolean()))
+				.thenReturn(accountHierarchyDataList);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
@@ -290,29 +299,28 @@ public class JiraReleaseServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.processWithExposedApiToken(kpiRequest);
 		assertEquals(0, resultList.size());
 	}
-
 	@Test
-	public void getJiraIssueReleaseForProject(){
+	public void getJiraIssueReleaseForProject() {
 		jiraServiceR.getJiraIssueReleaseForProject();
 	}
 
 	@Test
-	public void getReleaseList(){
+	public void getReleaseList() {
 		jiraServiceR.getReleaseList();
 	}
 
 	@Test
-	public void getSubTaskDefects(){
+	public void getSubTaskDefects() {
 		jiraServiceR.getSubTaskDefects();
 	}
 
 	@Test
-	public void getJiraIssuesCustomHistoryForCurrentSprint(){
-		jiraServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
+	public void getJiraIssuesCustomHistoryForCurrentRelease() {
+		jiraServiceR.getJiraIssuesCustomHistoryForCurrentRelease();
 	}
 
 	@Test
-	public void getJiraIssuesForSelectedRelease(){
+	public void getJiraIssuesForSelectedRelease() {
 		jiraServiceR.getJiraIssuesForSelectedRelease();
 	}
 

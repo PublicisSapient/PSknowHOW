@@ -20,7 +20,6 @@ import { Component, OnInit } from '@angular/core';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
-import { environment } from 'src/environments/environment';
 
 declare let $: any;
 
