@@ -410,7 +410,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.noSprint = false;
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
-
+      this.lastSyncData = {};
       this.selectedDayType = 'Weeks';
       this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
