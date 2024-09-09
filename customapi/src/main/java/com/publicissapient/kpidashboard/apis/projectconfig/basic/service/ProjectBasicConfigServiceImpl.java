@@ -214,20 +214,22 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	//TODO: change maxLvl.getValue() to maxlvl.getOrgHierarchyNodeId()
 	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfig savedProjectBasicConfig) {
 
-		Optional<HierarchyValue> maxLevel=savedProjectBasicConfig.getHierarchy().stream().max(Comparator.comparing(hierarchyValue->hierarchyValue.getHierarchyLevel().getLevel()));
-        if(maxLevel.isPresent()){
-			HierarchyValue maxLvl=maxLevel.get();
-			Optional<OrganizationHierarchy> existingProjectHierarchy=organizationHierarchyRepository.findByParentId(maxLvl.getValue());
-			if(existingProjectHierarchy.isEmpty()){
-				OrganizationHierarchy newProjectHierarchy=new OrganizationHierarchy();
-				newProjectHierarchy.setParentId(maxLvl.getValue());
-				newProjectHierarchy.setNodeId(savedProjectBasicConfig.getId().toString());
-				newProjectHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
-				newProjectHierarchy.setNodeName(savedProjectBasicConfig.getProjectName());
-				newProjectHierarchy.setNodeDisplayName(savedProjectBasicConfig.getProjectDisplayName());
-				newProjectHierarchy.setCreatedDate(LocalDateTime.now());
-				newProjectHierarchy.setModifiedDate(LocalDateTime.now());
-				organizationHierarchyRepository.save(newProjectHierarchy);
+		Optional<HierarchyValue> maxLevel = savedProjectBasicConfig.getHierarchy().stream()
+				.max(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
+		if (maxLevel.isPresent()) {
+			HierarchyValue maxLvl = maxLevel.get();
+			Optional<OrganizationHierarchy> existingOrganizationHierarchy = organizationHierarchyRepository
+					.findByParentId(maxLvl.getValue());
+			if (existingOrganizationHierarchy.isEmpty()) {
+				OrganizationHierarchy newOrganizationHierarchy = new OrganizationHierarchy();
+				newOrganizationHierarchy.setParentId(maxLvl.getValue());
+				newOrganizationHierarchy.setNodeId(savedProjectBasicConfig.getProjectNodeId());
+				newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+				newOrganizationHierarchy.setNodeName(savedProjectBasicConfig.getProjectName());
+				newOrganizationHierarchy.setNodeDisplayName(savedProjectBasicConfig.getProjectDisplayName());
+				newOrganizationHierarchy.setCreatedDate(LocalDateTime.now());
+				newOrganizationHierarchy.setModifiedDate(LocalDateTime.now());
+				organizationHierarchyRepository.save(newOrganizationHierarchy);
 				clearOrgHierarchyCache();
 			}
 		}
