@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -8,7 +8,7 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './sticky-header-v2.component.html',
   styleUrls: ['./sticky-header-v2.component.css']
 })
-export class StickyHeaderV2Component implements OnInit,AfterViewInit, OnDestroy {
+export class StickyHeaderV2Component implements AfterViewInit, OnDestroy {
 
   fields: Map<string, string> = new Map();
   subscriptions: Subscription[] = [];
@@ -19,8 +19,6 @@ export class StickyHeaderV2Component implements OnInit,AfterViewInit, OnDestroy 
         this.fields.set('Selected Dashboard - ', data.selectedTab);
       }))
   }
-
-  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((data) => {
