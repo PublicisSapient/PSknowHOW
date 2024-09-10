@@ -289,15 +289,6 @@ public class ConfigHelperService {
 	}
 
 	/**
-	 * Load cache hierarchy level value Map.
-	 */
-	@Cacheable(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE)
-	public List<HierarchyLevelSuggestion> loadHierarchyLevelSuggestion() {
-		log.info("loading hierarchy level Master data");
-		return hierarchyLevelSuggestionRepository.findAll();
-	}
-
-	/**
 	 * Load KPI Field Mapping.
 	 */
 
