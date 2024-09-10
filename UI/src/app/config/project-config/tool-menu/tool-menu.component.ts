@@ -115,7 +115,7 @@ export class ToolMenuComponent implements OnInit {
   getToolsConfigured() {
     this.httpService.getAllToolConfigs(this.selectedProject.id).subscribe(response => {
       this.dataLoading = false;
-      if (response && response['success']) {
+      if (response?.success) {
         this.sharedService.setSelectedToolConfig(response['data']);
         this.selectedTools = response['data'];
         this.setGaData();
