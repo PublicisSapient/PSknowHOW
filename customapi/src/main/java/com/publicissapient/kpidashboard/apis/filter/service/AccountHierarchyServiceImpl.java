@@ -243,6 +243,7 @@ public class AccountHierarchyServiceImpl
 
 	private List<String> limitSprints(List<AccountHierarchy> accountHierarchies,
 			Map<String, SprintDetails> sprintDetailsMap) {
+		//TODO: category check
 		List<AccountHierarchy> withSprintAAccountHierracchiesList = accountHierarchies.stream()
 				.filter(x -> CommonConstant.HIERARCHY_LEVEL_ID_SPRINT.equalsIgnoreCase(x.getLabelName()))
 				.collect(Collectors.toList());
@@ -282,6 +283,7 @@ public class AccountHierarchyServiceImpl
 	 * @param accountHierarchy
 	 * @return true if needs to show in filter
 	 */
+	//TODO: category check
 	private boolean showInFilters(List<String> sprintIdListToDisplay, AccountHierarchy accountHierarchy) {
 		boolean show = true;
 		if (!CollectionUtils.isEmpty(sprintIdListToDisplay) && (accountHierarchy.getLabelName()

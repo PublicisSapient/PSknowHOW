@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
+import com.publicissapient.kpidashboard.jira.dataFactories.HierachyLevelFactory;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
@@ -73,17 +75,14 @@ public class FetchKanbanReleaseDataImplTest {
 	private JiraProcessorConfig jiraProcessorConfig;
 	@InjectMocks
 	private FetchKanbanReleaseDataImpl fetchKanbanReleaseData;
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
 
 	@Before
 	public void setUp() throws Exception {
 		prepareKanbanAccountHierarchy();
 		prepareProjectConfig();
 		prepareHierarchyLevel();
-		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(), any()))
-				.thenReturn(kanbanAccountHierarchylist);
-		when(kanbanAccountHierarchyRepo.findAll()).thenReturn(kanbanAccountHierarchylist);
-		when(hierarchyLevelService.getFullHierarchyLevels(kanbanProjectMapping.isKanban())).thenReturn(hierarchyLevels);
-		when(projectReleaseRepo.findByConfigId(any())).thenReturn(null);
 		ProjectVersion version = new ProjectVersion();
 		List<ProjectVersion> versionList = new ArrayList<>();
 		version.setId(Long.valueOf("123"));
@@ -93,6 +92,7 @@ public class FetchKanbanReleaseDataImplTest {
 		version.setReleaseDate(DateTime.now());
 		versionList.add(version);
 		when(jiraCommonService.getVersion(any(), any())).thenReturn(versionList);
+		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevels);
 	}
 
 	private void prepareHierarchyLevel() {
@@ -117,9 +117,6 @@ public class FetchKanbanReleaseDataImplTest {
 	@Test
 	public void processReleaseInfoWhenHierachyExist() throws IOException, ParseException {
 		prepareKanbanAccountHierarchy2();
-		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
-				.thenReturn(kanbanAccountHierarchylist);
-		when(kanbanAccountHierarchyRepo.findAll()).thenReturn(kanbanAccountHierarchylist);
 		try {
 			fetchKanbanReleaseData.processReleaseInfo(kanbanProjectMapping, krb5Client);
 		}
@@ -143,8 +140,10 @@ public class FetchKanbanReleaseDataImplTest {
 		subProjectConfig.setSubProjectIdentification("CustomField");
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_20810");
 		ProjectBasicConfig kanbanBasicConfig = new ProjectBasicConfig();
+		kanbanBasicConfig.setId(new ObjectId("5e15d9d5e4b098db674614b5"));
 		kanbanBasicConfig.setProjectName("Tools-Atlassian Tools Support");
 		kanbanBasicConfig.setIsKanban(true);
+		kanbanBasicConfig.setProjectNodeId("uniqueId");
 		kanbanProjectMapping.setProjectBasicConfig(kanbanBasicConfig);
 		kanbanProjectMapping.setKanban(true);
 		kanbanProjectMapping.setJira(jiraToolConfig);

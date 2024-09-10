@@ -20,6 +20,7 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -75,10 +76,11 @@ public class IssueScrumProcessorTest {
         Set<SprintDetails> sprintDetailsSets = new HashSet<>();
         sprintDetailsSets.add(sprintDetails);
         when(sprintDataProcessor.processSprintData(any(), any(), any(), any())).thenReturn(sprintDetailsSets);
-        AccountHierarchy accountHierarchy=AccountHierarchy.builder().basicProjectConfigId(new ObjectId("63bfa0f80b28191677615735")).build();
-        Set<AccountHierarchy> accountHierarchies = new HashSet<>();
-        accountHierarchies.add(accountHierarchy);
-        when(jiraIssueAccountHierarchyProcessor.createAccountHierarchy(any(), any(), any())).thenReturn(accountHierarchies);
+        ProjectHierarchy projectHierarchy=new ProjectHierarchy();
+        projectHierarchy.setBasicProjectConfigId(new ObjectId("63bfa0f80b28191677615735"));
+        Set<ProjectHierarchy> projectHierarchies = new HashSet<>();
+        projectHierarchies.add(projectHierarchy);
+        when(jiraIssueAccountHierarchyProcessor.createAccountHierarchy(any(), any(), any())).thenReturn(projectHierarchies);
         AssigneeDetails assigneeDetails = new AssigneeDetails();
         when(jiraIssueAssigneeProcessor.createAssigneeDetails(any(), any())).thenReturn(assigneeDetails);
 
@@ -88,7 +90,7 @@ public class IssueScrumProcessorTest {
         // Assert
         assertEquals(jiraIssue, result.getJiraIssue());
         assertEquals(sprintDetailsSets, result.getSprintDetailsSet());
-        assertEquals(accountHierarchies, result.getAccountHierarchies());
+        assertEquals(projectHierarchies, result.getProjectHierarchies());
         assertEquals(assigneeDetails, result.getAssigneeDetails());
     }
 }

@@ -243,17 +243,6 @@ public class JiraIssueClientUtilTest {
     }
 
 	@Test
-	public void testGetAccountHierarchy_EmptyRepository() {
-		AccountHierarchyRepository accountHierarchyRepository = Mockito.mock(AccountHierarchyRepository.class);
-		when(accountHierarchyRepository.findAll()).thenReturn(new ArrayList<>());
-
-		Map<Pair<String, String>, AccountHierarchy> result = jiraIssueClientUtil.getAccountHierarchy(accountHierarchyRepository);
-
-		assertNotNull(result, "");
-		assertTrue(result.isEmpty());
-	}
-
-	@Test
 	public void testGetKanbanAccountHierarchy_EmptyRepository() {
 		KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo = Mockito.mock(KanbanAccountHierarchyRepository.class);
 		when(kanbanAccountHierarchyRepo.findAll()).thenReturn(new ArrayList<>());

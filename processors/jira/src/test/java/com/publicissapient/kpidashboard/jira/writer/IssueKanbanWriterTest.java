@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +37,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.item.Chunk;
 
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -62,6 +63,9 @@ public class IssueKanbanWriterTest {
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
+
 	@InjectMocks
 	private IssueKanbanWriter issueKanbanWriter;
 
@@ -76,7 +80,6 @@ public class IssueKanbanWriterTest {
 		// Verify interactions with repositories
 		verify(kanbanJiraIssueRepository, times(1)).saveAll(createMockJiraItems());
 	}
-
 
 	@Test
 	public void testWriteDuplicates() throws Exception {
@@ -94,7 +97,7 @@ public class IssueKanbanWriterTest {
 	private Chunk<CompositeResult> createMockKanbanCompositeResults() {
 		CompositeResult compositeResult = new CompositeResult();
 		compositeResult.setKanbanJiraIssue(createMockJiraItems().get(0));
-		compositeResult.setKanbanAccountHierarchies((createMockAccountHierarchies()));
+		compositeResult.setProjectHierarchies((createMockAccountHierarchies()));
 		compositeResult.setAssigneeDetails(createMockAssigneesToSave().get("0"));
 		compositeResult.setKanbanIssueCustomHistory(createMockKanbanIssueCustomHistory().get(0));
 		Chunk<CompositeResult> kanbanCompositeResults = new Chunk<>();
@@ -120,13 +123,13 @@ public class IssueKanbanWriterTest {
 		return kanbanIssueCustomHistoryList;
 	}
 
-	private Set<KanbanAccountHierarchy> createMockAccountHierarchies() {
-		KanbanAccountHierarchy kanbanAccountHierarchy = new KanbanAccountHierarchy();
+	private Set<ProjectHierarchy> createMockAccountHierarchies() {
+		ProjectHierarchy kanbanAccountHierarchy = new ProjectHierarchy();
 		kanbanAccountHierarchy.setId(new ObjectId("63bfa0f80b28191677615735"));
-		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();
-		accountHierarchies.add(kanbanAccountHierarchy);
+		Set<ProjectHierarchy> projectHierarchies = new HashSet<>();
+		projectHierarchies.add(kanbanAccountHierarchy);
 		// Create mock KanbanAccountHierarchy objects and add them to the set
-		return accountHierarchies;
+		return projectHierarchies;
 	}
 
 	private Map<String, AssigneeDetails> createMockAssigneesToSave() {
@@ -141,15 +144,15 @@ public class IssueKanbanWriterTest {
 		// Create mock AssigneeDetails objects and add them to the map
 		return assigneesToSave;
 	}
-	
+
 	// Helper methods to create Duplicate mock data for testing
 	private Chunk<CompositeResult> createDuplicateMockKanbanCompositeResults() {
 		CompositeResult compositeResult = new CompositeResult();
 		CompositeResult compositeResultTwo = new CompositeResult();
 		compositeResult.setKanbanJiraIssue(createDuplicateMockJiraItems().get(0));
 		compositeResultTwo.setKanbanJiraIssue(createDuplicateMockJiraItems().get(1));
-		compositeResult.setKanbanAccountHierarchies((createDuplicateMockAccountHierarchies()));
-		compositeResultTwo.setKanbanAccountHierarchies((createDuplicateMockAccountHierarchies()));
+		compositeResult.setProjectHierarchies((createDuplicateMockAccountHierarchies()));
+		compositeResultTwo.setProjectHierarchies((createDuplicateMockAccountHierarchies()));
 		compositeResult.setAssigneeDetails(createDuplicateMockAssigneesToSave().get("0"));
 		compositeResultTwo.setAssigneeDetails(createDuplicateMockAssigneesToSave().get("1"));
 		compositeResult.setKanbanIssueCustomHistory(createDuplicateMockKanbanIssueCustomHistory().get(0));
@@ -175,6 +178,7 @@ public class IssueKanbanWriterTest {
 		// Create mock KanbanJiraIssue objects and add them to the list
 		return jiraItems;
 	}
+
 	private List<KanbanJiraIssue> verifyMockJiraItems() {
 		KanbanJiraIssue kanbanJiraIssue = new KanbanJiraIssue();
 		kanbanJiraIssue.setId(new ObjectId("63bfa0f80b28191677615735"));
@@ -185,6 +189,7 @@ public class IssueKanbanWriterTest {
 		// Create mock KanbanJiraIssue objects and add them to the list
 		return jiraItems;
 	}
+
 	private List<KanbanIssueCustomHistory> createDuplicateMockKanbanIssueCustomHistory() {
 		KanbanIssueCustomHistory kanbanIssueCustomHistory = new KanbanIssueCustomHistory();
 		kanbanIssueCustomHistory.setId(new ObjectId("63bfa0f80b28191677615735"));
@@ -196,6 +201,7 @@ public class IssueKanbanWriterTest {
 		// Create mock KanbanIssueCustomHistory objects and add them to the list
 		return kanbanIssueCustomHistoryList;
 	}
+
 	private Map<String, AssigneeDetails> createDuplicateMockAssigneesToSave() {
 		AssigneeDetails assigneeDetails = new AssigneeDetails();
 		AssigneeDetails assigneeDetailsTwo = new AssigneeDetails();
@@ -216,13 +222,14 @@ public class IssueKanbanWriterTest {
 		// Create mock AssigneeDetails objects and add them to the map
 		return assigneesToSave;
 	}
-	private Set<KanbanAccountHierarchy> createDuplicateMockAccountHierarchies() {
-		KanbanAccountHierarchy kanbanAccountHierarchy = new KanbanAccountHierarchy();
+
+	private Set<ProjectHierarchy> createDuplicateMockAccountHierarchies() {
+		ProjectHierarchy kanbanAccountHierarchy = new ProjectHierarchy();
 		kanbanAccountHierarchy.setId(new ObjectId("63bfa0f80b28191677615735"));
 		kanbanAccountHierarchy.setNodeId("123");
-		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();
+		Set<ProjectHierarchy> accountHierarchies = new HashSet<>();
 		accountHierarchies.add(kanbanAccountHierarchy);
-		KanbanAccountHierarchy kanbanAccountHierarchyTwo = new KanbanAccountHierarchy();
+		ProjectHierarchy kanbanAccountHierarchyTwo = new ProjectHierarchy();
 		kanbanAccountHierarchyTwo.setId(new ObjectId("63bfa0f80b28191677615736"));
 		kanbanAccountHierarchyTwo.setNodeId("123");
 		accountHierarchies.add(kanbanAccountHierarchyTwo);
