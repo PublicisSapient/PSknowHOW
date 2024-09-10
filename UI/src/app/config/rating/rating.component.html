@@ -12,9 +12,16 @@
   limitations under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <form id="ratingForm" [formGroup]="form">
-    <input type="radio" name="happinessRating" value=1 class="disappointed" formControlName="happinessRating" (change)="onChange()">
-    <input type="radio" name="happinessRating" value=2 class="sad" formControlName="happinessRating" (change)="onChange()">
-    <input type="radio" name="happinessRating" value=3 class="neutral" formControlName="happinessRating" (change)="onChange()">
-    <input type="radio" name="happinessRating" value=4 class="happy" formControlName="happinessRating" (change)="onChange()">
-    <input type="radio" name="happinessRating" value=5 class="ecstatic" formControlName="happinessRating" (change)="onChange()">
-  </form>
+  <div class="rating-input-container">
+    <input type="radio" name="happinessRating" value=1 class="disappointed" formControlName="happinessRating"
+      (change)="onChange()">
+    <input type="radio" name="happinessRating" value=2 class="sad" formControlName="happinessRating"
+      (change)="onChange()">
+    <input type="radio" name="happinessRating" value=3 class="neutral" formControlName="happinessRating"
+      (change)="onChange()">
+    <input type="radio" name="happinessRating" value=4 class="happy" formControlName="happinessRating"
+      (change)="onChange()">
+    <input type="radio" name="happinessRating" value=5 class="ecstatic" formControlName="happinessRating"
+      (change)="onChange()">
+  </div>
+</form>
