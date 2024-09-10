@@ -90,6 +90,7 @@ public class CookieUtil {
 	public static void deleteCookie(
 			@NotNull HttpServletRequest request,
 			@NotNull HttpServletResponse response,
+			@NotNull String domain,
 			@NotNull String name,
 			@NotNull String path
 	) {
@@ -97,6 +98,7 @@ public class CookieUtil {
 			foundCookie.setMaxAge(0);
 			foundCookie.setValue("");
 			foundCookie.setPath(path);
+            foundCookie.setDomain(domain);
 			response.addCookie(foundCookie);
 		});
 	}

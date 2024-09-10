@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.controller;
 
+import com.publicissapient.kpidashboard.apis.config.CookieConfig;
 import lombok.AllArgsConstructor;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,11 +20,15 @@ public class LogoutController {
 
 	private final AuthConfig authConfig;
 
+    private final CookieConfig cookieConfig;
+
 	// logs out the user from the central auth application
 	@GetMapping("/sso-logout")
 	public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-		CookieUtil.deleteCookie(request, response, CookieUtil.COOKIE_NAME, CookieUtil.API_COOKIE_PATH);
-		CookieUtil.deleteCookie(request, response, CookieUtil.EXPIRY_COOKIE_NAME, CookieUtil.DEFAULT_COOKIE_PATH);
+		CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.COOKIE_NAME,
+                                CookieUtil.API_COOKIE_PATH);
+		CookieUtil.deleteCookie(request, response, cookieConfig.getDomain(), CookieUtil.EXPIRY_COOKIE_NAME,
+                                CookieUtil.DEFAULT_COOKIE_PATH);
 
 		return ResponseEntity.ok().build();
 	}
