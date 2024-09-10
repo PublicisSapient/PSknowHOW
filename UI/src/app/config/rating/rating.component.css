@@ -66,4 +66,9 @@ form#ratingForm{
     background: url("../../../assets/img/smiley-1.svg") center;
     background-size: cover;
   }
+
+  .rating-input-container {
+    word-break: break-all;
+    max-width: 90px;
+  }
   
