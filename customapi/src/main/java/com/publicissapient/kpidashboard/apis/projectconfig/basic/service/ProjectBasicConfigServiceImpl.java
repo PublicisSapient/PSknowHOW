@@ -259,12 +259,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Override
 	public ServiceResponse updateBasicConfig(String basicConfigId, ProjectBasicConfigDTO projectBasicConfigDTO) {
 		ServiceResponse response;
-		ProjectBasicConfig savedConfig = getProjectBasicConfigs(basicConfigId);
-		//AN
+		Optional<ProjectBasicConfig> savedConfigOpt = basicConfigRepository.findById(new ObjectId(basicConfigId));
 		ProjectBasicConfig diffIdSameName = basicConfigRepository
 				.findByProjectNameAndIdNot(projectBasicConfigDTO.getProjectName(), new ObjectId(basicConfigId));
-		if (savedConfig != null) {
+		if (savedConfigOpt.isPresent()) {
 			if (!Optional.ofNullable(diffIdSameName).isPresent()) {
+				ProjectBasicConfig savedConfig = savedConfigOpt.get();
 				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 				if (isAssigneeUpdated(basicConfig, savedConfig)) {

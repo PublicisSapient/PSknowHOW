@@ -41,7 +41,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
+import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
+import com.publicissapient.kpidashboard.common.repository.application.*;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -99,11 +100,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -182,6 +178,9 @@ public class ProjectBasicConfigServiceImplTest {
 	private TestExecutionService testExecutionService;
 	@Mock
 	private OrganizationHierarchyRepository organizationHierarchyRepository;
+	@Mock
+	private HierarchyLevelRepository hierarchyLevelRepository;
+
 	private ProjectBasicConfig basicConfig;
 	private Optional<ProjectBasicConfig> basicConfigOpt = Optional.empty();
 	private ProjectBasicConfig diffbasicConfig;
