@@ -41,6 +41,7 @@ public final class CommonConstant {
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
+	public static final String CACHE_PROJECT_CONFIG_MAP_HIERARCHY = "projectConfigMapHierarchy";
 
 	public static final String CACHE_CLEAR_ENDPOINT = "api/cache/clearCache";
 	public static final String CLEAR_ALL_CACHE_ENDPOINT = "api/cache/clearAllCache";
