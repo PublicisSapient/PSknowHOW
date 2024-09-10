@@ -659,6 +659,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   populateAdditionalFilters(event) {
+    this.additionalFiltersArr = [];
     if (!Array.isArray(event)) {
       event = [event];
     }
