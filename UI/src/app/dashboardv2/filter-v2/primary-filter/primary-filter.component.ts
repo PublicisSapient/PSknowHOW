@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { MultiSelect } from 'primeng/multiselect';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-primary-filter',
@@ -22,7 +23,11 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
-  constructor(private service: SharedService, public helperService: HelperService) {
+  constructor(
+    private service: SharedService,
+    public helperService: HelperService,
+    public router: Router,
+    private route: ActivatedRoute) {
     this.service.selectedTrendsEvent.subscribe(filters => {
       if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
         this.selectedFilters = filters;
@@ -128,10 +133,29 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         this.applyDefaultFilters();
       }
       console.log(this.selectedFilters)
+      console.log(this.selectedLevel)
+      const selectedParentIds = this.selectedFilters.map((filter) => {
+        if (filter.basicProjectConfigId) {
+          return filter.basicProjectConfigId
+        } else {
+          return filter.nodeName
+        }
+      });
+      console.log(selectedParentIds)
+      const selectedParentIdsStr = selectedParentIds.join(',');
+      this.service.setPrimaryFilterSelection(selectedParentIdsStr);
+      if(typeof this.selectedLevel === 'string') {
+        console.log('string if', selectedParentIdsStr)
+        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { [this.selectedLevel]: selectedParentIdsStr }, relativeTo: this.route, queryParamsHandling: 'merge' });
+      } else {
+        console.log('string else', selectedParentIdsStr)
+        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': this.selectedFilters[0].nodeName, 'sqd': '' }, relativeTo: this.route, queryParamsHandling: 'merge' });
+      }
     }
   }
 
   applyDefaultFilters() {
+    console.log('inside func applyDefaultFilters')
     this.populateFilters();
     setTimeout(() => {
       this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
@@ -201,29 +225,42 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
     this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
     // }
-
+    console.log(this.selectedLevel)
+    console.log(this.selectedFilters)
+    const selectedParentIds = this.selectedFilters.map((filter) => {
+      if (filter.basicProjectConfigId) {
+        return filter.basicProjectConfigId
+      } else {
+        return filter.nodeName
+      }
+    });
+    const selectedParentIdsStr = selectedParentIds.join(',');
+    console.log(selectedParentIdsStr)
     if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
       console.log('parent if')
-      console.log(this.selectedFilters)
       this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+      this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { [this.selectedLevel]: selectedParentIdsStr, 'sprint': '', 'sqd': '' }, relativeTo: this.route, queryParamsHandling: 'merge' });
     } else {
       if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
-        console.log('if')
+        console.log('else > if')
         this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': this.selectedFilters[0].nodeName, 'sqd': '' }, relativeTo: this.route, queryParamsHandling: 'merge' });
       } else {
         this.service.setNoSprints(true);
         this.onPrimaryFilterChange.emit([]);
+        console.log(this.filters)
         console.log(this.selectedLevel)
         console.log(this.selectedFilters)
         if (this.filters.length) {
           this.selectedFilters.push({ ...this.filters[0] });
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
         } else {
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedLevel] })
+          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [this.selectedLevel] })
         }
       }
     }
     console.log(this.selectedFilters)
+
     // update query param goes here ...
     this.setProjectAndLevelBackupBasedOnSelectedLevel();
     if (this.multiSelect?.overlayVisible) {

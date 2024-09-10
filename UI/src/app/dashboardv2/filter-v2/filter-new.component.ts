@@ -301,15 +301,24 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleParentFilterChange(event) {
-    if (typeof event === 'string') {
-      this.selectedLevel = event;
-    } else {
-      this.selectedLevel = event;
-    }
-    console.log(this.selectedLevel)
-    const selectedLevel = typeof this.selectedLevel === 'string' ? this.selectedLevel : this.selectedLevel?.nodeType;
-    // const basicProjectConfigIds = this.selectedLevel.fullNodeDetails.map(obj => obj.basicProjectConfigId);
-    this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'type': this.selectedType, 'org': selectedLevel.toLowerCase() }, relativeTo: this.route });
+    console.log(event)
+    this.selectedLevel = event;
+    const getPrimaryFilterSelection = this.service.getPrimaryFilterSelection();
+    const selectedLevel = this.selectedLevel || this.selectedLevel?.nodeType;
+    const nodeType = this.selectedLevel?.nodeType ? this.selectedLevel.fullNodeDetails[0].basicProjectConfigId : getPrimaryFilterSelection;
+    // if (typeof event !== 'string') {
+    //   this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'type': this.selectedType, 'org': event?.nodeType, [event?.nodeType]: this.selectedLevel.fullNodeDetails[0].basicProjectConfigId }, relativeTo: this.route });
+    // } else {
+    //   console.log('filter new else', selectedLevel)
+    //   this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'type': this.selectedType, 'org': selectedLevel, [selectedLevel]: '', 'sprint': '', 'sqd': '' }, relativeTo: this.route });
+    // }
+    const queryParams = {
+      'type': this.selectedType,
+      'org': selectedLevel,
+      [selectedLevel]: nodeType,
+    };
+    this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams, relativeTo: this.route });
+    // this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'type': this.selectedType, 'org': selectedLevel, [selectedLevel]: '', 'sprint': '', 'sqd': '' }, relativeTo: this.route });
   }
 
   setColors(data) {

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewC
 import { MultiSelect } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { TooltipModule } from 'primeng/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-additional-filter',
@@ -26,7 +26,11 @@ export class AdditionalFilterComponent implements OnChanges {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   stateFilters: any;
 
-  constructor(public service: SharedService, public helperService: HelperService) {
+  constructor(
+    public service: SharedService,
+    public helperService: HelperService,
+    public router: Router,
+    private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -46,8 +50,8 @@ export class AdditionalFilterComponent implements OnChanges {
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
           const correctLevelMapping = {
-            Sprint : 'sprint',
-            Squad : 'sqd'
+            Sprint: 'sprint',
+            Squad: 'sqd'
           }
           if (this.stateFilters && Object.keys(this.stateFilters)) {
             Object.keys(this.stateFilters).forEach((key, index) => {
@@ -62,7 +66,10 @@ export class AdditionalFilterComponent implements OnChanges {
               }
             });
           }
-
+          console.log(this.stateFilters)
+          const sprintIds = this.stateFilters?.sprint && this.stateFilters['sprint'].map(item => item.nodeName.replace(" ", "")).join(',');
+          const sqdIds = this.stateFilters?.sqd && this.stateFilters['sqd'].map(item => item.nodeName.replace(" ", "")).join(',');
+          this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': sprintIds, 'sqd': sqdIds }, relativeTo: this.route, queryParamsHandling: 'merge' });
         }
 
         // Apply the first/ Overall filter
@@ -118,6 +125,10 @@ export class AdditionalFilterComponent implements OnChanges {
           }
         }
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
+        console.log(obj)
+        const sprintIds = obj['sprint'] && obj['sprint'].map(item => item.nodeName.replace(" ", "")).join(',');
+        const sqdIds = obj['sqd'] && obj['sqd'].map(item => item.nodeName.replace(" ", "")).join(',');
+        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': sprintIds, 'sqd': sqdIds }, relativeTo: this.route, queryParamsHandling: 'merge' });
       } else {
         this.onAdditionalFilterChange.emit(e);
       }
@@ -143,7 +154,7 @@ export class AdditionalFilterComponent implements OnChanges {
     if (event?.value) {
       event?.value.forEach(selectedItem => {
         this.filterData[index] = this.filterData[index].filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
-        this.filterData[index].unshift(selectedItem)// this will add selected item on the top 
+        this.filterData[index].unshift(selectedItem)// this will add selected item on the top
       });
     }
   }

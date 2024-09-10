@@ -114,6 +114,7 @@ export class SharedService {
 
   isRecommendationsEnabledSubject = new BehaviorSubject<boolean>(false);
   isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
+  primaryFilterSelection: String = '';
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -521,6 +522,15 @@ export class SharedService {
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
   }
+
+  setPrimaryFilterSelection(value) {
+    this.primaryFilterSelection = value;
+  }
+
+  getPrimaryFilterSelection() {
+    return this.primaryFilterSelection;
+  }
+
 }
 
 
