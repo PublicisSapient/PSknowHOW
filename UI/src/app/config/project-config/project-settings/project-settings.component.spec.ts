@@ -303,7 +303,7 @@ describe('ProjectSettingsComponent', () => {
       },
       {
         name: 'Enable Developer KPIs',
-        description: 'Provide consent to clone your code repositories (BitBucket, GitLab, GitHub) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to valuable KPIs on the Developer dashboard.',
+        description: 'Provide consent to clone your code repositories (BitBucket, GitLab, GitHub, Azure Repository) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to valuable KPIs on the Developer dashboard.',
         actionItem: 'switch-developer-kpi',
       }
     ]);
