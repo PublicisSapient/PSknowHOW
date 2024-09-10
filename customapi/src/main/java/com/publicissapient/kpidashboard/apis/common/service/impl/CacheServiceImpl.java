@@ -279,4 +279,10 @@ public class CacheServiceImpl implements CacheService {
 
 	}
 
+	@Cacheable(CommonConstant.CACHE_ORGANIZATION_HIERARCHY_DATA)
+	@Override
+	public List<OrganizationHierarchy> getCacheOrganizationHierarchies() {
+		return organizationHierarchyService.findAllOrganizationHierarchiesFromDB();
+	}
+
 }
