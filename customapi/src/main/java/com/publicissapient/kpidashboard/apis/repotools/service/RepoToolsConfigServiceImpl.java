@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -167,10 +168,6 @@ public class RepoToolsConfigServiceImpl {
 		if (name.contains("."))
 			name = name.split(".git")[0];
 
-		// Set the repository name in the project tool configuration
-		projectToolConfig.setRepositoryName(name);
-		repoToolConfig.setName(name);
-
 		String accessToken = "";
 
 		// Configure the RepoToolConfig based on the tool name
@@ -178,21 +175,27 @@ public class RepoToolsConfigServiceImpl {
 		case Constant.TOOL_GITHUB:
 			accessToken = connection.getAccessToken();
 			repoToolConfig.setProvider(Constant.TOOL_GITHUB.toLowerCase());
+			repoToolConfig.setName(projectToolConfig.getRepositoryName());
 			break;
 		case Constant.TOOL_BITBUCKET:
 			accessToken = connection.getPassword();
 			repoToolConfig
 					.setApiEndPoint(connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name);
 			repoToolConfig.setProvider(BITBUCKET_PROVIDER);
+			projectToolConfig.setRepositoryName(projectToolConfig.getRepoSlug());
+			repoToolConfig.setName(projectToolConfig.getRepoSlug());
 			break;
 		case Constant.TOOL_GITLAB:
 			accessToken = connection.getAccessToken();
 			repoToolConfig.setProvider(ProcessorConstants.GITLAB.toLowerCase());
+			projectToolConfig.setRepositoryName(name);
+			repoToolConfig.setName(name);
 			break;
 		case Constant.TOOL_AZUREREPO:
 			accessToken = connection.getPat();
 			repoToolConfig.setProvider(AZURE_PROVIDER);
 			repoToolConfig.setOrganization(split[3]);
+			repoToolConfig.setName(projectToolConfig.getRepositoryName());
 			break;
 		default:
 			throw new IllegalStateException("Unexpected value: " + projectToolConfig.getToolName());
@@ -417,8 +420,9 @@ public class RepoToolsConfigServiceImpl {
 		processorExecutionTraceLog
 				.setExecutionSuccess(Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-		if(Boolean.TRUE.equals(isWarning))
-			processorExecutionTraceLog.setExecutionResumesAt(repoToolsStatusResponse.getTimestamp());
+		if (Boolean.TRUE.equals(isWarning))
+			processorExecutionTraceLog
+					.setExecutionResumesAt(LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.UTC).toEpochMilli());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 	}
