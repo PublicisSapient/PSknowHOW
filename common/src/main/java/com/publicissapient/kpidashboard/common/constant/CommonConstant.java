@@ -34,7 +34,7 @@ public final class CommonConstant {
 	public static final String JIRAKANBAN_KPI_CACHE = "jiraKanbanKpiCache";
 	public static final String CACHE_ACCOUNT_HIERARCHY = "accountHierarchy";
 
-	public static final String CACHE_ORGANIZATION_HIERARCHY = "organizationHierarchies";
+	public static final String CACHE_ORGANIZATION_HIERARCHY_DATA = "organizationHierarchyData";
 	public static final String CACHE_SPRINT_HIERARCHY = "sprintHierarchy";
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";
@@ -112,6 +112,7 @@ public final class CommonConstant {
 	public static final String BLANK = "";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
+	public static final String CACHE_HIERARCHY_LEVEL_VALUE = "cache_hierarchy_level_value";
 	public static final String CACHE_PROJECT_BASIC_TREE = "cache_project_basic_tree";
 	public static final String CACHE_USER_BOARD_CONFIG = "cache_user_board_config";
 

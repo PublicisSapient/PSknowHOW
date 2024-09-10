@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.abac.policy.SimplePolicyDefinition;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
-import com.publicissapient.kpidashboard.common.service.OrganizationHierarchyService;
 
 /**
  * @author bogolesw
@@ -39,9 +38,6 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 	@Autowired
 	GlobalConfigRepository globalConfigRepository;
 
-	@Autowired
-	OrganizationHierarchyService organizationHierarchyService;
-
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
 		configHelperService.loadKpiMaster();
@@ -49,13 +45,13 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 		configHelperService.calculateCriteria();
 		configHelperService.calculateCriteriaForCircleKPI();
 		configHelperService.loadProjectBasicTree();
+		configHelperService.loadHierarchyLevelSuggestion();
 		configHelperService.loadFieldMappingStructure();
 		configHelperService.loadUserBoardConfig();
 		configHelperService.loadAllProjectToolConfig();
 		configHelperService.loadAllFilters();
 		configHelperService.loadConfigData();
 		configHelperService.loadToolConfig();
-		organizationHierarchyService.findAll();
 		simplePolicyDefinition.init();
 		globalConfigRepository.findAll();
 

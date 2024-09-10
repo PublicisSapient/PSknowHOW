@@ -78,7 +78,7 @@
                         <executions>
                             <execution>
                                 <id>build</id>
-                                <phase>install</phase>
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>
@@ -121,7 +121,7 @@
                         <executions>
                             <execution>
                                 <id>build</id>
-                                <phase>install</phase>
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>
@@ -186,7 +186,7 @@
                         <executions>
                             <execution>
                                 <id>build</id>
-                                <phase>install</phase>
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>
@@ -262,7 +262,7 @@
                         <executions>
                             <execution>
                                 <id>build</id>
-                                <phase>install</phase>
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>

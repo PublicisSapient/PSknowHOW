@@ -6,9 +6,5 @@ import java.util.List;
 
 public interface OrganizationHierarchyService {
 
-	List<OrganizationHierarchy> findAll();
-
-	OrganizationHierarchy findById(String nodeId);
-
-	void clearCache();
+	List<OrganizationHierarchy> findAllOrganizationHierarchiesFromDB();
 }
