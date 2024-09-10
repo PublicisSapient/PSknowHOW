@@ -26,7 +26,6 @@ import lombok.Data;
 public class HierarchyValue {
 
 	private HierarchyLevel hierarchyLevel;
-	private String orgHierarchyNodeId;
 	private String value;
 
 	@Override

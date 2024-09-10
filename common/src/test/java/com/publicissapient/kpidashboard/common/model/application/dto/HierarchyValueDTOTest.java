@@ -72,7 +72,7 @@ public class HierarchyValueDTOTest {
      * <li>{@link HierarchyValueDTO#getValue()}
      * </ul>
      */
-    //@Test
+    @Test
     public void testConstructor() {
         HierarchyValueDTO actualHierarchyValueDTO = new HierarchyValueDTO();
         HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
@@ -101,7 +101,7 @@ public class HierarchyValueDTOTest {
      * <li>{@link HierarchyValueDTO#getValue()}
      * </ul>
      */
-    //@Test
+    @Test
     public void testConstructor2() {
         HierarchyValueDTO actualHierarchyValueDTO = new HierarchyValueDTO();
         HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();

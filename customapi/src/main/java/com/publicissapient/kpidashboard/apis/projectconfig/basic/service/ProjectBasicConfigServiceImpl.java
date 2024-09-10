@@ -43,7 +43,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -390,8 +389,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			list.addAll(basicConfigRepository.findAll());
 		} else {
 			Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
-			//projectNodeId
-			//Basic Configs
 			if (Optional.ofNullable(basicProjectConfigIds).isPresent()) {
 				Set<ObjectId> configIds = new HashSet<>();
 				for (String id : basicProjectConfigIds) {
@@ -549,6 +546,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Override
 	public List<ProjectBasicConfigDTO> getAllProjectsBasicConfigsDTOWithoutPermission() {
 		List<ProjectBasicConfigDTO> projectBasicList = Lists.newArrayList();
+		//AN --
 		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 				.cacheProjectConfigMapData();
 
@@ -773,24 +771,22 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 						Collectors.toList(), list -> list.stream().limit(5).collect(Collectors.toList()))));
 	}
 
-	@Cacheable(value = CommonConstant.CACHE_PROJECT_CONFIG_MAP_HIERARCHY, key = "#nodeId")
-	public List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId) {
+	private List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId) {
 
 		List<HierarchyValue> hierarchy = new ArrayList<>();
 
-		// Retrieve the Org Hierarchy node
 		OrganizationHierarchy organizationHierarchy = organizationHierarchyRepository.findByNodeId(nodeId);
 
-		// Move one level above if the current node exists
-		if (organizationHierarchy != null) {
-			String parentId = organizationHierarchy.getParentId();
-			organizationHierarchy = parentId != null ? organizationHierarchyRepository.findByNodeId(parentId) : null;
-		}
-
 		while (organizationHierarchy != null) {
+			HierarchyValue hierarchyValue = new HierarchyValue();
 
-			// Create and add the hierarchy value
-			hierarchy.add(createHierarchyValue(hierarchyLevels, organizationHierarchy));
+			HierarchyLevel hierarchyLevel = getHierarchyLevel(hierarchyLevels, organizationHierarchy.getHierarchyLevelId());
+
+			hierarchyValue.setHierarchyLevel(hierarchyLevel);
+			hierarchyValue.setOrgHierarchyNodeId(organizationHierarchy.getNodeId());
+			hierarchyValue.setValue(organizationHierarchy.getNodeDisplayName());
+
+			hierarchy.add(hierarchyValue);
 
 			if (organizationHierarchy.getParentId() == null) {
 				break;
@@ -801,29 +797,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return hierarchy;
 	}
 
-	private HierarchyValue createHierarchyValue(List<HierarchyLevel> hierarchyLevels,
-												OrganizationHierarchy organizationHierarchy) {
-
-		HierarchyValue hierarchyValue = new HierarchyValue();
-
-		HierarchyLevel hierarchyLevel = getHierarchyLevel(hierarchyLevels, organizationHierarchy.getHierarchyLevelId());
-
-		hierarchyValue.setHierarchyLevel(hierarchyLevel);
-		hierarchyValue.setOrgHierarchyNodeId(organizationHierarchy.getNodeId());
-		hierarchyValue.setValue(organizationHierarchy.getNodeDisplayName());
-
-		return hierarchyValue;
-	}
-
 	private HierarchyLevel getHierarchyLevel(List<HierarchyLevel> hierarchyLevels, String hierarchyLevelId) {
 		return hierarchyLevels.stream()
 				.filter(hierarchy -> hierarchy.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId))
 				.findFirst()
 				//Setting this explicitly to maintain backward compatibility
-				.map(hierarchyLevel -> {
-					hierarchyLevel.setId(null);
-					return hierarchyLevel;
-				})
+				.map(hierarchyLevel -> {hierarchyLevel.setId(null); return hierarchyLevel;})
 				.orElse(null);
 	}
 }

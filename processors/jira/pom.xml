@@ -539,7 +539,7 @@
 				<executions>
 					<execution>
 						<id>build</id>
-						<phase>deploy</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>build</goal>
 						</goals>
