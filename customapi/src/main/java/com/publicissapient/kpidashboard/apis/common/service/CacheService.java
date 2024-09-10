@@ -103,6 +103,4 @@ public interface CacheService {
 	Map<String, HierarchyLevel> getFullKanbanHierarchyLevelMap();
 
 	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
-
-	List<OrganizationHierarchy> getCacheOrganizationHierarchies();
 }

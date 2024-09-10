@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.common.controller;
+package com.publicissapient.kpidashboard.apis.hierarchy.rest;
 
 import java.util.List;
 
@@ -19,9 +19,6 @@ public class HierarchyLevelsController {
 
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
-
-	@Autowired
-	private HierarchyLevelSuggestionsService hierarchyLevelSuggestionsService;
 
 	@GetMapping
 	private ResponseEntity<List<HierarchyLevel>> getHierarchyLevel() {

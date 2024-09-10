@@ -1,17 +1,20 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -38,7 +41,10 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 	@Indexed(unique = true)
 	private String parentId;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime createdDate;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime modifiedDate;
 
 }
