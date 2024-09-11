@@ -30,8 +30,8 @@ import io.mongock.api.annotations.RollbackExecution;
 public class ChangeCombinedSourceDevKpis {
 
 	private final MongoTemplate mongoTemplate;
-	private static final String existingKpiSource = "RepoTool";
-	private static final String updatedKpiSource = "Bitbucket/AzureRepository/GitHub/GitLab";
+	private static final String EXISTING_KPI_SOURCE = "RepoTool";
+	private static final String UPDATED_KPI_SOURCE = "Bitbucket/AzureRepository/GitHub/GitLab";
 
 	public ChangeCombinedSourceDevKpis(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -41,12 +41,12 @@ public class ChangeCombinedSourceDevKpis {
 	public void execution() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
 		// Update documents
-		updateDocument(kpiMaster, "kpi160", existingKpiSource);
-		updateDocument(kpiMaster, "kpi162", existingKpiSource);
-		updateDocument(kpiMaster, "kpi157", existingKpiSource);
-		updateDocument(kpiMaster, "kpi173", existingKpiSource);
-		updateDocument(kpiMaster, "kpi158", existingKpiSource);
-		updateDocument(kpiMaster, "kpi159", existingKpiSource);
+		updateDocument(kpiMaster, "kpi160", EXISTING_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi162", EXISTING_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi157", EXISTING_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi173", EXISTING_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi158", EXISTING_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi159", EXISTING_KPI_SOURCE);
 	}
 
 	private void updateDocument(MongoCollection<Document> kpiCategoryMapping, String kpiId, String kpiSource) {
@@ -62,12 +62,12 @@ public class ChangeCombinedSourceDevKpis {
 	public void rollback() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
 		// Update documents
-		updateDocument(kpiMaster, "kpi160", updatedKpiSource);
-		updateDocument(kpiMaster, "kpi162", updatedKpiSource);
-		updateDocument(kpiMaster, "kpi157", updatedKpiSource);
-		updateDocument(kpiMaster, "kpi173", updatedKpiSource);
-		updateDocument(kpiMaster, "kpi158", updatedKpiSource);
-		updateDocument(kpiMaster, "kpi159", updatedKpiSource);
+		updateDocument(kpiMaster, "kpi160", UPDATED_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi162", UPDATED_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi157", UPDATED_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi173", UPDATED_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi158", UPDATED_KPI_SOURCE);
+		updateDocument(kpiMaster, "kpi159", UPDATED_KPI_SOURCE);
 	}
 
 }
