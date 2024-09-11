@@ -11,12 +11,14 @@ import { SharedService } from 'src/app/services/shared.service';
 export class StickyHeaderV2Component implements AfterViewInit, OnDestroy {
 
   fields: Map<string, string> = new Map();
+  //isIteration:boolean = false;
   subscriptions: Subscription[] = [];
   colorObj: any = {};
   constructor( public service: SharedService, private helperService: HelperService) { 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe((data)=>{
-        this.fields.set('Selected Dashboard - ', data.selectedTab);
+      //  this.isIteration = data.selectedTab === 'iteration'?true:false;
+        this.fields.set('Selected Dashboard ', data.selectedTab);
       }))
   }
 
@@ -36,7 +38,7 @@ export class StickyHeaderV2Component implements AfterViewInit, OnDestroy {
   }
 
   objectKeys(obj){
-    return this.helperService.getObjectKeys(obj)
+    return this.helperService?.getObjectKeys(obj)
   }
 
   ngOnDestroy(): void {
