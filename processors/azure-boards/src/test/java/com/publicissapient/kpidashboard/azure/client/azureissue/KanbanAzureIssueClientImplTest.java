@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -102,6 +103,8 @@ public class KanbanAzureIssueClientImplTest {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
 
 	@BeforeEach
 	public void setUp() throws Exception {
