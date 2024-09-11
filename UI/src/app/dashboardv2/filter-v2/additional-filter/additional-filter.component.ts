@@ -47,7 +47,13 @@ export class AdditionalFilterComponent implements OnChanges {
             if (this.selectedTab === 'developer') {
               data[f].forEach(element => {
                 if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                  this.filterData[index].push(element);
+                  const correctLevelMapping = {
+                    Sprint: 'sprint',
+                    Squad: 'sqd'
+                  }
+                  if (this.filterData[index]?.length && correctLevelMapping[this.additionalFilterConfig[index].defaultLevel.labelName] === this.filterData[index][0].labelName) {
+                    this.filterData[index].push(element);
+                  }
                 }
               });
             } else {
