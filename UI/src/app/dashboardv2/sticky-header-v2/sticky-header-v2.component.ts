@@ -40,7 +40,7 @@ export class StickyHeaderV2Component implements OnInit,AfterViewInit, OnDestroy 
   }
 
   objectKeys(obj){
-    return this.helperService.getObjectKeys(obj)
+    return this.helperService?.getObjectKeys(obj)
   }
 
   ngOnDestroy(): void {
