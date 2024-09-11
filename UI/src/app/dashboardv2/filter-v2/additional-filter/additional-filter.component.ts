@@ -49,6 +49,7 @@ export class AdditionalFilterComponent implements OnChanges {
           });
 
           this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+          console.log('additional_level filter state', this.stateFilters);
           const correctLevelMapping = {
             Sprint: 'sprint',
             Squad: 'sqd'
@@ -84,7 +85,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
   applyDefaultFilter() {
     let fakeEvent = {};
-    if (this.filterData.map(f => f.nodeName).includes('Overall')) {
+    if (this.filterData?.map(f => f?.nodeName).includes('Overall')) {
       this.filterData.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
       this.filterData.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
       fakeEvent['value'] = 'Overall';

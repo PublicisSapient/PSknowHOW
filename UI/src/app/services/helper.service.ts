@@ -409,7 +409,7 @@ export class HelperService {
     }
 
     sortByField(objArray, propArr): any {
-        objArray.sort((a, b) => {
+        objArray?.sort((a, b) => {
             if (objArray?.[0]?.[propArr[0]] && propArr[0].indexOf('Date') === -1) {
                 const propA = a[propArr[0]];
                 const propB = b[propArr[0]];
@@ -417,7 +417,7 @@ export class HelperService {
             }
         });
 
-        objArray.sort((a, b) => {
+        objArray?.sort((a, b) => {
             if (objArray?.[0]?.[propArr[1]] && propArr[1].indexOf('Date') !== -1) {
                 const propA = new Date(a[propArr[1]].substring(0, a[propArr[1]].indexOf('T')));
                 const propB = new Date(b[propArr[1]].substring(0, b[propArr[1]].indexOf('T')));

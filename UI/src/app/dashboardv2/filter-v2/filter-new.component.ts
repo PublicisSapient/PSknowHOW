@@ -75,10 +75,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     public router: Router,
     private route: ActivatedRoute,
   ) {
+    // console.log(this.router.url)
     const url = decodeURIComponent(this.router.url);
     if (url !== this.router.url) {
       this.router.navigateByUrl(url);
     }
+
+    // console.log('url from -> ', decodeURIComponent(window.location.hash.substring(1)))
+    // this.route.queryParams.subscribe(params => {
+    //   console.log(params); // All query params as an object
+    // });
   }
 
 
@@ -304,7 +310,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     console.log(event)
     this.selectedLevel = event;
     const getPrimaryFilterSelection = this.service.getPrimaryFilterSelection();
-    const selectedLevel = this.selectedLevel || this.selectedLevel?.nodeType;
+    const selectedLevel = typeof this.selectedLevel !== 'string' ? this.selectedLevel?.nodeType : this.selectedLevel;
+
     const nodeType = this.selectedLevel?.nodeType ? this.selectedLevel.fullNodeDetails[0].basicProjectConfigId : getPrimaryFilterSelection;
     // if (typeof event !== 'string') {
     //   this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'type': this.selectedType, 'org': event?.nodeType, [event?.nodeType]: this.selectedLevel.fullNodeDetails[0].basicProjectConfigId }, relativeTo: this.route });

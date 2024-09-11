@@ -22,13 +22,14 @@ export class ParentFilterComponent implements OnChanges {
   constructor(private helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-
+    console.log('parent filter SimpleChanges ', changes)
+    console.log('parent filter onchange ', this.helperService.getBackupOfFilterSelectionState())
     if (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab']?.previousValue || changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue) {
       if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
         this.fillAdditionalFilterLevels();
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
-        
+
         this.stringToObject();
         this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
@@ -48,10 +49,7 @@ export class ParentFilterComponent implements OnChanges {
 
           this.onSelectedLevelChange.emit(this.selectedLevel);
         });
-      } else if (changes['parentFilterConfig'].previousValue?.labelName === 'Organization Level' && changes['parentFilterConfig'].currentValue?.labelName?.toLowerCase() === 'project' ||
-      changes['parentFilterConfig'].previousValue?.labelName.toLowerCase() === 'project' && changes['parentFilterConfig'].currentValue?.labelName === 'Organization Level' ||
-        (changes['parentFilterConfig'].previousValue?.labelName.toLowerCase() === 'project' && changes['parentFilterConfig'].currentValue?.labelName?.toLowerCase() === 'project') ||
-        changes['parentFilterConfig'].firstChange) {
+      } else if (changes['parentFilterConfig'].previousValue?.labelName === 'Organization Level' && changes['parentFilterConfig'].currentValue?.labelName?.toLowerCase() === 'project' || changes['parentFilterConfig'].previousValue?.labelName.toLowerCase() === 'project' && changes['parentFilterConfig'].currentValue?.labelName === 'Organization Level' || (changes['parentFilterConfig'].previousValue?.labelName.toLowerCase() === 'project' && changes['parentFilterConfig'].currentValue?.labelName?.toLowerCase() === 'project') || changes['parentFilterConfig'].firstChange) {
         this.filterLevels = this.filterData[this['parentFilterConfig']['labelName']]?.map((item) => item.nodeName);
         this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
         this.stringToObject();

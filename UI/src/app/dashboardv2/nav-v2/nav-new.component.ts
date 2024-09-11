@@ -25,8 +25,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
     public sharedService: SharedService,
     public messageService: MessageService,
     public router: Router,
+    public route: ActivatedRoute,
     private helperService: HelperService,
   ) {
+    // console.log('url from -> ', decodeURIComponent(window.location.hash.substring(1)))
+    // this.route.queryParams.subscribe(params => {
+    //   console.log(params); // All query params as an object
+    // });
   }
 
   ngOnInit(): void {

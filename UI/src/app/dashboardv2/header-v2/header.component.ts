@@ -57,6 +57,7 @@ export class HeaderComponent implements OnInit {
         icon: 'fas fa-cog',
         command: () => {
           this.lastVisitedFromUrl = window.location.hash.substring(1);
+          console.log(this.lastVisitedFromUrl);
           this.router.navigate(['/dashboard/Config/ProjectList']);
         },
       },

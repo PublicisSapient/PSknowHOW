@@ -33,6 +33,11 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         this.selectedFilters = filters;
       }
     });
+
+    console.log('url from -> ', decodeURIComponent(window.location.hash.substring(1)))
+    this.route.queryParams.subscribe(params => {
+      console.log(params); // All query params as an object
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -47,8 +52,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     this.populateFilters();
     if (this.filters?.length) {
       this.selectedFilters = new Set();
-
+      console.log('primary filter onchange ', this.helperService.getBackupOfFilterSelectionState())
       this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
+      console.log(this.stateFilters);
       if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && !this.stateFilters['additional_level']) {
         this.stateFilters['primary_level'].forEach(stateFilter => {
           this.selectedFilters.add(stateFilter);
@@ -132,7 +138,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       } else {
         this.applyDefaultFilters();
       }
-      console.log(this.selectedFilters)
+      // console.log(this.selectedFilters)
       console.log(this.selectedLevel)
       const selectedParentIds = this.selectedFilters.map((filter) => {
         if (filter.basicProjectConfigId) {
@@ -149,7 +155,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { [this.selectedLevel]: selectedParentIdsStr }, relativeTo: this.route, queryParamsHandling: 'merge' });
       } else {
         console.log('string else', selectedParentIdsStr)
-        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': this.selectedFilters[0].nodeName, 'sqd': '' }, relativeTo: this.route, queryParamsHandling: 'merge' });
+        if(this.selectedLevel.emittedLevel.toLowerCase() !== 'release') {
+          this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': this.selectedFilters[0].nodeName, 'sqd': null }, relativeTo: this.route, queryParamsHandling: 'merge' });
+        }
       }
     }
   }
@@ -157,10 +165,15 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   applyDefaultFilters() {
     console.log('inside func applyDefaultFilters')
     this.populateFilters();
+    console.log('url from -> ', decodeURIComponent(window.location.hash.substring(1)))
+    this.route.queryParams.subscribe(params => {
+      console.log(params); // All query params as an object
+    });
     setTimeout(() => {
       this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
-      if ((this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'project' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project') ||
-        (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && (this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'sprint' || this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'release') && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project')) {
+      console.log(this.stateFilters)
+      if ((this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'project' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project') || (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && (this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'sprint' || this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'release') && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project')) {
+        console.log('inside if')
         this.selectedFilters = [];
         if (this.stateFilters['primary_level'][0]?.labelName.toLowerCase() === 'project') {
           this.selectedFilters.push({ ...this.filters.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0] });
@@ -169,6 +182,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         }
         this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
       } else {
+        console.log('inside else')
         this.selectedFilters = [];
         this.selectedFilters.push({ ...this.filters[0] });
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
@@ -186,7 +200,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((val) => {
       if (this.selectedFilters?.length && this.selectedFilters[0]) {
         this.selectedFilters = this.selectedFilters.filter((filter) => Object.keys(val).includes(filter.nodeId));
-        console.log(this.selectedFilters)
+        // console.log(this.selectedFilters)
       }
     }));
   }
@@ -239,12 +253,18 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
       console.log('parent if')
       this.onPrimaryFilterChange.emit([...this.selectedFilters]);
-      this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { [this.selectedLevel]: selectedParentIdsStr, 'sprint': '', 'sqd': '' }, relativeTo: this.route, queryParamsHandling: 'merge' });
+      console.log(this.selectedLevel, this.selectedTab)
+      if(typeof this.selectedLevel === 'string') {
+        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { [this.selectedLevel]: selectedParentIdsStr, 'sprint': null, 'sqd': null, 'release': null }, relativeTo: this.route, queryParamsHandling: 'merge' });
+      } else {
+        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'release': selectedParentIdsStr, 'sprint': null, 'sqd': null }, relativeTo: this.route, queryParamsHandling: 'merge' });
+      }
+      // this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { [this.selectedLevel]: selectedParentIdsStr, 'sprint': null, 'sqd': null }, relativeTo: this.route, queryParamsHandling: 'merge' });
     } else {
       if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
         console.log('else > if')
         this.onPrimaryFilterChange.emit([...this.selectedFilters]);
-        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': this.selectedFilters[0].nodeName, 'sqd': '' }, relativeTo: this.route, queryParamsHandling: 'merge' });
+        this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': this.selectedFilters[0].nodeName, 'sqd': null }, relativeTo: this.route, queryParamsHandling: 'merge' });
       } else {
         this.service.setNoSprints(true);
         this.onPrimaryFilterChange.emit([]);
