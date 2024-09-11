@@ -306,7 +306,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  objectKeys(obj){
+  objectKeys(obj) {
     return this.helperService.getObjectKeys(obj)
   }
 
@@ -547,9 +547,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.setSprintForRnR(currentProjectSprints[currentProjectSprints?.length - 1])
         this.noSprint = false;
       } else {
-        this.noSprint = true;
-        this.service.setAdditionalFilters([]);
+        if (this.selectedTab !== 'developer') {
+          this.noSprint = true;
+          this.service.setAdditionalFilters([]);
+        }
       }
+    } else {
+      this.noSprint = false;
     }
     this.compileGAData(event);
   }
