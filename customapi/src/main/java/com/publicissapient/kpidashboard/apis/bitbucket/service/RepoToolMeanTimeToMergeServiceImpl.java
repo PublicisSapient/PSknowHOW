@@ -280,14 +280,23 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	 */
 	private void setDataCount(String projectName, String week, String kpiGroup, Long value,
 			Map<String, List<DataCount>> dataCountMap) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(week);
-		dataCount.setValue(value);
-		dataCount.setKpiGroup(kpiGroup);
-		dataCount.setHoverValue(new HashMap<>());
-		dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
+		List<DataCount> dataCounts = dataCountMap.get(kpiGroup);
+		Optional<DataCount> optionalDataCount = dataCounts!=null? dataCounts.stream()
+				.filter(dataCount1 -> dataCount1.getDate().equals(week)).findFirst():Optional.empty();
+		if (optionalDataCount.isPresent()) {
+			DataCount updatedDataCount = optionalDataCount.get();
+			updatedDataCount.setValue(((Number) updatedDataCount.getValue()).longValue() + value);
+			dataCounts.set(dataCounts.indexOf(optionalDataCount.get()), updatedDataCount);
+		} else {
+			DataCount dataCount = new DataCount();
+			dataCount.setData(String.valueOf(value));
+			dataCount.setSProjectName(projectName);
+			dataCount.setDate(week);
+			dataCount.setValue(value);
+			dataCount.setKpiGroup(kpiGroup);
+			dataCount.setHoverValue(new HashMap<>());
+			dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
+		}
 	}
 
 	@Override

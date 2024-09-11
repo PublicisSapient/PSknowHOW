@@ -324,17 +324,34 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	 */
 	private void setDataCount(String projectName, String week, String kpiGroup, Long commitValue, Long mrCount,
 			Map<String, List<DataCount>> dataCountMap) {
-		DataCount dataCount = new DataCount();
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(week);
-		dataCount.setValue(commitValue);
-		dataCount.setLineValue(mrCount);
-		dataCount.setKpiGroup(kpiGroup);
-		Map<String, Object> hoverValues = new HashMap<>();
-		hoverValues.put(NO_CHECKIN, commitValue);
-		hoverValues.put(NO_MERGE, mrCount);
-		dataCount.setHoverValue(hoverValues);
-		dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
+		List<DataCount> dataCounts = dataCountMap.get(kpiGroup);
+		Optional<DataCount> optionalDataCount = dataCounts != null
+				? dataCounts.stream().filter(dataCount1 -> dataCount1.getDate().equals(week)).findFirst()
+				: Optional.empty();
+		if (optionalDataCount.isPresent()) {
+			DataCount updatedDataCount = optionalDataCount.get();
+			commitValue = ((Number) updatedDataCount.getValue()).longValue() + commitValue;
+			mrCount = ((Number) updatedDataCount.getLineValue()).longValue() + mrCount;
+			updatedDataCount.setValue(commitValue);
+			updatedDataCount.setLineValue(((Number) updatedDataCount.getLineValue()).longValue() + mrCount);
+			Map<String, Object> hoverValues = new HashMap<>();
+			hoverValues.put(NO_CHECKIN, commitValue);
+			hoverValues.put(NO_MERGE, mrCount);
+			updatedDataCount.setHoverValue(hoverValues);
+			dataCounts.set(dataCounts.indexOf(optionalDataCount.get()), updatedDataCount);
+		} else {
+			DataCount dataCount = new DataCount();
+			dataCount.setSProjectName(projectName);
+			dataCount.setDate(week);
+			dataCount.setValue(commitValue);
+			dataCount.setLineValue(mrCount);
+			dataCount.setKpiGroup(kpiGroup);
+			Map<String, Object> hoverValues = new HashMap<>();
+			hoverValues.put(NO_CHECKIN, commitValue);
+			hoverValues.put(NO_MERGE, mrCount);
+			dataCount.setHoverValue(hoverValues);
+			dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
+		}
 	}
 
 	/**
