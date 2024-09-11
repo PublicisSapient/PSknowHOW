@@ -54,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 
 import static org.mockito.Mockito.when;
 
@@ -87,6 +88,8 @@ public class ConfigHelperServiceTest {
 	private ConfigHelperService configHelperService;
 	@Mock
 	private FiltersRepository filtersRepository;
+	@Mock
+	private HierarchyLevelRepository hierarchyLevelRepository;
 
 	@Before
 	public void setUp() {
@@ -96,6 +99,7 @@ public class ConfigHelperServiceTest {
 
 	@Test
 	public void loadConfigData() {
+		Mockito.when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(new ArrayList<>());
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectList);
 		Mockito.when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
 		configHelperService.loadConfigData();

@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.TreeSet;
 
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
@@ -479,7 +480,9 @@ public class ProjectBasicConfigServiceImplTest {
 		List<ProjectBasicConfig> listOfProjectDetails = new ArrayList<>();
 		Mockito.when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		listOfProjectDetails.add(new ProjectBasicConfig());
-		Mockito.when(basicConfigRepository.findAll()).thenReturn(listOfProjectDetails);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(UUID.randomUUID().toString(), new ProjectBasicConfig());
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigs();
 		assertThat("response list size: ", list.size(), equalTo(1));
 
@@ -495,7 +498,9 @@ public class ProjectBasicConfigServiceImplTest {
 		ProjectBasicConfig project = new ProjectBasicConfig();
 		project.setId(projectId);
 		Optional<ProjectBasicConfig> projectOpt = Optional.of(project);
-		Mockito.when(basicConfigRepository.findById(projectId)).thenReturn(projectOpt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(projectId.toString(), project);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		ProjectBasicConfig config = projectBasicConfigServiceImpl.getProjectBasicConfigs(projectId.toString());
 		assertThat("response : ", config.getId(), equalTo(projectId));
 	}
@@ -513,7 +518,9 @@ public class ProjectBasicConfigServiceImplTest {
 		Set<String> userProjIds = new HashSet<>();
 		userProjIds.add(projectId.toString());
 		Mockito.when(tokenAuthenticationService.getUserProjects()).thenReturn(userProjIds);
-		Mockito.when(basicConfigRepository.findById(projectId)).thenReturn(userprojectOpt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(projectId.toString(), userproject);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		ProjectBasicConfig config = projectBasicConfigServiceImpl.getProjectBasicConfigs(projectId.toString());
 		assertThat("response : ", config.getId(), equalTo(projectId));
 	}
@@ -584,7 +591,9 @@ public class ProjectBasicConfigServiceImplTest {
 		AccessRequest accessRequestsData = createAccessRequestData();
 		when(toolRepository.findByBasicProjectConfigId(any(ObjectId.class))).thenReturn(createTools());
 		when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(basicConfigRepository.findById(any(ObjectId.class))).thenReturn(p1Opt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		when(dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA)).thenReturn(agileDataCleanUpService);
 		doNothing().when(agileDataCleanUpService).clean(anyString());
 		doNothing().when(toolRepository).deleteById(any(ObjectId.class));
@@ -614,7 +623,9 @@ public class ProjectBasicConfigServiceImplTest {
 		AccessRequest accessRequestsData = createAccessRequestData();
 		when(toolRepository.findByBasicProjectConfigId(any(ObjectId.class))).thenReturn(createTools());
 		when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(basicConfigRepository.findById(any(ObjectId.class))).thenReturn(p1Opt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(anyString())).thenReturn(new AssigneeDetails());
 		when(dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA)).thenReturn(agileDataCleanUpService);
 		doNothing().when(agileDataCleanUpService).clean(anyString());
@@ -756,7 +767,6 @@ public class ProjectBasicConfigServiceImplTest {
 
 	@Test
 	public void creatTree(){
-		Mockito.when(basicConfigRepository.findAll()).thenReturn(Arrays.asList(basicConfig));
 		projectBasicConfigServiceImpl.getBasicConfigTree();
 	}
 
