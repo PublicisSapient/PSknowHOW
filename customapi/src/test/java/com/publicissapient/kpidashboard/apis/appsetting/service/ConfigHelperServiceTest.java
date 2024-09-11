@@ -145,12 +145,6 @@ public class ConfigHelperServiceTest {
 	}
 
 	@Test
-	public void loadHierarchyLevelSuggestion() {
-		Mockito.when(hierarchyLevelSuggestionRepository.findAll()).thenReturn(new ArrayList<>());
-		Assertions.assertNotNull(configHelperService.loadHierarchyLevelSuggestion().getClass());
-	}
-
-	@Test
 	public void loadProjectBasicTree() {
 		ProjectBasicConfigNode projectBasicConfigNode = new ProjectBasicConfigNode();
 		projectBasicConfigNode.setValue("Test");
