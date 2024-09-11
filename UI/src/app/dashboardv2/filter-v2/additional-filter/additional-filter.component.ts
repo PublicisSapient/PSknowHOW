@@ -32,7 +32,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
   ngOnInit() {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
-      if (data && Object.keys(data)?.length && data[Object.keys(data)[0]].length) {
+      if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
         this.selectedFilters = [];
 
         this.selectedTrends = this.service.getSelectedTrends();
@@ -44,13 +44,15 @@ export class AdditionalFilterComponent implements OnChanges {
 
         Object.keys(data).forEach((f, index) => {
           if (this.filterData[index]) {
-            // this.filterData[index].concat(data[f]);
-            // Array.prototype.push.apply(this.filterData[index],data[f]);
-            data[f].forEach(element => {
-              if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                this.filterData[index].push(element);
-              }
-            });
+            if (this.selectedTab === 'developer') {
+              data[f].forEach(element => {
+                if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
+                  this.filterData[index].push(element);
+                }
+              });
+            } else {
+              this.filterData[index] = data[f];
+            }
 
 
           } else {
