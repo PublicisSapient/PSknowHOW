@@ -129,7 +129,21 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.kanban = false;
             this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
           }
-          this.processBoardData(this.boardData);
+          let projectList = [...this.service.getSelectedTrends().map(proj => proj['basicProjectConfigId'])];
+          this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
+            (response) => {
+              if (response?.success) {
+                this.processBoardData(response.data.userBoardConfigDTO);
+              }
+            },
+            (error) => {
+              this.messageService.add({
+                severity: 'error',
+                summary: error.message,
+              });
+            },
+          );
+
 
           if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'kpi-maturity') {
             this.showChart = 'chart';
