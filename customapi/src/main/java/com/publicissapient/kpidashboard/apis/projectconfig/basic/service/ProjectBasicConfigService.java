@@ -23,6 +23,8 @@ import java.util.Map;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
@@ -79,7 +81,7 @@ public interface ProjectBasicConfigService {
 	 * 
 	 * @return {@code List<ProjectBasicConfig>} : empty list in case no data found
 	 */
-	List<ProjectBasicConfig> getAllProjectsBasicConfigsWithoutPermission();
+	List<ProjectBasicConfig> getAllProjectBasicConfigs();
 
 	/**
 	 * Delete basic project congig
@@ -154,4 +156,8 @@ public interface ProjectBasicConfigService {
 	void projectBasicConfigSortedBasedOnHierarchyLevel(ProjectBasicConfig projectBasicConfig);
 
 	List<HierarchyResponseDTO> getHierarchyData();
+
+	List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId);
+
+	ProjectBasicConfig getProjectBasicConfig(String projectNodeId);
 }

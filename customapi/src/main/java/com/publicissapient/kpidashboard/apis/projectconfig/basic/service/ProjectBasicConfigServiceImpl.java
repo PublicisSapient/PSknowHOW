@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
@@ -163,6 +164,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Autowired
 	private HierarchyLevelRepository hierarchyLevelRepository;
 
+    @Autowired
+    private ConfigHelperService configHelperService;
+
 	/**
 	 * method to save basic configuration
 	 *
@@ -240,6 +244,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	private void clearOrgHierarchyCache() {
 		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
+		configHelperService.loadConfigData();
 	}
 
 	private void addNewProjectIntoUserInfo(ProjectBasicConfig basicConfig, String username) {
@@ -355,19 +360,18 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		ProjectBasicConfig projectBasicConfig = null;
 		if (!StringUtils.isBlank(basicProjectConfigId)) {
 			if (userAuthorizedProjectsService.ifSuperAdminUser()) {
-				config = basicConfigRepository.findById(new ObjectId(basicProjectConfigId));
+				config = Optional.of(getProjectBasicConfig(basicProjectConfigId));
 			} else {
 				Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
 				if (Optional.ofNullable(basicProjectConfigIds).isPresent()
 						&& basicProjectConfigIds.contains(basicProjectConfigId)) {
-					config = basicConfigRepository.findById(new ObjectId(basicProjectConfigId));
+					config = Optional.of(getProjectBasicConfig(basicProjectConfigId));
 				}
 			}
 		}
 		log.info("For projectId: {} : Returning getProjectBasicConfig response: {}", basicProjectConfigId, config);
 		if (config.isPresent()) {
 			projectBasicConfig = config.get();
-			projectBasicConfig.setHierarchy(getHierarchy(hierarchyLevelRepository.findAllByOrderByLevel(), projectBasicConfig.getProjectNodeId()));
 			projectBasicConfigSortedBasedOnHierarchyLevel(projectBasicConfig);
 		}
 		return projectBasicConfig;
@@ -387,7 +391,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<ProjectBasicConfig> list = new ArrayList<>();
 		List<ProjectBasicConfig> configListSortBasedOnLevels = new ArrayList<>();
 		if (userAuthorizedProjectsService.ifSuperAdminUser()) {
-			list.addAll(basicConfigRepository.findAll());
+			list.addAll(getAllProjectBasicConfigs());
 		} else {
 			Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
 			if (Optional.ofNullable(basicProjectConfigIds).isPresent()) {
@@ -402,21 +406,38 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		if (CollectionUtils.isNotEmpty(list)) {
 			List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
 			list.stream().forEach(projectBasicConfig -> {
-				//AN: This is to make sure UI doesn't break, to be removed after migration
-				if(StringUtils.isNotEmpty(projectBasicConfig.getProjectNodeId())) {
-					projectBasicConfig.setHierarchy(getHierarchy(hierarchyLevels, projectBasicConfig.getProjectNodeId()));
-					projectBasicConfigSortedBasedOnHierarchyLevel(projectBasicConfig);
-					configListSortBasedOnLevels.add(projectBasicConfig);
-				}
+				projectBasicConfigSortedBasedOnHierarchyLevel(projectBasicConfig);
+				configListSortBasedOnLevels.add(projectBasicConfig);
 			});
 		}
 		log.info("Returning getProjectBasicConfig response: {}", list);
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<ProjectBasicConfig> getAllProjectsBasicConfigsWithoutPermission() {
-		return basicConfigRepository.findAll();
+	public List<ProjectBasicConfig> getAllProjectBasicConfigs() {
+
+		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+				.cacheProjectConfigMapData();
+
+		return Optional.ofNullable(basicConfigMap)
+				.filter(MapUtils::isNotEmpty)
+				.map(map -> new ArrayList<>(map.values()))
+				.orElseGet(ArrayList::new);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ProjectBasicConfig getProjectBasicConfig(String projectNodeId) {
+
+		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+				.cacheProjectConfigMapData();
+
+		return Optional.ofNullable(basicConfigMap)
+				.filter(MapUtils::isNotEmpty)
+				.map(map -> map.get(projectNodeId))
+				.orElse(null);
 	}
 
 	@Override
@@ -589,7 +610,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private Set<ProjectBasicConfigNode> getBasicConfigNodes() {
-		List<ProjectBasicConfig> projectBasicConfigs = basicConfigRepository.findAll();
+		List<ProjectBasicConfig> projectBasicConfigs = getAllProjectBasicConfigs();
 		Set<ProjectBasicConfigNode> projectBasicConfigNodes = new LinkedHashSet<>();
 		if (CollectionUtils.isNotEmpty(projectBasicConfigs)) {
 
@@ -771,7 +792,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 						Collectors.toList(), list -> list.stream().limit(5).collect(Collectors.toList()))));
 	}
 
-	@Cacheable(value = CommonConstant.CACHE_PROJECT_CONFIG_MAP_HIERARCHY, key = "#nodeId")
 	public List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId) {
 
 		List<HierarchyValue> hierarchy = new ArrayList<>();

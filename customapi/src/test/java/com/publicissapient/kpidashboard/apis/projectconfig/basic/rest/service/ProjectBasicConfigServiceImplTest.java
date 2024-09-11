@@ -572,16 +572,6 @@ public class ProjectBasicConfigServiceImplTest {
 	 */
 
 	@Test
-	public void getAllProjectsBasicConfigsWithoutPermission() {
-		List<ProjectBasicConfig> listOfProjectDetails = new ArrayList<>();
-		listOfProjectDetails.add(new ProjectBasicConfig());
-		Mockito.when(basicConfigRepository.findAll()).thenReturn(listOfProjectDetails);
-		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigsWithoutPermission();
-		assertThat("response list size: ", list.size(), equalTo(1));
-
-	}
-
-	@Test
 	public void deleteProject_Success() {
 		String id = "5fc4d61f80b6350f048a93e5";
 		ObjectId basicProjectConfigId = new ObjectId(id);

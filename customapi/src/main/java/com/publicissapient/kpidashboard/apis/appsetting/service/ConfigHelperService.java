@@ -87,6 +87,9 @@ public class ConfigHelperService {
 	private FiltersRepository filtersRepository;
 
 	@Autowired
+	private HierarchyLevelRepository hierarchyLevelRepository;
+
+	@Autowired
 	private FieldMappingStructureRepository fieldMappingStructureRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfMap = new HashMap<>();
@@ -102,7 +105,13 @@ public class ConfigHelperService {
 		List<ProjectBasicConfig> projectList = projectConfigRepository.findAll();
 		List<FieldMapping> fieldMappingList = fieldMappingRepository.findAll();
 
+		List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
+
 		projectList.forEach(projectConfig -> {
+			//AN: This is to make sure UI doesn't break, to be removed after migration
+			if(StringUtils.isNotEmpty(projectConfig.getProjectNodeId())) {
+				projectConfig.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
+			}
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
 			FieldMapping mapping = fieldMappingList.stream()
 					.filter(x -> null != x.getBasicProjectConfigId()
