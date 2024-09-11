@@ -36,6 +36,7 @@ public class HierarchyValue {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		HierarchyValue that = (HierarchyValue) o;
+		//todo change of value to orgHierarchyNodeId
 		return Objects.equals(hierarchyLevel, that.hierarchyLevel) && Objects.equals(value, that.value);
 	}
 
