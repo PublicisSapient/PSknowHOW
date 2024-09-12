@@ -159,5 +159,5 @@ public interface ProjectBasicConfigService {
 
 	List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId);
 
-	ProjectBasicConfig getProjectBasicConfig(String projectNodeId);
+	ProjectBasicConfig getProjectBasicConfig(String projectBasicConfigId);
 }

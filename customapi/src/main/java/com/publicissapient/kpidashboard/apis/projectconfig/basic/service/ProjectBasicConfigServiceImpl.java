@@ -429,14 +429,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ProjectBasicConfig getProjectBasicConfig(String projectNodeId) {
+	public ProjectBasicConfig getProjectBasicConfig(String projectBasicConfigId) {
 
 		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 				.cacheProjectConfigMapData();
 
 		return Optional.ofNullable(basicConfigMap)
 				.filter(MapUtils::isNotEmpty)
-				.map(map -> map.get(projectNodeId))
+				.map(map -> map.get(projectBasicConfigId))
 				.orElse(null);
 	}
 
