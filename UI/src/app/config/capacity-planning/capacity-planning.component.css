@@ -169,8 +169,8 @@
 
   @media only screen and (max-width: 1600px){
     :host ::ng-deep .capacity-table-container {
-      max-width: 1050px;
-      overflow: scroll; 
+      max-width: 1170px;
+      overflow-x: scroll; 
     }
   }
   
