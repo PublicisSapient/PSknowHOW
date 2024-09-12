@@ -603,7 +603,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll().stream()
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()))
+				.toList();
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
@@ -613,7 +615,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		return CollectionUtils.emptyIfNull(allProjects).stream()
 				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled())
 						&& selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {
