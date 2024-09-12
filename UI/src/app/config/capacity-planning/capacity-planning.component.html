@@ -276,7 +276,7 @@
                                 <ng-template pTemplate="rowexpansion" let-item>
                                     <tr [pSelectableRow]="item" class="row-expansion">
                                         <td colspan="5" [style]="{'display':'block'}" class="p-pb-2">
-                                            <div>
+                                            <div class="capacity-table-container">
                                                 <div class="p-d-flex p-justify-between p-align-center">
                                                     <div class="p-d-flex p-align-center">
                                                         <h3 class="color-grey">Added Users</h3>&nbsp;&nbsp;
@@ -295,7 +295,7 @@
                                                     </p-button>
                                                 </div>
 
-                                                <div class="capacity-table-container">
+                                                <div >
                                                     <p-table [value]="item.assigneeCapacity" dataKey="userId"
                                                         [paginator]="true" [rows]="20" [rowsPerPageOptions]="[20,25,30]"
                                                         [showCurrentPageReport]="true">
