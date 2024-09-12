@@ -177,19 +177,23 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Override
 	public ServiceResponse addBasicConfig(ProjectBasicConfigDTO projectBasicConfigDTO) {
 		ServiceResponse response;
+		//HB : todo remove projectName condition
 		ProjectBasicConfig basicConfig = basicConfigRepository
 				.findByProjectName(projectBasicConfigDTO.getProjectName());
+		if(StringUtils.isNotEmpty(projectBasicConfigDTO.getProjectNodeId())){
+			basicConfig  = basicConfigRepository
+					.findByProjectNodeId(projectBasicConfigDTO.getProjectNodeId());
+		}
 		String username = authenticationService.getLoggedInUser();
 		if (basicConfig != null) {
 			response = new ServiceResponse(false, "Try with different Project name.", null);
 		} else {
+			tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
+			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(projectBasicConfigDTO, username);
 			ModelMapper mapper = new ModelMapper();
 			basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 			basicConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 			basicConfig.setCreatedBy(authenticationService.getLoggedInUser());
-			tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
-			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(basicConfig, username);
-
 			if (accessRoleOfParent == null) {
 
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
@@ -197,14 +201,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
 				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO);
-				performFilterOperation(basicConfigDtoCreation(savedProjectBasicConfig, mapper), false);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
 				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO);
-				performFilterOperation(basicConfigDtoCreation(savedProjectBasicConfig, mapper), false);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else {
@@ -222,7 +224,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * @param projectBasicConfigDTO
 	 *            ProjectBasicConfigDTO
 	 */
-	// TODO: change maxLvl.getValue() to maxlvl.getOrgHierarchyNodeId()
 	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO) {
 		OrganizationHierarchy existingOrganizationHierarchy = organizationHierarchyRepository
 				.findByNodeId(projectBasicConfigDTO.getProjectNodeId());
@@ -230,7 +231,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			Optional<HierarchyValueDTO> maxLevel = projectBasicConfigDTO.getHierarchy().stream()
 					.max(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
 			OrganizationHierarchy newOrganizationHierarchy = new OrganizationHierarchy();
-			maxLevel.ifPresent(ml -> newOrganizationHierarchy.setParentId(ml.getValue()));
+			maxLevel.ifPresent(ml -> newOrganizationHierarchy.setParentId(ml.getOrgHierarchyNodeId()));
 			newOrganizationHierarchy.setNodeId(projectBasicConfigDTO.getProjectNodeId());
 			newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 			newOrganizationHierarchy.setNodeName(projectBasicConfigDTO.getProjectName());
@@ -266,6 +267,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	public ServiceResponse updateBasicConfig(String basicConfigId, ProjectBasicConfigDTO projectBasicConfigDTO) {
 		ServiceResponse response;
 		Optional<ProjectBasicConfig> savedConfigOpt = basicConfigRepository.findById(new ObjectId(basicConfigId));
+		//todo remove projectName condition
 		ProjectBasicConfig diffIdSameName = basicConfigRepository
 				.findByProjectNameAndIdNot(projectBasicConfigDTO.getProjectName(), new ObjectId(basicConfigId));
 		if (savedConfigOpt.isPresent()) {
@@ -295,8 +297,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
+				basicConfig.setHierarchy(null); // todo remove Check Testing purpose only added
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
-				performFilterOperation(basicConfigDtoCreation(updatedBasicConfig, mapper), true);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
 			} else {
 				response = new ServiceResponse(false, "Try with different project name.", null);
@@ -312,6 +314,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return unsavedBasicConfig.isSaveAssigneeDetails() != savedConfig.isSaveAssigneeDetails();
 	}
 
+	//todo remove
 	/**
 	 * method to perform filter operation
 	 *

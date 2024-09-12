@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -62,7 +63,11 @@ public class ProjectBasicConfig extends BasicModel {
 	private String updatedAt;
 	private String updatedBy;
 	private boolean kanban;
+
+	// hierarchy will not store in DB
+	@Transient
 	private List<HierarchyValue> hierarchy;
+
 	private boolean saveAssigneeDetails;
 	private boolean developerKpiEnabled;
 	private boolean projectOnHold;
