@@ -40,11 +40,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.TreeSet;
 
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
-import com.publicissapient.kpidashboard.common.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -86,10 +85,7 @@ import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecution
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;

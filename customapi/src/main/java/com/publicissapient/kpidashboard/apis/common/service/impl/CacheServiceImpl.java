@@ -43,10 +43,8 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
-import com.publicissapient.kpidashboard.common.service.OrganizationHierarchyService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,9 +63,6 @@ public class CacheServiceImpl implements CacheService {
 	private AccountHierarchyServiceImpl accountHierarchyService;
 	@Autowired
 	private AccountHierarchyServiceKanbanImpl accountHierarchyServiceKanban;
-
-	@Autowired
-	OrganizationHierarchyService organizationHierarchyService;
 
 	@Autowired
 	@Qualifier("cacheManager")

@@ -1,12 +1,12 @@
-package com.publicissapient.kpidashboard.common.service;
+package com.publicissapient.kpidashboard.apis.hierarchy.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
@@ -20,25 +20,28 @@ public class OrganizationHierarchyServiceImpl implements OrganizationHierarchySe
 	@Autowired
 	private OrganizationHierarchyRepository organizationHierarchyRepository;
 
-	@Cacheable(CommonConstant.CACHE_ORGANIZATION_HIERARCHY)
+	@Autowired
+	private ConfigHelperService configHelperService;
+
 	@Override
 	public List<OrganizationHierarchy> findAll() {
-		log.debug("created cache organization Hierarchies");
-		return organizationHierarchyRepository.findAll();
+		return configHelperService.loadAllOrganizationHierarchy();
 	}
 
 	/**
 	 * all Hierarchy fetching by cache and give particular NodeId
+	 * 
 	 * @param nodeId
 	 * @return
 	 */
 	@Override
 	public OrganizationHierarchy findByNodeId(String nodeId) {
+		// Get the proxy of this class
 		return findAll().stream().filter(node -> node.getNodeId().equals(nodeId)).findFirst().orElse(null);
 	}
 
 	@Override
-	public OrganizationHierarchy save(OrganizationHierarchy organizationHierarchy){
+	public OrganizationHierarchy save(OrganizationHierarchy organizationHierarchy) {
 		return organizationHierarchyRepository.save(organizationHierarchy);
 	}
 
