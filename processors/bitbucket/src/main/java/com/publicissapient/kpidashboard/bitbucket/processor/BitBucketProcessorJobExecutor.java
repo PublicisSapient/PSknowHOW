@@ -417,7 +417,9 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	 * @return List of projects
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll().stream()
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()))
+				.toList();
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
@@ -427,7 +429,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		return CollectionUtils.emptyIfNull(allProjects).stream()
 				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled())
 						&& selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {
