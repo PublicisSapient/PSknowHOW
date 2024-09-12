@@ -17,17 +17,13 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.repository.application;
 
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
 @Repository
 public interface OrganizationHierarchyRepository extends MongoRepository<OrganizationHierarchy, ObjectId> {
 
-	OrganizationHierarchy findByNodeId(String nodeId);
-
-	Optional<OrganizationHierarchy> findByParentId(String parentId);
 }

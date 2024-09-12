@@ -27,9 +27,19 @@ public class OrganizationHierarchyServiceImpl implements OrganizationHierarchySe
 		return organizationHierarchyRepository.findAll();
 	}
 
+	/**
+	 * all Hierarchy fetching by cache and give particular NodeId
+	 * @param nodeId
+	 * @return
+	 */
 	@Override
-	public OrganizationHierarchy findById(String nodeId) {
-		return organizationHierarchyRepository.findByNodeId(nodeId);
+	public OrganizationHierarchy findByNodeId(String nodeId) {
+		return findAll().stream().filter(node -> node.getNodeId().equals(nodeId)).findFirst().orElse(null);
+	}
+
+	@Override
+	public OrganizationHierarchy save(OrganizationHierarchy organizationHierarchy){
+		return organizationHierarchyRepository.save(organizationHierarchy);
 	}
 
 	@CacheEvict(CommonConstant.CACHE_ORGANIZATION_HIERARCHY)

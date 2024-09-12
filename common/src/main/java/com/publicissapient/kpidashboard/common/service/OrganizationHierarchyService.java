@@ -8,7 +8,9 @@ public interface OrganizationHierarchyService {
 
 	List<OrganizationHierarchy> findAll();
 
-	OrganizationHierarchy findById(String nodeId);
+	OrganizationHierarchy findByNodeId(String nodeId);
+
+	OrganizationHierarchy save(OrganizationHierarchy organizationHierarchy);
 
 	void clearCache();
 }

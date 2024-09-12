@@ -80,12 +80,13 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
         actualHierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
+        actualHierarchyValueDTO.setOrgHierarchyNodeId("orgNodeUniqueId");
         actualHierarchyValueDTO.setValue("42");
         String actualToStringResult = actualHierarchyValueDTO.toString();
         assertSame(hierarchyLevelDTO, actualHierarchyValueDTO.getHierarchyLevel());
         assertEquals("42", actualHierarchyValueDTO.getValue());
         assertEquals(
-                "HierarchyValueDTO(hierarchyLevel=HierarchyLevelDTO(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyLevelInfo=null, suggestions=[]), value=42)",
+                "HierarchyValueDTO(hierarchyLevel=HierarchyLevelDTO(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyLevelInfo=null), orgHierarchyNodeId=orgNodeUniqueId, value=42)",
                 actualToStringResult);
     }
 
@@ -110,11 +111,12 @@ public class HierarchyValueDTOTest {
         hierarchyLevelDTO.setLevel(1);
         actualHierarchyValueDTO.setHierarchyLevel(hierarchyLevelDTO);
         actualHierarchyValueDTO.setValue("42");
+        actualHierarchyValueDTO.setOrgHierarchyNodeId("orgNodeUniqueId");
         String actualToStringResult = actualHierarchyValueDTO.toString();
         assertSame(hierarchyLevelDTO, actualHierarchyValueDTO.getHierarchyLevel());
         assertEquals("42", actualHierarchyValueDTO.getValue());
         assertEquals(
-                "HierarchyValueDTO(hierarchyLevel=HierarchyLevelDTO(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyLevelInfo=null, suggestions=[]), value=42)",
+                "HierarchyValueDTO(hierarchyLevel=HierarchyLevelDTO(level=1, hierarchyLevelId=42, hierarchyLevelName=Hierarchy Level Name, hierarchyLevelInfo=null), orgHierarchyNodeId=orgNodeUniqueId, value=42)",
                 actualToStringResult);
     }
 
