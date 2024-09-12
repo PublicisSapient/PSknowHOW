@@ -39,6 +39,9 @@ import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyLevelDTO;
+import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -901,12 +904,12 @@ public class ProjectAccessManager {
 		return isDeleted;
 	}
 
-	public String getAccessRoleOfNearestParent(ProjectBasicConfig projectConfig, String username) {
+	public String getAccessRoleOfNearestParent(ProjectBasicConfigDTO projectBasicConfigDTO, String username) {
 
 		Map<String, String> parents = new LinkedHashMap<>();
-		List<HierarchyValue> hierarchyLevelValues = projectConfig.getHierarchy();
+		List<HierarchyValueDTO> hierarchyLevelValues = projectBasicConfigDTO.getHierarchy();
 		CollectionUtils.emptyIfNull(hierarchyLevelValues).stream().sorted(Comparator
-				.comparing((HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()).reversed())
+				.comparing((HierarchyValueDTO hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()).reversed())
 				.forEach(hierarchyValue -> parents.put(hierarchyValue.getHierarchyLevel().getHierarchyLevelId(),
 						hierarchyValue.getValue()));
 
@@ -944,8 +947,7 @@ public class ProjectAccessManager {
 
 	public UserInfo addNewProjectIntoUserInfo(ProjectBasicConfig basicConfig, String username) {
 		AccessItem newAccessItem = new AccessItem();
-		newAccessItem.setItemId(basicConfig.getId().toHexString());
-		newAccessItem.setItemName(basicConfig.getProjectName());
+		newAccessItem.setItemId(basicConfig.getProjectNodeId());
 
 		UserInfo userInfo = getUserInfo(username);
 
