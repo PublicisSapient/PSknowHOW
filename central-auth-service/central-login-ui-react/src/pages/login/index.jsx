@@ -44,7 +44,7 @@ const LoginPage = ({search}) => {
     const PerformSAMLLogout = async () => {
         setShowSAMLLoader(true);
 
-        Cookies.remove(SAML_USERNAME_COOKIE_NAME, { domain: '.tools.publicis.sapient.com' });
+        Cookies.remove(SAML_USERNAME_COOKIE_NAME, { path: '/', domain: '.tools.publicis.sapient.com' });
 
         window.location.href = apiProvider.handleSamlLogout
     }
