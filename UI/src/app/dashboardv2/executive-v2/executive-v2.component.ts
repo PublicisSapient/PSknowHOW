@@ -120,7 +120,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2].split('?')[0] : 'iteration';
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();
@@ -426,7 +426,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     });
 
-    // sending requests after grouping the the KPIs according to group Id   
+    // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');

@@ -324,6 +324,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       'org': selectedLevel,
       [selectedLevel]: nodeType,
     };
+    console.log('6')
     this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams, relativeTo: this.route });
     // this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'type': this.selectedType, 'org': selectedLevel, [selectedLevel]: '', 'sprint': '', 'sqd': '' }, relativeTo: this.route });
   }
@@ -360,8 +361,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
       } else {
         if (typeof this.selectedLevel === 'string') {
+          console.log('11')
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         } else {
+          console.log('12')
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
 
@@ -463,7 +466,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+        // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         if (event && event[0] && event[0]?.labelName?.toLowerCase() === 'project') {
           this.populateAdditionalFilters(event);
         } else if (event && event[0]) {
@@ -566,7 +569,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousFilterEvent['primary_level'] = event['primary_level'];
 
       if (!event['additional_level']) {
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+        // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         this.handlePrimaryFilterChange(event);
       } else {
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });

@@ -70,6 +70,7 @@ export class AdditionalFilterComponent implements OnChanges {
           console.log(this.stateFilters)
           const sprintIds = this.stateFilters?.sprint && this.stateFilters['sprint'].map(item => item.nodeName.replace(" ", "")).join(',');
           const sqdIds = this.stateFilters?.sqd && this.stateFilters['sqd'].map(item => item.nodeName.replace(" ", "")).join(',');
+          console.log('8')
           this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': sprintIds, 'sqd': sqdIds }, relativeTo: this.route, queryParamsHandling: 'merge' });
         }
 
@@ -129,6 +130,7 @@ export class AdditionalFilterComponent implements OnChanges {
         console.log(obj)
         const sprintIds = obj['sprint'] && obj['sprint'].map(item => item.nodeName.replace(" ", "")).join(',');
         const sqdIds = obj['sqd'] && obj['sqd'].map(item => item.nodeName.replace(" ", "")).join(',');
+        console.log('7')
         this.router.navigate(['/dashboard/' + this.selectedTab], { queryParams: { 'sprint': sprintIds, 'sqd': sqdIds }, relativeTo: this.route, queryParamsHandling: 'merge' });
       } else {
         this.onAdditionalFilterChange.emit(e);

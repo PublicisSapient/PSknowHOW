@@ -43,11 +43,12 @@ export class GroupBarChartComponent implements OnChanges {
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log('bar chart ', this.data);
     if (this.selectedtype?.toLowerCase() === 'kanban') {
       this.xCaption = this.service.getSelectedDateFilter();
     } else {
-      const duration = this.data[0]?.dataGroup[0]?.duration;
-      this.xCaption = duration.charAt(0).toUpperCase() + duration.slice(1).toLowerCase();
+      const duration = Object.keys(this.data[0]).length > 0 && this.data[0]?.dataGroup[0]?.duration;
+      this.xCaption = duration?.charAt(0).toUpperCase() + duration.slice(1).toLowerCase();
     }
     // only run when property "data" changed
     if (changes['data']) {

@@ -141,10 +141,10 @@ export class NavNewComponent implements OnInit, OnDestroy {
     if (this.selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     }
-    if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
-      || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
-      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
-    }
+    // if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
+    //   || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
+    //   this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+    // }
     this.sharedService.setSelectedTab(this.selectedTab);
     this.router.navigate(['/dashboard/' + this.selectedTab], { queryParamsHandling: 'merge' });
   }
