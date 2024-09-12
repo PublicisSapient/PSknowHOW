@@ -276,7 +276,6 @@ public class JiraCommonService {
 	}
 
 	/**
-	 *
 	 * @param username
 	 *            username
 	 * @param password
