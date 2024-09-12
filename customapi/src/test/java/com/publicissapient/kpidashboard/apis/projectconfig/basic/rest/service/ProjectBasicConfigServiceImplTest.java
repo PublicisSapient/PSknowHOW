@@ -39,10 +39,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.TreeSet;
 
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
+import com.publicissapient.kpidashboard.common.service.OrganizationHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -182,6 +184,8 @@ public class ProjectBasicConfigServiceImplTest {
 	@Mock
 	private TestExecutionService testExecutionService;
 	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
+	@Mock
 	private OrganizationHierarchyRepository organizationHierarchyRepository;
 	@Mock
 	private HierarchyLevelRepository hierarchyLevelRepository;
@@ -192,13 +196,6 @@ public class ProjectBasicConfigServiceImplTest {
 	private UserInfo userInfo;
 	private UserInfo nonSuperadminUserInfo;
 	private UserInfo projectViewerUserInfo;
-	private HierarchyLevelSuggestion hierarchyLevelSuggestion;
-	private AccountHierarchy accountHierarchy1;
-	private AccountHierarchy accountHierarchy2;
-	private AccountHierarchy accountHierarchy3;
-	private KanbanAccountHierarchy accountHierarchy4;
-	private KanbanAccountHierarchy accountHierarchy5;
-	private KanbanAccountHierarchy accountHierarchy6;
 
 	private ModelMapper modelMapper = new ModelMapper();
 
@@ -260,49 +257,6 @@ public class ProjectBasicConfigServiceImplTest {
 		viewerProjectAccess.setRole("ROLE_SUPERADMIN");
 		viewerProjectAccess.setAccessNodes(Lists.newArrayList());
 		projectViewerUserInfo.setProjectsAccess(Lists.newArrayList(viewerProjectAccess));
-
-		hierarchyLevelSuggestion = new HierarchyLevelSuggestion();
-		TreeSet<String> values = new TreeSet<>();
-		values.add("hierarchyLevel1Value1");
-		values.add("hierarchyLevel1Value2");
-		hierarchyLevelSuggestion.setHierarchyLevelId("hierarchyLevel1Id");
-		hierarchyLevelSuggestion.setValues(values);
-
-		accountHierarchy1 = new AccountHierarchy();
-		accountHierarchy1.setPath("FCA,FCA,fs");
-		accountHierarchy1.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e34"));
-		accountHierarchy1.setLabelName("Project");
-		accountHierarchy1.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-
-		accountHierarchy2 = new AccountHierarchy();
-		accountHierarchy2.setPath("FCA,fs");
-		accountHierarchy2.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e35"));
-		accountHierarchy2.setLabelName("");
-		accountHierarchy2.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-
-		accountHierarchy3 = new AccountHierarchy();
-		accountHierarchy3.setPath("FCA,fs");
-		accountHierarchy3.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e36"));
-		accountHierarchy3.setLabelName("hierarchyLevel3Id");
-		accountHierarchy3.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e37"));
-
-		accountHierarchy4 = new KanbanAccountHierarchy();
-		accountHierarchy4.setPath("FCA,FCA,fs");
-		accountHierarchy4.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e34"));
-		accountHierarchy4.setLabelName("Project");
-		accountHierarchy4.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-
-		accountHierarchy5 = new KanbanAccountHierarchy();
-		accountHierarchy5.setPath("FCA,fs");
-		accountHierarchy5.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e35"));
-		accountHierarchy5.setLabelName("hierarchyLevel3Id");
-		accountHierarchy5.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-
-		accountHierarchy6 = new KanbanAccountHierarchy();
-		accountHierarchy6.setPath("FCA,fs");
-		accountHierarchy6.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e36"));
-		accountHierarchy6.setLabelName("hierarchyLevel3Id");
-		accountHierarchy6.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e37"));
 
 	}
 
@@ -479,7 +433,9 @@ public class ProjectBasicConfigServiceImplTest {
 		List<ProjectBasicConfig> listOfProjectDetails = new ArrayList<>();
 		Mockito.when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		listOfProjectDetails.add(new ProjectBasicConfig());
-		Mockito.when(basicConfigRepository.findAll()).thenReturn(listOfProjectDetails);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(UUID.randomUUID().toString(), new ProjectBasicConfig());
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigs();
 		assertThat("response list size: ", list.size(), equalTo(1));
 
@@ -495,7 +451,9 @@ public class ProjectBasicConfigServiceImplTest {
 		ProjectBasicConfig project = new ProjectBasicConfig();
 		project.setId(projectId);
 		Optional<ProjectBasicConfig> projectOpt = Optional.of(project);
-		Mockito.when(basicConfigRepository.findById(projectId)).thenReturn(projectOpt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(projectId.toString(), project);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		ProjectBasicConfig config = projectBasicConfigServiceImpl.getProjectBasicConfigs(projectId.toString());
 		assertThat("response : ", config.getId(), equalTo(projectId));
 	}
@@ -513,7 +471,9 @@ public class ProjectBasicConfigServiceImplTest {
 		Set<String> userProjIds = new HashSet<>();
 		userProjIds.add(projectId.toString());
 		Mockito.when(tokenAuthenticationService.getUserProjects()).thenReturn(userProjIds);
-		Mockito.when(basicConfigRepository.findById(projectId)).thenReturn(userprojectOpt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(projectId.toString(), userproject);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		ProjectBasicConfig config = projectBasicConfigServiceImpl.getProjectBasicConfigs(projectId.toString());
 		assertThat("response : ", config.getId(), equalTo(projectId));
 	}
@@ -584,7 +544,9 @@ public class ProjectBasicConfigServiceImplTest {
 		AccessRequest accessRequestsData = createAccessRequestData();
 		when(toolRepository.findByBasicProjectConfigId(any(ObjectId.class))).thenReturn(createTools());
 		when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(basicConfigRepository.findById(any(ObjectId.class))).thenReturn(p1Opt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		when(dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA)).thenReturn(agileDataCleanUpService);
 		doNothing().when(agileDataCleanUpService).clean(anyString());
 		doNothing().when(toolRepository).deleteById(any(ObjectId.class));
@@ -614,7 +576,9 @@ public class ProjectBasicConfigServiceImplTest {
 		AccessRequest accessRequestsData = createAccessRequestData();
 		when(toolRepository.findByBasicProjectConfigId(any(ObjectId.class))).thenReturn(createTools());
 		when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(basicConfigRepository.findById(any(ObjectId.class))).thenReturn(p1Opt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(anyString())).thenReturn(new AssigneeDetails());
 		when(dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA)).thenReturn(agileDataCleanUpService);
 		doNothing().when(agileDataCleanUpService).clean(anyString());
@@ -756,7 +720,6 @@ public class ProjectBasicConfigServiceImplTest {
 
 	@Test
 	public void creatTree(){
-		Mockito.when(basicConfigRepository.findAll()).thenReturn(Arrays.asList(basicConfig));
 		projectBasicConfigServiceImpl.getBasicConfigTree();
 	}
 

@@ -53,9 +53,9 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 		configHelperService.loadUserBoardConfig();
 		configHelperService.loadAllProjectToolConfig();
 		configHelperService.loadAllFilters();
+		organizationHierarchyService.findAll();
 		configHelperService.loadConfigData();
 		configHelperService.loadToolConfig();
-		organizationHierarchyService.findAll();
 		simplePolicyDefinition.init();
 		globalConfigRepository.findAll();
 
