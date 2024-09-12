@@ -32,11 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
-import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -44,13 +39,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
@@ -72,13 +67,16 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
@@ -86,6 +84,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepo
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -159,7 +158,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	private HappinessKpiDataRepository happinessKpiDataRepository;
 
 	@Autowired
-	private OrganizationHierarchyRepository organizationHierarchyRepository;
+	private OrganizationHierarchyService organizationHierarchyService;
 
 	@Autowired
 	private HierarchyLevelRepository hierarchyLevelRepository;
@@ -225,7 +224,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 *            ProjectBasicConfigDTO
 	 */
 	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO) {
-		OrganizationHierarchy existingOrganizationHierarchy = organizationHierarchyRepository
+		OrganizationHierarchy existingOrganizationHierarchy = organizationHierarchyService
 				.findByNodeId(projectBasicConfigDTO.getProjectNodeId());
 		if (ObjectUtils.isEmpty(existingOrganizationHierarchy)) {
 			Optional<HierarchyValueDTO> maxLevel = projectBasicConfigDTO.getHierarchy().stream()
@@ -238,7 +237,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			newOrganizationHierarchy.setNodeDisplayName(projectBasicConfigDTO.getProjectDisplayName());
 			newOrganizationHierarchy.setCreatedDate(LocalDateTime.now());
 			newOrganizationHierarchy.setModifiedDate(LocalDateTime.now());
-			organizationHierarchyRepository.save(newOrganizationHierarchy);
+			organizationHierarchyService.save(newOrganizationHierarchy);
 			clearOrgHierarchyCache();
 		}
 	}
@@ -299,6 +298,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
 				basicConfig.setHierarchy(null); // todo remove Check Testing purpose only added
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
+				updateCacheProjectBasicConfig(updatedBasicConfig);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
 			} else {
 				response = new ServiceResponse(false, "Try with different project name.", null);
@@ -314,7 +314,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return unsavedBasicConfig.isSaveAssigneeDetails() != savedConfig.isSaveAssigneeDetails();
 	}
 
-	//todo remove
+	//HB : todo remove
 	/**
 	 * method to perform filter operation
 	 *
@@ -800,12 +800,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<HierarchyValue> hierarchy = new ArrayList<>();
 
 		// Retrieve the Org Hierarchy node
-		OrganizationHierarchy organizationHierarchy = organizationHierarchyRepository.findByNodeId(nodeId);
+		OrganizationHierarchy organizationHierarchy = organizationHierarchyService.findByNodeId(nodeId);
 
 		// Move one level above if the current node exists
 		if (organizationHierarchy != null) {
 			String parentId = organizationHierarchy.getParentId();
-			organizationHierarchy = parentId != null ? organizationHierarchyRepository.findByNodeId(parentId) : null;
+			organizationHierarchy = parentId != null ? organizationHierarchyService.findByNodeId(parentId) : null;
 		}
 
 		while (organizationHierarchy != null) {
@@ -816,7 +816,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			if (organizationHierarchy.getParentId() == null) {
 				break;
 			}
-			organizationHierarchy = organizationHierarchyRepository.findByNodeId(organizationHierarchy.getParentId());
+			organizationHierarchy = organizationHierarchyService.findByNodeId(organizationHierarchy.getParentId());
 		}
 
 		return hierarchy;
@@ -846,5 +846,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					return hierarchyLevel;
 				})
 				.orElse(null);
+	}
+
+	private void updateCacheProjectBasicConfig(ProjectBasicConfig projectBasicConfig){
+		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+				.cacheProjectConfigMapData();
+		basicConfigMap.put(projectBasicConfig.getId().toHexString(), projectBasicConfig);
+
 	}
 }
