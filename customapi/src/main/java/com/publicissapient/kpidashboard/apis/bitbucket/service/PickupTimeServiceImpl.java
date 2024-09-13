@@ -217,10 +217,9 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
 
 						pickupTime = matchingBranch.map(Branches::getHours).orElse(0.0d);
-						mrCount = matchingBranch.map(branch -> {
-							Map<String, Double> mergeRequestsPT = branch.getMergeRequestsPT();
-							return mergeRequestsPT != null ? mergeRequestsPT.size() : 0;
-						}).orElse(0);
+						mrCount = matchingBranch.map(Branches::getMergeRequestsPT)
+								.map(Map::size)
+								.orElse(0);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(
