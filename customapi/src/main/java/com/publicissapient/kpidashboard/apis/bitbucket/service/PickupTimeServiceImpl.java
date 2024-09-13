@@ -217,7 +217,10 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
 
 						pickupTime = matchingBranch.map(Branches::getHours).orElse(0.0d);
-						mrCount = matchingBranch.map(Branches::getMergeRequestsPT).stream().count();
+						mrCount = matchingBranch.map(branch -> {
+							Map<String, Double> mergeRequestsPT = branch.getMergeRequestsPT();
+							return mergeRequestsPT != null ? mergeRequestsPT.size() : 0;
+						}).orElse(0);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(
@@ -291,7 +294,11 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userHours = repoToolUserDetails.map(RepoToolUserDetails::getHours).orElse(0.0d);
-			long userMrCount = repoToolUserDetails.map(RepoToolUserDetails::getMergeRequestsPT).stream().count();
+			long userMrCount = repoToolUserDetails
+					.map(repoToolUserDetails1 -> {
+						Map<String, Double> mergeRequestsPT = repoToolUserDetails1.getMergeRequestsPT();
+						return mergeRequestsPT != null ? mergeRequestsPT.size() : 0;
+					}).orElse(0);
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
 			if (repoToolUserDetails.isPresent() && repo != null) {
@@ -331,6 +338,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 				: Optional.empty();
 		if (optionalDataCount.isPresent()) {
 			DataCount updatedDataCount = optionalDataCount.get();
+			updatedDataCount.getHoverValue().put(MR_COUNT,
+					((Number) updatedDataCount.getHoverValue().get(MR_COUNT)).longValue() + mrCount);
 			updatedDataCount.setValue(((Number) updatedDataCount.getValue()).longValue() + value);
 			dataCounts.set(dataCounts.indexOf(optionalDataCount.get()), updatedDataCount);
 		} else {
