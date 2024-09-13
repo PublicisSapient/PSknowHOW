@@ -1,5 +1,7 @@
 [{
   "projectName": "Test Project 1",
+  "projectNodeId" : "project_unique_001",
+  "projectDisplayName" : "Test Project 1",
   "createdAt": "2022-08-08T09:30:32",
   "kanban": true,
   "hierarchy": [
@@ -9,6 +11,7 @@
         "hierarchyLevelId": "hierarchyLevel1Id",
         "hierarchyLevelName": "hierarchyLevel1Name"
       },
+      "orgHierarchyNodeId": "hL1ValueNodeId1",
       "value": "hierarchyLevel1Value1"
     },
     {
@@ -17,6 +20,7 @@
         "hierarchyLevelId": "hierarchyLevel2Id",
         "hierarchyLevelName": "hierarchyLevel2Name"
       },
+      "orgHierarchyNodeId": "hL2ValueNodeId1",
       "value": "hierarchyLevel2Value1"
     },
     {
@@ -25,6 +29,7 @@
         "hierarchyLevelId": "hierarchyLevel3Id",
         "hierarchyLevelName": "hierarchyLevel3Name"
       },
+      "orgHierarchyNodeId": "hL3ValueNodeId1",
       "value": "hierarchyLevel3Value1"
     }
   ]
