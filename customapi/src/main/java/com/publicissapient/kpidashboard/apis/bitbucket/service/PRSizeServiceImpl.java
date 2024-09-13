@@ -309,7 +309,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 				: Optional.empty();
 		if (optionalDataCount.isPresent()) {
 			DataCount updatedDataCount = optionalDataCount.get();
-			updatedDataCount.setValue(((Number) updatedDataCount.getValue()).longValue() + value);
+			updatedDataCount.getHoverValue().put(MR_COUNT,
+					((Number) updatedDataCount.getHoverValue().get(MR_COUNT)).longValue() + mrCount);
 			dataCounts.set(dataCounts.indexOf(optionalDataCount.get()), updatedDataCount);
 		} else {
 			DataCount dataCount = new DataCount();
