@@ -16,16 +16,16 @@ import static org.mockito.Mockito.mock;
 
 public class HierarchyValueDTOTest {
     /**
-     * Method under test: {@link HierarchyValueDTO#canEqual(Object)}
+     * Method under test: {@link HierarchyValueDTO#equals(Object)}
      */
     @Test
     public void testCanEqual() {
-        assertFalse((new HierarchyValueDTO()).canEqual("Other"));
-        assertFalse((new HierarchyValueDTO()).canEqual("Other"));
+        assertFalse((new HierarchyValueDTO()).equals("Other"));
+        assertFalse((new HierarchyValueDTO()).equals("Other"));
     }
 
     /**
-     * Method under test: {@link HierarchyValueDTO#canEqual(Object)}
+     * Method under test: {@link HierarchyValueDTO#equals(Object)}
      */
     @Test
     public void testCanEqual2() {
@@ -39,11 +39,11 @@ public class HierarchyValueDTOTest {
         HierarchyValueDTO hierarchyValueDTO1 = new HierarchyValueDTO();
         hierarchyValueDTO1.setHierarchyLevel(hierarchyLevelDTO);
         hierarchyValueDTO1.setValue("42");
-        assertTrue(hierarchyValueDTO.canEqual(hierarchyValueDTO1));
+        assertTrue(hierarchyValueDTO.equals(hierarchyValueDTO1));
     }
 
     /**
-     * Method under test: {@link HierarchyValueDTO#canEqual(Object)}
+     * Method under test: {@link HierarchyValueDTO#equals(Object)}
      */
     @Test
     public void testCanEqual3() {
@@ -57,7 +57,7 @@ public class HierarchyValueDTOTest {
         HierarchyValueDTO hierarchyValueDTO1 = new HierarchyValueDTO();
         hierarchyValueDTO1.setHierarchyLevel(hierarchyLevelDTO);
         hierarchyValueDTO1.setValue("42");
-        assertTrue(hierarchyValueDTO.canEqual(hierarchyValueDTO1));
+        assertTrue(hierarchyValueDTO.equals(hierarchyValueDTO1));
     }
 
     /**

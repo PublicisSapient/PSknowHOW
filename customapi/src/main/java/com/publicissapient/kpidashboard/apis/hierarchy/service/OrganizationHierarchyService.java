@@ -1,8 +1,8 @@
-package com.publicissapient.kpidashboard.common.service;
-
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+package com.publicissapient.kpidashboard.apis.hierarchy.service;
 
 import java.util.List;
+
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
 public interface OrganizationHierarchyService {
 

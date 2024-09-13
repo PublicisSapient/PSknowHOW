@@ -40,11 +40,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.TreeSet;
 
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
-import com.publicissapient.kpidashboard.common.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -86,10 +85,7 @@ import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecution
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
@@ -123,9 +119,6 @@ public class ProjectBasicConfigServiceImplTest {
 	private MockMvc mockMvc;
 	@InjectMocks
 	private ProjectBasicConfigServiceImpl projectBasicConfigServiceImpl;
-
-	@Mock
-	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
 
 	@Mock
 	private ContextAwarePolicyEnforcement policy;
@@ -291,6 +284,7 @@ public class ProjectBasicConfigServiceImplTest {
 	@Test
 	public void addConfigTest_projectNameAlreadyExist_failure() {
 		when(basicConfigRepository.findByProjectName(any(String.class))).thenReturn(basicConfig);
+		when(basicConfigRepository.findByProjectNodeId(any())).thenReturn(basicConfig);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
@@ -301,6 +295,7 @@ public class ProjectBasicConfigServiceImplTest {
 	@Test
 	public void addConfigTest_saveOperation_failure() {
 		when(basicConfigRepository.findByProjectName(any())).thenReturn(basicConfig);
+		when(basicConfigRepository.findByProjectNodeId(any())).thenReturn(basicConfig);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
