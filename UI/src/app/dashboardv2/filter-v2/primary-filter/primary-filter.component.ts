@@ -200,7 +200,6 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   }
 
   applyPrimaryFilters(event) {
-    console.log(this.selectedFilters)
     if (!Array.isArray(this.selectedFilters)) {
       this.selectedFilters = [this.selectedFilters];
     }
