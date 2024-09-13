@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -111,7 +112,7 @@ public class ConfigHelperService {
 
 		projectList.forEach(projectConfig -> {
 			//AN: This is to make sure UI doesn't break, to be removed after migration
-			if(StringUtils.isNotEmpty(projectConfig.getProjectNodeId())) {
+			if(CollectionUtils.isEmpty(projectConfig.getHierarchy())) {
 				projectConfig.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
 			}
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
