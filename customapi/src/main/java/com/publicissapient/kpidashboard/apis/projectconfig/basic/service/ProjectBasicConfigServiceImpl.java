@@ -196,6 +196,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			if (accessRoleOfParent == null) {
 
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
+				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
@@ -205,6 +206,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
+				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
@@ -266,7 +268,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	public ServiceResponse updateBasicConfig(String basicConfigId, ProjectBasicConfigDTO projectBasicConfigDTO) {
 		ServiceResponse response;
 		Optional<ProjectBasicConfig> savedConfigOpt = basicConfigRepository.findById(new ObjectId(basicConfigId));
-		//todo remove projectName condition
+		//HB : todo remove projectName condition
 		ProjectBasicConfig diffIdSameName = basicConfigRepository
 				.findByProjectNameAndIdNot(projectBasicConfigDTO.getProjectName(), new ObjectId(basicConfigId));
 		if (savedConfigOpt.isPresent()) {
@@ -296,9 +298,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
-				basicConfig.setHierarchy(null); // todo remove Check Testing purpose only added
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
-				updateCacheProjectBasicConfig(updatedBasicConfig);
+				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
 			} else {
 				response = new ServiceResponse(false, "Try with different project name.", null);
@@ -846,12 +847,5 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					return hierarchyLevel;
 				})
 				.orElse(null);
-	}
-
-	private void updateCacheProjectBasicConfig(ProjectBasicConfig projectBasicConfig){
-		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
-				.cacheProjectConfigMapData();
-		basicConfigMap.put(projectBasicConfig.getId().toHexString(), projectBasicConfig);
-
 	}
 }

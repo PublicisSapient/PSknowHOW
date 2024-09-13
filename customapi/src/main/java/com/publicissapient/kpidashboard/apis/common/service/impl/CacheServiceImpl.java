@@ -118,10 +118,21 @@ public class CacheServiceImpl implements CacheService {
 	@Cacheable(CommonConstant.CACHE_PROJECT_CONFIG_MAP)
 	@Override
 	public Object cacheProjectConfigMapData() {
-		log.info("updating Project Config Cache");
+		log.info("Creating Project Config Cache");
 		configHelperService.loadConfigData();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 
+	}
+
+	/**
+	 * this method will be current updated map store in cache
+	 * @return
+	 */
+	@Cacheable(CommonConstant.CACHE_PROJECT_CONFIG_MAP)
+	@Override
+	public Object updateCacheProjectConfigMapData() {
+		log.info("updating Project Config Cache");
+		return configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 	}
 
 	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_MAP)

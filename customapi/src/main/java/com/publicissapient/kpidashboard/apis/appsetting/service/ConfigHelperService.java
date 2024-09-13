@@ -333,4 +333,14 @@ public class ConfigHelperService {
 		log.debug("loading cache organization Hierarchies");
 		return organizationHierarchyRepository.findAll();
 	}
+
+	/**
+	 * this method will update projectConfigMap and update cache object
+	 * 
+	 * @param projectBasicConfig
+	 */
+	public void updateCacheProjectBasicConfig(ProjectBasicConfig projectBasicConfig) {
+		projectConfigMap.put(projectBasicConfig.getId().toString(), projectBasicConfig);
+		cacheService.updateCacheProjectConfigMapData();
+	}
 }
