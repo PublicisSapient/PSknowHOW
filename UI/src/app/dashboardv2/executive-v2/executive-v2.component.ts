@@ -121,7 +121,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
+    // this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
+    //   this.noFilterApplyData = false;
+    //   this.kpiLoader = new Set();
+    //   this.immediateLoader = true;
+    //   this.processedKPI11Value = {};
+    //   this.selectedBranchFilter = 'Select';
+    //   this.serviceObject = {};
+    //   this.selectedtype = data.selectedType;
+    //   this.selectedTab = data.selectedTab;
+    //   this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+    // }));
+
+
+    this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();
       this.immediateLoader = true;
@@ -129,8 +142,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedBranchFilter = 'Select';
       this.serviceObject = {};
       this.selectedtype = data.selectedType;
-      this.selectedTab = data.selectedTab;
+      // this.selectedTab = data.selectedTab;
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+    }));
+
+    this.subscriptions.push(this.service.onTabSwitch.subscribe((data) => {
+      this.noFilterApplyData = false;
+      this.kpiLoader = new Set();
+      this.immediateLoader = true;
+      this.processedKPI11Value = {};
+      this.selectedBranchFilter = 'Select';
+      this.serviceObject = {};
+      // this.selectedtype = data.selectedType;
+      this.selectedTab = data.selectedBoard;
+      // this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
@@ -251,18 +276,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   click apply and call kpi
    **/
   receiveSharedData($event) {
-    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false
+    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelName'] === 'project' ? true : false
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
       if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {
         this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
       }
     }
-    if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
+    if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
 
-      this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
+      this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
       const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName.toLowerCase() === 'release')[0];
       const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
       this.releaseEndDate = endDate;

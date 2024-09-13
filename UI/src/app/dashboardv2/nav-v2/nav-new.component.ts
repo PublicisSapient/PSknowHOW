@@ -70,7 +70,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
         const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
         data[this.selectedType].forEach((board) => {
           if (board?.filters) {
-            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
+            if (levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0]) {
+              board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
+            }
             if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
               board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
             }
@@ -80,7 +82,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
             if (board.boardSlug !== 'developer') {
               board.filters.additionalFilters.forEach(element => {
-                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
+                if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
+                  element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
+                }
               });
             }
           }
@@ -99,7 +103,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         });
         data['configDetails'] = response.data.configDetails;
         if (!this.deepEqual(this.dashConfigData, data)) {
-          this.sharedService.setDashConfigData(data);
+          // this.sharedService.setDashConfigData(data);
           this.dashConfigData = data;
         }
 
@@ -115,7 +119,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
-          if (res.data) {          
+          if (res.data) {
             localStorage.setItem('completeHierarchyData', JSON.stringify(res.data));
             this.setBoards(response);
           }
@@ -127,7 +131,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
   handleMenuTabFunctionality(obj) {
     this.selectedTab = obj['boardSlug'];
     if (this.selectedTab !== 'unauthorized access') {
-      this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+      // this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+      this.sharedService.setSelectedBoard(this.selectedTab);
     }
     if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
       || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {

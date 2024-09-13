@@ -31,11 +31,15 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) ||
-      ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
-        (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
-      // (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
-      this.applyDefaultFilters();
+    if (this['primaryFilterConfig'] && Object.keys(this['primaryFilterConfig']).length) {
+      if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) ||
+        ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
+          (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
+        // (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
+        this.applyDefaultFilters();
+        return;
+      }
+    } else {
       return;
     }
     this.selectedFilters = [];
@@ -183,15 +187,17 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         }
       }
     } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
+      let selectedLevel = this.selectedLevel.emittedLevel;
+      selectedLevel = selectedLevel[0].toUpperCase() + selectedLevel.slice(1);
       // check for iterations and releases
       if (this.primaryFilterConfig['defaultLevel'].sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
-          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
+          this.filters = this.helperService.sortByField(this.filterData[selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
         } else {
-          this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy]);
+          this.filters = this.helperService.sortByField(this.filterData[selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy]);
         }
       } else {
-        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
+        this.filters = this.helperService.sortAlphabetically(this.filterData[selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId));
       }
     } else {
       this.selectedLevel = 'Project';
