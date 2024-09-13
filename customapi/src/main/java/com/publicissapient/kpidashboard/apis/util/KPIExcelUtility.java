@@ -38,15 +38,13 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.google.common.collect.Sets;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.jira.scrum.service.CommittmentReliabilityServiceImpl;
@@ -61,6 +59,7 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.apis.model.MeanTimeRecoverData;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterValue;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
@@ -289,7 +288,7 @@ public class KPIExcelUtility {
 	 * @param kpiId
 	 */
 	public static void populateDefectRelatedExcelData(String sprint, List<JiraIssue> jiraIssues,
-			List<KPIExcelData> kpiExcelData, String kpiId) {
+			List<KPIExcelData> kpiExcelData, String kpiId, CustomApiConfig customApiConfig) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.stream().forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
@@ -300,7 +299,35 @@ public class KPIExcelUtility {
 				defectIdDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
 				excelData.setDefectId(defectIdDetails);
 				if (kpiId.equalsIgnoreCase(KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId())) {
-					excelData.setPriority(jiraIssue.getPriority());
+					List<String> priorities;
+					String priority;
+					if (StringUtils.containsIgnoreCase(
+							customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(),
+							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+						priorities = Arrays.asList("P1 - Blocker", "p1");
+						priority = Constant.P1;
+						setIssuePriority(jiraIssue, excelData, priorities, priority);
+					} else if (StringUtils.containsIgnoreCase(
+							customApiConfig.getpriorityP2().replaceAll(Constant.WHITESPACE, "").trim(),
+							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+						priorities = Arrays.asList("P2 - Critical", "p2");
+						priority = Constant.P2;
+						setIssuePriority(jiraIssue, excelData, priorities, priority);
+					} else if (StringUtils.containsIgnoreCase(
+							customApiConfig.getpriorityP3().replaceAll(Constant.WHITESPACE, "").trim(),
+							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+						priorities = Arrays.asList("P3 - Major", "p3");
+						priority = Constant.P3;
+						setIssuePriority(jiraIssue, excelData, priorities, priority);
+					} else if (StringUtils.containsIgnoreCase(
+							customApiConfig.getpriorityP4().replaceAll(Constant.WHITESPACE, "").trim(),
+							jiraIssue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+						priorities = Arrays.asList("P4 - Minor", "p4");
+						priority = Constant.P4;
+						setIssuePriority(jiraIssue, excelData, priorities, priority);
+					} else {
+						excelData.setPriority(Constant.MISC + "- " + jiraIssue.getPriority());
+					}
 				}
 				if (kpiId.equalsIgnoreCase(KPICode.DEFECT_COUNT_BY_RCA.getKpiId())) {
 					excelData.setRootCause(jiraIssue.getRootCauseList());
@@ -308,6 +335,15 @@ public class KPIExcelUtility {
 
 				kpiExcelData.add(excelData);
 			});
+		}
+	}
+
+	private static void setIssuePriority(JiraIssue jiraIssue, KPIExcelData excelData, List<String> priorities,
+			String priority) {
+		if (priorities.contains(jiraIssue.getPriority())) {
+			excelData.setPriority(jiraIssue.getPriority());
+		} else {
+			excelData.setPriority(priority + "- " + jiraIssue.getPriority());
 		}
 	}
 
@@ -639,7 +675,7 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateSprintCapacity(String sprintName, List<JiraIssue> totalStoriesList,
-											  List<KPIExcelData> kpiExcelData, Map<String, Double> loggedTimeIssueMap) {
+			List<KPIExcelData> kpiExcelData, Map<String, Double> loggedTimeIssueMap) {
 		if (CollectionUtils.isNotEmpty(totalStoriesList)) {
 			totalStoriesList.forEach(issue -> {
 
@@ -651,7 +687,8 @@ public class KPIExcelUtility {
 				excelData.setIssueDesc(checkEmptyName(issue));
 				setSquads(excelData, issue);
 				String daysEstimated = "0.0";
-				excelData.setTotalTimeSpent(String.valueOf(roundingOff(loggedTimeIssueMap.getOrDefault(issue.getNumber(),0d))));
+				excelData.setTotalTimeSpent(
+						String.valueOf(roundingOff(loggedTimeIssueMap.getOrDefault(issue.getNumber(), 0d))));
 
 				if (issue.getAggregateTimeOriginalEstimateMinutes() != null
 						&& issue.getAggregateTimeOriginalEstimateMinutes() > 0) {
@@ -1024,6 +1061,9 @@ public class KPIExcelUtility {
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
+				Map<String, String> mergeUrl = new HashMap<>();
+				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
+				excelData.setMergeRequestUrl(mergeUrl);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -1039,14 +1079,15 @@ public class KPIExcelUtility {
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
-				excelData.setPickupTime(repoToolValidationData.getPickupTime().toString());
+				excelData.setPickupTime(String.format("%.2f", repoToolValidationData.getPickupTime()));
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
 				kpiExcelData.add(excelData);
 			});
 		}
 	}
 
-	public static void populatePRSizeExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+	public static void populatePRSizeExcelData(List<RepoToolValidationData> repoToolValidationDataList,
+			List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
 				KPIExcelData excelData = new KPIExcelData();
@@ -1062,8 +1103,8 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateReworkRateExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
-
+	public static void populateReworkRateExcelData(List<RepoToolValidationData> repoToolValidationDataList,
+			List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
 				KPIExcelData excelData = new KPIExcelData();
@@ -1072,15 +1113,14 @@ public class KPIExcelUtility {
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
-				excelData.setReworkRate(repoToolValidationData.getReworkRate());
-				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				excelData.setReworkRate(String.format("%.2f", repoToolValidationData.getReworkRate()));
 				kpiExcelData.add(excelData);
 			});
 		}
-
 	}
 
-	public static void populateCodeCommit(List<RepoToolValidationData>repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+	public static void populateCodeCommit(List<RepoToolValidationData> repoToolValidationDataList,
+			List<KPIExcelData> kpiExcelData) {
 
 		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
@@ -2057,7 +2097,8 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateReleasePlanExcelData(List<JiraIssue> jiraIssues, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+	public static void populateReleasePlanExcelData(List<JiraIssue> jiraIssues, List<KPIExcelData> kpiExcelData,
+			FieldMapping fieldMapping) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
@@ -2080,9 +2121,8 @@ public class KPIExcelUtility {
 							roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
 									+ roundingOff(totalOriginalEstimate) + " hrs");
 				}
-				excelData.setDueDate(
-						(StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
-								jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
+				excelData.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
+						jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
 				kpiExcelData.add(excelData);
 			});
 		}

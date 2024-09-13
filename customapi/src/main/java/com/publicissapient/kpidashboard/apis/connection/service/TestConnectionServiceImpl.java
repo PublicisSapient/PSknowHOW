@@ -251,9 +251,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-			} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
-				isValid = testConnectionForRepoTools(apiUrl, password, connection);
-				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			} else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
@@ -262,15 +259,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return statusCode;
 	}
 
-	private boolean testConnectionForRepoTools(String apiUrl, String password, Connection connection) {
-
-		if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
-			return testConnectionForGitHub(apiUrl, connection.getUsername(), password);
-		else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET))
-			return testConnection(connection, Constant.TOOL_BITBUCKET, apiUrl, password, false);
-		else
-			return testConnectionForTools(apiUrl, password);
-	}
 
 	private boolean testConnectionForGitHub(String apiUrl, String username, String password) {
 

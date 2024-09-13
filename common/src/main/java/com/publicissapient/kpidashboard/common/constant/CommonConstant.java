@@ -195,7 +195,6 @@ public final class CommonConstant {
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
-	public static final String REPO_TOOLS = "RepoTool";
     public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
 	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
@@ -235,6 +234,7 @@ public final class CommonConstant {
 	public static final String JIRASTORYIDENTIFICATIONKPI129="jiraStoryIdentificationKPI129";
 	public static final String JIRASTORYIDENTIFICATIONKPI166="jiraStoryIdentificationKPI166";
 	public static final String JIRASTORYIDENTIFICATIONKPI40="jiraStoryIdentificationKpi40";
+	public static final String JIRASTORYCATEGORYKPI40="jiraStoryCategoryKpi40";
 	public static final String JIRA_STORY_IDENTIFICATION_KPI164="jiraStoryIdentificationKPI164";
 
 	public static final String STORYFIRSTSTATUSKPI148="storyFirstStatusKPI148";

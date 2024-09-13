@@ -33,6 +33,10 @@
   left: 10px;
 }
 
+::ng-deep .p-tieredmenu-overlay {
+  left: -100% !important;
+}
+
 div.main {
     width: calc(100% - 16px);
     margin: 8px;
@@ -53,4 +57,21 @@ div.main {
   }
   .col-head{
     word-break: break-word;
+  }
+
+  :host::ng-deep .p-dialog.field-mapping {
+    min-width: 90vw !important;
+    width: auto !important;
+    max-width: 90vw;
+    min-height: 20vh !important;
+  }
+
+  ::ng-deep .action-btns {
+    font-size: 14px;
+    text-wrap: nowrap;
+    color: #06a0ff;
+  }
+
+  ::ng-deep  .p-datatable.p-datatable-striped .p-datatable-tbody>tr>td {
+    word-break: normal;
   }

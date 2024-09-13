@@ -164,6 +164,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				}
 			});
 		}
+		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
 	}
 
 	@Override

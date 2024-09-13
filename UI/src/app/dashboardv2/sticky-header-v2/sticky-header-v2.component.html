@@ -1,0 +1,19 @@
+<div class="sticky-header">
+  <ng-container *ngFor="let field of fields | keyvalue">
+    <span class="text-container p-d-inline-block p-mr-2">{{ field.key }}:</span>
+    <span class="p-text-bold p-d-inline-block p-mr-3">{{ field.value }}</span>
+  </ng-container>
+  <div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3">
+    <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
+      <li class="selectedfilter" *ngFor="let item of objectKeys(colorObj); let i = index;">
+        <div class="selected-node" style="display: flex;flex-wrap: nowrap;">
+          <div class="selected-node-label p-pl-0" style="text-wrap: nowrap;" [title]="colorObj[item]?.nodeName">
+            <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"></span>
+            <span class="p-l-1">{{colorObj[item]?.labelName | uppercase}}: {{ colorObj[item]?.nodeName?.length<= 20 ?
+              colorObj[item]?.nodeName : colorObj[item]?.nodeName?.slice(0,20)+'...'}}</span>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

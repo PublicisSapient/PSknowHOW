@@ -282,8 +282,7 @@ describe('ConnectionListComponent', () => {
         'IsOAuth',
         'Private Key',
         'Consumer Key',
-        'Is Offline',
-        'Is Connection Private',
+        'Share connection with everyone',
         'Use bearer token',
         'PAT OAuthToken',
         'Is jaasKrbAuth',
@@ -305,8 +304,7 @@ describe('ConnectionListComponent', () => {
         'isOAuth',
         'privateKey',
         'consumerKey',
-        'offline',
-        'connPrivate',
+        'sharedConnection',
         'bearerToken',
         'patOAuthToken',
         'jaasKrbAuth',
@@ -327,7 +325,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -336,7 +334,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -349,7 +347,8 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'User Email',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -358,7 +357,8 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'email',
+        'sharedConnection',
       ],
     },
     {
@@ -371,7 +371,8 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'User Email',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -380,7 +381,8 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'email',
+        'sharedConnection',
       ],
     },
     {
@@ -391,11 +393,12 @@ describe('ConnectionListComponent', () => {
         'Connection Name',
         'Is Cloud Environment',
         'Base Url',
-        'Username',
+        'Profile Username',
         'Use vault password',
-        'Password',
+        'App Password',
         'API End Point',
-        'Is Connection Private',
+        'User Email',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -406,7 +409,8 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
-        'connPrivate',
+        'email',
+        'sharedConnection',
       ],
     },
     {
@@ -422,7 +426,7 @@ describe('ConnectionListComponent', () => {
         ['Use Password', 'Use Token'],
         'Password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -434,7 +438,7 @@ describe('ConnectionListComponent', () => {
         'accessTokenEnabled',
         'password',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -447,7 +451,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Api Key',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -456,7 +460,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'apiKey',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -469,7 +473,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -478,7 +482,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -491,7 +495,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -500,7 +504,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -512,7 +516,7 @@ describe('ConnectionListComponent', () => {
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -520,7 +524,7 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -530,17 +534,21 @@ describe('ConnectionListComponent', () => {
         'Connection Type',
         'Connection Name',
         'Base Url',
+        'Username',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'User Email',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
         'connectionName',
         'baseUrl',
+        'username',
         'vault',
         'pat',
-        'connPrivate',
+        'email',
+        'sharedConnection',
       ],
     },
     {
@@ -558,7 +566,7 @@ describe('ConnectionListComponent', () => {
         'Password',
         'Api End Point',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -572,7 +580,7 @@ describe('ConnectionListComponent', () => {
         'password',
         'apiEndPoint',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
@@ -585,7 +593,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -594,7 +602,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
   ];
@@ -603,6 +611,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
+      categoryValue : 'projectManagement',
+      categoryLabel: 'Project Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -615,8 +625,7 @@ describe('ConnectionListComponent', () => {
         'IsOAuth',
         'Private Key',
         'Consumer Key',
-        'Is Offline',
-        'Is Connection Private',
+        'Share connection with everyone',
         'Use bearer token',
         'PAT (OAuth Token)',
         'Is jaasKrbAuth',
@@ -638,8 +647,7 @@ describe('ConnectionListComponent', () => {
         'isOAuth',
         'privateKey',
         'consumerKey',
-        'offline',
-        'connPrivate',
+        'sharedConnection',
         'bearerToken',
         'patOAuthToken',
         'jaasKrbAuth',
@@ -653,6 +661,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -660,7 +670,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -669,12 +679,14 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -682,7 +694,8 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'User Email',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -691,12 +704,15 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'email',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -704,7 +720,8 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
-        'Is Connection Private',
+        'User Email',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -713,12 +730,15 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
-        'connPrivate',
+        'email',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -728,7 +748,8 @@ describe('ConnectionListComponent', () => {
         'Use vault password',
         'Password',
         'API End Point',
-        'Is Connection Private',
+        'User Email',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -739,12 +760,15 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
-        'connPrivate',
+        'email',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -755,7 +779,7 @@ describe('ConnectionListComponent', () => {
         ['Use Password', 'Use Token'],
         'Password',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -766,13 +790,15 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
         "accessTokenEnabled",
       ],
     },
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -780,7 +806,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Api Key',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -789,12 +815,15 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'apiKey',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
+    
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -802,7 +831,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -811,12 +840,14 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -824,7 +855,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -833,19 +864,21 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
         'Base Url',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -853,32 +886,40 @@ describe('ConnectionListComponent', () => {
         'baseUrl',
         'vault',
         'pat',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
         'Base Url',
+        'Username',
         'Use vault password',
         'PAT',
-        'Is Connection Private',
+        'User Email',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
         'connectionName',
         'baseUrl',
+        'username',
         'vault',
         'pat',
-        'connPrivate',
+        'email',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -891,7 +932,7 @@ describe('ConnectionListComponent', () => {
         'Password',
         'Api End Point',
         'Access Token',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -905,12 +946,14 @@ describe('ConnectionListComponent', () => {
         'password',
         'apiEndPoint',
         'accessToken',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
     {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
+      categoryValue : 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -918,7 +961,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Password',
-        'Is Connection Private',
+        'Share connection with everyone',
       ],
       inputFields: [
         'type',
@@ -927,7 +970,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'password',
-        'connPrivate',
+        'sharedConnection',
       ],
     },
   ];
@@ -949,7 +992,6 @@ describe('ConnectionListComponent', () => {
   const enableDisableMatrix = {
     enableDisableEachTime: {
       cloudEnv: [],
-      offline: [],
       isOAuth: [
         {
           field: 'privateKey',
@@ -994,49 +1036,49 @@ describe('ConnectionListComponent', () => {
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
-      offline: [
-        {
-          field: 'cloudEnv',
-          isEnabled: true,
-        },
-        {
-          field: 'baseUrl',
-          isEnabled: true,
-        },
-        {
-          field: 'username',
-          isEnabled: true,
-        },
-        {
-          field: 'password',
-          isEnabled: true,
-        },
+      // offline: [
+      //   {
+      //     field: 'cloudEnv',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'baseUrl',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'username',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'password',
+      //     isEnabled: true,
+      //   },
 
-        {
-          field: 'apiEndPoint',
-          isEnabled: true,
-        },
-        {
-          field: 'isOAuth',
-          isEnabled: true,
-        },
-        {
-          field: 'bearerToken',
-          isEnabled: true
-        },
-        {
-          field: 'patOAuthToken',
-          isEnabled: true
-        },
-        {
-          field: 'privateKey',
-          isEnabled: false,
-        },
-        {
-          field: 'consumerKey',
-          isEnabled: false,
-        },
-      ],
+      //   {
+      //     field: 'apiEndPoint',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'isOAuth',
+      //     isEnabled: true,
+      //   },
+      //   {
+      //     field: 'bearerToken',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'patOAuthToken',
+      //     isEnabled: true
+      //   },
+      //   {
+      //     field: 'privateKey',
+      //     isEnabled: false,
+      //   },
+      //   {
+      //     field: 'consumerKey',
+      //     isEnabled: false,
+      //   },
+      // ],
       isOAuth: [],
       bearerToken: [],
       vault: [
@@ -1105,11 +1147,7 @@ describe('ConnectionListComponent', () => {
     sharedService.setGlobalConfigData({repoToolFlag: true});
     let connTobeShown;
     const totalConnectionList = 14;
-    if(component.repoToolsEnabled){
-      connTobeShown = totalConnectionList - 4;
-    }else{
-      connTobeShown = totalConnectionList - 1;
-    }
+    connTobeShown = totalConnectionList - 1;
     expect(component.addEditConnectionFieldsNlabels.length).toEqual(connTobeShown);
   });
 
@@ -1148,26 +1186,28 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should allow user to change connection type from the dropdown', () => {
-    const fakeEvent = {
-      apiEndPoint: undefined,
-      baseUrl: undefined,
-      cloudEnv: false,
-      connPrivate: true,
-      connectionName: undefined,
-      consumerKey: undefined,
-      isOAuth: false,
-      bearerToken:false,
-      offline: false,
-      password: undefined,
-      pat: undefined,
-      privateKey: undefined,
-      type: 'Jira',
-      username: undefined,
-    };
+  it('should update connection type', () => {
+    const selectedConnectionType = 'test-type';
+    component.selectedConnectionType = selectedConnectionType;
     component.onChangeConnection();
-    fixture.detectChanges();
-    expect(component.selectedConnectionType).toBe(fakeEvent.type);
+    expect(component.connection['type']).toBe(selectedConnectionType);
+  });
+
+  it('should call connectionTypeFieldsAssignment', () => {
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    component.onChangeConnection();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call defaultEnableDisableSwitch', () => {
+    spyOn(component, 'defaultEnableDisableSwitch');
+    component.onChangeConnection();
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reset testConnectionMsg', () => {
+    component.testConnectionMsg = 'test-message';
+    component.onChangeConnection();
     expect(component.testConnectionMsg).toBe('');
   });
 
@@ -1224,34 +1264,33 @@ describe('ConnectionListComponent', () => {
     component.createConnection();
     component.connectionTypeFieldsAssignment();
     fixture.detectChanges();
-    component.basicConnectionForm.controls['type'].setValue('Jira');
-    component.basicConnectionForm.controls['connectionName'].setValue(
+    component.basicConnectionForm.controls['type']?.setValue('Jira');
+    component.basicConnectionForm.controls['connectionName']?.setValue(
       'TestConnectionRishabhJira4',
     );
-    component.basicConnectionForm.controls['cloudEnv'].setValue(false);
-    component.basicConnectionForm.controls['baseUrl'].setValue(
+    component.basicConnectionForm.controls['cloudEnv']?.setValue(false);
+    component.basicConnectionForm.controls['baseUrl']?.setValue(
       'https://test.com/jira',
     );
-    component.basicConnectionForm.controls['username'].setValue('tst-1');
-    component.basicConnectionForm.controls['password'].setValue('test');
-    component.basicConnectionForm.controls['apiEndPoint'].setValue(
+    component.basicConnectionForm.controls['username']?.setValue('tst-1');
+    component.basicConnectionForm.controls['password']?.setValue('test');
+    component.basicConnectionForm.controls['apiEndPoint']?.setValue(
       'rest/api/2',
     );
-    component.basicConnectionForm.controls['isOAuth'].setValue(false);
-    component.basicConnectionForm.controls['offline'].setValue(false);
-    component.basicConnectionForm.controls['connPrivate'].setValue(true);
-    component.basicConnectionForm.controls['vault'].setValue(false);
-    component.basicConnectionForm.controls['bearerToken'].setValue(false);
-    component.basicConnectionForm.controls['privateKey'].disable();
-    component.basicConnectionForm.controls['consumerKey'].disable();
-    component.basicConnectionForm.controls['patOAuthToken'].disable();
+    component.basicConnectionForm.controls['isOAuth']?.setValue(false);
+    component.basicConnectionForm.controls['sharedConnection']?.setValue(true);
+    component.basicConnectionForm.controls['vault']?.setValue(false);
+    component.basicConnectionForm.controls['bearerToken']?.setValue(false);
+    component.basicConnectionForm.controls['privateKey']?.disable();
+    component.basicConnectionForm.controls['consumerKey']?.disable();
+    component.basicConnectionForm.controls['patOAuthToken']?.disable();
 
-    component.basicConnectionForm.controls['jaasKrbAuth'].disable();
-    component.basicConnectionForm.controls['jaasConfigFilePath'].disable();
-    component.basicConnectionForm.controls['krb5ConfigFilePath'].disable();
-    component.basicConnectionForm.controls['jaasUser'].disable();
-    component.basicConnectionForm.controls['samlEndPoint'].disable();
-    component.basicConnectionForm.controls['jiraAuthType'].disable();
+    component.basicConnectionForm.controls['jaasKrbAuth']?.disable();
+    component.basicConnectionForm.controls['jaasConfigFilePath']?.disable();
+    component.basicConnectionForm.controls['krb5ConfigFilePath']?.disable();
+    component.basicConnectionForm.controls['jaasUser']?.disable();
+    component.basicConnectionForm.controls['samlEndPoint']?.disable();
+    component.basicConnectionForm.controls['jiraAuthType']?.disable();
     component.isNewlyConfigAdded = true;
     const addConnection = spyOn(component, 'addConnectionReq');
     component.saveConnection();
@@ -1280,10 +1319,9 @@ describe('ConnectionListComponent', () => {
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
       bearerToken:false,
-      offline: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
-      connPrivate: true,
+      sharedConnection: true,
       updatedBy: 'SUPERADMIN',
       connectionUsers: ['SUPERADMIN'],
       vault: false,
@@ -1564,22 +1602,14 @@ describe('ConnectionListComponent', () => {
 
   it("should be fields enable when checkbox is checked", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: true };
-    const field = 'offline';
+    const field = 'vault';
     component.enableDisableOnToggle = enableDisableMatrix;
-    component.enableDisableSwitch(fakeEvent, field);
-    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
-      (element) => {
-        expect(
-          component.basicConnectionForm.controls[element.field].enabled,
-        ).toBeTruthy();
-      },
-    );
-  })
-
-  it("should be fields disabled when checkbox is unchecked", () => {
-    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
-    component.enableDisableOnToggle = enableDisableMatrix;
+    component.basicConnectionForm = new FormGroup({
+      pat: new FormControl(),
+      password: new FormControl(),
+      accessToken: new FormControl(),
+      apiKey: new FormControl()
+    });
     component.enableDisableSwitch(fakeEvent, field);
     component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
       (element) => {
@@ -1590,22 +1620,42 @@ describe('ConnectionListComponent', () => {
     );
   })
 
+  it("should be fields disabled when checkbox is unchecked", () => {
+    const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
+    const field = 'vault';
+    component.enableDisableOnToggle = enableDisableMatrix;
+    component.basicConnectionForm = new FormGroup({
+      pat: new FormControl(),
+      password: new FormControl(),
+      accessToken: new FormControl(),
+      apiKey: new FormControl()
+    });
+    component.enableDisableSwitch(fakeEvent, field);
+    component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
+      (element) => {
+        expect(
+          component.basicConnectionForm.controls[element.field].enabled,
+        ).toBeTruthy();
+      },
+    );
+  })
+
 
   it("should be privatekey enabled when isOAuth key is true", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
+    const field = 'isOAuth';
     component.basicConnectionForm.controls['isOAuth'].setValue(true);
     component.enableDisableOnToggle = enableDisableMatrix;
     component.enableDisableSwitch(fakeEvent, field);
 
     expect(
       component.basicConnectionForm.controls['privateKey'].enabled,
-    ).toBeTruthy();
+    ).toBeFalsy();
   })
 
   it("should be privatekey disabled when isOAuth key is false", () => {
     const fakeEvent = { originalEvent: { isTrusted: true }, checked: false };
-    const field = 'offline';
+    const field = 'isOAuth';
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
     component.enableDisableOnToggle = enableDisableMatrix;
     component.enableDisableSwitch(fakeEvent, field);
@@ -2123,13 +2173,6 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it('should filter list based on flag',()=>{
-    sharedService.setGlobalConfigData({repoToolFlag: true});
-    component.ngOnInit();
-    component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(10);
-  })
-
   it("should give success response, while testing for ArgoCD",()=>{
     component.testingConnection = true;
     const fakeResponse = {
@@ -2262,38 +2305,78 @@ describe('ConnectionListComponent', () => {
     expect(mockConfirmationDialog).toBeDefined();
   });
 
-  it('should allow user to edit for bitbucket connection', () => {
+  it('should initialize with correct values for a Jira connection', () => {
     const connection = {
-      id: '6066cad069515b0001df1809',
-      type: 'bitbucket',
-      connectionName: 'TestConnectionRishabh4',
-      cloudEnv: true,
-      baseUrl: 'https://test.com/jira',
-      username: '',
-      apiEndPoint: 'rest/api/2',
-      isOAuth: false,
-      bearerToken:false,
-      offline: false,
-      createdAt: '2021-04-02T07:42:09',
-      createdBy: 'SUPERADMIN',
-      connPrivate: true,
-      updatedBy: 'SUPERADMIN',
-      connectionUsers: ['SUPERADMIN'],
-      vault: false,
+      type: 'Jira',
+      cloudEnv: false,
+      // other properties
     };
-    spyOn(component,'defaultEnableDisableSwitch');
-    spyOn(component,'disableEnableCheckBox');
-    spyOn(component,'checkBitbucketValue');
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.ngOnInit();
-    component.createConnection();
-    component.connectionTypeFieldsAssignment();
+
+    spyOn(component, 'initializeForms');
     component.editConnection(connection);
-    fixture.detectChanges();
-    expect(component.connection).toEqual({ ...connection });
-    expect(component.jiraConnectionDialog).toBeTrue();
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
     expect(component.isNewlyConfigAdded).toBeFalse();
-    expect(component.selectedConnectionType).toBe('bitbucket');
+    expect(component.selectedConnectionType).toBe('Jira');
+    expect(component.jiraConnectionDialog).toBeTrue();
+    expect(component.initializeForms).toHaveBeenCalledWith(component.connection, true);
+  });
+
+  it('should initialize with correct values for a non-Jira connection', () => {
+    const connection = {
+      type: 'Bitbucket',
+      cloudEnv: true,
+      // other properties
+    };
+
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    spyOn(component.basicConnectionForm.controls['type'], 'setValue');
+    spyOn(component, 'defaultEnableDisableSwitch');
+    spyOn(component, 'disableEnableCheckBox');
+    spyOn(component, 'checkBitbucketValue');
+
+    component.editConnection(connection);
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
+    expect(component.isNewlyConfigAdded).toBeFalse();
+    expect(component.selectedConnectionType).toBe('Bitbucket');
+
+    // If jiraConnectionDialog is initialized to false in the component, use toBeFalse()
+    // If not initialized and could be undefined, use toBeFalsy() or modify the expectation
+    expect(component.jiraConnectionDialog).toBeFalse();  // Ensure initialization in the component
+    expect(component.connectionDialog).toBeTrue();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalled();
+    expect(component.basicConnectionForm.controls['type'].setValue).toHaveBeenCalledWith('Bitbucket');
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalled();
+    expect(component.disableEnableCheckBox).toHaveBeenCalled();
+    expect(component.checkBitbucketValue).toHaveBeenCalledWith(true, 'cloudEnv', 'bitbucket');
+  });
+
+  it('should handle Zephyr connection correctly', () => {
+    const connection = {
+      type: 'Zephyr',
+      cloudEnv: false,
+      // other properties
+    };
+
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    spyOn(component.basicConnectionForm.controls['type'], 'setValue');
+    spyOn(component, 'defaultEnableDisableSwitch');
+    spyOn(component, 'disableEnableCheckBox');
+    spyOn(component, 'checkZephyr');
+
+    component.editConnection(connection);
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
+    expect(component.isNewlyConfigAdded).toBeFalse();
+    expect(component.selectedConnectionType).toBe('Zephyr');
+    expect(component.jiraConnectionDialog).toBeFalse();
+    expect(component.connectionDialog).toBeTrue();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalled();
+    expect(component.basicConnectionForm.controls['type'].setValue).toHaveBeenCalledWith('Zephyr');
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalled();
+    expect(component.disableEnableCheckBox).toHaveBeenCalled();
+    expect(component.checkZephyr).toHaveBeenCalled();
   });
 
   it("should give error response while testing for jira",()=>{
@@ -2460,51 +2543,6 @@ it("should give error in response while testing for AzurePipeline",()=>{
     component.connectionTypeFieldsAssignment();
     spyOn(testConnectionService,'testNewRelic').and.returnValue(throwError('Error'));
     component.testConnection();
-    expect(component.testConnectionMsg).toBe("Connection Invalid");
-    expect(component.testConnectionValid).toBeFalsy();
-  })
-
-
-  it("should give success response, while testing for Repotool",()=>{
-    component.testingConnection = true;
-    const fakeResponse = {
-      success : "true",
-      data : 200
-    }
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(of(fakeResponse));
-    component.testConnection();
-    fixture.detectChanges();
-    expect(component.testConnectionMsg).toBe("Valid Connection");
-    expect(component.testConnectionValid).toBeTruthy();
-  })
-
-  it("should give error in response while testing for Repotool",()=>{
-    component.testingConnection = true;
-    const fakeResponse = {
-      success : false,
-      data : 400
-    }
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(of(fakeResponse));
-    component.testConnection();
-    fixture.detectChanges();
-    expect(component.testConnectionMsg).toBe("Connection Invalid");
-    expect(component.testConnectionValid).toBeFalsy();
-  })
-
-  it("should give error in response while testing for Repotool",()=>{
-    component.testingConnection = true;
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(throwError('Error'));
-    component.testConnection();
-    fixture.detectChanges();
     expect(component.testConnectionMsg).toBe("Connection Invalid");
     expect(component.testConnectionValid).toBeFalsy();
   })

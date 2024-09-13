@@ -59,6 +59,7 @@ import { ManageAssigneeComponent } from './manage-assignee/manage-assignee.compo
 import { RatingComponent } from './rating/rating.component';
 import { CapacityPlanningComponent } from './capacity-planning/capacity-planning.component';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ScrollTopModule } from 'primeng/scrolltop';
 
 @NgModule({
   imports: [
@@ -91,7 +92,8 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     DialogModule,
     TabViewModule,
     AutoCompleteModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    ScrollTopModule
   ],
   declarations: [
     ConfigComponent,

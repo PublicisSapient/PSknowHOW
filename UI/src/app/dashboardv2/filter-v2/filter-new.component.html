@@ -1,3 +1,4 @@
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="filter-container p-m-0 p-fluid">
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
@@ -10,7 +11,7 @@
     </div>
   </div>
   <div class="p-d-flex p-jc-center p-pl-0 p-pr-0 primary-filter-container" *ngIf="filterDataArr[selectedType]">
-    <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2"
+    <app-parent-filter *ngIf="objectKeys(parentFilterConfig).length" class="p-mr-2"
       [filterData]="filterDataArr[selectedType]" [selectedTab]="selectedTab"
       (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType"
       [selectedTab]="selectedTab" [parentFilterConfig]="parentFilterConfig"></app-parent-filter>
@@ -24,14 +25,14 @@
     </ng-container>
   </div>
 </div>
-<div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3">
+<div class="selected-filter-container p-d-flex p-jc-between p-pl-3 p-pr-3" *ngIf="!noSprint">
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
-    <ng-container *ngIf="getObjectKeys(colorObj).length">
-      <ng-container *ngFor="let item of getObjectKeys(colorObj); let i = index;">
+    <ng-container *ngIf="objectKeys(colorObj).length">
+      <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
         <li class="selectedfilter p-mr-3">
           <div class="selected-node">
-            <div class="selected-node-label p-pl-0">
-              <span class="align-list-marker" [title]="colorObj[item]?.nodeName"
+            <div class="selected-node-label p-pl-0" [title]="colorObj[item]?.nodeName">
+              <span class="align-list-marker" 
                 [ngStyle]="{'background':colorObj[item]?.color}"></span>
               <span class="p-l-1">{{filterType | uppercase}} {{ colorObj[item]?.nodeName?.length<= 20 ?
                   colorObj[item]?.nodeName : colorObj[item]?.nodeName?.slice(0,20)+'...'}} <span class="remove-node"
@@ -72,24 +73,26 @@
         *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
         <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" />Syncing
       </span>
-      <span class="success-state p-p-2" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful"
+      <!-- <span class="success-state p-p-2" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful"
         (click)="onUpdateKPI()">
         <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update" />Update
-      </span>
+      </span> -->
     </div>
 
   </div>
   <div class="p-d-flex">
     <div class="view-tabs p-pl-2 p-pr-2"
       *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
-      <div>
+      <div aria-hidden="true" pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
+      tooltipStyleClass="tooltiptext">
         <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
         <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
           <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
           <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
         </label>
       </div>
-      <div>
+      <div aria-hidden="true" pTooltip="Table View" tooltipPosition="top" tooltipEvent="hover"
+      tooltipStyleClass="tooltiptext">
         <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'">
         <label class="label2" for="table-view" (click)="showChartToggle('table')" id="Layout-Table">
           <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
@@ -97,7 +100,7 @@
         </label>
       </div>
     </div>
-    <div class="show-hide-container"
+    <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
       *ngIf="selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release' && selectedTab !== 'dora' && selectedTab.toLowerCase() !== 'kpi-maturity'">
       <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
         <i class="pi pi-pause" style="font-size: 1rem"></i>
@@ -123,7 +126,7 @@
       </p-multiSelect>
     </div>
 
-    <div class="date-filter-container" *ngIf="kanban || selectedTab?.toLowerCase() === 'developer'">
+    <div class="date-filter-container cursor-pointer" *ngIf="kanban || selectedTab?.toLowerCase() === 'developer'">
       <!-- Date filter start -->
       <div class="position-relative">
         <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
@@ -139,8 +142,10 @@
               [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
           </div>
           <div class="p-d-flex p-justify-end p-align-center btn-container">
-            <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply"
+            <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply p-mr-1"
               (click)="applyDateFilter()"></button>
+              <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm btn-apply"
+              (click)="closeDateFilterModel()"></button>
           </div>
         </div>
       </div>

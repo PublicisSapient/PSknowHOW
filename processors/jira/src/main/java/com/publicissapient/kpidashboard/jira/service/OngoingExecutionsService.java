@@ -62,6 +62,7 @@ public class OngoingExecutionsService {
 			processorExecutionTraceLog.setProgressStatusList(new ArrayList<>()); // clear the prev record
 			processorExecutionTraceLog.setErrorMessage(null); // Clear the error message
 			processorExecutionTraceLog.setFailureLog(null); // Clear the failure log message
+			processorExecutionTraceLog.setErrorDetailList(new ArrayList<>());
 		}
 		log.info("ProjectId {} for processor {} executionOngoing to {} ", basicProjectConfigId, processorName ,
 				executionOngoing);

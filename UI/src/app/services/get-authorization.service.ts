@@ -54,7 +54,7 @@ export class GetAuthorizationService {
       if (projectAccess.role) {
         if (projectAccess.role === 'ROLE_PROJECT_VIEWER') {
           projectAccess.projects.forEach(project => {
-            if (project && project.projectId && (project.projectId === selectedProject.id || project.projectId === selectedProject.basicProjectConfigId)) {
+            if (project && project.projectId && (project.projectId === selectedProject?.id || project.projectId === selectedProject?.basicProjectConfigId)) {
               isViewer = true;
               return;
             }

@@ -110,6 +110,10 @@ public final class BitBucketConstants {
 
 	/** The Constant Next. */
 	public static final String NEXT = "next";
+	public static final String LINKS = "links";
+	public static final String HTML_LINK = "html";
+	public static final String HREF = "href";
+	public static final String SELF = "self";
 
 	/**
 	 * Instantiates a new bit bucket constants.

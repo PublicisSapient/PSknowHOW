@@ -34,7 +34,7 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() selectedToolConfig;
   @Input() thresholdUnit;
   @Output() reloadKPI = new EventEmitter();
-  disableSave = false;
+  //disableSave = false;
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -50,7 +50,7 @@ export class FieldMappingFormComponent implements OnInit {
   form: FormGroup;
   fieldMappingSectionList = [];
   formConfig: any;
-  isFormDirty : boolean = false;
+  //isFormDirty : boolean = false;
   historyList = [];
   showSpinner: boolean = false;
   isHistoryPopup : any = {};
@@ -78,7 +78,7 @@ private setting = {
     this.initializeForm();
     this.generateFieldMappingConfiguration();
     this.form.valueChanges.subscribe(()=>{
-     this.isFormDirty = true;
+     //this.isFormDirty = true;
     })
   }
 
@@ -93,9 +93,33 @@ private setting = {
         fieldMappingConfigration[field.section].push(field);
       }
     });
-    this.fieldMappingSectionList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-    this.formConfig = fieldMappingConfigration;
+   const sectionsInCorrectOrder = ["Custom Fields Mapping","Issue Types Mapping", "Defects Mapping","WorkFlow Status Mapping","Additional Filter Identifier","Project Level Threshold"]
+       const sectionsList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+       this.fieldMappingSectionList = this.getSectionsInCorrectOrder(sectionsList,sectionsInCorrectOrder)
+       this.formConfig = this.sortingOfFieldMapping(fieldMappingConfigration)
 
+  }
+
+  sortingOfFieldMapping(data) {
+    const sortedData = {};
+    for (const category in data) {
+      if (data.hasOwnProperty(category)) {
+        sortedData[category] = data[category].sort((a, b) => a?.fieldDisplayOrder - b?.fieldDisplayOrder);
+      }
+    }
+    return sortedData;
+  }
+
+  getSectionsInCorrectOrder(incorrectOrder, correctOrder) {
+    const orderMap = new Map();
+
+    // Create a map with the correct order
+    correctOrder.forEach((item, index) => {
+      orderMap.set(item, index);
+    });
+
+    // Sort the incorrect order list based on the correct order map
+    return incorrectOrder.sort((a, b) => orderMap.get(a) - orderMap.get(b));
   }
 
   initializeForm(){
@@ -244,6 +268,7 @@ private setting = {
 
   /** Once user select value and click on save then selected option will be populated on chip/textbox */
   saveDialog() {
+    const preSaveFormValueList = {...this.form.controls[this.selectedField].value}
     if (this.singleSelectionDropdown) {
       if (this.selectedValue.length) {
         this.form.controls[this.selectedField].setValue(this.selectedValue);
@@ -273,6 +298,14 @@ private setting = {
 
       this.form.controls[this.selectedField].setValue(Array.from(new Set(selectedMultiValueLabels)));
     }
+    //#region  DTS-39044 fix
+    const afterSaveFormValueList = {...this.form.controls[this.selectedField].value}
+    if(JSON.stringify(preSaveFormValueList) != JSON.stringify(afterSaveFormValueList)){
+      this.form.markAsDirty();
+      this.form.markAsTouched();
+      this.form.updateValueAndValidity();
+    }
+    //#endregion
     this.populateDropdowns = false;
     this.displayDialog = false;
   }
@@ -289,7 +322,7 @@ private setting = {
 
   /** Responsible for handle template popup */
   save() {
-    this.disableSave = true;
+    //this.disableSave = true;
     const finalList = [];
 
     this.formData.forEach(element => {
@@ -338,6 +371,11 @@ private setting = {
           severity: 'success',
           summary: 'Field Mappings submitted!!',
         });
+      //#region Bug:39044
+      this.form.markAsPristine();
+      this.form.markAsUntouched();
+      this.form.updateValueAndValidity();
+      //#endregion
         this.uploadedFileName = '';
         if(this.parentComp === 'kpicard'){
           this.reloadKPI.emit();
@@ -352,26 +390,6 @@ private setting = {
       }
     });
   }
-
-
-
-
-  private dyanmicDownloadByHtmlTag(arg: {
-    fileName: string;
-    text: string;
-  }) {
-    if (!this.setting.element.dynamicDownload) {
-      this.setting.element.dynamicDownload = document.createElement('a');
-    }
-    const element = this.setting.element.dynamicDownload;
-    const fileType = arg.fileName.indexOf('.json') > -1 ? 'text/json' : 'text/plain';
-    element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(arg.text)}`);
-    element.setAttribute('download', arg.fileName);
-
-    const event = new MouseEvent('click');
-    element.dispatchEvent(event);
-  }
-
 
 compareValues(originalValue: any, previousValue: any): boolean {
   if (typeof originalValue !== typeof previousValue) {
