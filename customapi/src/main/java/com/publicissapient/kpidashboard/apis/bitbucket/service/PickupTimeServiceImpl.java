@@ -154,8 +154,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 		ProjectFilter projectFilter = projectLeafNode.getProjectFilter();
-		ObjectId projectBasicConfigId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
-		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(projectBasicConfigId);
+		ObjectId projectBasicConfigId = projectFilter.getBasicProjectConfigId();
+		Map<String, List<Tool>> toolListMap = toolMap.get(projectBasicConfigId);
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
 				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration,
 				dataPoints, customApiConfig.getRepoToolPickupTimeUrl());
