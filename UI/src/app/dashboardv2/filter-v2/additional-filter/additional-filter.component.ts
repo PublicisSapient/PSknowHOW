@@ -196,16 +196,17 @@ export class AdditionalFilterComponent implements OnChanges {
   moveSelectedOptionToTop(event, index) {
     if (this.selectedFilters.length > 0) {
       // Get the selected options based on a particular property
-      const selected = this.filterData[index].filter(option =>
-        this.selectedFilters[index]?.some(selected => selected.nodeName === option.nodeName) // Match by 'nodeName'
+      const selected = this.filterData[index]?.filter(option =>
+        this.selectedFilters[index]?.some(selected => selected?.nodeName === option?.nodeName) // Match by 'nodeName'
       );
 
       // Get the unselected options
-      const unselected = this.filterData[index].filter(option =>
-        !this.selectedFilters[index]?.some(selected => selected.nodeName === option.nodeName) // Match by 'id'
+      const unselected = this.filterData[index]?.filter(option =>
+        !this.selectedFilters[index]?.some(selected => selected?.nodeName === option?.nodeName) // Match by 'id'
       );
 
       // Combine selected and unselected, with selected on top
+      if(!selected) return;
       this.filterData[index] = [...selected, ...unselected];
     }
   }
