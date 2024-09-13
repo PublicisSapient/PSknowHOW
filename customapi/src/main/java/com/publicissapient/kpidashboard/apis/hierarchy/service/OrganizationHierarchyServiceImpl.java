@@ -36,7 +36,6 @@ public class OrganizationHierarchyServiceImpl implements OrganizationHierarchySe
 	 */
 	@Override
 	public OrganizationHierarchy findByNodeId(String nodeId) {
-		// Get the proxy of this class
 		return findAll().stream().filter(node -> node.getNodeId().equals(nodeId)).findFirst().orElse(null);
 	}
 

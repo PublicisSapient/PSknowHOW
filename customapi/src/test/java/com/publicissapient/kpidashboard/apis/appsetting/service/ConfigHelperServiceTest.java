@@ -19,26 +19,12 @@
 
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
-import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
-import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,12 +37,28 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
 import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
+import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
-
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigHelperServiceTest {
@@ -65,6 +67,7 @@ public class ConfigHelperServiceTest {
 	CacheService cacheService;
 	List<ProjectBasicConfig> projectList = null;
 	List<FieldMapping> fieldMappingList = null;
+	List<OrganizationHierarchy> organizationHierarchyList = null;
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
@@ -79,7 +82,7 @@ public class ConfigHelperServiceTest {
 	@Mock
 	ProjectToolConfigRepository projectToolConfigRepository;
 	@Mock
-	HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
+	OrganizationHierarchyRepository organizationHierarchyRepository;
 	@Mock
 	ProjectBasicConfigService projectBasicConfigService;
 	@Mock
@@ -95,6 +98,7 @@ public class ConfigHelperServiceTest {
 	public void setUp() {
 		projectList = ProjectBasicConfigDataFactory.newInstance("").getProjectBasicConfigs();
 		fieldMappingList = FieldMappingDataFactory.newInstance("").getFieldMappings();
+		organizationHierarchyList = OrganizationHierarchyDataFactory.newInstance("").getOrganizationHierarchies();
 	}
 
 	@Test
@@ -208,5 +212,10 @@ public class ConfigHelperServiceTest {
 	public void loadAllFilters(){
 		when(filtersRepository.findAll()).thenReturn(null);
 		Assertions.assertNull(configHelperService.loadAllFilters());
+	}
+	@Test
+	public void loadAllOrganizationHierarchy(){
+		when(organizationHierarchyRepository.findAll()).thenReturn(organizationHierarchyList);
+		Assertions.assertNotNull(configHelperService.loadAllOrganizationHierarchy());
 	}
 }
