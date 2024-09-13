@@ -1572,16 +1572,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
       else {
         if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {
+          this.kpiSelectedFilterObj[kpi?.kpiId] = [];
           for (const key in event) {
             if (event[key]?.length == 0) {
               delete event[key];
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-            } else if (Array.isArray(event[key])) {
+            } else if (Array.isArray(event[key])){
               for (let i = 0; i < event[key]?.length; i++) {
-                this.kpiSelectedFilterObj[kpi?.kpiId][key].concat[Array.isArray(event[key]) ? event[key][i] : event[key]];
+                this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
               }
-            } else {
-              this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+            }else{
+             this.kpiSelectedFilterObj[kpi?.kpiId] = Array.isArray(event[key]) ? event[key] : [event[key]];
             }
           }
         } else if (this.selectedTab.toLowerCase() === 'developer') {
@@ -1592,6 +1593,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
           }
         } else {
+          this.kpiSelectedFilterObj[kpi?.kpiId] = [];
           this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
         }
       }

@@ -165,10 +165,13 @@
     white-space: nowrap;
   }
 
-  :host ::ng-deep .capacity-table-container {
-    max-width: calc(100%);
-    max-height: 400px;
-    overflow: scroll;
+  
+
+  @media only screen and (max-width: 1600px){
+    :host ::ng-deep .capacity-table-container {
+      max-width: 1170px;
+      overflow-x: scroll; 
+    }
   }
   
   :host ::ng-deep .capacity-table.custom-grid .p-datatable tbody tr.sprint {
