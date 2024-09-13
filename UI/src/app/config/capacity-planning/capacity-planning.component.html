@@ -276,7 +276,7 @@
                                 <ng-template pTemplate="rowexpansion" let-item>
                                     <tr [pSelectableRow]="item" class="row-expansion">
                                         <td colspan="5" [style]="{'display':'block'}" class="p-pb-2">
-                                            <div>
+                                            <div class="capacity-table-container">
                                                 <div class="p-d-flex p-justify-between p-align-center">
                                                     <div class="p-d-flex p-align-center">
                                                         <h3 class="color-grey">Added Users</h3>&nbsp;&nbsp;
@@ -295,7 +295,7 @@
                                                     </p-button>
                                                 </div>
 
-                                                <div class="capacity-table-container">
+                                                <div >
                                                     <p-table [value]="item.assigneeCapacity" dataKey="userId"
                                                         [paginator]="true" [rows]="20" [rowsPerPageOptions]="[20,25,30]"
                                                         [showCurrentPageReport]="true">
@@ -309,7 +309,7 @@
                                             </div>
                                         </th>
                                         <th scope="col" pSortableColumn="email" class="expanded-table-header-cell"
-                                            [style]="{'width':'25%'}">
+                                            [style]="{'min-width':'170px'}">
                                             <div>
                                                 <span [ngClass]="{'editable': projectCapacityEditMode}">Email Id</span>
                                             </div>
@@ -367,12 +367,12 @@
                                             '-
                                             -'}}</td>
                                         <td class="expanded-table-body-cell"
-                                            [style]="{'max-width':'120px', 'word-wrap': 'break-word'}">
+                                            [style]="{'min-width':'170px', 'word-wrap': 'break-word'}">
 
                                             <p-multiSelect [options]="projectAssigneeEmailsCopy"
                                                 *ngIf="projectCapacityEditMode;else showUserEmail"
                                                 defaultLabel="Select Emails" class="multiselect-custom"
-                                                [style]="{'width':'150px'}" display="chip" showClear="true"
+                                                [style]="{'width':'160px'}" display="chip" showClear="true"
                                                 optionLabel="name" optionValue="value"
                                                 [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
                                                 (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
