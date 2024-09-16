@@ -553,7 +553,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			azureIssue.setSprintEndDate("");
 			azureIssue.setSprintAssetState("");
 		} else {
-			String sprintId = value.getId() + AzureConstants.COMBINE_IDS_SYMBOL + projectConfig.getProjectKey();
+			String sprintId = value.getId() + AzureConstants.COMBINE_IDS_SYMBOL + projectConfig.getProjectBasicConfig().getProjectNodeId();
 			setSprintData(azureIssue, value, sprintId);
 			populateSprintDetails(value, sprintDetailsSet, sprintId);
 		}
@@ -1057,13 +1057,13 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			projectHierarchy.setHierarchyLevelId(hierarchyLevel.getHierarchyLevelId());
 			String sprintName = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintName");
 			String sprintId = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintID");
-
+			String state = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintAssetState");
 			projectHierarchy.setNodeId(sprintId);
 			projectHierarchy.setNodeName(
-					sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectNodeId());
+					sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
 			projectHierarchy
-					.setNodeDisplayName(sprintName + AzureConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName());
-
+					.setNodeDisplayName(sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectDisplayName());
+			projectHierarchy.setSprintState(state);
 			projectHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintBeginDate"));
 			projectHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintEndDate"));
 			projectHierarchy.setParentId(projectBasicConfig.getProjectNodeId());
@@ -1118,7 +1118,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			if (null == exHiery) {
 				sprintHierarchy.setCreatedDate(LocalDateTime.now());
 				setToSave.add(sprintHierarchy);
-			} else if (!exHiery.checkSprintEquality(sprintHierarchy)) {
+			} else if (!exHiery.equals(sprintHierarchy)) {
 				exHiery.setBeginDate(sprintHierarchy.getBeginDate());
 				exHiery.setNodeName(sprintHierarchy.getNodeName());
 				exHiery.setEndDate(sprintHierarchy.getEndDate());

@@ -126,7 +126,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 					if (null == exHiery) {
 						hierarchy.setCreatedDate(LocalDateTime.now());
 						setToSave.add(hierarchy);
-					} else if (!exHiery.checkReleaseEquality(hierarchy)) {
+					} else if (!exHiery.equals(hierarchy)) {
 						exHiery.setBeginDate(hierarchy.getBeginDate());
 						exHiery.setNodeName(hierarchy.getNodeName());// release name changed
 						exHiery.setEndDate(hierarchy.getEndDate());

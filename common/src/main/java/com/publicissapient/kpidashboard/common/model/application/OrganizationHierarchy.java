@@ -47,4 +47,8 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime modifiedDate;
 
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
 }

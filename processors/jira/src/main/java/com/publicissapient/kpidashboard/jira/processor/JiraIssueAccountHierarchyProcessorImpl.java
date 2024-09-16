@@ -118,7 +118,7 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 			if (null == exHiery) {
 				sprintHierarchy.setCreatedDate(LocalDateTime.now());
 				setToSave.add(sprintHierarchy);
-			} else if (!exHiery.checkSprintEquality(sprintHierarchy)) {
+			} else if (!exHiery.equals(sprintHierarchy)) {
 
 				exHiery.setBeginDate(sprintHierarchy.getBeginDate());
 				exHiery.setNodeName(sprintHierarchy.getNodeName());// sprint name changed

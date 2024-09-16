@@ -20,6 +20,7 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -43,25 +44,20 @@ public class ProjectHierarchy extends OrganizationHierarchy implements Serializa
 	private String beginDate;
 	private String endDate;
 
-	private boolean equals(ProjectHierarchy obj) {
-		boolean isEqual = false;
-		if ((null != obj && this.getClass() != obj.getClass()) || null == obj) {
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
 			return false;
-		}
-		if (obj instanceof ProjectHierarchy && this.getNodeId().equals(obj.getNodeId())
-				&& (null == this.beginDate || this.beginDate.split("[.]")[0].equals(obj.beginDate.split("[.]")[0]))
-				&& (null == this.endDate || this.endDate.split("[.]")[0].equals(obj.endDate.split("[.]")[0]))) {
-			isEqual = true;
-		}
-		return isEqual;
-
+		ProjectHierarchy that = (ProjectHierarchy) o;
+		return Objects.equals(basicProjectConfigId, that.basicProjectConfigId)
+				&& Objects.equals(sprintState, that.sprintState) && Objects.equals(releaseState, that.releaseState)
+				&& Objects.equals(beginDate, that.beginDate) && Objects.equals(endDate, that.endDate);
 	}
 
-	public boolean checkSprintEquality(ProjectHierarchy obj) {
-		return equals(obj) && (null == this.sprintState || this.sprintState.equals(obj.sprintState));
-	}
-
-	public boolean checkReleaseEquality(ProjectHierarchy obj) {
-		return equals(obj) && (null == this.releaseState || this.releaseState.equals(obj.releaseState));
+	@Override
+	public int hashCode() {
+		return Objects.hash(basicProjectConfigId, sprintState, releaseState, beginDate, endDate);
 	}
 }
