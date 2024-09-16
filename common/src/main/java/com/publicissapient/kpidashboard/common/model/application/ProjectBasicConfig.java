@@ -64,7 +64,7 @@ public class ProjectBasicConfig extends BasicModel {
 	private String updatedBy;
 	private boolean kanban;
 
-	// hierarchy will not store in DB
+	// hierarchy will not read/write in DB
 	@Transient
 	private List<HierarchyValue> hierarchy;
 

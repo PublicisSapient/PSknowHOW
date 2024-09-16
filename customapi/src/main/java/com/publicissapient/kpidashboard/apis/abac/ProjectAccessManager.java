@@ -831,13 +831,31 @@ public class ProjectAccessManager {
 		List<AccessItem> accessItems = accessNode.getAccessItems();
 
 		if (accessLevel.equals(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
-			return projectBasicConfigRepository.findByIdIn(accessItems.stream()
-					.map(accessItem -> new ObjectId(accessItem.getItemId())).collect(Collectors.toSet()));
+			return findByIdIn(accessItems.stream()
+					.map(AccessItem::getItemId).collect(Collectors.toSet()));
 		} else {
-			List<String> hierarchyLevelIds = accessItems.stream().map(AccessItem::getItemId)
+			List<String> accessItemIds = accessItems.stream().map(AccessItem::getItemId)
 					.collect(Collectors.toList());
-			return projectBasicConfigRepository.findByHierarchyLevelIdAndValues(accessLevel, hierarchyLevelIds);
+			return filterProjectsByHierarchyLevelAndValue(accessLevel, accessItemIds);
 		}
+	}
+
+	private List<ProjectBasicConfig> findByIdIn(Set<String> projectBasicConfigNodeIds) {
+		return projectBasicConfigService.getAllProjectBasicConfigs().stream()
+				.filter(project -> projectBasicConfigNodeIds.contains(project.getProjectNodeId()))
+				.collect(Collectors.toList());
+	}
+
+	private List<ProjectBasicConfig> filterProjectsByHierarchyLevelAndValue(String hierarchyLevelId, List<String> orgHierarchyNodeIds) {
+
+		return projectBasicConfigService.getAllProjectBasicConfigs().stream()
+				.filter(project -> project.getHierarchy().stream()
+						.anyMatch(hierarchy ->
+								hierarchy.getHierarchyLevel().getHierarchyLevelId().equals(hierarchyLevelId)
+										&& orgHierarchyNodeIds.contains(hierarchy.getOrgHierarchyNodeId())
+						)
+				)
+				.collect(Collectors.toList());
 	}
 
 	private AccessRequest getAccessRequest(String id) {

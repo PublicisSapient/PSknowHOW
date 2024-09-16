@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
@@ -103,4 +104,6 @@ public interface CacheService {
 	Map<String, HierarchyLevel> getFullKanbanHierarchyLevelMap();
 
 	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
+
+	Object updateCacheProjectConfigMapData();
 }

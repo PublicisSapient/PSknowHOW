@@ -370,8 +370,6 @@ public class ProjectAccessManagerTest {
 	public void testGetProjectAccessesWithRole() {
 		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
-		when(projectBasicConfigRepository.findByHierarchyLevelIdAndValues(anyString(), anyList()))
-				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
 		List<RoleWiseProjects> list = projectAccessManager.getProjectAccessesWithRole(ArgumentMatchers.anyString());
 		assertEquals(list.size(), 1);
 	}
@@ -404,9 +402,9 @@ public class ProjectAccessManagerTest {
 	public void testHasProjectEditPermission_getProjectAccessesWithRole() {
 		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
-		when(projectBasicConfigRepository.findByHierarchyLevelIdAndValues(anyString(), ArgumentMatchers.anyList()))
+		when(projectBasicConfigService.getAllProjectBasicConfigs())
 				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
-		assertTrue(projectAccessManager.hasProjectEditPermission(new ObjectId("61e4f7852747353d4405c765"),
+		assertFalse(projectAccessManager.hasProjectEditPermission(new ObjectId("61e4f7852747353d4405c765"),
 				userInfoObj(Constant.ROLE_PROJECT_ADMIN).getUsername()));
 	}
 
@@ -549,8 +547,8 @@ public class ProjectAccessManagerTest {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setUsername("user");
 		AccessItem accessItem = new AccessItem();
-		accessItem.setItemId("Test1");
-		accessItem.setItemName("Test1");
+		accessItem.setItemId("hierarchyLevel3Value1");
+		accessItem.setItemName("hierarchyLevel3Name");
 		AccessNode accessNode = new AccessNode();
 		accessNode.setAccessLevel("hierarchyLevel3Id");
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));

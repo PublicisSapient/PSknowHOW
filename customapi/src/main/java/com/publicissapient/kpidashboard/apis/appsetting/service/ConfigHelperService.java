@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,8 +36,10 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.Filters;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
@@ -44,15 +48,13 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
-import org.apache.commons.lang3.StringUtils;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,7 +80,7 @@ public class ConfigHelperService {
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
 	@Autowired
-	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
+	private OrganizationHierarchyRepository organizationHierarchyRepository;
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
 	@Autowired
@@ -111,7 +113,7 @@ public class ConfigHelperService {
 
 		projectList.forEach(projectConfig -> {
 			//AN: This is to make sure UI doesn't break, to be removed after migration
-			if(StringUtils.isNotEmpty(projectConfig.getProjectNodeId())) {
+			if(CollectionUtils.isEmpty(projectConfig.getHierarchy())) {
 				projectConfig.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
 			}
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
@@ -325,5 +327,21 @@ public class ConfigHelperService {
 	public List<Filters> loadAllFilters() {
 		log.info("loading AllFilters");
 		return filtersRepository.findAll();
+	}
+
+	@Cacheable(CommonConstant.CACHE_ORGANIZATION_HIERARCHY)
+	public List<OrganizationHierarchy> loadAllOrganizationHierarchy() {
+		log.debug("loading cache organization Hierarchies");
+		return organizationHierarchyRepository.findAll();
+	}
+
+	/**
+	 * this method will update projectConfigMap and update cache object
+	 * 
+	 * @param projectBasicConfig
+	 */
+	public void updateCacheProjectBasicConfig(ProjectBasicConfig projectBasicConfig) {
+		projectConfigMap.put(projectBasicConfig.getId().toString(), projectBasicConfig);
+		cacheService.updateCacheProjectConfigMapData();
 	}
 }
