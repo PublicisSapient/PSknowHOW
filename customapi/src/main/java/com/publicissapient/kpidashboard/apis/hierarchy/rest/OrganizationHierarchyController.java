@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
-import com.publicissapient.kpidashboard.common.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 
 @RestController
 @RequestMapping("/organizationHierarchy")

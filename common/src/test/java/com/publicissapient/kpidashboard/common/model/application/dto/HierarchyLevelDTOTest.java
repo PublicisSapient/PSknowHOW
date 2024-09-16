@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.common.model.application.dto;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import java.util.TreeSet;
@@ -12,15 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HierarchyLevelDTOTest {
     /**
-     * Method under test: {@link HierarchyLevelDTO#canEqual(Object)}
+     * Method under test: {@link HierarchyLevelDTO#equals(Object)}
      */
     @Test
     public void testCanEqual() {
-        assertFalse((new HierarchyLevelDTO()).canEqual("Other"));
+        assertFalse((new HierarchyLevelDTO()).equals("Other"));
     }
 
     /**
-     * Method under test: {@link HierarchyLevelDTO#canEqual(Object)}
+     * Method under test: {@link HierarchyLevelDTO#equals(Object)}
      */
     @Test
     public void testCanEqual2() {
@@ -150,7 +151,7 @@ public class HierarchyLevelDTOTest {
     @Test
     public void testEquals6() {
         HierarchyLevelDTO hierarchyLevelDTO = new HierarchyLevelDTO();
-        hierarchyLevelDTO.setHierarchyLevelId(null);
+        hierarchyLevelDTO.setHierarchyLevelId("10");
         hierarchyLevelDTO.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO.setLevel(1);
 
@@ -191,7 +192,7 @@ public class HierarchyLevelDTOTest {
         HierarchyLevelDTO hierarchyLevelDTO1 = new HierarchyLevelDTO();
         hierarchyLevelDTO1.setHierarchyLevelId("42");
         hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
-        hierarchyLevelDTO1.setLevel(1);
+        hierarchyLevelDTO1.setLevel(2);
         assertNotEquals(hierarchyLevelDTO, hierarchyLevelDTO1);
     }
 
@@ -206,7 +207,7 @@ public class HierarchyLevelDTOTest {
         hierarchyLevelDTO.setLevel(3);
 
         HierarchyLevelDTO hierarchyLevelDTO1 = new HierarchyLevelDTO();
-        hierarchyLevelDTO1.setHierarchyLevelId("42");
+        hierarchyLevelDTO1.setHierarchyLevelId("33");
         hierarchyLevelDTO1.setHierarchyLevelName("Hierarchy Level Name");
         hierarchyLevelDTO1.setLevel(1);
         assertNotEquals(hierarchyLevelDTO, hierarchyLevelDTO1);
