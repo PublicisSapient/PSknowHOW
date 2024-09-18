@@ -484,13 +484,18 @@ public class DevCompletionStatusServiceImpl extends JiraIterationKPIService {
 			Map<String, Object> jiraIssueData, Map<String, Object> actualCompletionData) {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
 		String markerValue = Constant.BLANK;
-		jiraIssueModalObject.setDevCompletionDate((String) jiraIssueData.get(DEV_COMPLETION_DATE));
+		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateTimeConverter(
+				(String) jiraIssueData.get(DEV_COMPLETION_DATE), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null)
-			jiraIssueModalObject.setActualCompletionDate(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString());
+			jiraIssueModalObject.setActualCompletionDate(
+					DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString(),
+							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		else
 			jiraIssueModalObject.setActualCompletionDate(" - ");
 		if (actualCompletionData.get(ACTUAL_START_DATE) != null) {
-			jiraIssueModalObject.setActualStartDate(actualCompletionData.get(ACTUAL_START_DATE).toString());
+			jiraIssueModalObject.setActualStartDate(
+					DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_START_DATE).toString(),
+							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		} else
 			jiraIssueModalObject.setActualStartDate(" - ");
 		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
