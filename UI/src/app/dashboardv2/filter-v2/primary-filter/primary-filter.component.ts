@@ -247,12 +247,19 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     }
   }
 
-  moveSelectedOptionToTop(event) {
-    if (event?.value) {
-      event?.value.forEach(selectedItem => {
-        this.filters = this.filters.filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
-        this.filters.unshift(selectedItem)// this will add selected item on the top
-      });
+  moveSelectedOptionToTop() {
+    // Filter selected options
+    const selected = this.filters.filter(option => this.selectedFilters?.includes(option));
+
+    // Filter unselected options
+    const unselected = this.filters.filter(option => !this.selectedFilters?.includes(option));
+
+    this.filters = [...selected, ...unselected];
+  }
+
+  onSelectionChange(event: any) {
+    if (event?.value?.length > 0) {
+      this.moveSelectedOptionToTop()
     }
   }
 
