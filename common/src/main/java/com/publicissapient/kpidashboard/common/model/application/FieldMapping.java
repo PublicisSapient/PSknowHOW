@@ -472,6 +472,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private String thresholdValueKPI139;
 	private String thresholdValueKPI166;
 	private String thresholdValueKPI173;
+	private String thresholdValueKPI183;
+	private String thresholdValueKPI184;
 
 	// Production Incident Mapping
 	private String jiraProductionIncidentIdentification;
