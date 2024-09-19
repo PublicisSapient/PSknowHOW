@@ -46,9 +46,9 @@ export class AppComponent implements OnInit {
   onScroll(event) {
     const header = document.querySelector('.header');
     if (window.scrollY > 200) { // adjust the scroll position threshold as needed
-      header.classList.add('scrolled');
+      header?.classList.add('scrolled');
     } else {
-      header.classList.remove('scrolled');
+      header?.classList.remove('scrolled');
     }
   }
 
