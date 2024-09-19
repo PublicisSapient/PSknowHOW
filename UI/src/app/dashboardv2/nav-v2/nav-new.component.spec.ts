@@ -290,4 +290,20 @@ describe('NavNewComponent', () => {
 
     expect(result).toBe(false);
   });
+
+  // setBoards(response)
+  it('should call setBoards with a successful response', () => {
+    const response = { success: true, data: { userBoardConfigDTO: {} } };
+    spyOn(component, 'setBoards');
+    component.setBoards(response);
+    expect(component.setBoards).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle invalid response data', () => {
+    const response = { success: false, data: null };
+    component.setBoards(response);
+    expect(component.dashConfigData).toBeUndefined();
+    expect(component.items).toBeUndefined();
+  });
+  // end of setBoards(response)
 });
