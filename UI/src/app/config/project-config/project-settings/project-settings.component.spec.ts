@@ -37,7 +37,7 @@ describe('ProjectSettingsComponent', () => {
   let messageService: MessageService;
   let confirmationService: ConfirmationService;
   let getAuthorizationService: GetAuthorizationService;
-  let router: Router;
+  let routerSpy: jasmine.SpyObj<Router>;
   let httpMock;
   const baseUrl = environment.baseUrl;
   const navigateSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -71,7 +71,7 @@ describe('ProjectSettingsComponent', () => {
     // messageService = TestBed.inject(MessageService);
     confirmationService = TestBed.inject(ConfirmationService);
     getAuthorizationService = TestBed.inject(GetAuthorizationService);
-    router = TestBed.inject(Router);
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     fixture.detectChanges();
   });
 
@@ -336,151 +336,6 @@ describe('ProjectSettingsComponent', () => {
     expect(component.isSuperAdmin).toBe(true);
   });
 
-  /* it('should delete project on click of "Delete"', () => {
-    const project = {
-      id: '631f394dcfef11709d7ddc7b',
-      name: 'MAP',
-      type: 'Scrum',
-      country: 'India',
-      state: 'Haryana',
-      city: 'Gurgaon'
-  };
-
-    const deleteResponse = {
-      message: 'MAP deleted successfully',
-      success: true,
-      data: {
-        id: '631f394dcfef11709d7ddc7b',
-        projectName: 'MAP',
-        createdAt: '2022-09-12T19:21:09',
-        kanban: false,
-        hierarchy: [
-          {
-            hierarchyLevel: {
-              level: 1,
-              hierarchyLevelId: 'country',
-              hierarchyLevelName: 'Country'
-            },
-            value: 'India'
-          },
-          {
-            hierarchyLevel: {
-              level: 2,
-              hierarchyLevelId: 'state',
-              hierarchyLevelName: 'State'
-            },
-            value: 'Haryana'
-          },
-          {
-            hierarchyLevel: {
-              level: 3,
-              hierarchyLevelId: 'city',
-              hierarchyLevelName: 'City'
-            },
-            value: 'Gurgaon'
-          }
-        ],
-        isKanban: false
-      }
-    };
-
-    const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.accept());
-    component.deleteProject(project);
-    expect(mockConfirm).toHaveBeenCalled();
-    httpMock.expectOne(baseUrl + '/api/basicconfigs/631f394dcfef11709d7ddc7b').flush(deleteResponse);
-    fixture.detectChanges();
-  });
-
-  it('should delete project on click of "Delete" and get projectsAccess', () => {
-    const project = {
-      id: '631f394dcfef11709d7ddc7b',
-      name: 'MAP',
-      type: 'Scrum',
-      country: 'India',
-      state: 'Haryana',
-      city: 'Gurgaon'
-  };
-
-    const deleteResponse = {
-      message: 'MAP deleted successfully',
-      success: true,
-      data: {
-        id: '631f394dcfef11709d7ddc7b',
-        projectName: 'MAP',
-        createdAt: '2022-09-12T19:21:09',
-        kanban: false,
-        hierarchy: [
-          {
-            hierarchyLevel: {
-              level: 1,
-              hierarchyLevelId: 'country',
-              hierarchyLevelName: 'Country'
-            },
-            value: 'India'
-          },
-        ],
-        isKanban: false
-      }
-    };
-
-    spyOn(sharedService,'getCurrentUserDetails').and.returnValue([{
-      projects : [
-        {projectId : '123'}
-      ]
-    }])
-    spyOn(httpService,'deleteProject').and.returnValue(of({success : true}))
-    spyOn(component,'projectDeletionStatus');
-
-    const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.accept());
-    component.deleteProject(project);
-    expect(mockConfirm).toHaveBeenCalled();
-  });
-
-  it('should get error while deleting proect', () => {
-    const project = {
-      id: '631f394dcfef11709d7ddc7b',
-      name: 'MAP',
-      type: 'Scrum',
-      country: 'India',
-      state: 'Haryana',
-      city: 'Gurgaon'
-  };
-
-    const deleteResponse = {
-      message: 'MAP deleted successfully',
-      success: true,
-      data: {
-        id: '631f394dcfef11709d7ddc7b',
-        projectName: 'MAP',
-        createdAt: '2022-09-12T19:21:09',
-        kanban: false,
-        hierarchy: [
-          {
-            hierarchyLevel: {
-              level: 1,
-              hierarchyLevelId: 'country',
-              hierarchyLevelName: 'Country'
-            },
-            value: 'India'
-          },
-        ],
-        isKanban: false
-      }
-    };
-
-    spyOn(sharedService,'getCurrentUserDetails').and.returnValue([{
-      projects : [
-        {projectId : '123'}
-      ]
-    }])
-    spyOn(httpService,'deleteProject').and.returnValue(throwError('Error'))
-    spyOn(component,'projectDeletionStatus');
-
-    const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.accept());
-    component.deleteProject(project);
-    expect(mockConfirm).toHaveBeenCalled();
-  }); */
-
   it('should set isDeleteClicked and projectConfirm to true', () => {
     component.deleteProject({ id: 1, name: 'Test Project' });
     expect(component.isDeleteClicked).toBe(true);
@@ -733,61 +588,45 @@ describe('ProjectSettingsComponent', () => {
     expect(component.selectedProject).toEqual(projectList[0]);
   });
 
-  // it('should assign isAssigneeSwitchChecked, isAssigneeSwitchDisabled, developerKpiEnabled, isDeveloperKpiSwitchDisabled, and projectOnHold correctly', () => {
-  //   const project = {
-  //     id: 1,
-  //     name: 'Project 1',
-  //     saveAssigneeDetails: true,
-  //     developerKpiEnabled: true,
-  //     projectOnHold: true
-  //   };
-  //   spyOn(sharedService, 'getSelectedProject').and.returnValue(project);
-  //   component.getProjects();
-  //   expect(component.isAssigneeSwitchChecked).toBe(true);
-  //   expect(component.isAssigneeSwitchDisabled).toBe(true);
-  //   expect(component.developerKpiEnabled).toBe(true);
-  //   expect(component.isDeveloperKpiSwitchDisabled).toBe(true);
-  //   expect(component.projectOnHold).toBe(true);
-  // });
+  // -> updateProjectSelection
+  it('should call sharedService.setSelectedProject, router.navigate, and update properties correctly', () => {
+    // Mock the selectedProject data
+    const mockProject = {
+      id: 1,
+      type: 'Scrum',
+      saveAssigneeDetails: true,
+      developerKpiEnabled: false,
+      projectOnHold: true
+    };
+    component.selectedProject = mockProject;
 
-  // it('should rename selectedProject properties correctly', () => {
-  //   const project = {
-  //     id: 1,
-  //     name: 'Project 1',
-  //     hierarchyLevelId: 'hierarchyLevelName'
-  //   };
-  //   const levelDetails = [
-  //     { id: 'hierarchyLevelId', name: 'hierarchyLevelName' }
-  //   ];
-  //   spyOn(sharedService, 'getSelectedProject').and.returnValue(project);
-  //   localStorage.setItem('completeHierarchyData', JSON.stringify({ kanban: levelDetails }));
-  //   component.getProjects();
-  //   expect(component.selectedProject).toEqual({
-  //     id: 1,
-  //     name: 'Project 1',
-  //     hierarchyLevelName: 'hierarchyLevelName'
-  //   });
-  // });
+    // Spy on the sharedService method (sharedService already exists, so no need for mock)
+    const sharedService = TestBed.inject(SharedService);
+    spyOn(sharedService, 'setSelectedProject');  // Reuse the same spy if already defined in previous test cases
 
-  // it('should set selected project', () => {
-  //   component.updateProjectSelection();
-  //   expect(component.sharedService.getSelectedProject()).toEqual(component.selectedProject);
-  // });
+    // Spy on hierarchyLabelNameChange
+    spyOn(component, 'hierarchyLabelNameChange');
 
-  // it('should navigate to correct route', () => {
-  //   // spyOn(component.router, 'navigate');
-  //   component.updateProjectSelection();
-  //   expect(component.router.navigate).toHaveBeenCalledWith(['/dashboard/Config/ConfigSettings/project1'], { queryParams: { tab: 0 } });
-  // });
+    // Call the method to be tested
+    component.updateProjectSelection();
 
-  // it('should update isAssigneeSwitchChecked', () => {
-  //   component.updateProjectSelection();
-  //   expect(component.isAssigneeSwitchChecked).toBeTrue();
-  // });
+    // Check if sharedService.setSelectedProject() was called with the correct argument
+    expect(sharedService.setSelectedProject).toHaveBeenCalledWith(mockProject);
 
-  // it('should update isDeveloperKpiSwitchDisabled', () => {
-  //   component.updateProjectSelection();
-  //   expect(component.isDeveloperKpiSwitchDisabled).toBeTrue();
-  // });
+    // Check if router.navigate() was called with the correct arguments
+    expect(routerSpy.navigate).toHaveBeenCalledWith(
+      ['/dashboard/Config/ConfigSettings/1'],
+      { queryParams: { 'type': 'scrum', tab: 0 } }
+    );
+
+    // Check if component properties are updated correctly
+    expect(component.isAssigneeSwitchChecked).toBe(true);
+    expect(component.developerKpiEnabled).toBe(false);
+    expect(component.projectOnHold).toBe(true);
+
+    // Check if hierarchyLabelNameChange() was called
+    expect(component.hierarchyLabelNameChange).toHaveBeenCalled();
+  });
+  // -> end of updateProjectSelection
 
 });
