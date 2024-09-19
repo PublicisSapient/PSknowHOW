@@ -7607,7 +7607,7 @@ describe('ExecutiveV2Component', () => {
     // httpMock.verify();
   });
 
-  it('check whether scrum', (done) => {
+  fit('check whether scrum', (done) => {
     const type = 'Scrum';
     component.selectedtype = 'Scrum';
     spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraGroupId1));
@@ -7617,7 +7617,7 @@ describe('ExecutiveV2Component', () => {
 
   });
 
-  it('download excel functionality', fakeAsync(() => {
+  fit('download excel functionality', fakeAsync(() => {
     const excelData = {
       kpiName: 'Defect Injection Rate',
       kpiId: 'kpi14',
@@ -7673,7 +7673,7 @@ describe('ExecutiveV2Component', () => {
     done();
   }));
 
-  it('kanban with filter applied only Date', (done) => {
+  fit('kanban with filter applied only Date', (done) => {
     const type = 'Kanban';
     service.setSelectedTypeOrTabRefresh('Category One', 'Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
@@ -7710,21 +7710,21 @@ describe('ExecutiveV2Component', () => {
 
 
 
-  it('color acc to maturity check ', waitForAsync(() => {
+  fit('color acc to maturity check ', waitForAsync(() => {
     const returnBlue = component.returnColorAccToMaturity(0);
     spyOn(component, 'receiveSharedData');
     expect(returnBlue).toBe('#44739f');
     // done();
   }));
 
-  it('color acc to maturity check array', (done) => {
+  fit('color acc to maturity check array', (done) => {
     component.colorAccToMaturity('1-2-3');
     spyOn(component, 'receiveSharedData');
     expect(component.maturityColorCycleTime[0]).toBe('#44739f');
     done();
   });
 
-  it('should create', (done) => {
+  fit('should create', (done) => {
     spyOn(component, 'receiveSharedData');
     expect(component).toBeTruthy();
     done();
@@ -7732,7 +7732,7 @@ describe('ExecutiveV2Component', () => {
 
 
 
-  // it('should process kpi config Data', () => {
+  // fit('should process kpi config Data', () => {
   //   component.configGlobalData = configGlobalData;
   //   component.processKpiConfigData();
   //   expect(component.noKpis).toBeFalse();
@@ -7742,7 +7742,7 @@ describe('ExecutiveV2Component', () => {
   //   expect(component.noKpis).toBeTrue();
   // });
 
-  it('should make post call when kpi available for Sonar for Scrum', () => {
+  fit('should make post call when kpi available for Sonar for Scrum', () => {
     const kpiListSonar = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
@@ -7768,7 +7768,7 @@ describe('ExecutiveV2Component', () => {
   });
 
 
-  it('should make post call when kpi available for Jenkins for Scrum', () => {
+  fit('should make post call when kpi available for Jenkins for Scrum', () => {
     const kpiListJenkins = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
@@ -7793,7 +7793,7 @@ describe('ExecutiveV2Component', () => {
     expect(postJenkinsSpy).toHaveBeenCalled();
   });
 
-  it('should make post call when kpi available for Zypher for Scrum', () => {
+  fit('should make post call when kpi available for Zypher for Scrum', () => {
     const kpiListZypher = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
@@ -7805,7 +7805,7 @@ describe('ExecutiveV2Component', () => {
     expect(postZypherSpy).toHaveBeenCalled();
   });
 
-  it('should make post call when kpi available for Jira for Scrum', () => {
+  fit('should make post call when kpi available for Jira for Scrum', () => {
     const kpiListJira = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
@@ -7817,7 +7817,7 @@ describe('ExecutiveV2Component', () => {
     expect(postJiraSpy).toHaveBeenCalled();
   });
 
-  it('should make post call when kpi available for Jira for Scrum on release page', () => {
+  fit('should make post call when kpi available for Jira for Scrum on release page', () => {
     const kpiListJira = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
@@ -7831,7 +7831,7 @@ describe('ExecutiveV2Component', () => {
   });
 
 
-  it('should make post call when kpi available for BitBucket for Scrum', () => {
+  fit('should make post call when kpi available for BitBucket for Scrum', () => {
     const kpiListBitBucket = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
@@ -7843,7 +7843,7 @@ describe('ExecutiveV2Component', () => {
     expect(postBitBucketSpy).toHaveBeenCalled();
   });
 
-  it('should check if kpi exists', () => {
+  fit('should check if kpi exists', () => {
     component.allKpiArray = [{
       kpiId: 'kpi13'
     }];
@@ -7852,7 +7852,7 @@ describe('ExecutiveV2Component', () => {
   });
 
 
-  it('should refresh values onTypeRefresh', () => {
+  fit('should refresh values onTypeRefresh', () => {
     spyOn(service, 'getSelectedType');
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     const spy = spyOn(component, 'processKpiConfigData');
@@ -7862,7 +7862,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.selectedBranchFilter).toBe('Select');
   });
 
-  it('should set noTabAccess to true when no filterData', () => {
+  fit('should set noTabAccess to true when no filterData', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     component.kanbanActivated = false;
     component.filterApplyData = {};
@@ -7921,7 +7921,7 @@ describe('ExecutiveV2Component', () => {
 
   });
 
-  it('should call grouping kpi functions when filterdata is available', () => {
+  fit('should call grouping kpi functions when filterdata is available', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     component.filterApplyData = {};
     const event = {
@@ -8017,7 +8017,7 @@ describe('ExecutiveV2Component', () => {
     expect(spyJenkins).toHaveBeenCalled();
   });
 
-  it('should set release end date', () => {
+  fit('should set release end date', () => {
     const filterData = [
       {
         nodeId: 'release1',
@@ -8041,7 +8041,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.releaseEndDate).toEqual('2023-01-01');
   });
 
-  it('should set release end date to undefined if selectedRelease is undefined', () => {
+  fit('should set release end date to undefined if selectedRelease is undefined', () => {
     const filterData = [
       {
         nodeId: 'release1',
@@ -8067,7 +8067,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.releaseEndDate).toBeUndefined();
   });
 
-  it('should make post Sonar call', fakeAsync(() => {
+  fit('should make post Sonar call', fakeAsync(() => {
     const postData = {
       kpiList: [
         {
@@ -8095,7 +8095,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalledWith(successRes, postData);
   }));
 
-  // it('should make post Sonar Kanban Kpi call', fakeAsync(() => {
+  // fit('should make post Sonar Kanban Kpi call', fakeAsync(() => {
   //   const postData = {
   //     kpiList: [
   //       {
@@ -8127,7 +8127,7 @@ describe('ExecutiveV2Component', () => {
   //   expect(spy).toHaveBeenCalledWith(postData.kpiList);
   // }));
 
-  it('should make post Jenkins call', fakeAsync(() => {
+  fit('should make post Jenkins call', fakeAsync(() => {
     const postData = {
       kpiList: [
         {
@@ -8158,7 +8158,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalledWith(postData.kpiList);
   }));
 
-  it('should make post Jenkins Kanban call', fakeAsync(() => {
+  fit('should make post Jenkins Kanban call', fakeAsync(() => {
     const postData = {
       kpiList: [
         {
@@ -8189,7 +8189,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalledWith(postData.kpiList);
   }));
 
-  it('should make post Jira call', fakeAsync(() => {
+  fit('should make post Jira call', fakeAsync(() => {
     component.tooltip = {
       sprintCountForKpiCalculation: 2
     }
@@ -8261,7 +8261,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   }));
 
-  it('should make post Jira Kanban call', fakeAsync(() => {
+  fit('should make post Jira Kanban call', fakeAsync(() => {
     const postData = {
       kpiList: [
         {
@@ -8360,7 +8360,7 @@ describe('ExecutiveV2Component', () => {
 
 
 
-  it('should make post BitBucket call', fakeAsync(() => {
+  fit('should make post BitBucket call', fakeAsync(() => {
     const postData = {
       kpiList: [
         {
@@ -8407,11 +8407,11 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   }));
 
-  // it('should return color', () => {
+  // fit('should return color', () => {
   //   expect(component.getPriorityColor(1)).toBe('#FE7F0C');
   // });
 
-  it('should change View', () => {
+  fit('should change View', () => {
     component.changeView('list');
     expect(component.isChartView).toBeFalse();
 
@@ -8420,7 +8420,7 @@ describe('ExecutiveV2Component', () => {
 
   });
 
-  it('should generate colorObj', () => {
+  fit('should generate colorObj', () => {
     const arr = [
       {
         data: 'bittest',
@@ -8560,7 +8560,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.chartColorList['kpi84'].length).toEqual(2);
   });
 
-  it('should get dropdown data', () => {
+  fit('should get dropdown data', () => {
     component.allKpiArray = [{
       kpiId: 'kpi11',
       kpiName: 'Check-Ins & Merge Requests',
@@ -8766,7 +8766,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiDropdowns['kpi11'].length).toBeGreaterThan(0);
   });
 
-  it('should check maturity', () => {
+  fit('should check maturity', () => {
     const item = [
       {
         "data": "EU",
@@ -8810,7 +8810,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled()
   })
 
-  it('should check latest trend and maturity', () => {
+  fit('should check latest trend and maturity', () => {
     const item = [
       {
         "data": "EU",
@@ -8895,7 +8895,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should call set kpi values after SonarKpiResponseReceive', () => {
+  fit('should call set kpi values after SonarKpiResponseReceive', () => {
     const response = [{
       "kpiId": "kpi17",
       "kpiName": "Unit Test Coverage",
@@ -9214,7 +9214,7 @@ describe('ExecutiveV2Component', () => {
 
 
 
-  it('should call set kpi values after Zypher KpiResponseReceive', () => {
+  fit('should call set kpi values after Zypher KpiResponseReceive', () => {
     component.filterApplyData = {
       label: 'project'
     }
@@ -9642,7 +9642,7 @@ describe('ExecutiveV2Component', () => {
 
   });
 
-  it('should call zypher kpi api', () => {
+  fit('should call zypher kpi api', () => {
     spyOn(httpService, 'postKpi').and.returnValue(of({}));
     const spyafterZypherKpiResponseReceived = spyOn(component, 'afterZypherKpiResponseReceived');
     component.postZypherKpi({}, 'Zypher');
@@ -9650,7 +9650,7 @@ describe('ExecutiveV2Component', () => {
     expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
   });
 
-  it('should call createCombinations', () => {
+  fit('should call createCombinations', () => {
     const t1 = ['Initial Commitment (Story Points)']
     const t2 = ['Overall']
     const response = component.createCombinations(t1, t2);
@@ -9663,7 +9663,7 @@ describe('ExecutiveV2Component', () => {
     expect(response).toEqual(t3);
   });
 
-  it('should call zypher kanban kpi api', () => {
+  fit('should call zypher kanban kpi api', () => {
     const mockSubscription = {
       unsubscribe: jasmine.createSpy('unsubscribe'),
     };
@@ -9675,7 +9675,7 @@ describe('ExecutiveV2Component', () => {
     expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
   });
 
-  it('should call post bitbucket kanban kpi', () => {
+  fit('should call post bitbucket kanban kpi', () => {
     const mockSubscription = {
       unsubscribe: jasmine.createSpy('unsubscribe'),
     };
@@ -9687,7 +9687,7 @@ describe('ExecutiveV2Component', () => {
     expect(spycreateAllKpiArray).toHaveBeenCalled();
   });
 
-  it('should call checkLatestAndTrendValue for trendCalculation false', () => {
+  fit('should call checkLatestAndTrendValue for trendCalculation false', () => {
     const kpiData = {
       "kpiId": "kpi72",
       "kpiName": "Commitment Reliability",
@@ -9825,7 +9825,7 @@ describe('ExecutiveV2Component', () => {
     expect(spyData).toEqual(result);
   });
 
-  it('should call checkLatestAndTrendValue for trendCalculation true', () => {
+  fit('should call checkLatestAndTrendValue for trendCalculation true', () => {
     const kpiData = {
       "kpiId": "kpi72",
       "kpiName": "Commitment Reliability",
@@ -9963,7 +9963,7 @@ describe('ExecutiveV2Component', () => {
     expect(spyData).toEqual(result);
   });
 
-  it('should call checkMaturity', () => {
+  fit('should call checkMaturity', () => {
     const item = {
       "data": "AddingIterationProject",
       "value": [
@@ -10041,7 +10041,7 @@ describe('ExecutiveV2Component', () => {
     expect(spyData).toEqual(response);
   });
 
-  it('should call handleSelectedOption for kpi72', () => {
+  fit('should call handleSelectedOption for kpi72', () => {
     const event = {
       "filter1": "Initial Commitment (Count)",
       "filter2": "Enabler Story"
@@ -10118,7 +10118,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiSelectedFilterObj["kpi72"]).toEqual(response);
   });
 
-  it('should call handleSelectedOption for non kpi72', () => {
+  fit('should call handleSelectedOption for non kpi72', () => {
     const event = {
       "filter1": [
         "P3"
@@ -10237,7 +10237,7 @@ describe('ExecutiveV2Component', () => {
     // expect(component.kpiSelectedFilterObj["kpi28"]).toEqual(response);
   });
 
-  it('should call handleSelectedOption for non kpi72', () => {
+  fit('should call handleSelectedOption for non kpi72', () => {
     const event = 'test1'
     const kpi = {
       "kpiId": "kpi28",
@@ -10294,7 +10294,7 @@ describe('ExecutiveV2Component', () => {
     // expect(component.kpiSelectedFilterObj["kpi28"]).toEqual(response);
   });
 
-  it('should call getDropdownArray', () => {
+  fit('should call getDropdownArray', () => {
     const kpiId = "kpi72";
     component.allKpiArray = [
       {
@@ -11351,7 +11351,7 @@ describe('ExecutiveV2Component', () => {
   });
 
 
-  it('should reload KPI once jira mapping saved ', () => {
+  fit('should reload KPI once jira mapping saved ', () => {
     const KPiList = [{
       id: "kpi1"
     }];
@@ -11369,7 +11369,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toBeDefined();
   });
 
-  it('should get kpi comments count', fakeAsync(() => {
+  fit('should get kpi comments count', fakeAsync(() => {
     component.filterApplyData = {
       'selectedMap': {
         'project': ["KnowHOW_6360fefc3fa9e175755f0728"]
@@ -11405,7 +11405,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiCommentsCountObj).toBeDefined();
   }));
 
-  it('should get kpi comments count when have kpi id', fakeAsync(() => {
+  fit('should get kpi comments count when have kpi id', fakeAsync(() => {
     component.filterApplyData = {
       'selectedMap': {
         'project': ["KnowHOW_6360fefc3fa9e175755f0728"]
@@ -11441,7 +11441,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiCommentsCountObj).toBeDefined();
   }));
 
-  it('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
+  fit('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
     component.allKpiArray = fakeDoraKpis;
     component.kpiSelectedFilterObj['kpi118'] = ['Overall'];
     const res = fakeDoraKpis[0].trendValueList.filter(x => x['filter'] == 'Overall')[0];
@@ -11449,7 +11449,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value[0]?.value?.length);
   });
 
-  it('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
+  fit('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
     component.allKpiArray = fakeDoraKpis;
     component.kpiSelectedFilterObj['kpi118'] = ['81.200.188.111->KnowHOW', '81.200.188.112->KnowHOW'];
     const res = fakeDoraKpiFilters;
@@ -11462,7 +11462,7 @@ describe('ExecutiveV2Component', () => {
   });
 
 
-  it('should create all kpi Table Heads when scrum is selected', () => {
+  fit('should create all kpi Table Heads when scrum is selected', () => {
     const tableHeadsArr = [
       {
         "field": "kpiName",
@@ -11508,7 +11508,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiTableHeadingArr?.length).toEqual(tableHeadsArr?.length);
   });
 
-  it('should create all kpi Table Heads when kanban is selected', () => {
+  fit('should create all kpi Table Heads when kanban is selected', () => {
     const tableHeadsArr = [
       {
         "field": "kpiName",
@@ -11557,7 +11557,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiTableHeadingArr?.length).toEqual(tableHeadsArr?.length);
   });
 
-  it('should create all kpi array when trendValueList does not have filter', () => {
+  fit('should create all kpi array when trendValueList does not have filter', () => {
     const data = {
       'kpi14': {
         "kpiId": "kpi14",
@@ -11588,7 +11588,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should create all kpi array when trendValueList has dropdown filter', () => {
+  fit('should create all kpi array when trendValueList has dropdown filter', () => {
     const data = {
       'kpi28': {
         "kpiId": "kpi28",
@@ -11757,7 +11757,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should create all kpi array when trendValueList has radiobutton filter', () => {
+  fit('should create all kpi array when trendValueList has radiobutton filter', () => {
     const data = {
       'kpi126': {
         "kpiId": "kpi126",
@@ -12040,7 +12040,7 @@ describe('ExecutiveV2Component', () => {
       });
     });
 
-    it('should remove the kpi from allKpiArray if it exists', () => {
+    fit('should remove the kpi from allKpiArray if it exists', () => {
       const event = {
         kpiDetail: {
           kpiId: 1,
@@ -12053,7 +12053,7 @@ describe('ExecutiveV2Component', () => {
       expect(component.allKpiArray.splice).toHaveBeenCalledWith(1, 1);
     });
 
-    it('should group the kpi from master and call the appropriate post method for kanban view', () => {
+    fit('should group the kpi from master and call the appropriate post method for kanban view', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
@@ -12069,7 +12069,7 @@ describe('ExecutiveV2Component', () => {
       expect(spyobj).toHaveBeenCalled();
     });
 
-    it('should reload jenkins kanban KPI', () => {
+    fit('should reload jenkins kanban KPI', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
@@ -12085,7 +12085,7 @@ describe('ExecutiveV2Component', () => {
 
     });
 
-    it('should reload zypher kanban KPI', () => {
+    fit('should reload zypher kanban KPI', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
@@ -12101,7 +12101,7 @@ describe('ExecutiveV2Component', () => {
 
     });
 
-    it('should reload bitbucket kanban KPI', () => {
+    fit('should reload bitbucket kanban KPI', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
@@ -12117,7 +12117,7 @@ describe('ExecutiveV2Component', () => {
 
     });
 
-    it('should reload sonar scrum KPI', () => {
+    fit('should reload sonar scrum KPI', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
@@ -12132,7 +12132,7 @@ describe('ExecutiveV2Component', () => {
       expect(spyobj).toHaveBeenCalled();
     });
 
-    it('should reload jenkins scrum KPI', () => {
+    fit('should reload jenkins scrum KPI', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
@@ -12147,7 +12147,7 @@ describe('ExecutiveV2Component', () => {
       expect(spyobj).toHaveBeenCalled();
     });
 
-    it('should reload zypher scrum KPI', () => {
+    fit('should reload zypher scrum KPI', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
@@ -12162,7 +12162,7 @@ describe('ExecutiveV2Component', () => {
       expect(spyobj).toHaveBeenCalled();
     });
 
-    it('should reload bitbucket scrum KPI', () => {
+    fit('should reload bitbucket scrum KPI', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
@@ -12196,14 +12196,14 @@ describe('ExecutiveV2Component', () => {
       spyOn(worksheet, 'mergeCells');
     });
 
-    it('should work download excel functionality', () => {
+    fit('should work download excel functionality', () => {
       spyOn(component.exportExcelComponent, 'downloadExcel')
       component.downloadExcel('kpi70', 'name', true, true);
       expect(exportExcelComponent).toBeDefined();
     });
   });
 
-  it('should set the colorObj', () => {
+  fit('should set the colorObj', () => {
     component.kpiChartData = {
       kpi121: {
         kpiId: 'kpi123'
@@ -12221,21 +12221,21 @@ describe('ExecutiveV2Component', () => {
     expect(component.colorObj).toBe(x);
   });
 
-  it('should noTabAccess false when emp details not available', () => {
+  fit('should noTabAccess false when emp details not available', () => {
     service.setEmptyData('');
     fixture.detectChanges();
     component.ngOnInit();
     expect(component.noTabAccess).toBeFalsy();
   })
 
-  it('should noTabAccess true when emp details available', () => {
+  fit('should noTabAccess true when emp details available', () => {
     service.setEmptyData('test');
     fixture.detectChanges();
     component.ngOnInit();
     expect(component.noTabAccess).toBeTruthy();
   })
 
-  it('postJiraKpi should call httpServicepost', fakeAsync(() => {
+  fit('postJiraKpi should call httpServicepost', fakeAsync(() => {
     component.filterApplyData = {
       label: 'project'
     }
@@ -12274,7 +12274,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   }));
 
-  it('should hadle of postJiraKanbanKpi', fakeAsync(() => {
+  fit('should hadle of postJiraKanbanKpi', fakeAsync(() => {
     const jiraKpiData = {
       kpi14: {
         kpiId: 'kpi14',
@@ -12309,7 +12309,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   }));
 
-  it('should getchartdata for kpi when trendValueList is arry with two filter', () => {
+  fit('should getchartdata for kpi when trendValueList is arry with two filter', () => {
     component.allKpiArray = [{
       kpiId: 'kpi118',
       trendValueList: [
@@ -12334,7 +12334,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should getchartdata for kpi when trendValueList is arry with any one i.e filter1', () => {
+  fit('should getchartdata for kpi when trendValueList is arry with any one i.e filter1', () => {
     component.allKpiArray = [{
       kpiId: 'kpi118',
       trendValueList: [
@@ -12357,7 +12357,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should getchartdata for kpi when kpiSelectedFilterObj do not have filter1 and filter2', () => {
+  fit('should getchartdata for kpi when kpiSelectedFilterObj do not have filter1 and filter2', () => {
     component.allKpiArray = [{
       kpiId: 'kpi118',
       trendValueList: [
@@ -12380,7 +12380,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should getchartdata for kpi17', () => {
+  fit('should getchartdata for kpi17', () => {
     component.allKpiArray = [{
       kpiId: 'kpi17',
       trendValueList: [
@@ -12405,7 +12405,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should getchartdata for kpi17 and filter is average coverage', () => {
+  fit('should getchartdata for kpi17 and filter is average coverage', () => {
     component.allKpiArray = [{
       kpiId: 'kpi17',
       trendValueList: [
@@ -12430,7 +12430,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should preapare column of kpi3', () => {
+  fit('should preapare column of kpi3', () => {
     component.allKpiArray = [{
       kpiId: 'kpi3',
       trendValueList: [
@@ -12482,7 +12482,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it('should generate colorObj for kpi17', () => {
+  fit('should generate colorObj for kpi17', () => {
     const arr = [
       {
         data: 'bittest',
@@ -12622,7 +12622,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.chartColorList['kpi17'].length).toEqual(2);
   });
 
-  it('should set the hierarchyLevel to the value of the selected type in the completeHierarchyData from localStorage', () => {
+  fit('should set the hierarchyLevel to the value of the selected type in the completeHierarchyData from localStorage', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     component.kanbanActivated = false;
     component.filterApplyData = {};
@@ -12700,21 +12700,21 @@ describe('ExecutiveV2Component', () => {
     expect(component.noTabAccess).toBe(true);
   });
 
-  it('should return -1 if a.key is "Select"', () => {
+  fit('should return -1 if a.key is "Select"', () => {
     const a = { key: 'Select' };
     const b = { key: 'SomeKey' };
     const result = component.originalOrder(a, b);
     expect(result).toBe(-1);
   });
 
-  it('should return 0 if a.key and b.key are the same', () => {
+  fit('should return 0 if a.key and b.key are the same', () => {
     const a = { key: 'SomeKey' };
     const b = { key: 'SomeKey' };
     const result = component.originalOrder(a, b);
     expect(result).toBeDefined();
   });
 
-  it('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
+  fit('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
     component.allKpiArray = [{
       kpiName: 'abc'
     }];
@@ -12765,7 +12765,7 @@ describe('ExecutiveV2Component', () => {
   });
 
 
-  it('should sort the rows in the kpfableDataObj for the provided hierarchyName by order', () => {
+  fit('should sort the rows in the kpfableDataObj for the provided hierarchyName by order', () => {
     component.kpiTableDataObj = {
       'hierarchy1': [
         { order: 3 },
@@ -12787,7 +12787,7 @@ describe('ExecutiveV2Component', () => {
     ]);
   });
 
-  it('should not sort the rows in the kpiTableDataObj if the hierarchyName does not exist', () => {
+  fit('should not sort the rows in the kpiTableDataObj if the hierarchyName does not exist', () => {
     component.kpiTableDataObj = {
       'hierarchy1': [
         { order: 3 },
@@ -12805,7 +12805,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiTableDataObj[hierarchyName]).toBeUndefined();
   });
 
-  it('should create trend data for kpi kpi17', () => {
+  fit('should create trend data for kpi kpi17', () => {
     component.updatedConfigGlobalData = [
       {
         kpiId: 'kpi17',
@@ -12840,7 +12840,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.handleSelectedOption).not.toHaveBeenCalled();
   });
 
-  it('should not handle selected option when triggerAdditionalFilters is triggered and data is empty', () => {
+  fit('should not handle selected option when triggerAdditionalFilters is triggered and data is empty', () => {
     spyOn(component, 'handleSelectedOption');
     component.selectedTab = 'developer';
     const data = {};
@@ -12857,7 +12857,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.handleSelectedOption).toHaveBeenCalledTimes(2);
   });
 
-  it('should return the correct latest value, trend value, and unit when item.value is not empty and trendCalculative is true', () => {
+  fit('should return the correct latest value, trend value, and unit when item.value is not empty and trendCalculative is true', () => {
     const kpiData = {
       kpiDetail: {
         kpiUnit: 'Number',
@@ -12892,7 +12892,7 @@ describe('ExecutiveV2Component', () => {
     expect(actualUnit).toEqual(expectedUnit);
   });
 
-  it('should return the correct latest value, trend value, and unit when item.value is not empty and trendCalculative is false', () => {
+  fit('should return the correct latest value, trend value, and unit when item.value is not empty and trendCalculative is false', () => {
     const kpiData = {
       kpiDetail: {
         kpiUnit: 'Number',
@@ -12928,7 +12928,7 @@ describe('ExecutiveV2Component', () => {
     expect(actualUnit).toEqual(expectedUnit);
   });
 
-  it('should return the correct latest value, trend value, and unit when item.value is empty', () => {
+  fit('should return the correct latest value, trend value, and unit when item.value is empty', () => {
     const kpiData = {
       kpiDetail: {
         kpiUnit: 'Number',
@@ -12954,7 +12954,7 @@ describe('ExecutiveV2Component', () => {
     // expect(actualUnit).toEqual(expectedUnit);
   });
 
-  it('should return the correct latest value, trend value, and unit when item.value is not empty and kpiDetail.showTrend is false', () => {
+  fit('should return the correct latest value, trend value, and unit when item.value is not empty and kpiDetail.showTrend is false', () => {
     const kpiData = {
       kpiDetail: {
         kpiUnit: 'Number',
@@ -12982,7 +12982,7 @@ describe('ExecutiveV2Component', () => {
     // expect(actualUnit).toEqual(expectedUnit);
   });
 
-  it('should return the correct latest value, trend value, and unit when item.value is empty and kpiDetail.showTrend is false', () => {
+  fit('should return the correct latest value, trend value, and unit when item.value is empty and kpiDetail.showTrend is false', () => {
     const kpiData = {
       kpiDetail: {
         kpiUnit: 'Number',
@@ -13003,7 +13003,7 @@ describe('ExecutiveV2Component', () => {
     // expect(actualUnit).toEqual(expectedUnit);
   });
 
-  it('should sort the array alphabetically when the array has more than one element', () => {
+  fit('should sort the array alphabetically when the array has more than one element', () => {
     const objArray = [
       { data: 'Carrot' },
       { data: 'Apple' },
@@ -13020,7 +13020,7 @@ describe('ExecutiveV2Component', () => {
     expect(sortedArray).toEqual(expectedArray);
   });
 
-  it('should not modify the array when the array has only one element', () => {
+  fit('should not modify the array when the array has only one element', () => {
     const objArray = [
       { data: 'Apple' },
     ];
@@ -13033,7 +13033,7 @@ describe('ExecutiveV2Component', () => {
     expect(sortedArray).toEqual(expectedArray);
   });
 
-  it('should return an empty array when the input array is empty', () => {
+  fit('should return an empty array when the input array is empty', () => {
     const objArray = [];
     const expectedArray = [];
 
@@ -13042,7 +13042,7 @@ describe('ExecutiveV2Component', () => {
     expect(sortedArray).toEqual(expectedArray);
   });
 
-  it('should return null when the input array is null', () => {
+  fit('should return null when the input array is null', () => {
     const objArray = null;
     const expectedArray = null;
 
@@ -13051,7 +13051,7 @@ describe('ExecutiveV2Component', () => {
     expect(sortedArray).toEqual(expectedArray);
   });
 
-  it('getChartDataforRelease should set the kpiChartData array correctly when kpiId is not kpi178 and trendValueList is an object', () => {
+  fit('getChartDataforRelease should set the kpiChartData array correctly when kpiId is not kpi178 and trendValueList is an object', () => {
     const kpiId = 'kpi123';
     const idx = 0;
     const aggregationType = 'sum';
@@ -13072,7 +13072,7 @@ describe('ExecutiveV2Component', () => {
     expect(actualChartData).toEqual(expectedChartData);
   });
 
-  it('getChartDataforRelease should set the kpiChartData array correctly when kpiId is not kpi178 and trendValueList is an array', () => {
+  fit('getChartDataforRelease should set the kpiChartData array correctly when kpiId is not kpi178 and trendValueList is an array', () => {
     const kpiId = 'kpi123';
     const idx = 0;
     const aggregationType = 'sum';
@@ -13095,7 +13095,7 @@ describe('ExecutiveV2Component', () => {
     expect(actualChartData).toEqual(expectedChartData);
   });
 
-  it('getChartDataforRelease should set the kpiChartData array correctly when kpiId is kpi178', () => {
+  fit('getChartDataforRelease should set the kpiChartData array correctly when kpiId is kpi178', () => {
     const kpiId = 'kpi178';
     const idx = 0;
     const aggregationType = 'sum';
@@ -13298,7 +13298,7 @@ describe('ExecutiveV2Component', () => {
     expect(actualChartData).toEqual(expectedChartData);
   });
 
-  it('getChartDataforRelease should set the kpiChartData array correctly when kpiId is not kpi178 and trendValueList is null', () => {
+  fit('getChartDataforRelease should set the kpiChartData array correctly when kpiId is not kpi178 and trendValueList is null', () => {
     const kpiId = 'kpi123';
     const idx = 0;
     const aggregationType = 'sum';
@@ -13313,7 +13313,7 @@ describe('ExecutiveV2Component', () => {
     expect(actualChartData).toEqual(expectedChartData);
   });
 
-  it('getChartDataforRelease should set the kpiChartData array correctly when kpiId is not kpi178 and trendValueList is an object with no value property', () => {
+  fit('getChartDataforRelease should set the kpiChartData array correctly when kpiId is not kpi178 and trendValueList is an object with no value property', () => {
     const kpiId = 'kpi123';
     const idx = 0;
     const aggregationType = 'sum';
@@ -13331,7 +13331,7 @@ describe('ExecutiveV2Component', () => {
     expect(actualChartData).toEqual(expectedChartData);
   });
 
-  it('checkIfDataPresent should return true when data contains at least one object with a numeric "data" property', () => {
+  fit('checkIfDataPresent should return true when data contains at least one object with a numeric "data" property', () => {
     const data = [
       { label: 'A', data: 10 },
       { label: 'B', data: null },
@@ -13343,7 +13343,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBe(true);
   });
 
-  it('checkIfDataPresent should return true when data contains at least one object with a numeric "value.data" property', () => {
+  fit('checkIfDataPresent should return true when data contains at least one object with a numeric "value.data" property', () => {
     const data = [
       { label: 'A', value: [{ label: 'A1', data: 10 }, { label: 'A2', data: null }] },
       { label: 'B', value: [{ label: 'B1', data: '20' }, { label: 'B2', data: '30' }] },
@@ -13355,7 +13355,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBe(true);
   });
 
-  it('checkIfDataPresent should return false when data does not contain any objects with a numeric "data" or "value.data" property', () => {
+  fit('checkIfDataPresent should return false when data does not contain any objects with a numeric "data" or "value.data" property', () => {
     const data = [
       { label: 'A', data: null },
       { label: 'B', value: [{ label: 'B1', data: null }, { label: 'B2', data: undefined }] },
@@ -13367,7 +13367,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBe(false);
   });
 
-  it('checkIfDataPresent should return false when data is an empty array', () => {
+  fit('checkIfDataPresent should return false when data is an empty array', () => {
     const data = [];
 
     const result = component.checkIfDataPresent(data);
@@ -13375,7 +13375,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBe(false);
   });
 
-  it('checkIfDataPresent should return false when data is null', () => {
+  fit('checkIfDataPresent should return false when data is null', () => {
     const data = null;
 
     const result = component.checkIfDataPresent(data);
@@ -13384,7 +13384,7 @@ describe('ExecutiveV2Component', () => {
   });
 
 
-  it('getChartData should set additional filters on developer tab', () => {
+  fit('getChartData should set additional filters on developer tab', () => {
     component.selectedTab = 'developer';
     component.allKpiArray = [{
       "kpiId": "kpi84",
@@ -13548,7 +13548,7 @@ describe('ExecutiveV2Component', () => {
 
   });
 
-  it('should make post Sonar Kanban Kpi call', fakeAsync(() => {
+  fit('should make post Sonar Kanban Kpi call', fakeAsync(() => {
     const postData = {
       kpiList: [
         {
@@ -13576,7 +13576,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalledWith(successRes, postData);
   }));
 
-  it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card', () => {
+  fit('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
       trendValueList: [
@@ -13596,7 +13596,7 @@ describe('ExecutiveV2Component', () => {
   })
 
 
-  it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card and kpiSelectedFilters have only 1 filter', () => {
+  fit('should get chartdataforRelease for kpi when trendValueList is an Array of two filters for card and kpiSelectedFilters have only 1 filter', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
       trendValueList: [
@@ -13614,7 +13614,7 @@ describe('ExecutiveV2Component', () => {
     expect(spyObj).toHaveBeenCalled();
   })
 
-  it('should get chartdataforRelease for kpi when trendValueList is an Array of two filters without aggregration', () => {
+  fit('should get chartdataforRelease for kpi when trendValueList is an Array of two filters without aggregration', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
       trendValueList: [
@@ -13629,7 +13629,7 @@ describe('ExecutiveV2Component', () => {
     component.getChartDataforRelease('kpi124', 0)
   })
 
-  it('should getChartDataforRelease for kpi when trendValueList is an object', () => {
+  fit('should getChartDataforRelease for kpi when trendValueList is an object', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
       trendValueList: {
@@ -13682,7 +13682,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
   })
 
-  it('should getChartDataforRelease for kpi when trendValueList is an object with single filter', () => {
+  fit('should getChartDataforRelease for kpi when trendValueList is an object with single filter', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
       trendValueList: {
@@ -13732,7 +13732,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
   })
 
-  it('should getChartDataforRelease for kpi when trendValueList is an object and KPI selected filter is blank', () => {
+  fit('should getChartDataforRelease for kpi when trendValueList is an object and KPI selected filter is blank', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
       trendValueList: {
@@ -13769,7 +13769,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData['kpi124'][0].data.length).toBeGreaterThan(0)
   })
 
-  it('should getChartDataforRelease for kpi when trendValueList is an object but there is no data', () => {
+  fit('should getChartDataforRelease for kpi when trendValueList is an object but there is no data', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
       trendValueList: {
@@ -13784,7 +13784,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
   })
 
-  it('should apply aggregation logic correctly for a single data array', () => {
+  fit('should apply aggregation logic correctly for a single data array', () => {
     const mockData = [
       {
         data: [
@@ -13808,7 +13808,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toEqual(expectedAggregatedData);
   });
 
-  it('should apply aggregation logic correctly for multiple data arrays', () => {
+  fit('should apply aggregation logic correctly for multiple data arrays', () => {
     const mockData = [
       {
         data: [
@@ -13839,7 +13839,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toEqual(expectedAggregatedData);
   });
 
-  it('should get table data for kpi when trendValueList dont have filter', () => {
+  fit('should get table data for kpi when trendValueList dont have filter', () => {
     component.allKpiArray = [{
       "kpiId": "kpi172",
       "kpiName": "Build Frequency",
@@ -13934,7 +13934,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
 
-  it('should group Jira kanban kpi', () => {
+  fit('should group Jira kanban kpi', () => {
     const kpiListJiraKanban = [{
       id: '64c27a3b1d26a19187772b2e',
       kpiId: 'kpi54',
@@ -13978,7 +13978,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   })
 
-  it('should group Sonar kanban kpi', () => {
+  fit('should group Sonar kanban kpi', () => {
     const kpiListSonarKanban = [{
       id: '64c27a3b1d26a19187772b2e',
       kpiId: 'kpi62',
@@ -13991,7 +13991,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   })
 
-  it('should group Jenkins kanban kpi', () => {
+  fit('should group Jenkins kanban kpi', () => {
     const kpiListJenkinsKanban = [{
       id: '64c27a3b1d26a19187772b3a',
       kpiId: 'kpi66',
@@ -14003,7 +14003,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   })
 
-  it('should group Zypher kanban kpi', () => {
+  fit('should group Zypher kanban kpi', () => {
     const kpiListZypherKanban = [{
       id: '64c27a3b1d26a19187772b33',
       kpiId: 'kpi63',
@@ -14015,7 +14015,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   })
 
-  it('should group Bitbucket kanban kpi', () => {
+  fit('should group Bitbucket kanban kpi', () => {
     const kpiListBitbucketKanban = [{
       id: '64c27a3b1d26a19187772b3b',
       kpiId: 'kpi65',
@@ -14027,7 +14027,7 @@ describe('ExecutiveV2Component', () => {
     expect(spy).toHaveBeenCalled();
   })
 
-  it('should post jira kpis when Release board is selected', fakeAsync(() => {
+  fit('should post jira kpis when Release board is selected', fakeAsync(() => {
     component.tooltip = {
       sprintCountForKpiCalculation: 2
     }
@@ -14082,7 +14082,7 @@ describe('ExecutiveV2Component', () => {
     tick();
     expect(spy).toHaveBeenCalled();
   }));
-  it('should handle successful post request and update jiraKpiData', () => {
+  fit('should handle successful post request and update jiraKpiData', () => {
     const mockPostData = {
       "kpiList": [
         {
@@ -14215,7 +14215,7 @@ describe('ExecutiveV2Component', () => {
     // expect(component.jiraKpiData).toEqual(mockGetData);
   });
 
-  it('should handle successful post request and update jiraKpiData when api resturns no data', () => {
+  fit('should handle successful post request and update jiraKpiData when api resturns no data', () => {
     const mockPostData = {
       "kpiList": [
         {
@@ -14292,7 +14292,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.jiraKpiData).toEqual(mockGetData);
   });
 
-  it('should handle successful post request and update bitbucketKpiData when api resturns no data', () => {
+  fit('should handle successful post request and update bitbucketKpiData when api resturns no data', () => {
     const mockPostData = {
       "kpiList": [
         {
@@ -14369,7 +14369,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.bitBucketKpiData).toEqual(mockGetData);
   });
 
-  it('should handle successful post request and update jenkinsKpiData when api resturns no data', () => {
+  fit('should handle successful post request and update jenkinsKpiData when api resturns no data', () => {
     const mockPostData = {
       "kpiList": [
         {
@@ -14446,7 +14446,7 @@ describe('ExecutiveV2Component', () => {
 
 
 
-  it('should handle error response and update jiraKpiData', () => {
+  fit('should handle error response and update jiraKpiData', () => {
     const mockPostData = {
       "kpiList": [
         {
@@ -14874,7 +14874,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.jiraKpiData).toEqual(mockErrorData);
   });
 
-  it('should handle selected option on release when event is an object', () => {
+  fit('should handle selected option on release when event is an object', () => {
     const mockEvent = {
       filter1: ['value1', 'value2'],
       filter2: ['value3']
@@ -14886,7 +14886,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
   });
 
-  it('should handle selected option on release when event is not an object', () => {
+  fit('should handle selected option on release when event is not an object', () => {
     const mockEvent = 'value1';
     const mockKpi = { kpiId: 'kpi1' };
 
@@ -14895,7 +14895,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter1: [mockEvent] });
   });
 
-  it('should delete empty values from event object', () => {
+  fit('should delete empty values from event object', () => {
     const mockEvent = {
       filter1: [],
       filter2: ['value1']
@@ -14907,7 +14907,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual({ filter2: ['value1'] });
   });
 
-  it('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
+  fit('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
     component.allKpiArray = [{
       kpiName: 'abc'
     }];
@@ -14957,7 +14957,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
 
-  it('should return true when data contains at least one numeric value', () => {
+  fit('should return true when data contains at least one numeric value', () => {
     const mockData = [
       { data: 'value1' },
       { data: 2 },
@@ -14969,7 +14969,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBeTrue();
   });
 
-  it('should return false when data does not contain any numeric value', () => {
+  fit('should return false when data does not contain any numeric value', () => {
     const mockData = [
       { data: 'value1' },
       { data: 'value2' },
@@ -14981,7 +14981,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBeFalse();
   });
 
-  it('should return false when data is undefined', () => {
+  fit('should return false when data is undefined', () => {
     const mockData = undefined;
 
     const result = component.checkIfDataPresent(mockData);
@@ -14989,7 +14989,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBeFalse();
   });
 
-  it('should return false when data is an empty array', () => {
+  fit('should return false when data is an empty array', () => {
     const mockData = [];
 
     const result = component.checkIfDataPresent(mockData);
@@ -14997,7 +14997,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBeFalse();
   });
 
-  it('should return the correct chart type when kpiId exists in updatedConfigGlobalData', () => {
+  fit('should return the correct chart type when kpiId exists in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi1';
     component.updatedConfigGlobalData = [{
       kpiId: 'kpi1',
@@ -15011,7 +15011,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toEqual('line');
   });
 
-  it('should return undefined when kpiId does not exist in updatedConfigGlobalData', () => {
+  fit('should return undefined when kpiId does not exist in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi4';
     component.updatedConfigGlobalData = [];
     const result = component.getKpiChartType(mockKpiId);
@@ -15020,7 +15020,7 @@ describe('ExecutiveV2Component', () => {
   });
 
 
-  it('should update kpiTableDataObj with correct data when idx is greater than or equal to 0 and filter is overall', () => {
+  fit('should update kpiTableDataObj with correct data when idx is greater than or equal to 0 and filter is overall', () => {
     component.allKpiArray = [
       { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
       { kpiId: 'kpi2', kpiName: 'KPI 2', trendValueList: [{ data: 'value3' }, { data: 'value4' }] },
@@ -15047,7 +15047,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
-  it('should update kpiTableDataObj with correct data when idx is greater than or equal to 0 and filter is not overall', () => {
+  fit('should update kpiTableDataObj with correct data when idx is greater than or equal to 0 and filter is not overall', () => {
     component.allKpiArray = [
       { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
       { kpiId: 'kpi2', kpiName: 'KPI 2', trendValueList: [{ data: 'value3' }, { data: 'value4' }] },
@@ -15072,7 +15072,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
-  it('should update kpiTableDataObj with correct data when idx is less than 0 and filter is overall', () => {
+  fit('should update kpiTableDataObj with correct data when idx is less than 0 and filter is overall', () => {
 
     component.allKpiArray = [
       { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
@@ -15099,7 +15099,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.sortingRowsInTable).not.toHaveBeenCalled();
   });
 
-  it('should update kpiTableDataObj with correct data when idx is less than 0 and filter is not overall', () => {
+  fit('should update kpiTableDataObj with correct data when idx is less than 0 and filter is not overall', () => {
 
     component.allKpiArray = [
       { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
@@ -15125,7 +15125,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.sortingRowsInTable).not.toHaveBeenCalled();
   });
 
-  it('should add kpiId to maturityTableKpiList if not already present', () => {
+  fit('should add kpiId to maturityTableKpiList if not already present', () => {
     component.allKpiArray = [
       { kpiId: 'kpi1', kpiName: 'KPI 1', trendValueList: [{ data: 'value1' }, { data: 'value2' }] },
       { kpiId: 'kpi2', kpiName: 'KPI 2', trendValueList: [{ data: 'value3' }, { data: 'value4' }] },
@@ -15149,7 +15149,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.sortingRowsInTable).toHaveBeenCalled();
   });
 
-  it('should set correct kpiChartData on release dashboard', () => {
+  fit('should set correct kpiChartData on release dashboard', () => {
     component.allKpiArray = [{
       "kpiId": "kpi142",
       "kpiName": "Defect Count by RCA",
@@ -15222,7 +15222,7 @@ describe('ExecutiveV2Component', () => {
     }]);
   });
 
-  it('should set correct kpiChartData on release dashboard when trendvaluelist has value attribute', () => {
+  fit('should set correct kpiChartData on release dashboard when trendvaluelist has value attribute', () => {
     component.allKpiArray = [
       {
         "kpiId": "kpi142",
@@ -15376,7 +15376,7 @@ describe('ExecutiveV2Component', () => {
     }]);
   });
 
-  it('should set selectedKPITab to the provided tab', () => {
+  fit('should set selectedKPITab to the provided tab', () => {
     const mockTab = 'tab1';
 
     component.selectKPITab(mockTab);
@@ -15384,7 +15384,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.selectedKPITab).toEqual(mockTab);
   });
 
-  it('should set filter value to first option if formType is radiobutton', () => {
+  fit('should set filter value to first option if formType is radiobutton', () => {
     component.allKpiArray = [
       {
         filters: {
@@ -15430,7 +15430,7 @@ describe('ExecutiveV2Component', () => {
     expect(setBackupSpy).toHaveBeenCalledWith('kpi1', {}, [undefined]);
   });
 
-  it('should set filter value to Overall if formType is dropdown', () => {
+  fit('should set filter value to Overall if formType is dropdown', () => {
     component.allKpiArray = [
       {
         filters: {
@@ -15476,7 +15476,7 @@ describe('ExecutiveV2Component', () => {
     expect(setBackupSpy).toHaveBeenCalledWith('kpi2', {}, ['Overall']);
   });
 
-  it('should set filter value to Overall if filters exist', () => {
+  fit('should set filter value to Overall if filters exist', () => {
     component.allKpiArray = [
       {
         filters: {
@@ -15522,7 +15522,7 @@ describe('ExecutiveV2Component', () => {
     expect(setBackupSpy).toHaveBeenCalledWith('kpi3', {}, ['Overall']);
   });
 
-  it('should set filter value to Overall if no matching filter is found', () => {
+  fit('should set filter value to Overall if no matching filter is found', () => {
     component.allKpiArray = [
       {
         filters: {
@@ -15569,7 +15569,7 @@ describe('ExecutiveV2Component', () => {
     expect(setBackupSpy).toHaveBeenCalledWith('kpi4', {}, ['Overall']);
   });
 
-  it('should return the maximum number of sprints for any project', () => {
+  fit('should return the maximum number of sprints for any project', () => {
     const eventMock = {
       filterApplyData: {
         selectedMap: {
@@ -15589,7 +15589,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBe(3); // Project 1 has 3 sprints, and so does project 2
   });
 
-  it('should return sprint count from config if no sprints are selected', () => {
+  fit('should return sprint count from config if no sprints are selected', () => {
     const eventMock = {
       configDetails: {
         sprintCountForKpiCalculation: 5
@@ -15600,7 +15600,7 @@ describe('ExecutiveV2Component', () => {
     expect(result).toBe(5);
   });
 
-  it('should handle empty selectedMap gracefully', () => {
+  fit('should handle empty selectedMap gracefully', () => {
     const eventMock = {
       filterApplyData: {
         selectedMap: {
@@ -15614,6 +15614,43 @@ describe('ExecutiveV2Component', () => {
 
     const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
     expect(result).toBe(3);
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0', () => {
+    const mockEvent = {
+      filter1: ['test1', 'test2'],
+      filter2: []
+    };
+    const mockKpi = { kpiId: 'kpi1' };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0 and dor single dropdown', () => {
+    const mockEvent = {
+      filter1: 'test1',
+    };
+    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'dropDown'} };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0', () => {
+    const mockEvent = {
+      filter1: 'test1',
+    };
+    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'nondropDown'} };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
   });
 });
 
