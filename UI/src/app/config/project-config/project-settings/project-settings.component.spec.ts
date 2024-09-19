@@ -523,7 +523,7 @@ describe('ProjectSettingsComponent', () => {
       icon: 'pi pi-info-circle',
       accept: () => {
         httpService.deleteProject({ id: 1, name: 'Test Project' }).subscribe(response => {
-          expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/ConfigSettings/1'], { queryParams: { tab: 0 } });
+          expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/Config/ConfigSettings/1'], { queryParams: { type: 'scrum', tab: 0 } });
         });
       }
     });

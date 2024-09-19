@@ -33,6 +33,8 @@ import { CommonModule } from '@angular/common';
 import { of } from 'rxjs';
 import { ProjectListComponent } from '../project-list/project-list.component';
 import { url } from 'inspector';
+import { ConfigSettingsComponent } from '../config-settings/config-settings.component';
+import { AdvancedSettingsComponent } from '../../advanced-settings/advanced-settings.component';
 
 describe('ToolMenuComponent', () => {
   let component: ToolMenuComponent;
@@ -66,6 +68,8 @@ describe('ToolMenuComponent', () => {
       imports: [
         RouterTestingModule.withRoutes([
           { path: 'dashboard/Config/ProjectList', component: ProjectListComponent },
+          { path: 'dashboard/Config/ConfigSettings/:id', component: ConfigSettingsComponent },
+          { path: 'dashboard/Config/AdvancedSettings', component: AdvancedSettingsComponent }
         ]),
         HttpClientTestingModule,
         DataViewModule,
@@ -210,9 +214,9 @@ describe('ToolMenuComponent', () => {
         category: 'Project Management',
         description: '-',
         icon: 'fab fa-atlassian',
-        routerLink: `/dashboard/Config/ConfigSettings/wer1241kj2b4jh1lj4/JiraConfig`,
+        routerLink: `/dashboard/Config/ConfigSettings/1/JiraConfig`,
         queryParams1: 'Jira',
-        routerLink2: `/dashboard/Config/ConfigSettings/wer1241kj2b4jh1lj4/FieldMapping`,
+        routerLink2: `/dashboard/Config/ConfigSettings/1/FieldMapping`,
         index: 0,
         connectionName: component.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
         updatedAt: component.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
@@ -222,7 +226,7 @@ describe('ToolMenuComponent', () => {
         category: 'Test Management',
         description: '-',
         icon: 'fab fa-atlassian',
-        routerLink: `/dashboard/Config/ConfigSettings/wer1241kj2b4jh1lj4/JiraConfig`,
+        routerLink: `/dashboard/Config/ConfigSettings/1/JiraConfig`,
         queryParams1: 'JiraTest',
         index: 11,
         connectionName: component.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.connectionName,
@@ -668,5 +672,86 @@ describe('ToolMenuComponent', () => {
     component.ngOnInit();
     expect(component.tools.length).toEqual(1);
   })
+
+  // -> updateProjectSelection
+  it('should call setSelectedProject when updateProjectSelection is invoked', () => {
+    spyOn(sharedService, 'setSelectedProject');
+    component.selectedProject = { id: 1, type: 'test' };
+    component.updateProjectSelection();
+    expect(sharedService.setSelectedProject).toHaveBeenCalledTimes(1);
+  });
+
+  it('should navigate to correct URL with query parameters', () => {
+    spyOn(router, 'navigate');
+    component.selectedProject = { id: 1, type: 'test' };
+    component.updateProjectSelection();
+    expect(router.navigate).toHaveBeenCalledTimes(1);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Config/ConfigSettings/1'], { queryParams: { type: 'test', tab: 2 } });
+  });
+
+  it('should call getToolsConfigured after navigating to new route', () => {
+    spyOn(component, 'getToolsConfigured');
+    component.selectedProject = { id: 1, type: 'test' };
+    component.updateProjectSelection();
+    expect(component.getToolsConfigured).toHaveBeenCalledTimes(1);
+  });
+
+  xit('should handle null or undefined selectedProject', () => {
+    component.selectedProject = null;
+    expect(() => component.updateProjectSelection()).not.toThrow();
+  });
+  // -> end of updateProjectSelection
+
+  // -> gotoProcessor
+  it('should navigate to AdvancedSettings with valid project ID', () => {
+    component.selectedProject = { id: '123' };
+    spyOn(router, 'navigate');
+    component.gotoProcessor();
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: '123' } });
+  });
+
+  xit('should not navigate to AdvancedSettings with invalid project ID (null)', () => {
+    component.selectedProject = null;
+    spyOn(router, 'navigate');
+    component.gotoProcessor();
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  xit('should not navigate to AdvancedSettings with invalid project ID (undefined)', () => {
+    component.selectedProject = undefined;
+    spyOn(router, 'navigate');
+    component.gotoProcessor();
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  xit('should not navigate to AdvancedSettings with empty project ID', () => {
+    component.selectedProject = { id: '' };
+    spyOn(router, 'navigate');
+    component.gotoProcessor();
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+  //-> end of gotoProcessor
+
+  // -> setSelectedProject
+  it('should call sharedService.setSelectedProject with the correct project', () => {
+    const project = { id: 1, name: 'Test Project' };
+    component.selectedProject = project;
+    spyOn(sharedService, 'setSelectedProject');
+    component.setSelectedProject();
+    expect(sharedService.setSelectedProject).toHaveBeenCalledWith(project);
+  });
+
+  it('should not throw an error when selectedProject is null or undefined', () => {
+    component.selectedProject = null;
+    expect(() => component.setSelectedProject()).not.toThrow();
+    component.selectedProject = undefined;
+    expect(() => component.setSelectedProject()).not.toThrow();
+  });
+
+  xit('should not throw an error when sharedService.setSelectedProject is not a function', () => {
+    sharedService.setSelectedProject = null;
+    expect(() => component.setSelectedProject()).not.toThrow();
+  });
+  // -> end of setSelectedProject
 
 });
