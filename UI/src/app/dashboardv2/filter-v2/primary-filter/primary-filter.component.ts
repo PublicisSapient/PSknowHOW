@@ -153,7 +153,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         if (this.filters?.length) {
           this.selectedFilters.push({ ...this.filters[0] });
         }
-        if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
+        if (this.primaryFilterConfig &&this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
         }
       }
