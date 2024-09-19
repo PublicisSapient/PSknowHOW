@@ -74,7 +74,6 @@ export class ConfigSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedProject = this.sharedService.getSelectedProject();
-    console.log('this.selectedProject ', this.selectedProject);
   }
 
   onTabChange() {

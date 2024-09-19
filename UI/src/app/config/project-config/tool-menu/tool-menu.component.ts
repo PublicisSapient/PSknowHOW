@@ -118,7 +118,7 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${this.selectedProject.type.toLowerCase()}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${this.selectedProject.type.toLowerCase()}&tab=2`) {
+        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${this.selectedProject.type?.toLowerCase()}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${this.selectedProject.type?.toLowerCase()}&tab=2`) {
           this.buttonText = 'Set Up';
           this.tools = [
             {
@@ -287,7 +287,7 @@ export class ToolMenuComponent implements OnInit {
           };
           this.projectTypeChange(fakeEvent, false);
           this.selectedType = jiraOrAzure[0].toolName === 'Azure';
-          const kpiID = this.selectedProject['Type'] === 'Kanban' ? 'kpi1' : 'kpi0';
+          const kpiID = this.selectedProject['type'] === 'Kanban' ? 'kpi1' : 'kpi0';
           let obj = {
             "releaseNodeId": null
           }
