@@ -60,7 +60,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
-      categoryValue : 'projectManagement',
+      categoryValue: 'projectManagement',
       categoryLabel: 'Project Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'IsOAuth', 'Private Key', 'Consumer Key', 'Share connection with everyone', 'Use bearer token', 'PAT OAuthToken', 'Is jaasKrbAuth', 'Jaas Config FilePath', 'Krb5 Config FilePath', 'Jaas User', 'Saml Endpoint', 'Select Authentication Type'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'isOAuth', 'privateKey', 'consumerKey', 'sharedConnection', 'bearerToken', 'patOAuthToken', 'jaasKrbAuth', 'jaasConfigFilePath', 'krb5ConfigFilePath', 'jaasUser', 'samlEndPoint', 'jiraAuthType']
@@ -68,7 +68,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
-      categoryValue : 'projectManagement',
+      categoryValue: 'projectManagement',
       categoryLabel: 'Project Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'sharedConnection']
@@ -76,7 +76,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
-      categoryValue : 'sourceCodeManagement',
+      categoryValue: 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'User Email', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'email', 'sharedConnection']
@@ -84,23 +84,23 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
-      categoryValue : 'sourceCodeManagement',
+      categoryValue: 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'User Email', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'email', 'sharedConnection']
-     },
+    },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
-      categoryValue : 'sourceCodeManagement',
+      categoryValue: 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'User Email', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'email', 'sharedConnection']
-     },
+    },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      categoryValue : 'security',
+      categoryValue: 'security',
       categoryLabel: 'Security',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', ['Use Password', 'Use Token'], 'Password', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'accessTokenEnabled', 'password', 'accessToken', 'sharedConnection']
@@ -108,7 +108,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
-      categoryValue : 'build',
+      categoryValue: 'build',
       categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Api Key', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'apiKey', 'sharedConnection'],
@@ -117,7 +117,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
-      categoryValue : 'build',
+      categoryValue: 'build',
       categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
@@ -125,7 +125,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
-      categoryValue : 'build',
+      categoryValue: 'build',
       categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
@@ -133,7 +133,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
-      categoryValue : 'build',
+      categoryValue: 'build',
       categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Use vault password', 'PAT', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'vault', 'pat', 'sharedConnection']
@@ -141,7 +141,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
-      categoryValue : 'sourceCodeManagement',
+      categoryValue: 'sourceCodeManagement',
       categoryLabel: 'Source Code Management',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'PAT', 'User Email', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'pat', 'email', 'sharedConnection']
@@ -149,7 +149,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
-      categoryValue : 'testManagement',
+      categoryValue: 'testManagement',
       categoryLabel: 'Test Management',
       labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'sharedConnection']
@@ -157,7 +157,7 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
-      categoryValue : 'build',
+      categoryValue: 'build',
       categoryLabel: 'Build',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
@@ -498,7 +498,7 @@ export class ConnectionListComponent implements OnInit {
   }
   jiraConnectionDialog: boolean = false;
   @Input() selectedToolName: string;
-  groupedToolsGroup : any;
+  groupedToolsGroup: any;
 
   constructor(private httpService: HttpService,
     private formBuilder: UntypedFormBuilder,
@@ -1392,14 +1392,20 @@ export class ConnectionListComponent implements OnInit {
     if (type == 'bitbucket') {
       const tempArr = [...this.addEditConnectionFieldsNlabels];
       const bitbucketObj = tempArr.filter((item) => item.connectionLabel.toLowerCase() == 'bitbucket')[0];
+      if (!bitbucketObj) {
+        // Exit if the bitbucketObj is not found
+        return;
+      }
       if (this.basicConnectionForm.controls['cloudEnv'].value) {
         bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username (Profile Username)', 'Use vault password', 'Password (App Password)', 'API End Point', 'User Email', 'Share connection with everyone'];
       } else {
         bitbucketObj.labels = ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'API End Point', 'User Email', 'Share connection with everyone'];
       }
       const index = tempArr.findIndex((item) => item.connectionLabel.toLowerCase() == 'bitbucket');
-      tempArr[index] = bitbucketObj;
-      this.addEditConnectionFieldsNlabels = [...tempArr];
+      if (index !== -1) {
+        tempArr[index] = bitbucketObj;
+        this.addEditConnectionFieldsNlabels = [...tempArr];
+      }
     }
   }
 
@@ -1528,8 +1534,8 @@ export class ConnectionListComponent implements OnInit {
     }
   }
 
-  createFormatCategoryWise(addEditConnectionFieldsNlabels){
-    const formatedData =  addEditConnectionFieldsNlabels.reduce((acc, curr) => {
+  createFormatCategoryWise(addEditConnectionFieldsNlabels) {
+    const formatedData = addEditConnectionFieldsNlabels.reduce((acc, curr) => {
       // Find the category in the accumulator
       let category = acc.find(item => item.label === curr.categoryLabel);
 
