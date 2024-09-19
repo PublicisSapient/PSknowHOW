@@ -399,12 +399,12 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectSelection() {
     this.setSelectedProject();
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject['id']}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 2 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 2 } });
     this.getToolsConfigured();
   }
 
   gotoProcessor() {
-    this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject['id'] } });
+    this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject?.id } });
   }
 
   setSelectedProject() {
