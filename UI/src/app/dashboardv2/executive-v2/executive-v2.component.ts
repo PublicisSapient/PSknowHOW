@@ -276,7 +276,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   click apply and call kpi
    **/
   receiveSharedData($event) {
-    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelName'] === 'project' ? true : false
+    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
       if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {

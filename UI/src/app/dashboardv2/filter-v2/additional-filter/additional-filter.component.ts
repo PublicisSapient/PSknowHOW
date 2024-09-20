@@ -28,6 +28,11 @@ export class AdditionalFilterComponent implements OnChanges {
   stateFilters: any;
 
   constructor(public service: SharedService, public helperService: HelperService) {
+    this.service.selectedTrendsEvent.subscribe(filters => {
+      this.filterSet = new Set();
+      this.selectedFilters = [];
+      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+    });
   }
 
   ngOnInit() {
@@ -150,11 +155,15 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedTab'] || changes['additionalFilterConfig']) {
+    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
       this.filterSet = new Set();
       this.selectedFilters = [];
-      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': [] });
+      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
+  }
+
+  compareObjects(obj1, obj2) {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
   }
 
   applyAdditionalFilter(e, index, multi = false, fromBackup = false) {

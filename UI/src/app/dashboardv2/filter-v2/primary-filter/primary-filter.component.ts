@@ -15,6 +15,7 @@ export class PrimaryFilterComponent implements OnChanges {
   @Input() selectedType: string = '';
   @Input() selectedTab: string = '';
   filters = [];
+  previousSelectedFilters: any = [];
   selectedFilters: any;
   selectedAdditionalFilters: any;
   subscriptions: any[] = [];
@@ -23,6 +24,12 @@ export class PrimaryFilterComponent implements OnChanges {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   constructor(private service: SharedService, public helperService: HelperService) {
+    // This is required speecifically when filter is removed from removeFilter fn on filter-new
+    this.service.selectedTrendsEvent.subscribe(filters => {
+      if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
+        this.selectedFilters = filters;
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -59,11 +66,19 @@ export class PrimaryFilterComponent implements OnChanges {
         if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']) {
           this.selectedFilters = [];
           if (this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'project') {
+
             if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project') {
-              this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0] });
+              if (this.primaryFilterConfig['type'] === 'multiSelect') {
+                this.stateFilters['primary_level'].forEach(element => {
+                  this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === element.nodeId)[0] });
+                });
+              } else {
+                this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0] });
+              }
             } else {
               this.selectedFilters.push({ ...this.filters?.filter((project) => project.parentId === this.stateFilters['primary_level'][0].nodeId)[0] });
             }
+
           } else {
             if (this.filters[0].labelName === 'project') {
               this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0] });
@@ -124,15 +139,15 @@ export class PrimaryFilterComponent implements OnChanges {
         this.service.setNoSprints(false);
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
           let addtnlStateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
-          if(addtnlStateFilters) {
+          if (addtnlStateFilters && this.arraysEqual(this.selectedFilters, this.previousSelectedFilters)) {
             let combinedEvent = {};
             combinedEvent['additional_level'] = addtnlStateFilters;
             combinedEvent['primary_level'] = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit(combinedEvent);
           } else {
+            this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit([...this.selectedFilters]);
           }
-          
         }
 
         if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
@@ -140,6 +155,7 @@ export class PrimaryFilterComponent implements OnChanges {
         }
 
         this.setProjectAndLevelBackupBasedOnSelectedLevel();
+
       }
 
       if (this.multiSelect?.overlayVisible) {
@@ -176,6 +192,45 @@ export class PrimaryFilterComponent implements OnChanges {
     if (event?.value?.length > 0) {
       this.moveSelectedOptionToTop()
     }
+  }
+
+  arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (!this.deepEqual(arr1[i], arr2[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  deepEqual(obj1, obj2) {
+    if (obj1 === obj2) {
+      return true;
+    }
+
+    if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+      return false;
+    }
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    for (let key of keys1) {
+      if (!keys2.includes(key) || !this.deepEqual(obj1[key], obj2[key])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
 }
