@@ -494,28 +494,79 @@ describe('PrimaryFilterComponent', () => {
 
   it('should not modify filters array when event.value is null', () => {
     const event = { value: null };
-    component.moveSelectedOptionToTop(event);
+    component.moveSelectedOptionToTop();
     expect(component.filters).toEqual(filters);
   });
 
   it('should remove selected item from its original position', () => {
     const event = { value: [{ nodeName: 'item2' }] };
-    component.moveSelectedOptionToTop(event);
+    component.moveSelectedOptionToTop();
     expect(component.filters).not.toContain([{ nodeId: 2, nodeName: 'item2' }]);
   });
 
-  it('should add selected item to the top of filters array', () => {
-    const event = { value: [{ nodeName: 'item2' }] };
-    component.moveSelectedOptionToTop(event);
-    expect(component.filters[0].nodeName).toBe('item2');
+  // -> moveSelectedOptionToTop() & onSelectionChange()
+
+  it('should move selected options to top when selectedFilters is a subset of filters', () => {
+    component.filters = ['option1', 'option2', 'option3'];
+    component.selectedFilters = ['option1', 'option2'];
+    component.moveSelectedOptionToTop();
+    expect(component.filters).toEqual(['option1', 'option2', 'option3']);
   });
 
-  it('should handle multiple selected items correctly', () => {
-    const event = { value: [{ nodeName: 'item2' }, { nodeName: 'item3' }] };
-    component.moveSelectedOptionToTop(event);
-    expect(component.filters[0].nodeName).toBe('item3');
-    expect(component.filters[1].nodeName).toBe('item2');
+  it('should not move options when selectedFilters is not a subset of filters', () => {
+    component.filters = ['option1', 'option2', 'option3'];
+    component.selectedFilters = ['option4', 'option5'];
+    component.moveSelectedOptionToTop();
+    expect(component.filters).toEqual(['option1', 'option2', 'option3']);
   });
+
+  it('should not move options when selectedFilters is an empty array', () => {
+    component.filters = ['option1', 'option2', 'option3'];
+    component.selectedFilters = [];
+    component.moveSelectedOptionToTop();
+    expect(component.filters).toEqual(['option1', 'option2', 'option3']);
+  });
+
+  it('should not move options when filters is an empty array', () => {
+    component.filters = [];
+    component.selectedFilters = ['option1', 'option2'];
+    component.moveSelectedOptionToTop();
+    expect(component.filters).toEqual([]);
+  });
+
+  it('should not move options when both filters and selectedFilters are empty arrays', () => {
+    component.filters = [];
+    component.selectedFilters = [];
+    component.moveSelectedOptionToTop();
+    expect(component.filters).toEqual([]);
+  });
+
+  it('should not call moveSelectedOptionToTop when event value is empty', () => {
+    const event = { value: [] };
+    spyOn(component, 'moveSelectedOptionToTop');
+    component.onSelectionChange(event);
+    expect(component.moveSelectedOptionToTop).not.toHaveBeenCalled();
+  });
+
+  it('should call moveSelectedOptionToTop when event value has one or more elements', () => {
+    const event = { value: ['element1'] };
+    spyOn(component, 'moveSelectedOptionToTop');
+    component.onSelectionChange(event);
+    expect(component.moveSelectedOptionToTop).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call moveSelectedOptionToTop when event value is null or undefined', () => {
+    const event = { value: null };
+    spyOn(component, 'moveSelectedOptionToTop');
+    component.onSelectionChange(event);
+    expect(component.moveSelectedOptionToTop).not.toHaveBeenCalled();
+
+    const event2 = { value: undefined };
+    component.onSelectionChange(event2);
+    expect(component.moveSelectedOptionToTop).not.toHaveBeenCalled();
+  });
+
+  // -> end moveSelectedOptionToTop() & onSelectionChange()
 
   it('should convert selectedFilters to an array if it\'s not already one', () => {
     component.selectedFilters = 'test';

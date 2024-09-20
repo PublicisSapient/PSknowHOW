@@ -1,5 +1,5 @@
 
-import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -20,14 +20,15 @@ export class NavNewComponent implements OnInit, OnDestroy {
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
 
-  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, private helperService: HelperService) {
+  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, public helperService: HelperService) {
   }
 
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
     this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
-    this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
+    this.subscriptions.push(this.sharedService?.onTypeOrTabRefresh.subscribe((data) => {
+      console.log(data);
       this.selectedType = data.selectedType ? data.selectedType : 'scrum';
       this.sharedService.setSelectedType(this.selectedType)
     }));
@@ -68,19 +69,19 @@ export class NavNewComponent implements OnInit, OnDestroy {
       let data = response.data.userBoardConfigDTO;
       if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
         const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
-        data[this.selectedType].forEach((board) => {
+        data[this.selectedType]?.forEach((board) => {
           if (board?.filters) {
-            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
+            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0]?.hierarchyLevelName;
             if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-              board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+              board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0]?.hierarchyLevelName;
             }
             if (board.filters.parentFilter?.emittedLevel) {
-              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0]?.hierarchyLevelName;
             }
 
             if (board.boardSlug !== 'developer') {
-              board.filters.additionalFilters.forEach(element => {
-                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
+              board.filters.additionalFilters?.forEach(element => {
+                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]?.hierarchyLevelName;
               });
             }
           }
@@ -115,7 +116,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
-          if (res.data) {          
+          if (res.data) {
             localStorage.setItem('completeHierarchyData', JSON.stringify(res.data));
             this.setBoards(response);
           }

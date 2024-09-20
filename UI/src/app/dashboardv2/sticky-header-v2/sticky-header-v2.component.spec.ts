@@ -1,41 +1,36 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StickyHeaderV2Component } from './sticky-header-v2.component';
-import { SharedService } from '../../services/shared.service';
-import { HelperService } from '../../services/helper.service';
-import { By } from '@angular/platform-browser';
+import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 import { of, Subject } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 describe('StickyHeaderV2Component', () => {
   let component: StickyHeaderV2Component;
   let fixture: ComponentFixture<StickyHeaderV2Component>;
-  let sharedService: SharedService;
-  let helperService: HelperService;
+  let mockSharedService: jasmine.SpyObj<SharedService>;
+  let mockHelperService: jasmine.SpyObj<HelperService>;
+  let onTypeOrTabRefreshSubject: Subject<any>;
+  let mapColorToProjectObsSubject: Subject<any>;
 
   beforeEach(async () => {
+    // Create Subjects to simulate Observables from SharedService
+    onTypeOrTabRefreshSubject = new Subject();
+    mapColorToProjectObsSubject = new Subject();
+
+    // Create mock objects
+    mockSharedService = jasmine.createSpyObj('SharedService', ['onTypeOrTabRefresh', 'mapColorToProjectObs']);
+    mockHelperService = jasmine.createSpyObj('HelperService', ['getObjectKeys']);
+
+    // Mock the service observables
+    Object.defineProperty(mockSharedService, 'onTypeOrTabRefresh', { value: onTypeOrTabRefreshSubject.asObservable() });
+    Object.defineProperty(mockSharedService, 'mapColorToProjectObs', { value: mapColorToProjectObsSubject.asObservable() });
+
     await TestBed.configureTestingModule({
       declarations: [StickyHeaderV2Component],
       providers: [
-        {
-          provide: SharedService,
-          useValue: {
-            fieldsSubscription: of([
-              { label: 'Selected Dashboard', value: 'my-knowhow' }
-            ]),
-            onTypeOrTabRefresh: new Subject<{ selectedTab: string, selectedType: string }>() //new EventEmitter<string>()
-          }
-        },
-        {
-          provide: HelperService,
-          useValue: {
-            getObjectKeys: (obj) => {
-              if (obj && Object.keys(obj).length) {
-                return Object.keys(obj);
-              } else {
-                return [];
-              }
-            }
-          } // provide a mock implementation for HelperService
-        }
+        { provide: SharedService, useValue: mockSharedService },
+        { provide: HelperService, useValue: mockHelperService }
       ]
     }).compileComponents();
   });
@@ -43,19 +38,57 @@ describe('StickyHeaderV2Component', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(StickyHeaderV2Component);
     component = fixture.componentInstance;
-    sharedService = TestBed.inject(SharedService);
-    helperService = TestBed.inject(HelperService);
     fixture.detectChanges();
   });
 
-  xit('should be hidden initially', () => {
-    expect(component).toBeTruthy();// toBe(false); // or whatever property you're expecting
+  afterEach(() => {
+    component.ngOnDestroy(); // Make sure to test unsubscription behavior
   });
 
-  xit('should be visible after scrolling down', () => {
-    window.scrollTo(0, 300);
-    fixture.detectChanges();
-    expect(component).toBeFalsy(); //.toBe(true); // or whatever property you're expecting
+  it('should create the component', () => {
+    expect(component).toBeTruthy();
   });
 
+  it('should subscribe to onTypeOrTabRefresh and update fields', () => {
+    const mockData = { selectedTab: 'iteration' };
+
+    onTypeOrTabRefreshSubject.next(mockData);
+
+    expect(component.fields.get('Selected Dashboard ')).toEqual('iteration');
+  });
+
+  it('should subscribe to mapColorToProjectObs and update colorObj', () => {
+    const mockData = [
+      { nodeId: '1', nodeName: 'Project A', labelName: 'project' },
+      { nodeId: '2', nodeName: 'Project B', labelName: 'project' }
+    ];
+
+    mapColorToProjectObsSubject.next(mockData);
+
+    expect(component.colorObj['1']).toEqual({ nodeName: 'Project A', color: '#FFB587', nodeId: '1', labelName: 'project' });
+  });
+
+  it('should return object keys using helperService', () => {
+    const mockObject = { key1: 'value1', key2: 'value2' };
+    mockHelperService.getObjectKeys.and.returnValue(Object.keys(mockObject));
+
+    const result = component.objectKeys(mockObject);
+
+    expect(result).toEqual(Object.keys(mockObject));
+    expect(mockHelperService.getObjectKeys).toHaveBeenCalledWith(mockObject);
+  });
+
+  it('should unsubscribe from all subscriptions on destroy', () => {
+    const subscriptionSpy = spyOn(Subscription.prototype, 'unsubscribe').and.callThrough();
+
+    component.ngOnDestroy();
+
+    expect(subscriptionSpy).toHaveBeenCalledTimes(component.subscriptions.length);
+  });
+
+  it('should not update colorObj when mapColorToProjectObs is empty', () => {
+    const mockData = {};
+    mapColorToProjectObsSubject.next(mockData);
+    expect(component.colorObj).toEqual({});
+  });
 });

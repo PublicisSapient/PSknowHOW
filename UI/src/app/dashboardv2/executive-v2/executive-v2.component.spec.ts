@@ -15615,6 +15615,43 @@ describe('ExecutiveV2Component', () => {
     const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
     expect(result).toBe(3);
   });
+
+  it('should handle selected option on release when event is an object when event key equals to 0', () => {
+    const mockEvent = {
+      filter1: ['test1', 'test2'],
+      filter2: []
+    };
+    const mockKpi = { kpiId: 'kpi1' };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0 and dor single dropdown', () => {
+    const mockEvent = {
+      filter1: 'test1',
+    };
+    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'dropDown'} };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0', () => {
+    const mockEvent = {
+      filter1: 'test1',
+    };
+    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'nondropDown'} };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
+  });
 });
 
 
