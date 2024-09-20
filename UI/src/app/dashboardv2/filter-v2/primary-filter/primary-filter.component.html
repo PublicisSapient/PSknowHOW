@@ -9,7 +9,7 @@
                 <div class="filter-item">
                     <div>
                         <span>{{option.nodeName}}</span>
-                        <span class="parent_span">
+                        <span *ngIf="option?.path" class="parent_span">
                             ({{ option.path.split('_')[0]}})
                         </span>
                     </div>
@@ -44,7 +44,7 @@
                 </div>
             </ng-template>
         </p-dropdown>
-        <label class="floating-label" for="singleselectFilter" [hidden]="selectedTab === 'iteration'">
+        <label class="floating-label" for="singleselectFilter" [hidden]="selectedTab === 'iteration' || !selectedFilters?.length">
           Select
           <ng-container *ngIf="selectedLevel === 'project'; else objectTemplate">
             {{ selectedLevel }}

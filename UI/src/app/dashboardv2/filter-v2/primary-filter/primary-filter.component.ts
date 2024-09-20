@@ -8,7 +8,7 @@ import { HelperService } from 'src/app/services/helper.service';
   templateUrl: './primary-filter.component.html',
   styleUrls: ['./primary-filter.component.css']
 })
-export class PrimaryFilterComponent implements OnChanges, OnInit {
+export class PrimaryFilterComponent implements OnChanges {
   @Input() filterData = null;
   @Input() selectedLevel: any = '';
   @Input() primaryFilterConfig: {};
@@ -23,163 +23,72 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
   constructor(private service: SharedService, public helperService: HelperService) {
-    this.service.selectedTrendsEvent.subscribe(filters => {
-      if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
-        this.selectedFilters = filters;
-      }
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this['primaryFilterConfig'] && Object.keys(this['primaryFilterConfig']).length) {
-      if ((!this.compareObjects(changes['primaryFilterConfig']?.currentValue, changes['primaryFilterConfig']?.previousValue)) ||
-        ((changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) ||
-          (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange))) {
-        // (changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange)) {
-        this.applyDefaultFilters();
-        return;
-      }
-    } else {
+    if (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange) {
+      this.applyDefaultFilters();
+      return;
+    } else if (changes['primaryFilterConfig'] && Object.keys(changes['primaryFilterConfig'].currentValue).length && !changes['primaryFilterConfig']?.firstChange) {
+      this.applyDefaultFilters();
       return;
     }
-    this.selectedFilters = [];
-    this.populateFilters();
-    if (this.filters?.length) {
-      this.selectedFilters = new Set();
 
-      this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
-      if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && !this.stateFilters['additional_level']) {
-        this.stateFilters['primary_level'].forEach(stateFilter => {
-          this.selectedFilters.add(stateFilter);
-        });
-
-        this.selectedFilters = [...this.selectedFilters];
-
-        this.selectedFilters = Array.from(
-          this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
-        );
-        // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
-        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-        // }
-        if (this.selectedFilters?.length) {
-          if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
-            this.onPrimaryFilterChange.emit(this.selectedFilters);
-          } else {
-            if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
-              this.onPrimaryFilterChange.emit(this.selectedFilters);
-            } else {
-              this.service.setNoSprints(true);
-              this.onPrimaryFilterChange.emit([]);
-              if (this.filters.length) {
-                this.selectedFilters.push({ ...this.filters[0] });
-                this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
-              } else {
-                this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedLevel] })
-              }
-            }
-          }
-        } else {
-          this.service.setNoSprints(true);
-          this.onPrimaryFilterChange.emit([]);
-        }
-        this.setProjectAndLevelBackupBasedOnSelectedLevel();
-      } else if (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['additional_level'] && Object.keys(this.stateFilters['additional_level'])?.length) {
-
-        this.stateFilters['primary_level'].forEach(stateFilter => {
-          this.selectedFilters.add(stateFilter);
-        });
-
-        this.selectedFilters = [...this.selectedFilters];
-
-        this.selectedFilters = Array.from(
-          this.selectedFilters.reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
-        );
-        this.selectedFilters = this.filterData[this.selectedLevel]?.filter((f) => this.selectedFilters.map((s) => s.nodeId).includes(f.nodeId));
-        this.selectedAdditionalFilters = {};
-        Object.keys(this.stateFilters['additional_level']).forEach(key => {
-
-          this.selectedAdditionalFilters[key] = new Set();
-          this.stateFilters['additional_level'][key].forEach(stateFilter => {
-            this.selectedAdditionalFilters[key].add(stateFilter);
-          });
-
-          this.selectedAdditionalFilters[key] = [...this.selectedAdditionalFilters[key]];
-
-          this.selectedAdditionalFilters[key] = Array.from(
-            this.selectedAdditionalFilters[key].reduce((map, obj) => map.set(obj.nodeId, obj), new Map()).values()
-          );
-          // this.selectedAdditionalFilters[key] = this.filterData[this.selectedLevel]?.filter((f) => this.selectedAdditionalFilters[key].map((s) => s.nodeId).includes(f.nodeId));
-        });
-
-
-        let obj = {};
-        obj['primary_level'] = this.selectedFilters;
-        obj['additional_level'] = this.selectedAdditionalFilters;
-        this.onPrimaryFilterChange.emit(obj);
-
-        if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
-          this.onPrimaryFilterChange.emit(obj);
-        } else {
-          if (this.selectedFilters[0].sprintState?.toLowerCase() === 'active') {
-            this.onPrimaryFilterChange.emit(obj);
-          } else {
-            this.service.setNoSprints(true);
-            this.onPrimaryFilterChange.emit([]);
-            if (this.filters.length) {
-              this.selectedFilters.push({ ...this.filters[0] });
-              this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
-            } else {
-              this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedLevel] })
-            }
-          }
-        }
-      } else {
-        this.applyDefaultFilters();
-      }
+    if (changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) {
+      this.applyFirstFilter();
+      return;
     }
+  }
+
+  applyFirstFilter() {
+    this.populateFilters();
+    setTimeout(() => {
+      this.selectedFilters = [];
+      this.selectedFilters.push(this.filters[0]);
+      this.applyPrimaryFilters({});
+      this.setProjectAndLevelBackupBasedOnSelectedLevel();
+    }, 100);
   }
 
   applyDefaultFilters() {
     this.populateFilters();
     setTimeout(() => {
       this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
-      if ((this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'project' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project') ||
-        (this.stateFilters && this.stateFilters['primary_level'] && this.stateFilters['primary_level']?.length > 0 && (this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'sprint' || this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'release') && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project')) {
-        this.selectedFilters = [];
-        if (this.stateFilters['primary_level'][0]?.labelName.toLowerCase() === 'project') {
-          this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0] });
+      // PROBLEM AREA START
+      if (this.filters?.length) {
+        if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']) {
+          this.selectedFilters = [];
+          if (this.stateFilters['primary_level'][0]?.labelName?.toLowerCase() === 'project') {
+            if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === 'project') {
+              this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0] });
+            } else {
+              this.selectedFilters.push({ ...this.filters?.filter((project) => project.parentId === this.stateFilters['primary_level'][0].nodeId)[0] });
+            }
+          } else {
+            if (this.filters[0].labelName === 'project') {
+              this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0] });
+            } else {
+              this.selectedFilters.push({ ...this.filters[0] });
+            }
+          }
         } else {
-          this.selectedFilters.push({ ...this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0] });
+          this.selectedFilters = [];
+          this.selectedFilters.push(this.filters[0]);
         }
-        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
+        // PROBLEM AREA END
+        this.applyPrimaryFilters({});
+        this.setProjectAndLevelBackupBasedOnSelectedLevel();
       } else {
-        this.selectedFilters = [];
-        if (this.filters?.length) {
-          this.selectedFilters.push({ ...this.filters[0] });
-        }
-        if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': this.selectedFilters });
-        }
+        this.service.setNoSprints(true);
+        this.onPrimaryFilterChange.emit([]);
       }
-      // if (!this.stateFilters['additional_level']) {
-      this.applyPrimaryFilters({});
-      this.setProjectAndLevelBackupBasedOnSelectedLevel();
-      // }
     }, 100);
-  }
-
-  ngOnInit() {
-    this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((val) => {
-      if (this.selectedFilters?.length && this.selectedFilters[0]) {
-        this.selectedFilters = this.selectedFilters.filter((filter) => Object.keys(val).includes(filter.nodeId));
-      }
-    }));
   }
 
   populateFilters() {
     if (this.selectedLevel && typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
       this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
-      if (this.primaryFilterConfig['defaultLevel'].sortBy) {
+      if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']?.sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
           this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
         } else {
@@ -190,7 +99,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       let selectedLevel = this.selectedLevel.emittedLevel;
       selectedLevel = selectedLevel[0].toUpperCase() + selectedLevel.slice(1);
       // check for iterations and releases
-      if (this.primaryFilterConfig['defaultLevel'].sortBy) {
+      if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']?.sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
           this.filters = this.helperService.sortByField(this.filterData[selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
         } else {
@@ -206,36 +115,36 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   }
 
   applyPrimaryFilters(event) {
-    if (!Array.isArray(this.selectedFilters)) {
-      this.selectedFilters = [this.selectedFilters];
-    }
-    // if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' && this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'release') {
-    this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
-    // }
-    if (this.selectedFilters?.length) {
-      if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint') {
-        this.onPrimaryFilterChange.emit([...this.selectedFilters]);
-      } else {
-        if (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active') {
-          this.onPrimaryFilterChange.emit([...this.selectedFilters]);
-        } else {
-          this.service.setNoSprints(true);
-          this.onPrimaryFilterChange.emit([]);
-          if (this.filters.length) {
-            this.selectedFilters.push({ ...this.filters[0] });
-            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
-          } else {
-            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedLevel] })
-          }
-        }
+    if (this.primaryFilterConfig && Object.keys(this.primaryFilterConfig).length) {
+      if (!Array.isArray(this.selectedFilters)) {
+        this.selectedFilters = [this.selectedFilters];
       }
-    } else {
-      this.service.setNoSprints(true);
-      this.onPrimaryFilterChange.emit([]);
-    }
-    this.setProjectAndLevelBackupBasedOnSelectedLevel();
-    if (this.multiSelect?.overlayVisible) {
-      this.multiSelect.close(event);
+
+      if (this.selectedFilters?.length && Object.keys(this.selectedFilters[0]).length) {
+        this.service.setNoSprints(false);
+        if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
+          let addtnlStateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+          if(addtnlStateFilters) {
+            let combinedEvent = {};
+            combinedEvent['additional_level'] = addtnlStateFilters;
+            combinedEvent['primary_level'] = [...this.selectedFilters];
+            this.onPrimaryFilterChange.emit(combinedEvent);
+          } else {
+            this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+          }
+          
+        }
+
+        if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
+          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
+        }
+
+        this.setProjectAndLevelBackupBasedOnSelectedLevel();
+      }
+
+      if (this.multiSelect?.overlayVisible) {
+        this.multiSelect.close(event);
+      }
     }
   }
 
@@ -256,7 +165,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   moveSelectedOptionToTop(event) {
     if (event?.value) {
       event?.value.forEach(selectedItem => {
-        this.filters = this.filters.filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
+        this.filters = this.filters.filter(x => x.nodeId !== selectedItem.nodeId); // remove the item from list
         this.filters.unshift(selectedItem)// this will add selected item on the top
       });
     }

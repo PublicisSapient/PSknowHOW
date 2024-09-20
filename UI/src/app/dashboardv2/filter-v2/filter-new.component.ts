@@ -102,53 +102,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     };
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-    // this.subscriptions.push(
-    //   this.service.globalDashConfigData.subscribe((boardData) => {
-    //     this.dashConfigData = boardData;
-    //     this.processBoardData(boardData);
-    //   })
-    // );
+
     this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
     this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
 
     this.subscriptions.push(
-      // this.service.onTypeOrTabRefresh
-      //   .subscribe(data => {
-      //     this.colorObj = {};
-      //     this.selectedTab = data.selectedTab;
-      //     this.selectedType = data.selectedType;
-
-
-      //     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-      //     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
-
-
-      //     if (this.selectedType.toLowerCase() === 'kanban') {
-      //       this.kanban = true;
-      //       if (!this.dateRangeFilter.types.includes('Months')) {
-      //         this.dateRangeFilter.types.push('Months');
-      //       }
-      //     } else {
-      //       this.kanban = false;
-      //       this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
-      //     }
-      //     this.processBoardData(this.boardData);
-
-      //     if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'kpi-maturity') {
-      //       this.showChart = 'chart';
-      //       this.service.setShowTableView(this.showChart);
-      //     }
-      //     this.service.setSelectedDateFilter(this.selectedDayType);
-
-      //     // Populate additional filters on MyKnowHOW, Speed and Quality
-      //     if (this.selectedTab.toLowerCase() !== 'developer') {
-      //       this.additionalFiltersArr = [];
-      //       this.populateAdditionalFilters(this.previousFilterEvent);
-      //     } else {
-      //       this.applyDateFilter();
-      //     }
-      //   }),
-
       this.service.onScrumKanbanSwitch
         .subscribe(data => {
 
@@ -164,10 +122,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
             }
 
-            // this.processBoardData(this.boardData);
             this.filterDataArr = {};
-            // this.parentFilterConfig = null;
-            // this.primaryFilterConfig = null;
             this.setHierarchyLevels();
           }, 0);
         }),
@@ -283,39 +238,33 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.parentFilterConfig = { ...this.selectedBoard.filters.parentFilter };
       if (!this.parentFilterConfig || !Object.keys(this.parentFilterConfig).length) {
         this.selectedLevel = null;
+        this.primaryFilterConfig = { ...this.selectedBoard.filters.primaryFilter };
       }
-      this.primaryFilterConfig = { ...this.selectedBoard.filters.primaryFilter };
+
       if (this.selectedBoard.filters.additionalFilters) {
         this.additionalFilterConfig = [...this.selectedBoard.filters.additionalFilters];
+      } else {
+        this.additionalFilterConfig = [];
       }
       this.cdr.detectChanges();
-      // Populate additional filters on MyKnowHOW, Speed and Quality
-      if (this.selectedTab.toLowerCase() !== 'developer') {
-        this.additionalFiltersArr = [];
-        this.populateAdditionalFilters(this.previousFilterEvent);
-      } else {
-        this.handlePrimaryFilterChange(this.previousFilterEvent);
-      }
     }
   }
 
   getFiltersData() {
-    if (!Object.keys(this.filterDataArr).length || !this.filterDataArr[this.selectedType]) {
-      this.selectedFilterData = {};
-      this.selectedFilterData['kanban'] = this.kanban;
-      this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-      this.cdr.detectChanges();
-      this.subscriptions.push(
-        this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
-          if (filterApiData['success']) {
-            this.filterApiData = filterApiData['data'];
-            this.processFilterData(filterApiData['data']);
-          } else {
-            // error
-          }
-        })
-      );
-    }
+    this.selectedFilterData = {};
+    this.selectedFilterData['kanban'] = this.kanban;
+    this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+    this.cdr.detectChanges();
+    this.subscriptions.push(
+      this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+        if (filterApiData['success']) {
+          this.filterApiData = filterApiData['data'];
+          this.processFilterData(filterApiData['data']);
+        } else {
+          // error
+        }
+      })
+    );
   }
 
   processFilterData(data) {
@@ -344,11 +293,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     dataCopy = this.removeUndefinedProperties(dataCopy);
     this.filterDataArr[this.selectedType] = dataCopy;
 
-    if (this.selectedLevel && typeof this.selectedLevel === 'string') {
-      let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
-      // this.selectedBasicConfigIds = data.map(proj => proj['basicProjectConfigId']).sort();
+    let stateFilters = this.helperService.getBackupOfFilterSelectionState();
+    if (stateFilters && stateFilters['primary_level']) {
+      let selectedProject;
+      if (stateFilters['primary_level'][0].labelName === 'project') {
+        selectedProject = stateFilters['primary_level'][0];
+      } else {
+        selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
+      }
       this.getBoardConfig([selectedProject['basicProjectConfigId']]);
-    } else {
+    } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
+      let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
+      this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+    }
+    else {
       let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
       this.getBoardConfig([selectedProject['basicProjectConfigId']]);
     }
@@ -418,6 +376,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             data['configDetails'] = response.data.configDetails;
             this.dashConfigData = data;
             this.service.setDashConfigData(data, false);
+            this.masterData['kpiList'] = [];
+            this.parentFilterConfig = {};
+            this.primaryFilterConfig = {};
+            this.additionalFilterConfig = [];
             this.processBoardData(data);
           }
         },
@@ -432,11 +394,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handleParentFilterChange(event) {
-    if (typeof event === 'string') {
-      this.selectedLevel = event;
-    } else {
-      this.selectedLevel = event;
-    }
+    this.primaryFilterConfig = { ...this.selectedBoard.filters.primaryFilter };
+    this.selectedLevel = event;
   }
 
   setColors(data) {
@@ -471,12 +430,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         } else {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
-
-        // Object.keys(stateFilters['additional_level']).forEach((level) => {
-        //   Object.keys(stateFilters['additional_level'][level]).forEach(key => {
-        //     stateFilters['additional_level'][level][key] = stateFilters['additional_level'][level][key].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
-        //   })
-        // });
 
         Object.keys(stateFilters['additional_level']).forEach((level) => {
           stateFilters['additional_level'][level] = stateFilters['additional_level'][level].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
@@ -541,10 +494,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   handlePrimaryFilterChange(event) {
-
-    // sort the event array based on nodeId
-    event.sort((a, b) => (a.nodeId > b.nodeId) ? 1 : ((b.nodeId > a.nodeId) ? -1 : 0))
-
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
         if (!event['additional_level'][key]?.length) {
@@ -556,9 +505,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         delete event['additional_level'];
         event = event['primary_level'];
       }
+    } else {
+      // sort the event array based on nodeId
+      event.sort((a, b) => (a.nodeId > b.nodeId) ? 1 : ((b.nodeId > a.nodeId) ? -1 : 0))
     }
     this.noSprint = false;
-    if (event && !event['additional_level'] && event?.length && (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) { // && Object.keys(event[0]).length) {
+    if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length && (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) { // && Object.keys(event[0]).length) {
       this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -572,15 +524,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // Populate additional filters on MyKnowHOW, Speed and Quality
       if (this.selectedTab.toLowerCase() !== 'developer') {
         this.additionalFiltersArr = [];
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         if (event && event[0] && event[0]?.labelName?.toLowerCase() === 'project') {
           this.populateAdditionalFilters(event);
         } else if (event && event[0]) {
           this.populateAdditionalFilters(event.map((e) => e.parentId));
         }
+      } else {
+        this.additionalFiltersArr = [];
       }
-      if (event.length === 1) {
+      if (event.length === 1 && this.selectedTab === 'iteration') {
         this.getProcessorsTraceLogsForProject();
+      } else {
+        this.service.setProcessorLogDetails({});
       }
       this.previousFilterEvent = event;
       this.previousSelectedTab = this.selectedTab;
@@ -597,31 +552,32 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       } else {
         this.filterType = '';
       }
-
-      if (typeof this.selectedLevel === 'string') {
-        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
-          if (filterLevel !== this.selectedLevel) {
-            this.filterApplyData['selectedMap'][filterLevel] = [];
-          } else {
-            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
-          }
-        });
-      } else if (this.selectedLevel) {
-        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
-          if (filterLevel !== this.selectedLevel.emittedLevel) {
-            this.filterApplyData['selectedMap'][filterLevel] = [];
-          } else {
-            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
-          }
-        });
-      } else {
-        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
-          if (filterLevel !== 'Project') {
-            this.filterApplyData['selectedMap'][filterLevel] = [];
-          } else {
-            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
-          }
-        });
+      if (Object.keys(this.filterDataArr[this.selectedType]).length) {
+        if (typeof this.selectedLevel === 'string') {
+          Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
+            if (filterLevel !== this.selectedLevel) {
+              this.filterApplyData['selectedMap'][filterLevel] = [];
+            } else {
+              this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
+            }
+          });
+        } else if (this.selectedLevel) {
+          Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
+            if (filterLevel !== this.selectedLevel.emittedLevel) {
+              this.filterApplyData['selectedMap'][filterLevel] = [];
+            } else {
+              this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
+            }
+          });
+        } else {
+          Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
+            if (filterLevel !== 'Project') {
+              this.filterApplyData['selectedMap'][filterLevel] = [];
+            } else {
+              this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
+            }
+          });
+        }
       }
       this.setSelectedMapLevels();
       if (!this.kanban) {
@@ -661,10 +617,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             } else {
               this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
             }
-          } else {
+          }
+          else {
             this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
           }
-        } else {
+        }
+        else {
+          // this.setHierarchyLevels();
           this.applyDateFilter();
         }
       }
@@ -679,7 +638,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousFilterEvent['primary_level'] = event['primary_level'];
 
       if (!event['additional_level']) {
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+        // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         this.handlePrimaryFilterChange(event);
       } else {
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
@@ -822,7 +781,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         } else {
           this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
         }
-      } else {
+      }
+      else if (!this.parentFilterConfig || !Object.keys(this.parentFilterConfig).length) {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
       }
     }

@@ -36,12 +36,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
     this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
 
-    this.subscriptions.push(this.sharedService.selectedTrendsEvent.subscribe((data) => {
-      if (!this.compareStringArrays(this.selectedBasicConfigIds, data.map(proj => proj['basicProjectConfigId']))) {
-        this.selectedBasicConfigIds = data.map(proj => proj['basicProjectConfigId']).sort();
-        this.getBoardConfig(this.selectedBasicConfigIds);
-      }
-    }));
+    // this.subscriptions.push(this.sharedService.selectedTrendsEvent.subscribe((data) => {
+    //   if (!this.compareStringArrays(this.selectedBasicConfigIds, data.map(proj => proj['basicProjectConfigId']))) {
+    //     this.selectedBasicConfigIds = data.map(proj => proj['basicProjectConfigId']).sort();
+    //     this.getBoardConfig(this.selectedBasicConfigIds);
+    //   }
+    // }));
   }
 
   // unsubscribing all Kpi Request
@@ -166,20 +166,20 @@ export class NavNewComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  compareStringArrays(array1, array2) {
-    // Check if both arrays have the same length
-    if (array1.length !== array2.length) {
-      return false;
-    }
+  // compareStringArrays(array1, array2) {
+  //   // Check if both arrays have the same length
+  //   if (array1.length !== array2.length) {
+  //     return false;
+  //   }
 
-    // Check if each corresponding element is the same
-    for (let i = 0; i < array1.length; i++) {
-      if (array1[i] !== array2[i]) {
-        return false;
-      }
-    }
+  //   // Check if each corresponding element is the same
+  //   for (let i = 0; i < array1.length; i++) {
+  //     if (array1[i] !== array2[i]) {
+  //       return false;
+  //     }
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
 }

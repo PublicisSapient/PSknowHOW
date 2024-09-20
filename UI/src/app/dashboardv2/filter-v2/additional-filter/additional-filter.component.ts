@@ -91,7 +91,9 @@ export class AdditionalFilterComponent implements OnChanges {
               if (this.stateFilters[key].length) {
                 this.selectedFilters[correctIndex] = this.stateFilters[key];
               }
+              // this.applyAdditionalFilter(this.selectedFilters, correctIndex + 1, true, true);
             });
+            
           }
 
         }
@@ -148,9 +150,10 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedTab']) {
+    if (changes['selectedTab'] || changes['additionalFilterConfig']) {
       this.filterSet = new Set();
       this.selectedFilters = [];
+      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': [] });
     }
   }
 
@@ -171,6 +174,7 @@ export class AdditionalFilterComponent implements OnChanges {
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
       } else {
         this.onAdditionalFilterChange.emit(e);
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
       }
     } else {
       // this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];

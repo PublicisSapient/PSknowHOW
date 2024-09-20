@@ -59,8 +59,8 @@ export class ParentFilterComponent implements OnChanges {
         this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
 
         Promise.resolve().then(() => {
-          if (this.stateFilters?.length) {
-            if (this.stateFilters[0]['labelName'] === 'project') {
+          if (this.stateFilters?.length && this.stateFilters[0] && Object.keys(this.stateFilters[0]).length) {
+            if (this.stateFilters[0]['labelName'].toLowerCase() === 'project') {
               this.selectedLevel = this.filterLevels?.filter((level) => {
                 return level === this.stateFilters[0]['nodeName']
               })[0];
@@ -69,9 +69,10 @@ export class ParentFilterComponent implements OnChanges {
           if (!this.stateFilters || !this.selectedLevel) {
             this.selectedLevel = this.filterLevels[0];
           }
-          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel })
+          
           let selectedNode = this.filterData[this['parentFilterConfig']['labelName']].filter((filter) => filter.nodeName === this.selectedLevel);
           this.onSelectedLevelChange.emit({ nodeId: selectedNode[0].nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
+          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0].labelName });
         });
       }
       else if (this.filterData && Object.keys(this.filterData).length) {
@@ -120,7 +121,7 @@ export class ParentFilterComponent implements OnChanges {
       let selectedNode = this.filterData[this['parentFilterConfig']['labelName']].filter((filter) => filter.nodeName === this.selectedLevel);
       this.onSelectedLevelChange.emit({ nodeId: selectedNode[0].nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
     }
-    this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel, 'primary_level': null });
+    // this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel, 'primary_level': null });
   }
 
   stringToObject() {
