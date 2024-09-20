@@ -78,7 +78,10 @@ export class ConfigSettingsComponent implements OnInit {
 
   onTabChange() {
     if (this.selectedTab === 'projectConfig') {
-      this.router.navigate(['.'], { queryParams: { 'type': this.selectedProject?.type.toLowerCase(), 'tab': 2 }, relativeTo: this.route });
+      let type = this.selectedProject?.type ? this.selectedProject?.type : this.selectedProject?.Type;
+      if (type) {
+        this.router.navigate(['.'], { queryParams: { 'type': type.toLowerCase(), 'tab': 2 }, relativeTo: this.route });
+      }
     } else if (this.selectedTab === 'availableConnections') {
       this.router.navigate(['.'], { queryParams: { 'tab': 1 }, relativeTo: this.route });
     } else {
