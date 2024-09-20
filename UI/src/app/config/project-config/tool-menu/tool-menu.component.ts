@@ -76,7 +76,7 @@ export class ToolMenuComponent implements OnInit {
     ];
     this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
 
-    const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
+    const selectedType = this.selectedProject?.type ? this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum' : this.selectedProject?.Type !== 'Scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
       return {
         id: x['hierarchyLevelId'],
