@@ -118,7 +118,8 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${this.selectedProject.type?.toLowerCase()}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${this.selectedProject.type?.toLowerCase()}&tab=2`) {
+        let typeOfSelectedProject = this.selectedProject.type?.toLowerCase() || this.selectedProject.Type?.toLowerCase();
+        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2`) {
           this.buttonText = 'Set Up';
           this.tools = [
             {
