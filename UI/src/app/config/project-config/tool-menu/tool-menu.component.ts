@@ -17,14 +17,12 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
-import { SelectButtonModule } from 'primeng/selectbutton';
 @Component({
   selector: 'app-tool-menu',
   templateUrl: './tool-menu.component.html',
@@ -61,11 +59,8 @@ export class ToolMenuComponent implements OnInit {
     public router: Router,
     public sharedService: SharedService,
     private httpService: HttpService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     public getAuthorizationService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService,
-    private route: ActivatedRoute) {
+    private ga: GoogleAnalyticsService) {
   }
 
   ngOnInit() {
@@ -123,7 +118,7 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?tab=2` || this.router.url === '/dashboard/Config/ConfigSettings?tab=2') {
+        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${this.selectedProject.type?.toLowerCase()}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${this.selectedProject.type?.toLowerCase()}&tab=2`) {
           this.buttonText = 'Set Up';
           this.tools = [
             {
@@ -292,7 +287,7 @@ export class ToolMenuComponent implements OnInit {
           };
           this.projectTypeChange(fakeEvent, false);
           this.selectedType = jiraOrAzure[0].toolName === 'Azure';
-          const kpiID = this.selectedProject['Type'] === 'Kanban' ? 'kpi1' : 'kpi0';
+          const kpiID = this.selectedProject['type'] === 'Kanban' ? 'kpi1' : 'kpi0';
           let obj = {
             "releaseNodeId": null
           }
@@ -404,12 +399,12 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectSelection() {
     this.setSelectedProject();
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject['id']}`], { queryParams: { tab: 2 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 2 } });
     this.getToolsConfigured();
   }
 
   gotoProcessor() {
-    this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject['id'] } });
+    this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject?.id } });
   }
 
   setSelectedProject() {

@@ -464,7 +464,7 @@ describe('AdditionalFilterComponent', () => {
     component.appliedFilters = {};
     component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
     component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
- 
+
     const mockEvent = [{ labelName: 'filter1' }];
     const mockIndex = 1;
     const mockMulti = false;
@@ -561,4 +561,45 @@ describe('AdditionalFilterComponent', () => {
 
     expect(component.multiSelect.close).not.toHaveBeenCalled();
   });
+
+  // -> moveSelectedOptionToTop() & onSelectionChange()
+
+  it('should not modify filterData when selectedFilters is empty', () => {
+    component.selectedFilters = [];
+    component.filterData = [[{ nodeName: 'option1' }, { nodeName: 'option2' }]];
+    component.moveSelectedOptionToTop(null, 0);
+    expect(component.filterData).toEqual([[{ nodeName: 'option1' }, { nodeName: 'option2' }]]);
+  });
+
+  it('should move selected options to top when selectedFilters is not empty', () => {
+    component.selectedFilters = [[{ nodeName: 'option2' }]];
+    component.filterData = [[{ nodeName: 'option1' }, { nodeName: 'option2' }]];
+    component.moveSelectedOptionToTop(null, 0);
+    expect(component.filterData).toEqual([[{ nodeName: 'option2' }, { nodeName: 'option1' }]]);
+  });
+
+  it('should not modify filterData when selectedFilters has no matching options', () => {
+    component.selectedFilters = [[{ nodeName: 'option3' }]];
+    component.filterData = [[{ nodeName: 'option1' }, { nodeName: 'option2' }]];
+    component.moveSelectedOptionToTop(null, 0);
+    expect(component.filterData).toEqual([[{ nodeName: 'option1' }, { nodeName: 'option2' }]]);
+  });
+
+  it('should not modify filterData when filterData is empty', () => {
+    component.selectedFilters = [[{ nodeName: 'option1' }]];
+    component.filterData = [];
+    component.moveSelectedOptionToTop(null, 0);
+    expect(component.filterData).toEqual([]);
+  });
+
+  it('should not call moveSelectedOptionToTop if event.value is empty', () => {
+    const event = { value: '' };
+    const index = 0;
+    spyOn(component, 'moveSelectedOptionToTop');
+    component.onSelectionChange(event, index);
+    expect(component.moveSelectedOptionToTop).not.toHaveBeenCalled();
+  });
+
+  // -> end of moveSelectedOptionToTop() & onSelectionChange()
+
 });
