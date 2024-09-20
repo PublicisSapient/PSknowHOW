@@ -27,21 +27,24 @@ export class NavNewComponent implements OnInit, OnDestroy {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
     this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
-    this.subscriptions.push(this.sharedService?.onTypeOrTabRefresh.subscribe((data) => {
-      console.log(data);
-      this.selectedType = data.selectedType ? data.selectedType : 'scrum';
-      this.sharedService.setSelectedType(this.selectedType)
-    }));
-
+    // this.subscriptions.push(this.sharedService?.onTypeOrTabRefresh.subscribe((data) => {
+    //   this.selectedType = data.selectedType ? data.selectedType : 'scrum';
+    //   this.sharedService.setSelectedType(this.selectedType)
+    // }));
+    this.sharedService.setSelectedBoard(this.selectedTab);
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
-    this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
-    this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+    this.sharedService.setScrumKanban(this.selectedType);
+    if (this.sharedService.getSelectedTrends() && this.sharedService.getSelectedTrends()[0]) {
+      this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+    } else {
+      this.getBoardConfig([]);
+    }
 
     // this.subscriptions.push(this.sharedService.selectedTrendsEvent.subscribe((data) => {
-    //   if (!this.compareStringArrays(this.selectedBasicConfigIds, data.map(proj => proj['basicProjectConfigId']))) {
+    //   // if (!this.compareStringArrays(this.selectedBasicConfigIds, data.map(proj => proj['basicProjectConfigId']))) {
     //     this.selectedBasicConfigIds = data.map(proj => proj['basicProjectConfigId']).sort();
     //     this.getBoardConfig(this.selectedBasicConfigIds);
-    //   }
+    //   // }
     // }));
   }
 
