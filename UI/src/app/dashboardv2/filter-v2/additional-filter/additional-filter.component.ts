@@ -198,11 +198,27 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   moveSelectedOptionToTop(event, index) {
-    if (event?.value) {
-      event?.value.forEach(selectedItem => {
-        this.filterData[index] = this.filterData[index].filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
-        this.filterData[index].unshift(selectedItem)// this will add selected item on the top 
-      });
+    if (this.selectedFilters.length > 0) {
+      // Get the selected options based on a particular property
+      const selected = this.filterData[index]?.filter(option =>
+        this.selectedFilters[index]?.some(selected => selected?.nodeName === option?.nodeName) // Match by 'nodeName'
+      );
+
+      // Get the unselected options
+      const unselected = this.filterData[index]?.filter(option =>
+        !this.selectedFilters[index]?.some(selected => selected?.nodeName === option?.nodeName) // Match by 'id'
+      );
+
+      // Combine selected and unselected, with selected on top
+      if(!selected) return;
+      this.filterData[index] = [...selected, ...unselected];
     }
   }
+
+  onSelectionChange(event: any, index) {
+    if (event?.value.length > 0) {
+      this.moveSelectedOptionToTop(event, index)
+    }
+  }
+
 }

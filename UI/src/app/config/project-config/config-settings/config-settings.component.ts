@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -26,12 +26,13 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './config-settings.component.html',
   styleUrls: ['./config-settings.component.css']
 })
-export class ConfigSettingsComponent {
+export class ConfigSettingsComponent implements OnInit {
 
   configOptions: { tab: string; tabValue: string; }[];
   selectedTab: string = 'projectSettings';
   tab: any;
   selectedToolName: string = null;
+  selectedProject: any;
   constructor(
     private route: ActivatedRoute,
     public router: Router,
@@ -71,13 +72,17 @@ export class ConfigSettingsComponent {
 
   }
 
+  ngOnInit(): void {
+    this.selectedProject = this.sharedService.getSelectedProject();
+  }
+
   onTabChange() {
     if (this.selectedTab === 'projectConfig') {
-      this.router.navigate(['.'], { queryParams: { 'tab': 2 }, relativeTo: this.route });
+      this.router.navigate(['.'], { queryParams: { 'type': this.selectedProject?.type.toLowerCase(), 'tab': 2 }, relativeTo: this.route });
     } else if (this.selectedTab === 'availableConnections') {
       this.router.navigate(['.'], { queryParams: { 'tab': 1 }, relativeTo: this.route });
     } else {
-      this.router.navigate(['.'], { queryParams: { 'tab': 0 }, relativeTo: this.route });
+      this.router.navigate(['.'], { queryParams: { 'type': this.selectedProject?.type.toLowerCase(), 'tab': 0 }, relativeTo: this.route });
     }
   }
 
