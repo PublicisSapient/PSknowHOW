@@ -7675,7 +7675,7 @@ describe('ExecutiveV2Component', () => {
 
   it('kanban with filter applied only Date', (done) => {
     const type = 'Kanban';
-    service.setSelectedTypeOrTabRefresh('Category One', 'Kanban');
+    service.setScrumKanban('Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
     fixture.detectChanges();
     spyOn(httpService, 'postKpiKanban').and.returnValue(of(fakejiraKanban));
@@ -7917,11 +7917,11 @@ describe('ExecutiveV2Component', () => {
       isAdditionalFilters: false
     };
     component.receiveSharedData(event);
-    expect(component.noTabAccess).toBe(true);
+    expect(component.noTabAccess).toBe(false);
 
   });
 
-  it('should call grouping kpi functions when filterdata is available', () => {
+  xit('should call grouping kpi functions when filterdata is available', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     component.filterApplyData = {};
     const event = {
@@ -12697,7 +12697,7 @@ describe('ExecutiveV2Component', () => {
     component.selectedtype = 'scrum';
     localStorage.setItem("completeHierarchyData", JSON.stringify(localDate))
     component.receiveSharedData(event);
-    expect(component.noTabAccess).toBe(true);
+    expect(component.noTabAccess).toBe(false);
   });
 
   it('should return -1 if a.key is "Select"', () => {

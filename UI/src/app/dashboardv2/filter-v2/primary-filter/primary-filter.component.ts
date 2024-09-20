@@ -135,7 +135,7 @@ export class PrimaryFilterComponent implements OnChanges {
         this.selectedFilters = [this.selectedFilters];
       }
 
-      if (this.selectedFilters?.length && Object.keys(this.selectedFilters[0]).length) {
+      if (this.selectedFilters?.length && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
         this.service.setNoSprints(false);
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
           let addtnlStateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
