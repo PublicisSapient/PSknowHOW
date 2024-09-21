@@ -27,25 +27,16 @@ export class NavNewComponent implements OnInit, OnDestroy {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
     this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
-    // this.subscriptions.push(this.sharedService?.onTypeOrTabRefresh.subscribe((data) => {
-    //   this.selectedType = data.selectedType ? data.selectedType : 'scrum';
-    //   this.sharedService.setSelectedType(this.selectedType)
-    // }));
+    
     this.sharedService.setSelectedBoard(this.selectedTab);
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.sharedService.setScrumKanban(this.selectedType);
+
     if (this.sharedService.getSelectedTrends() && this.sharedService.getSelectedTrends()[0]) {
       this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
     } else {
       this.getBoardConfig([]);
     }
-
-    // this.subscriptions.push(this.sharedService.selectedTrendsEvent.subscribe((data) => {
-    //   // if (!this.compareStringArrays(this.selectedBasicConfigIds, data.map(proj => proj['basicProjectConfigId']))) {
-    //     this.selectedBasicConfigIds = data.map(proj => proj['basicProjectConfigId']).sort();
-    //     this.getBoardConfig(this.selectedBasicConfigIds);
-    //   // }
-    // }));
   }
 
   // unsubscribing all Kpi Request
@@ -169,21 +160,4 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     return true;
   }
-
-  // compareStringArrays(array1, array2) {
-  //   // Check if both arrays have the same length
-  //   if (array1.length !== array2.length) {
-  //     return false;
-  //   }
-
-  //   // Check if each corresponding element is the same
-  //   for (let i = 0; i < array1.length; i++) {
-  //     if (array1[i] !== array2[i]) {
-  //       return false;
-  //     }
-  //   }
-
-  //   return true;
-  // }
-
 }
