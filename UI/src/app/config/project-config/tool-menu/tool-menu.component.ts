@@ -65,18 +65,18 @@ export class ToolMenuComponent implements OnInit {
 
   ngOnInit() {
     this.selectedProject = this.sharedService.getSelectedProject();
-    this.sharedService.currentUserDetailsObs.subscribe(details => {
-      if (details) {
-        this.userName = details['user_name'];
-      }
-    });
+    // this.sharedService.currentUserDetailsObs.subscribe(details => {
+    //   if (details) {
+    //     this.userName = details['user_name'];
+    //   }
+    // });
     this.projectTypeOptions = [
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
     ];
     this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
 
-    const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
+    const selectedType = (this.selectedProject?.type || this.selectedProject?.Type)?.toLowerCase() !== 'scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
       return {
         id: x['hierarchyLevelId'],
@@ -118,7 +118,8 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${this.selectedProject.type?.toLowerCase()}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${this.selectedProject.type?.toLowerCase()}&tab=2`) {
+        let typeOfSelectedProject = this.selectedProject.type?.toLowerCase() || this.selectedProject.Type?.toLowerCase();
+        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2`) {
           this.buttonText = 'Set Up';
           this.tools = [
             {

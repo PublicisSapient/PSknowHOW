@@ -63,6 +63,13 @@ export class AdditionalFilterComponent implements OnChanges {
                   }
                 }
               });
+
+              this.filterData.forEach((filterSet, index) => {
+                if (!data[Object.keys(data)[index]]) {
+                  delete this.filterData[index];
+                }
+              });
+
             } else {
               this.filterData[index] = data[f];
             }

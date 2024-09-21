@@ -113,7 +113,7 @@
           </div>
           <div class="card__actions">
             <button pButton type="button" routerLink="{{ tool.routerLink }}"
-              [queryParams]="{type: selectedProject?.type.toLowerCase(), toolName : tool.queryParams1}"
+              [queryParams]="{type: selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase(), toolName : tool.queryParams1}"
               label="{{isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText}}"
               icon="far fa-plus-square" class="p-button-success p-button-raised p-button p-component p-mt-1"
               (click)="setSelectedProject()"></button>
@@ -148,7 +148,7 @@
           </div>
           <div class="card__actions">
             <button pButton type="button" routerLink="{{ tool.routerLink }}"
-              [queryParams]="{type: selectedProject?.type.toLowerCase(), toolName : tool.queryParams1}"
+              [queryParams]="{type: selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase(), toolName : tool.queryParams1}"
               label="{{ isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText }}"
               icon="far fa-plus-square"
               class="p-button-success p-button-raised p-button p-component mr-1 p-mt-1"></button>
