@@ -28,11 +28,6 @@ export class AdditionalFilterComponent implements OnChanges {
   stateFilters: any;
 
   constructor(public service: SharedService, public helperService: HelperService) {
-    this.service.selectedTrendsEvent.subscribe(filters => {
-      this.filterSet = new Set();
-      this.selectedFilters = [];
-      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
-    });
   }
 
   ngOnInit() {
