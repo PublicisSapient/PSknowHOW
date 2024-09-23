@@ -475,8 +475,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.noSprint = false;
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length && 
     (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
-      this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
-      this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
+      
+      // this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
+      // this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
 
       // set selected projects(trends)
