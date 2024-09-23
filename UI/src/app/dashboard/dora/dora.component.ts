@@ -95,15 +95,18 @@ export class DoraComponent implements OnInit {
       }
     }));
 
-    this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
-      this.processKpiConfigData();
+    // this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
+    //   this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
+    //   this.processKpiConfigData();
+    // }));
+
+    this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
+      this.selectedtype = data.selectedType;
+      this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
     }));
 
-    this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
-      this.selectedtype = data.selectedType;
-      this.selectedTab = data.selectedTab;
-      this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+    this.subscriptions.push(this.service.onTabSwitch.subscribe((data) => {
+       this.selectedTab = data.selectedBoard;
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
