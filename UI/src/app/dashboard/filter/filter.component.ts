@@ -1250,9 +1250,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (obj) {
         let d;
         if (type == 'start') {
-          d = new Date(obj[startDateField]);
+          d = new Date(obj[startDateField].split('T')[0]);
         } else {
-          d = new Date(obj[endDateField]);
+          d = new Date(obj[endDateField].split('T')[0]);
         }
         dateString = [this.pad(d.getDate()), this.pad(monthNames[d.getMonth()]), d.getFullYear()].join('/');
       }
