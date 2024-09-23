@@ -58,6 +58,13 @@ export class AdditionalFilterComponent implements OnChanges {
                   }
                 }
               });
+
+              this.filterData.forEach((filterSet, index) => {
+                if (!data[Object.keys(data)[index]]) {
+                  delete this.filterData[index];
+                }
+              });
+
             } else {
               this.filterData[index] = data[f];
             }
@@ -91,7 +98,9 @@ export class AdditionalFilterComponent implements OnChanges {
               if (this.stateFilters[key].length) {
                 this.selectedFilters[correctIndex] = this.stateFilters[key];
               }
+              // this.applyAdditionalFilter(this.selectedFilters, correctIndex + 1, true, true);
             });
+            
           }
 
         }
@@ -148,10 +157,15 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedTab']) {
+    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
       this.filterSet = new Set();
       this.selectedFilters = [];
+      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
+  }
+
+  compareObjects(obj1, obj2) {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
   }
 
   applyAdditionalFilter(e, index, multi = false, fromBackup = false) {
@@ -171,6 +185,7 @@ export class AdditionalFilterComponent implements OnChanges {
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
       } else {
         this.onAdditionalFilterChange.emit(e);
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
       }
     } else {
       // this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
@@ -194,11 +209,27 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   moveSelectedOptionToTop(event, index) {
-    if (event?.value) {
-      event?.value.forEach(selectedItem => {
-        this.filterData[index] = this.filterData[index].filter(x => x.nodeName !== selectedItem.nodeName); // remove the item from list
-        this.filterData[index].unshift(selectedItem)// this will add selected item on the top 
-      });
+    if (this.selectedFilters.length > 0) {
+      // Get the selected options based on a particular property
+      const selected = this.filterData[index]?.filter(option =>
+        this.selectedFilters[index]?.some(selected => selected?.nodeName === option?.nodeName) // Match by 'nodeName'
+      );
+
+      // Get the unselected options
+      const unselected = this.filterData[index]?.filter(option =>
+        !this.selectedFilters[index]?.some(selected => selected?.nodeName === option?.nodeName) // Match by 'id'
+      );
+
+      // Combine selected and unselected, with selected on top
+      if(!selected) return;
+      this.filterData[index] = [...selected, ...unselected];
     }
   }
+
+  onSelectionChange(event: any, index) {
+    if (event?.value.length > 0) {
+      this.moveSelectedOptionToTop(event, index)
+    }
+  }
+
 }

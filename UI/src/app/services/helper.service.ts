@@ -696,10 +696,14 @@ export class HelperService {
     }
 
     getBackupOfFilterSelectionState = (prop = null) => {
-        if (prop) {
-            return this.selectedFilters[prop];
+        if (this.selectedFilters) {
+            if (prop) {
+                return this.selectedFilters[prop];
+            } else {
+                return this.selectedFilters;
+            }
         } else {
-            return this.selectedFilters;
+            return null;
         }
     }
 
@@ -784,9 +788,9 @@ export class HelperService {
 
     getObjectKeys(obj) {
         if (obj && Object.keys(obj).length) {
-          return Object.keys(obj);
+            return Object.keys(obj);
         } else {
-          return [];
+            return [];
         }
     }
 }

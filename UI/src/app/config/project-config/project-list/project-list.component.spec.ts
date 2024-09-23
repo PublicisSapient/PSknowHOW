@@ -438,7 +438,7 @@ describe('ProjectListComponent', () => {
     spyOn(sharedService , 'setSelectedProject');
     component.editConfiguration(fakeProject, tabNum);
     expect(sharedService.setSelectedProject).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ConfigSettings/63b3f9098ec44416b3ce9699'], { queryParams: { tab: 2 } });
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ConfigSettings/63b3f9098ec44416b3ce9699'], { queryParams: { type: 'scrum', tab: 2 } });
   })
 
   it("should get success response while getting project list",()=>{

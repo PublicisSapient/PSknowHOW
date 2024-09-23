@@ -80,6 +80,7 @@ export class KpiCardComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
+      this.filterOptions = {};
       if (Object.keys(x)?.length > 1) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {

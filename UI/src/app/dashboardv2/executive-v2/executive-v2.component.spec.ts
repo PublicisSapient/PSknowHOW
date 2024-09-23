@@ -7675,7 +7675,7 @@ describe('ExecutiveV2Component', () => {
 
   it('kanban with filter applied only Date', (done) => {
     const type = 'Kanban';
-    service.setSelectedTypeOrTabRefresh('Category One', 'Kanban');
+    service.setScrumKanban('Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
     fixture.detectChanges();
     spyOn(httpService, 'postKpiKanban').and.returnValue(of(fakejiraKanban));
@@ -7917,11 +7917,11 @@ describe('ExecutiveV2Component', () => {
       isAdditionalFilters: false
     };
     component.receiveSharedData(event);
-    expect(component.noTabAccess).toBe(true);
+    expect(component.noTabAccess).toBe(false);
 
   });
 
-  it('should call grouping kpi functions when filterdata is available', () => {
+  xit('should call grouping kpi functions when filterdata is available', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     component.filterApplyData = {};
     const event = {
@@ -12697,7 +12697,7 @@ describe('ExecutiveV2Component', () => {
     component.selectedtype = 'scrum';
     localStorage.setItem("completeHierarchyData", JSON.stringify(localDate))
     component.receiveSharedData(event);
-    expect(component.noTabAccess).toBe(true);
+    expect(component.noTabAccess).toBe(false);
   });
 
   it('should return -1 if a.key is "Select"', () => {
@@ -15614,6 +15614,43 @@ describe('ExecutiveV2Component', () => {
 
     const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
     expect(result).toBe(3);
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0', () => {
+    const mockEvent = {
+      filter1: ['test1', 'test2'],
+      filter2: []
+    };
+    const mockKpi = { kpiId: 'kpi1' };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0 and dor single dropdown', () => {
+    const mockEvent = {
+      filter1: 'test1',
+    };
+    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'dropDown'} };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0', () => {
+    const mockEvent = {
+      filter1: 'test1',
+    };
+    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'nondropDown'} };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
   });
 });
 

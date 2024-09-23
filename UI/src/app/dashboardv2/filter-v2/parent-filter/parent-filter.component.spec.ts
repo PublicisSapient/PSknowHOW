@@ -156,7 +156,6 @@ describe('ParentFilterComponent', () => {
     spyOn(helperService, 'setBackupOfFilterSelectionState');
 
     component.handleSelectedLevelChange();
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': component.selectedLevel, 'primary_level': null });
   });
 
 

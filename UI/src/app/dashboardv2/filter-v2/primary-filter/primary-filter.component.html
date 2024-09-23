@@ -4,12 +4,12 @@
             optionLabel="nodeName" [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}"
             [selectionLimit]="6" [selectedItemsLabel]="'{0} selected'" defaultLabel="Select"
             [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }" [appendTo]="filterDiv" [resetFilterOnHide]="true"
-            (onChange)="moveSelectedOptionToTop($event)">
+            (onChange)="onSelectionChange($event)" (onPanelShow)="moveSelectedOptionToTop()">
             <ng-template let-option pTemplate="item">
                 <div class="filter-item">
                     <div>
                         <span>{{option.nodeName}}</span>
-                        <span class="parent_span">
+                        <span *ngIf="option?.path" class="parent_span">
                             ({{ option.path.split('_')[0]}})
                         </span>
                     </div>
@@ -44,10 +44,11 @@
                 </div>
             </ng-template>
         </p-dropdown>
-        <label class="floating-label" for="singleselectFilter" [hidden]="selectedTab === 'iteration'">
+        
+        <label class="floating-label" for="singleselectFilter" [hidden]="selectedTab === 'iteration' || !selectedFilters?.length">
           Select
-          <ng-container *ngIf="selectedLevel === 'project'; else objectTemplate">
-            {{ selectedLevel }}
+          <ng-container *ngIf="!selectedLevel || isString(selectedLevel); else objectTemplate">
+            {{ selectedLevel || 'Project' }}
           </ng-container>
           <ng-template #objectTemplate>
             {{ selectedLevel?.emittedLevel }}

@@ -272,7 +272,7 @@ export class ProjectListComponent implements OnInit {
 
   editConfiguration(project, tabNum) {
     this.sharedService.setSelectedProject(project);
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${project['id']}`], { queryParams: { tab: tabNum } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${project['id']}`], { queryParams: { 'type': project['type'].toLowerCase(), tab: tabNum } });
 
   }
 }

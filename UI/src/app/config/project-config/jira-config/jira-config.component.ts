@@ -325,12 +325,11 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     }, (err) => {
-      console.log("getJenkinsJobNames in err block ",err);
       this.jenkinsJobNameList = [];
       this.hideLoadingOnFormElement('jobName');
       this.messenger.add({
         severity: 'error',
-        summary: err.error.message,
+        summary: err?.error.message ? err.error.message : err?.statusText,
       });
     });
   }

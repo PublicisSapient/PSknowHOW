@@ -235,7 +235,7 @@ export class ProjectSettingsComponent implements OnInit {
 
   updateProjectSelection() {
     this.sharedService.setSelectedProject(this.selectedProject);
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { tab: 0 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 0 } });
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
     this.projectOnHold = this.selectedProject?.projectOnHold;
@@ -275,7 +275,7 @@ export class ProjectSettingsComponent implements OnInit {
       accept: () => {
         this.httpService.deleteProject(project).subscribe(response => {
           this.projectDeletionStatus(response);
-          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { tab: 0 } });
+          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase(), tab: 0 } });
           this.selectedProject = this.userProjects[0];
           let arr = this.sharedService.getCurrentUserDetails('projectsAccess');
           if (arr?.length) {
