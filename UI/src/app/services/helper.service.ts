@@ -68,7 +68,7 @@ export class HelperService {
     // type is quality or productivity
     groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type, selectedTab) {
         const kpiRequestObject = <any>{};
-
+        const visibleKpis = masterData.filter(obj => obj.isEnabled && obj.shown).map(x => x.kpiId);
         kpiRequestObject.kpiList = <any>[];
         for (let i = 0; i < masterData?.length; i++) {
             const obj = { ...masterData[i]?.kpiDetail };
@@ -91,7 +91,7 @@ export class HelperService {
                     if (obj.isEnabled && obj.shown) {
                         kpiRequestObject.kpiList.push(obj);
                     }
-                } else {
+                } else if (visibleKpis.includes(obj.kpiId)) {
                     kpiRequestObject.kpiList.push(obj);
                 }
             }

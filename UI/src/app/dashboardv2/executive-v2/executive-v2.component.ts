@@ -866,8 +866,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
-    let developerBopardKpis = this.globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis.map(x => x.kpiId);
-    if (this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis.includes(kpiId)) {
+    let developerBopardKpis = this.globalConfig[this.kanbanActivated ? 'kanban' : 'scrum']?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
+    if (this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis?.includes(kpiId)) {
       if (!trendValueList?.length) {
         this.additionalFiltersArr = {};
         this.service.setAdditionalFilters(this.additionalFiltersArr);
