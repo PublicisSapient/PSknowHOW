@@ -105,6 +105,7 @@ export class ToolMenuComponent implements OnInit {
       this.getToolsConfigured();
     }
 
+    this.updateProjectSelection();
   }
 
   getToolsConfigured() {
