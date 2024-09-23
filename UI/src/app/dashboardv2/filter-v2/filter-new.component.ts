@@ -77,8 +77,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
-    // this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
-    this.selectedType = 'scrum';
+    this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
 
     this.dateRangeFilter = {
@@ -292,23 +291,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
     dataCopy = this.removeUndefinedProperties(dataCopy);
     this.filterDataArr[this.selectedType] = dataCopy;
-
-    let stateFilters = this.helperService.getBackupOfFilterSelectionState();
-    if (stateFilters && stateFilters['primary_level']) {
-      let selectedProject;
-      if (stateFilters['primary_level'][0].labelName === 'project') {
-        selectedProject = stateFilters['primary_level'][0];
-      } else {
-        selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
+    if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
+      let stateFilters = this.helperService.getBackupOfFilterSelectionState();
+      if (stateFilters && stateFilters['primary_level']) {
+        let selectedProject;
+        if (stateFilters['primary_level'][0].labelName === 'project') {
+          selectedProject = stateFilters['primary_level'][0];
+        } else {
+          selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
+        }
+        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+      } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
+        let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
+        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
       }
-      this.getBoardConfig([selectedProject['basicProjectConfigId']]);
-    } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
-      let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
-      this.getBoardConfig([selectedProject['basicProjectConfigId']]);
-    }
-    else {
-      let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
-      this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+      else {
+        let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
+        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+      }
+    } else {
+      this.getBoardConfig([]);
     }
   }
 
@@ -329,7 +331,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   getBoardConfig(projectList) {
-    if (!this.compareStringArrays(projectList, this.projectList)) {
+    if (!this.compareStringArrays(projectList, this.projectList) || !projectList?.length) {
       this.projectList = [...projectList];
       this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
         (response) => {
@@ -471,7 +473,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       event.sort((a, b) => (a.nodeId > b.nodeId) ? 1 : ((b.nodeId > a.nodeId) ? -1 : 0))
     }
     this.noSprint = false;
-    if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length && (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) { // && Object.keys(event[0]).length) {
+    if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length && 
+    (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -494,9 +497,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.additionalFiltersArr = [];
       }
       if (event.length === 1 && this.selectedTab === 'iteration') {
+        this.additionalData = true;
         this.getProcessorsTraceLogsForProject();
       } else {
         this.service.setProcessorLogDetails({});
+        this.additionalData = false;
       }
       this.previousFilterEvent = event;
       this.previousSelectedTab = this.selectedTab;
@@ -607,13 +612,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.handleAdditionalChange({ [key]: event['additional_level'][key] })
         });
       }
-    } else if (!event.length) {
-      if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint' || this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'release') {
-        this.noSprint = true;
-        this.service.setAdditionalFilters([]);
-        this.previousSelectedTab = this.selectedTab;
-        this.previousSelectedType = this.selectedType;
-      }
+    } else if (!event.length || event[0].labelName.toLowerCase() !== this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase()) {
+      // if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint' || this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'release') {
+      this.noSprint = true;
+      this.service.setAdditionalFilters([]);
+      this.previousSelectedTab = this.selectedTab;
+      this.previousSelectedType = this.selectedType;
+      this.colorObj = {};
+      this.additionalData = false;
+      // }
     }
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['Sprint'] && event && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['Sprint'];

@@ -20,6 +20,7 @@ export class PrimaryFilterComponent implements OnChanges {
   selectedAdditionalFilters: any;
   subscriptions: any[] = [];
   stateFilters: any = {};
+  hierarchyLevels: any[] = [];
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
@@ -30,6 +31,9 @@ export class PrimaryFilterComponent implements OnChanges {
         this.selectedFilters = filters;
       }
     });
+
+    this.hierarchyLevels = JSON.parse(localStorage.getItem('hierarchyData')).map(x => x.hierarchyLevelId);
+    this.hierarchyLevels.push('project');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -42,26 +46,17 @@ export class PrimaryFilterComponent implements OnChanges {
     }
 
     if (changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) {
-      this.applyFirstFilter();
+      this.applyDefaultFilters();
       return;
     }
-  }
-
-  applyFirstFilter() {
-    this.populateFilters();
-    setTimeout(() => {
-      this.selectedFilters = [];
-      this.selectedFilters.push(this.filters[0]);
-      this.applyPrimaryFilters({});
-      this.setProjectAndLevelBackupBasedOnSelectedLevel();
-    }, 100);
   }
 
   applyDefaultFilters() {
     this.populateFilters();
     setTimeout(() => {
       this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
-      if (this.filters?.length) {
+      if (this.filters?.length && this.filters[0]?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
+        this.hierarchyLevels.includes(this.filters[0]?.labelName?.toLowerCase())) {
         if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']?.length) {
           this.selectedFilters = [];
           if (this.filters[0].labelName === this.stateFilters['primary_level'][0].labelName) {
@@ -85,17 +80,23 @@ export class PrimaryFilterComponent implements OnChanges {
 
           }
         } else {
-          // reset
-          this.selectedFilters = [];
-          this.selectedFilters.push(this.filters[0]);
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
-          this.applyPrimaryFilters({});
-          this.setProjectAndLevelBackupBasedOnSelectedLevel();
-          return;
+          if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
+            this.selectedFilters = [];
+            this.selectedFilters.push(this.stateFilters['parent_level']);
+          } else {
+            // reset
+            this.selectedFilters = [];
+            this.selectedFilters.push(this.filters[0]);
+            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
+            this.applyPrimaryFilters({});
+            this.setProjectAndLevelBackupBasedOnSelectedLevel();
+            return;
+          }
         }
       } else {
         this.service.setNoSprints(true);
         this.onPrimaryFilterChange.emit([]);
+        return;
       }
       // PROBLEM AREA END
       this.applyPrimaryFilters({});
@@ -237,5 +238,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
     return true;
   }
+
+  isString(val): boolean { return typeof val === 'string'; }
 
 }
