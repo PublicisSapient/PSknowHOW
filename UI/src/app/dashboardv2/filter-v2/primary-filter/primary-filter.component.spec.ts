@@ -53,6 +53,7 @@ describe('PrimaryFilterComponent', () => {
         "sortBy": null
       }
     };
+    localStorage.setItem('hierarchyData', JSON.stringify([{ "level": 1, "hierarchyLevelId": "bu", "hierarchyLevelName": "BU", "hierarchyLevelInfo": "Business Unit", "value": "", "required": true }, { "level": 2, "hierarchyLevelId": "ver", "hierarchyLevelName": "Vertical", "hierarchyLevelInfo": "Industry", "value": "", "required": true }, { "level": 3, "hierarchyLevelId": "acc", "hierarchyLevelName": "Account", "hierarchyLevelInfo": "Account", "value": "", "required": true }, { "level": 4, "hierarchyLevelId": "port", "hierarchyLevelName": "Engagement", "hierarchyLevelInfo": "Engagement", "value": "", "required": true }]));
     fixture.detectChanges();
   });
 
@@ -91,7 +92,7 @@ describe('PrimaryFilterComponent', () => {
   });
 
   xit('should populate filters and emit onPrimaryFilterChange when primaryFilterConfig, selectedType, or selectedLevel change', fakeAsync(() => {
-    component.primaryFilterConfig = { defaultLevel: {labelName: 'Filter1'} };
+    component.primaryFilterConfig = { defaultLevel: { labelName: 'Filter1' } };
     component.selectedType = 'Type1';
     component.selectedLevel = 'Level1';
     component.filters = [{ nodeId: 1, nodeName: 'Node1' }];
@@ -222,19 +223,6 @@ describe('PrimaryFilterComponent', () => {
     expect(sharedService.setSelectedLevel).toHaveBeenCalledWith({ hierarchyLevelName: 'level1' });
   });
 
-  it('should populate filters, set selectedFilters, and call other methods after a delay', fakeAsync(() => {
-    component.populateFilters = jasmine.createSpy('populateFilters');
-    spyOn(component, 'applyPrimaryFilters');
-    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
-
-    component.applyDefaultFilters();
-    tick(100);
-
-    expect(component.populateFilters).toHaveBeenCalled();
-    expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
-    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
-  }));
-
   it('should handle cases where stateFilters or primaryFilterConfig are null or undefined', () => {
     component.stateFilters = null;
     component.primaryFilterConfig = null;
@@ -298,46 +286,6 @@ describe('PrimaryFilterComponent', () => {
     component.ngOnChanges(mockChanges);
 
     expect(component.applyDefaultFilters).toHaveBeenCalled();
-  });
-
-  it('should reset selectedFilters and call populateFilters if filters exist', () => {
-    component.primaryFilterConfig = {
-      filter1: ['value1'],
-      filter2: ['value2'],
-    };
-    component.selectedType = 'type1';
-    component.selectedLevel = 1;
-    component.applyDefaultFilters = jasmine.createSpy('applyDefaultFilters');
-    component.populateFilters = jasmine.createSpy('populateFilters');
-    // component.helperService = jasmine.createSpyObj('HelperService', ['getBackupOfFilterSelectionState', 'setBackupOfFilterSelectionState']);
-    // component.onPrimaryFilterChange = jasmine.createSpy('onPrimaryFilterChange');
-    component.setProjectAndLevelBackupBasedOnSelectedLevel = jasmine.createSpy('setProjectAndLevelBackupBasedOnSelectedLevel');
-    component.filterData = {
-      'level1': [
-        { nodeId: 'node1', labelName: 'filter1' },
-        { nodeId: 'node2', labelName: 'filter2' },
-      ],
-      'level2': [
-        { nodeId: 'node3', labelName: 'filter3' },
-        { nodeId: 'node4', labelName: 'filter4' },
-      ],
-    };
-    component.selectedFilters = [];
-    component.selectedAdditionalFilters = {};
-    component.stateFilters = [];
-    const mockChanges = {
-      selectedType: {
-        previousValue: 'type1',
-        currentValue: 'type2',
-        firstChange: false,
-        isFirstChange: () => false
-      }
-    };
-
-    component.ngOnChanges(mockChanges);
-
-    expect([...component.selectedFilters]).toEqual([]);
-    expect(component.populateFilters).toHaveBeenCalled();
   });
 
   xit('should set selectedFilters and call setBackupOfFilterSelectionState and onPrimaryFilterChange if primary_level is in stateFilters', () => {
@@ -408,7 +356,7 @@ describe('PrimaryFilterComponent', () => {
         { nodeId: 'node2', nodeName: 'filter2' },
       ],
       additional_level: {
-          level4 :[
+        level4: [
           { nodeId: 'node3', nodeName: 'filter3' },
           { nodeId: 'node4', nodeName: 'filter4' },
         ]

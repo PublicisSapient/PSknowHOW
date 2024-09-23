@@ -32,8 +32,8 @@ export class PrimaryFilterComponent implements OnChanges {
       }
     });
 
-    this.hierarchyLevels = JSON.parse(localStorage.getItem('hierarchyData')).map(x => x.hierarchyLevelId);
-    this.hierarchyLevels.push('project');
+    this.hierarchyLevels = JSON.parse(localStorage.getItem('hierarchyData'))?.map(x => x.hierarchyLevelId);
+    this.hierarchyLevels?.push('project');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
