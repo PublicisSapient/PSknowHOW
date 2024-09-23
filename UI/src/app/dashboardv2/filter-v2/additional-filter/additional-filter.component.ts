@@ -51,7 +51,7 @@ export class AdditionalFilterComponent implements OnChanges {
                     Sprint: 'sprint',
                     Squad: 'sqd'
                   }
-                  if (this.filterData[index]?.length && correctLevelMapping[this.additionalFilterConfig[index].defaultLevel.labelName] === this.filterData[index][0].labelName) {
+                  if (this.filterData[index]?.length && correctLevelMapping[this.additionalFilterConfig[index]?.defaultLevel?.labelName] === this.filterData[index][0].labelName) {
                     this.filterData[index].push(element);
                   } else {
                     this.filterData[index] = data[f];
