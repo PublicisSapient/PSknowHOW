@@ -84,7 +84,8 @@ export class PrimaryFilterComponent implements OnChanges {
             this.selectedFilters = [];
             this.selectedFilters.push(this.stateFilters['parent_level']);
           } else {
-            if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName?.toLowerCase()) {
+            if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName?.toLowerCase() ||
+          this.hierarchyLevels.includes(this.filters[0]?.labelName?.toLowerCase())) {
               // reset
               this.selectedFilters = [];
               this.selectedFilters.push(this.filters[0]);
