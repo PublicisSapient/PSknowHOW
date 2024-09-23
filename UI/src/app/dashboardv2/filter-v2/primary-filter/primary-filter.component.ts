@@ -84,13 +84,19 @@ export class PrimaryFilterComponent implements OnChanges {
             this.selectedFilters = [];
             this.selectedFilters.push(this.stateFilters['parent_level']);
           } else {
-            // reset
-            this.selectedFilters = [];
-            this.selectedFilters.push(this.filters[0]);
-            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
-            this.applyPrimaryFilters({});
-            this.setProjectAndLevelBackupBasedOnSelectedLevel();
-            return;
+            if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName?.toLowerCase()) {
+              // reset
+              this.selectedFilters = [];
+              this.selectedFilters.push(this.filters[0]);
+              this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
+              this.applyPrimaryFilters({});
+              this.setProjectAndLevelBackupBasedOnSelectedLevel();
+              return;
+            } else {
+              this.service.setNoSprints(true);
+              this.onPrimaryFilterChange.emit([]);
+              return;
+            }
           }
         }
       } else {
