@@ -31,9 +31,6 @@ export class PrimaryFilterComponent implements OnChanges {
         this.selectedFilters = filters;
       }
     });
-
-    this.hierarchyLevels = JSON.parse(localStorage.getItem('hierarchyData'))?.map(x => x.hierarchyLevelId);
-    this.hierarchyLevels?.push('project');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -49,6 +46,10 @@ export class PrimaryFilterComponent implements OnChanges {
       this.applyDefaultFilters();
       return;
     }
+
+    let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
+    let projectLevelNode = completeHiearchyData?.filter(x => x.hierarchyLevelId === 'project');
+    this.hierarchyLevels = completeHiearchyData?.filter(x => x.level <= projectLevelNode[0].level).map(x => x.hierarchyLevelId);
   }
 
   applyDefaultFilters() {
@@ -125,7 +126,7 @@ export class PrimaryFilterComponent implements OnChanges {
       let selectedLevel = this.selectedLevel.emittedLevel;
       selectedLevel = selectedLevel[0].toUpperCase() + selectedLevel.slice(1);
       // check for iterations and releases
-      if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']?.sortBy) {
+      if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
           this.filters = this.helperService.sortByField(this.filterData[selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
         } else {
