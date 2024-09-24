@@ -108,7 +108,7 @@ export class ToolMenuComponent implements OnInit {
   }
 
   getToolsConfigured() {
-    this.httpService.getAllToolConfigs(this.selectedProject.id).subscribe(response => {
+    this.httpService.getAllToolConfigs(this.selectedProject?.id).subscribe(response => {
       this.dataLoading = false;
       if (response?.success) {
         this.sharedService.setSelectedToolConfig(response['data']);
@@ -119,8 +119,9 @@ export class ToolMenuComponent implements OnInit {
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
         let typeOfSelectedProject = this.selectedProject.type?.toLowerCase() || this.selectedProject.Type?.toLowerCase();
-        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2`) {
-          this.buttonText = 'Set Up';
+        //if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings`) {
+        if(this.router.url.includes('tab=2')){ 
+        this.buttonText = 'Set Up';
           this.tools = [
             {
               toolName: 'Jira',
@@ -400,9 +401,9 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectSelection() {
     this.setSelectedProject();
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 2 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': (this.selectedProject?.type?.toLowerCase() || this.selectedProject?.Type?.toLowerCase()) ,tab: 2 } });
     this.getToolsConfigured();
-  }
+}
 
   gotoProcessor() {
     this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject?.id } });
