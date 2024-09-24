@@ -10,7 +10,7 @@ import '../../App.css';
 import SuiteLogos from '../../components/SuiteLogos';
 import PSLogo from '../../components/PSLogo';
 
-const _loginButtonText = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_LOGIN_BUTTON_TEXT : process.env.REACT_APP_LOGIN_BUTTON_TEXT;
+const _loginInstanceText = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_LOGIN_INSTANCE_TEXT : process.env.REACT_APP_LOGIN_INSTANCE_TEXT;
 
 const LoginPage = ({search}) => {
 
@@ -89,16 +89,22 @@ const LoginPage = ({search}) => {
             <div className="w-2/5 p-12 bg-white-A700">
                 
                 <PSLogo/>
-                <div className='w-full mt-8 mb-8'>
+                <div className='w-full mt-8 mb-2'>
                     <Text
-                        className="text-center text-lg"
+                        className="text-center text-lg mb-3"
                         size="txtPoppinsBold44"
+                        style={{fontFamily: 'PoppinsBold'}}
                     >
                         Welcome back!
                     </Text>
+                    <Text
+                        className="text-center text-lg"
+                    >
+                        Part of Publicis Groupe?
+                    </Text>
                 </div>
                 <Button
-                    className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
+                    className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[13px] w-full"
                     rightIcon={
                         <>
                             <Img
@@ -115,25 +121,25 @@ const LoginPage = ({search}) => {
                     } clickFn={PerformSAMLLogin}
                 >
                     <Text className="text-white text-left">
-                      {_loginButtonText ? _loginButtonText : 'Login with SSO'}
+                    Continue here
                     </Text>
                 </Button>
                 <Button
-                    color={showLoginWithCredentials ? 'blue_80' : 'blue_800'}
+                    color={'white'}
                     className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                     rightIcon={
                         <>
                             <Img
-                                className="h-5 mb-px ml-2"
-                                src="images/img_arrowright.svg"
+                                className="mb-px ml-2"
+                                src="images/img_arrow_right_black.svg"
                                 alt="arrow_right"
-                                style={{ transform: showLoginWithCredentials ? 'rotate(90deg)' : 'none' }}
+                                style={{ transform: showLoginWithCredentials ? 'rotate(90deg)' : 'translateY(2px)', }}
                             />
                         </>
                     } clickFn={ShowLoginWithCredentials}
                 >
-                    <Text className="text-white text-left">
-                        Login with credentials
+                    <Text className="text-left underline">
+                       Not a part of {_loginInstanceText} ?
                     </Text>
                 </Button>
               {
@@ -141,7 +147,7 @@ const LoginPage = ({search}) => {
                 <>
                   <FormProvider {...methods}>
                     <form noValidate autoComplete="off">
-                      <FloatingInput type="text" placeHolder="User Name" id="userName"
+                      <FloatingInput type="text" placeHolder="Enter your user name here" id="userName"
                                      className={`mt-4 ${(methods.formState.errors['userName']) ? 'Invalid' : ''}`}
                                      validationRules={{
                                        'required': 'Field is required',
@@ -157,7 +163,7 @@ const LoginPage = ({search}) => {
                       </FloatingInput>
                       {(methods.formState.errors['userName']) &&
                         <p className="errMsg">{methods.formState.errors['userName'].message}</p>}
-                      <FloatingInput type="password" placeHolder="Password" id="password"
+                      <FloatingInput type="password" placeHolder="Enter your password here" id="password"
                                      className={`mt-4 ${(methods.formState.errors['password']) ? 'Invalid' : ''}`}
                                      validationRules={{
                                        'required': 'Field is required',

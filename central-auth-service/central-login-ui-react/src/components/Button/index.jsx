@@ -7,6 +7,7 @@ const variants = {
     blue_800: "bg-blue-800 text-white-A700",
     blue_80: "bg-blue-80 text-white-A700",
     blue_gray_100: "bg-blue_gray-100 text-blue_gray-50",
+    white : "bg-white text-black"
   },
 };
 const sizes = { xs: "p-[9px]" };
@@ -43,7 +44,7 @@ Button.propTypes = {
   shape: PropTypes.oneOf(["round"]),
   size: PropTypes.oneOf(["xs"]),
   variant: PropTypes.oneOf(["fill"]),
-  color: PropTypes.oneOf(["blue_800", "blue_80", "blue_gray_100"]),
+  color: PropTypes.oneOf(["blue_800", "blue_80", "blue_gray_100","white"]),
 };
 
 export { Button };

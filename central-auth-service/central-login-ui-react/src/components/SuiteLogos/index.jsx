@@ -17,7 +17,7 @@ const SuiteLogos = () => {
             {
                 isSpeedSuite && 
                 bg.map((item, index) => (
-                    <BgItem key={index} item={item} />
+                    <BgItem key={index} item={item} className={item === 'KnowHOWGroup' ? 'h-16' : ''}/>
                 ))
             }
                 

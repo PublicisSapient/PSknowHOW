@@ -25,6 +25,12 @@ const RegisterPage = () => {
     const userNamePattern = /^[A-Za-z0-9]+$/;
     const password = methods.watch('password', '');
 
+    const restrictedDomains = [
+        "publicisgroupe.net",
+        "publicissapient.com",
+        "publicisresources.com"
+    ];
+
     const onSubmit = (data) => {
         setShowLoader(true);
         let obj = {
@@ -106,7 +112,14 @@ const RegisterPage = () => {
                                 "pattern": {
                                     "value": emailPatthern,
                                     "message": 'Invalid Email'
+                                },
+                            }}
+                            validateValueFn={(value) => {
+                                const domain = value.split('@')[1].toLowerCase(); // Extract the domain and convert to lowercase
+                                if (restrictedDomains.includes(domain)) {
+                                    return `The email domain ${domain} is not allowed.Please use a non-groupe email domain.`;
                                 }
+                                return true; // Return true if the domain is not restricted
                             }}>
                         </FloatingInput>
                         {(methods.formState.errors['email']) && <p className='errMsg'>{methods.formState.errors['email'].message}</p>}
