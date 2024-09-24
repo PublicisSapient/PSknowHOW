@@ -24,6 +24,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   previousSelectedType: string = '';
   subscriptions: any[] = [];
   selectedFilterData: {};
+  previousSelectedFilterData: {};
   selectedLevel: any = 'Project';
   kanban: boolean = false;
   boardData: object = {};
@@ -254,16 +255,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedFilterData['kanban'] = this.kanban;
     this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     this.cdr.detectChanges();
-    this.subscriptions.push(
-      this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
-        if (filterApiData['success']) {
-          this.filterApiData = filterApiData['data'];
-          this.processFilterData(filterApiData['data']);
-        } else {
-          // error
-        }
-      })
-    );
+    if (!this.objectsEqual(this.selectedFilterData, this.previousSelectedFilterData)) {
+      this.previousSelectedFilterData = {...this.selectedFilterData};
+      this.subscriptions.push(
+        this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+          if (filterApiData['success']) {
+            this.filterApiData = filterApiData['data'];
+            this.processFilterData(filterApiData['data']);
+          } else {
+            // error
+          }
+        })
+      );
+    }
   }
 
   processFilterData(data) {
@@ -473,9 +477,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       event.sort((a, b) => (a.nodeId > b.nodeId) ? 1 : ((b.nodeId > a.nodeId) ? -1 : 0))
     }
     this.noSprint = false;
-    if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length && 
-    (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
-      
+    if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
+      (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+
       // this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       // this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -644,18 +648,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
 
   objectsEqual(o1, o2) {
-    if (!o1 || !o2) {
+    if (typeof o1 !== 'boolean' && (!o1 || !o2)) {
       return false;
     } else {
       return typeof o1 === 'object' && Object.keys(o1).length > 0
         ? Object.keys(o1).length === Object.keys(o2).length
-        && Object.keys(o1).every(p => this.objectsEqual(o1[p], o2[p]))
+        && Object.keys(o1).every(p => !Array.isArray(o1[p]) ? this.objectsEqual(o1[p], o2[p]) : this.arrayDeepCompare(o1[p], o2[p]))
         : o1 === o2;
     }
   }
 
   arrayDeepCompare(a1, a2) {
-    return a1.length === a2.length && a1.every((o, idx) => this.objectsEqual(o, a2[idx]));
+    return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.objectsEqual(o, a2[idx]) : o === a2[idx]);
   }
 
   setSprintDetails(event) {
