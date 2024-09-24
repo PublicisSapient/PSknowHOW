@@ -63,23 +63,24 @@ export class MyprofileComponent implements OnInit {
       this.isProjectAdmin = true;
     }
 
-    if ((!this.isSuperAdmin) && (this.sharedService.getCurrentUserDetails('projectsAccess') === 'undefined' || !this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
+    if ((!this.isSuperAdmin) && (!this.sharedService.getCurrentUserDetails('projectsAccess')?.length)) {
       this.noAccess = true;
     }
 
     this.sharedService.currentUserDetailsObs.subscribe(details => {
       if (details) {
         this.userName = details['user_name'] ? details['user_name'] : '--';
-        this.userEmail = details['user_email'] ? details['user_email'] : '--';
         if (details['user_email']) {
+          this.userEmail = details['user_email']
           this.emailConfigured = true;
+        } else {
+          this.userEmail = '--';
         }
       }
     })
 
-    if (!!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
+    if (this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
       const accessList = JSON.parse(JSON.stringify(this.sharedService.getCurrentUserDetails('projectsAccess')));
-
       this.groupProjects(accessList);
       this.getTableHeadings();
     }
