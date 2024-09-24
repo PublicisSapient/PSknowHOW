@@ -1,5 +1,5 @@
 
-import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -26,7 +26,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
     public messageService: MessageService,
     public router: Router,
     public route: ActivatedRoute,
-    private helperService: HelperService,
+    public helperService: HelperService,
   ) {
     // console.log('url from -> ', decodeURIComponent(window.location.hash.substring(1)))
     // this.route.queryParams.subscribe(params => {
@@ -38,7 +38,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
     const selectedTab = decodeURIComponent(window.location.hash.substring(1));
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
     this.selectedTab = this.selectedTab?.split('?')[0].split(' ').join('-').toLowerCase();
-    this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
+    this.subscriptions.push(this.sharedService?.onTypeOrTabRefresh.subscribe((data) => {
+      console.log(data);
       this.selectedType = data.selectedType ? data.selectedType : 'scrum';
       this.sharedService.setSelectedType(this.selectedType)
     }));
@@ -79,18 +80,18 @@ export class NavNewComponent implements OnInit, OnDestroy {
       let data = response.data.userBoardConfigDTO;
       if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
         const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
-        data[this.selectedType].forEach((board) => {
+        data[this.selectedType]?.forEach((board) => {
           if (board?.filters) {
-            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
+            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0]?.hierarchyLevelName;
             if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-              board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+              board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0]?.hierarchyLevelName;
             }
             if (board.filters.parentFilter?.emittedLevel) {
-              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0]?.hierarchyLevelName;
             }
 
             if (board.boardSlug !== 'developer') {
-              board.filters.additionalFilters.forEach(element => {
+              board.filters.additionalFilters?.forEach(element => {
                 element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]?.hierarchyLevelName;
               });
             }

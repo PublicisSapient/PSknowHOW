@@ -373,7 +373,12 @@ export class CapacityPlanningComponent implements OnInit {
               .subscribe(response => {
                 if (response && response?.success && response?.data) {
                   this.projectAssigneeEmails = response.data;
-                  this.projectAssigneeEmailsCopy = [...this.projectAssigneeEmails];
+                  this.projectAssigneeEmailsCopy = [...this.projectAssigneeEmails].map(x => {
+                    return {
+                      'name': x,
+                      'value': x
+                    }
+                  });
                 } else {
                   this.messageService.add({ severity: 'error', summary: 'Could not fetch Assignee Emails.' });
                 }

@@ -112,7 +112,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         15
       ]
     };
-    this.selectedDayType = 'Weeks';
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.subscriptions.push(
@@ -128,12 +127,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
         .subscribe(data => {
-          // console.log(data)
+          this.colorObj = {};
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
 
 
-          this.selectedDayType = 'Weeks';
           this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
           this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -169,6 +167,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.iterationConfigData = iterationDetails;
       })
     );
+
+    this.subscriptions.push(this.service.dateFilterSelectedDateType.subscribe(date => {
+      this.selectedDayType = date;
+    }))
   }
 
   /**create dynamic hierarchy levels for filter dropdown */
@@ -202,7 +204,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSelectedDateType(label: string) {
-    this.selectedDayType = label;
+    this.service.dateFilterSelectedDateType.next(label);
   }
 
   setSelectedType(type) {
@@ -303,6 +305,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     levelDetails.forEach(level => {
       dataCopy[level.hierarchyLevelName] = this.filterDataArr[this.selectedType][level.hierarchyLevelId];
     });
+    dataCopy = this.removeUndefinedProperties(dataCopy);
     this.filterDataArr[this.selectedType] = dataCopy;
   }
 
@@ -342,12 +345,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  getObjectKeys(obj) {
-    if (obj && Object.keys(obj).length) {
-      return Object.keys(obj);
-    } else {
-      return [];
-    }
+  objectKeys(obj) {
+    return this.helperService.getObjectKeys(obj)
   }
 
   removeFilter(id) {
@@ -451,8 +450,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.noSprint = false;
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
-
-      this.selectedDayType = 'Weeks';
       this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -578,7 +575,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         });
       }
     } else if (!event.length) {
-      if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint') {
+      if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint' || this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'release') {
         this.noSprint = true;
         this.service.setAdditionalFilters([]);
       }
@@ -591,9 +588,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.setSprintForRnR(currentProjectSprints[currentProjectSprints?.length - 1])
         this.noSprint = false;
       } else {
-        this.noSprint = true;
-        this.service.setAdditionalFilters([]);
+        if (this.selectedTab !== 'developer') {
+          this.noSprint = true;
+          this.service.setAdditionalFilters([]);
+        }
       }
+    } else {
+      this.noSprint = false;
     }
     this.compileGAData(event);
   }
@@ -703,6 +704,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   populateAdditionalFilters(event) {
+    this.additionalFiltersArr = [];
     if (!Array.isArray(event)) {
       event = [event];
     }
@@ -806,6 +808,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'SUCCESS';
             this.handlePrimaryFilterChange(this.previousFilterEvent);
+            this.lastSyncData = {};
             this.messageService.add({
               severity: 'success',
               summary: 'Refreshing data',
@@ -944,4 +947,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.showChart = val;
     this.service.setShowTableView(this.showChart);
   }
+
+  removeUndefinedProperties(obj) {
+    for (let key in obj) {
+      if (obj[key] === undefined) {
+        delete obj[key];
+      }
+    }
+    return obj;
+  }
+
 }

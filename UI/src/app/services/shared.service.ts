@@ -56,6 +56,7 @@ export class SharedService {
   public boardId = 1;
   private authToken = '';
   public sprintForRnR;
+  public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};

@@ -147,7 +147,6 @@
   
   :host ::ng-deep .custom-grid .p-datatable tbody tr.sprint {
     display: block;
-    width: 100%;
     padding: 5px;
     border-radius: 5px;
     margin: 10px 0px;
@@ -164,6 +163,15 @@
     padding-left: 0px;
     padding-right: 0px;
     white-space: nowrap;
+  }
+
+  
+
+  @media only screen and (max-width: 1600px){
+    :host ::ng-deep .capacity-table-container {
+      max-width: 1170px;
+      overflow-x: scroll; 
+    }
   }
   
   :host ::ng-deep .capacity-table.custom-grid .p-datatable tbody tr.sprint {

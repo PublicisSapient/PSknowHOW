@@ -92,7 +92,7 @@ export class ProjectSettingsComponent implements OnInit {
       },
       {
         name: 'Enable Developer KPIs',
-        description: 'Provide consent to clone your code repositories (BitBucket, GitLab, GitHub) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to valuable KPIs on the Developer dashboard.',
+        description: 'Provide consent to clone your code repositories (BitBucket, GitLab, GitHub, Azure Repository) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to valuable KPIs on the Developer dashboard.',
         actionItem: 'switch-developer-kpi',
       }
     ];
@@ -235,7 +235,7 @@ export class ProjectSettingsComponent implements OnInit {
 
   updateProjectSelection() {
     this.sharedService.setSelectedProject(this.selectedProject);
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { tab: 0 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 0 } });
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
     this.projectOnHold = this.selectedProject?.projectOnHold;
@@ -275,7 +275,7 @@ export class ProjectSettingsComponent implements OnInit {
       accept: () => {
         this.httpService.deleteProject(project).subscribe(response => {
           this.projectDeletionStatus(response);
-          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { tab: 0 } });
+          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase(), tab: 0 } });
           this.selectedProject = this.userProjects[0];
           let arr = this.sharedService.getCurrentUserDetails('projectsAccess');
           if (arr?.length) {
@@ -425,7 +425,7 @@ export class ProjectSettingsComponent implements OnInit {
       this.displayGeneratedToken = true;
       if (response['success'] && response['data']) {
         this.generatedToken = response['data'].apiToken;
-        this.messageService.add({ severity: 'success', summary: 'Token copied!' });
+        this.messageService.add({ severity: 'success', summary: 'Token generated!' });
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
       }
@@ -436,6 +436,7 @@ export class ProjectSettingsComponent implements OnInit {
     if (this.generatedToken) {
       this.tokenCopied = true;
       navigator.clipboard.writeText(this.generatedToken);
+      this.messageService.add({ severity: 'success', summary: 'Token copied!' });
     }
   }
 

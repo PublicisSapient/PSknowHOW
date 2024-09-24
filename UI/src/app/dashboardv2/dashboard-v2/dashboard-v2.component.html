@@ -25,7 +25,7 @@
     *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-nav-new>
   <app-filter-new
     *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-filter-new>
-  <app-sticky-header class="header nav-filter-container"></app-sticky-header>
+  <app-sticky-header class="header nav-filter-container" *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-sticky-header>
 
   <div id="wrapper" [ngClass]="sideNavStyle">
     <div id="page-content-wrapper"
@@ -36,7 +36,5 @@
     </div>
   </div>
 </div>
-<button id="go-to-top" title="Go to Top">
-  <i class="fa fa-arrow-up" aria-hidden="true"></i>
-</button>
+    <p-scrollTop ></p-scrollTop>
 <app-footer></app-footer>

@@ -225,16 +225,6 @@ public class TestConnectionController {
 
 	}
 
-	@PostMapping("/repotool")
-	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
-	public ResponseEntity<ServiceResponse> validateRepoToolsConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
-		log.info(SONAR_CONNECTION_MSG);
-		final ModelMapper modelMapper = new ModelMapper();
-		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
-		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.validateConnection(connection, CommonConstant.REPO_TOOLS));
-
-	}
-
 	/**
 	 * Validate ArgoCD connection
 	 *
