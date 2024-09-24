@@ -105,7 +105,6 @@ export class ToolMenuComponent implements OnInit {
       this.getToolsConfigured();
     }
 
-    this.updateProjectSelection();
   }
 
   getToolsConfigured() {
@@ -120,7 +119,7 @@ export class ToolMenuComponent implements OnInit {
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
         let typeOfSelectedProject = this.selectedProject.type?.toLowerCase() || this.selectedProject.Type?.toLowerCase();
-        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2`) {
+        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings`) {
           this.buttonText = 'Set Up';
           this.tools = [
             {
@@ -402,10 +401,7 @@ export class ToolMenuComponent implements OnInit {
   updateProjectSelection() {
     this.setSelectedProject();
     this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 2 } });
-    if(this.selectedProject){
       this.getToolsConfigured();
-    }
-    
   }
 
   gotoProcessor() {
