@@ -139,7 +139,7 @@ const LoginPage = ({search}) => {
                     } clickFn={ShowLoginWithCredentials}
                 >
                     <Text className="text-left underline">
-                       Not a part of {_loginInstanceText} ?
+                       Not a part of {_loginInstanceText ? _loginInstanceText : 'Publicis Groupe' } ?
                     </Text>
                 </Button>
               {
