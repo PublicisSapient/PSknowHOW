@@ -102,9 +102,10 @@ export class ToolMenuComponent implements OnInit {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     } else {
       this.dataLoading = true;
-      this.updateProjectSelection();
       this.getToolsConfigured();
     }
+
+    this.updateProjectSelection();
   }
 
   getToolsConfigured() {
@@ -401,7 +402,10 @@ export class ToolMenuComponent implements OnInit {
   updateProjectSelection() {
     this.setSelectedProject();
     this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 2 } });
-    this.getToolsConfigured();
+    if(this.selectedProject){
+      this.getToolsConfigured();
+    }
+    
   }
 
   gotoProcessor() {
