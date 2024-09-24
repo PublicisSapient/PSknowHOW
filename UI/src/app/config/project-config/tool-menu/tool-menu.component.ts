@@ -108,7 +108,7 @@ export class ToolMenuComponent implements OnInit {
   }
 
   getToolsConfigured() {
-    this.httpService.getAllToolConfigs(this.selectedProject.id).subscribe(response => {
+    this.httpService.getAllToolConfigs(this.selectedProject?.id).subscribe(response => {
       this.dataLoading = false;
       if (response?.success) {
         this.sharedService.setSelectedToolConfig(response['data']);
@@ -400,9 +400,9 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectSelection() {
     this.setSelectedProject();
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase() ,tab: 2 } });
-      this.getToolsConfigured();
-  }
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': (this.selectedProject?.type?.toLowerCase() || this.selectedProject?.Type?.toLowerCase()) ,tab: 2 } });
+    this.getToolsConfigured();
+}
 
   gotoProcessor() {
     this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject?.id } });
