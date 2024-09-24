@@ -402,7 +402,9 @@ export class HelperService {
             objArray.sort((a, b) => {
                 const aName = a.nodeName || a.data || a.date || a;
                 const bName = b.nodeName || b.data || b.date || b;
-                return aName.localeCompare(bName);
+                if (typeof aName === 'string' && typeof bName === 'string') {
+                    return aName.localeCompare(bName);
+                }
             });
         }
         return objArray;
