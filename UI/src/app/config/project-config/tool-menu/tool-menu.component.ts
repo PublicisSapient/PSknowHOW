@@ -102,10 +102,9 @@ export class ToolMenuComponent implements OnInit {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     } else {
       this.dataLoading = true;
+      this.updateProjectSelection();
       this.getToolsConfigured();
     }
-
-    this.updateProjectSelection();
   }
 
   getToolsConfigured() {
