@@ -61,7 +61,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
               this.filterData.forEach((filterSet, index) => {
                 if (!data[Object.keys(data)[index]]) {
-                  delete this.filterData[index];
+                  this.filterData.splice(index,1);
                 }
               });
 
@@ -130,8 +130,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
     this.filterData.forEach((filter, index) => {
       if (filter.map(f => f.nodeName).includes('Overall')) {
-        // filter.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
-        // filter.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
+       
         fakeEvent['value'] = 'Overall';
 
         this.selectedFilters[index] = { nodeId: 'Overall', nodeName: 'Overall' };
@@ -183,7 +182,6 @@ export class AdditionalFilterComponent implements OnChanges {
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
       }
     } else {
-      // this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
       this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];

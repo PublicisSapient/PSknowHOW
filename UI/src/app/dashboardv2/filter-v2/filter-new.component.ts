@@ -596,7 +596,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          // this.setHierarchyLevels();
           this.applyDateFilter();
         }
       }
@@ -611,7 +610,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousFilterEvent['primary_level'] = event['primary_level'];
 
       if (!event['additional_level']) {
-        // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         this.handlePrimaryFilterChange(event);
       } else {
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
@@ -966,21 +964,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             detail: '',
           });
           this.service.setDashConfigData(this.dashConfigData);
-          // this.toggleDropdown['showHide'] = false;
         } else {
           this.messageService.add({
             severity: 'error',
             summary: 'Error in Saving Configuraion',
           });
         }
-        // this.showHideLoader = false;
       },
       (error) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error in saving kpis. Please try after some time.',
         });
-        // this.showHideLoader = false;
       },
     );
   }

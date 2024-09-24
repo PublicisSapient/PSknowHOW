@@ -68,15 +68,7 @@ export class MyprofileComponent implements OnInit {
     }
 
     this.sharedService.currentUserDetailsObs.subscribe(details => {
-      if (details) {
-        this.userName = details['user_name'] ? details['user_name'] : '--';
-        if (details['user_email']) {
-          this.userEmail = details['user_email']
-          this.emailConfigured = true;
-        } else {
-          this.userEmail = '--';
-        }
-      }
+      this.setUserDetails(details);
     })
 
     if (this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
@@ -96,6 +88,18 @@ export class MyprofileComponent implements OnInit {
       "accessAlertNotification": [this.sharedService.getCurrentUserDetails('notificationEmail')?.accessAlertNotification || false],
       "errorAlertNotification": [this.sharedService.getCurrentUserDetails('notificationEmail')?.errorAlertNotification || false]
     })
+  }
+
+  setUserDetails(details) {
+    if (details) {
+      this.userName = details['user_name'] ? details['user_name'] : '--';
+      if (details['user_email']) {
+        this.userEmail = details['user_email']
+        this.emailConfigured = true;
+      } else {
+        this.userEmail = '--';
+      }
+    }
   }
 
   getTableHeadings() {
