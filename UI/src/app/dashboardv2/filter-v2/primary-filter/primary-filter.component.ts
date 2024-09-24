@@ -113,9 +113,9 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   populateFilters() {
-    if (this.selectedLevel && typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
+    if (typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
       this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
-      if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']?.sortBy) {
+      if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
         if (this.selectedTab.toLowerCase() === 'iteration') {
           this.filters = this.helperService.sortByField(this.filterData[this.selectedLevel].filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
         } else {
