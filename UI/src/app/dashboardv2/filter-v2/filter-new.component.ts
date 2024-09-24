@@ -112,16 +112,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
           setTimeout(() => {
             this.selectedType = JSON.parse(JSON.stringify(data.selectedType));
-            if (this.selectedType.toLowerCase() === 'kanban') {
-              this.kanban = true;
-              if (!this.dateRangeFilter.types.includes('Months')) {
-                this.dateRangeFilter.types.push('Months');
-              }
-            } else {
-              this.kanban = false;
-              this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
-            }
-
+            this.setDateFilter();
             this.filterDataArr = {};
             this.setHierarchyLevels();
           }, 0);
@@ -131,15 +122,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         .subscribe(data => {
           setTimeout(() => {
             this.selectedTab = JSON.parse(JSON.stringify(data.selectedBoard));
-            if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora' || this.selectedTab.toLowerCase() === 'developer' || this.selectedTab.toLowerCase() === 'kpi-maturity') {
+            if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
               this.showChart = 'chart';
               this.service.setShowTableView(this.showChart);
             }
             this.service.setSelectedDateFilter(this.selectedDayType);
 
             // To DO
-            if (this.boardData && Object.keys(this.boardData).length) {
-
+            if (Object.keys(this.boardData)?.length) {
               this.processBoardData(this.boardData);
             } else {
               this.setHierarchyLevels();
@@ -160,6 +150,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.service.setScrumKanban(this.selectedType);
     this.service.setSelectedBoard(this.selectedTab);
+  }
+
+  setDateFilter() {
+    if (this.selectedType.toLowerCase() === 'kanban') {
+      this.kanban = true;
+      if (!this.dateRangeFilter.types.includes('Months')) {
+        this.dateRangeFilter.types.push('Months');
+      }
+    } else {
+      this.kanban = false;
+      this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
+    }
   }
 
   /**create dynamic hierarchy levels for filter dropdown */
@@ -256,7 +258,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     this.cdr.detectChanges();
     if (!this.objectsEqual(this.selectedFilterData, this.previousSelectedFilterData)) {
-      this.previousSelectedFilterData = {...this.selectedFilterData};
+      this.previousSelectedFilterData = { ...this.selectedFilterData };
       this.subscriptions.push(
         this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
           if (filterApiData['success']) {

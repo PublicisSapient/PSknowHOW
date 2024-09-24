@@ -98,15 +98,10 @@ export class AdditionalFilterComponent implements OnChanges {
               if (this.stateFilters[key].length) {
                 this.selectedFilters[correctIndex] = this.stateFilters[key];
               }
-              // this.applyAdditionalFilter(this.selectedFilters, correctIndex + 1, true, true);
             });
-            
+
           }
-
-        }
-
-        // Apply the first/ Overall filter
-        if (this.selectedTab.toLowerCase() === 'developer') {
+        } else {
           this.applyDefaultFilter();
         }
       } else {
@@ -221,7 +216,7 @@ export class AdditionalFilterComponent implements OnChanges {
       );
 
       // Combine selected and unselected, with selected on top
-      if(!selected) return;
+      if (!selected) return;
       this.filterData[index] = [...selected, ...unselected];
     }
   }
