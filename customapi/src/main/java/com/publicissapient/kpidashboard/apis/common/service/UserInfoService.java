@@ -68,7 +68,7 @@ public interface UserInfoService {
 	 *
 	 * @return the users
 	 */
-	Collection<UserInfo> getUsers();
+	Collection<UserInfoDTO> getUsers();
 
 	/**
 	 * Gets users and add/delete some fields.

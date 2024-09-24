@@ -24,7 +24,6 @@ import lombok.Setter;
 @Setter
 public class AccessItem {
 	private String itemId;
-	private String itemName;
 
 	@Override
 	public boolean equals(Object o) {

@@ -315,7 +315,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return unsavedBasicConfig.isSaveAssigneeDetails() != savedConfig.isSaveAssigneeDetails();
 	}
 
-	//HB : todo remove
 	/**
 	 * method to perform filter operation
 	 *
@@ -630,7 +629,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					for (HierarchyValue hierarchyValue : projectBasicConfig.getHierarchy()) {
 						HierarchyLevel hierarchyLevel = hierarchyValue.getHierarchyLevel();
 						ProjectBasicConfigNode projectBasicHierarchyNode = createProjectBasicNode(
-								hierarchyValue.getValue(),
+								hierarchyValue.getOrgHierarchyNodeId(),
 								new ArrayList<>(Arrays.asList(projectBasicConfigLevelWiseNode)),
 								hierarchyLevel.getHierarchyLevelId());
 						projectBasicConfigNodes.add(projectBasicHierarchyNode);
@@ -638,7 +637,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					}
 				}
 				ProjectBasicConfigNode projectBasicProjNode = createProjectBasicNode(
-						projectBasicConfig.getId().toString(),
+						projectBasicConfig.getProjectNodeId(),
 						new ArrayList<>(Arrays.asList(projectBasicConfigLevelWiseNode)), Filters.PROJECT.name());
 				projectBasicConfigNodes.add(projectBasicProjNode);
 			}

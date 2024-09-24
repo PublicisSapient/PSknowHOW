@@ -136,7 +136,7 @@ public class AccountHierarchyServiceImpl
 	 * @return list of {@link AccountHierarchyData}
 	 */
 	@Override
-	public List<AccountHierarchyData>createHierarchyData() {
+	public List<AccountHierarchyData> createHierarchyData() {
 
 		List<AccountHierarchy> filterDataList = accountHierarchyRepository.findAll();
 		Map<String, List<AccountHierarchy>> parentWiseMap = filterDataList.stream()

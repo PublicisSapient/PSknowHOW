@@ -233,7 +233,6 @@ public class ProjectBasicConfigServiceImplTest {
 
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("5cd16683eef5c3167c799227");
-		accessItem.setItemName("dummy project");
 		AccessNode accessNode = new AccessNode();
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
 		ProjectsAccess superAdminProjectAccess = new ProjectsAccess();

@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -118,6 +119,8 @@ public class ProjectAccessManagerTest {
 	TokenAuthenticationService tokenAuthenticationService;
 	@Mock
 	NotificationService notificationService;
+	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
 
 	@Test
 	public void testCreateAccessRequest_hasPendingAccessRequest() {
@@ -190,7 +193,6 @@ public class ProjectAccessManagerTest {
 		projectsAccess.setRole(Constant.ROLE_PROJECT_ADMIN);
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("hierarchyLevel3Value");
-		accessItem.setItemName("hierarchyLevel3Value");
 		AccessNode accessNode = new AccessNode();
 		accessNode.setAccessLevel("HIERARCHYLEVEL3ID");
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
@@ -213,7 +215,6 @@ public class ProjectAccessManagerTest {
 		projectsAccess.setRole(Constant.ROLE_PROJECT_ADMIN);
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("hierarchyLevel3Id");
-		accessItem.setItemName("hierarchyLevel3Id");
 		AccessNode accessNode = new AccessNode();
 		accessNode.setAccessLevel("hierarchyLevel3Id");
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
@@ -245,7 +246,6 @@ public class ProjectAccessManagerTest {
 		projectsAccess.setRole(Constant.ROLE_PROJECT_ADMIN);
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("hierarchyLevel3Value");
-		accessItem.setItemName("hierarchyLevel3Value");
 		AccessNode accessNode = new AccessNode();
 		accessNode.setAccessLevel("hierarchyLevel3Id");
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
@@ -312,7 +312,6 @@ public class ProjectAccessManagerTest {
 		projectsAccess.setRole(Constant.ROLE_PROJECT_ADMIN);
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("hierarchyLevel3Value");
-		accessItem.setItemName("hierarchyLevel3Value");
 		AccessNode accessNode = new AccessNode();
 		accessNode.setAccessLevel("hierarchyLevel3Id");
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
@@ -355,7 +354,6 @@ public class ProjectAccessManagerTest {
 		projectsAccess.setRole(Constant.ROLE_GUEST);
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("hierarchyLevel3Value");
-		accessItem.setItemName("hierarchyLevel3Value");
 		AccessNode accessNode = new AccessNode();
 		accessNode.setAccessLevel("hierarchyLevel3Id");
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
@@ -370,6 +368,8 @@ public class ProjectAccessManagerTest {
 	public void testGetProjectAccessesWithRole() {
 		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
+		when(projectBasicConfigRepository.findByHierarchyLevelIdAndValues(anyString(), anyList()))
+				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
 		List<RoleWiseProjects> list = projectAccessManager.getProjectAccessesWithRole(ArgumentMatchers.anyString());
 		assertEquals(list.size(), 1);
 	}
@@ -465,7 +465,6 @@ public class ProjectAccessManagerTest {
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_VIEWER));
 		userInfo.setProjectsAccess(Lists.newArrayList());
 		AccessItem item = new AccessItem();
-		item.setItemName("Test Project");
 		item.setItemId("61d6d4235c76563333369f01");
 		Map<String, String> notificationSubjects = new HashMap<>();
 		notificationSubjects.put("Subject", "subject");
@@ -507,7 +506,6 @@ public class ProjectAccessManagerTest {
 		List<AccessItem> items = new ArrayList<>();
 
 		AccessItem item = new AccessItem();
-		item.setItemName("Test Project");
 		item.setItemId("61d6d4235c76563333369f01");
 		items.add(item);
 		accessNode.setAccessItems(items);
@@ -548,7 +546,6 @@ public class ProjectAccessManagerTest {
 		userInfo.setUsername("user");
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("hierarchyLevel3Value1");
-		accessItem.setItemName("hierarchyLevel3Name");
 		AccessNode accessNode = new AccessNode();
 		accessNode.setAccessLevel("hierarchyLevel3Id");
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
@@ -575,7 +572,6 @@ public class ProjectAccessManagerTest {
 		AccessNode accessNode = new AccessNode();
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("hierarchyLevel3Value");
-		accessItem.setItemName("hierarchyLevel3Value");
 		accessNode.setAccessLevel(accessLevel);
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
 		accessRequest.setAccessNode(accessNode);
@@ -628,7 +624,6 @@ public class ProjectAccessManagerTest {
 		List<AccessItem> items = new ArrayList<>();
 
 		AccessItem item = new AccessItem();
-		item.setItemName("Test Project");
 		item.setItemId("61d6d4235c76563333369f01");
 		items.add(item);
 		accessNode.setAccessItems(items);

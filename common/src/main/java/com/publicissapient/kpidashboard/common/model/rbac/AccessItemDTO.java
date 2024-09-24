@@ -15,43 +15,35 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package com.publicissapient.kpidashboard.common.model.rbac;
 
-import java.util.List;
-import java.util.Map;
-
-import org.bson.types.ObjectId;
-
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The User info dto.
- */
-@Data
-@Builder
+import java.util.Objects;
+
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserInfoDTO {
-	private ObjectId id;
-	private String username;
-	private List<String> authorities;
-	private AuthType authType;
-	private String firstName;
-	private String middleName;
-	private String lastName;
-	private String displayName;
-	private String createdOn;
-	private String emailAddress;
-	private List<ProjectsAccessDTO> projectsAccess;
-	private Map<String , Boolean> notificationEmail;
+public class AccessItemDTO {
+    private String itemId;
+    private String itemName;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        AccessItemDTO that = (AccessItemDTO) o;
+
+        return Objects.equals(itemId, that.itemId);
+    }
+
+    @Override
+    public int hashCode() {
+        return itemId != null ? itemId.hashCode() : 0;
+    }
 }
