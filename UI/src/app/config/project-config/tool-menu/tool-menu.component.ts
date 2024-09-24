@@ -119,8 +119,9 @@ export class ToolMenuComponent implements OnInit {
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
         let typeOfSelectedProject = this.selectedProject.type?.toLowerCase() || this.selectedProject.Type?.toLowerCase();
-        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings`) {
-          this.buttonText = 'Set Up';
+        //if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings`) {
+        if(this.router.url.includes('tab=2')){ 
+        this.buttonText = 'Set Up';
           this.tools = [
             {
               toolName: 'Jira',
