@@ -40,4 +40,7 @@ public class RepoToolUserDetails {
 	private Map<String, Double> mergeRequestsPT;
 	@JsonProperty("merge_requests")
 	private List<MergeRequests> mergeRequestList;
+	private double percentage;
+	private int mergeRequestsNumber;
+	private double memberDefectMergeRequestPercentage;
 }

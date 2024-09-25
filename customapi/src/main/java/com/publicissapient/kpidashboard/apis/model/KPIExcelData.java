@@ -427,4 +427,10 @@ public class KPIExcelData {
 	@JsonProperty("Merge Request Url")
 	private Map<String, String> mergeRequestUrl;
 
+	@JsonProperty("Innovation Rate")
+	private String innovationRate;
+
+	@JsonProperty("Defect Rate")
+	private String defectRate;
+
 }
