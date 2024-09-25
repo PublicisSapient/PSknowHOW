@@ -727,4 +727,22 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
+	/**
+	 * test add config
+	 */
+	@Test
+	public void addConfigTest_projectNodeIdIsNull_success() {
+		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
+		SecurityContextHolder.setContext(securityContext);
+		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("GUEST");
+		userInfo.setAuthType(AuthType.STANDARD);
+		userInfo.setAuthorities(Lists.newArrayList("ROLE_GUEST"));
+		when(projectAccessManager.getUserInfo(any())).thenReturn(userInfo);
+		basicConfigDTO.setProjectNodeId(null);
+		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
+		assertThat("Status: ", response.getSuccess(), equalTo(true));
+	}
+
 }
