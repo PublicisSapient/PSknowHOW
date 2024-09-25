@@ -517,6 +517,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousSelectedType = this.selectedType;
       this.colorObj = {};
       this.additionalData = false;
+      this.previousFilterEvent = [];
       // }
     }
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['Sprint'] && event && event[0]?.labelName === 'project') {
@@ -630,6 +631,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release') {
+      this.additionalData = true;
       this.setSprintDetails(event);
     } else {
       this.additionalData = false;
