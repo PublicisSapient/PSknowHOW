@@ -484,13 +484,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.noSprint = false;
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
       (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
-      if (!this.arrayDeepCompare(event, this.previousFilterEvent) && this.previousSelectedType === this.selectedType &&
+      let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
+      if (!this.arrayDeepCompare(event, this.previousFilterEvent) &&
+        !this.arrayDeepCompare(previousEventParentNode, event) &&
+        this.previousSelectedType === this.selectedType &&
         event[0].labelName.toLowerCase() === 'project') {
         // new project selected => make boardConfig call
         this.getBoardConfig(event.map(x => x.basicProjectConfigId), true, event);
       } else {
         this.prepareKPICalls(event);
       }
+
     } else if (event && event['additional_level']) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
