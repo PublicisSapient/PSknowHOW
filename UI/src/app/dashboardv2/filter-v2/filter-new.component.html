@@ -126,7 +126,7 @@
       </p-multiSelect>
     </div>
 
-    <div class="date-filter-container cursor-pointer" *ngIf="kanban || selectedTab?.toLowerCase() === 'developer'">
+    <div class="date-filter-container cursor-pointer" *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity'">
       <!-- Date filter start -->
       <div class="position-relative">
         <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
