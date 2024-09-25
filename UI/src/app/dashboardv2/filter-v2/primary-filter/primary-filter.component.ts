@@ -68,7 +68,8 @@ export class PrimaryFilterComponent implements OnChanges {
             } else {
               this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0]];
             }
-          } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName'].toLowerCase())) {
+          } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName'].toLowerCase()) &&
+          this.stateFilters['primary_level'][0]['labelName'].toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
             this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0]];
           } else {
             // reset
