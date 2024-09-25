@@ -98,12 +98,12 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ServiceResponse getAllAccessRequests() {
 		List<AccessRequest> accessRequest = repository.findAll();
-		List<AccessRequestDTO> accessRequestDTOList=getAccessRequestDTO(accessRequest);
 
 		if (CollectionUtils.isEmpty(accessRequest)) {
 			log.info("No requests in access request db");
-			return new ServiceResponse(true, "No access requests in db", accessRequestDTOList);
+			return new ServiceResponse(true, "No access requests in db", accessRequest);
 		}
+		List<AccessRequestDTO> accessRequestDTOList=getAccessRequestDTO(accessRequest);
 		log.info("Fetched access requests successfully");
 		return new ServiceResponse(true, "Found all access requests", accessRequestDTOList);
 	}
@@ -129,10 +129,10 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		}
 
 		Optional<AccessRequest> accessRequest = repository.findById(new ObjectId(id));
-		List<AccessRequestDTO> accessRequestDTOList=getAccessRequestDTO(Arrays.asList(accessRequest.orElse(null)));
 
 		if (accessRequest.isPresent()) {
 			log.info("Successfully Found access request@{}", id);
+			List<AccessRequestDTO> accessRequestDTOList=getAccessRequestDTO(Arrays.asList(accessRequest.orElse(null)));
 			return new ServiceResponse(true, "Found access_request@" + id, accessRequestDTOList);
 		} else {
 			log.info("Db returned null");
@@ -158,12 +158,12 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		}
 
 		List<AccessRequest> accessRequest = repository.findByUsername(username);
-		List<AccessRequestDTO> accessRequestDTOList=getAccessRequestDTO(accessRequest);
 
 		if (CollectionUtils.isEmpty(accessRequest)) {
 			log.info("No requests under user {}", username);
-			return new ServiceResponse(true, "access_requests do not exist for username " + username, accessRequestDTOList);
+			return new ServiceResponse(true, "access_requests do not exist for username " + username, accessRequest);
 		}
+		List<AccessRequestDTO> accessRequestDTOList=getAccessRequestDTO(accessRequest);
 		log.info("Successfully found requests under user {}", username);
 		return new ServiceResponse(true, "Found access_requests under username " + username, accessRequestDTOList);
 	}
@@ -215,6 +215,9 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	}
 
 	private List<AccessRequestDTO> getAccessRequestDTO(List<AccessRequest> accessRequest) {
+		if (CollectionUtils.isEmpty(accessRequest)) {
+			return null;
+		}
 		List<AccessRequestDTO> accessRequestDTOList;
 		ModelMapper mapper = new ModelMapper();
 
@@ -274,13 +277,13 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		}
 
 		final List<AccessRequest> accessRequest = repository.findByUsernameAndStatus(username, status);
-		List<AccessRequestDTO> accessRequestDTOList=getAccessRequestDTO(accessRequest);
 
 		if (CollectionUtils.isEmpty(accessRequest)) {
 			log.info("No requests under user {} with current status {}", username, status);
 			return new ServiceResponse(true,
-					"access_requests do not exist for username " + username + " and status " + status, accessRequestDTOList);
+					"access_requests do not exist for username " + username + " and status " + status, accessRequest);
 		}
+		List<AccessRequestDTO> accessRequestDTOList=getAccessRequestDTO(accessRequest);
 		log.info("Successfully found requests under username {} and status{}", username, status);
 		return new ServiceResponse(true, "Found access_requests under username " + username + " and status " + status,
 				accessRequestDTOList);

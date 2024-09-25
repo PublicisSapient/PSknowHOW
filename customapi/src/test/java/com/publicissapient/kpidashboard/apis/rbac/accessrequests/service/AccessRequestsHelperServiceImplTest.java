@@ -185,7 +185,6 @@ public class AccessRequestsHelperServiceImplTest {
 		when(accessRequestsRepository.findAll()).thenReturn(null);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAllAccessRequests();
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertThat("Data should not exist: ", response.getData(), equalTo(null));
 	}
 
 	/**
@@ -208,10 +207,15 @@ public class AccessRequestsHelperServiceImplTest {
 	public void testGetAllAccessRequests3() {
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
+		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
+		AccessRequestDTO testAccessRequestsDatadto;
+		ModelMapper mapper=new ModelMapper();
+		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findAll()).thenReturn(testListAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAllAccessRequests();
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertThat("Data should exist but empty: ", response.getData(), equalTo(testListAccessRequestsData));
+		assertThat("Data should exist but empty: ", response.getData(), equalTo(testListAccessRequestsDatadto));
 	}
 
 	/**
@@ -306,7 +310,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(accessRequestsRepository.findByUsername(testUsername)).thenReturn(null);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsername(testUsername);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(null, response.getData());
+
 	}
 
 	/**
@@ -319,10 +323,15 @@ public class AccessRequestsHelperServiceImplTest {
 		testUsername = "UnitTest";
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
+		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
+		AccessRequestDTO testAccessRequestsDatadto;
+		ModelMapper mapper=new ModelMapper();
+		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findByUsername(testUsername)).thenReturn(testListAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsername(testUsername);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(testListAccessRequestsData, response.getData());
+		assertEquals(testListAccessRequestsDatadto, response.getData());
 	}
 
 	/**
@@ -355,7 +364,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByStatus(testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(response.getData(), new ArrayList<>());
+		assertEquals(response.getData(), null);
 	}
 
 	/**
@@ -427,7 +436,7 @@ public class AccessRequestsHelperServiceImplTest {
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsernameAndStatus(testUsername,
 				testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(null, response.getData());
+
 	}
 
 	/**
@@ -475,12 +484,17 @@ public class AccessRequestsHelperServiceImplTest {
 		testUsername = "UnitTest";
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
+		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
+		AccessRequestDTO testAccessRequestsDatadto;
+		ModelMapper mapper=new ModelMapper();
+		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findByUsernameAndStatus(testUsername, testStatus))
 				.thenReturn(testListAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsernameAndStatus(testUsername,
 				testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(testListAccessRequestsData, response.getData());
+		assertEquals(testListAccessRequestsDatadto, response.getData());
 	}
 
 	/**

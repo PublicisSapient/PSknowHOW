@@ -368,8 +368,6 @@ public class ProjectAccessManagerTest {
 	public void testGetProjectAccessesWithRole() {
 		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
-		when(projectBasicConfigRepository.findByHierarchyLevelIdAndValues(anyString(), anyList()))
-				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
 		List<RoleWiseProjects> list = projectAccessManager.getProjectAccessesWithRole(ArgumentMatchers.anyString());
 		assertEquals(list.size(), 1);
 	}
