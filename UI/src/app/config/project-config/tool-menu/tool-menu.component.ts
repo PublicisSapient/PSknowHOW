@@ -294,7 +294,7 @@ export class ToolMenuComponent implements OnInit {
             "releaseNodeId": null
           }
           this.httpService.getFieldMappingsWithHistory(jiraOrAzure[0].id, kpiID, obj).subscribe(mappings => {
-            if (mappings && mappings['success']) {
+            if (mappings?.success) {
               this.sharedService.setSelectedFieldMapping(mappings['data']);
               this.disableSwitch = true;
             } else {
