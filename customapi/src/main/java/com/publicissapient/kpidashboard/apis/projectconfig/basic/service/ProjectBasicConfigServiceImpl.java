@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -193,6 +194,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 			basicConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 			basicConfig.setCreatedBy(authenticationService.getLoggedInUser());
+			if(StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())){
+				basicConfig.setProjectNodeId(UUID.randomUUID().toString());
+			}
 			if (accessRoleOfParent == null) {
 
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
@@ -200,14 +204,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
-				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO);
+				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
-				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO);
+				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else {
@@ -224,16 +228,16 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 *
 	 * @param projectBasicConfigDTO
 	 *            ProjectBasicConfigDTO
+	 * @param projectNodeId
+	 *            String
 	 */
-	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO) {
-		OrganizationHierarchy existingOrganizationHierarchy = organizationHierarchyService
-				.findByNodeId(projectBasicConfigDTO.getProjectNodeId());
-		if (ObjectUtils.isEmpty(existingOrganizationHierarchy)) {
+	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO, String projectNodeId) {
+		if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
 			Optional<HierarchyValueDTO> maxLevel = projectBasicConfigDTO.getHierarchy().stream()
 					.max(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
 			OrganizationHierarchy newOrganizationHierarchy = new OrganizationHierarchy();
 			maxLevel.ifPresent(ml -> newOrganizationHierarchy.setParentId(ml.getOrgHierarchyNodeId()));
-			newOrganizationHierarchy.setNodeId(projectBasicConfigDTO.getProjectNodeId());
+			newOrganizationHierarchy.setNodeId(projectNodeId);
 			newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 			newOrganizationHierarchy.setNodeName(projectBasicConfigDTO.getProjectName());
 			newOrganizationHierarchy.setNodeDisplayName(projectBasicConfigDTO.getProjectDisplayName());
