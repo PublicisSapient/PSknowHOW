@@ -492,23 +492,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
-      if (!this.arrayDeepCompare(event, this.previousFilterEvent)) {
-
-        if (!this.arrayDeepCompare(previousEventParentNode, event)) {
-          if (event[0].labelName.toLowerCase() === 'project') {
-            // new project selected => make boardConfig call
-            this.getBoardConfig(event.map(x => x.basicProjectConfigId), event);
-          } else if(!this.arrayDeepCompare(currentEventParentNode, previousEventParentNode) && currentEventParentNode?.length) {
-            this.getBoardConfig(currentEventParentNode.map(x => x.basicProjectConfigId), event);
-          } else {
-            this.prepareKPICalls(event);
-          }
+      if (!this.arrayDeepCompare(previousEventParentNode, event)) {
+        if (event[0].labelName.toLowerCase() === 'project') {
+          // new project selected => make boardConfig call
+          this.getBoardConfig(event.map(x => x.basicProjectConfigId), event);
+        } else if (!this.arrayDeepCompare(currentEventParentNode, previousEventParentNode) && currentEventParentNode?.length) {
+          this.getBoardConfig(currentEventParentNode.map(x => x.basicProjectConfigId), event);
         } else {
           this.prepareKPICalls(event);
         }
       } else {
         this.prepareKPICalls(event);
       }
+
       // CAUTION
     } else if (event && event['additional_level']) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
