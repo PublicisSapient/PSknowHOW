@@ -86,6 +86,8 @@ export class SharedService {
   currentUserDetailsSubject = new BehaviorSubject<any>(null);
   currentUserDetailsObs = this.currentUserDetailsSubject.asObservable();
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
+  public onScrumKanbanSwitch = new Subject<{ selectedType: string }>();
+  public onTabSwitch = new Subject<{ selectedBoard: string }>();
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData: any = []
@@ -101,6 +103,7 @@ export class SharedService {
   sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
   processorTraceLogs = [];
   selectedTrendsEvent;
+  selectedTrendsEventSubject;
   projectList = [];
 
   public currentIssue = new BehaviorSubject({});
@@ -126,7 +129,11 @@ export class SharedService {
     // For additional filters
     this.populateAdditionalFilters = new EventEmitter();
     this.triggerAdditionalFilters = new EventEmitter();
-    this.selectedTrendsEvent = new EventEmitter();
+    // this.selectedTrendsEvent = new EventEmitter();
+
+    this.selectedTrendsEventSubject = new Subject<any>();
+    // Observable to subscribe to
+    this.selectedTrendsEvent = this.selectedTrendsEventSubject.asObservable();
   }
 
   // for DSV
@@ -139,10 +146,22 @@ export class SharedService {
     this.currentSelectedSprintSub.next(selectedSprint);
   }
 
+  // only Old UI code
   setSelectedTypeOrTabRefresh(selectedTab, selectedType) {
     this.selectedtype = selectedType;
     this.selectedTab = selectedTab;
     this.onTypeOrTabRefresh.next({ selectedTab, selectedType });
+  }
+  // end here
+
+  setScrumKanban(selectedType) {
+    this.selectedtype = selectedType;
+    this.onScrumKanbanSwitch.next({ selectedType });
+  }
+
+  setSelectedBoard(selectedBoard) {
+    this.selectedTab = selectedBoard;
+    this.onTabSwitch.next({ selectedBoard });
   }
 
   setSelectedTab(selectedTab) {
@@ -164,9 +183,11 @@ export class SharedService {
   }
 
   // setter dash config data
-  setDashConfigData(data) {
+  setDashConfigData(data, emit = true) {
     this.dashConfigData = JSON.parse(JSON.stringify(data));
-    this.globalDashConfigData.emit(data);
+    if (emit) {
+      this.globalDashConfigData.emit(data);
+    }
   }
 
   // getter kpi config data
@@ -366,7 +387,8 @@ export class SharedService {
   }
   setSelectedTrends(values) {
     this.selectedTrends = values;
-    this.selectedTrendsEvent.emit(values);
+    // this.selectedTrendsEvent.emit(values);
+    this.selectedTrendsEventSubject.next(values);
   }
   getSelectedTrends() {
     return this.selectedTrends;

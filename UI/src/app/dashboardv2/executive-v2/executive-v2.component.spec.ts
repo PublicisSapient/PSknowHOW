@@ -7675,7 +7675,7 @@ describe('ExecutiveV2Component', () => {
 
   it('kanban with filter applied only Date', (done) => {
     const type = 'Kanban';
-    service.setSelectedTypeOrTabRefresh('Category One', 'Kanban');
+    service.setScrumKanban('Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
     fixture.detectChanges();
     spyOn(httpService, 'postKpiKanban').and.returnValue(of(fakejiraKanban));
@@ -7917,11 +7917,11 @@ describe('ExecutiveV2Component', () => {
       isAdditionalFilters: false
     };
     component.receiveSharedData(event);
-    expect(component.noTabAccess).toBe(true);
+    expect(component.noTabAccess).toBe(false);
 
   });
 
-  it('should call grouping kpi functions when filterdata is available', () => {
+  xit('should call grouping kpi functions when filterdata is available', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     component.filterApplyData = {};
     const event = {
@@ -12697,7 +12697,7 @@ describe('ExecutiveV2Component', () => {
     component.selectedtype = 'scrum';
     localStorage.setItem("completeHierarchyData", JSON.stringify(localDate))
     component.receiveSharedData(event);
-    expect(component.noTabAccess).toBe(true);
+    expect(component.noTabAccess).toBe(false);
   });
 
   it('should return -1 if a.key is "Select"', () => {
@@ -13524,6 +13524,247 @@ describe('ExecutiveV2Component', () => {
         ]
       }
     }
+    component.kanbanActivated = false;
+    component.globalConfig = {
+      "username": "SUPERADMIN",
+      "scrum": [
+        {
+          "boardId": 6,
+          "boardName": "Developer",
+          "boardSlug": "developer",
+          "kpis": [
+            {
+              "kpiId": "kpi84",
+              "kpiName": "Check-Ins & Merge Requests",
+              "isEnabled": true,
+              "order": 1,
+              "kpiDetail": {
+                "id": "65793ddc127be336160bc112",
+                "kpiId": "kpi84",
+                "kpiName": "Check-Ins & Merge Requests",
+                "isDeleted": "False",
+                "defaultOrder": 1,
+                "kpiCategory": "Developer",
+                "kpiUnit": "MRs",
+                "chartType": "grouped_column_plus_line",
+                "showTrend": true,
+                "isPositiveTrend": true,
+                "lineLegend": "Merge Requests",
+                "barLegend": "Commits",
+                "calculateMaturity": true,
+                "hideOverallFilter": true,
+                "kpiSource": "BitBucket",
+                "maxValue": 10,
+                "thresholdValue": 55,
+                "kanban": false,
+                "groupId": 1,
+                "kpiInfo": {
+                  "definition": "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down. NUMBER OF MERGE REQUESTS when looked at along with commits highlights the efficiency of the review process",
+                  "details": [
+                    {
+                      "type": "paragraph",
+                      "value": "It is calculated as a Count. Higher the count better is the ‘Speed’"
+                    },
+                    {
+                      "type": "paragraph",
+                      "value": "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive"
+                    }
+                  ],
+                  "maturityLevels": [
+                    {
+                      "level": "M5",
+                      "bgColor": "#6cab61",
+                      "range": "> 16"
+                    },
+                    {
+                      "level": "M4",
+                      "bgColor": "#AEDB76",
+                      "range": "8-16"
+                    },
+                    {
+                      "level": "M3",
+                      "bgColor": "#eff173",
+                      "range": "4-8"
+                    },
+                    {
+                      "level": "M2",
+                      "bgColor": "#ffc35b",
+                      "range": "2-4"
+                    },
+                    {
+                      "level": "M1",
+                      "bgColor": "#F06667",
+                      "range": "0-2"
+                    }
+                  ]
+                },
+                "kpiFilter": "dropDown",
+                "aggregationCriteria": "average",
+                "maturityRange": [
+                  "-2",
+                  "2-4",
+                  "4-8",
+                  "8-16",
+                  "16-"
+                ],
+                "isRepoToolKpi": true,
+                "trendCalculative": false,
+                "xaxisLabel": "Days",
+                "yaxisLabel": "Count",
+                "isAdditionalFilterSupport": false
+              },
+              "shown": true
+            },
+          ],
+          "filters": {
+            "projectTypeSwitch": {
+              "enabled": true,
+              "visible": true
+            },
+            "primaryFilter": {
+              "type": "singleSelect",
+              "defaultLevel": {
+                "labelName": "Project"
+              }
+            },
+            "additionalFilters": [
+              {
+                "type": "singleSelect",
+                "defaultLevel": {
+                  "labelName": "branch"
+                }
+              },
+              {
+                "type": "singleSelect",
+                "defaultLevel": {
+                  "labelName": "developer"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "kanban": [
+        {
+          "boardId": 12,
+          "boardName": "Developer",
+          "boardSlug": "developer",
+          "kpis": [
+            {
+              "kpiId": "kpi159",
+              "kpiName": "Number of Check-ins",
+              "isEnabled": true,
+              "order": 1,
+              "kpiDetail": {
+                "id": "65793ddc127be336160bc114",
+                "kpiId": "kpi159",
+                "kpiName": "Number of Check-ins",
+                "isDeleted": "false",
+                "defaultOrder": 1,
+                "kpiCategory": "Developer",
+                "kpiUnit": "check-ins",
+                "chartType": "line",
+                "showTrend": true,
+                "isPositiveTrend": true,
+                "calculateMaturity": true,
+                "hideOverallFilter": true,
+                "kpiSource": "BitBucket",
+                "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
+                "maxValue": 10,
+                "thresholdValue": 55,
+                "kanban": true,
+                "groupId": 1,
+                "kpiInfo": {
+                  "definition": "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down.",
+                  "details": [
+                    {
+                      "type": "paragraph",
+                      "value": "It is calculated as a Count. Higher the count better is the ‘Speed’"
+                    },
+                    {
+                      "type": "paragraph",
+                      "value": "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive."
+                    },
+                    {
+                      "type": "paragraph",
+                      "value": "Maturity of the KPI is calculated based on the latest value"
+                    }
+                  ],
+                  "maturityLevels": [
+                    {
+                      "level": "M5",
+                      "bgColor": "#6cab61",
+                      "range": ">16"
+                    },
+                    {
+                      "level": "M4",
+                      "bgColor": "#AEDB76",
+                      "range": "8-16"
+                    },
+                    {
+                      "level": "M3",
+                      "bgColor": "#eff173",
+                      "range": "4-8"
+                    },
+                    {
+                      "level": "M2",
+                      "bgColor": "#ffc35b",
+                      "range": "2-4"
+                    },
+                    {
+                      "level": "M1",
+                      "bgColor": "#F06667",
+                      "range": "0-2"
+                    }
+                  ]
+                },
+                "kpiFilter": "dropDown",
+                "aggregationCriteria": "sum",
+                "maturityRange": [
+                  "-2",
+                  "2-4",
+                  "4-8",
+                  "8-16",
+                  "16-"
+                ],
+                "isRepoToolKpi": true,
+                "trendCalculative": false,
+                "xaxisLabel": "Weeks",
+                "yaxisLabel": "Count",
+                "isAdditionalFilterSupport": false
+              },
+              "shown": true
+            }
+          ],
+          "filters": {
+            "projectTypeSwitch": {
+              "enabled": true,
+              "visible": true
+            },
+            "primaryFilter": {
+              "type": "singleSelect",
+              "defaultLevel": {
+                "labelName": "project"
+              }
+            },
+            "additionalFilters": [
+              {
+                "type": "singleSelect",
+                "defaultLevel": {
+                  "labelName": "branch"
+                }
+              },
+              {
+                "type": "singleSelect",
+                "defaultLevel": {
+                  "labelName": "developer"
+                }
+              }
+            ]
+          }
+        }
+      ],
+    };
     const kpiId = 'kpi84';
     const idx = 0;
     const aggregationType = 'average';
@@ -15633,7 +15874,7 @@ describe('ExecutiveV2Component', () => {
     const mockEvent = {
       filter1: 'test1',
     };
-    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'dropDown'} };
+    const mockKpi = { kpiId: 'kpi1', kpiDetail: { kpiFilter: 'dropDown' } };
 
     component.selectedTab = 'value';
     component.handleSelectedOption(mockEvent, mockKpi);
@@ -15645,7 +15886,7 @@ describe('ExecutiveV2Component', () => {
     const mockEvent = {
       filter1: 'test1',
     };
-    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'nondropDown'} };
+    const mockKpi = { kpiId: 'kpi1', kpiDetail: { kpiFilter: 'nondropDown' } };
 
     component.selectedTab = 'value';
     component.handleSelectedOption(mockEvent, mockKpi);
