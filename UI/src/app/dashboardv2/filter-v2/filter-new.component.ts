@@ -494,12 +494,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(event, this.previousFilterEvent)) {
 
-        if (!this.arrayDeepCompare(previousEventParentNode, event) &&
-          !this.arrayDeepCompare(currentEventParentNode, previousEventParentNode)) {
+        if (!this.arrayDeepCompare(previousEventParentNode, event)) {
           if (event[0].labelName.toLowerCase() === 'project') {
             // new project selected => make boardConfig call
             this.getBoardConfig(event.map(x => x.basicProjectConfigId), event);
-          } else if (currentEventParentNode?.length) {
+          } else if(!this.arrayDeepCompare(currentEventParentNode, previousEventParentNode) && currentEventParentNode?.length) {
             this.getBoardConfig(currentEventParentNode.map(x => x.basicProjectConfigId), event);
           } else {
             this.prepareKPICalls(event);
