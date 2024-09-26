@@ -27,13 +27,13 @@ import lombok.Data;
 
 @Data
 public class HierarchyResponseDTO {
-	private String bu;
+	private String hierarchyLevelOne;
 
-	private String vertical;
+	private String hierarchyLevelTwo;
 
-	private String account;
+	private String hierarchyLevelThree;
 
-	private String engagement;
+	private String hierarchyLevelFour;
 
 	private String projectName;
 

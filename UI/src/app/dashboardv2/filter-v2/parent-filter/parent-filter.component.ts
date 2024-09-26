@@ -61,9 +61,9 @@ export class ParentFilterComponent implements OnChanges {
             if (Array.isArray(this.stateFilters)) {
               this.stateFilters = this.stateFilters[0];
             }
-            if (this.stateFilters['labelName'].toLowerCase() === this['parentFilterConfig']['labelName'].toLowerCase()) {
+            if (this.stateFilters['labelName']?.toLowerCase() === this['parentFilterConfig']['labelName']?.toLowerCase()) {
               this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId === this.stateFilters['nodeId'] })[0];
-            } else if (this.stateFilters['labelName'].toLowerCase() === 'sprint' || this.stateFilters['labelName'].toLowerCase() === 'release') {
+            } else if (this.stateFilters['labelName']?.toLowerCase() === 'sprint' || this.stateFilters['labelName']?.toLowerCase() === 'release') {
               this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId === this.stateFilters['parentId'] })[0];
             } else {
               this.selectedLevel = this.filterLevels[0];
@@ -104,7 +104,7 @@ export class ParentFilterComponent implements OnChanges {
       }
     } else {
       let selectedNode = this.filterData[this['parentFilterConfig']['labelName']].filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
-      this.onSelectedLevelChange.emit({ nodeId: selectedNode[0].nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
+      this.onSelectedLevelChange.emit({ nodeId: selectedNode[0]?.nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
       if (parentLevelChanged) {
         this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0], 'primary_level': null });
       } else {

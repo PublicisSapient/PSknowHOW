@@ -103,6 +103,7 @@ export class SharedService {
   sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
   processorTraceLogs = [];
   selectedTrendsEvent;
+  selectedTrendsEventSubject;
   projectList = [];
 
   public currentIssue = new BehaviorSubject({});
@@ -128,7 +129,11 @@ export class SharedService {
     // For additional filters
     this.populateAdditionalFilters = new EventEmitter();
     this.triggerAdditionalFilters = new EventEmitter();
-    this.selectedTrendsEvent = new EventEmitter();
+    // this.selectedTrendsEvent = new EventEmitter();
+
+    this.selectedTrendsEventSubject = new Subject<any>();
+    // Observable to subscribe to
+    this.selectedTrendsEvent = this.selectedTrendsEventSubject.asObservable();
   }
 
   // for DSV
@@ -382,7 +387,8 @@ export class SharedService {
   }
   setSelectedTrends(values) {
     this.selectedTrends = values;
-    this.selectedTrendsEvent.emit(values);
+    // this.selectedTrendsEvent.emit(values);
+    this.selectedTrendsEventSubject.next(values);
   }
   getSelectedTrends() {
     return this.selectedTrends;

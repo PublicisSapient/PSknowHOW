@@ -73,10 +73,6 @@
         *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
         <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" />Syncing
       </span>
-      <!-- <span class="success-state p-p-2" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful"
-        (click)="onUpdateKPI()">
-        <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update" />Update
-      </span> -->
     </div>
 
   </div>
@@ -125,6 +121,8 @@
         </ng-template>
       </p-multiSelect>
     </div>
+<!--spal tst-->
+    <!-- <div class="date-filter-container cursor-pointer" *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity'"> -->
 
     <div class="date-filter-container cursor-pointer" *ngIf="kanban || selectedTab?.toLowerCase() === 'developer'">
       <div *ngIf="!(selectedTab?.toLowerCase() === 'dora' && kanban)">

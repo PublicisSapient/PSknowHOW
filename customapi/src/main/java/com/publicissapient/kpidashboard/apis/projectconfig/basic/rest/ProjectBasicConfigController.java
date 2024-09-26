@@ -228,6 +228,7 @@ public class ProjectBasicConfigController {
 	/**
 	 *
 	 * Gets All Scrum ProjectsList with hierarchy details
+	 * this method is only use for specific purpose for Expose API
 	 *
 	 * @return list of Scrum project list with hierarchy details
 	 */

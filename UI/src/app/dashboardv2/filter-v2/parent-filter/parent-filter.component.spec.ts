@@ -85,7 +85,7 @@ describe('ParentFilterComponent', () => {
       }
     });
 
-    expect(component.filterLevels).toEqual(['Level1']);
+    expect(component.filterLevels).toEqual([{ nodeId: 'Level1', nodeName: 'Level1' }]);
     // expect(component.selectedLevel).toEqual('LEVEL1');
     expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('parent_level');
     // expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': 'LEVEL1' });
@@ -133,8 +133,8 @@ describe('ParentFilterComponent', () => {
       }
     });
 
-    expect(component.filterLevels).toEqual(['Node 1', 'Node 4']);
-    expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('parent_level');
+    expect(component.filterLevels).toEqual([{ nodeId: 1, nodeName: 'Node 1' }, { nodeId: 4, nodeName: 'Node 4' }]);
+    expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('primary_level');
   });
 
   xit('should emit selectedLevel when parentFilterConfig labelName is Organization Level', () => {

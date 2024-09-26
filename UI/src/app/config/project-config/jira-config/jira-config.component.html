@@ -29,7 +29,7 @@
     </div>
     <div class="p-ml-3">
         <div class="p-d-flex p-align-center position-relative p-pb-3">
-            <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject.id]" [queryParams]="{type: selectedProject?.type.toLowerCase(), tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-raised p-button-secondary back-button p-mr-4"></a>
+            <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject.id]" [queryParams]="{type: (selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase()), tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-raised p-button-secondary back-button p-mr-4"></a>
             <h5 class="card__primary__title__text p-m-0">{{formTitle}} Configuration</h5>
         </div>
         <div class="p-mb-4">

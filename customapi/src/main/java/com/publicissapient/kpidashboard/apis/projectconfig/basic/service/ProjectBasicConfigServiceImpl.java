@@ -692,10 +692,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				int level = hirarchy.getHierarchyLevel().getLevel();
 				String value = hirarchy.getValue();
 				switch (level) {
-				case 1 -> dto.setBu(value);
-				case 2 -> dto.setVertical(value);
-				case 3 -> dto.setAccount(value);
-				default -> dto.setEngagement(value);
+				case 1 -> dto.setHierarchyLevelOne(value);
+				case 2 -> dto.setHierarchyLevelTwo(value);
+				case 3 -> dto.setHierarchyLevelThree(value);
+				default -> dto.setHierarchyLevelFour(value);
 				}
 			});
 			dto.setSprintDetailsList(groupedByProject.getOrDefault(projectBasicConfig.getId(), new ArrayList<>()));
