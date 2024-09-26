@@ -68,7 +68,7 @@ export class HelperService {
     // type is quality or productivity
     groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type, selectedTab) {
         const kpiRequestObject = <any>{};
-
+        const visibleKpis = masterData?.filter(obj => obj.isEnabled && obj.shown).map(x => x.kpiId);
         kpiRequestObject.kpiList = <any>[];
         for (let i = 0; i < masterData?.length; i++) {
             const obj = { ...masterData[i]?.kpiDetail };
@@ -91,7 +91,7 @@ export class HelperService {
                     if (obj.isEnabled && obj.shown) {
                         kpiRequestObject.kpiList.push(obj);
                     }
-                } else {
+                } else if (visibleKpis.includes(obj.kpiId)) {
                     kpiRequestObject.kpiList.push(obj);
                 }
             }
@@ -402,7 +402,9 @@ export class HelperService {
             objArray.sort((a, b) => {
                 const aName = a.nodeName || a.data || a.date || a;
                 const bName = b.nodeName || b.data || b.date || b;
-                return aName.localeCompare(bName);
+                if (typeof aName === 'string' && typeof bName === 'string') {
+                    return aName.localeCompare(bName);
+                }
             });
         }
         return objArray;
@@ -696,10 +698,14 @@ export class HelperService {
     }
 
     getBackupOfFilterSelectionState = (prop = null) => {
-        if (prop) {
-            return this.selectedFilters[prop];
+        if (this.selectedFilters) {
+            if (prop) {
+                return this.selectedFilters[prop];
+            } else {
+                return this.selectedFilters;
+            }
         } else {
-            return this.selectedFilters;
+            return null;
         }
     }
 
@@ -784,9 +790,9 @@ export class HelperService {
 
     getObjectKeys(obj) {
         if (obj && Object.keys(obj).length) {
-          return Object.keys(obj);
+            return Object.keys(obj);
         } else {
-          return [];
+            return [];
         }
     }
 }

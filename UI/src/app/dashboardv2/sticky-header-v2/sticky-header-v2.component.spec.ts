@@ -10,20 +10,20 @@ describe('StickyHeaderV2Component', () => {
   let fixture: ComponentFixture<StickyHeaderV2Component>;
   let mockSharedService: jasmine.SpyObj<SharedService>;
   let mockHelperService: jasmine.SpyObj<HelperService>;
-  let onTypeOrTabRefreshSubject: Subject<any>;
+  let onTabSwitch: Subject<any>;
   let mapColorToProjectObsSubject: Subject<any>;
 
   beforeEach(async () => {
     // Create Subjects to simulate Observables from SharedService
-    onTypeOrTabRefreshSubject = new Subject();
+    onTabSwitch = new Subject();
     mapColorToProjectObsSubject = new Subject();
 
     // Create mock objects
-    mockSharedService = jasmine.createSpyObj('SharedService', ['onTypeOrTabRefresh', 'mapColorToProjectObs']);
+    mockSharedService = jasmine.createSpyObj('SharedService', ['onTabSwitch', 'mapColorToProjectObs']);
     mockHelperService = jasmine.createSpyObj('HelperService', ['getObjectKeys']);
 
     // Mock the service observables
-    Object.defineProperty(mockSharedService, 'onTypeOrTabRefresh', { value: onTypeOrTabRefreshSubject.asObservable() });
+    Object.defineProperty(mockSharedService, 'onTabSwitch', { value: onTabSwitch.asObservable() });
     Object.defineProperty(mockSharedService, 'mapColorToProjectObs', { value: mapColorToProjectObsSubject.asObservable() });
 
     await TestBed.configureTestingModule({
@@ -49,10 +49,10 @@ describe('StickyHeaderV2Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should subscribe to onTypeOrTabRefresh and update fields', () => {
-    const mockData = { selectedTab: 'iteration' };
+  it('should subscribe to onTabSwitch and update fields', () => {
+    const mockData = { selectedBoard: 'iteration' };
 
-    onTypeOrTabRefreshSubject.next(mockData);
+    onTabSwitch.next(mockData);
 
     expect(component.fields.get('Selected Dashboard ')).toEqual('iteration');
   });
