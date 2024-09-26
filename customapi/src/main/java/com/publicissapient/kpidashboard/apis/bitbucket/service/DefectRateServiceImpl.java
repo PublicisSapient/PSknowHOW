@@ -91,9 +91,8 @@ public class DefectRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 		Map<String, Node> mapTmp = new HashMap<>();
 		mapTmp.put(projectNode.getId(), projectNode);
 		projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
-
-		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}",
-				kpiRequest.getRequestTrackerId().replaceAll("[\\r\\n]", ""), projectNode);
+		String sanitizedRequestId = kpiRequest.getRequestTrackerId().replaceAll("[^a-zA-Z0-9-_]", "");
+		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", sanitizedRequestId, projectNode);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.DEFECT_RATE);
