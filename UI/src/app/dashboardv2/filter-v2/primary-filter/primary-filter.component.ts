@@ -34,7 +34,7 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedLevel'] && changes['selectedLevel']?.currentValue !== changes['selectedLevel'].previousValue && !changes['selectedLevel']?.firstChange) {
+    if (changes['selectedLevel'] && !this.deepEqual(changes['selectedLevel']?.currentValue,changes['selectedLevel'].previousValue) && !changes['selectedLevel']?.firstChange) {
       this.applyDefaultFilters();
       return;
     } else if (changes['primaryFilterConfig'] && Object.keys(changes['primaryFilterConfig'].currentValue).length && !changes['primaryFilterConfig']?.firstChange) {

@@ -336,8 +336,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  getBoardConfig(projectList, prepareKPICalls = false, event = null) {
-    if (!this.compareStringArrays(projectList, this.projectList) || prepareKPICalls) {
+  getBoardConfig(projectList, event = null) {
+    if (!this.compareStringArrays(projectList, this.projectList)) {
       this.projectList = [...projectList];
       this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
         (response) => {
@@ -401,6 +401,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           });
         },
       );
+    } else {
+      if (event) {
+        this.prepareKPICalls(event);
+      }
     }
   }
 
@@ -482,19 +486,31 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       event.sort((a, b) => (a.nodeId > b.nodeId) ? 1 : ((b.nodeId > a.nodeId) ? -1 : 0))
     }
     this.noSprint = false;
+
+    // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
       (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
-      if (!this.arrayDeepCompare(event, this.previousFilterEvent) &&
-        !this.arrayDeepCompare(previousEventParentNode, event) &&
-        this.previousSelectedType === this.selectedType &&
-        event[0].labelName.toLowerCase() === 'project') {
-        // new project selected => make boardConfig call
-        this.getBoardConfig(event.map(x => x.basicProjectConfigId), true, event);
+      let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
+      if (!this.arrayDeepCompare(event, this.previousFilterEvent)) {
+
+        if (!this.arrayDeepCompare(previousEventParentNode, event) &&
+          !this.arrayDeepCompare(currentEventParentNode, previousEventParentNode)) {
+          if (event[0].labelName.toLowerCase() === 'project') {
+            // new project selected => make boardConfig call
+            this.getBoardConfig(event.map(x => x.basicProjectConfigId), event);
+          } else if (currentEventParentNode?.length) {
+            this.getBoardConfig(currentEventParentNode.map(x => x.basicProjectConfigId), event);
+          } else {
+            this.prepareKPICalls(event);
+          }
+        } else {
+          this.prepareKPICalls(event);
+        }
       } else {
         this.prepareKPICalls(event);
       }
-
+      // CAUTION
     } else if (event && event['additional_level']) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         setTimeout(() => {
@@ -662,15 +678,29 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
 
-  objectsEqual(o1, o2) {
-    if (typeof o1 !== 'boolean' && (!o1 || !o2)) {
-      return false;
-    } else {
-      return typeof o1 === 'object' && Object.keys(o1).length > 0
-        ? Object.keys(o1).length === Object.keys(o2).length
-        && Object.keys(o1).every(p => !Array.isArray(o1[p]) ? this.objectsEqual(o1[p], o2[p]) : this.arrayDeepCompare(o1[p], o2[p]))
-        : o1 === o2;
+  objectsEqual(obj1, obj2) {
+    if (obj1 === obj2) {
+      return true;
     }
+
+    if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+      return false;
+    }
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    for (let key of keys1) {
+      if (!keys2.includes(key) || !this.objectsEqual(obj1[key], obj2[key])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   arrayDeepCompare(a1, a2) {
