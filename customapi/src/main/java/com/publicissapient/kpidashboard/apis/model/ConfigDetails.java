@@ -29,16 +29,8 @@ public class ConfigDetails {
 	private int hierarchySelectionCount;
 	private DateRangeFilter dateRangeFilter;
 	private int noOfDataPoints;
-	private boolean repoToolFlag;
 	private boolean gitlabToolFieldFlag;
 	private int sprintCountForKpiCalculation;
-
-	public boolean isRepoToolFlag() {
-		return repoToolFlag;
-	}
-	public void setRepoToolFlag(boolean repoToolFlag) {
-		this.repoToolFlag = repoToolFlag;
-	}
 
 	public boolean isGitlabToolFieldFlag() {
 		return gitlabToolFieldFlag;

@@ -700,7 +700,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case ProcessorConstants.GITLAB:
 		case ProcessorConstants.GITHUB:
-		case ProcessorConstants.REPO_TOOLS:
 			setEncryptedAccessTokenForDb(conn);
 			break;
 		case ProcessorConstants.JENKINS:

@@ -12,17 +12,23 @@
           "name": "PSknowHOW",
           "pickupTimeRepoScore": 0,
           "pickupTimeRepoHours": 0,
-          "pickupTimeMergeRequestPT": [
-            {
-              "link": 0
-            }
-          ],
+          "mergeRequestsPT": {
+            "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1345": 23.939444444444444,
+            "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1348": 0.028333333333333332,
+            "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1319": 119.09555555555555
+          },
           "branches": [
             {
               "name": "master",
               "average": 30176.5,
               "mergeRequests": 5,
               "lines_change": 60710.0,
+              "mergeRequestsPT": {
+                "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1345": 23.939444444444444,
+                "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1348": 0.028333333333333332,
+                "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1319": 119.09555555555555,
+                "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1331": 1.086111111111111
+              },
               "users": [
                 {
                   "email": "99163630+hirbabar@users.noreply.github.com",

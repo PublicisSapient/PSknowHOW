@@ -297,7 +297,7 @@ public class ConnectionServiceImplTest {
 		Connection connection = connectionsDataFactory.findConnectionById("5fdc809fb55d53cc1692543c");
 		connection.setAccessToken("accesToken");
 		connection.setApiKey("apiKey");
-		connection.setType(ProcessorConstants.REPO_TOOLS);
+		connection.setType(ProcessorConstants.GITHUB);
 		connection.setRepoToolProvider("GitHub");
 		connection.setClientId("ClientId");
 		connection.setClientSecretKey("Secret Key");
@@ -309,7 +309,6 @@ public class ConnectionServiceImplTest {
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
-		when(repoToolsConfigService.updateRepoToolConnection(connection)).thenReturn(HttpStatus.OK.value());
 		ServiceResponse response = connectionServiceImpl.updateConnection("5fdc809fb55d53cc1692543c", connection);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(((ConnectionDTO) response.getData()).getConnectionName(), connection.getConnectionName());
@@ -864,7 +863,7 @@ public class ConnectionServiceImplTest {
 		Connection c2 = new Connection();
 		c2.setSharedConnection(true);
 		c2.setApiEndPoint("pat");
-		c2.setType(ProcessorConstants.REPO_TOOLS);
+		c2.setType(ProcessorConstants.BITBUCKET);
 		c2.setConnectionName("Test BitBucket");
 		c2.setBaseUrl("https://test.server.com//bitbucket");
 		c2.setUsername("testUser");

@@ -45,7 +45,6 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.UserBoardConfigEnum;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -82,6 +81,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private static final String ITERATION = "Iteration";
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
 	public static final String SUPER_ADMIN_ALL_PROJ_SELECTED = "all";
+	private boolean handleDeveloperKpi = false;
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
 	@Autowired
@@ -98,8 +98,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CacheService cacheService;
-	@Autowired
-	private CustomApiConfig customApiConfig;
 	@Autowired
 	private UserInfoCustomRepository userInfoCustomRepository;
 	@Autowired
@@ -122,6 +120,13 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				.collect(Collectors.toMap(KpiMaster::getKpiId, Function.identity()));
 		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
+		String basicProjectConfigId = CollectionUtils.isNotEmpty(listOfRequestedProj.getBasicProjectConfigIds())
+				? listOfRequestedProj.getBasicProjectConfigIds().get(0)
+						.substring(listOfRequestedProj.getBasicProjectConfigIds().get(0).lastIndexOf('_') + 1)
+				: null;
+
+		handleDeveloperKpi = configHelperService.getProjectConfig(basicProjectConfigId) != null
+				&& configHelperService.getProjectConfig(basicProjectConfigId).isDeveloperKpiEnabled();
 		// method to fetch all the project level board configs by their respective
 		// admins
 		final List<UserBoardConfig> adminProjectBoardConfig = getProjectBoardConfigs(listOfRequestedProj,
@@ -667,7 +672,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 *            kpiMaster
 	 */
 	private void setKpiUserBoardDefaultFromKpiMaster(List<BoardKpisDTO> boardKpisList, KpiMaster kpiMaster) {
-		Boolean isRepoToolFlag = customApiConfig.getIsRepoToolEnable();
+		Boolean isRepoToolFlag = handleDeveloperKpi;
 		if ((kpiMaster.getIsRepoToolKpi() == null) || (kpiMaster.getIsRepoToolKpi().equals(isRepoToolFlag))) {
 			BoardKpisDTO boardKpis = new BoardKpisDTO();
 			boardKpis.setKpiId(kpiMaster.getKpiId());
@@ -880,6 +885,10 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				.collect(Collectors.toMap(KpiMaster::getKpiId, Function.identity()));
 		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
+		defaultUserBoardConfigDTO.setBasicProjectConfigId(basicProjectConfigId);
+
+		handleDeveloperKpi = configHelperService.getProjectConfig(basicProjectConfigId) != null
+				&& configHelperService.getProjectConfig(basicProjectConfigId).isDeveloperKpiEnabled();
 		if (null == existingProjBoardConfigDTO) {
 			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 			defaultUserBoardConfigDTO.setBasicProjectConfigId(basicProjectConfigId);

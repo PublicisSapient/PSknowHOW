@@ -407,7 +407,7 @@ public class KPIExcelData {
 	private String escapedIdentifier;
 
 	@JsonProperty("Rework Rate")
-	private Double reworkRate;
+	private String reworkRate;
 
 	@JsonProperty("Revert Rate")
 	private Double revertRate;
@@ -433,6 +433,7 @@ public class KPIExcelData {
 	@JsonProperty("Developer")
 	private String developer;
 
-
+	@JsonProperty("Merge Request Url")
+	private Map<String, String> mergeRequestUrl;
 
 }

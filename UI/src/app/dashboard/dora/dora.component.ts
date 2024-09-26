@@ -170,12 +170,14 @@ export class DoraComponent implements OnInit {
     const nodes = [...this.filterApplyData?.['selectedMap']['project']];
     const level = this.filterApplyData?.level;
     const nodeChildId = '';
-    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
   }
 
   receiveSharedData($event) {
     this.isTooltip = '';
-    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
+    if (this.service.getSelectedLevel() && this.service.getSelectedLevel()['hierarchyLevelName']) {
+      this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelName'].toLowerCase() === 'project' ? true : false;
+    }
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
       if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {

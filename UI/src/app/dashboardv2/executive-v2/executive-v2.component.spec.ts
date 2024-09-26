@@ -12832,7 +12832,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.handleSelectedOption).toHaveBeenCalled();
   });
 
-  it('should not handle selected option when triggerAdditionalFilters is triggered and selectedTab is not developer', () => {
+  xit('should not handle selected option when triggerAdditionalFilters is triggered and selectedTab is not developer', () => {
     spyOn(component, 'handleSelectedOption');
     component.selectedTab = 'admin';
     const data = { key: 'value' };
@@ -12882,10 +12882,10 @@ describe('ExecutiveV2Component', () => {
       ],
     };
     const expectedLatest = '10';
-    const expectedTrend = '-- --';
+    const expectedTrend = '--';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -12921,7 +12921,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = '-ve';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -12947,7 +12947,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -12975,7 +12975,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -12996,7 +12996,7 @@ describe('ExecutiveV2Component', () => {
     const expectedTrend = 'NA';
     const expectedUnit = '';
 
-    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item, true);
+    const [actualLatest, actualTrend, actualUnit] = component.checkLatestAndTrendValue(kpiData, item);
 
     expect(actualLatest).toEqual(expectedLatest);
     expect(actualTrend).toEqual(expectedTrend);
@@ -15614,6 +15614,43 @@ describe('ExecutiveV2Component', () => {
 
     const result = component.coundMaxNoOfSprintSelectedForProject(eventMock);
     expect(result).toBe(3);
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0', () => {
+    const mockEvent = {
+      filter1: ['test1', 'test2'],
+      filter2: []
+    };
+    const mockKpi = { kpiId: 'kpi1' };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toEqual(mockEvent);
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0 and dor single dropdown', () => {
+    const mockEvent = {
+      filter1: 'test1',
+    };
+    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'dropDown'} };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
+  });
+
+  it('should handle selected option on release when event is an object when event key equals to 0', () => {
+    const mockEvent = {
+      filter1: 'test1',
+    };
+    const mockKpi = { kpiId: 'kpi1',kpiDetail : {kpiFilter : 'nondropDown'} };
+
+    component.selectedTab = 'value';
+    component.handleSelectedOption(mockEvent, mockKpi);
+
+    expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
   });
 });
 

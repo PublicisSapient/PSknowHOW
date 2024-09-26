@@ -50,6 +50,7 @@ export class BasicConfigComponent implements OnInit {
   public form: UntypedFormGroup = this.formBuilder.group({});
   blocked = true;
   assigneeSwitchInfo = "Turn ON to retrieve people-related information, such as assignees, developer profiles from all relevant source tools connected to your project";
+  developerKpiInfo = "By enabling repo cloning, you consent to clone your code repositories (BitBucket, GitLab, GitHub) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to more valuable KPIs on the Developer dashboard. If cloning is disabled, only 2 KPIs will be accessible";
   isProjectAdmin = false;
   breadcrumbs: Array<any>
   @Output() closeProjectSetupPopup = new EventEmitter();
@@ -133,6 +134,18 @@ export class BasicConfigComponent implements OnInit {
       }
     );
 
+    this.formData.push(
+      {
+        level: this.formData.length,
+        hierarchyLevelId: 'developerKpiEnabled',
+        label1:'Enable Developers KPIs',
+        label2: this.developerKpiInfo,
+        inputType: 'boolean',
+        value: false,
+        required: false
+      }
+    );
+
     this.formData.forEach(control => {
       this.form.addControl(
         control.hierarchyLevelId,
@@ -163,6 +176,7 @@ export class BasicConfigComponent implements OnInit {
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
+    submitData['developerKpiEnabled'] = formValue['developerKpiEnabled']
     let gaObj = {
       name: formValue['projectName'],
       kanban: formValue['kanban'],
@@ -190,6 +204,8 @@ export class BasicConfigComponent implements OnInit {
         this.selectedProject['name'] = response.serviceResponse.data['projectName'];
         this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
         this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
+        this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
+        this.selectedProject['projectOnHold'] = response.serviceResponse.data['projectOnHold'];
         response.serviceResponse.data['hierarchy'].forEach(element => {
           this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
         });

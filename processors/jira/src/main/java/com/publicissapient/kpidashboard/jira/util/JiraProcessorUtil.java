@@ -413,7 +413,7 @@ public class JiraProcessorUtil {
 			}
 			return OTHER_CLIENT_ERRORS;
 		}
-		return OTHER_CLIENT_ERRORS;
+		return null;
 	}
 
 }

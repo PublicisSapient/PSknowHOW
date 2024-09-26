@@ -45,6 +45,5 @@ public class ProcessorConstantsTest {
         assertEquals("Teamcity", ProcessorConstants.TEAMCITY);
         assertEquals("GitHub", ProcessorConstants.GITHUB);
         assertEquals("GitHubAction", ProcessorConstants.GITHUBACTION);
-        assertEquals("RepoTool", ProcessorConstants.REPO_TOOLS);
     }
 }

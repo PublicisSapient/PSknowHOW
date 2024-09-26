@@ -196,8 +196,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   handleChange(type, value = null, filterIndex = 0) {
-    if (value) {
-      value?.value?.forEach(selectedItem => {
+    if (value && value.value && Array.isArray(value.value)) {
+      value.value.forEach(selectedItem => {
         this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
         this.dropdownArr[filterIndex]?.options.unshift(selectedItem)// this will add selected item on the top
       });

@@ -231,7 +231,6 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	private String repoToolUpdateConnectionUrl;
-	private Boolean isRepoToolEnable;
 	private Boolean isGitlabFieldEnable;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
@@ -417,14 +416,6 @@ public class CustomApiConfig {// NOPMD
 
 	public String getRepoToolDeleteRepoUrl() {
 		return repoToolDeleteRepoUrl;
-	}
-
-	public Boolean getIsRepoToolEnable() {
-		return isRepoToolEnable;
-	}
-
-	public void setIsRepoToolEnable(Boolean isRepoToolEnable) {
-		this.isRepoToolEnable = isRepoToolEnable;
 	}
 
 	public Boolean getIsGitlabFieldEnable() {

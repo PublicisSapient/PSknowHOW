@@ -97,7 +97,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         15
       ]
     };
-    this.selectedDayType = 'Weeks';
     this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.subscriptions.push(
@@ -112,12 +111,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh
         .subscribe(data => {
-
+          this.colorObj = {};
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
 
 
-          this.selectedDayType = 'Weeks';
           this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
           this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -126,6 +124,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.kanban = true;
             if (!this.dateRangeFilter.types.includes('Months')) {
               this.dateRangeFilter.types.push('Months');
+            }
+            if(this.selectedTab.toLowerCase() === 'developer'){ //bug fix DTS-38628
+              this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
             }
           } else {
             this.kanban = false;
@@ -152,6 +153,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.iterationConfigData = iterationDetails;
       })
     );
+
+    this.subscriptions.push(this.service.dateFilterSelectedDateType.subscribe(date => {
+      this.selectedDayType = date;
+    }))
   }
 
   /**create dynamic hierarchy levels for filter dropdown */
@@ -185,7 +190,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setSelectedDateType(label: string) {
-    this.selectedDayType = label;
+    this.service.dateFilterSelectedDateType.next(label);
   }
 
   setSelectedType(type) {
@@ -279,6 +284,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     levelDetails.forEach(level => {
       dataCopy[level.hierarchyLevelName] = this.filterDataArr[this.selectedType][level.hierarchyLevelId];
     });
+    dataCopy = this.removeUndefinedProperties(dataCopy);
     this.filterDataArr[this.selectedType] = dataCopy;
   }
 
@@ -291,7 +297,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   setColors(data) {
-    let colorsArr = ['#6079C5', '#FFB587', '#D48DEF',  '#A4F6A5', '#FBCF5F', '#9FECFF']
+    let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       if (data[i]?.nodeId) {
@@ -303,12 +309,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  getObjectKeys(obj) {
-    if (obj && Object.keys(obj).length) {
-      return Object.keys(obj);
-    } else {
-      return [];
-    }
+  objectKeys(obj) {
+    return this.helperService.getObjectKeys(obj)
   }
 
   removeFilter(id) {
@@ -410,8 +412,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.noSprint = false;
     if (event && !event['additional_level'] && event?.length) { // && Object.keys(event[0]).length) {
-
-      this.selectedDayType = 'Weeks';
       this.selectedDateValue = this.dateRangeFilter?.counts?.[0];
       this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
 
@@ -537,20 +537,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         });
       }
     } else if (!event.length) {
-      if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint') {
+      if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint' || this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'release') {
         this.noSprint = true;
+        this.service.setAdditionalFilters([]);
       }
     }
-    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['sprint'] && event && event[0]?.labelName === 'project') {
-      const allSprints = this.filterDataArr[this.selectedType]['sprint'];
+    if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['Sprint'] && event && event[0]?.labelName === 'project') {
+      const allSprints = this.filterDataArr[this.selectedType]['Sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed');
       if (currentProjectSprints?.length) {
         currentProjectSprints.sort((a, b) => new Date(a.sprintEndDate).getTime() - new Date(b.sprintEndDate).getTime());
         this.service.setSprintForRnR(currentProjectSprints[currentProjectSprints?.length - 1])
         this.noSprint = false;
       } else {
-        this.noSprint = true;
+        if (this.selectedTab !== 'developer') {
+          this.noSprint = true;
+          this.service.setAdditionalFilters([]);
+        }
       }
+    } else {
+      this.noSprint = false;
     }
     this.compileGAData(event);
   }
@@ -617,16 +623,17 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
+    let additionalFilterSelected = this.filterApplyData['label'] === 'sqd' ? true : false;
     // Promise.resolve(() => {
     if (!this.selectedLevel) {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
     if (typeof this.selectedLevel === 'string') {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
       return;
     }
-    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, true, true, this.boardData['configDetails'], true, this.dashConfigData);
+    this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
     // });
   }
 
@@ -654,7 +661,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+  closeDateFilterModel() {
+    this.toggleDateDropdown = false;
+  }
+
   populateAdditionalFilters(event) {
+    this.additionalFiltersArr = [];
     if (!Array.isArray(event)) {
       event = [event];
     }
@@ -757,6 +769,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           if (response['data']?.fetchSuccessful === true) {
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'SUCCESS';
+            this.handlePrimaryFilterChange(this.previousFilterEvent);
+            this.lastSyncData = {};
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Refreshing data',
+            });
             this.subject.next(true);
           } else if (response['data']?.errorInFetch) {
             this.lastSyncData = {};
@@ -891,4 +909,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.showChart = val;
     this.service.setShowTableView(this.showChart);
   }
+
+  removeUndefinedProperties(obj) {
+    for (let key in obj) {
+      if (obj[key] === undefined) {
+        delete obj[key];
+      }
+    }
+    return obj;
+  }
+
 }

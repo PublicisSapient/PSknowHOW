@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -116,6 +116,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   releaseEndDate: string = '';
   timeRemaining = 0;
   immediateLoader = true;
+  projectCount: number = 0;
 
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
@@ -140,6 +141,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }, 500);
     }));
 
+
+    this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
+      this.noFilterApplyData = res;
+    }));
+
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
       this.maturityTableKpiList = [];
       this.colorObj = x;
@@ -151,6 +157,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
         tempObj[nodeName] = [];
       }
+      this.projectCount = Object.keys(this.trendBoxColorObj)?.length;
       this.kpiTableDataObj = { ...tempObj };
       if (!this.kpiChartData || Object.keys(this.kpiChartData)?.length <= 0) return this.service.passDataToDashboard;
       for (const key in this.kpiChartData) {
@@ -172,14 +179,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.noTabAccess = false;
       this.handleMaturityTableLoader();
     }));
-
-    if (this.selectedTab.toLowerCase() === 'developer') {
-      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
-        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
-          this.handleSelectedOption(data, kpi);
-        });
-      }));
-    }
 
     /**observable to get the type of view */
     this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
@@ -232,8 +231,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noTabAccess = false;
       }
     });
-  }
 
+    if (this.selectedTab.toLowerCase() === 'developer') {
+      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
+          this.handleSelectedOption(data, kpi);
+        });
+      }));
+    }
+  }
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
@@ -704,6 +710,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   postJiraKPIForRelease(postData, source) {
+    /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
+    /** Todo : Need to rework when BE cache issue will fix */
+    this.updatedConfigGlobalData.forEach(kpi=>{
+      postData.kpiList.push(kpi.kpiDetail)
+    });
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -894,8 +905,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
             else {
               const tempArr = {};
-              for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-                tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+              if (Array.isArray(this.kpiSelectedFilterObj[kpiId])) {
+                for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+                  tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+                }
+              } else {
+                tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
               }
               this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
             }
@@ -1510,7 +1525,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.selectedTab.toLowerCase() === 'release') {
       this.handleSelectedOptionOnRelease(event, kpi);
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+      // this.kpiSelectedFilterObj[kpi?.kpiId] = [];
       if (kpi.kpiId === "kpi72") {
         if (event.hasOwnProperty('filter1') || event.hasOwnProperty('filter2')) {
           if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
@@ -1535,20 +1550,33 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
       }
       else {
-        if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+        if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {
+          this.kpiSelectedFilterObj[kpi?.kpiId] = [];
           for (const key in event) {
             if (event[key]?.length == 0) {
               delete event[key];
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-            } else if (Array.isArray(event[key])) {
+            } else if (Array.isArray(event[key])){
               for (let i = 0; i < event[key]?.length; i++) {
                 this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
               }
-            } else {
-              this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+            }else{
+              if(kpi.kpiDetail.kpiFilter !== 'dropDown'){
+                this.kpiSelectedFilterObj[kpi?.kpiId] = Array.isArray(event[key]) ? event[key] : [event[key]];
+              }else{
+                this.kpiSelectedFilterObj[kpi?.kpiId] = event
+              }
             }
           }
+        } else if (this.selectedTab.toLowerCase() === 'developer') {
+          if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
+            this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
+          } else {
+            this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+            this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
+          }
         } else {
+          this.kpiSelectedFilterObj[kpi?.kpiId] = [];
           this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
         }
       }
@@ -1579,20 +1607,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   checkMaturity(item) {
+    // let maturity = item.maturity;
+    // if (maturity == undefined) {
+    //   return 'NA';
+    // }
+    // if (item.value.length >= 5) {
+    //   const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
+    //   const tempArr = last5ArrItems.filter(x => x.data != 0);
+    //   if (tempArr.length == 0) {
+    //     maturity = '--';
+    //   }
+    // } else {
+    //   maturity = '--';
+    // }
+    // maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M' + maturity : maturity;
     let maturity = item.maturity;
     if (maturity == undefined) {
       return 'NA';
     }
-    if (item.value.length >= 5) {
-      const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-      const tempArr = last5ArrItems.filter(x => x.data != 0);
-      if (tempArr.length == 0) {
-        maturity = '--';
-      }
-    } else {
-      maturity = '--';
-    }
-    maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M' + maturity : maturity;
+    maturity = 'M'+maturity;
     return maturity;
   }
 
@@ -1640,19 +1673,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   //   return [latest, trend, unit];
   // }
 
-  checkLatestAndTrendValue(kpiData, item, isKpi = false) {
+  checkLatestAndTrendValue(kpiData, item) {
     let latest: string = '';
     let trend: string = '';
-    const unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
-    const modUnit = (unit ? ' ' + unit : '');
+    let unit = '';
     if (item?.value?.length > 0) {
-      if (!isKpi) {
-        let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
-        latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
+      let tempVal;
+      if (item?.value[item?.value?.length - 1]?.dataValue) {
+        tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
       } else {
-        let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-        latest = tempVal > 0 ? ((Math.round(tempVal * 10) / 10) + modUnit) : (tempVal + modUnit);
+        tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
       }
+      unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+      latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
     }
     if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
       if (kpiData?.kpiDetail?.trendCalculative) {
@@ -1663,13 +1696,19 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         let operator = lhs < rhs ? '<' : lhs > rhs ? '>' : '=';
         let trendObj = kpiData?.kpiDetail?.trendCalculation?.find((item) => item.operator == operator);
         if (trendObj) {
-          trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '-- --';
+          trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '--';
         } else {
           trend = 'NA';
         }
       } else {
-        let lastVal = !isKpi ? item?.value[item?.value?.length - 1]?.value : item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;;
-        let secondLastVal = !isKpi ? item?.value[item?.value?.length - 2]?.value : item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
+        let lastVal, secondLastVal;
+        if (item?.value[item?.value?.length - 1]?.dataValue) {
+          lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
+          secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
+        } else {
+          lastVal = item?.value[item?.value?.length - 1]?.value;
+          secondLastVal = item?.value[item?.value?.length - 2]?.value;
+        }
         let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
         if (secondLastVal > lastVal && !isPositive) {
           trend = '+ve';
@@ -1680,7 +1719,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else if (secondLastVal > lastVal && isPositive) {
           trend = '-ve';
         } else {
-          trend = '-- --';
+          trend = '--';
         }
       }
     } else {
@@ -1697,7 +1736,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         for (let i = 0; i < this.kpiChartData[kpiId]?.length; i++) {
           if (this.kpiChartData[kpiId][i]?.value?.length > 0) {
             let trendObj = {};
-            const [latest, trend, unit] = !this.kpiChartData[kpiId][i].value[0]?.dataValue ? this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]) : this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i], true);
+            const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
             trendObj = {
               "hierarchyName": this.kpiChartData[kpiId][i]?.data,
               "value": latest,
