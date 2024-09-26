@@ -383,6 +383,6 @@ public class InnovationRateServiceImpl extends BitBucketKPIService<Double, List<
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI173(), KPICode.INNOVATION_RATE.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI185(), KPICode.INNOVATION_RATE.getKpiId());
 	}
 }

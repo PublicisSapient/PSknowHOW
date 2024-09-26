@@ -48,7 +48,7 @@ public class InnovationRateKpi {
 	public void fieldMappingStructureInsert() {
 		Document thresholdValueMapping = new Document("fieldName", "thresholdValueKPI185")
 				.append("fieldLabel", "Target KPI Value").append("fieldType", "number")
-				.append("section", "Custom Fields Mapping").append("tooltip",
+				.append("section", "Project Level Threshold").append("tooltip",
 						new Document("definition", "Target KPI value denotes the bare "
 								+ "minimum a project should maintain for a KPI. User should just input the number and"
 								+ " the unit like percentage, hours will automatically be considered."
