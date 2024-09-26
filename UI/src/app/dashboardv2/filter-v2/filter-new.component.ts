@@ -578,12 +578,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.additionalFiltersArr = [];
     }
-    if (event.length === 1 && this.selectedTab === 'iteration') {
+    if (event.length === 1) {
       this.additionalData = true;
       this.getProcessorsTraceLogsForProject();
-    } else {
-      this.service.setProcessorLogDetails({});
-      this.additionalData = false;
     }
     this.previousFilterEvent = event;
     this.previousSelectedTab = this.selectedTab;
