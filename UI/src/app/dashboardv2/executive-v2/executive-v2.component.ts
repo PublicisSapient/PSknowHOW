@@ -82,6 +82,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   updatedConfigGlobalData;
   kpiConfigData = {};
   kpiLoader = new Set();
+  kpiStatusCodeArr = {};
   noTabAccess = false;
   trendBoxColorObj: any;
   iSAdditionalFilterSelected = false;
@@ -125,6 +126,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();
+      this.kpiStatusCodeArr = {};
       this.immediateLoader = true;
       this.processedKPI11Value = {};
       this.selectedBranchFilter = 'Select';
@@ -136,6 +138,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.onTabSwitch.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();
+      this.kpiStatusCodeArr = {};
       this.immediateLoader = true;
       this.processedKPI11Value = {};
       this.selectedBranchFilter = 'Select';
@@ -300,6 +303,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiTrendsObj = {};
       this.kpiTableDataObj = {};
       this.kpiLoader = new Set();
+      this.kpiStatusCodeArr = {};
       this.immediateLoader = true;
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
@@ -534,7 +538,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (getData !== null && getData[0] !== 'error' && !getData['error']) {
       // creating array into object where key is kpi id
       this.sonarKpiData = this.helperService.createKpiWiseId(getData);
-
+      this.fillKPIResponseCode(this.sonarKpiData);
       // creating Sonar filter and finding unique keys from all the sonar kpis
       this.sonarFilterData = this.helperService.createSonarFilter(this.sonarKpiData, this.selectedtype);
       /** writing hack for unit test coverage kpi */
@@ -572,7 +576,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (getData !== null && getData[0] !== 'error' && !getData['error']) {
       // creating array into object where key is kpi id
       this.zypherKpiData = this.helperService.createKpiWiseId(getData);
-
+      this.fillKPIResponseCode(this.zypherKpiData);
       let calculatedObj;
       if (this.selectedtype !== 'Kanban') {
         calculatedObj = this.helperService.calculateTestExecutionData('kpi70', false, this.zypherKpiData);
@@ -623,7 +627,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .subscribe(getData => {
         this.loaderJenkins = false;
         if (getData !== null) {
-          this.jenkinsKpiData = getData;
+          this.jenkinsKpiData = [...getData];
+          for (const obj in getData) {
+            getData[getData[obj].kpiId] = getData[obj];
+          }
+          this.fillKPIResponseCode(getData);
           this.createAllKpiArray(this.jenkinsKpiData);
           this.removeLoaderFromKPIs(this.jenkinsKpiData);
         } else {
@@ -648,7 +656,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.loaderJenkins = false;
         // move Overall to top of trendValueList
         if (getData !== null) { // && getData[0] !== 'error') {
-          this.jenkinsKpiData = getData;
+          Object.assign(this.jenkinsKpiData, getData);
+          for (const obj in getData) {
+            getData[getData[obj].kpiId] = getData[obj];
+          }
+          this.fillKPIResponseCode(getData);
           this.createAllKpiArray(this.jenkinsKpiData);
           this.removeLoaderFromKPIs(this.jenkinsKpiData);
         } else {
@@ -698,7 +710,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
             // creating array into object where key is kpi id
             const localVariable = this.helperService.createKpiWiseId(getData);
-
+            this.fillKPIResponseCode(localVariable);
             if (localVariable && localVariable['kpi3'] && localVariable['kpi3'].maturityValue) {
               this.colorAccToMaturity(localVariable['kpi3'].maturityValue);
             }
@@ -731,6 +743,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           /** creating array into object where key is kpi id */
           const localVariable = this.helperService.createKpiWiseId(getData);
+          this.fillKPIResponseCode(localVariable);
           this.removeLoaderFromKPIs(localVariable);
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(localVariable);
@@ -755,6 +768,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
+          this.fillKPIResponseCode(this.bitBucketKpiData);
           this.createAllKpiArray(this.bitBucketKpiData);
           this.removeLoaderFromKPIs(this.bitBucketKpiData);
 
@@ -777,7 +791,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
-
+          this.fillKPIResponseCode(this.bitBucketKpiData);
           this.createAllKpiArray(this.bitBucketKpiData);
           this.removeLoaderFromKPIs(this.bitBucketKpiData);
         } else {
@@ -797,6 +811,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
+          this.fillKPIResponseCode(localVariable);
           const kpi997 = localVariable['kpi997'];
           if (kpi997 && kpi997.trendValueList && kpi997.xAxisValues && kpi997.xAxisValues.length === 5) {
             kpi997.trendValueList.forEach(trendElem => {
@@ -1783,6 +1798,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       let idx = this.allKpiArray.findIndex((x) => x.kpiId == kpiId);
       this.getTableData(kpiId, idx, enabledKpiObj);
     }
+  }
+
+  fillKPIResponseCode(data) {
+    Object.keys(data).forEach((key) => {
+      this.kpiStatusCodeArr[key] = data[key].responseCode
+    });
   }
 
   getKpiCommentsCount(kpiId?) {
