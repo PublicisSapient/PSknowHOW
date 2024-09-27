@@ -347,19 +347,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   checkIfDataPresent(data) {
     if (data) {
       if (Array.isArray(data)) {
-        let dataCount = 0;
-        data?.forEach(item => {
-          if (item?.data && !isNaN(parseInt(item?.data))) {
-            dataCount += item?.data;
-          } else if (item.value) {
-            item?.value?.forEach(val => {
-              if (!isNaN(parseInt(val?.data))) {
-                dataCount += val?.data;
-              }
-            });
-          }
-        });
-        return parseInt(dataCount + '') > 0;
+        if(data.length) {
+          this.checkIfDataPresent(data[0]);
+        } else {
+          return false;
+        }
       }
       return Object.keys(data).length > 0;
     }
