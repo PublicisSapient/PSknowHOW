@@ -46,7 +46,7 @@ public class DeveloperKPIIntegeration {
 		List<String> levels = Arrays.asList("-80", "80-50", "50-20", "20-5", "5-");
 		insertKpis("kpi180", "Revert Rate", "The percentage of total pull requests opened that are reverts.", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/197263361/Developer+Revert+Rate", levels);
         insertKpis("kpi181", "PR Decline Rate", "The percentage of opened Pull Requests that are declined within a timeframe.", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/205357058/Developer+PR+Decline+Rate", levels);
-        insertKpis("kpi182", "PR Success Rate", "PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/75726849/Developer+PR+Success+Rate", levels);
+        insertKpis("kpi182", "PR Success Rate", "PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/75726849/Developer+PR+Success+Rate", Arrays.asList("-5","5-20","20-50","50-80","80-"));
 		fieldMappingStructureInsert("thresholdValueKPI182", THRESHOLD);
 		fieldMappingStructureInsert("thresholdValueKPI181", THRESHOLD);
 		fieldMappingStructureInsert("thresholdValueKPI180", THRESHOLD);

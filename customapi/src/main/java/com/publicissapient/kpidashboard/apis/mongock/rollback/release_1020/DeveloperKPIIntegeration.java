@@ -63,7 +63,7 @@ public class DeveloperKPIIntegeration {
 		insertKpis("kpi182", "PR Success Rate",
 				"PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste",
 				"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/75726849/Developer+PR+Success+Rate",
-				levels);
+				Arrays.asList("-5","5-20","20-50","50-80","80-"));
 		fieldMappingStructureInsert("thresholdValueKPI182", THRESHOLD);
 		fieldMappingStructureInsert("thresholdValueKPI181", THRESHOLD);
 		fieldMappingStructureInsert("thresholdValueKPI180", THRESHOLD);

@@ -4748,7 +4748,7 @@
     "hideOverallFilter" : true,
     "isRepoToolKpi" : true,
     "kpiCategory" : "Developer",
-    "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
+    "maturityRange" : [ "-5","5-20","20-50","50-80","80-" ]
   },
   {
     "kpiId" : "kpi181",
