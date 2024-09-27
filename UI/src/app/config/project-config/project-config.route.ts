@@ -23,80 +23,80 @@ import { BasicConfigComponent } from './basic-config/basic-config.component';
 import { ProjectListComponent } from './project-list/project-list.component';
 import { ToolMenuComponent } from './tool-menu/tool-menu.component';
 import { FieldMappingComponent } from './field-mapping/field-mapping.component';
-import { ConnectionListComponent } from './connection-list/connection-list.component';
 import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { FeatureGuard } from 'src/app/services/feature.guard';
+import { ConfigSettingsComponent } from './config-settings/config-settings.component';
 
 export const ProjectConfigRoutes: Routes = [
-    {
+  {
+    path: '',
+    component: ProjectConfigComponent,
+    canActivateChild: [FeatureGuard],
+    children: [
+      {
         path: '',
-        component: ProjectConfigComponent,
-        canActivateChild: [FeatureGuard],
-        children: [
-            {
-                path: '',
-                redirectTo: 'ProjectList',
-                pathMatch: 'full',
-                data: {
-                    feature: "ProjectList"
-                }
-            },
-            {
-                path: 'BasicConfig',
-                component: BasicConfigComponent,
-                data: {
-                    feature: "BasicConfig"
-                }
-            },
-            {
-                path: 'ProjectList',
-                component: ProjectListComponent,
-                data: {
-                    feature: "ProjectList"
-                }
-            },
-            {
-                path: 'connection-list/:id/ToolMenu',
-                component: ConnectionListComponent,
-                data: {
-                    feature: "ToolMenu"
-                }
-            },
-            {
-                path: 'MappingMenu',
-                component: ToolMenuComponent,
-                data: {
-                    feature: "MappingMenu"
-                }
-            },
-            {
-                path: 'connection-list/:id/FieldMapping',
-                component: FieldMappingComponent,
-                data: {
-                    feature: "FieldMapping"
-                }
-            },
-            {
-                path: 'connection-list',
-                component: ConnectionListComponent,
-                data: {
-                    feature: "connection-list"
-                }
-            },
-            {
-                path: 'connection-list/:id/JiraConfig',
-                component: JiraConfigComponent,
-                data: {
-                    feature: "JiraConfig"
-                }
-            }
-        ]
-    }
+        redirectTo: 'ProjectList',
+        pathMatch: 'full',
+        data: {
+          feature: "ProjectList"
+        }
+      },
+      {
+        path: 'BasicConfig',
+        component: BasicConfigComponent,
+        data: {
+          feature: "BasicConfig"
+        }
+      },
+      {
+        path: 'ProjectList',
+        component: ProjectListComponent,
+        data: {
+          feature: "ProjectList"
+        }
+      },
+      {
+        path: 'ConfigSettings',
+        component: ConfigSettingsComponent,
+        data: {
+          feature: "ConfigSettings"
+        }
+      },
+      {
+        path: 'ConfigSettings/:id',
+        component: ConfigSettingsComponent,
+        data: {
+          feature: "ConfigSettings"
+        }
+      },
+      {
+        path: 'MappingMenu',
+        component: ToolMenuComponent,
+        data: {
+          feature: "MappingMenu"
+        }
+      },
+      {
+        path: 'ConfigSettings/:id/FieldMapping',
+        component: FieldMappingComponent,
+        data: {
+          feature: "FieldMapping"
+        }
+      },
+      {
+        path: 'ConfigSettings/:id/JiraConfig',
+        component: JiraConfigComponent,
+        data: {
+          feature: "JiraConfig"
+        }
+      }
+    ]
+  }
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(ProjectConfigRoutes)],
-    exports: [RouterModule]
+  imports: [RouterModule.forChild(ProjectConfigRoutes)],
+  exports: [RouterModule]
 })
 
 export class ProjectConfigRoutingModule { }

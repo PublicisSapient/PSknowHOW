@@ -520,6 +520,14 @@ public enum KPICode {
      * Success Rate (Developer)
      */
     PR_SUCCESS_RATE("kpi182", KPISource.BITBUCKET.name()),
+    /**
+     * Innovation Rate (Developer)
+     */
+    INNOVATION_RATE("kpi185", KPISource.BITBUCKET.name()),
+    /**
+     * Defect Rate (Developer)
+     */
+    DEFECT_RATE("kpi186", KPISource.BITBUCKET.name()),
 
 
 

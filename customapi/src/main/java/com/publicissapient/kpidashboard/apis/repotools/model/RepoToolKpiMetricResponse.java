@@ -43,6 +43,9 @@ public class RepoToolKpiMetricResponse {
     private double revertRateGrade;
     private double projectRevertPercentage;
     private double projectReworkRatePercent;
+    private double innovationRatePercentage;
+    private int mergeRequestsNumber;
+    private double projectDefectMergeRequestPercentage;
     private double projectPercentage;
     private List<RepoToolRepositories> repositories;
     private List<RepoToolRepositories> projectRepositories;

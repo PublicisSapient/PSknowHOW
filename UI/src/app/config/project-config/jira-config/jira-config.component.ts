@@ -325,12 +325,11 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     }, (err) => {
-      console.log("getJenkinsJobNames in err block ",err);
       this.jenkinsJobNameList = [];
       this.hideLoadingOnFormElement('jobName');
       this.messenger.add({
         severity: 'error',
-        summary: err.error.message,
+        summary: err?.error.message ? err.error.message : err?.statusText,
       });
     });
   }
@@ -487,8 +486,8 @@ export class JiraConfigComponent implements OnInit {
               });
             });
 
-            if (this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
-              || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure') {
+            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
+            || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure'){
               this.showAddNewBtn = false;
             }
           }
@@ -548,7 +547,7 @@ export class JiraConfigComponent implements OnInit {
     const postData = {
       connectionId: self.selectedConnection.id,
       projectKey: self.toolForm.controls['projectKey'].value,
-      boardType: self.selectedProject['type']
+      boardType: self.selectedProject['type'] || self.selectedProject['Type']
     };
 
     self.isLoading = true;
@@ -1717,6 +1716,15 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
+              {
+                type: 'text',
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
@@ -1784,6 +1792,15 @@ export class JiraConfigComponent implements OnInit {
           this.formTemplate = {
             group: 'GitLab',
             elements: [
+              {
+                type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
               {
                 type: 'number',
                 label: 'Gitlab Project Id',
@@ -1931,6 +1948,15 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
+              {
+                type: 'text',
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
@@ -1998,6 +2024,15 @@ export class JiraConfigComponent implements OnInit {
           this.formTemplate = {
             group: 'GitHub',
             elements: [
+              {
+                type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
               {
                 type: 'text',
                 label: 'Repository Name',
@@ -2837,12 +2872,13 @@ export class JiraConfigComponent implements OnInit {
   }
 
   redirectToConnections() {
-    this.router.navigate(['./dashboard/Config/connection-list']);
+    const currProjId = this.sharedService.getSelectedProject();
+    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], {queryParams: { tab: 1, toolName: this.formTitle }});
   }
 
   handleToolConfiguration(type?) {
     this.isConfigureTool = true;
-    if (type == 'new') {
+    if(type == 'new'){
       this.isEdit = false;
     }
     setTimeout(() => {

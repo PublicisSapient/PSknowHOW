@@ -60,7 +60,7 @@ export class ConfigComponent implements OnInit {
         this.items = [
          { label: 'Manage Access', icon: 'fas fa-user-circle', routerLink: '/dashboard/Config/Profile/MyProfile', id: 'Layout-ProfileMgmt', routerLinkActiveOptions: '{ exact: true }' },
             { label: 'Projects', icon: 'fas fa-wrench', routerLink: '/dashboard/Config/ProjectList', id: 'Layout-KPIConfig', routerLinkActiveOptions: '{ exact: true }' },
-            { label: 'Connections', icon: 'fas fa-plug', routerLink: '/dashboard/Config/connection-list', id: 'Layout-ConnectionsConfig', routerLinkActiveOptions: '{ exact: true }' },
+            { label: 'Manage Tools', icon: 'fas fa-plug', routerLink: '/dashboard/Config/ConfigSettings', id: 'Layout-ConnectionsConfig', routerLinkActiveOptions: '{ exact: true }' },
         ];
 
         if (this.hasAccess) {

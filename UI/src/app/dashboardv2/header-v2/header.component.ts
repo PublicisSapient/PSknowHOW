@@ -27,6 +27,7 @@ export class HeaderComponent implements OnInit {
   lastVisitedFromUrl: string = '';
   ifSuperUser: boolean = false;
   ifProjectAdmin: boolean = false;
+  isGuest: boolean = false;
   appList: MenuItem[] | undefined;
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
@@ -53,14 +54,6 @@ export class HeaderComponent implements OnInit {
     this.ifProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.userMenuItems = [
       {
-        label: 'Settings',
-        icon: 'fas fa-cog',
-        command: () => {
-          this.lastVisitedFromUrl = window.location.hash.substring(1);
-          this.router.navigate(['/dashboard/Config/ProjectList']);
-        },
-      },
-      {
         label: 'Logout',
         icon: 'fas fa-sign-out-alt',
         command: () => {
@@ -68,6 +61,30 @@ export class HeaderComponent implements OnInit {
         }
       },
     ]
+    let authoritiesArr;
+    if (this.sharedService.getCurrentUserDetails('authorities')) {
+      authoritiesArr = this.sharedService.getCurrentUserDetails('authorities');
+    }
+    if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
+      this.isGuest = true;
+    }
+
+    if (!this.isGuest) {
+      this.userMenuItems.unshift({
+        label: 'Settings',
+        icon: 'fas fa-cog',
+        command: () => {
+          this.lastVisitedFromUrl = window.location.hash.substring(1);
+          this.router.navigate(['/dashboard/Config/ProjectList']);
+        },
+      });
+
+      this.httpService.getAllConnections().subscribe(response => {
+        if (response['data'].length < 1) {
+          this.noToolsConfigured = true;
+        }
+      });
+    }
 
     if (!this.ssoLogin) {
 
@@ -102,12 +119,6 @@ export class HeaderComponent implements OnInit {
     this.sharedService.passEventToNav.subscribe(() => {
       this.getNotification();
     })
-
-    this.httpService.getAllConnections().subscribe(response => {
-      if(response['data'].length < 1) {
-        this.noToolsConfigured = true;
-      }
-    });
   }
 
   // when user would want to give access on project from notification list

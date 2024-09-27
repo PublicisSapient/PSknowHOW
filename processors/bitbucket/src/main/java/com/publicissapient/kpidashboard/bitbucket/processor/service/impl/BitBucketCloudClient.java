@@ -263,6 +263,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			JSONObject authorObj = (JSONObject) mergReqObj.get(BitBucketConstants.RESP_AUTHOR_KEY);
 			String author = getString(authorObj, BitBucketConstants.RESP_DISPLAY_NAME);
 			String scmRevisionNumber = getString(mergReqObj, BitBucketConstants.RESP_ID_KEY);
+			String mergeReqHtmlUrl = getLinks(mergReqObj, BitBucketConstants.HTML_LINK);
 
 			MergeRequests mergeReq = new MergeRequests();
 			mergeReq.setTitle(title);
@@ -275,6 +276,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			mergeReq.setFromBranch(fromBranch);
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
+			mergeReq.setMergeRequestUrl(mergeReqHtmlUrl);
 			setAuthor(proBasicConfig, author, mergeReq);
 			mergeReq.setRevisionNumber(scmRevisionNumber);
 			mergeRequests.add(mergeReq);

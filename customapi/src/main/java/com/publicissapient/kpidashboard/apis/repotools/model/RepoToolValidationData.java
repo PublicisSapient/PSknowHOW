@@ -51,5 +51,8 @@ public class RepoToolValidationData {
 	private Double revertRate;
 	private Double pRSuccessRate;
 	private Double prDeclineRate;
+	private String mergeRequestUrl;
+	private Double innovationRate;
+	private double defectRate;
 
 }
