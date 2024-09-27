@@ -2,15 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Router, NavigationEnd, RouteConfigLoadStart, RouteConfigLoadEnd } from '@angular/router';
-import { HttpService } from './services/http.service';
+import { HttpService } from './core/services/http.service';
 import { AppComponent } from './app.component';
-import { GoogleAnalyticsService } from './services/google-analytics.service';
-import { GetAuthorizationService } from './services/get-authorization.service';
-import { GetAuthService } from './services/getauth.service';
-import { SharedService } from './services/shared.service';
+import { GoogleAnalyticsService } from './core/services/google-analytics.service';
+import { GetAuthorizationService } from './core/services/get-authorization.service';
+import { GetAuthService } from './core/services/getauth.service';
+import { SharedService } from './core/services/shared.service';
 import { PrimeNGConfig } from 'primeng/api';
 import { of } from 'rxjs';
-import { APP_CONFIG, AppConfig } from './services/app.config';
+import { APP_CONFIG, AppConfig } from './core/configs/app.config';
 
 describe('AppComponent', () => {
   let component: AppComponent;
