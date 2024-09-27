@@ -32,6 +32,7 @@ import { from, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/core/services/shared.service';
 
+
 describe('RaiseRequestComponent', () => {
   let component: RaiseAccessRequestComponent;
   let fixture: ComponentFixture<RaiseAccessRequestComponent>;
@@ -40,8 +41,8 @@ describe('RaiseRequestComponent', () => {
   let messageService;
   const baseUrl = environment.baseUrl;  // Servers Env
 
-  const fakeRoleList = require('../../../../test/resource/fakeRolesList.json');
-  const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
+  const fakeRoleList = require('../../../../../test/resource/fakeRolesList.json');
+  const fakeRolesData = require('../../../../../test/resource/fakeRolesData.json');
 
   const fakeRequestData = {
     username: 'testUser',

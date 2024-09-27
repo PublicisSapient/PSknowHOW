@@ -21,12 +21,6 @@ import { ComponentFixture, discardPeriodicTasks, fakeAsync, flushMicrotasks, inj
 import { FilterComponent } from './filter.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { HttpService } from '../../core/services/http.service';
-import { SharedService } from '../../core/services/shared.service';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
-import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
-import { ExcelService } from '../../core/services/excel.service';
-import { DatePipe } from '../../../../node_modules/@angular/common';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, Routes } from '@angular/router';
@@ -36,6 +30,12 @@ import { HelperService } from 'src/app/core/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/core/services/google-analytics.service';
+import { ExcelService } from 'src/app/core/services/excel.service';
+import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { DatePipe } from '@angular/common';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 class MockRouter {
 
@@ -67,9 +67,9 @@ describe('FilterComponent', () => {
   let router: Router;
   const baseUrl = environment.baseUrl;  // Servers Env
 
-  const fakeFilterData = require('../../../test/resource/fakeFilterData.json');
-  const fakeMasterData = require('../../../test/resource/masterData.json');
-  const configGlobalData = require('../../../test/resource/fakeGlobalConfigData.json');
+  const fakeFilterData = require('../../../../test/resource/fakeFilterData.json');
+  const fakeMasterData = require('../../../../test/resource/masterData.json');
+  const configGlobalData = require('../../../../test/resource/fakeGlobalConfigData.json');
   const hierarchyLevels = [
     {
       hierarchyLevelId: 'hierarchyLevelOne',
@@ -96,7 +96,7 @@ describe('FilterComponent', () => {
       level: 3,
     },
   ];
-  const fakeCommentList = require('../../../test/resource/fakeCommentList.json');
+  const fakeCommentList = require('../../../../test/resource/fakeCommentList.json');
 
   const additionalFiltersDdn =  {
     selectedLevel: [{

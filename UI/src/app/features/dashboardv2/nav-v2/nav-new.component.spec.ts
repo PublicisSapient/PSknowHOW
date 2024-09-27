@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavNewComponent } from './nav-new.component';
-import { HttpService } from '../../core/services/http.service';
-import { SharedService } from '../../core/services/shared.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { HelperService } from 'src/app/core/services/helper.service';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { HttpService } from 'src/app/core/services/http.service';
 
 describe('NavNewComponent', () => {
   let component: NavNewComponent;

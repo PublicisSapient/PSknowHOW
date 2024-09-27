@@ -24,7 +24,6 @@ import { GetAuthorizationService } from '../../../../core/services/get-authoriza
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 
 import { TableModule } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
@@ -35,6 +34,7 @@ import { HelperService } from 'src/app/core/services/helper.service';
 import { environment } from 'src/environments/environment';
 import { of, throwError } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('ProjectListComponent', () => {
   let component: ProjectListComponent;
@@ -46,7 +46,7 @@ describe('ProjectListComponent', () => {
   const baseUrl = environment.baseUrl;
   let confirmationService;
 
-  const projectListData = require('../../../../test/resource/projectListData.json');
+  const projectListData = require('../../../../../test/resource/projectListData.json');
   const formFieldData = [
     {
       level: 1,

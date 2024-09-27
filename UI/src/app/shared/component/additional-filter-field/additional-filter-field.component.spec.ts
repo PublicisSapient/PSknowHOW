@@ -222,7 +222,7 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     component.fieldMappingForm = new UntypedFormGroup({
       'jiraDefectRejectionStatusDIR' : new UntypedFormControl()
     });
-    const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
+    const dropDownMetaData = require('../../../../test/resource/KPIConfig.json');
     component.fieldMappingForm.controls['jiraDefectRejectionStatusDIR']?.setValue("fake value")
     component.fieldMappingMetaData = dropDownMetaData.data;
     component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','fields');

@@ -32,7 +32,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from 'src/app/core/services/http.service';
 import { ConnectionListComponent } from './connection-list.component';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { ConfirmationService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { of, throwError } from 'rxjs';
@@ -40,6 +39,7 @@ import { TestConnectionService } from 'src/app/core/services/test-connection.ser
 import { SharedService } from 'src/app/core/services/shared.service';
 import { HelperService } from 'src/app/core/services/helper.service';
 import { DatePipe } from '@angular/common';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('ConnectionListComponent', () => {
   let component: ConnectionListComponent;
@@ -263,7 +263,7 @@ describe('ConnectionListComponent', () => {
   ];
 
 
-  const getConnectionsResponse = require('../../../../test/resource/fakeGetConnectionResponse.json');
+  const getConnectionsResponse = require('../../../../../test/resource/fakeGetConnectionResponse.json');
 
 
   const connectionLabelsFields = [

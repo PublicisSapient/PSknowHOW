@@ -328,7 +328,7 @@ describe('CapacityPlanningComponent', () => {
     ]
   };
 
-  const fakeCapacityKanbanData = require('../../../test/resource/fakeCapacityData.json');
+  const fakeCapacityKanbanData = require('../../../../test/resource/fakeCapacityData.json');
   const trendValueList = [
     {
       "nodeId": " Buy & Deliver_651af337d18501286c28a464",

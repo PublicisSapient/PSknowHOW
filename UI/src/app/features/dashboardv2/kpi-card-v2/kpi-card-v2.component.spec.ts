@@ -1,30 +1,29 @@
 import { ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { KpiCardV2Component } from './kpi-card-v2.component';
-
 import { RouterTestingModule } from '@angular/router/testing';
-import { SharedService } from '../../core/services/shared.service';
 import { HelperService } from 'src/app/core/services/helper.service';
-import { GetAuthService } from '../../core/services/getauth.service';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpService } from '../../core/services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { of } from 'rxjs';
+import { GetAuthService } from 'src/app/core/services/getauth.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('KpiCardV2Component', () => {
   let component: KpiCardV2Component;
   let fixture: ComponentFixture<KpiCardV2Component>;
   let getAuth: GetAuthService;
-  let httpService: HttpService
+  let httpService: HttpService;
   let sharedService: SharedService;
   let helperService: HelperService;
   let dialogService: DialogService;
   let mockService: jasmine.SpyObj<SharedService>;
-  const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
-  const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
+  const fakeKpiFieldMappingList = require('../../../../test/resource/fakeMappingFieldConfig.json');
+  const dropDownMetaData = require('../../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
     "id": "63282cbaf5c740241aff32a1",
     "projectToolConfigId": "63282ca6487eff1e8b70b1bb",

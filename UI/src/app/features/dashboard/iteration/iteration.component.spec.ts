@@ -20,23 +20,23 @@ import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angul
 
 import { IterationComponent } from './iteration.component';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpService } from '../../core/services/http.service';
-import { ExcelService } from '../../core/services/excel.service';
-import { SharedService } from '../../core/services/shared.service';
-import { HelperService } from '../../core/services/helper.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { environment } from '../../../environments/environment';
-import { MultilineComponent } from '../../component/multiline/multiline.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { DatePipe } from '@angular/common';
 import { of } from 'rxjs/internal/observable/of';
 import { Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardComponent } from '../dashboard.component';
-import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { MessageService } from 'primeng/api';
 import { FeatureFlagsService } from 'src/app/core/services/feature-toggle.service';
+import { ExcelService } from 'src/app/core/services/excel.service';
+import { HelperService } from 'src/app/core/services/helper.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { environment } from 'src/environments/environment';
+import { ExportExcelComponent } from 'src/app/shared/component/export-excel/export-excel.component';
+import { MultilineComponent } from 'src/app/shared/component/multiline/multiline.component';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('IterationComponent', () => {
     let component: IterationComponent;
@@ -53,10 +53,10 @@ describe('IterationComponent', () => {
     const selectedTab = 'Iteration';
     let tableComponent: any;
     const filterApplyDataWithNoFilter = {};
-    const masterData = require('../../../test/resource/masterData.json');
-    const filterData = require('../../../test/resource/filterData.json');
+    const masterData = require('../../../../test/resource/masterData.json');
+    const filterData = require('../../../../test/resource/filterData.json');
     const filterApplyDataWithScrum = { level: 2, label: 'Account', ids: ['CIM', 'FCA'], startDate: '', endDate: '', selectedMap: { Level1: [], Level2: ['CIM', 'FCA'], Level3: [], Project: [], Sprint: [], Build: [], Release: [], Squad: [], Individual: [] } };
-    const fakeKpiResponse = require('../../../test/resource/milestoneKpiResponse.json');
+    const fakeKpiResponse = require('../../../../test/resource/milestoneKpiResponse.json');
     const arrToBeAggregated = [
         {
             "filter1": "Defect",
@@ -1903,7 +1903,7 @@ describe('IterationComponent', () => {
             groupId: 1
         }
     ];
-    const fakeJiraGroupId1 = require('../../../test/resource/fakeJiraGroupId1.json');
+    const fakeJiraGroupId1 = require('../../../../test/resource/fakeJiraGroupId1.json');
 
     const fakeJiraNoFilter = [{ kpiId: 'kpi81', kpiName: 'Stories Without Estimate', value: [{ data: 'Total Issues', count: 12 }, { data: 'Issues Without Estimate', count: 0 }], unit: '%', maxValue: '500', chartType: '', id: '605e281c3a5c2e37eedfef72', isDeleted: 'False', kpiCategory: 'Iteration', kpiUnit: '%', kanban: false, kpiSource: 'Jira', trendValueList: [{ data: 'Test1Project', value: [{ data: '0', sSprintID: '29752_Test1Project_605af167f0fb3000015e6358', sSprintName: 'PS HOW |PI_4|ITR_6|10_Mar_Test1Project', howerValue: { 'Total Issues': 12, 'Issues Without Estimate': 0 }, startDate: '10-Mar-2021', endDate: '24-Mar-2021', sprojectName: 'Test1Project' }] }], groupId: 8 }, { kpiId: 'kpi115', kpiName: 'Missing Work Logs', value: [{ data: 'Total Issues(excluding open and dropped)', count: 12 }, { data: 'Issues Without Worklog', count: 12 }, { data: 'Total Issues(including open and dropped)', count: 12 }], unit: '%', maxValue: '500', chartType: '', id: '605e281c3a5c2e37eedfef6a', isDeleted: 'False', kpiCategory: 'Iteration', kpiUnit: '%', kanban: false, kpiSource: 'Jira', trendValueList: [{ data: 'Test1Project', value: [{ data: '100', sSprintID: '29752_Test1Project_605af167f0fb3000015e6358', sSprintName: 'PS HOW |PI_4|ITR_6|10_Mar_Test1Project', value: 100, howerValue: { 'Total Issues(excluding open and dropped)': 12, 'Issues Without Worklog': 12, 'Total Issues(including open and dropped)': 12 }, startDate: '10-Mar-2021', endDate: '24-Mar-2021', sprojectName: 'Test1Project' }] }], groupId: 8 }, { kpiId: 'kpi75', kpiName: 'Estimate vs Actual', value: [{ data: 'Estimated Effort (in hours)', count: 288, value: '100.0%' }, { data: 'Actual Effort (in hours)', count: 0, value: '0.0%' }], unit: '%', maxValue: '', chartType: '', id: '605e281c3a5c2e37eedfef6c', isDeleted: 'False', kpiCategory: 'Iteration', kpiUnit: '%', kanban: false, kpiSource: 'Jira', trendValueList: [{ data: 'Test1Project', value: [{ data: '0', sSprintID: '29752_Test1Project_605af167f0fb3000015e6358', sSprintName: 'PS HOW |PI_4|ITR_6|10_Mar_Test1Project', howerMap: { 'Estimated Effort (in hours)': [288, 100], 'Actual Effort (in hours)': [0, 0] }, startDate: '10-Mar-2021', endDate: '24-Mar-2021', sprojectName: 'Test1Project' }] }], groupId: 8 }, { kpiId: 'kpi76', kpiName: 'Story Completion', value: [{ data: 'Completed Issues', count: 7 }, { data: 'Total Issues', count: 12 }], unit: '%', maxValue: '500', chartType: '', id: '605e281c3a5c2e37eedfef6d', isDeleted: 'False', kpiCategory: 'Iteration', kpiUnit: '%', kanban: false, kpiSource: 'Jira', trendValueList: [{ data: 'Test1Project', value: [{ data: '58', sSprintID: '29752_Test1Project_605af167f0fb3000015e6358', sSprintName: 'PS HOW |PI_4|ITR_6|10_Mar_Test1Project', value: 58.333333333333336, howerValue: { 'Completed Issues': 7, 'Total Issues': 12 }, startDate: '10-Mar-2021', endDate: '24-Mar-2021', sprojectName: 'Test1Project' }] }], groupId: 8 }, { kpiId: 'kpi77', kpiName: 'Sprint Velocity (LOE Based)', value: [{ data: 'Team Logged efforts (in hours)', count: 0 }, { data: 'Delivered Story Points', count: 24 }], unit: '', maxValue: '500', chartType: '', id: '605e281c3a5c2e37eedfef6e', isDeleted: 'False', kpiCategory: 'Iteration', kpiUnit: '', kanban: false, kpiSource: 'Jira', trendValueList: [{ data: 'Test1Project', value: [{ data: '0', sSprintID: '29752_Test1Project_605af167f0fb3000015e6358', sSprintName: 'PS HOW |PI_4|ITR_6|10_Mar_Test1Project', value: 0, howerValue: { 'Team Logged efforts (in hours)': 0, 'Delivered Story Points': 24 }, startDate: '10-Mar-2021', endDate: '24-Mar-2021', sprojectName: 'Test1Project' }] }], groupId: 8 }, { kpiId: 'kpi78', kpiName: 'Actual vs Remaining', value: [{ data: 'Actual Effort (in hours)', count: 0, value: '0.0%' }, { data: 'Remaining Effort (in hours)', count: 288, value: '100.0%' }], unit: '%', maxValue: '500', chartType: '', id: '605e281c3a5c2e37eedfef6f', isDeleted: 'False', kpiCategory: 'Iteration', kpiUnit: '%', kanban: false, kpiSource: 'Jira', trendValueList: [{ data: 'Test1Project', value: [{ data: '100', sSprintID: '29752_Test1Project_605af167f0fb3000015e6358', sSprintName: 'PS HOW |PI_4|ITR_6|10_Mar_Test1Project', howerMap: { 'Actual Effort (in hours)': [0, 0], 'Remaining Effort (in hours)': [288, 100] }, startDate: '10-Mar-2021', endDate: '24-Mar-2021', sprojectName: 'Test1Project' }] }], groupId: 8 }, { kpiId: 'kpi80', kpiName: 'Defect Count Without Story Link', value: 698, unit: '', maxValue: '500', chartType: '', id: '605e281c3a5c2e37eedfef71', isDeleted: 'False', kpiCategory: 'Iteration', kpiUnit: '', kanban: false, kpiSource: 'Jira', trendValueList: [{ data: 'Test1Project', value: [{ data: '698', value: 698, howerValue: { 'Total Defects': 1334, 'Defects Without Story Link': 698 }, sprojectName: 'Test1Project' }] }], groupId: 8 }];
 
@@ -1913,7 +1913,7 @@ describe('IterationComponent', () => {
         { path: 'authentication/login', component: DashboardComponent }
 
     ];
-    const userConfigData = require('../../../test/resource/fakeGlobalConfigData.json');
+    const userConfigData = require('../../../../test/resource/fakeGlobalConfigData.json');
     const configGlobalData = [
         {
             kpiId: 'kpi74',
@@ -2011,7 +2011,7 @@ describe('IterationComponent', () => {
         }
     ];
 
-    const fakeJiraPayload = require('../../../test/resource/fakeJiraPayload.json');
+    const fakeJiraPayload = require('../../../../test/resource/fakeJiraPayload.json');
     const kpiDropdowns = {
         "kpi75": [
             {

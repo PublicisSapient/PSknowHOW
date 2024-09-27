@@ -18,13 +18,13 @@
 
 import { ComponentFixture, TestBed, fakeAsync, inject, getTestBed, waitForAsync } from '@angular/core/testing';
 import { ErrorComponent } from './error.component';
-import { SharedService } from '../../core/services/shared.service';
-import { HttpService } from '../../core/services/http.service';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
+import { HttpService } from 'src/app/core/services/http.service';
+import { SharedService } from 'src/app/core/services/shared.service';
 
 
 describe('ErrorComponent', () => {

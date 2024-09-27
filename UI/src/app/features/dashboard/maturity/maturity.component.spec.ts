@@ -21,19 +21,19 @@ import { ComponentFixture, ComponentFixtureAutoDetect, fakeAsync, TestBed, tick,
 import { MaturityComponent } from './maturity.component';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpService } from '../../core/services/http.service';
-import { SharedService } from '../../core/services/shared.service';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
-import { ExcelService } from '../../core/services/excel.service';
-import { DatePipe } from '../../../../node_modules/@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HelperService } from '../../core/services/helper.service';
-import { environment } from '../../../environments/environment';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { of } from 'rxjs';
-const masterData = require('../../../test/resource/masterData.json');
-const filterData = require('../../../test/resource/filterData.json');
+import { SharedService } from 'src/app/core/services/shared.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { HelperService } from 'src/app/core/services/helper.service';
+import { environment } from 'src/environments/environment';
+import { ExcelService } from 'src/app/core/services/excel.service';
+import { DatePipe } from '@angular/common';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
+const masterData = require('../../../../test/resource/masterData.json');
+const filterData = require('../../../../test/resource/filterData.json');
 
 
 describe('MaturityComponent', () => {
@@ -53,17 +53,17 @@ describe('MaturityComponent', () => {
   let httpMock;
   let reqJira;
 
-  const fakeJiraGroupId1 = require('../../../test/resource/fakeJiraGroupId1.json');
-  const fakeSonarPayload = require('../../../test/resource/fakeSonarPayload.json');
-  const fakeSonarResponse = require('../../../test/resource/fakeSonarResponse.json');
-  const fakeJenkinsPayload =require('../../../test/resource/fakeJenkinsPayload.json');
-  const fakeJenkinsResponse =require('../../../test/resource/fakeJenkinsResponse.json');
-  const fakeZypherPayload =require('../../../test/resource/fakeZypherPayload.json');
-  const fakeZypherResponse =require('../../../test/resource/fakeZypherResponse.json');
-  const fakeJiraPayload =require('../../../test/resource/fakeJiraPayload.json');
-  const fakeBitbucketPayload =require('../../../test/resource/fakeBitbucketPayload.json');
-  const fakeBitbucketResponse =require('../../../test/resource/fakeBitBucketResponse.json');
-  const fakeMasterData = require('../../../test/resource/fakeMasterData.json');
+  const fakeJiraGroupId1 = require('../../../../test/resource/fakeJiraGroupId1.json');
+  const fakeSonarPayload = require('../../../../test/resource/fakeSonarPayload.json');
+  const fakeSonarResponse = require('../../../../test/resource/fakeSonarResponse.json');
+  const fakeJenkinsPayload =require('../../../../test/resource/fakeJenkinsPayload.json');
+  const fakeJenkinsResponse =require('../../../../test/resource/fakeJenkinsResponse.json');
+  const fakeZypherPayload =require('../../../../test/resource/fakeZypherPayload.json');
+  const fakeZypherResponse =require('../../../../test/resource/fakeZypherResponse.json');
+  const fakeJiraPayload =require('../../../../test/resource/fakeJiraPayload.json');
+  const fakeBitbucketPayload =require('../../../../test/resource/fakeBitbucketPayload.json');
+  const fakeBitbucketResponse =require('../../../../test/resource/fakeBitBucketResponse.json');
+  const fakeMasterData = require('../../../../test/resource/fakeMasterData.json');
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [MaturityComponent],

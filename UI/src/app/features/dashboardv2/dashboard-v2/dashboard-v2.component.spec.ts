@@ -20,20 +20,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardV2Component } from './dashboard-v2.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SharedService } from '../../core/services/shared.service';
-import { GetAuthService } from '../../core/services/getauth.service';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpService } from '../../core/services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
+import { GetAuthService } from 'src/app/core/services/getauth.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('DashboardV2Component', () => {
   let component: DashboardV2Component;
   let fixture: ComponentFixture<DashboardV2Component>;
   let getAuth: GetAuthService;
-  let httpService: HttpService
+  let httpService: HttpService;
   let sharedService: SharedService;
 
   beforeEach(async () => {

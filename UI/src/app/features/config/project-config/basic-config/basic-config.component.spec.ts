@@ -25,7 +25,6 @@ import { GetAuthorizationService } from '../../../../core/services/get-authoriza
 import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 
 import { DropdownModule } from 'primeng/dropdown';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -40,6 +39,7 @@ import { environment } from 'src/environments/environment';
 import {InputSwitchModule} from 'primeng/inputswitch';
 import { of } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/core/services/google-analytics.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('BasicConfigComponent', () => {
   let component: BasicConfigComponent;

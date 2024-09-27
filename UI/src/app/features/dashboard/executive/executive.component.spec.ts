@@ -20,41 +20,39 @@ import { ComponentFixture, TestBed, inject, waitForAsync, fakeAsync, tick } from
 import { ExecutiveComponent } from './executive.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpService } from '../../core/services/http.service';
-import { SharedService } from '../../core/services/shared.service';
-import { HelperService } from '../../core/services/helper.service';
-
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
-import { ExcelService } from '../../core/services/excel.service';
-import { DatePipe } from '../../../../node_modules/@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 declare let $: any;
-import { CircularProgressComponent } from '../../component/circular-progress/circular-progress.component';
-import { ProgressbarComponent } from '../../component/progressbar/progressbar.component';
-import { CircularchartComponent } from '../../component/circularchart/circularchart.component';
-import { NumberchartComponent } from '../../component/numberchart/numberchart.component';
-import { BarchartComponent } from '../../component/barchart/barchart.component';
-import { LineBarChartComponent } from '../../component/line-bar-chart/line-bar-chart.component';
-import { GaugechartComponent } from '../../component/gaugechart/gaugechart.component';
-import { MultilineComponent } from '../../component/multiline/multiline.component';
 import { MaturityComponent } from '../../dashboard/maturity/maturity.component';
 import { FilterComponent } from '../../dashboard/filter/filter.component';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { environment } from '../../../environments/environment';
 import { of } from 'rxjs/internal/observable/of';
 import { DropdownModule } from 'primeng/dropdown';
-import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { HelperService } from 'src/app/core/services/helper.service';
+import { environment } from 'src/environments/environment';
+import { CircularProgressComponent } from 'src/app/shared/component/circular-progress/circular-progress.component';
+import { ProgressbarComponent } from 'src/app/shared/component/progressbar/progressbar.component';
+import { CircularchartComponent } from 'src/app/shared/component/circularchart/circularchart.component';
+import { NumberchartComponent } from 'src/app/shared/component/numberchart/numberchart.component';
+import { BarchartComponent } from 'src/app/shared/component/barchart/barchart.component';
+import { LineBarChartComponent } from 'src/app/shared/component/line-bar-chart/line-bar-chart.component';
+import { GaugechartComponent } from 'src/app/shared/component/gaugechart/gaugechart.component';
+import { MultilineComponent } from 'src/app/shared/component/multiline/multiline.component';
+import { ExportExcelComponent } from 'src/app/shared/component/export-excel/export-excel.component';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
+import { ExcelService } from 'src/app/core/services/excel.service';
 
-const masterData = require('../../../test/resource/masterData.json');
-const filterData = require('../../../test/resource/filterData.json');
+const masterData = require('../../../../test/resource/masterData.json');
+const filterData = require('../../../../test/resource/filterData.json');
 
 describe('ExecutiveComponent', () => {
   let component: ExecutiveComponent;
@@ -64,9 +62,9 @@ describe('ExecutiveComponent', () => {
   let helperService: HelperService;
   let exportExcelComponent;
   const baseUrl = environment.baseUrl;  // Servers Env
-  const fakeDoraKpis = require('../../../test/resource/fakeDoraKpis.json');
-  const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
-  const globalData = require('../../../test/resource/fakeGlobalConfigData.json');
+  const fakeDoraKpis = require('../../../../test/resource/fakeDoraKpis.json');
+  const fakeDoraKpiFilters = require('../../../../test/resource/fakeDoraKpiFilters.json');
+  const globalData = require('../../../../test/resource/fakeGlobalConfigData.json');
   const configGlobalData = [
     {
       kpiId: 'kpi74',
@@ -121,7 +119,7 @@ describe('ExecutiveComponent', () => {
   const filterApplyDataWithKanban = { kpiList: [{ id: '5d3013be4020938b42c23bd0', kpiId: 'kpi66', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: true, chartType: 'gaugeChart' }], ids: ['Date Range'], level: 5, selectedMap: { hierarchyLevelOne: ['ASDFG_hierarchyLevelOne'], Project: [], SubProject: [], Date: ['Date Range'], Build: [], Release: [], Squad: [], Individual: [] }, startDate: '2019-04-30T18:30:00.000Z', endDate: '2019-08-08T11:00:24.000Z' };
   const selectedTab = 'my-knowhow';
 
-  const dashConfigData = require('../../../test/resource/fakeShowHideApi.json');
+  const dashConfigData = require('../../../../test/resource/fakeShowHideApi.json');
 
   let httpMock;
   let reqJira;
@@ -2416,9 +2414,9 @@ describe('ExecutiveComponent', () => {
     }
   ];
 
-  const fakeJiraGroupId1 = require('../../../test/resource/fakeJiraGroupId1.json');
-  const fakeAllKpiArrayForTableData = require('../../../test/resource/fakeAllKpiArrayForTableData.json');
-  const fakeAllKpiArrayForTableDataWithFilter = require('../../../test/resource/fakeAllKpiArrayForTableDataWithFilter.json');
+  const fakeJiraGroupId1 = require('../../../../test/resource/fakeJiraGroupId1.json');
+  const fakeAllKpiArrayForTableData = require('../../../../test/resource/fakeAllKpiArrayForTableData.json');
+  const fakeAllKpiArrayForTableDataWithFilter = require('../../../../test/resource/fakeAllKpiArrayForTableDataWithFilter.json');
   const fakeKpiTableHeadingArray = [
     {
       "field": "kpiName",

@@ -6,13 +6,13 @@ import { SharedService } from 'src/app/core/services/shared.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HelperService } from 'src/app/core/services/helper.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ExcelService } from 'src/app/core/services/excel.service';
 import { DatePipe } from '@angular/common';
 import { of } from 'rxjs';
-import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { ExportExcelComponent } from 'src/app/shared/component/export-excel/export-excel.component';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 
 
@@ -239,8 +239,8 @@ describe('MilestoneComponent', () => {
             ]
         }
     ]
-    const fakeJiraPayload = require('../../../test/resource/fakeJiraPayload.json');
-    const fakeMilestoneKpiResponse = require('../../../test/resource/milestoneKpiResponse.json');
+    const fakeJiraPayload = require('../../../../test/resource/fakeJiraPayload.json');
+    const fakeMilestoneKpiResponse = require('../../../../test/resource/milestoneKpiResponse.json');
     const kpiDropdowns = {
         "kpi75": [
             {
@@ -254,8 +254,8 @@ describe('MilestoneComponent', () => {
             }
         ]
     }
-    const userConfigData = require('../../../test/resource/fakeGlobalConfigData.json');
-    const fakeJiraGroupId1 = require('../../../test/resource/fakeJiraGroupId1.json');
+    const userConfigData = require('../../../../test/resource/fakeGlobalConfigData.json');
+    const fakeJiraGroupId1 = require('../../../../test/resource/fakeJiraGroupId1.json');
     const configGlobalData = [
         {
             kpiId: 'kpi74',

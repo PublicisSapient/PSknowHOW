@@ -44,9 +44,9 @@ describe('DashboardconfigComponent', () => {
   let messageService;
   let getAuthorizationService;
 
-  const fakeGetDashData = require('../../../test/resource/fakeShowHideApi.json');
+  const fakeGetDashData = require('../../../../test/resource/fakeShowHideApi.json');
   let fakeGetDashDataOthers = fakeGetDashData.data['scrum'][0].kpis.concat(fakeGetDashData.data['kanban'][0].kpis).concat(fakeGetDashData.data['others'][0].kpis);
-  const fakeProjects = require('../../../test/resource/fakeProjectsDashConfig.json');
+  const fakeProjects = require('../../../../test/resource/fakeProjectsDashConfig.json');
   fakeGetDashDataOthers = fakeGetDashDataOthers.filter((kpi) => kpi.shown);
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({

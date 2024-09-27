@@ -2,30 +2,30 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HeaderComponent } from './header.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
-import { SharedService } from '../../core/services/shared.service';
 import { HelperService } from 'src/app/core/services/helper.service';
-import { GetAuthService } from '../../core/services/getauth.service';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpService } from '../../core/services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { of } from 'rxjs';
 import { Router, Routes } from '@angular/router';
 import { LoginComponent } from 'src/app/features/authentication/login/login.component';
-import { IterationComponent } from 'src/app/dashboard/iteration/iteration.component';
 import { RequestStatusComponent } from 'src/app/features/config/profile/request-status/request-status.component';
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
 import { ViewNewUserAuthRequestComponent } from 'src/app/features/config/profile/view-new-user-auth-request/view-new-user-auth-request.component';
 import { ViewRequestsComponent } from 'src/app/features/config/profile/view-requests/view-requests.component';
+import { GetAuthService } from 'src/app/core/services/getauth.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { IterationComponent } from '../../dashboard/iteration/iteration.component';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
   let routerSpy: jasmine.SpyObj<Router>;
   let getAuth: GetAuthService;
-  let httpService: HttpService
+  let httpService: HttpService;
   let sharedService: SharedService;
   let helperService: HelperService;
   let mockGetAuthorizationService;

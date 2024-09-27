@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { DoraComponent } from './dora.component';
-import { SharedService } from '../../core/services/shared.service';
 import { HttpService } from 'src/app/core/services/http.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { APP_CONFIG, AppConfig } from 'src/app/services/app.config';
 import { HelperService } from 'src/app/core/services/helper.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { of } from 'rxjs';
-import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { ExportExcelComponent } from 'src/app/shared/component/export-excel/export-excel.component';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('DoraComponent', () => {
   let component: DoraComponent;
@@ -180,7 +180,7 @@ describe('DoraComponent', () => {
       "shown": true
     }
   ]
-  const globalData = require('../../../test/resource/fakeGlobalConfigData.json');
+  const globalData = require('../../../../test/resource/fakeGlobalConfigData.json');
   const hierarchyData = [
     {
       level: 1,
@@ -19939,8 +19939,8 @@ describe('DoraComponent', () => {
     "label": "project"
   };
 
-  const fakeDoraKpis = require('../../../test/resource/fakeDoraKpis.json');
-  const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
+  const fakeDoraKpis = require('../../../../test/resource/fakeDoraKpis.json');
+  const fakeDoraKpiFilters = require('../../../../test/resource/fakeDoraKpiFilters.json');
   beforeEach(async () => {
     service = new SharedService();
     await TestBed.configureTestingModule({

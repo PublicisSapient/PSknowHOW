@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
-import { HttpService } from '../../core/services/http.service';
-import { SharedService } from '../../core/services/shared.service';
+import { HttpService } from '../../../core/services/http.service';
+import { SharedService } from '../../../core/services/shared.service';
 import { MessageService } from 'primeng/api';
 import { ProjectFilterComponent } from './project-filter.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
+import { APP_CONFIG,AppConfig } from '../../../core/configs/app.config';
 
-const allProjectsData = require('../../../test/resource/projectFilterAllProjects.json');
+const allProjectsData = require('../../../../test/resource/projectFilterAllProjects.json');
 const filteredData = [
   {
       id: '6335363749794a18e8a4479b',

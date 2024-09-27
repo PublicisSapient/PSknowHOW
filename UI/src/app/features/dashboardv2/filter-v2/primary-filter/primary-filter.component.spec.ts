@@ -4,11 +4,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { CommonModule, DatePipe } from '@angular/common';
 
 import { SharedService } from 'src/app/core/services/shared.service';
 import { HelperService } from 'src/app/core/services/helper.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 // Mock classes
 class MockMultiSelect {

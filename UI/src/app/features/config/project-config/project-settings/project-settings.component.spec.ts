@@ -24,10 +24,10 @@ import { of, throwError } from 'rxjs';
 import { SharedService } from '../../../../core/services/shared.service';
 import { HttpService } from '../../../../core/services/http.service';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('ProjectSettingsComponent', () => {
   let component: ProjectSettingsComponent;
@@ -41,7 +41,7 @@ describe('ProjectSettingsComponent', () => {
   let httpMock;
   const baseUrl = environment.baseUrl;
   const navigateSpy = jasmine.createSpyObj('Router', ['navigate']);
-  const projectListData = require('../../../../test/resource/projectListData.json');
+  const projectListData = require('../../../../../test/resource/projectListData.json');
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

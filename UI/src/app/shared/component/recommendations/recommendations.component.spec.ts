@@ -5,9 +5,9 @@ import { HttpService } from 'src/app/core/services/http.service';
 import { of, throwError } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { APP_CONFIG, AppConfig } from 'src/app/services/app.config';
-import { SharedService } from '../../core/services/shared.service';
+ import { SharedService } from '../../../core/services/shared.service';
 import { MessageService } from 'primeng/api';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('RecommendationsComponent', () => {
   let component: RecommendationsComponent;

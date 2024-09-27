@@ -23,7 +23,6 @@ import { SharedService } from '../../../../core/services/shared.service';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
 import { GoogleAnalyticsService } from '../../../../core/services/google-analytics.service';
 import { DataViewModule } from 'primeng/dataview';
@@ -35,6 +34,7 @@ import { ProjectListComponent } from '../project-list/project-list.component';
 import { url } from 'inspector';
 import { ConfigSettingsComponent } from '../config-settings/config-settings.component';
 import { AdvancedSettingsComponent } from '../../advanced-settings/advanced-settings.component';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('ToolMenuComponent', () => {
   let component: ToolMenuComponent;
@@ -48,9 +48,9 @@ describe('ToolMenuComponent', () => {
   let router: Router;
   const baseUrl = environment.baseUrl;
 
-  const toolsData = require('../../../../test/resource/fakeToolsData.json');
-  const mappingData = require('../../../../test/resource/fakeToolMappings.json');
-  const fakeCompleteHiearchyData = require('../../../../test/resource/fakeCompleteHierarchyData.json');
+  const toolsData = require('../../../../../test/resource/fakeToolsData.json');
+  const mappingData = require('../../../../../test/resource/fakeToolMappings.json');
+  const fakeCompleteHiearchyData = require('../../../../../test/resource/fakeCompleteHierarchyData.json');
   const fakeProject = {
     id: '6335363749794a18e8a4479b',
     name: 'Scrum Project',

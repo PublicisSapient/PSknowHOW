@@ -48,7 +48,7 @@ describe('AdvancedSettingsComponent', () => {
   //   return JSON.parse(store['storage']);
   // };
 
-  const fakeProjects = require('../../../test/resource/fakeProjectsDashConfig.json');
+  const fakeProjects = require('../../../../test/resource/fakeProjectsDashConfig.json');
   const fakeProcessorData = {
     message: '',
     success: true,
@@ -176,8 +176,8 @@ describe('AdvancedSettingsComponent', () => {
     }
   };
 
-  const fakeGetAllTools = require('../../../test/resource/fakeGetAllTools.json');
-  const fakeProcessorsTracelog = require('../../../test/resource/fakeProcessorsTracelog.json');
+  const fakeGetAllTools = require('../../../../test/resource/fakeGetAllTools.json');
+  const fakeProcessorsTracelog = require('../../../../test/resource/fakeProcessorsTracelog.json');
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [AdvancedSettingsComponent],

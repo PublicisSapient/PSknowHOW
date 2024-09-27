@@ -19,19 +19,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { DashboardComponent } from './dashboard.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SharedService } from '../core/services/shared.service';
-import { GetAuthService } from '../core/services/getauth.service';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_CONFIG, AppConfig } from '../services/app.config';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpService } from '../core/services/http.service';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { GetAuthService } from 'src/app/core/services/getauth.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let getAuth: GetAuthService;
-  let httpService: HttpService
+  let httpService: HttpService;
   let sharedService: SharedService;
 
   beforeEach(waitForAsync(() => {

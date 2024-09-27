@@ -1,13 +1,14 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { HttpService } from '../services/http.service';
 import { FeedbackComponent } from './feedback.component';
 import { of, throwError } from 'rxjs';
-import { APP_CONFIG, AppConfig } from '../services/app.config';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { SharedService } from '../services/shared.service';
+
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
+import { HttpService } from 'src/app/core/services/http.service';
 
 describe('FeedbackComponent', () => {
   let component: FeedbackComponent;
@@ -18,7 +19,7 @@ describe('FeedbackComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FeedbackComponent],
       imports: [RouterTestingModule, HttpClientModule, HttpClientTestingModule],
-      providers: [HttpService,SharedService,  { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService,SharedService,  { provide: APP_CONFIG , useValue: AppConfig }]
     })
       .compileComponents();
   });

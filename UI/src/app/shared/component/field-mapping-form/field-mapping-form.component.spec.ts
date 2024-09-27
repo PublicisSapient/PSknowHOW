@@ -21,15 +21,15 @@ import { HttpClientTestingModule,HttpTestingController } from '@angular/common/h
 import { HttpService } from 'src/app/core/services/http.service';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MessageService,ConfirmationService } from 'primeng/api';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { environment } from 'src/environments/environment';
 import { FieldMappingFormComponent } from './field-mapping-form.component';
 import { of } from 'rxjs';
+import { AppConfig,APP_CONFIG } from 'src/app/core/configs/app.config';
 
 
-const fakeKpiFieldMappingConfigList = require('../../../test/resource/fakeMappingFieldConfig.json');
+const fakeKpiFieldMappingConfigList = require('../../../../test/resource/fakeMappingFieldConfig.json');
 const baseUrl = environment.baseUrl;
-const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
+const dropDownMetaData = require('../../../../test/resource/KPIConfig.json');
 const completeHierarchyData = {
   kanban: [
     {

@@ -345,7 +345,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-          // getData = require('../../../test/resource/fakeIterationKpi.json');
+          // getData = require('../../../../test/resource/fakeIterationKpi.json');
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
           for (const kpi in localVariable) {

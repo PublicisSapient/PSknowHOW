@@ -45,14 +45,14 @@ describe('AccessMgmtComponent', () => {
   const baseUrl = environment.baseUrl;  // Servers Env
   let sharedService : SharedService;
 
-  const fakeUserData = require('../../../../test/resource/fakeUserData.json');
-  const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
-  const fakeServiceInputInvalid = require('../../../../test/resource/fakeUserDataChange.json');
-  const fakeServiceInputValid = require('../../../../test/resource/fakeUserDataChangeValid.json');
-  const fakeFilterByProjectData = require('../../../../test/resource/fakeFilterByProjectData.json');
-  const fakeFilterByRoleData = require('../../../../test/resource/fakeFilterByRoleData.json');
-  const accessNodes = require('../../../../test/resource/fakeAccessNodes.json')
-  const fakeDeleteAccess = require('../../../../test/resource/fakeDeleteAccessRequest.json');
+  const fakeUserData = require('../../../../../test/resource/fakeUserData.json');
+  const fakeRolesData = require('../../../../../test/resource/fakeRolesData.json');
+  const fakeServiceInputInvalid = require('../../../../../test/resource/fakeUserDataChange.json');
+  const fakeServiceInputValid = require('../../../../../test/resource/fakeUserDataChangeValid.json');
+  const fakeFilterByProjectData = require('../../../../../test/resource/fakeFilterByProjectData.json');
+  const fakeFilterByRoleData = require('../../../../../test/resource/fakeFilterByRoleData.json');
+  const accessNodes = require('../../../../../test/resource/fakeAccessNodes.json')
+  const fakeDeleteAccess = require('../../../../../test/resource/fakeDeleteAccessRequest.json');
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [AccessMgmtComponent],

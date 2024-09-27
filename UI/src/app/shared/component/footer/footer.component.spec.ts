@@ -22,7 +22,7 @@ import { FooterComponent } from './footer.component';
 import { HttpService } from 'src/app/core/services/http.service';
 import { SharedService } from 'src/app/core/services/shared.service';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
+import { APP_CONFIG,AppConfig } from '../../../core/configs/app.config';
 import { CommonModule } from '@angular/common';
 // import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';

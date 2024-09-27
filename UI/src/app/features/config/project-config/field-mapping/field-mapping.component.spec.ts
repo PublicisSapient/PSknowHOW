@@ -25,7 +25,6 @@ import { GetAuthorizationService } from '../../../../core/services/get-authoriza
 import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, FormControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ChipsModule } from 'primeng/chips';
@@ -41,6 +40,7 @@ import { environment } from 'src/environments/environment';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { BadgeModule } from 'primeng/badge';
 import { of } from 'rxjs';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 const completeHierarchyData = {
   kanban: [
@@ -621,8 +621,8 @@ const fakeSelectedFieldMappingWithAdditionalFilters = {
     }
   ]
 };
-const dropDownMetaData = require('../../../../test/resource/KPIConfig.json');
-const fakeKpiFieldMappingList = require('../../../../test/resource/fakeMappingFieldConfig.json');
+const dropDownMetaData = require('../../../../../test/resource/KPIConfig.json');
+const fakeKpiFieldMappingList = require('../../../../../test/resource/fakeMappingFieldConfig.json');
 
 describe('FieldMappingComponent', () => {
   let component: FieldMappingComponent;

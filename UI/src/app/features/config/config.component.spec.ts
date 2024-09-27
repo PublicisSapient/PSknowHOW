@@ -30,7 +30,6 @@ import { AccordionModule } from 'primeng/accordion';
 import { FieldsetModule } from 'primeng/fieldset';
 // import { ButtonModule, SharedModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
-import { AutoCompleteComponent } from '../component/auto-complete/auto-complete.component';
 import { ConfigComponent } from './config.component';
 import { UploadComponent } from './upload/upload.component';
 import { DashboardconfigComponent } from './dashboard-config/dashboard-config.component';
@@ -51,6 +50,7 @@ import { GetAuthorizationService } from '../../core/services/get-authorization.s
 import { SharedService } from '../../core/services/shared.service';
 import { of } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
+import { AutoCompleteComponent } from 'src/app/shared/component/auto-complete/auto-complete.component';
 describe('ConfigComponent', () => {
   let component: ConfigComponent;
   let fixture: ComponentFixture<ConfigComponent>;

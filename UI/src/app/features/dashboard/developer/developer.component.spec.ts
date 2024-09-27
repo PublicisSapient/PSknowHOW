@@ -24,31 +24,30 @@ unit test cases.
 
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpService } from '../../core/services/http.service';
-import { SharedService } from '../../core/services/shared.service';
-import { HelperService } from '../../core/services/helper.service';
-import { ExcelService } from '../../core/services/excel.service';
-import { DatePipe } from '../../../../node_modules/@angular/common';
 import { MessageService } from 'primeng/api';
 import { DeveloperComponent } from './developer.component';
-import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardComponent } from '../dashboard.component';
-import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
+import { ExportExcelComponent } from 'src/app/shared/component/export-excel/export-excel.component';
+import { SharedService } from 'src/app/core/services/shared.service';
+import { HttpService } from 'src/app/core/services/http.service';
+import { HelperService } from 'src/app/core/services/helper.service';
+import { ExcelService } from 'src/app/core/services/excel.service';
 
 const selectedTab = 'developer';
-const masterData = require('../../../test/resource/masterData.json');
-const filterData = require('../../../test/resource/filterData.json');
-const fakeDeveloperTabData = require('../../../test/resource/fakeDeveloperTabData.json');
-const dashConfigData = require('../../../test/resource/fakeShowHideApi.json').data;
-const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
+const masterData = require('../../../../test/resource/masterData.json');
+const filterData = require('../../../../test/resource/filterData.json');
+const fakeDeveloperTabData = require('../../../../test/resource/fakeDeveloperTabData.json');
+const dashConfigData = require('../../../../test/resource/fakeShowHideApi.json').data;
+const fakeDoraKpiFilters = require('../../../../test/resource/fakeDoraKpiFilters.json');
 const filterApplyDataWithScrum = {
   kpiList: [
     {

@@ -648,7 +648,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.httpService.postKpi(postData, source)
             .subscribe(getData => {
                 this.loaderBitBucket = false;
-                // getData = require('../../../test/resource/fakeKPI11.json');
+                // getData = require('../../../../test/resource/fakeKPI11.json');
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -670,7 +670,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.httpService.postKpiKanban(postData, source)
             .subscribe(getData => {
                 this.loaderBitBucket = false;
-                // getData = require('../../../test/resource/fakeKPI65.json');
+                // getData = require('../../../../test/resource/fakeKPI65.json');
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);

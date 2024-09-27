@@ -4,10 +4,10 @@ import { HttpClientTestingModule, HttpTestingController} from '@angular/common/h
 import { KpiCardComponent } from './kpi-card.component';
 import { SharedService } from 'src/app/core/services/shared.service';
 import { HttpService } from 'src/app/core/services/http.service';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { of } from 'rxjs';
 import { SimpleChanges } from '@angular/core';
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 
 describe('KpiCardComponent', () => {
@@ -17,8 +17,8 @@ describe('KpiCardComponent', () => {
   let httpService: HttpService;
   let authService: GetAuthorizationService
   let mockService: jasmine.SpyObj<SharedService>;
-  const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
-  const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
+  const fakeKpiFieldMappingList = require('../../../../../src/test/resource/fakeMappingFieldConfig.json');
+  const dropDownMetaData = require('../../../../../src/test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
     "id": "63282cbaf5c740241aff32a1",
     "projectToolConfigId": "63282ca6487eff1e8b70b1bb",
