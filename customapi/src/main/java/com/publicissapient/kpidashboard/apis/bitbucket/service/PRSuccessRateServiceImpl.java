@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -74,7 +73,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final String REPO_TOOLS = "RepoTool";
 	private static final String ASSIGNEE = "assignee";
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -183,10 +181,7 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
-		ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
-		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
-				: toolMap.get(configId).get(REPO_TOOLS);
+		List<Tool> reposList = kpiHelperService.populateSCMToolsRepoList(toolListMap);
 		if (CollectionUtils.isEmpty(reposList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
 					projectLeafNode.getProjectFilter());
