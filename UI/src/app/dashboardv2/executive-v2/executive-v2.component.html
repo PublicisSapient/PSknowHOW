@@ -52,13 +52,12 @@
                                             [showCommentIcon]="showCommentIcon"
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
-                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize" [kpiChartData]="kpiChartData"
-                                            [immediateLoader]='immediateLoader'>
+                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize"
+                                            [kpiChartData]="kpiChartData" [immediateLoader]='immediateLoader'>
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length">
                                                     <div [ngSwitch]="kpi?.kpiDetail?.chartType">
-                                                        <ng-container
-                                                            *ngIf="!kpiLoader.has(kpi?.kpiId) && kpiChartData[kpi?.kpiId]">
+                                                        <ng-container *ngIf="!kpiLoader.has(kpi?.kpiId)">
                                                             <ng-container *ngIf="!(showChart === 'table')">
                                                                 <ng-container *ngSwitchCase="'stackedColumn'">
                                                                     <ng-container
@@ -209,6 +208,16 @@
                                         </app-kpi-card-v2>
 
                                     </div>
+                                    <ng-template #noDataForChartWithFilters let-data>
+                                        <div class="min-ht" *ngIf="!loader">
+                                            <div class="p-w-100  p-d-flex p-justify-center">
+                                                <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+                                            </div>
+                                            <div class="p-w-100">
+                                                <h4 class="p-text-center">No data Available.</h4>
+                                            </div>
+                                        </div>
+                                    </ng-template>
                                     <ng-template #zeroData let-data>
                                         <div class="min-ht" *ngIf="!loader">
                                             <div class="p-w-100  p-d-flex p-justify-center">
@@ -223,7 +232,7 @@
                                     </ng-template>
                                     <ng-template #noDataAccess>
                                         <div class="min-ht">
-                                            <div class="err"> No Data Available</div>
+                                            <div class="err">No Data Available.</div>
                                         </div>
                                     </ng-template>
                                 </ng-container>
@@ -249,7 +258,8 @@
 </ng-template>
 <ng-template #noFilterApplyDataTemplate>
     <div class="p-d-flex p-align-center p-justify-center no-sprint-msg p-pb-5">
-        <h2 class="msg">The selected project need to have atleast one {{ selectedTab }} available for the KPI's to show up</h2>
+        <h2 class="msg">The selected project need to have atleast one {{ selectedTab }} available for the KPI's to show
+            up</h2>
     </div>
 </ng-template>
 
@@ -257,4 +267,4 @@
 
 <ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2">
     <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
-  </ng-container>
+</ng-container>

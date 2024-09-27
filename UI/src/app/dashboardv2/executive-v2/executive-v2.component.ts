@@ -627,13 +627,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .subscribe(getData => {
         this.loaderJenkins = false;
         if (getData !== null) {
-          this.jenkinsKpiData = [...getData];
+          this.jenkinsKpiData = getData;
+          this.createAllKpiArray(this.jenkinsKpiData);
+          this.removeLoaderFromKPIs(this.jenkinsKpiData);
+
           for (const obj in getData) {
             getData[getData[obj].kpiId] = getData[obj];
           }
           this.fillKPIResponseCode(getData);
-          this.createAllKpiArray(this.jenkinsKpiData);
-          this.removeLoaderFromKPIs(this.jenkinsKpiData);
         } else {
           postData.kpiList.forEach(element => {
             this.kpiLoader.delete(element.kpiId);
@@ -656,13 +657,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.loaderJenkins = false;
         // move Overall to top of trendValueList
         if (getData !== null) { // && getData[0] !== 'error') {
-          Object.assign(this.jenkinsKpiData, getData);
+          this.jenkinsKpiData = getData;
+          this.createAllKpiArray(this.jenkinsKpiData);
+          this.removeLoaderFromKPIs(this.jenkinsKpiData);
+
           for (const obj in getData) {
             getData[getData[obj].kpiId] = getData[obj];
           }
           this.fillKPIResponseCode(getData);
-          this.createAllKpiArray(this.jenkinsKpiData);
-          this.removeLoaderFromKPIs(this.jenkinsKpiData);
         } else {
           postData.kpiList.forEach(element => {
             this.kpiLoader.delete(element.kpiId);
@@ -1431,19 +1433,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   // }
 
   checkIfDataPresent(data) {
-    let dataCount = 0;
-    data?.forEach(item => {
-      if (item?.data && !isNaN(parseInt(item?.data))) {
-        dataCount += item?.data;
-      } else if (item.value) {
-        item?.value?.forEach(val => {
-          if (!isNaN(parseInt(val?.data))) {
-            dataCount += val?.data;
+    if (data) {
+      if (Array.isArray(data)) {
+        let dataCount = 0;
+        data?.forEach(item => {
+          if (item?.data && !isNaN(parseInt(item?.data))) {
+            dataCount += item?.data;
+          } else if (item.value) {
+            item?.value?.forEach(val => {
+              if (!isNaN(parseInt(val?.data))) {
+                dataCount += val?.data;
+              }
+            });
           }
         });
+        return parseInt(dataCount + '') > 0;
       }
-    });
-    return parseInt(dataCount + '') > 0;
+      return Object.keys(data).length > 0;
+    }
+    return false;
   }
 
   // evalvateExpression(element, aggregatedArr, filteredArr) {

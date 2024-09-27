@@ -89,7 +89,7 @@ describe('KpiCardV2Component', () => {
 
     const result = component.checkIfDataPresent(data);
 
-    expect(result).toBe(true);
+    expect(result).toBe(false);
   });
 
   it('checkIfDataPresent should return true when data is an object with at least one key', () => {
@@ -130,7 +130,7 @@ describe('KpiCardV2Component', () => {
 
     const result = component.checkIfDataPresent(data);
 
-    expect(result).toBe(false);
+    expect(result).toBe(true);
   });
 
   it('checkIfDataPresent should return false when data is a number', () => {

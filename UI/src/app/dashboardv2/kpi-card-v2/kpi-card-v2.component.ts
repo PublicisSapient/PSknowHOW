@@ -75,7 +75,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   colorCssClassArray = ['sprint-hover-project1', 'sprint-hover-project2', 'sprint-hover-project3', 'sprint-hover-project4', 'sprint-hover-project5', 'sprint-hover-project6'];
   commentDialogRef: DynamicDialogRef | undefined;
   disableSettings: boolean = false;
-  @Input() immediateLoader : boolean = true;
+  @Input() immediateLoader: boolean = true;
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
@@ -345,7 +345,25 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    return (Array.isArray(data) || typeof data === 'object') && Object.keys(data)?.length > 0 && (!this.loader);
+    if (data) {
+      if (Array.isArray(data)) {
+        let dataCount = 0;
+        data?.forEach(item => {
+          if (item?.data && !isNaN(parseInt(item?.data))) {
+            dataCount += item?.data;
+          } else if (item.value) {
+            item?.value?.forEach(val => {
+              if (!isNaN(parseInt(val?.data))) {
+                dataCount += val?.data;
+              }
+            });
+          }
+        });
+        return parseInt(dataCount + '') > 0;
+      }
+      return Object.keys(data).length > 0;
+    }
+    return false;
   }
 
   getColorCssClasses(index) {
