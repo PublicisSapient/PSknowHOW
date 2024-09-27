@@ -44,4 +44,5 @@ public class MergeRequests extends BasicModel {
 	private List<String> reviewers;
 	private String revisionNumber;
 	private String date;
+	private String mergeRequestUrl;
 }

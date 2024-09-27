@@ -347,6 +347,7 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -356,6 +357,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
+        'email',
         'sharedConnection',
       ],
     },
@@ -369,6 +371,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -378,6 +381,7 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
+        'email',
         'sharedConnection',
       ],
     },
@@ -389,10 +393,11 @@ describe('ConnectionListComponent', () => {
         'Connection Name',
         'Is Cloud Environment',
         'Base Url',
-        'Username',
+        'Profile Username',
         'Use vault password',
-        'Password',
+        'App Password',
         'API End Point',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -404,6 +409,7 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
+        'email',
         'sharedConnection',
       ],
     },
@@ -528,16 +534,20 @@ describe('ConnectionListComponent', () => {
         'Connection Type',
         'Connection Name',
         'Base Url',
+        'Username',
         'Use vault password',
         'PAT',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
         'type',
         'connectionName',
         'baseUrl',
+        'username',
         'vault',
         'pat',
+        'email',
         'sharedConnection',
       ],
     },
@@ -601,6 +611,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Jira',
       connectionLabel: 'Jira',
+      categoryValue: 'projectManagement',
+      categoryLabel: 'Project Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -649,6 +661,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Azure',
       connectionLabel: 'Azure Boards',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -671,6 +685,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'GitHub',
       connectionLabel: 'GitHub',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -678,6 +694,7 @@ describe('ConnectionListComponent', () => {
         'Repo Ownername',
         'Use vault password',
         'Access Token',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -687,12 +704,15 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
+        'email',
         'sharedConnection',
       ],
     },
     {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -700,6 +720,7 @@ describe('ConnectionListComponent', () => {
         'Username',
         'Use vault password',
         'Access Token',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -709,12 +730,15 @@ describe('ConnectionListComponent', () => {
         'username',
         'vault',
         'accessToken',
+        'email',
         'sharedConnection',
       ],
     },
     {
       connectionType: 'Bitbucket',
       connectionLabel: 'Bitbucket',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -724,6 +748,7 @@ describe('ConnectionListComponent', () => {
         'Use vault password',
         'Password',
         'API End Point',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
@@ -735,12 +760,15 @@ describe('ConnectionListComponent', () => {
         'vault',
         'password',
         'apiEndPoint',
+        'email',
         'sharedConnection',
       ],
     },
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -769,6 +797,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Jenkins',
       connectionLabel: 'Jenkins',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -788,9 +818,12 @@ describe('ConnectionListComponent', () => {
         'sharedConnection',
       ],
     },
+
     {
       connectionType: 'Bamboo',
       connectionLabel: 'Bamboo',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -813,6 +846,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'Teamcity',
       connectionLabel: 'Teamcity',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -835,6 +870,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'AzurePipeline',
       connectionLabel: 'Azure Pipeline',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -855,26 +892,34 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'AzureRepository',
       connectionLabel: 'Azure Repository',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
         'Base Url',
+        'Username',
         'Use vault password',
         'PAT',
+        'User Email',
         'Share connection with everyone',
       ],
       inputFields: [
         'type',
         'connectionName',
         'baseUrl',
+        'username',
         'vault',
         'pat',
+        'email',
         'sharedConnection',
       ],
     },
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -907,6 +952,8 @@ describe('ConnectionListComponent', () => {
     {
       connectionType: 'ArgoCD',
       connectionLabel: 'ArgoCD',
+      categoryValue: 'sourceCodeManagement',
+      categoryLabel: 'Source Code Management',
       labels: [
         'Connection Type',
         'Connection Name',
@@ -960,7 +1007,7 @@ describe('ConnectionListComponent', () => {
           field: 'patOAuthToken',
           isEnabled: false
         }
-        ],
+      ],
       vault: [
         {
           field: 'password',
@@ -979,7 +1026,7 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
-      isCloneable:[
+      isCloneable: [
         {
           field: 'sshUrl',
           isEnabled: false
@@ -1052,7 +1099,7 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
-      isCloneable:[],
+      isCloneable: [],
       accessTokenEnabled: [],
     },
   };
@@ -1097,14 +1144,10 @@ describe('ConnectionListComponent', () => {
   });
 
   it('Should test 10 connections are loaded', () => {
-    sharedService.setGlobalConfigData({repoToolFlag: true});
+    sharedService.setGlobalConfigData({ repoToolFlag: true });
     let connTobeShown;
     const totalConnectionList = 14;
-    if(component.repoToolsEnabled){
-      connTobeShown = totalConnectionList - 4;
-    }else{
-      connTobeShown = totalConnectionList - 1;
-    }
+    connTobeShown = totalConnectionList - 1;
     expect(component.addEditConnectionFieldsNlabels.length).toEqual(connTobeShown);
   });
 
@@ -1129,7 +1172,7 @@ describe('ConnectionListComponent', () => {
       connectionData.inputFields.forEach((field, innerIndex) => {
         expect(
           component.addEditConnectionFieldsNlabels[index].inputFields[
-            innerIndex
+          innerIndex
           ],
         ).toEqual(field);
       });
@@ -1143,25 +1186,28 @@ describe('ConnectionListComponent', () => {
     });
   });
 
-  it('should allow user to change connection type from the dropdown', () => {
-    const fakeEvent = {
-      apiEndPoint: undefined,
-      baseUrl: undefined,
-      cloudEnv: false,
-      sharedConnection: true,
-      connectionName: undefined,
-      consumerKey: undefined,
-      isOAuth: false,
-      bearerToken:false,
-      password: undefined,
-      pat: undefined,
-      privateKey: undefined,
-      type: 'Jira',
-      username: undefined,
-    };
+  it('should update connection type', () => {
+    const selectedConnectionType = 'test-type';
+    component.selectedConnectionType = selectedConnectionType;
     component.onChangeConnection();
-    fixture.detectChanges();
-    expect(component.selectedConnectionType).toBe(fakeEvent.type);
+    expect(component.connection['type']).toBe(selectedConnectionType);
+  });
+
+  it('should call connectionTypeFieldsAssignment', () => {
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    component.onChangeConnection();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call defaultEnableDisableSwitch', () => {
+    spyOn(component, 'defaultEnableDisableSwitch');
+    component.onChangeConnection();
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should reset testConnectionMsg', () => {
+    component.testConnectionMsg = 'test-message';
+    component.onChangeConnection();
     expect(component.testConnectionMsg).toBe('');
   });
 
@@ -1218,33 +1264,33 @@ describe('ConnectionListComponent', () => {
     component.createConnection();
     component.connectionTypeFieldsAssignment();
     fixture.detectChanges();
-    component.basicConnectionForm.controls['type'].setValue('Jira');
-    component.basicConnectionForm.controls['connectionName'].setValue(
+    component.basicConnectionForm.controls['type']?.setValue('Jira');
+    component.basicConnectionForm.controls['connectionName']?.setValue(
       'TestConnectionRishabhJira4',
     );
-    component.basicConnectionForm.controls['cloudEnv'].setValue(false);
-    component.basicConnectionForm.controls['baseUrl'].setValue(
+    component.basicConnectionForm.controls['cloudEnv']?.setValue(false);
+    component.basicConnectionForm.controls['baseUrl']?.setValue(
       'https://test.com/jira',
     );
-    component.basicConnectionForm.controls['username'].setValue('tst-1');
-    component.basicConnectionForm.controls['password'].setValue('test');
-    component.basicConnectionForm.controls['apiEndPoint'].setValue(
+    component.basicConnectionForm.controls['username']?.setValue('tst-1');
+    component.basicConnectionForm.controls['password']?.setValue('test');
+    component.basicConnectionForm.controls['apiEndPoint']?.setValue(
       'rest/api/2',
     );
-    component.basicConnectionForm.controls['isOAuth'].setValue(false);
-    component.basicConnectionForm.controls['sharedConnection'].setValue(true);
-    component.basicConnectionForm.controls['vault'].setValue(false);
-    component.basicConnectionForm.controls['bearerToken'].setValue(false);
-    component.basicConnectionForm.controls['privateKey'].disable();
-    component.basicConnectionForm.controls['consumerKey'].disable();
-    component.basicConnectionForm.controls['patOAuthToken'].disable();
+    component.basicConnectionForm.controls['isOAuth']?.setValue(false);
+    component.basicConnectionForm.controls['sharedConnection']?.setValue(true);
+    component.basicConnectionForm.controls['vault']?.setValue(false);
+    component.basicConnectionForm.controls['bearerToken']?.setValue(false);
+    component.basicConnectionForm.controls['privateKey']?.disable();
+    component.basicConnectionForm.controls['consumerKey']?.disable();
+    component.basicConnectionForm.controls['patOAuthToken']?.disable();
 
-    component.basicConnectionForm.controls['jaasKrbAuth'].disable();
-    component.basicConnectionForm.controls['jaasConfigFilePath'].disable();
-    component.basicConnectionForm.controls['krb5ConfigFilePath'].disable();
-    component.basicConnectionForm.controls['jaasUser'].disable();
-    component.basicConnectionForm.controls['samlEndPoint'].disable();
-    component.basicConnectionForm.controls['jiraAuthType'].disable();
+    component.basicConnectionForm.controls['jaasKrbAuth']?.disable();
+    component.basicConnectionForm.controls['jaasConfigFilePath']?.disable();
+    component.basicConnectionForm.controls['krb5ConfigFilePath']?.disable();
+    component.basicConnectionForm.controls['jaasUser']?.disable();
+    component.basicConnectionForm.controls['samlEndPoint']?.disable();
+    component.basicConnectionForm.controls['jiraAuthType']?.disable();
     component.isNewlyConfigAdded = true;
     const addConnection = spyOn(component, 'addConnectionReq');
     component.saveConnection();
@@ -1272,7 +1318,7 @@ describe('ConnectionListComponent', () => {
       username: '',
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
-      bearerToken:false,
+      bearerToken: false,
       createdAt: '2021-04-02T07:42:09',
       createdBy: 'SUPERADMIN',
       sharedConnection: true,
@@ -1442,35 +1488,35 @@ describe('ConnectionListComponent', () => {
     component.enableDisableFieldsOnIsCloudSwithChange();
     fixture.detectChanges();
     fixture.whenStable().then(() => {
-     expect(component.basicConnectionForm.get('accessToken').value).toBe('');
-     });
+      expect(component.basicConnectionForm.get('accessToken').value).toBe('');
+    });
   });
 
-  it("should be password blank when accessToken or password is toggling",()=>{
+  it("should be password blank when accessToken or password is toggling", () => {
     component.connection['accessTokenEnabled'] = true;
     fixture.detectChanges();
     expect(component.basicConnectionForm.controls['password'].value).toBe("")
   })
 
-  it("should be privateKey,consumerKey enabled when isOAuth switch is enabled",()=>{
+  it("should be privateKey,consumerKey enabled when isOAuth switch is enabled", () => {
     component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
-    component.connection['isOAuth'] =true;
+    component.connection['isOAuth'] = true;
     component.defaultEnableDisableSwitch();
     fixture.detectChanges();
     expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeTruthy();
     expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeTruthy();
   })
 
-  it("should be privateKey,consumerKey disabled when isOAuth switch is disabled",()=>{
+  it("should be privateKey,consumerKey disabled when isOAuth switch is disabled", () => {
     component.basicConnectionForm.controls['isOAuth'].setValue("Any value")
-    component.connection['isOAuth'] =false;
+    component.connection['isOAuth'] = false;
     component.defaultEnableDisableSwitch();
     fixture.detectChanges();
     expect(component.basicConnectionForm.controls['privateKey'].enabled).toBeFalsy();
     expect(component.basicConnectionForm.controls['consumerKey'].enabled).toBeFalsy();
   });
 
-  it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled",()=>{
+  it("should be username,password disabled when selected connection is zephyr and cloudEnv switch is enabled", () => {
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "zephyr"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1485,7 +1531,7 @@ describe('ConnectionListComponent', () => {
   })
 
 
-  it("should be accessToken disabled  when selected connection is zephyr and cloudEnv switch is disabled",()=>{
+  it("should be accessToken disabled  when selected connection is zephyr and cloudEnv switch is disabled", () => {
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "zephyr"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1498,7 +1544,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['password'].enabled).toBeTruthy();
   })
 
-  it("should be username,password disabled when selected connection is sonar and cloudEnv switch is enabled",()=>{
+  it("should be username,password disabled when selected connection is sonar and cloudEnv switch is enabled", () => {
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1513,7 +1559,7 @@ describe('ConnectionListComponent', () => {
 
   })
 
-  it("should be username,password enabled when selected connection is sonar and cloudEnv switch is disabled",()=>{
+  it("should be username,password enabled when selected connection is sonar and cloudEnv switch is disabled", () => {
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1527,7 +1573,7 @@ describe('ConnectionListComponent', () => {
     expect(component.basicConnectionForm.controls['accessTokenEnabled'].enabled).toBeTruthy();
   })
 
-  it("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled",()=>{
+  it("should be accessTokenEnabled,password  disabled when selected connection is sonar and vault switch is enabled", () => {
     component.selectedConnectionType = "sonar"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1626,7 +1672,7 @@ describe('ConnectionListComponent', () => {
     const type = 'sonar'
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
     component.enableDisableOnToggle = enableDisableMatrix;
-    component.enableDisableSwitch(fakeEvent, field,type);
+    component.enableDisableSwitch(fakeEvent, field, type);
     component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
       (element) => {
         expect(
@@ -1636,7 +1682,7 @@ describe('ConnectionListComponent', () => {
     );
   })
 
-  it("should enable form control while testing connections",()=>{
+  it("should enable form control while testing connections", () => {
 
     component.testingConnection = true;
     const reqData = {};
@@ -1666,7 +1712,7 @@ describe('ConnectionListComponent', () => {
     const type = 'sonar'
     component.basicConnectionForm.controls['isOAuth'].setValue(false);
     component.enableDisableOnToggle = enableDisableMatrix;
-    component.enableDisableSwitch(fakeEvent, field,type);
+    component.enableDisableSwitch(fakeEvent, field, type);
     component.enableDisableOnToggle.enableDisableEachTime[field].forEach(
       (element) => {
         expect(
@@ -1676,7 +1722,7 @@ describe('ConnectionListComponent', () => {
     );
   })
 
-  it("should empty url for Zephyr",()=>{
+  it("should empty url for Zephyr", () => {
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1690,16 +1736,16 @@ describe('ConnectionListComponent', () => {
 
 
 
-  it("should give success response, while testing for jira",()=>{
+  it("should give success response, while testing for jira", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Jira';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testJira').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testJira').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testJira).toHaveBeenCalled();
@@ -1707,16 +1753,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for jira",()=>{
+  it("should give unsuccess response while testing for jira", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Jira';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testJira').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testJira').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testJira).toHaveBeenCalled();
@@ -1724,16 +1770,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for Azure",()=>{
+  it("should give success response, while testing for Azure", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Azure';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzureBoards').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testAzureBoards').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzureBoards).toHaveBeenCalled();
@@ -1741,16 +1787,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for Azure",()=>{
+  it("should give unsuccess response while testing for Azure", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Azure';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzureBoards').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testAzureBoards').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzureBoards).toHaveBeenCalled();
@@ -1758,16 +1804,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for GitLab",()=>{
+  it("should give success response, while testing for GitLab", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'GitLab';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testGitLab').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testGitLab').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testGitLab).toHaveBeenCalled();
@@ -1775,7 +1821,7 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should empty url for Zephyr",()=>{
+  it("should empty url for Zephyr", () => {
     component.selectedConnectionType = "zephyr"
     component.connection['type'] = "sonar"
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
@@ -1787,16 +1833,16 @@ describe('ConnectionListComponent', () => {
     expect(component.emptyUrlInZephyr()).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for GitLab",()=>{
+  it("should give unsuccess response while testing for GitLab", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'GitLab';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testGitLab').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testGitLab').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testGitLab).toHaveBeenCalled();
@@ -1804,16 +1850,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for Bitbucket",()=>{
+  it("should give success response, while testing for Bitbucket", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Bitbucket';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testBitbucket').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testBitbucket').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testBitbucket).toHaveBeenCalled();
@@ -1821,16 +1867,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for Bitbucket",()=>{
+  it("should give unsuccess response while testing for Bitbucket", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Bitbucket';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testBitbucket').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testBitbucket').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testBitbucket).toHaveBeenCalled();
@@ -1838,16 +1884,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for Sonar",()=>{
+  it("should give success response, while testing for Sonar", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testSonar').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testSonar').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testSonar).toHaveBeenCalled();
@@ -1855,16 +1901,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for Sonar",()=>{
+  it("should give unsuccess response while testing for Sonar", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testSonar').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testSonar').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testSonar).toHaveBeenCalled();
@@ -1872,16 +1918,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for Jenkins",()=>{
+  it("should give success response, while testing for Jenkins", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Jenkins';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testJenkins').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testJenkins').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testJenkins).toHaveBeenCalled();
@@ -1889,16 +1935,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for Jenkins",()=>{
+  it("should give unsuccess response while testing for Jenkins", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Jenkins';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testJenkins').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testJenkins').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testJenkins).toHaveBeenCalled();
@@ -1906,16 +1952,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for NewRelic",()=>{
+  it("should give success response, while testing for NewRelic", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'NewRelic';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testNewRelic').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testNewRelic').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testNewRelic).toHaveBeenCalled();
@@ -1923,16 +1969,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give success response, while testing for Bamboo",()=>{
+  it("should give success response, while testing for Bamboo", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Bamboo';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testBamboo').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testBamboo').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testBamboo).toHaveBeenCalled();
@@ -1940,16 +1986,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for Bamboo",()=>{
+  it("should give unsuccess response while testing for Bamboo", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Bamboo';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testBamboo').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testBamboo').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testBamboo).toHaveBeenCalled();
@@ -1957,16 +2003,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for Teamcity",()=>{
+  it("should give success response, while testing for Teamcity", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Teamcity';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testTeamCity').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testTeamCity').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testTeamCity).toHaveBeenCalled();
@@ -1974,16 +2020,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for Teamcity",()=>{
+  it("should give unsuccess response while testing for Teamcity", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Teamcity';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testTeamCity').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testTeamCity').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testTeamCity).toHaveBeenCalled();
@@ -1991,16 +2037,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for AzurePipeline",()=>{
+  it("should give success response, while testing for AzurePipeline", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'AzurePipeline';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzurePipeline').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testAzurePipeline').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzurePipeline).toHaveBeenCalled();
@@ -2008,16 +2054,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for AzurePipeline",()=>{
+  it("should give unsuccess response while testing for AzurePipeline", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'AzurePipeline';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzurePipeline').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testAzurePipeline').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzurePipeline).toHaveBeenCalled();
@@ -2025,16 +2071,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for AzureRepository",()=>{
+  it("should give success response, while testing for AzureRepository", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'AzureRepository';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzureRepository').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testAzureRepository').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzureRepository).toHaveBeenCalled();
@@ -2042,16 +2088,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for AzureRepository",()=>{
+  it("should give unsuccess response while testing for AzureRepository", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'AzureRepository';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzureRepository').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testAzureRepository').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzureRepository).toHaveBeenCalled();
@@ -2059,16 +2105,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for GitHub",()=>{
+  it("should give success response, while testing for GitHub", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'GitHub';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testGithub').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testGithub').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testGithub).toHaveBeenCalled();
@@ -2076,16 +2122,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for GitHub",()=>{
+  it("should give unsuccess response while testing for GitHub", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'GitHub';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testGithub').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testGithub').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testGithub).toHaveBeenCalled();
@@ -2093,16 +2139,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give success response, while testing for Zephyr",()=>{
+  it("should give success response, while testing for Zephyr", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Zephyr';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testZephyr').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testZephyr').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testZephyr).toHaveBeenCalled();
@@ -2110,16 +2156,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for Zephyr",()=>{
+  it("should give unsuccess response while testing for Zephyr", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Zephyr';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testZephyr').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testZephyr').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testZephyr).toHaveBeenCalled();
@@ -2127,23 +2173,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it('should filter list based on flag',()=>{
-    sharedService.setGlobalConfigData({repoToolFlag: true});
-    component.ngOnInit();
-    component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(10);
-  })
-
-  it("should give success response, while testing for ArgoCD",()=>{
+  it("should give success response, while testing for ArgoCD", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : "true",
-      data : 200
+      success: "true",
+      data: 200
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'ArgoCD';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testArgoCD').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testArgoCD').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testArgoCD).toHaveBeenCalled();
@@ -2151,16 +2190,16 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeTruthy();
   })
 
-  it("should give unsuccess response while testing for ArgoCD",()=>{
+  it("should give unsuccess response while testing for ArgoCD", () => {
     component.testingConnection = true;
     const fakeResponse = {
-      success : false,
-      data : 400
+      success: false,
+      data: 400
     }
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'ArgoCD';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testArgoCD').and.returnValue(of(fakeResponse));
+    spyOn(testConnectionService, 'testArgoCD').and.returnValue(of(fakeResponse));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testArgoCD).toHaveBeenCalled();
@@ -2168,8 +2207,8 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it('should change auth type',()=>{
-   component.initializeForms(component.jiraConnectionFields,true);
+  it('should change auth type', () => {
+    component.initializeForms(component.jiraConnectionFields, true);
     component.onChangeAuthType('vault');
     component.onChangeAuthType('bearerToken');
     component.onChangeAuthType('jaasKrbAuth');
@@ -2178,54 +2217,54 @@ describe('ConnectionListComponent', () => {
     expect(component.jiraForm).toBeDefined();
   })
 
-  it('should initialize forms and edit for vault',()=>{
-    component.jiraConnectionFields['vault']= true;
-    component.initializeForms(component.jiraConnectionFields,true);
+  it('should initialize forms and edit for vault', () => {
+    component.jiraConnectionFields['vault'] = true;
+    component.initializeForms(component.jiraConnectionFields, true);
     expect(component.onChangeAuthType).toBeDefined();
   })
 
-  it('should initialize forms and edit for bearerToken',()=>{
-    component.jiraConnectionFields['bearerToken']= true;
-    component.initializeForms(component.jiraConnectionFields,true);
+  it('should initialize forms and edit for bearerToken', () => {
+    component.jiraConnectionFields['bearerToken'] = true;
+    component.initializeForms(component.jiraConnectionFields, true);
     expect(component.onChangeAuthType).toBeDefined();
   })
 
-  it('should initialize forms and edit for isOAuth',()=>{
-    component.jiraConnectionFields['isOAuth']= true;
-    component.initializeForms(component.jiraConnectionFields,true);
+  it('should initialize forms and edit for isOAuth', () => {
+    component.jiraConnectionFields['isOAuth'] = true;
+    component.initializeForms(component.jiraConnectionFields, true);
     expect(component.onChangeAuthType).toBeDefined();
   })
 
-  it('should initialize forms and edit for jaasKrbAuth',()=>{
-    component.jiraConnectionFields['jaasKrbAuth']= true;
-    component.initializeForms(component.jiraConnectionFields,true);
+  it('should initialize forms and edit for jaasKrbAuth', () => {
+    component.jiraConnectionFields['jaasKrbAuth'] = true;
+    component.initializeForms(component.jiraConnectionFields, true);
     expect(component.onChangeAuthType).toBeDefined();
   })
 
-  it('should add connection successfully',()=>{
-    spyOn(httpService,'addConnection').and.returnValue(of("success"))
-    const spyObj = spyOn(component,'renderCreateUpdateConnectionStatus');
+  it('should add connection successfully', () => {
+    spyOn(httpService, 'addConnection').and.returnValue(of("success"))
+    const spyObj = spyOn(component, 'renderCreateUpdateConnectionStatus');
     component.addConnectionReq('dummyConnection');
     expect(spyObj).toHaveBeenCalled();
   })
 
-  it('should throw error while adding connections',()=>{
-    spyOn(httpService,'addConnection').and.returnValue(throwError('Error'))
-    const spyObj = spyOn(component,'hideDialog');
+  it('should throw error while adding connections', () => {
+    spyOn(httpService, 'addConnection').and.returnValue(throwError('Error'))
+    const spyObj = spyOn(component, 'hideDialog');
     component.addConnectionReq('dummyConnection');
     expect(spyObj).toHaveBeenCalled();
   })
 
-  it('should handle edit connection request',()=>{
-    spyOn(httpService,'editConnection').and.returnValue(of("success"))
-    const spyObj = spyOn(component,'renderCreateUpdateConnectionStatus');
+  it('should handle edit connection request', () => {
+    spyOn(httpService, 'editConnection').and.returnValue(of("success"))
+    const spyObj = spyOn(component, 'renderCreateUpdateConnectionStatus');
     component.editConnectionReq('dummyConnection');
     expect(spyObj).toHaveBeenCalled();
   })
 
-  it('should throw error while adding connections',()=>{
-    spyOn(httpService,'editConnection').and.returnValue(throwError('Error'))
-    const spyObj = spyOn(component,'hideDialog');
+  it('should throw error while adding connections', () => {
+    spyOn(httpService, 'editConnection').and.returnValue(throwError('Error'))
+    const spyObj = spyOn(component, 'hideDialog');
     component.editConnectionReq('dummyConnection');
     expect(spyObj).toHaveBeenCalled();
   })
@@ -2266,45 +2305,86 @@ describe('ConnectionListComponent', () => {
     expect(mockConfirmationDialog).toBeDefined();
   });
 
-  it('should allow user to edit for bitbucket connection', () => {
+  it('should initialize with correct values for a Jira connection', () => {
     const connection = {
-      id: '6066cad069515b0001df1809',
-      type: 'bitbucket',
-      connectionName: 'TestConnectionRishabh4',
-      cloudEnv: true,
-      baseUrl: 'https://test.com/jira',
-      username: '',
-      apiEndPoint: 'rest/api/2',
-      isOAuth: false,
-      bearerToken:false,
-      createdAt: '2021-04-02T07:42:09',
-      createdBy: 'SUPERADMIN',
-      sharedConnection: true,
-      updatedBy: 'SUPERADMIN',
-      connectionUsers: ['SUPERADMIN'],
-      vault: false,
+      type: 'Jira',
+      cloudEnv: false,
+      // other properties
     };
-    spyOn(component,'defaultEnableDisableSwitch');
-    spyOn(component,'disableEnableCheckBox');
-    spyOn(component,'checkBitbucketValue');
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.ngOnInit();
-    component.createConnection();
-    component.connectionTypeFieldsAssignment();
+
+    spyOn(component, 'initializeForms');
     component.editConnection(connection);
-    fixture.detectChanges();
-    expect(component.connection).toEqual({ ...connection });
-    expect(component.jiraConnectionDialog).toBeTrue();
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
     expect(component.isNewlyConfigAdded).toBeFalse();
-    expect(component.selectedConnectionType).toBe('bitbucket');
+    expect(component.selectedConnectionType).toBe('Jira');
+    expect(component.jiraConnectionDialog).toBeTrue();
+    expect(component.initializeForms).toHaveBeenCalledWith(component.connection, true);
   });
 
-  it("should give error response while testing for jira",()=>{
+  it('should initialize with correct values for a non-Jira connection', () => {
+    const connection = {
+      type: 'Bitbucket',
+      cloudEnv: true,
+      // other properties
+    };
+
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    spyOn(component.basicConnectionForm.controls['type'], 'setValue');
+    spyOn(component, 'defaultEnableDisableSwitch');
+    spyOn(component, 'disableEnableCheckBox');
+    spyOn(component, 'checkBitbucketValue');
+
+    component.editConnection(connection);
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
+    expect(component.isNewlyConfigAdded).toBeFalse();
+    expect(component.selectedConnectionType).toBe('Bitbucket');
+
+    // If jiraConnectionDialog is initialized to false in the component, use toBeFalse()
+    // If not initialized and could be undefined, use toBeFalsy() or modify the expectation
+    expect(component.jiraConnectionDialog).toBeFalse();  // Ensure initialization in the component
+    expect(component.connectionDialog).toBeTrue();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalled();
+    expect(component.basicConnectionForm.controls['type'].setValue).toHaveBeenCalledWith('Bitbucket');
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalled();
+    expect(component.disableEnableCheckBox).toHaveBeenCalled();
+    expect(component.checkBitbucketValue).toHaveBeenCalledWith(true, 'cloudEnv', 'bitbucket');
+  });
+
+  it('should handle Zephyr connection correctly', () => {
+    const connection = {
+      type: 'Zephyr',
+      cloudEnv: false,
+      // other properties
+    };
+
+    spyOn(component, 'connectionTypeFieldsAssignment');
+    spyOn(component.basicConnectionForm.controls['type'], 'setValue');
+    spyOn(component, 'defaultEnableDisableSwitch');
+    spyOn(component, 'disableEnableCheckBox');
+    spyOn(component, 'checkZephyr');
+
+    component.editConnection(connection);
+
+    expect(component.connection).toEqual({ ...connection, username: '' });
+    expect(component.isNewlyConfigAdded).toBeFalse();
+    expect(component.selectedConnectionType).toBe('Zephyr');
+    expect(component.jiraConnectionDialog).toBeFalse();
+    expect(component.connectionDialog).toBeTrue();
+    expect(component.connectionTypeFieldsAssignment).toHaveBeenCalled();
+    expect(component.basicConnectionForm.controls['type'].setValue).toHaveBeenCalledWith('Zephyr');
+    expect(component.defaultEnableDisableSwitch).toHaveBeenCalled();
+    expect(component.disableEnableCheckBox).toHaveBeenCalled();
+    expect(component.checkZephyr).toHaveBeenCalled();
+  });
+
+  it("should give error response while testing for jira", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Jira';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testJira').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testJira').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testJira).toHaveBeenCalled();
@@ -2312,12 +2392,12 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give error in response while testing for Azure",()=>{
+  it("should give error in response while testing for Azure", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Azure';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzureBoards').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testAzureBoards').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzureBoards).toHaveBeenCalled();
@@ -2325,12 +2405,12 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give error in response while testing for GitLab",()=>{
+  it("should give error in response while testing for GitLab", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'GitLab';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testGitLab').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testGitLab').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testGitLab).toHaveBeenCalled();
@@ -2338,12 +2418,12 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give error in response while testing for Bitbucket",()=>{
+  it("should give error in response while testing for Bitbucket", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Bitbucket';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testBitbucket').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testBitbucket').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testBitbucket).toHaveBeenCalled();
@@ -2351,12 +2431,12 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give error in response while testing for Sonar",()=>{
+  it("should give error in response while testing for Sonar", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Sonar';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testSonar').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testSonar').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testSonar).toHaveBeenCalled();
@@ -2364,12 +2444,12 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
- it("should give error in response while testing for Jenkins",()=>{
+  it("should give error in response while testing for Jenkins", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Jenkins';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testJenkins').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testJenkins').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testJenkins).toHaveBeenCalled();
@@ -2377,12 +2457,12 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give error in response while testing for Bamboo",()=>{
+  it("should give error in response while testing for Bamboo", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Bamboo';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testBamboo').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testBamboo').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testBamboo).toHaveBeenCalled();
@@ -2391,12 +2471,12 @@ describe('ConnectionListComponent', () => {
   })
 
 
-  it("should give error in response while testing for Teamcity",()=>{
+  it("should give error in response while testing for Teamcity", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Teamcity';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testTeamCity').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testTeamCity').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testTeamCity).toHaveBeenCalled();
@@ -2404,12 +2484,12 @@ describe('ConnectionListComponent', () => {
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-it("should give error in response while testing for AzurePipeline",()=>{
+  it("should give error in response while testing for AzurePipeline", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'AzurePipeline';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzurePipeline').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testAzurePipeline').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzurePipeline).toHaveBeenCalled();
@@ -2417,12 +2497,12 @@ it("should give error in response while testing for AzurePipeline",()=>{
     expect(component.testConnectionValid).toBeFalsy();
   })
 
- it("should give error in response while testing for AzureRepository",()=>{
+  it("should give error in response while testing for AzureRepository", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'AzureRepository';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testAzureRepository').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testAzureRepository').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testAzureRepository).toHaveBeenCalled();
@@ -2430,12 +2510,12 @@ it("should give error in response while testing for AzurePipeline",()=>{
     expect(component.testConnectionValid).toBeFalsy();
   })
 
- it("should give error in response while testing for GitHub",()=>{
+  it("should give error in response while testing for GitHub", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'GitHub';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testGithub').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testGithub').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testGithub).toHaveBeenCalled();
@@ -2443,12 +2523,12 @@ it("should give error in response while testing for AzurePipeline",()=>{
     expect(component.testConnectionValid).toBeFalsy();
   })
 
- it("should give error in response while testing for Zephyr",()=>{
+  it("should give error in response while testing for Zephyr", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Zephyr';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testZephyr').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testZephyr').and.returnValue(throwError('Error'));
     component.testConnection();
     fixture.detectChanges();
     expect(testConnectionService.testZephyr).toHaveBeenCalled();
@@ -2456,58 +2536,13 @@ it("should give error in response while testing for AzurePipeline",()=>{
     expect(component.testConnectionValid).toBeFalsy();
   })
 
-  it("should give error in response while testing for NewRelic",()=>{
+  it("should give error in response while testing for NewRelic", () => {
     component.testingConnection = true;
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'NewRelic';
     component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testNewRelic').and.returnValue(throwError('Error'));
+    spyOn(testConnectionService, 'testNewRelic').and.returnValue(throwError('Error'));
     component.testConnection();
-    expect(component.testConnectionMsg).toBe("Connection Invalid");
-    expect(component.testConnectionValid).toBeFalsy();
-  })
-
-
-  it("should give success response, while testing for Repotool",()=>{
-    component.testingConnection = true;
-    const fakeResponse = {
-      success : "true",
-      data : 200
-    }
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(of(fakeResponse));
-    component.testConnection();
-    fixture.detectChanges();
-    expect(component.testConnectionMsg).toBe("Valid Connection");
-    expect(component.testConnectionValid).toBeTruthy();
-  })
-
-  it("should give error in response while testing for Repotool",()=>{
-    component.testingConnection = true;
-    const fakeResponse = {
-      success : false,
-      data : 400
-    }
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(of(fakeResponse));
-    component.testConnection();
-    fixture.detectChanges();
-    expect(component.testConnectionMsg).toBe("Connection Invalid");
-    expect(component.testConnectionValid).toBeFalsy();
-  })
-
-  it("should give error in response while testing for Repotool",()=>{
-    component.testingConnection = true;
-    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
-    component.connection['type'] = 'RepoTool';
-    component.connectionTypeFieldsAssignment();
-    spyOn(testConnectionService,'testRepoTool').and.returnValue(throwError('Error'));
-    component.testConnection();
-    fixture.detectChanges();
     expect(component.testConnectionMsg).toBe("Connection Invalid");
     expect(component.testConnectionValid).toBeFalsy();
   })
@@ -2548,5 +2583,95 @@ it("should give error in response while testing for AzurePipeline",()=>{
     expect(component.basicConnectionForm.controls['password'].disable).toHaveBeenCalled();
     expect(component.basicConnectionForm.controls['accessToken'].enable).toHaveBeenCalled();
   });
+
+  // -> checkBitbucketValue
+  it('should update labels correctly for Bitbucket cloud environment', () => {
+    component.basicConnectionForm.controls['cloudEnv'].setValue(true); // Set cloud environment to true
+    component.checkBitbucketValue({}, '', 'bitbucket');
+
+    const bitbucketObj = component.addEditConnectionFieldsNlabels.find(item => item.connectionLabel.toLowerCase() === 'bitbucket');
+
+    // Ensure bitbucketObj exists before checking its labels
+    expect(bitbucketObj).toBeDefined();
+    expect(bitbucketObj.labels).toEqual([
+      'Connection Type',
+      'Connection Name',
+      'Is Cloud Environment',
+      'Base Url',
+      'Username (Profile Username)',
+      'Use vault password',
+      'Password (App Password)',
+      'API End Point',
+      'User Email',
+      'Share connection with everyone'
+    ]);
+  });
+
+  it('should update labels correctly for Bitbucket non-cloud environment', () => {
+    component.basicConnectionForm.controls['cloudEnv'].setValue(false); // Set cloud environment to false
+    component.checkBitbucketValue({}, '', 'bitbucket');
+
+    const bitbucketObj = component.addEditConnectionFieldsNlabels.find(item => item.connectionLabel.toLowerCase() === 'bitbucket');
+
+    // Ensure bitbucketObj exists before checking its labels
+    expect(bitbucketObj).toBeDefined();
+    expect(bitbucketObj.labels).toEqual([
+      'Connection Type',
+      'Connection Name',
+      'Is Cloud Environment',
+      'Base Url',
+      'Username',
+      'Use vault password',
+      'Password',
+      'API End Point',
+      'User Email',
+      'Share connection with everyone'
+    ]);
+  });
+
+  it('should not update labels for other types', () => {
+    component.basicConnectionForm.controls['cloudEnv'].setValue(true); // Set cloud environment to true
+    component.checkBitbucketValue({}, '', 'github'); // Pass a different type
+
+    const bitbucketObj = component.addEditConnectionFieldsNlabels.find(item => item.connectionLabel.toLowerCase() === 'bitbucket');
+
+    // Ensure bitbucketObj exists before checking its labels
+    expect(bitbucketObj).toBeDefined();
+    expect(bitbucketObj.labels).toEqual(['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Profile Username', 'Use vault password', 'App Password', 'API End Point', 'User Email', 'Share connection with everyone']);  // Labels should remain unchanged
+  });
+
+  it('should not throw error if bitbucket is not found', () => {
+    component.addEditConnectionFieldsNlabels = [
+      {
+        connectionType: 'GitHub',
+        connectionLabel: 'GitHub',
+        categoryValue: 'sourceCodeManagement',
+        categoryLabel: 'Source Code Management',
+        labels: [
+          'Connection Type',
+          'Connection Name',
+          'Base Url',
+          'Repo Ownername',
+          'Use vault password',
+          'Access Token',
+          'User Email',
+          'Share connection with everyone',
+        ],
+        inputFields: [
+          'type',
+          'connectionName',
+          'baseUrl',
+          'username',
+          'vault',
+          'accessToken',
+          'email',
+          'sharedConnection',
+        ],
+      }  // No bitbucket in the list
+    ];
+
+    expect(() => component.checkBitbucketValue({}, '', 'bitbucket')).not.toThrow();
+  });
+  // -> end of checkBitbucketValue
 
 });

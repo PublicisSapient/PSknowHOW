@@ -45,6 +45,7 @@ export class DashboardV2Component implements AfterContentInit {
   headerStyle;
   sideNavStyle;
   newUI = false;
+  goToTopButton: HTMLElement;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -57,6 +58,7 @@ export class DashboardV2Component implements AfterContentInit {
 
   ngAfterContentInit() {
     this.cdRef.detectChanges();
+
   }
 
   ngOnDestroy() {

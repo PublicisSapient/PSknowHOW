@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
@@ -151,4 +152,6 @@ public interface ProjectBasicConfigService {
 	 * @return
 	 */
 	void projectBasicConfigSortedBasedOnHierarchyLevel(ProjectBasicConfig projectBasicConfig);
+
+	List<HierarchyResponseDTO> getHierarchyData();
 }

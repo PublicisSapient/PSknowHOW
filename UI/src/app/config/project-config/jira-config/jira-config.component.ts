@@ -106,7 +106,7 @@ export class JiraConfigComponent implements OnInit {
   jiraTemplate: any[];
   gitActionWorkflowNameList: any[];
   cloudEnv: any;
-  isGitlabToolFieldEnabled : boolean;
+  isGitlabToolFieldEnabled: boolean;
   isConfigureTool: boolean = false;
   showAddNewBtn: boolean = true;
 
@@ -123,6 +123,24 @@ export class JiraConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedProject = this.sharedService.getSelectedProject();
+
+    const selectedType = this.selectedProject.type !== 'Scrum' ? 'kanban' : 'scrum';
+    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
+      return {
+        id: x['hierarchyLevelId'],
+        name: x['hierarchyLevelName']
+      }
+    });
+
+    Object.keys(this.selectedProject).forEach(key => {
+      if(levelDetails.map(x => x.id).includes(key)) {
+        let propertyName = levelDetails.filter(x=> x.id === key)[0].name;
+        this.selectedProject[propertyName] = this.selectedProject[key];
+        delete this.selectedProject[key];
+      }
+    });
+
+
     this.isGitlabToolFieldEnabled = this.sharedService.getGlobalConfigData()?.gitlabToolFieldFlag;
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -144,7 +162,7 @@ export class JiraConfigComponent implements OnInit {
         this.getConnectionList(this.urlParam);
         this.initializeFields(this.urlParam);
 
-        if(this.isGitlabToolFieldEnabled){
+        if (this.isGitlabToolFieldEnabled) {
           this.showFormElements(['gitLabID'])
         } else {
           this.hideFormElements(['gitLabID'])
@@ -298,6 +316,7 @@ export class JiraConfigComponent implements OnInit {
         }
         this.hideLoadingOnFormElement('jobName');
       } catch (error) {
+        console.log("getJenkinsJobNames in catch block ",error);
         this.jenkinsJobNameList = [];
         this.hideLoadingOnFormElement('jobName');
         this.messenger.add({
@@ -306,10 +325,11 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     }, (err) => {
-      console.log(err);
+      this.jenkinsJobNameList = [];
+      this.hideLoadingOnFormElement('jobName');
       this.messenger.add({
         severity: 'error',
-        summary: err.error.message,
+        summary: err?.error.message ? err.error.message : err?.statusText,
       });
     });
   }
@@ -466,7 +486,7 @@ export class JiraConfigComponent implements OnInit {
               });
             });
 
-            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest' 
+            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
             || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure'){
               this.showAddNewBtn = false;
             }
@@ -527,7 +547,7 @@ export class JiraConfigComponent implements OnInit {
     const postData = {
       connectionId: self.selectedConnection.id,
       projectKey: self.toolForm.controls['projectKey'].value,
-      boardType: self.selectedProject['Type']
+      boardType: self.selectedProject['type'] || self.selectedProject['Type']
     };
 
     self.isLoading = true;
@@ -550,7 +570,7 @@ export class JiraConfigComponent implements OnInit {
       });
 
       // If boards already has value
-      if (self.toolForm.controls['boards'].value.length) {
+      if (self.toolForm.controls['boards']?.value?.length) {
         self.toolForm.controls['boards'].value.forEach((val) => {
           self.boardsData = self.boardsData.filter((data) => (data.boardId + '') !== (val.boardId + ''));
         });
@@ -1696,6 +1716,15 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
+              {
+                type: 'text',
                 label: 'Branch',
                 id: 'branch',
                 validators: ['required'],
@@ -1764,6 +1793,15 @@ export class JiraConfigComponent implements OnInit {
             group: 'GitLab',
             elements: [
               {
+                type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
+              {
                 type: 'number',
                 label: 'Gitlab Project Id',
                 id: 'projectId',
@@ -1795,7 +1833,7 @@ export class JiraConfigComponent implements OnInit {
                 tooltip: `list of inputs to access GitLab data.<br />
               <i>
                  Impacted : All GitLab based KPIs</i>`,
-             }
+              }
             ],
           };
         }
@@ -1910,6 +1948,15 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
+              {
+                type: 'text',
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
@@ -1977,6 +2024,15 @@ export class JiraConfigComponent implements OnInit {
           this.formTemplate = {
             group: 'GitHub',
             elements: [
+              {
+                type: 'text',
+                label: 'Full Git URL',
+                id: 'gitFullUrl',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Provide the complete HTTPS URL required for cloning the repository.`,
+              },
               {
                 type: 'text',
                 label: 'Repository Name',
@@ -2414,13 +2470,11 @@ export class JiraConfigComponent implements OnInit {
         self.toolForm.controls['boards'].setValue([]);
         self.toolForm.controls['boards'].clearValidators();
         self.toolForm.controls['boards'].updateValueAndValidity();
-
         self.toolForm.controls['boardQuery'].setValidators([Validators.required]);
         self.toolForm.controls['boardQuery'].updateValueAndValidity();
       } else {
         self.toolForm.controls['boards'].setValidators([Validators.required]);
         self.toolForm.controls['boards'].updateValueAndValidity();
-
         self.toolForm.controls['boardQuery'].clearValidators();
         self.toolForm.controls['boardQuery'].updateValueAndValidity();
       }
@@ -2498,9 +2552,7 @@ export class JiraConfigComponent implements OnInit {
 
     }
 
-    if (this.urlParam === 'Jira') {
-      submitData['metadataTemplateCode'] = submitData['metadataTemplateCode'].templateCode;
-    } else {
+    if (this.urlParam !== 'Jira') {
       delete submitData['metadataTemplateCode'];
     }
     if (this.urlParam === 'GitHubAction') {
@@ -2551,27 +2603,30 @@ export class JiraConfigComponent implements OnInit {
               severity: 'success',
               summary: `${this.urlParam} config submitted!!  ${successAlert}`,
             });
-            if (this.urlParam !== 'Jira' && this.urlParam !== 'Azure' && this.urlParam !== 'Zephyr') {
-              // update the table
-              if (!this.configuredTools || !this.configuredTools.length) {
-                this.configuredTools = [];
-              }
+            // update the table
+            if (!this.configuredTools || !this.configuredTools.length) {
+              this.configuredTools = [];
+            }
 
-              // empty the form
-              this.toolForm.reset();
-              if (this.urlParam === 'Sonar') {
-                this.tool['apiVersion'].enable();
-                this.tool['projectKey'].enable();
-              }
+            // empty the form
+            if (this.urlParam === 'Sonar') {
+              this.tool['apiVersion'].enable();
+              this.tool['projectKey'].enable();
+            }
 
-              this.configuredTools.push(response['data']);
-              this.configuredTools.forEach((tool) => {
-                this.connections.forEach((connection) => {
-                  if (tool.connectionId === connection.id) {
-                    tool['connectionName'] = connection.connectionName;
-                  }
-                });
+            this.configuredTools.push(response['data']);
+            this.configuredTools.forEach((tool) => {
+              this.connections?.forEach((connection) => {
+                if (tool.connectionId === connection.id) {
+                  tool['connectionName'] = connection.connectionName;
+                }
               });
+            });
+            if (this.urlParam == 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
+              this.isConfigureTool = false;
+              this.showAddNewBtn = false;
+            } else {
+              this.toolForm.reset();
             }
           } else {
             this.messenger.add({
@@ -2627,8 +2682,10 @@ export class JiraConfigComponent implements OnInit {
               });
             }
             // empty the form
-            if (this.urlParam !== 'Jira' && this.urlParam !== 'Azure' && this.urlParam !== 'Zephyr') {
+            if (this.urlParam !== 'Jira' && this.urlParam !== 'Azure' && this.urlParam !== 'Zephyr' && this.urlParam !== 'JiraTest') {
               this.toolForm.reset();
+            } else {
+              this.isConfigureTool = false;
             }
           } else {
             this.messenger.add({
@@ -2700,6 +2757,10 @@ export class JiraConfigComponent implements OnInit {
               severity: 'success',
               summary: response['message'] || 'Tool deleted successfully',
             });
+            this.showAddNewBtn = true;
+            this.isConfigureTool = false;
+            this.toolForm.reset();
+            this.selectedConnection = {};
           } else {
             this.messenger.add({
               severity: 'error',
@@ -2743,15 +2804,17 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getJiraTemplate() {
-    const isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
+    const isKanban = this.selectedProject?.type?.toLowerCase() === 'kanban' ? true : false;
     this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp => {
       this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
-        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate);
+        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate?.templateCode);
         if (selectedTemplate?.templateName === 'Custom Template') {
           this.toolForm.get('metadataTemplateCode').disable();
         }
+      } else {
+        this.toolForm.get('metadataTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
       }
     })
   }
@@ -2809,14 +2872,18 @@ export class JiraConfigComponent implements OnInit {
   }
 
   redirectToConnections() {
-    this.router.navigate(['./dashboard/Config/connection-list']);
+    const currProjId = this.sharedService.getSelectedProject();
+    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], {queryParams: { tab: 1, toolName: this.formTitle }});
   }
 
-  handleToolConfiguration(){
+  handleToolConfiguration(type?) {
     this.isConfigureTool = true;
+    if(type == 'new'){
+      this.isEdit = false;
+    }
     setTimeout(() => {
       const element = document.getElementById("tool-configuration");
-      element.scrollIntoView({behavior: "smooth", inline: "nearest"});
+      element.scrollIntoView({ behavior: "smooth", inline: "nearest" });
     }, 100);
   }
 }

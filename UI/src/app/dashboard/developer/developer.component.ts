@@ -81,8 +81,6 @@ export class DeveloperComponent implements OnInit {
   showChart = 'chart';
   iSAdditionalFilterSelected = false;
   kpiThresholdObj = {};
-  kpiList:Array<string> = [];
-  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
@@ -159,11 +157,6 @@ export class DeveloperComponent implements OnInit {
           this.service.setGlobalConfigData(filterData);
         }
       });
-
-      /** Get recommendations flag */
-      this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
-          this.isRecommendationsEnabled = item;
-      }));
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
@@ -248,7 +241,6 @@ export class DeveloperComponent implements OnInit {
     this.enableByeUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId)
     const shownKpis = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
     if (shownKpis?.length === 0) {
       this.noKpis = true;
@@ -625,40 +617,8 @@ export class DeveloperComponent implements OnInit {
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = [];
-    if (kpi.kpiId === "kpi72") {
-      if (event.hasOwnProperty('filter1') || event.hasOwnProperty('filter2')) {
-        if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
-          const outputObject = {};
-          for (const key in event) {
-            outputObject[key] = [event[key]];
-          }
-          event = outputObject;
-        }
-      }
-      if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
-
-        for (const key in event) {
-          if (key !== 'filter1' && key !== 'filter2') {
-            delete event[key];
-          }
-        }
-        this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-      } else {
-        this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
-      }
-
-    }
-    else {
-      if (event && Object.keys(event)?.length !== 0 && !Array.isArray(event)) {
-        for (const key in event) {
-          if (key !== 'filter1' && key !== 'filter2') {
-            delete event[key];
-          }
-        }
-        this.kpiSelectedFilterObj[kpi?.kpiId] = [event];
-      } else {
-        this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
-      }
+    for (const key in event) {
+      this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
     this.kpiSelectedFilterObj['action'] = 'update';

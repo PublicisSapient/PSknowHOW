@@ -21,12 +21,11 @@
 <app-header></app-header>
 <div class="main-container">
 
-    <div class="nav-filter-container">
         <app-nav-new
             *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-nav-new>
         <app-filter-new
             *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-filter-new>
-    </div>
+     <app-sticky-header class="header nav-filter-container" *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-sticky-header>
 
     <div id="wrapper" [ngClass]="sideNavStyle">
         <div id="page-content-wrapper"
@@ -37,4 +36,5 @@
         </div>
     </div>
 </div>
+    <p-scrollTop ></p-scrollTop>
 <app-footer></app-footer>

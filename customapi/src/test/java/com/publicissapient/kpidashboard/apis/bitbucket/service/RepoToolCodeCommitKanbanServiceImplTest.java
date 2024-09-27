@@ -77,6 +77,7 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
+	List<Tool> toolList = new ArrayList<>();
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -147,6 +148,7 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
 		assigneeDetails.setAssignee(assigneeSet);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
+		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList);
 	}
 
 	private void setTreadValuesDataCount() {
@@ -179,7 +181,6 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 	}
 
 	private void setToolMap() {
-		List<Tool> toolList = new ArrayList<>();
 
 		ProcessorItem processorItem = new ProcessorItem();
 		processorItem.setId(new ObjectId("633bcf9e26878c56f03ebd38"));
@@ -188,11 +189,11 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 		List<ProcessorItem> processorItemList = new ArrayList<>();
 		processorItemList.add(processorItem);
 
-		tool = createTool("URL1", "BRANCH3", "RepoTool", "USER3", "PASS3", processorItemList);
+		tool = createTool("URL1", "BRANCH3", "Bitbucket", "USER3", "PASS3", processorItemList);
 
 		toolList.add(tool);
 
-		toolGroup.put(Constant.REPO_TOOLS, toolList);
+		toolGroup.put(Constant.TOOL_BITBUCKET, toolList);
 
 		toolMap.put(new ObjectId("6335368249794a18e8a4479f"), toolGroup);
 	}

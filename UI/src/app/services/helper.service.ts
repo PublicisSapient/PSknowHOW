@@ -68,7 +68,7 @@ export class HelperService {
     // type is quality or productivity
     groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type, selectedTab) {
         const kpiRequestObject = <any>{};
-
+        const visibleKpis = masterData?.filter(obj => obj.isEnabled && obj.shown).map(x => x.kpiId);
         kpiRequestObject.kpiList = <any>[];
         for (let i = 0; i < masterData?.length; i++) {
             const obj = { ...masterData[i]?.kpiDetail };
@@ -91,7 +91,7 @@ export class HelperService {
                     if (obj.isEnabled && obj.shown) {
                         kpiRequestObject.kpiList.push(obj);
                     }
-                } else {
+                } else if (visibleKpis.includes(obj.kpiId)) {
                     kpiRequestObject.kpiList.push(obj);
                 }
             }
@@ -402,24 +402,61 @@ export class HelperService {
             objArray.sort((a, b) => {
                 const aName = a.nodeName || a.data || a.date || a;
                 const bName = b.nodeName || b.data || b.date || b;
-                return aName.localeCompare(bName);
+                if (typeof aName === 'string' && typeof bName === 'string') {
+                    return aName.localeCompare(bName);
+                }
             });
         }
         return objArray;
     }
 
     sortByField(objArray, propArr): any {
-        propArr.forEach(prop => {
-            if (objArray?.[0]?.[prop]) {
-                objArray.sort((a, b) => {
-                    const propA = a[prop].toLowerCase();
-                    const propB = b[prop].toLowerCase();
-                    return propA.localeCompare(propB);
-                });
+        objArray.sort((a, b) => {
+            if (objArray?.[0]?.[propArr[0]] && propArr[0].indexOf('Date') === -1) {
+                const propA = a[propArr[0]];
+                const propB = b[propArr[0]];
+                return propA.localeCompare(propB);
             }
         });
+
+        objArray.sort((a, b) => {
+            if (objArray?.[0]?.[propArr[1]] && propArr[1].indexOf('Date') !== -1) {
+                const propA = new Date(a[propArr[1]].substring(0, a[propArr[1]].indexOf('T')));
+                const propB = new Date(b[propArr[1]].substring(0, b[propArr[1]].indexOf('T')));
+                return +propB - +propA;
+            }
+        });
+
         return objArray;
     }
+
+    releaseSorting(releaseList){
+        releaseList.sort((a, b) => {
+            // First, sort by releaseState (Unreleased first, Released second)
+            if (a.releaseState === 'Unreleased' && b.releaseState === 'Released') {
+              return -1;
+            } else if (a.releaseState === 'Released' && b.releaseState === 'Unreleased') {
+              return 1;
+            }
+
+            // Both are in the same state, so we sort by releaseEndDate
+            const dateA = a.releaseEndDate ? new Date(a.releaseEndDate).getTime() : null;
+            const dateB = b.releaseEndDate ? new Date(b.releaseEndDate).getTime() : null;
+
+            if (a.releaseState === 'Unreleased') {
+              // For Unreleased, sort by ascending releaseEndDate, keeping null dates last
+              if (dateA === null) return 1;
+              if (dateB === null) return -1;
+              return dateA - dateB;
+            } else {
+              // For Released, sort by descending releaseEndDate, keeping null dates last
+              if (dateA === null) return 1;
+              if (dateB === null) return -1;
+              return dateB - dateA;
+            }
+          });
+          return releaseList
+        }
 
     /** logic to apply multiselect filter */
     applyAggregationLogic(obj, aggregationType, percentile) {
@@ -582,8 +619,8 @@ export class HelperService {
 
     getGlobalConfig() {
         this.httpService.getConfigDetails().subscribe(res => {
-            if (res && res['success']) {
-                this.sharedService.setGlobalConfigData(res['data']);
+            if (res) {
+                this.sharedService.setGlobalConfigData(res);
             }
         })
     }
@@ -681,7 +718,7 @@ export class HelperService {
     setBackupOfFilterSelectionState = (selectedFilterObj) => {
         if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
             this.selectedFilters = { ...selectedFilterObj };
-        } else if(selectedFilterObj){
+        } else if (selectedFilterObj) {
             this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
         } else {
             this.selectedFilters = null;
@@ -689,10 +726,14 @@ export class HelperService {
     }
 
     getBackupOfFilterSelectionState = (prop = null) => {
-        if (prop) {
-            return this.selectedFilters[prop];
+        if (this.selectedFilters) {
+            if (prop) {
+                return this.selectedFilters[prop];
+            } else {
+                return this.selectedFilters;
+            }
         } else {
-            return this.selectedFilters;
+            return null;
         }
     }
 
@@ -770,5 +811,13 @@ export class HelperService {
         }
       }
     })
+    }
+
+    getObjectKeys(obj) {
+        if (obj && Object.keys(obj).length) {
+            return Object.keys(obj);
+        } else {
+            return [];
+        }
     }
 }

@@ -121,9 +121,6 @@ public class FetchSprintReportImplTest {
 
 	@Test
 	public void fetchSprints() throws InterruptedException, IOException {
-		JiraProcessor processor = new JiraProcessor();
-		processor.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		when(jiraProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
 		when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
 		when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn(
@@ -132,7 +129,7 @@ public class FetchSprintReportImplTest {
 //				"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
 		when(jiraCommonService.getDataFromClient(any(), any(),any())).thenReturn(sprintResponse);
 		Assert.assertEquals(1,
-				fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false).size());
+				fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false, new ObjectId()).size());
 	}
 
 	private List<SprintDetails> getMockSprintDetails() {
@@ -160,9 +157,6 @@ public class FetchSprintReportImplTest {
 		when(jiraProcessorConfig.getJiraSprintByBoardUrlApi())
 				.thenReturn("rest/agile/1.0/board/{boardId}/sprint?startAt={startAtIndex}");
 		when(jiraProcessorConfig.getSprintReportCountToBeFetched()).thenReturn(15);
-		JiraProcessor processor = new JiraProcessor();
-		processor.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		when(jiraProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
 		when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
 		when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn(
@@ -171,7 +165,7 @@ public class FetchSprintReportImplTest {
 //				"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
 		when(jiraCommonService.getDataFromClient(any(), any(),any())).thenReturn(sprintResponse);
 		Assert.assertEquals(15,
-				fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig, krb5Client, jiraBoard).size());
+				fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig, krb5Client, jiraBoard, new ObjectId("5e16c126e4b098db673cc372")).size());
 
 	}
 

@@ -503,7 +503,7 @@
   </ng-container>
   <ng-template #noSprintsTemplate>
     <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
-      <h2 class="msg">The selected project need to have atleast one sprint available for the KPI's to show up</h2>
+      <h2 class="msg">The selected project need to have atleast one ACTIVE sprint available for the KPI's to show up</h2>
     </div>
   </ng-template>
   <ng-template #noProjectsTemplate>
@@ -626,7 +626,3 @@
 
 </p-dialog>
 <app-export-excel #exportExcel></app-export-excel>
-
-<ng-container *ngIf="isRecommendationsEnabled && (filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
-  <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
-</ng-container>

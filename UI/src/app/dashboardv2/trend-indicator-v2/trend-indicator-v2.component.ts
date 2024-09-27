@@ -24,7 +24,7 @@ export class TrendIndicatorV2Component implements OnChanges {
         this.dataObj.push({
           'Project': this.colorObj.filter((obj) => obj.nodeName === trend['hierarchyName'])[0].color,
           'Latest Trend': trend['value'] + ' (' + trend['trend'] + ')',
-          'KPI Maturity': trend['maturity'],
+          'KPI Maturity': this.getMaturityValue(trend),
         });
       });
       this.headerObj.push(...Object.keys(this.dataObj[0]));
@@ -47,6 +47,14 @@ export class TrendIndicatorV2Component implements OnChanges {
       result.push(val);
     });
     return result;
+  }
+
+  getMaturityValue(trend: any): string {
+    if (trend.maturityValue && trend.maturity !== '--' && trend.maturity !== 'NA') {
+      return trend.maturityValue + ' ' + trend.kpiUnit.charAt(0).toUpperCase() + ' (' + trend.maturity + ')';
+    } else {
+      return trend.maturity;
+    }
   }
 
 }

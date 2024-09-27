@@ -40,7 +40,7 @@
                                             [loader]="kpiLoader.has(kpi?.kpiId)" [trendData]="kpiTrendsObj[kpi?.kpiId]"
                                             [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                                             [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
-                                            (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                                            (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban, kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                             (optionSelected)="handleSelectedOption($event, kpi)"
                                             [showExport]="(showChart === 'chart' || showChart === 'large')"
@@ -51,7 +51,8 @@
                                             [showCommentIcon]="showCommentIcon"
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
-                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize">
+                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize" [kpiChartData]="kpiChartData"
+                                            [immediateLoader]='immediateLoader'>
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                                                 <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length">
                                                     <div [ngSwitch]="kpi?.kpiDetail?.chartType">
@@ -253,6 +254,6 @@
 
 <app-export-excel #exportExcel></app-export-excel>
 
-<ng-container *ngIf="isRecommendationsEnabled && (filterApplyData?.label == 'project' || filterApplyData?.label == 'sprint') && filterApplyData?.ids?.length == 1">
+<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2">
     <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
   </ng-container>

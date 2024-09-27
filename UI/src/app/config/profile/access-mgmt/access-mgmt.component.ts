@@ -161,10 +161,9 @@ export class AccessMgmtComponent implements OnInit {
 			this.rolesData = roles;
 			if (this.rolesData['success']) {
 				this.roleList = roles.data.map((role) => ({
-						label: role.roleName,
+						label: role.displayName,
 						value: role.roleName,
 					}));
-
 				this.searchRoleList = [
 					{
 						label: 'Select Role',
@@ -336,7 +335,6 @@ export class AccessMgmtComponent implements OnInit {
 			this.addedProjectsOrNodes = this.addedProjectsOrNodes.filter((items) => (items.accessItems = items.accessItems.filter((item, index, self) => index === self.findIndex((t) => t.itemId !== accessItem.valueRemoved.val[0].code))));
 		} else {
 			// clear filters clicked
-			console.log('clear filters clicked');
 			this.addedProjectsOrNodes = [];
 		}
 

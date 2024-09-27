@@ -63,8 +63,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
   kpiThresholdObj: any = [];
   fullPageLoader: boolean = true;
   kpiTrendObject = {};
-  kpiList: Array<string> = [];
-  isRecommendationsEnabled: boolean = false;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -110,11 +108,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
       }
     }));
 
-    /** Get recommendations flag */
-    this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
-        this.isRecommendationsEnabled = item;
-    }));
-
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
         this.noTabAccess = true;
@@ -148,7 +141,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-    this.kpiList = this.configGlobalData.map((kpi) => kpi.kpiId);
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
     const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
     if(this.updatedConfigGlobalData?.length > 0){
@@ -321,10 +313,9 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (Object.values(this.kpiSelectedFilterObj[kpiId]).length > 1) {
         const tempArr = {};
-        /** This loop schenario is not possible practically inside this if block*/
-        // for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-        //   tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-        // }
+        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+        }
         if (this.getChartType(kpiId) === 'progress-bar') {
           this.kpiChartData[kpiId] = this.applyAggregationLogicForProgressBar(tempArr);
         } else {

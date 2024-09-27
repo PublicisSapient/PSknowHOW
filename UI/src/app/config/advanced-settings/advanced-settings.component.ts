@@ -50,6 +50,7 @@ export class AdvancedSettingsComponent implements OnInit {
   subscription: Subscription;
   dataMismatchObj: object = {};
   pid: string;
+  configuredToolList: any;
 
   constructor(
     private httpService: HttpService,
@@ -79,7 +80,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
 
     this.selectedView = 'processor_state';
-    this.getProcessorData();
+    // this.getProcessorData();
     this.getProjects();
   }
 
@@ -87,25 +88,25 @@ export class AdvancedSettingsComponent implements OnInit {
   switchView(event) {
     if (event.item.label === 'Processor State') {
       this.selectedView = 'processor_state';
-      this.getProcessorData();
+      // this.getProcessorData();
       this.getProjects();
     }
   }
 
 
   // used to fetch the processors
-  getProcessorData() {
-    this.dataLoading = true;
-    this.httpService.getProcessorData()
-      .subscribe(processorData => {
-        this.dataLoading = false;
-        if (processorData[0] !== 'error' && !processorData.error) {
-          this.processorData = processorData;
-        } else {
-          this.messageService.add({ severity: 'error', summary: 'Error in fetching Processor data. Please try after some time.' });
-        }
-      });
-  }
+  // getProcessorData() {
+  //   this.dataLoading = true;
+  //   this.httpService.getProcessorData()
+  //     .subscribe(processorData => {
+  //       this.dataLoading = false;
+  //       if (processorData[0] !== 'error' && !processorData.error) {
+  //         this.processorData = processorData;
+  //       } else {
+  //         this.messageService.add({ severity: 'error', summary: 'Error in fetching Processor data. Please try after some time.' });
+  //       }
+  //     });
+  // }
 
   // used to fetch projects
   getProjects() {
@@ -115,15 +116,15 @@ export class AdvancedSettingsComponent implements OnInit {
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
             that.userProjects = response.data.map((proj) => ({
-                name: proj.projectName,
-                id: proj.id
-              }));
+              name: proj.projectName,
+              id: proj.id
+            }));
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
               .map((filteredProj) => ({
-                  name: filteredProj.projectName,
-                  id: filteredProj.id
-                }));
+                name: filteredProj.projectName,
+                id: filteredProj.id
+              }));
           }
         } else {
           this.messageService.add({ severity: 'error', summary: 'User needs to be assigned a project for the access to work on dashboards.' });
@@ -131,8 +132,8 @@ export class AdvancedSettingsComponent implements OnInit {
         if (that.userProjects != null && that.userProjects.length > 0) {
           that.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
           that.selectedProject = this.pid ? that.userProjects.find(x => x.id === this.pid) : that.userProjects[0];
-          that.getProcessorsTraceLogsForProject(that.selectedProject['id']);
           that.getAllToolConfigs(that.selectedProject['id']);
+          that.getProcessorsTraceLogsForProject(that.selectedProject['id']);
         }
       });
   }
@@ -141,7 +142,10 @@ export class AdvancedSettingsComponent implements OnInit {
     this.httpService.getAllToolConfigs(basicProjectConfigId)
       .subscribe(response => {
         if (response['success']) {
-          this.toolConfigsDetails = response['data'];
+          this.configuredToolList = response['data'];
+          const uniqueTools = Array.from(new Set(response['data'].map(item => item.toolName)))
+            .map(toolName => response['data'].find(item => item.toolName === toolName));
+          this.toolConfigsDetails = uniqueTools;
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s data. Please try after some time.' });
         }
@@ -149,7 +153,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
   getToolDetailsForProcessor(processorName) {
-    return this.toolConfigsDetails.filter(toolDetails => toolDetails.toolName === processorName);
+    return this.configuredToolList?.filter(toolDetails => toolDetails.toolName === processorName);
   }
 
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
@@ -160,24 +164,23 @@ export class AdvancedSettingsComponent implements OnInit {
         this.jiraExecutionSteps = []
         if (response.success) {
           that.processorsTracelogs = response.data;
-          that.processorsTracelogs.forEach(pDetails=>{
-              if(pDetails.processorName !== 'Jira'){
-                pDetails['executionOngoing'] = false;
-              }
-              if(pDetails.dataMismatch && pDetails.firstRunDate){
-                this.dataMismatchObj[pDetails.processorName] = pDetails.dataMismatch;
-              }
+          that.processorsTracelogs.forEach(pDetails => {
+            if (pDetails.processorName !== 'Jira') {
+              pDetails['executionOngoing'] = false;
+            }
+            if (pDetails.dataMismatch && pDetails.firstRunDate) {
+              this.dataMismatchObj[pDetails.processorName] = pDetails.dataMismatch;
+            }
           })
 
-
-          if(this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))){
+          if (this.decideWhetherLoaderOrNot(that.findTraceLogForTool('Jira'))) {
             that.jiraStatusContinuePulling = true;
             const runProcessorInput = {
               processor: 'Jira',
               projects: [this.selectedProject['id']]
             };
             that.getProcessorCompletionSteps(runProcessorInput);
-          }else{
+          } else {
             that.jiraStatusContinuePulling = false;
             const jiraDAta = that.findTraceLogForTool('Jira');
             jiraDAta.executionOngoing = false;
@@ -199,18 +202,17 @@ export class AdvancedSettingsComponent implements OnInit {
       this.subscription.unsubscribe();
       this.jiraStatusContinuePulling = false;
     }
-
-    this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
     this.getAllToolConfigs(this.selectedProject['id']);
+    this.getProcessorsTraceLogsForProject(this.selectedProject['id']);
 
   }
 
 
   findTraceLogForTool(processorName) {
-    if(processorName.toLowerCase() === 'jira'){
+    if (processorName.toLowerCase() === 'jira') {
       const jiraInd = this.findCorrectJiraDetails();
       return this.processorsTracelogs[jiraInd];
-    }else{
+    } else {
       return this.processorsTracelogs.find(ptl => ptl['processorName'] == processorName);
     }
   }
@@ -224,6 +226,8 @@ export class AdvancedSettingsComponent implements OnInit {
     const traceLog = this.findTraceLogForTool(processorName);
     if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
       return 'NA';
+    } else if(traceLog.executionWarning){
+      return 'Warning';
     } else {
       return traceLog.executionSuccess ? 'Success' : 'Failure';
     }
@@ -247,24 +251,24 @@ export class AdvancedSettingsComponent implements OnInit {
       runProcessorInput['projects'] = [this.selectedProject['id']];
     }
     const pDetails = this.findTraceLogForTool(processorName)
-    if(pDetails){
+    if (pDetails) {
       pDetails['executionOngoing'] = true;
     }
 
-    if(processorName === 'Jira'){
+    if (processorName === 'Jira') {
       this.resetLogs()
     }
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
         if (!response.error && response.success) {
           this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
-          if(runProcessorInput['processor'].toLowerCase() === 'jira'){
+          if (runProcessorInput['processor'].toLowerCase() === 'jira') {
             this.jiraStatusContinuePulling = true;
             this.getProcessorCompletionSteps(runProcessorInput)
           }
-          else{
+          else {
             const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
-            if(pDetails){
+            if (pDetails) {
               pDetails['executionOngoing'] = false;
             }
           }
@@ -294,22 +298,22 @@ export class AdvancedSettingsComponent implements OnInit {
     return true;
   }
 
-  deleteProcessorData(processorDetails){
+  deleteProcessorData(processorDetails) {
     this.confirmationService.confirm({
-			message:`Do you want to delete ${this.selectedProject['name']} data for ${processorDetails?.processorName}`,
-			header: `Delete ${this.selectedProject['name']} Data?`,
-			icon: 'pi pi-info-circle',
-			accept: () => {
-				this.deleteProcessorDataReq(processorDetails,this.selectedProject);
-			},
-      reject : ()=>{
+      message: `Do you want to delete ${this.selectedProject['name']} data for ${processorDetails?.toolName}`,
+      header: `Delete ${this.selectedProject['name']} Data?`,
+      icon: 'pi pi-info-circle',
+      accept: () => {
+        this.deleteProcessorDataReq(processorDetails, this.selectedProject);
+      },
+      reject: () => {
         console.log("reject")
       }
-		});
+    });
   }
 
   deleteProcessorDataReq(processorDetails, selectedProject) {
-    const toolDetails = this.getToolDetailsForProcessor(processorDetails.processorName);
+    const toolDetails = this.getToolDetailsForProcessor(processorDetails.toolName);
     const toolDetailSubscription = [];
     if (toolDetails?.length > 0) {
       toolDetails.forEach(toolDetail => {
@@ -332,7 +336,7 @@ export class AdvancedSettingsComponent implements OnInit {
   }
 
 
-  getProcessorCompletionSteps(runProcessorInput){
+  getProcessorCompletionSteps(runProcessorInput) {
     const jiraInd = this.findCorrectJiraDetails();
     this.subscription = interval(15000).pipe(
       takeWhile(() => this.jiraStatusContinuePulling),
@@ -340,54 +344,54 @@ export class AdvancedSettingsComponent implements OnInit {
     ).subscribe(response => {
       if (response && response['success']) {
         if (this.decideWhetherLoaderOrNot(response['data'][0])) {
-            this.processorsTracelogs[jiraInd].executionOngoing = true;
-            this.jiraStatusContinuePulling = true
+          this.processorsTracelogs[jiraInd].executionOngoing = true;
+          this.jiraStatusContinuePulling = true
         } else {
           this.processorsTracelogs[jiraInd].executionOngoing = false;
           this.jiraStatusContinuePulling = false;
           this.getProcessorsTraceLogsForProject(this.selectedProject['id'])
         }
-        Object.assign(this.findTraceLogForTool('Jira'),response['data'][0])
+        Object.assign(this.findTraceLogForTool('Jira'), response['data'][0])
       }
     })
   }
 
-  resetLogs(){
+  resetLogs() {
     const jiraInd = this.findCorrectJiraDetails();
-      if(jiraInd !== -1){
-        this.processorsTracelogs[jiraInd].errorMessage = '';
-        this.processorsTracelogs[jiraInd].progressStatusList = [];
+    if (jiraInd !== -1) {
+      this.processorsTracelogs[jiraInd].errorMessage = '';
+      this.processorsTracelogs[jiraInd].progressStatusList = [];
 
-      }
-  }
-
-  findCorrectJiraDetails(){
-    const processorName = 'Jira';
-    const jiraCount = this.processorsTracelogs.filter(ptl => ptl['processorName'] == processorName).length;
-    if(jiraCount === 1){
-      return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName);
-    }else if(jiraCount >= 1){
-       return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName && ptl['progressStats'] === true);
-    }else{
-      this.processorsTracelogs.push({processorName : 'Jira',errorMessage : '',progressStatusList : [],executionOngoing : false,executionEndedAt : 0,isDeleteDisable : true});
-      return  this.processorsTracelogs.length;
     }
   }
 
-  decideWhetherLoaderOrNot(jiraLogDetails){
-    if(jiraLogDetails && jiraLogDetails?.executionOngoing && jiraLogDetails?.progressStatusList?.length){
+  findCorrectJiraDetails() {
+    const processorName = 'Jira';
+    const jiraCount = this.processorsTracelogs.filter(ptl => ptl['processorName'] == processorName).length;
+    if (jiraCount === 1) {
+      return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName);
+    } else if (jiraCount >= 1) {
+      return this.processorsTracelogs.findIndex(ptl => ptl['processorName'] == processorName && ptl['progressStats'] === true);
+    } else {
+      this.processorsTracelogs.push({ processorName: 'Jira', errorMessage: '', progressStatusList: [], executionOngoing: false, executionEndedAt: 0, isDeleteDisable: true });
+      return this.processorsTracelogs.length;
+    }
+  }
+
+  decideWhetherLoaderOrNot(jiraLogDetails) {
+    if (jiraLogDetails && jiraLogDetails?.executionOngoing && jiraLogDetails?.progressStatusList?.length) {
       const logs = jiraLogDetails.progressStatusList;
-      const lastLOgTime = logs[logs.length-1].endTime;
+      const lastLOgTime = logs[logs.length - 1].endTime;
       const currentTime = new Date().getTime();
       let differenceInMilliseconds = Math.abs(currentTime - lastLOgTime);
-      if(differenceInMilliseconds > 600000){
+      if (differenceInMilliseconds > 600000) {
         return false;
-      }else if(differenceInMilliseconds <= 600000){
+      } else if (differenceInMilliseconds <= 600000) {
         return true;
-      }else{
+      } else {
         return false;
       }
-    }else{
+    } else {
       return false;
     }
 
@@ -395,6 +399,33 @@ export class AdvancedSettingsComponent implements OnInit {
 
   backToProjectList() {
     this.router.navigate(['/dashboard/Config/ProjectList']);
+  }
+
+  getToolCategory(ProcessorName) {
+    const categoryWiseTool = {
+      'Project Management': ['jira', 'azure'],
+      'Test Management': ['zephyr', 'jiratest'],
+      'Source Code Management': ['github', 'gitlab', 'bitbucket', 'azurerepository'],
+      'Security': ['sonar'],
+      'Build': ['bamboo', 'teamcity', 'azurepipeline', 'argocd', 'githubaction', 'jenkins']
+    }
+
+    for (const category in categoryWiseTool) {
+      if (categoryWiseTool[category].includes(ProcessorName?.toLowerCase())) {
+        return category;
+      }
+    }
+    return '';
+  }
+
+  getSCMToolTimeDetails(processorName) {
+    const traceLog = this.findTraceLogForTool(processorName);
+    return (traceLog == undefined || traceLog == null || traceLog.executionResumesAt == 0) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionResumesAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
+  }
+
+  isSCMToolProcessor(processorName) {
+    const scmTools = ['GitHub','GitLab','Bitbucket','AzureRepository'];
+    return scmTools.includes(processorName)
   }
 
   ngOnDestroy(): void {

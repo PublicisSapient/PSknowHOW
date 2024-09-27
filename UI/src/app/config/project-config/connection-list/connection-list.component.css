@@ -32,6 +32,10 @@ div.main {
     margin: 8px;
 }
 
+.selectbtn-container {
+  margin: 28px 8px 0;
+}
+
 .p-button.p-button-danger, .p-buttonset.p-button-danger > .p-button, .p-splitbutton.p-button-danger > .p-button {
     color: #ffffff !important;
     background: #D32F2F !important;
@@ -91,3 +95,4 @@ input[type="text"]:disabled, input[type="password"]:disabled {
     padding: .70rem;
     width: 150px;
 }
+

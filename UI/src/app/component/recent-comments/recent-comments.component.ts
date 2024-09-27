@@ -55,6 +55,10 @@ export class RecentCommentsComponent {
       "nodes": []
     }
 
+    if(this.selectedTab?.toLowerCase() == 'backlog'){
+      reqObj['nodeChildId'] = "";
+    }
+
     kpiList.forEach(x => {
       this.kpiObj[x['kpiId']] = x['kpiName'];
     });

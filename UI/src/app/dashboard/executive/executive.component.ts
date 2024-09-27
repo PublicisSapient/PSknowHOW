@@ -117,6 +117,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     cumulativeTrend = ['kpi17', 'kpi62', 'kpi67', 'kpi27', 'kpi66', 'kpi71', 'kpi42'];
     kpiList:Array<string> = [];
     isRecommendationsEnabled: boolean = false;
+    projectCount : number = 0;
 
     constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -153,6 +154,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
                     tempObj[nodeName] = [];
                 }
+                this.projectCount = Object.keys(this.trendBoxColorObj)?.length;
                 this.kpiTableDataObj = {...tempObj};
                 if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
                     for (const key in this.kpiChartData) {
@@ -227,7 +229,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.noProjects = res;
             this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
           }));
-       
+
         /** Get recommendations flag */
         this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
             this.isRecommendationsEnabled = item;
@@ -1057,16 +1059,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.chartColorList[kpiId] = [];
             for (let i = 0; i < arr?.length; i++) {
                 for (const key in this.colorObj) {
-                    if(kpiId == 'kpi17'){
-                        if(this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName){
-                            this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-                            finalArr.push(JSON.parse(JSON.stringify(arr[i])));
-                        }
-
-                    }else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
-                        this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-                        finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
-                        // break;
+                    if (kpiId == 'kpi17' && this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName){
+                      this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+                      finalArr.push(JSON.parse(JSON.stringify(arr[i])));
+                    } else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
+                      this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+                      finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
                     }
                 }
             }

@@ -114,7 +114,7 @@ describe('AccessMgmtComponent', () => {
     httpMock.match(baseUrl + '/api/roles')[0].flush(fakeRolesData);
     if (component.rolesData.success) {
       fakeRolesData.data = fakeRolesData.data.map((role) => ({
-        label: role.roleName,
+        label: role.displayName,
         value: role.roleName
       }));
       expect(component.roleList).toEqual(fakeRolesData.data);
@@ -831,13 +831,13 @@ describe('AccessMgmtComponent', () => {
     component.submitValidationMessage = '';
     component.displayDuplicateProject = false;
     component.onRoleChange(event, index, access);
-  
+
     expect(component.submitValidationMessage).toBe('A row for ROLE_ADMIN already exists, please add accesses there.');
     expect(component.displayDuplicateProject).toBe(true);
   });
 
   it('should handle delete access request', () => {
-    const username = 'testUser';  
+    const username = 'testUser';
     const isSuperAdmin = true;
     const deleteAccessError = { message: 'Error deleting access' };
     spyOn(httpService, 'deleteAccess').and.returnValue(throwError(deleteAccessError));;
@@ -865,9 +865,9 @@ describe('AccessMgmtComponent', () => {
         { itemId: '3', itemName: 'Project 3' }
       ]
     }];
-  
+
     component.projectSelectedEvent(accessItem);
-  
+
     // Check if the projects/nodes are added correctly
     expect(component.addedProjectsOrNodes).toEqual([
       {
@@ -878,7 +878,7 @@ describe('AccessMgmtComponent', () => {
         ]
       }
     ]);
-    
+
   });
 
   it('should add or remove projects/nodes when accessItem is not project', () => {
@@ -897,9 +897,9 @@ describe('AccessMgmtComponent', () => {
         { itemId: '3', itemName: 'Project 3' }
       ]
     }];
-  
+
     component.projectSelectedEvent(accessItem);
-  
+
     // Check if the projects/nodes are added correctly
     expect(component.addedProjectsOrNodes).toEqual([{
         accessLevel: 'category1',
@@ -916,7 +916,7 @@ describe('AccessMgmtComponent', () => {
       }
 
     ]);
-    
+
   });
 
   it('should add or remove projects/nodes when accessItem is not project and valueRemoved is empty', () => {
@@ -935,9 +935,9 @@ describe('AccessMgmtComponent', () => {
         { itemId: '3', itemName: 'item 3' }
       ]
     }];
-  
+
     component.projectSelectedEvent(accessItem);
-  
+
     // Check if the projects/nodes are added correctly
     expect(component.addedProjectsOrNodes).toEqual([{
         accessLevel: 'category1',
@@ -949,7 +949,7 @@ describe('AccessMgmtComponent', () => {
       }
 
     ]);
-    
+
   });
 
   it('should add or remove projects/nodes when accessItem is not project and valueRemoved is not empty', () => {
@@ -971,9 +971,9 @@ describe('AccessMgmtComponent', () => {
         { itemId: '3', itemName: 'item 3' }
       ]
     }];
-  
+
     component.projectSelectedEvent(accessItem);
-  
+
     // Check if the projects/nodes are added correctly
     expect(component.addedProjectsOrNodes).toEqual([{
         accessLevel: 'category1',
@@ -983,6 +983,6 @@ describe('AccessMgmtComponent', () => {
       }
 
     ]);
-    
+
   });
 });

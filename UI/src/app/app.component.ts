@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { SharedService } from './services/shared.service';
 import { GetAuthService } from './services/getauth.service';
 import { HttpService } from './services/http.service';
@@ -41,6 +41,16 @@ export class AppComponent implements OnInit {
 
   newUI: boolean = false;
   isNewUISwitch: boolean = false;
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event) {
+    const header = document.querySelector('.header');
+    if (window.scrollY > 200) { // adjust the scroll position threshold as needed
+      header?.classList.add('scrolled');
+    } else {
+      header?.classList.remove('scrolled');
+    }
+  }
 
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
     public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
@@ -80,7 +90,7 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         this.loadingRouteConfig = false;
         const data = {
-          url: event.urlAfterRedirects + '/' + (this.service.getSelectedType() ? this.service.getSelectedType() : 'Scrum'),
+          url: event.urlAfterRedirects + '/' + (this.service.getSelectedType() || 'Scrum'),
           userRole: this.authorisation.getRole(),
           version: this.httpService.currentVersion,
           uiType: JSON.parse(localStorage.getItem('newUI')) === true ? 'New' : 'Old'
@@ -98,13 +108,17 @@ export class AppComponent implements OnInit {
 
   uiSwitch(event, userChange = false) {
     let isChecked = event.checked;
+    const data = {
+      type: isChecked ? 'New' : 'Old'
+    };
+    this.ga.setUIType(data);
     if (isChecked) {
       localStorage.setItem('newUI', 'true');
     } else {
       localStorage.removeItem('newUI');
     }
     if (userChange) {
-        window.location.reload();
+      window.location.reload();
     }
   }
 }
