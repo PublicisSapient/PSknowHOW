@@ -171,10 +171,11 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-
+		ProjectFilter projectFilter = projectLeafNode.getProjectFilter();
+		ObjectId projectBasicConfigId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
+		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(projectBasicConfigId);
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
-				localEndDate, toolMap, projectLeafNode, duration, dataPoints,
-				customApiConfig.getRepoToolPRSuccessRateUrl());
+				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration, dataPoints, customApiConfig.getRepoToolPRSuccessRateUrl());
 
 		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
