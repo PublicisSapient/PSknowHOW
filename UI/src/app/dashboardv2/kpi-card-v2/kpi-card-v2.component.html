@@ -24,8 +24,8 @@
       </ng-template>
     </p-menu>
   </div>
-  <!-- kpiFilter -->
-  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" *ngIf="checkIfDataPresent(trendValueList) && kpiData?.kpiDetail?.isAdditionalFilterSupport;"
+  <!-- kpiFilter *ngIf="checkIfDataPresent(trendValueList);"-->
+  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" 
     [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' }" class="kpi-filter p-pr-5 p-pl-5"
     #kpiFilterContainer>
     <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
@@ -98,7 +98,7 @@
     </div>
   </div>
   <div class="kpi-card-footer p-pr-5 p-pl-5">
-    <app-trend-indicator-v2 *ngIf="trendValueList && trendValueList.length > 0 && kpiData?.kpiDetail?.isAdditionalFilterSupport" [trendData]="trendData"
+    <app-trend-indicator-v2 *ngIf="trendValueList && trendValueList.length > 0 " [trendData]="trendData"
       [colorObj]="trendBoxColorObj">
     </app-trend-indicator-v2>
   </div>

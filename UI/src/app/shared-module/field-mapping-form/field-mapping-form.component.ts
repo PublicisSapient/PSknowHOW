@@ -34,7 +34,7 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() selectedToolConfig;
   @Input() thresholdUnit;
   @Output() reloadKPI = new EventEmitter();
-  disableSave = false;
+  //disableSave = false;
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -50,7 +50,7 @@ export class FieldMappingFormComponent implements OnInit {
   form: FormGroup;
   fieldMappingSectionList = [];
   formConfig: any;
-  isFormDirty : boolean = false;
+  //isFormDirty : boolean = false;
   historyList = [];
   showSpinner: boolean = false;
   isHistoryPopup : any = {};
@@ -78,7 +78,7 @@ private setting = {
     this.initializeForm();
     this.generateFieldMappingConfiguration();
     this.form.valueChanges.subscribe(()=>{
-     this.isFormDirty = true;
+     //this.isFormDirty = true;
     })
   }
 
@@ -229,9 +229,19 @@ private setting = {
         break;
       case 'releases':
         if (this.fieldMappingMetaData && this.fieldMappingMetaData.releases) {
-          this.fieldMappingMetaData.releases.forEach((item : any) => (
-              item['disabled']= item.data.includes("duration - days")
-          ));
+          // Set the 'disabled' property and segregate items in a single pass
+          const { enabledItems, disabledItems } = this.fieldMappingMetaData.releases.reduce((acc: any, item: any) => {
+            item['disabled'] = item.data.includes("duration - days");
+            if (item['disabled']) {
+              acc.disabledItems.push(item);
+            } else {
+              acc.enabledItems.push(item);
+            }
+            return acc;
+          }, { enabledItems: [], disabledItems: [] });
+
+          // Concatenate the non-disabled items with the disabled items
+          this.fieldMappingMetaData.releases = [...enabledItems, ...disabledItems];
           this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.releases;
         } else {
           this.fieldMappingMultiSelectValues = [];
@@ -268,6 +278,7 @@ private setting = {
 
   /** Once user select value and click on save then selected option will be populated on chip/textbox */
   saveDialog() {
+    const preSaveFormValueList = {...this.form.controls[this.selectedField].value}
     if (this.singleSelectionDropdown) {
       if (this.selectedValue.length) {
         this.form.controls[this.selectedField].setValue(this.selectedValue);
@@ -297,6 +308,14 @@ private setting = {
 
       this.form.controls[this.selectedField].setValue(Array.from(new Set(selectedMultiValueLabels)));
     }
+    //#region  DTS-39044 fix
+    const afterSaveFormValueList = {...this.form.controls[this.selectedField].value}
+    if(JSON.stringify(preSaveFormValueList) != JSON.stringify(afterSaveFormValueList)){
+      this.form.markAsDirty();
+      this.form.markAsTouched();
+      this.form.updateValueAndValidity();
+    }
+    //#endregion
     this.populateDropdowns = false;
     this.displayDialog = false;
   }
@@ -313,7 +332,7 @@ private setting = {
 
   /** Responsible for handle template popup */
   save() {
-    this.disableSave = true;
+    //this.disableSave = true;
     const finalList = [];
 
     this.formData.forEach(element => {
@@ -362,6 +381,11 @@ private setting = {
           severity: 'success',
           summary: 'Field Mappings submitted!!',
         });
+      //#region Bug:39044
+      this.form.markAsPristine();
+      this.form.markAsUntouched();
+      this.form.updateValueAndValidity();
+      //#endregion
         this.uploadedFileName = '';
         if(this.parentComp === 'kpicard'){
           this.reloadKPI.emit();

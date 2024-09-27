@@ -37,6 +37,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ScrollTopModule } from 'primeng/scrolltop';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -144,6 +145,7 @@ import { HorizontalPercentBarChartv2Component } from './component/horizontal-per
 import { RecommendationsComponent } from './component/recommendations/recommendations.component';
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
+import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 
 
 /******************************************************/
@@ -231,7 +233,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         PageNotFoundComponent,
         RecommendationsComponent,
         ChartWithFiltersComponent,
-        KpiAdditionalFilterComponent
+        KpiAdditionalFilterComponent,
+        StickyHeaderV2Component
     ],
     imports: [
         DropdownModule,
@@ -266,7 +269,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         CheckboxModule,
         SkeletonModule,
         SharedModuleModule,
-        InputTextModule
+        InputTextModule,
+        ScrollTopModule
     ],
     providers: [
         ExcelService,

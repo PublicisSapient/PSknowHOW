@@ -81,7 +81,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
-      if (Object.keys(x)?.length > 1) {
+      this.filterOptions = {};
+      if (Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
@@ -196,8 +197,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   handleChange(type, value = null, filterIndex = 0) {
-    if (value) {
-      value?.value?.forEach(selectedItem => {
+    if (value && value.value && Array.isArray(value.value)) {
+      value.value.forEach(selectedItem => {
         this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
         this.dropdownArr[filterIndex]?.options.unshift(selectedItem)// this will add selected item on the top
       });

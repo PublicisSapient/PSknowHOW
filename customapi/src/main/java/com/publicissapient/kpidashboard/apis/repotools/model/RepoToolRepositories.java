@@ -39,5 +39,8 @@ public class RepoToolRepositories {
     private Map<String, Double> mergeRequestsPT;
     private String filteredBranch;
     private double repositoryReworkRateGrade;
+    private double innovationRatePercentageRepo;
+    private int mergeRequestsNumber;
+    private double repoDefectMergeRequestPercentage;
 
 }

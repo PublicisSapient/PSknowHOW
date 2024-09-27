@@ -70,6 +70,8 @@
           <ng-template pTemplate="header">
             <tr>
               <th id="processorName">Processor Name</th>
+              <th id="processorName">Processor Type</th>
+              <th id="connectionName">Connection Name</th>
               <th id="executionTime">Last Executed On</th>
               <th></th>
               <th id="state">Status</th>
@@ -81,12 +83,20 @@
               <td class='custom-table-cell'>
                 {{ processor.toolName === 'Azure' ? 'Azure Board' : processor.toolName }}
               </td>
+              <td class='custom-table-cell'>
+                {{ getToolCategory(processor.toolName) }}
+              </td>
 
+              <td class='custom-table-cell'>
+                {{  processor.connectionName }}
+              </td>
               <td class='custom-table-cell'>
                 <span
                   *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">{{
                   showExecutionDate(processor.toolName) }}</span>
               </td>
+
+
               <td class="custom-table-cell">
                 <p-progressBar mode="indeterminate"
                   *ngIf="processor.toolName === 'Jira' && findTraceLogForTool(processor.toolName)?.executionOngoing === true "
@@ -96,7 +106,11 @@
                 <div class="p-d-flex p-align-center">
                   <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">
                     <div *ngIf="showProcessorLastState(processor.toolName) !== 'NA'" class="status-container"
-                      [ngClass]="showProcessorLastState(processor.toolName) === 'Success' ? 'active' : 'inactive'">
+                    [ngClass]="{
+                      'active': showProcessorLastState(processor.toolName) === 'Success',
+                      'inactive': showProcessorLastState(processor.toolName) === 'Failure',
+                      'pending': showProcessorLastState(processor.toolName) === 'Warning'
+                    }">
                       {{ showProcessorLastState(processor.toolName)}}
                     </div>
                     <!-- <span *ngIf="showProcessorLastState(processor.toolName) === 'NA'">NA</span> -->
@@ -107,12 +121,20 @@
                       (click)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''"
                       style="font-size: 1.2rem"></i>
                   </div>
+                  <div class="p-ml-2" *ngIf="isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning'">
+                    <i class="pi pi-info-circle"
+                    (click)="rOp.toggle($event)" style="font-size: 1.2rem"></i>
+                    <p-overlayPanel #rOp [showCloseIcon]="false">
+                      Reached the API rate limit. Repo scanning will automatically resume after {{getSCMToolTimeDetails(processor.toolName)}}
+                    </p-overlayPanel>
+                  </div>
                 </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
                <button pButton pRipple label="Run Now"
                   icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
-                  [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira'  "
+                  [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
+                  (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
                   class="p-button-sm p-button-success p-button-raised"
                   (click)="runProcessor(processor.toolName)"></button>
                 <div class="action-btns p-ml-3"
@@ -216,3 +238,4 @@
     </ul>
   </div>
 </p-overlayPanel>
+

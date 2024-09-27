@@ -41,6 +41,9 @@ public class RepoToolKpiMetricResponse {
     private double average;
     private double projectReworkRateGrade;
     private double projectReworkRatePercent;
+    private double innovationRatePercentage;
+    private int mergeRequestsNumber;
+    private double projectDefectMergeRequestPercentage;
     private List<RepoToolRepositories> repositories;
     private List<RepoToolRepositories> projectRepositories;
     @JsonProperty("date_label")

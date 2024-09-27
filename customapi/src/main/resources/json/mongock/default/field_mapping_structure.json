@@ -238,7 +238,7 @@
   },
   {
     "fieldName": "rootCauseIdentifier",
-    "fieldLabel": "Root Cause",
+    "fieldLabel": "Custom field for Root Cause",
     "fieldDisplayOrder": 13,
     "fieldType": "radiobutton",
     "fieldCategory": "fields",
@@ -787,7 +787,7 @@
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "Only issues with specified labels will be considered"
+      "definition": "All issue types that can have valid defect linkages"
     },
     "mandatory": true
   },
@@ -800,7 +800,7 @@
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "Only issues with specified labels will be considered"
+      "definition": "All issue types that can have valid defect linkages"
     },
     "mandatory": true
   },
@@ -813,7 +813,7 @@
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "Only issues with specified labels will be considered"
+      "definition": "All issue types that can have valid defect linkages"
     },
     "mandatory": true
   },
@@ -826,7 +826,7 @@
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "Only issues with specified labels will be considered"
+      "definition": "All issue types that can have valid defect linkages"
     },
     "mandatory": true
   },
@@ -839,7 +839,7 @@
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "Only issues with specified labels will be considered"
+      "definition": "All issue types that can have valid defect linkages"
     },
     "mandatory": true
   },
@@ -852,7 +852,7 @@
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "Only issues with specified labels will be considered"
+      "definition": "All issue types that can have valid defect linkages"
     }
   },
   {
@@ -1125,7 +1125,7 @@
   {
     "fieldName": "includeRCAForKPI82",
     "fieldLabel": "Root cause values to be included",
-    "placeHolderText": "Enter Root cause values to be included",
+    "placeHolderText": " Root cause values to be included",
     "fieldType": "chips",
     "section": "Defects Mapping",
     "fieldDisplayOrder": 2,
@@ -1137,7 +1137,7 @@
   {
     "fieldName": "includeRCAForKPI14",
     "fieldLabel": "Root cause values to be included",
-    "placeHolderText": "Enter Root cause values to be included",
+    "placeHolderText": " Root cause values to be included",
     "fieldType": "chips",
     "section": "Defects Mapping",
     "fieldDisplayOrder": 2,
@@ -1149,7 +1149,7 @@
   {
     "fieldName": "includeRCAForQAKPI111",
     "fieldLabel": "Root cause values to be included",
-    "placeHolderText": "Enter Root cause values to be included",
+    "placeHolderText": " Root cause values to be included",
     "fieldType": "chips",
     "section": "Defects Mapping",
     "fieldDisplayOrder": 2,
@@ -1161,7 +1161,7 @@
   {
     "fieldName": "includeRCAForKPI133",
     "fieldLabel": "Root cause values to be included",
-    "placeHolderText": "Enter Root cause values to be included",
+    "placeHolderText": " Root cause values to be included",
     "fieldType": "chips",
     "section": "Defects Mapping",
     "fieldDisplayOrder": 2,
@@ -1173,7 +1173,7 @@
   {
     "fieldName": "includeRCAForKPI35",
     "fieldLabel": "Root cause values to be included",
-    "placeHolderText": "Enter Root cause values to be included",
+    "placeHolderText": " Root cause values to be included",
     "fieldType": "chips",
     "section": "Defects Mapping",
     "fieldDisplayOrder": 2,
@@ -1205,8 +1205,8 @@
     "nestedFields": [
       {
         "fieldName": "jiraBugRaisedByCustomField",
-        "fieldLabel": "UAT Defect Custom Field",
-        "placeHolderText": "UAT Defect Custom Field",
+        "fieldLabel": "Custom field to identify escaped defects",
+        "placeHolderText": "Custom field to identify escaped defects",
         "fieldType": "text",
         "fieldCategory": "fields",
         "filterGroup": [
@@ -1218,8 +1218,8 @@
       },
       {
         "fieldName": "jiraBugRaisedByValue",
-        "fieldLabel": "UAT Defect Values",
-        "placeHolderText": "UAT Defect Custom Field",
+        "fieldLabel": "Field values that denote escaped defects",
+        "placeHolderText": "Field values that denote escaped defects",
         "fieldType": "chips",
         "filterGroup": [
           "CustomField",
@@ -1474,7 +1474,7 @@
     "fieldDisplayOrder": 8,
     "sectionOrder": 4,
     "tooltip": {
-      "definition": "All workflow statuses used to close issues of issue types in consideration"
+      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)"
     },
     "mandatory": true
   },
@@ -1851,7 +1851,7 @@
     "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status to identify as closed"
+      "definition": "All workflow statuses used to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered."
     }
   },
   {
@@ -2798,11 +2798,13 @@
   },
   {
     "fieldName": "includeRCAForKPI135",
-    "fieldLabel": "Defect RCA inclusion for Quality KPIs",
+    "fieldLabel": "Root cause values to be included",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "fieldDisplayOrder": 2,
+    "sectionOrder": 3,
     "tooltip": {
-      "definition": "The defects tagged to as per RCA values selected in this field on Mappings screen will be included."
+      "definition": "Root cause reasons for defects to be included In FTPR calculation"
     }
   },
   {
@@ -3020,12 +3022,14 @@
   },
   {
     "fieldName": "jiraDevDoneStatusKPI145",
-    "fieldLabel": "Status to identify Dev completion",
+    "fieldLabel": "Status to identify Dev Completed Issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
+    "fieldDisplayOrder": 7,
+    "sectionOrder": 4,
     "tooltip": {
-      "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing"
+      "definition": "All statuses indicating that development work is complete and the issue is ready for testing."
     },
     "mandatory": true
   },
@@ -3444,7 +3448,7 @@
     "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
     "fieldType": "number",
     "nodeSpecific": true,
-    "section": "Issue Types Mapping",
+    "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when the first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
     }
@@ -3759,5 +3763,23 @@
       "definition": "All issue types that are used as/equivalent to Story."
     },
     "mandatory": true
+  },
+  {
+    "fieldName" : "thresholdValueKPI185",
+    "fieldLabel" : "Target KPI Value",
+    "fieldType" : "number",
+    "section" : "Project Level Threshold",
+    "tooltip" : {
+      "definition" : "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName" : "thresholdValueKPI186",
+    "fieldLabel" : "Target KPI Value",
+    "fieldType" : "number",
+    "section" : "Project Level Threshold",
+    "tooltip" : {
+      "definition" : "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
   }
 ]
