@@ -177,7 +177,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
     this.disableSettings = this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release'));
     this.initializeMenu();
-    console.log(this.kpiDataStatusCode);
   }
 
   openCommentModal = () => {
