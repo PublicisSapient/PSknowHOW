@@ -75,7 +75,7 @@
     <ng-template #noData>
       <!-- <div class="min-ht" *ngIf="(!checkIfDataPresent(trendValueList) && !iSAdditionalFilterSelected) || (!checkIfDataPresent(trendValueList) && kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)"> -->
       <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && !checkIfDataPresent(trendValueList) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
+        *ngIf="!loader && !immediateLoader && !checkIfDataPresent(kpiDataStatusCode) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>
