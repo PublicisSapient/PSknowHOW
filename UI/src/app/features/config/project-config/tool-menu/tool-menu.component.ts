@@ -334,19 +334,11 @@ export class ToolMenuComponent implements OnInit {
       updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
     };
     this.tools = this.tools.filter((tool) => tool.toolName !== 'Azure' && tool.toolName !== 'Jira');
-    if (isClicked) {
       if (event && event.value) {
         this.tools.unshift(azureType);
       } else {
         this.tools.unshift(jiraType);
       }
-    } else {
-      if (event && event.value) {
-        this.tools.unshift(azureType);
-      } else {
-        this.tools.unshift(jiraType);
-      }
-    }
 
   }
 

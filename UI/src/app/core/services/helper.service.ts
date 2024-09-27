@@ -430,6 +430,34 @@ export class HelperService {
         return objArray;
     }
 
+    releaseSorting(releaseList){
+        releaseList.sort((a, b) => {
+            // First, sort by releaseState (Unreleased first, Released second)
+            if (a.releaseState === 'Unreleased' && b.releaseState === 'Released') {
+              return -1;
+            } else if (a.releaseState === 'Released' && b.releaseState === 'Unreleased') {
+              return 1;
+            }
+
+            // Both are in the same state, so we sort by releaseEndDate
+            const dateA = a.releaseEndDate ? new Date(a.releaseEndDate).getTime() : null;
+            const dateB = b.releaseEndDate ? new Date(b.releaseEndDate).getTime() : null;
+
+            if (a.releaseState === 'Unreleased') {
+              // For Unreleased, sort by ascending releaseEndDate, keeping null dates last
+              if (dateA === null) return 1;
+              if (dateB === null) return -1;
+              return dateA - dateB;
+            } else {
+              // For Released, sort by descending releaseEndDate, keeping null dates last
+              if (dateA === null) return 1;
+              if (dateB === null) return -1;
+              return dateB - dateA;
+            }
+          });
+          return releaseList
+        }
+
     /** logic to apply multiselect filter */
     applyAggregationLogic(obj, aggregationType, percentile) {
         const arr = JSON.parse(JSON.stringify(obj[Object.keys(obj)[0]]));
