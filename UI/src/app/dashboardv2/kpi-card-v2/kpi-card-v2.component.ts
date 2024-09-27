@@ -345,22 +345,36 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    return data === '200' && this.trendValueList?.length > 0; 
+    return data === '200' && this.trendValueList?.length > 0 && this.checkDataAtGranularLevel(this.trendValueList);
   }
 
   checkDataAtGranularLevel(data) {
     let dataCount = 0;
-    data?.forEach(item => {
-      if (item?.data && !isNaN(parseInt(item?.data))) {
-        dataCount += item?.data;
-      } else if (item.value) {
-        item?.value?.forEach(val => {
-          if (!isNaN(parseInt(val?.data))) {
-            dataCount += val?.data;
-          }
-        });
-      }
-    });
+    if (Array.isArray(data)) {
+      data?.forEach(item => {
+        if (item?.data && !isNaN(parseInt(item?.data))) {
+          // dataCount += item?.data;
+          ++dataCount;
+        } else if (Array.isArray(item.value) && item.value.length) {
+          // item?.value?.forEach(val => {
+          //   if (!isNaN(parseInt(val?.data))) {
+          //     // dataCount += val?.data;
+          //     ++dataCount;
+          //   }
+          // });
+          ++dataCount;
+        } else if (item.dataGroup && item.dataGroup.length) {
+          // item.dataGroup.forEach(element => {
+          //   ++dataCount;
+          // });
+          ++dataCount;
+        }
+      });
+    } else if (data && Object.keys(data).length) {
+      dataCount = Object.keys(data).length;
+    } else {
+      dataCount = 0;
+    }
     return parseInt(dataCount + '') > 0;
   }
 
