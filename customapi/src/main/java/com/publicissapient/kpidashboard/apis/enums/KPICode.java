@@ -508,7 +508,14 @@ public enum KPICode {
      * Defect Count By (Release->Quality)
      */
     DEFECT_COUNT_BY("kpi178", KPISource.JIRA.name()),
-
+    /**
+     * Innovation Rate (Developer)
+     */
+    INNOVATION_RATE("kpi185", KPISource.BITBUCKET.name()),
+    /**
+     * Defect Rate (Developer)
+     */
+    DEFECT_RATE("kpi186", KPISource.BITBUCKET.name()),
 
 
 
