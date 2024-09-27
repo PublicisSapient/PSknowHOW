@@ -6,6 +6,8 @@
       "project_code": "TestP1_64748074f15d7843b3735db5",
       "projectGrade": 0,
       "projectHours": 0,
+      "mergeRequestsNumber": 3,
+      "innovationRatePercentage": 70,
       "average": 43269.57407945454,
       "repositories": [
         {
@@ -23,6 +25,8 @@
               "average": 30176.5,
               "mergeRequests": 5,
               "lines_change": 60710.0,
+              "branchMergeRequestsNumber": 0,
+              "innovationRatePercentageBranch": 70,
               "mergeRequestsPT": {
                 "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1345": 23.939444444444444,
                 "https://api.github.com/repos/PublicisSapient/PSknowHOW/pulls/1348": 0.028333333333333332,
@@ -32,10 +36,14 @@
               "users": [
                 {
                   "email": "99163630+hirbabar@users.noreply.github.com",
+                  "mergeRequestsNumber": 1,
+                  "percentage": 8.846153846153847,
                   "average": 454814
                 },
                 {
                   "email": "akshat.shrivastav@publicissapient.com",
+                  "mergeRequestsNumber": 1,
+                  "percentage": 8.846153846153847,
                   "average": 3086.8333333333335
                 }
               ],
@@ -137,10 +145,12 @@
       "users": [
         {
           "email": "99163630+hirbabar@users.noreply.github.com",
+          "percentage": 8.846153846153847,
           "average": 454814
         },
         {
           "email": "akshat.shrivastav@publicissapient.com",
+          "percentage": 8.846153846153847,
           "average": 3086.8333333333335
         }
       ],

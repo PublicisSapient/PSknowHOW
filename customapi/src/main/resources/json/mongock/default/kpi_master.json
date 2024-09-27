@@ -4592,5 +4592,82 @@
     "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false
+  },
+  {
+    "kpiId" : "kpi186",
+    "kpiName" : "Defect Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 10,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "combinedKpiSource" : "Bitbucket/AzureRepository/GitHub/GitLab",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "The percentage of merged pull requests that are addressing defects.",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/226394113/Developer+Defect+Rate"
+          }
+        }
+      ]
+    },
+    "xAxisLabel" : "Days/Weeks/Months",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer",
+    "maturityRange" : null
+  },
+  {
+    "kpiId" : "kpi185",
+    "kpiName" : "Innovation Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 9,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "combinedKpiSource" : "Bitbucket/AzureRepository/GitHub/GitLab",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "Innovation rate aims at identifying the volume of brand new additions to a codebase (functional and non-functional features, etc) by measuring the newly added code at repository level.\nMore precisely, the New source lines of code(LOC) from a commit. (git log stats insertions)",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/226459649/Developer+Innovation+Rate"
+          }
+        }
+      ]
+    },
+    "xAxisLabel" : "Days/Weeks/Months",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : true,
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer"
   }
 ]
