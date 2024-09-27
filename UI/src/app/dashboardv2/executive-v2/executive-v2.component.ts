@@ -1433,24 +1433,28 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   // }
 
   checkIfDataPresent(data) {
-    if (data) {
-      if (Array.isArray(data)) {
-        let dataCount = 0;
-        data?.forEach(item => {
-          if (item?.data && !isNaN(parseInt(item?.data))) {
-            dataCount += item?.data;
-          } else if (item.value) {
-            item?.value?.forEach(val => {
-              if (!isNaN(parseInt(val?.data))) {
-                dataCount += val?.data;
-              }
-            });
-          }
-        });
-        return parseInt(dataCount + '') > 0;
-      }
-      return Object.keys(data).length > 0;
-    }
+    // if (data) {
+    //   if (Array.isArray(data)) {
+    //     let dataCount = 0;
+    //     data?.forEach(item => {
+    //       if (item?.data && !isNaN(parseInt(item?.data))) {
+    //         dataCount += item?.data;
+    //       } else if (item.value) {
+    //         item?.value?.forEach(val => {
+    //           if (!isNaN(parseInt(val?.data))) {
+    //             dataCount += val?.data;
+    //           }
+    //         });
+    //       }
+    //     });
+    //     return parseInt(dataCount + '') > 0;
+    //   }
+    //   return Object.keys(data).length > 0;
+    // }
+    // return false;
+    if(this.kpiStatusCodeArr[data]) {
+      return this.kpiStatusCodeArr[data] === '200' && this.kpiChartData[data]?.length > 0 && Object.keys(this.kpiChartData[data])?.length > 0;
+    } 
     return false;
   }
 

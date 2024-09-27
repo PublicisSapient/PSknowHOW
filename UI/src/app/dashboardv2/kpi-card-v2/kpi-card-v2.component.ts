@@ -345,17 +345,31 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    if (data) {
-      if (Array.isArray(data)) {
-        if(data.length) {
-          this.checkIfDataPresent(data[0]);
-        } else {
-          return false;
-        }
-      }
-      return Object.keys(data).length > 0;
-    }
-    return false;
+    // if (data) {
+    //   if (Array.isArray(data)) {
+    //     // if(data.length) {
+    //     //   this.checkIfDataPresent(data[0]);
+    //     // } else {
+    //     //   return false;
+    //     // }
+    //     let dataCount = 0;
+    //     data?.forEach(item => {
+    //       if (item?.data && !isNaN(parseInt(item?.data))) {
+    //         dataCount += item?.data;
+    //       } else if (item.value) {
+    //         item?.value?.forEach(val => {
+    //           if (!isNaN(parseInt(val?.data))) {
+    //             dataCount += val?.data;
+    //           }
+    //         });
+    //       }
+    //     });
+    //     return parseInt(dataCount + '') > 0;
+    //   }
+    //   return Object.keys(data).length > 0;
+    // }
+    // return false;
+    return data === '200' && this.trendValueList?.length > 0 && Object.keys(this.trendValueList)?.length > 0 && Object.keys(this.trendValueList)?.length > 0; 
   }
 
   getColorCssClasses(index) {

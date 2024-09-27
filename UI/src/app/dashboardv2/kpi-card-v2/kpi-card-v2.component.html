@@ -25,7 +25,7 @@
     </p-menu>
   </div>
   <!-- kpiFilter *ngIf="checkIfDataPresent(trendValueList);"-->
-  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" 
+  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
     [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' }" class="kpi-filter p-pr-5 p-pl-5"
     #kpiFilterContainer>
     <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
@@ -54,9 +54,9 @@
         <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
           inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
           (onChange)="handleChange('multi', $event, k)" [filter]="false" [showHeader]="false" [maxSelectedLabels]="3"
-          selectedItemsLabel="{0} items selected"
-          (onClear)="handleClearAll('filter'+(k+1))" [style]="{'max-width': '100%', 'height': '32px'}"
-          [showClear]="true" defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+          selectedItemsLabel="{0} items selected" (onClear)="handleClearAll('filter'+(k+1))"
+          [style]="{'max-width': '100%', 'height': '32px'}" [showClear]="true" defaultLabel="{{filter?.filterType}}"
+          [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
         </p-multiSelect>
       </ng-container>
     </div>
@@ -70,28 +70,33 @@
   <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : '220px',
   'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
     <!--place for chart to be rendered-->
-    <ng-content *ngIf="!loader && !immediateLoader && checkIfDataPresent(trendValueList) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
+    <ng-content
+      *ngIf="!loader && !immediateLoader && checkIfDataPresent(kpiDataStatusCode) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
     <ng-template #noData>
       <!-- <div class="min-ht" *ngIf="(!checkIfDataPresent(trendValueList) && !iSAdditionalFilterSelected) || (!checkIfDataPresent(trendValueList) && kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)"> -->
-      <div class="min-ht" *ngIf="!loader && !immediateLoader && !checkIfDataPresent(trendValueList) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
+      <div class="min-ht"
+        *ngIf="!loader && !immediateLoader && !checkIfDataPresent(trendValueList) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>
         <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
           <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
           <h4 *ngSwitchCase="'202'" class="p-text-center">Required Tool not configured. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your administrator.</h4>
+          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
+            administrator.</h4>
           <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
         </div>
       </div>
-      <div class="min-ht" *ngIf="!loader && !immediateLoader && !checkIfDataPresent(trendValueList) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
+      <div class="min-ht"
+        *ngIf="!loader && !immediateLoader && !checkIfDataPresent(kpiDataStatusCode) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>
         <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
           <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
           <h4 *ngSwitchCase="'202'" class="p-text-center">Required Tool not configured. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your administrator.</h4>
+          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
+            administrator.</h4>
           <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
         </div>
       </div>
@@ -156,7 +161,8 @@
         <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
           <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
           <h4 *ngSwitchCase="'202'" class="p-text-center">Required Tool not configured. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your administrator.</h4>
+          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
+            administrator.</h4>
           <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
         </div>
       </ng-template>
