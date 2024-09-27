@@ -1,0 +1,483 @@
+    /*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+ @keyframes colors {
+    0% {
+        stroke: var(--color-blue);
+    }
+    25% {
+        stroke: var(--color-red);
+    }
+    50% {
+        stroke: var(--color-yellow);
+    }
+    75% {
+        stroke: var(--color-green);
+    }
+    100% {
+        stroke: var(--color-blue);
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dashoffset: var(--offset);
+    }
+    50% {
+        stroke-dashoffset: 187/4;
+        transform: rotate(135deg);
+    }
+    100% {
+        stroke-dashoffset: var(--offset);
+        transform: rotate(450deg);
+    }
+}
+
+@keyframes rotator {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(270deg);
+    }
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+:host {
+    height: 100%;
+    min-height: 100%;
+    position: relative;
+}
+
+::ng-deep body {
+    height: 100%;
+    --offset: 187;
+    --duration: 1.4s;
+    line-height: 1.2;
+}
+
+::ng-deep html {
+    height: 100%;
+}
+
+.login {
+    width: 100%;
+    display: block;
+    height: calc(100% - 54px);
+}
+
+.knowHowImage{
+    height: 60px;
+}
+
+.login-intro {
+    width: 100%;
+    background: #f3f3f5 url('../../../assets/img/bg-login.jpg') no-repeat 100% 100%;
+    background-size: 70%;
+    height: 100vh;
+}
+
+.login .login-intro {
+    padding: 40px 50px;
+    color: var(--color-gray-34);
+    flex: 1;
+}
+
+.login .login-intro .logo {
+    display: none;
+    width: 128px;
+    margin-bottom: 16px;
+    margin-top: -20px;
+}
+
+.login .login-intro .title {
+    font-size: 42px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.login .login-intro .description {
+    padding-top: 16px;
+    font-size: 14px;
+    max-width: 600px;
+    color: rgba(255, 255, 255, .54);
+}
+
+.login .login-form-wrapper {
+    /* width: 430px; */
+    margin: 0 0 0 17%;
+    /* background-color: #f8f7f1; */
+    -webkit-animation: bounceIn 1s;
+    animation: bounceIn 1s;
+    -webkit-transform: scale(0, 0);
+    transform: scale(0, 0);
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+
+.login .login-form-wrapper .login-form {
+    padding: 10px 10px 0;
+    background-color: var(--color-white);
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 2px 1px -1px #0003, 0 1px 1px 0 #00000024, 0 1px 3px 0 #0000001f;
+    overflow: hidden;
+}
+
+.login-form-wrapper .login-form .logo {
+    height: 128px;
+    line-height: 128px;
+    font-size: 86px;
+    font-weight: 500;
+    margin: -72px auto;
+    color: var(--color-white);
+    border-radius: 2px;
+    background-image: url('../../../assets/img/logo.png');
+    background-repeat: no-repeat;
+}
+
+.login-form-wrapper .login-form .title {
+    font-size: 18px;
+    text-align: center;
+    border-radius: 0;
+    padding: 8px 8px 0;
+    color: #212529;
+    font-weight: 600;
+    /* background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 5s ease infinite; */
+}
+
+.login-form form .group {
+    position: relative;
+    margin: 20px 0 0 0;
+}
+
+.login-form form .idp {
+    cursor: pointer;
+    padding: 5px;
+    overflow: hidden;
+    margin-top: 35px;
+}
+
+.login-form form .idp:hover {
+    background-color: var(--color-gray-cc);
+}
+
+.login-form form .disabled {
+    color: gray;
+    cursor: not-allowed;
+}
+
+.login-form .idp .large-text-no-wrap {
+    height: 48px;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 1em;
+    padding-left: 16px;
+}
+
+.login-form form .large-icon {
+    height: 48px;
+    width: 48px;
+    vertical-align: middle;
+}
+
+.login-form form textarea {
+    resize: none;
+}
+
+.login-form form input[type='text'],
+input[type='password'],
+.login-form form textarea {
+    background: none;
+    font-size: 16px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 7px 10px 10px 5px;
+    display: block;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--color-gray-c6);
+}
+
+.login-form form input:focus,
+.login-form form textarea:focus {
+    outline: none;
+}
+
+/* .login-form input:focus~label,
+.login-form textarea:focus~label,
+.login-form input:valid~label,
+.login-form textarea:valid~label {
+    top: -14px;
+    font-size: 12px;
+    color: var(--color-gray-c6);
+} */
+
+.login-form input:focus~.bar::before,
+.login-form textarea:focus~.bar::before {
+    width: 100%;
+}
+
+/* .login-form form input[type='password'] {
+    letter-spacing: .3em;
+} */
+
+.login-form form label {
+    color: var(--color-gray-c6);
+    font-size: 14px;
+    font-weight: normal;
+    position: absolute;
+    pointer-events: none;
+    left: 5px;
+    top: 10px;
+    transition: 300ms ease all;
+}
+
+.login-form form .bar {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.login-form form .bar::before {
+    content: '';
+    height: 2px;
+    width: 0;
+    bottom: 0;
+    position: absolute;
+    background-color: var(--color-blue);
+    transition: 300ms ease all;
+    left: 0;
+}
+
+.login-form form .sep {
+    background-color: var(--color-gray-c6);
+    box-shadow: none;
+    border: none;
+    height: 2px;
+    width: 25%;
+    margin: 0 auto 45px auto;
+}
+
+
+/* button */
+
+.login-form form button {
+    width: 100%;
+    margin: 20px auto;
+    display: block;
+    background-color: #079fff ;
+    border: none;
+    box-shadow: none;
+    color: #fff;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.login-form form .redirection {
+    flex-direction: column;
+    box-sizing: border-box; 
+    max-width: 100%;
+    margin: 0 0 20px;
+    font-size: 15px;
+    text-align: left;
+}
+
+.login-form form .loading {
+    margin: 16px auto;
+}
+
+.login-form .spinner-align {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-form-wrapper .login-form .spinner {
+    animation: rotator var(--duration) linear infinite;
+}
+
+.login-form-wrapper .login-form .path {
+    stroke-dasharray: var(--offset);
+    stroke-dashoffset: 0;
+    transform-origin: center;
+    animation: dash var(--duration) ease-in-out infinite, colors 5.6s ease-in-out infinite;
+}
+
+.login-form-wrapper .login-form .invalid-text {
+    width: 100%;
+    margin-top: .2rem;
+    font-size: 80%;
+    color: var(--color-red);
+    text-align: left;
+}
+
+.login-form .group .checkboxclass {
+    display: block;
+    padding-left: 20px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    margin-top: -10px;
+    color: var(--color-gray-34);
+}
+
+.checkbox-div .control input[type='checkbox'] {
+    position: absolute;
+    top: 2px;
+    left: inherit;
+}
+
+.login-form-wrapper .login-form .info {
+    padding: 9px;
+    background-color: var(--color-blue);
+    color: var(--color-white);
+    font-size: 13px;
+    margin-left: -25px;
+    margin-right: -25px;
+}
+
+.login-form-wrapper .login-form .closebtn {
+    margin-left: 15px;
+    color: var(--color-white);
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.login-form-wrapper .login-form .closebtn:hover {
+    color: var(--color-black);
+}
+
+.alert {
+    border-radius: 0;
+    text-align: center;
+}
+
+
+/* Custom Checkbox CSS */
+
+
+/* The container */
+
+.login-form form .container {
+    display: block;
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 12px;
+    color: var(--color-gray-34);
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-size: 14px;
+    font-weight: normal;
+    pointer-events: all;
+    left: 0;
+    top: 10px;
+    transition: 300ms ease all;
+    text-align: left;
+}
+
+
+/* Hide the browser's default checkbox */
+
+.container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+
+/* Create a custom checkbox */
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 17px;
+    background-color: #eee;
+}
+
+
+/* On mouse-over, add a grey background color */
+
+.container:hover input~.checkmark {
+    background-color: #ccc;
+}
+
+
+/* When the checkbox is checked, add a blue background */
+
+.container input:checked~.checkmark {
+    background-color: #2196f3;
+}
+
+
+/* Create the checkmark/indicator (hidden when not checked) */
+
+.checkmark:after {
+    content: '';
+    position: absolute;
+    display: none;
+}
+
+
+/* Show the checkmark when checked */
+
+.container input:checked~.checkmark:after {
+    display: block;
+}
+
+
+/* Style the checkmark/indicator */
+
+.container .checkmark:after {
+    left: 5px;
+    top: 0px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+.ps-logo{
+    height: 80px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}

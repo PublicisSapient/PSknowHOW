@@ -17,14 +17,14 @@
  ******************************************************************************/
 
 import { Component, HostListener, OnInit } from '@angular/core';
-import { SharedService } from './core/services/shared.service';
-import { GetAuthService } from './core/services/getauth.service';
-import { HttpService } from './core/services/http.service';
-import { GoogleAnalyticsService } from './core/services/google-analytics.service';
-import { GetAuthorizationService } from './core/services/get-authorization.service';
+import { SharedService } from './services/shared.service';
+import { GetAuthService } from './services/getauth.service';
+import { HttpService } from './services/http.service';
+import { GoogleAnalyticsService } from './services/google-analytics.service';
+import { GetAuthorizationService } from './services/get-authorization.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-import { FeatureFlagsService } from './core/services/feature-toggle.service';
+import { FeatureFlagsService } from './services/feature-toggle.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

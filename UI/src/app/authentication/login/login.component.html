@@ -1,0 +1,92 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<div class="login" fxFlex>
+  <div class="login-intro" fxFlex fxHide fxShow.gt-xs>
+    <img src="../../../assets/img/ps-logo.svg" alt="Publicis Sapient" class="ps-logo"/>
+    <div class="p-grid">
+
+        <div class="login-form-wrapper p-lg-5 p-sm-7 p-xl-4">
+          <img src="../../../assets/img/knowHOW_logo_final.png" alt="Publicis Sapient" class="knowHowImage">
+          <div class="login-form">
+           <!-- Display error messages-->
+           <div *ngIf="error" class="alert alert-danger w-100 p-mb-0">{{error}}</div>
+            <h2>KnowHOW Login</h2>
+            <form class="w-100" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <div class="group">
+                <input autocomplete="off" type="text" name="username" id="Layout-UserName" formControlName="username"
+                  [ngClass]="{ 'is-invalid': submitted && f.username.errors }" required="required" placeholder="User Name"/>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+  
+                <!-- User validation-->
+                <div *ngIf="submitted && f.username.errors" class="invalid-text">
+                  <div *ngIf="f.username.errors.required">Username is required</div>
+                </div>
+              </div>
+  
+  
+              <div class="group" data-validate="Password is required">
+                <input type="password" name="password" id="Layout-Password" formControlName="password"
+                  [ngClass]="{ 'is-invalid': submitted && f.password.errors }" required="required" placeholder="Password"/>
+  
+                <span class="highlight"></span>
+                <span class="bar"></span>
+  
+                <!-- Password validation-->
+                <div *ngIf="submitted && f.password.errors" class="invalid-text">
+                  <div *ngIf="f.password.errors.required">Password is required</div>
+                </div>
+              </div>
+  
+  
+              <div class="group">
+                <button id="Layout-Login-Btn">
+                  Log In
+                </button>
+              </div>
+  
+              <div class="redirection">
+                <a class="link" routerLink="/authentication/forgetPasswordEmail">Forgot Password?</a>
+              </div>
+  
+  
+              <div class="redirection">
+                <span class="text p-mr-2">Don't have an account?</span>
+                <a class="link" routerLink="/authentication/register">Create an account</a>
+              </div>
+  
+  
+            </form>
+            <!-- Spinner -->
+            <div class="spinner-align w-100">
+              <svg *ngIf="loading" class="spinner" width="50px" height="40px" viewBox="0 0 66 66"
+                xmlns="http://www.w3.org/2000/svg">
+                <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30">
+                </circle>
+              </svg>
+            </div>
+      
+           
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</div>
