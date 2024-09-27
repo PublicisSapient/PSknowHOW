@@ -43,13 +43,6 @@ CREATE TABLE IF NOT EXISTS role (
 	modified_date DATE
 );
 
-CREATE TABLE IF NOT EXISTS user_token (
-	id serial PRIMARY KEY,
-	username VARCHAR(50) NOT NULL,
-	token VARCHAR,
-	expiry_date VARCHAR(100)
-);
-
 
 CREATE TABLE IF NOT EXISTS user_role (
 	id serial PRIMARY KEY,
@@ -83,17 +76,6 @@ CREATE TABLE user_verification_token (
     expiry_date TIMESTAMP,
     username VARCHAR(255),
     email VARCHAR(255)
-);
-
-CREATE TABLE IF NOT EXISTS api_key (
-	id serial PRIMARY KEY,
-	resource_id INTEGER NOT NULL REFERENCES resource (id),
-	key VARCHAR NOT NULL,
-	expiry_date DATE,
-	created_by INTEGER NOT NULL REFERENCES users (id),
-    created_date DATE NOT NULL,
-    modified_by	 INTEGER REFERENCES users (id),
-    modified_date DATE
 );
 
 ---

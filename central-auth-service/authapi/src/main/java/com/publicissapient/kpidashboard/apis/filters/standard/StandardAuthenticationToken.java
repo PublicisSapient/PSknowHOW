@@ -21,26 +21,20 @@ package com.publicissapient.kpidashboard.apis.filters.standard;
 import java.util.Collection;
 import java.util.Objects;
 
+import lombok.Getter;
+
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
-/**
- * Provides Standard Login Authentication Token.
- *
- * @author Hiren Babariya
- */
+@Getter
 public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 7187799207155545385L;
 
 	private final transient Object principal;
+
 	private transient Object credentials;
 
-	/**
-	 * 
-	 * @param principal
-	 * @param credentials
-	 */
 	@SuppressWarnings("PMD")
 	public StandardAuthenticationToken(Object principal, Object credentials) {
 		super(null);
@@ -49,15 +43,10 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 		setAuthenticated(false);
 	}
 
-	/**
-	 * 
-	 * @param principal
-	 * @param credentials
-	 * @param authorities
-	 */
+	// TODO: not used?
 	@SuppressWarnings("PMD")
 	public StandardAuthenticationToken(Object principal, Object credentials,
-			Collection<? extends GrantedAuthority> authorities) {
+									   Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.principal = principal;
 		this.credentials = credentials;
@@ -65,25 +54,8 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * @return credentials
-	 */
-	@Override
-	public Object getCredentials() {
-		return this.credentials;
-	}
-
-	/**
-	 * @return principal
-	 */
-	@Override
-	public Object getPrincipal() {
-		return this.principal;
-	}
-
-	/**
 	 * Sets authenticated false if isAuthneticated is false, Throws
 	 * IllegalArgumentException if isAuthneticated is true.
-	 * 
 	 */
 	@Override
 	public void setAuthenticated(boolean isAuthenticated) {
@@ -107,9 +79,9 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	/**
 	 * Overridden method of Object's equal method compares principal and credentials
 	 * object to check StandardAuthenticationToken is equal
-	 * 
+	 *
 	 * @return true if invoked object's principal and credentials are matching,
-	 *         false if they are not matching
+	 * false if they are not matching
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -126,11 +98,6 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 		return Objects.equals(principal, that.principal) && Objects.equals(credentials, that.credentials);
 	}
 
-	/**
-	 * Overridden method of Object's hashcode method
-	 * 
-	 * @return hashcode
-	 */
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), principal, credentials);

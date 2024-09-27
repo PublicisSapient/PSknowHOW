@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {NavLink} from 'react-router-dom';
 import apiProvider from '../../services/API/IndividualApis';
-import { useForm, FormProvider } from "react-hook-form";
-import { Text } from "../../components/Text";
-import { Button } from "../../components/Button";
-import { Img } from "../../components/Img";
-import { FloatingInput } from "../../components/FloatingInput";
+import {useForm, FormProvider} from "react-hook-form";
+import {Text} from "../../components/Text";
+import {Button} from "../../components/Button";
+import {Img} from "../../components/Img";
+import {FloatingInput} from "../../components/FloatingInput";
 import '../../App.css';
 import SuiteLogos from '../../components/SuiteLogos';
 import PSLogo from '../../components/PSLogo';
+import Cookies from 'js-cookie';
 
+const SAML_USERNAME_COOKIE_NAME = "samlUsernameCookie";
 const _loginButtonText = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_LOGIN_BUTTON_TEXT : process.env.REACT_APP_LOGIN_BUTTON_TEXT;
 
 const LoginPage = ({search}) => {
@@ -18,12 +20,33 @@ const LoginPage = ({search}) => {
     const [showLoader, setShowLoader] = useState(false);
     const [showSAMLLoader, setShowSAMLLoader] = useState(false);
     const [showLoginWithCredentials, setShowLoginWithCredentials] = useState(false);
-    const methods = useForm({ mode: 'all' });
+    const methods = useForm({mode: 'all'});
     const userNamePattern = /^[A-Za-z0-9]+$/;
+
+    const getSamlUsernameCookie = () => {
+        return Cookies.get(SAML_USERNAME_COOKIE_NAME);
+    };
+
+    const currentUsername = getSamlUsernameCookie();
 
     const PerformSAMLLogin = () => {
         setShowSAMLLoader(true);
-        window.location.href = apiProvider.handleSamlLogin;
+
+        const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
+
+        if (redirectUri) {
+            window.location.href = `${apiProvider.handleSamlLogin}?redirectUri=${redirectUri}`;
+        } else {
+            window.location.href = apiProvider.handleSamlLogin;
+        }
+    }
+
+    const PerformSAMLLogout = async () => {
+        setShowSAMLLoader(true);
+
+        Cookies.remove(SAML_USERNAME_COOKIE_NAME, { path: '/', domain: '.tools.publicis.sapient.com' });
+
+        window.location.href = apiProvider.handleSamlLogout
     }
 
     const ShowLoginWithCredentials = () => {
@@ -32,47 +55,35 @@ const LoginPage = ({search}) => {
 
     const PerformCredentialLogin = (data) => {
         setShowLoader(true);
+
         apiProvider.handleUserStandardLogin({
             username: data.userName,
             password: data.password
         })
-        .then((response) => {
-            if(response){
-                apiProvider.getStandardLoginStatus()
-                .then((res) => {
-                    if(res && res.data['success']){
-                        // const authToken = res.data.data.authToken;
-                        const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
-                        localStorage.setItem('user_details', JSON.stringify({ email: res.data.data.email, isAuthenticated: true }));
-                        setShowLoader(false);
-                        let defaultAppUrl = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_PSKnowHOW : process.env.REACT_APP_PSKnowHOW;
-                        if(!redirectUri){
-                            window.location.href = (defaultAppUrl);
-                        }else{
-                            if(redirectUri.indexOf('?') === -1){
-                                window.location.href = (`${redirectUri}`);
-                            }else{
-                                window.location.href = (`${redirectUri}`);
-                            }
-                        }
-                    } else {
-                     setShowLoader(false);
-                     setError(res.data.message);
-                     }
-                }).catch((err) => {
-                    console.log(err);
+            .then((response) => {
+                if (response.status === 200) {
+                    const redirectUri = JSON.parse(localStorage.getItem('redirect_uri'));
+
                     setShowLoader(false);
-                    let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
-                    setError(errMessage);
-                });
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            setShowLoader(false);
-            let errMessage = err?.response?.data?.message ?  err?.response?.data?.message : 'Please try again after sometime'
-            setError(errMessage);
-        });
+
+                    let url = new URL(redirectUri);
+
+                    window.location.href = url.origin + url.pathname;
+                } else {
+                    setShowLoader(false);
+
+                    setError(response.data.message);
+                }
+            })
+            .catch((err) => {
+                setShowLoader(false);
+
+                let errMessage = err?.response?.data?.message
+                    ? err?.response?.data?.message
+                    : 'Please try again after sometime'
+
+                setError(errMessage);
+            });
     }
 
     useEffect(() => {
@@ -115,11 +126,10 @@ const LoginPage = ({search}) => {
                     } clickFn={PerformSAMLLogin}
                 >
                     <Text className="text-white text-left">
-                      {_loginButtonText ? _loginButtonText : 'Login with SSO'}
+                        {currentUsername ? `Continue as ${currentUsername}` : _loginButtonText ? _loginButtonText : 'Login with SSO'}
                     </Text>
                 </Button>
-                <Button
-                    color={showLoginWithCredentials ? 'blue_80' : 'blue_800'}
+                {currentUsername && <Button
                     className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                     rightIcon={
                         <>
@@ -127,14 +137,36 @@ const LoginPage = ({search}) => {
                                 className="h-5 mb-px ml-2"
                                 src="images/img_arrowright.svg"
                                 alt="arrow_right"
-                                style={{ transform: showLoginWithCredentials ? 'rotate(90deg)' : 'none' }}
                             />
+                            {showSAMLLoader && <Img
+                                src={`${process.env.PUBLIC_URL}/images/spinner.png`} height='20'
+                                className="spinner mb-px ml-2"
+                                alt={`Spinner`}
+                            />}
                         </>
-                    } clickFn={ShowLoginWithCredentials}
+                    } clickFn={PerformSAMLLogout}
                 >
                     <Text className="text-white text-left">
-                        Login with credentials
+                        Logout of Microsoft and use another account
                     </Text>
+                </Button>}
+                <Button
+                  color={showLoginWithCredentials ? 'blue_80' : 'blue_800'}
+                  className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
+                  rightIcon={
+                    <>
+                      <Img
+                        className="h-5 mb-px ml-2"
+                        src="images/img_arrowright.svg"
+                        alt="arrow_right"
+                        style={{ transform: showLoginWithCredentials ? 'rotate(90deg)' : 'none' }}
+                      />
+                    </>
+                  } clickFn={ShowLoginWithCredentials}
+                >
+                  <Text className="text-white text-left">
+                    Login with credentials
+                  </Text>
                 </Button>
               {
                 showLoginWithCredentials &&
@@ -171,7 +203,7 @@ const LoginPage = ({search}) => {
                         <p className="errMsg">{methods.formState.errors['password'].message}</p>}
 
                       <Button
-                        color="blue_80"
+                        color="blue_800"
                         variant="fill"
                         className="cursor-pointer flex min-h-[36px] items-center justify-center ml-0.5 md:ml-[0] mt-[18px] w-full"
                         clickFn={methods.handleSubmit(PerformCredentialLogin)}
@@ -203,7 +235,6 @@ const LoginPage = ({search}) => {
                     <NavLink to="/register">Sign up here.</NavLink>
                   </div>
                 </>
-
               }
             </div>
         </div>
