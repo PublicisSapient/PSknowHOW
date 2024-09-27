@@ -26,3 +26,7 @@
     color: #fff;
     border-color: #D5DBE1;
 }
+
+::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight {
+    pointer-events: none;
+}

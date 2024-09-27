@@ -65,7 +65,9 @@ public class ProjectToolConfig extends BasicModel {
 	private String newRelicApiQuery;
 	private List<String> newRelicAppNames;
 	private String createdAt;
+	private String createdBy;
 	private String updatedAt;
+	private String updatedBy;
 	private boolean queryEnabled;
 	private String boardQuery;
 	private List<BoardDetails> boards;

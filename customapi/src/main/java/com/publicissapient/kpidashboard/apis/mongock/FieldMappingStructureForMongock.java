@@ -47,6 +47,14 @@ public class FieldMappingStructureForMongock {
 	private List<Options> options;
 	private List<String> filterGroup;
 	private List<BaseFieldMappingStructure> nestedFields;
+	private String placeHolderText;
+	private Integer fieldDisplayOrder;
+	private String toggleLabelLeft;
+	private String toggleLabelRight;
+	private Integer sectionOrder;
+	private boolean mandatory;
+	private String readOnly;
+	private boolean nodeSpecific;
 
 	@Data
 	@Getter

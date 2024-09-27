@@ -96,12 +96,12 @@ public class FetchKanbanReleaseDataImplTest {
 	}
 
 	private void prepareHierarchyLevel() {
-		hierarchyLevels.add(new HierarchyLevel(5, "sprint", "Sprint"));
-		hierarchyLevels.add(new HierarchyLevel(5, "release", "Release"));
-		hierarchyLevels.add(new HierarchyLevel(4, "project", "Project"));
-		hierarchyLevels.add(new HierarchyLevel(3, "hierarchyLevelThree", "Level Three"));
-		hierarchyLevels.add(new HierarchyLevel(2, "hierarchyLevelTwo", "Level Two"));
-		hierarchyLevels.add(new HierarchyLevel(1, "hierarchyLevelOne", "Level One"));
+		hierarchyLevels.add(new HierarchyLevel(5, "sprint", "Sprint", ""));
+		hierarchyLevels.add(new HierarchyLevel(5, "release", "Release", ""));
+		hierarchyLevels.add(new HierarchyLevel(4, "project", "Project", ""));
+		hierarchyLevels.add(new HierarchyLevel(3, "hierarchyLevelThree", "Level Three", ""));
+		hierarchyLevels.add(new HierarchyLevel(2, "hierarchyLevelTwo", "Level Two", ""));
+		hierarchyLevels.add(new HierarchyLevel(1, "hierarchyLevelOne", "Level One", ""));
 	}
 
 	@Test

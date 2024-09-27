@@ -58,24 +58,19 @@ export class ConfigComponent implements OnInit {
         });
 
         this.items = [
+         { label: 'Manage Access', icon: 'fas fa-user-circle', routerLink: '/dashboard/Config/Profile/MyProfile', id: 'Layout-ProfileMgmt', routerLinkActiveOptions: '{ exact: true }' },
             { label: 'Projects', icon: 'fas fa-wrench', routerLink: '/dashboard/Config/ProjectList', id: 'Layout-KPIConfig', routerLinkActiveOptions: '{ exact: true }' },
-            { label: 'Connections', icon: 'fas fa-plug', routerLink: '/dashboard/Config/connection-list', id: 'Layout-ConnectionsConfig', routerLinkActiveOptions: '{ exact: true }' },
-            { label: 'Profile Mgmt.', icon: 'fas fa-user-circle', routerLink: '/dashboard/Config/Profile/MyProfile', id: 'Layout-ProfileMgmt', routerLinkActiveOptions: '{ exact: true }' },
+            { label: 'Manage Tools', icon: 'fas fa-plug', routerLink: '/dashboard/Config/ConfigSettings', id: 'Layout-ConnectionsConfig', routerLinkActiveOptions: '{ exact: true }' },
         ];
 
         if (this.hasAccess) {
             // logged in as SuperAdmin or ProjectAdmin
             this.items.push(
+                { label: 'Processor', icon: 'fa fa-fw fa-cog', routerLink: '/dashboard/Config/AdvancedSettings', id: 'Layout-AdvanceSettings', routerLinkActiveOptions: '{ exact: true }' },
                 { label: 'Dashboard Config.', icon: 'fas fa-life-ring', routerLink: '/dashboard/Config/Dashboardconfig', id: 'Layout-DashboardConfig', routerLinkActiveOptions: '{ exact: true }' },
-                // { label: 'Validation', icon: 'fas fa-chart-line', routerLink: '/dashboard/Config/DataValidation', id: 'Layout-DataValidation', routerLinkActiveOptions: '{ exact: true }' }
-            );
-        }
+                { label: 'Capacity Planning', icon: 'fa fa-regular fa-users', routerLink: '/dashboard/Config/Capacity', id: 'Layout-Capacity', routerLinkActiveOptions: '{ exact: true }' },
+                { label: 'Misc Data Upload', icon: 'fa fa-fw fa-upload', routerLink: '/dashboard/Config/Upload', id: 'Layout-Upload', routerLinkActiveOptions: '{ exact: true }' },
 
-        if (this.hasAccess) {
-            this.items.push(
-                { label: 'Misc. Settings', icon: 'fa fa-fw fa-cog', routerLink: '/dashboard/Config/AdvancedSettings', id: 'Layout-AdvanceSettings', routerLinkActiveOptions: '{ exact: true }' },
-                { label: 'Upload Data', icon: 'fa fa-fw fa-upload', routerLink: '/dashboard/Config/Upload', id: 'Layout-Upload', routerLinkActiveOptions: '{ exact: true }' },
-                { label: 'Capacity Planning', icon: 'fa fa-regular fa-users', routerLink: '/dashboard/Config/Capacity', id: 'Layout-Capacity', routerLinkActiveOptions: '{ exact: true }' }
             );
         }
 

@@ -130,7 +130,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		List<Connection> nonAuthConnection = new ArrayList<>();
 
 		connectionData.stream().filter(
-				e -> !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()) && e.isConnPrivate())
+				e -> !e.isSharedConnection() && !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 				.forEach(nonAuthConnection::add);
 
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
@@ -239,7 +239,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		List<Connection> nonAuthConnection = new ArrayList<>();
 		typeList.stream().filter(
-				e -> !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()) && e.isConnPrivate())
+				e -> !e.isSharedConnection() && !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 				.forEach(nonAuthConnection::add);
 
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
@@ -273,9 +273,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String api = "save";
 
 		if (connName == null) {
-			List<Connection> publicConnections = connectionRepository.findByTypeAndConnPrivate(conn.getType(), false);
+			List<Connection> publicConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(), true);
 
-			List<Connection> privateConnections = connectionRepository.findByTypeAndConnPrivate(conn.getType(), true)
+			List<Connection> privateConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(), false)
 					.stream().filter(e -> e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 					.collect(Collectors.toList());
 
@@ -523,8 +523,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private List<Connection> getFilteredConnection(String username, Connection inputConn, ObjectId objId) {
 		List<Connection> connection = connectionRepository.findByType(inputConn.getType());
 
-		return connection.stream().filter(e -> !e.isConnPrivate()
-				|| (e.isConnPrivate() && e.getConnectionUsers().contains(username)) && (!e.getId().equals(objId)))
+		return connection.stream().filter(
+				e -> e.isSharedConnection() || e.getConnectionUsers().contains(username) && !e.getId().equals(objId))
 				.collect(Collectors.toList());
 	}
 
@@ -565,7 +565,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setCloudEnv(connection.isCloudEnv());
 		existingConnection.setVault(connection.isVault());
 		existingConnection.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
-		existingConnection.setConnPrivate(connection.isConnPrivate());
+		existingConnection.setSharedConnection(connection.isSharedConnection());
 		existingConnection.setAccessTokenEnabled(connection.isAccessTokenEnabled());
 		existingConnection.setUpdatedBy(authenticationService.getLoggedInUser());
 		existingConnection.setPatOAuthToken(connection.getPatOAuthToken());
@@ -700,7 +700,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case ProcessorConstants.GITLAB:
 		case ProcessorConstants.GITHUB:
-		case ProcessorConstants.REPO_TOOLS:
 			setEncryptedAccessTokenForDb(conn);
 			break;
 		case ProcessorConstants.JENKINS:

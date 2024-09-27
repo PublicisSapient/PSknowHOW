@@ -17,6 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
+import static com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper.getStoryPoint;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -81,6 +83,8 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	private static final String REMOVED_FROM_RELEASE = "removedFromRelease";
 	private static final String RELEASE_SCOPE = "Release Scope";
 	private static final String RELEASE_PLANNED = "Release planned";
+	private static final String ISSUE_COUNT = "Issue Count";
+	private static final String STORY_POINT = "Story Points";
 	private static final int DAYS_RANGE = 120;
 	private static final String LINE_GRAPH_TYPE = "line";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -131,7 +135,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 		Map<LocalDate, List<JiraIssue>> removeIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
 				.get(REMOVED_FROM_RELEASE);
 
-		IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
+		List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
 		long range;
 		String duration;
 		if (CollectionUtils.isNotEmpty(releaseIssues) && MapUtils.isNotEmpty(fullReleaseIssueMap)) {
@@ -159,17 +163,19 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 			fullReleaseIssueMap.forEach((k, v) -> allReleaseTaggedIssue.addAll(v));
 			List<JiraIssue> overallIssues = new ArrayList<>();
 			List<DataCountGroup> issueCountDataGroup = new ArrayList<>();
-
+			List<DataCountGroup> issueSizeCountDataGroup = new ArrayList<>();
 			// populating release scope vs planned
 			for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
 				DataCountGroup issueCount = new DataCountGroup();
+				DataCountGroup issueSize = new DataCountGroup();
 				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate, duration);
 				Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
 						addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues);
 				String date = getRange(dateRange, duration);
-				populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, date, duration, dateRange);
+				populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration, dateRange, fieldMapping);
 				startLocalDate = getNextRangeDate(duration, startLocalDate, endLocalDate);
 				issueCountDataGroup.add(issueCount);
+				issueSizeCountDataGroup.add(issueSize);
 			}
 			releaseIssues.retainAll(allReleaseTaggedIssue);
 			LocalDate maxPlannedDueDate = releaseIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
@@ -182,9 +188,20 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				Map<String, Object> additionalInfoMap = new HashMap<>();
 				additionalInfoMap.put("isXaxisGapRequired", true);
 				additionalInfoMap.put("plannedDueDate", String.valueOf(maxPlannedDueDate));
+
+				IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 				kpiValueIssueCount.setDataGroup(issueCountDataGroup);
-				kpiValueIssueCount.setFilter1(CommonConstant.OVERALL);
+				kpiValueIssueCount.setFilter1(ISSUE_COUNT);
 				kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
+
+				IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
+				kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
+				kpiValueSizeCount.setFilter1(STORY_POINT);
+				kpiValueSizeCount.setAdditionalInfo(additionalInfoMap);
+
+				iterationKpiValueList.add(kpiValueSizeCount);
+				iterationKpiValueList.add(kpiValueIssueCount);
+
 
 				kpiElement.setModalHeads(KPIExcelColumn.RELEASE_PLAN.getColumns());
 				kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_PLAN.getColumns());
@@ -192,7 +209,7 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 			}
 
 		}
-		kpiElement.setTrendValueList(kpiValueIssueCount);
+		kpiElement.setTrendValueList(iterationKpiValueList);
 	}
 
 	/**
@@ -425,34 +442,47 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	 *            Map<String, List<JiraIssue>>
 	 * @param issueCount
 	 *            DataCountGroup of Issue Count
+	 * @param issueSize
+	 *            DataCountGroup of Issue Size
 	 * @param date
 	 *            Date of x-axis
 	 * @param duration
 	 *            Duration
 	 * @param dateRange
 	 *            date range
+	 * @param fieldMapping
+	 * 			fieldMapping
 	 */
 	private void populateFilterWiseDataMap(Map<String, List<JiraIssue>> filterWiseGroupedMap, DataCountGroup issueCount,
-			String date, String duration, CustomDateRange dateRange) {
+			DataCountGroup issueSize, String date, String duration, CustomDateRange dateRange,
+			FieldMapping fieldMapping) {
 		List<DataCount> issueCountDataList = new ArrayList<>();
+		List<DataCount> issueSizeDataList = new ArrayList<>();
 
 		List<JiraIssue> overallIssues = filterWiseGroupedMap.getOrDefault(OVERALL_ISSUE, new ArrayList<>());
 
 		LocalDate endDate = dateRange.getEndDate();
 
-		//gives issue count whose dueDates are till endDate
-		long matchingIssueCount = overallIssues.stream().map(JiraIssue::getDueDate).filter(Objects::nonNull)
-				.filter(dueDateStr -> !dueDateStr.isBlank()).filter(dueDateStr -> {
-					LocalDate dueDate = LocalDate.parse(dueDateStr.split("T")[0], DATE_TIME_FORMATTER);
-					return DateUtil.equalAndBeforeTime(dueDate,endDate);
-				}).count();
-
+		//gives issue whose dueDates are till endDate
+		List<JiraIssue> matchingIssues = overallIssues.stream().filter(issue -> issue.getDueDate() != null)
+				.filter(issue -> !issue.getDueDate().isBlank()).filter(issue -> {
+					LocalDate dueDate = LocalDate.parse(issue.getDueDate().split("T")[0], DATE_TIME_FORMATTER);
+					return DateUtil.equalAndBeforeTime(dueDate, endDate);
+				}).toList();
+		
 		createDataCount((long) overallIssues.size(), RELEASE_SCOPE, issueCountDataList);
-		createDataCount(matchingIssueCount, RELEASE_PLANNED, issueCountDataList);
+		createDataCount((long) matchingIssues.size(), RELEASE_PLANNED, issueCountDataList);
 
 		issueCount.setFilter(date);
 		issueCount.setDuration(duration);
 		issueCount.setValue(issueCountDataList);
+
+		createDataCount(getStoryPoint(overallIssues, fieldMapping) , RELEASE_SCOPE, issueSizeDataList);
+		createDataCount(getStoryPoint(matchingIssues, fieldMapping) , RELEASE_PLANNED, issueSizeDataList);
+
+		issueSize.setFilter(date);
+		issueSize.setDuration(duration);
+		issueSize.setValue(issueSizeDataList);
 	}
 
 	/**
@@ -548,4 +578,5 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 			KPIExcelUtility.populateReleasePlanExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
+
 }

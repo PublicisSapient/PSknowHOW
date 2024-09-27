@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
+import static com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper.getTicketEstimate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -298,7 +299,7 @@ public class ReleaseBurnUpServiceImplTest {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
 		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
-		double result = releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
+		double result = getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
 		assertEquals(63.0, result, 0.01);
 	}
 
@@ -309,7 +310,7 @@ public class ReleaseBurnUpServiceImplTest {
 		List<JiraIssue> jiraIssueList = jiraIssueDataFactory.getJiraIssues();
 		when(fieldMapping.getEstimationCriteria()).thenReturn("time");
 		when(fieldMapping.getStoryPointToHourMapping()).thenReturn(1.0);
-		double result = releaseBurnUpService.getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
+		double result = getTicketEstimate(jiraIssueList, fieldMapping, 0.0);
 		assertEquals(0.0, result, 0.01);
 	}
 

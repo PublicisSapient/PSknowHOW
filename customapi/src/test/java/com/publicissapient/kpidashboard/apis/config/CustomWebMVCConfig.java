@@ -28,7 +28,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -61,16 +60,6 @@ public class CustomWebMVCConfig implements WebMvcConfigurer {
 		PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
 		resolver.setMaxPageSize(Integer.MAX_VALUE);
 		argumentResolvers.add(resolver);
-	}
-
-	/*
-	 * Added for Swagger
-	 */
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		String[] staticResourceMappingPath = { "classpath:/static/" };
-
-		registry.addResourceHandler("/**").addResourceLocations(staticResourceMappingPath);
 	}
 
 }

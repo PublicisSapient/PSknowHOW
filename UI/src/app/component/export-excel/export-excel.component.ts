@@ -72,8 +72,8 @@ export class ExportExcelComponent implements OnInit {
         )
         .subscribe((getData) => {
           if (
-            getData['excelData'] ||
-            !getData?.hasOwnProperty('validationData')
+            getData['excelData'] 
+            || !getData?.hasOwnProperty('validationData')
           ) {
             if (chartType == 'stacked-area') {
               let kpiObj = JSON.parse(JSON.stringify(getData));
@@ -96,6 +96,7 @@ export class ExportExcelComponent implements OnInit {
 
             this.modalDetails['tableHeadings'] =
               this.kpiExcelData.headerNames.map((column) => column.header);
+            // this.modalDetails['tableValues'] = additionalFilterSupport ? this.kpiExcelData.excelData : [];
             this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
             this.generateTableColumnData();
             this.modalDetails['header'] = kpiName;
@@ -167,19 +168,21 @@ export class ExportExcelComponent implements OnInit {
   }
 
   generateTableColumnData() {
-    this.modalDetails['tableHeadings'].forEach(colName => {
-      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
-        if (this.typeOf(colData)) {
-          if (!this.excludeColumnFilter.includes(colName)) {
-            this.excludeColumnFilter.push(colName)
+    if(this.modalDetails['tableValues'].length > 0) {
+      this.modalDetails['tableHeadings'].forEach(colName => {
+        this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
+          if (this.typeOf(colData)) {
+            if (!this.excludeColumnFilter.includes(colName)) {
+              this.excludeColumnFilter.push(colName)
+            }
+            return { name: colData.text, value: colData.text }
+          } else {
+            return { name: colData, value: colData }
           }
-          return { name: colData.text, value: colData.text }
-        } else {
-          return { name: colData, value: colData }
-        }
+        });
+        this.tableColumnForm[colName] = [];
       });
-      this.tableColumnForm[colName] = [];
-    });
+    }
   }
 
   generateExcel(exportMode) {

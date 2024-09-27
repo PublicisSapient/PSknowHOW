@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -209,7 +209,9 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeKPI36()));
 			}
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionRCAKPI36(), fieldMapping.getJiraDefectRejectionStatusRCAKPI36());
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionRCAKPI36(),
+					fieldMapping.getJiraDefectRejectionStatusRCAKPI36());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});
@@ -327,7 +329,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 			List<JiraIssue> jiraIssueList = sprintWiseDefectDataListMap.get(currentNodeIdentifier);
 			Map<String, Long> finalMap = new HashMap<>();
 			Map<String, Object> overAllHoverValueMap = new HashMap<>();
-			if (allRCA.size() > 1) {
+			if (allRCA.size() >= 1) {
 				allRCA.forEach(rca -> {
 					finalMap.put(StringUtils.capitalize(rca), rcaMap.getOrDefault(rca, 0L));
 					Long rcaCount = rcaMap.values().stream().mapToLong(val -> val).sum();
@@ -360,7 +362,8 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 			mapTmp.get(node.getId()).setValue(dataCountMap);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.DEFECT_COUNT_BY_RCA.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
@@ -369,7 +372,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
 			KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
-					KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
+					KPICode.DEFECT_COUNT_BY_RCA.getKpiId(), customApiConfig);
 		}
 
 	}
@@ -442,7 +445,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI36(),KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI36(), KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
 	}
 }

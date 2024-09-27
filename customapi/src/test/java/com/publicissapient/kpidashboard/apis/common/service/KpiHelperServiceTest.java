@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
@@ -35,9 +36,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -99,6 +104,7 @@ public class KpiHelperServiceTest {
 
 	private List<AccountHierarchyData> ahdList = new ArrayList<>();
 	private List<AccountHierarchyDataKanban> ahdKanbanList = new ArrayList<>();
+	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -161,6 +167,17 @@ public class KpiHelperServiceTest {
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectConfigMap = new HashMap<>();
 
 	List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private static final String AZURE_REPO = "AzureRepository";
+	private static final String BITBUCKET = "Bitbucket";
+	private static final String GITLAB = "GitLab";
+	private static final String GITHUB = "GitHub";
+	private static Tool tool3;
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	Map<String, List<Tool>> toolGroup = new HashMap<>();
+
+	List<Tool> toolList1;
+	List<Tool> toolList2;
+	List<Tool> toolList3;
 
 	@Before
 	public void setup() {
@@ -551,6 +568,76 @@ public class KpiHelperServiceTest {
 		kpiElement.setMaxValue("500");
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
+	}
+
+	@Test
+	public void getScmToolJobsReturnsAllTools() {
+		setToolMap();
+		Node node = new Node();
+		List<Tool> result = kpiHelperService.getScmToolJobs(toolMap.get(new ObjectId("6335363749794a18e8a4479b")),
+				node);
+		assertEquals(1, result.size());
+	}
+
+	@Test
+	public void getScmToolJobsReturnsEmptyListWhenNoTools() {
+		Map<String, List<Tool>> toolListMap = new HashMap<>();
+		Node node = new Node();
+		List<Tool> result = kpiHelperService.getScmToolJobs(toolListMap, node);
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void populateSCMToolsRepoListReturnsAllTools() {
+		setToolMap();
+		List<Tool> result = kpiHelperService
+				.populateSCMToolsRepoList(toolMap.get(new ObjectId("6335363749794a18e8a4479b")));
+		assertEquals(1, result.size());
+	}
+
+	@Test
+	public void populateSCMToolsRepoListReturnsEmptyListWhenNoTools() {
+		Map<String, List<Tool>> mapOfListOfTools = new HashMap<>();
+		List<Tool> result = kpiHelperService.populateSCMToolsRepoList(mapOfListOfTools);
+		assertTrue(result.isEmpty());
+	}
+
+	private void setToolMap() {
+		toolList3 = new ArrayList<>();
+
+		ProcessorItem processorItem = new ProcessorItem();
+		processorItem.setProcessorId(new ObjectId("63282180160f5b4eb2ac380b"));
+		processorItem.setId(new ObjectId("633ab3fb26878c56f03ebd36"));
+
+		ProcessorItem processorItem1 = new ProcessorItem();
+		processorItem1.setProcessorId(new ObjectId("63378301e7d2665a7944f675"));
+		processorItem1.setId(new ObjectId("633abcd1e7d2665a7944f678"));
+
+		List<ProcessorItem> collectorItemList = new ArrayList<>();
+		collectorItemList.add(processorItem);
+		List<ProcessorItem> collectorItemList1 = new ArrayList<>();
+		collectorItemList1.add(processorItem1);
+
+		tool3 = createTool("url3", "Bitbucket", collectorItemList1);
+
+		toolList3.add(tool3);
+
+		toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
+		toolGroup.put(Constant.TOOL_AZUREREPO, toolList1);
+		toolGroup.put(Constant.REPO_TOOLS, toolList2);
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
+
+	}
+
+	private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
+		Tool tool = new Tool();
+		tool.setTool(toolType);
+		tool.setUrl(url);
+		tool.setBranch("master");
+		tool.setRepositoryName("PSknowHOW");
+
+		tool.setProcessorItemList(collectorItemList);
+		return tool;
 	}
 
 }

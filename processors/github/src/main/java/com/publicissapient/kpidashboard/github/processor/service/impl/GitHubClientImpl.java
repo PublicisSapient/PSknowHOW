@@ -227,14 +227,11 @@ public class GitHubClientImpl implements GitHubClient {
 			boolean isClosed = Boolean.parseBoolean(getString(mergReqObj, GitHubConstants.RESP_CLOSED));
 			long createdDate = getDateTimeStamp(getString(mergReqObj, GitHubConstants.RESP_CREATED_AT));
 			long updatedDate = getDateTimeStamp(getString(mergReqObj, GitHubConstants.RESP_UPDATED_AT));
-			if (getString(mergReqObj, GitHubConstants.RESP_CLOSED_AT) != null) {
-				closedDate = getDateTimeStamp(getString(mergReqObj, GitHubConstants.RESP_CLOSED_AT));
-			}
+			String mergeReqUrl = getString(mergReqObj, GitHubConstants.HTTP_URL);
 			if (getString(mergReqObj, GitHubConstants.RESP_MERGED_AT) != null) {
 				closedDate = getDateTimeStamp(getString(mergReqObj, GitHubConstants.RESP_MERGED_AT));
 				state = GitHubConstants.MERGED;
 			}
-
 			JSONObject fromBranchObj = (JSONObject) mergReqObj.get(GitHubConstants.RESP_HEAD);
 			JSONObject toBranchObj = (JSONObject) mergReqObj.get(GitHubConstants.RESP_BASE);
 			String fromBranch = getString(fromBranchObj, GitHubConstants.RESP_REF);
@@ -264,6 +261,7 @@ public class GitHubClientImpl implements GitHubClient {
 			mergeReq.setToBranch(toBranch);
 			mergeReq.setRepoSlug(repoSlug);
 			mergeReq.setProjKey(projKey);
+			mergeReq.setMergeRequestUrl(mergeReqUrl);
 			if (proBasicConfig.isSaveAssigneeDetails()) {
 				mergeReq.setAuthor(author);
 			}

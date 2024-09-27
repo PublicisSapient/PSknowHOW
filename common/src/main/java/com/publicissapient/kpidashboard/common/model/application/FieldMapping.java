@@ -51,6 +51,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiradefecttype;
 	private String epicLink;
 	private List<String> jiraSubTaskDefectType;
+	private String updatedAt;
+	private String updatedBy;
 
 	// defectPriority
 	private List<String> defectPriority;
@@ -60,6 +62,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> defectPriorityQAKPI111;
 	private List<LabelCount> defectPriorityKPI82;
 	private List<String> defectPriorityKPI133;
+	private List<String> defectPriorityKPI34;
 	private String[] jiraIssueTypeNames;
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
@@ -118,6 +121,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private String jiraDefectRejectionStatusRCAKPI36;
 	private String jiraDefectRejectionStatusKPI14;
 	private String jiraDefectRejectionStatusQAKPI111;
+	private String jiraDefectRejectionStatusKPI34;
 
 	private String jiraBugRaisedByIdentification;
 	private List<String> jiraBugRaisedByValue;
@@ -168,6 +172,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraStoryIdentification;
 	private List<String> jiraStoryIdentificationKPI129;
 	private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryCategoryKpi40;
 	private List<String> jiraStoryIdentificationKPI164;
 
 	private String jiraLiveStatus;
@@ -212,6 +217,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> includeRCAForQAKPI111;
 	private List<String> includeRCAForKPI133;
 	private List<String> includeRCAForKPI35;
+	private List<String> includeRCAForKPI34;
 
 	// For Lloyds KPIs
 	private List<String> jiraDorToLiveIssueType;
@@ -230,6 +236,7 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> resolutionTypeForRejectionRCAKPI36;
 	private List<String> resolutionTypeForRejectionKPI14;
 	private List<String> resolutionTypeForRejectionQAKPI111;
+	private List<String> resolutionTypeForRejectionKPI34;
 
 	private List<String> jiraQADefectDensityIssueType;
 	private List<String> jiraQAKPI111IssueType;
@@ -401,6 +408,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraIssueTypeKPI156;
 	private List<String> jiraLabelsKPI14;
 	private List<String> jiraLabelsKPI82;
+	private List<String> jiraLabelsQAKPI111;
+	private List<String> jiraLabelsKPI133;
 	private List<String> jiraIssueWaitStateKPI170;
 	private List<String> jiraIssueClosedStateKPI170;
 
@@ -463,6 +472,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private String thresholdValueKPI139;
 	private String thresholdValueKPI166;
 	private String thresholdValueKPI173;
+	private String thresholdValueKPI185;
+	private String thresholdValueKPI186;
 
 	// Production Incident Mapping
 	private String jiraProductionIncidentIdentification;
@@ -492,6 +503,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraLiveStatusKPI171;
 	private String storyFirstStatusKPI171;
 
+	private List<String> jiraIssueTypeExcludeKPI124;
+	private List<String> jiraIssueTypeExcludeKPI75;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

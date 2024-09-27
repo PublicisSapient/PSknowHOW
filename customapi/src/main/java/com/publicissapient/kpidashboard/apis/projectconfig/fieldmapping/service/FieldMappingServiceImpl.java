@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	public static final String INVALID_PROJECT_TOOL_CONFIG_ID = "Invalid projectToolConfigId";
 	public static final String HISTORY = "history";
+	public static final String UPDATED_AT = "updatedAt";
+	public static final String UPDATED_BY = "updatedBy";
 	public static final String DOUBLE = "java.lang.Double";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
@@ -276,6 +279,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				FieldMappingStructure mappingStructure = fieldMappingStructureMap
 						.get(fieldMappingResponse.getFieldName());
 				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
+
 				if (null != mappingStructure) {
 					cleanTraceLog = createSpecialFieldsAndUpdateFieldMapping(projectToolConfig, fieldMappingMeta, update,
 							fieldMappingResponseList, cleanTraceLog, fieldMappingResponse, mappingStructure);
@@ -285,6 +289,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					update.addToSet(HISTORY + fieldMappingResponse.getFieldName(), configurationHistoryChangeLog);
 				}
 			}
+			update.set(UPDATED_AT, DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+			update.set(UPDATED_BY, loggedInUser);
 			operations.updateFirst(query, update, "field_mapping");
 			saveTemplateCode(projectBasicConfig, projectToolConfig);
 			if (cleanTraceLog.equalsIgnoreCase("True"))
