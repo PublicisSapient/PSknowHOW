@@ -152,7 +152,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: ($event) => {
           this.prepareData();
         },
-        disabled: this.selectedTab === 'release'
+        disabled: this.selectedTab === 'release' || this.selectedTab === 'backlog'
       },
       {
         label: 'Explore',
@@ -177,6 +177,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
     this.disableSettings = this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release'));
     this.initializeMenu();
+    console.log(this.kpiData.kpiDetail.chartType);
   }
 
   openCommentModal = () => {
@@ -345,35 +346,26 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    return data === '200' && this.trendValueList?.length > 0 && this.checkDataAtGranularLevel(this.trendValueList);
+    return data === '200' && this.checkDataAtGranularLevel(this.trendValueList);
   }
 
   checkDataAtGranularLevel(data) {
     let dataCount = 0;
     if (Array.isArray(data)) {
       data?.forEach(item => {
-        if (item?.data && !isNaN(parseInt(item?.data))) {
+        if (Array.isArray(item.data) && item.data?.length) {
+          ++dataCount;
+        } else if (item?.data && !isNaN(parseInt(item?.data))) {
           // dataCount += item?.data;
           ++dataCount;
-        } else if (Array.isArray(item.value) && item.value.length) {
-          // item?.value?.forEach(val => {
-          //   if (!isNaN(parseInt(val?.data))) {
-          //     // dataCount += val?.data;
-          //     ++dataCount;
-          //   }
-          // });
+        } else if ((Array.isArray(item.value) && item.value.length) || Object.keys(item.value)?.length) {
           ++dataCount;
         } else if (item.dataGroup && item.dataGroup.length) {
-          // item.dataGroup.forEach(element => {
-          //   ++dataCount;
-          // });
           ++dataCount;
         }
       });
     } else if (data && Object.keys(data).length) {
       dataCount = Object.keys(data).length;
-    } else {
-      dataCount = 0;
     }
     return parseInt(dataCount + '') > 0;
   }

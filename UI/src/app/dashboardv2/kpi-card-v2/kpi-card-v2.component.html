@@ -25,7 +25,7 @@
     </p-menu>
   </div>
   <!-- kpiFilter *ngIf="checkIfDataPresent(trendValueList);"-->
-  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
+  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" *ngIf="kpiData.kpiDetail.chartType !== 'stacked-area'"
     [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' }" class="kpi-filter p-pr-5 p-pl-5"
     #kpiFilterContainer>
     <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
@@ -67,7 +67,7 @@
       </ng-container>
     </ng-container>
   </div>
-  <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : '220px',
+  <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : kpiData.kpiDetail.chartType === 'stacked-area' ? '270px' : '220px',
   'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
     <!--place for chart to be rendered-->
     <ng-content
