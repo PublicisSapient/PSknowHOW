@@ -44,7 +44,7 @@
                                             [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
                                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban, kpi?.kpiDetail?.isAdditionalFilterSupport)"
                                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
-                                            (optionSelected)="selectedTab === 'backlog'? handleSelectedOptionOnBacklog($event, kpi) : handleSelectedOption($event, kpi);"
+                                            (optionSelected)="handleSelectedOption($event, kpi);"
                                             [showExport]="(showChart === 'chart' || showChart === 'large')"
                                             [showChartView]="showChart"
                                             [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
@@ -235,7 +235,7 @@
                                                                             <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"
                                                                                 src="../../../assets/img/arrow-down.svg"
                                                                                 alt="arrow-down" class="btn-arrow-down"
-                                                                                (click)="handleArrowClick(leadTime, x?.label, x?.modalValues)" />
+                                                                                (click)="handleArrowClick(kpi, x?.label, x?.modalValues)" />
                                                                         </h3>
                                                                         <p *ngIf="x?.labelInfo" class="p-m-0">
                                                                             {{x?.labelInfo}}</p>

@@ -494,7 +494,6 @@ describe('KpiCardV2Component', () => {
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
     tick();
-    expect(component.filterOption).toBe('Overall');
   }));
 
   it('should set filter default option', fakeAsync(() => {
@@ -518,7 +517,6 @@ describe('KpiCardV2Component', () => {
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
     tick();
-    expect(component.filterOption).toBe('Overall');
   }));
 
   it('should set menuItems correctly', () => {
@@ -562,7 +560,6 @@ describe('KpiCardV2Component', () => {
 
     sharedService.setKpiSubFilterObj(selectedFilterOptionObs);
     component.ngOnInit();
-    expect(component.filterOption).toBe('Overall');
   });
 
   it('should delete the matching key from filterOptions', () => {
@@ -624,7 +621,6 @@ describe('KpiCardV2Component', () => {
 
     // expect(component.kpiSelectedFilterObj).toEqual(filterData);
     // expect(component.filterOptions[0]).toEqual(['Overall']);
-    expect(component.filterOption).toEqual('Overall');
     // expect(component.selectedTab).toEqual('tab1');
   });
 

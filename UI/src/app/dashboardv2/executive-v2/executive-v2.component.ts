@@ -1091,7 +1091,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
     this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, this.selectedTab, refreshValue, initialValue, this.filterApplyData['ids']?.length ? this.filterApplyData['ids'][0] : {}, filters)
+    if(this.selectedTab !== 'backlog') {
     this.getDropdownArray(kpiId);
+    } else {
+      if (this.updatedConfigGlobalData.filter(kpi => kpi?.kpiId == kpiId)[0]?.kpiDetail?.chartType) {
+        this.getDropdownArrayForBacklog(kpiId);
+      } else {
+        this.getDropdownArrayForCard(kpiId);
+      }
+    }
   }
 
   getChartDataForBacklog(kpiId, idx, aggregationType) {
@@ -1139,7 +1147,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     }
 
-    if (this.colorObj && Object.keys(this.colorObj)?.length > 0 && !['kpi161','kpi146','kpi148'].includes(kpiId)) {
+    if (this.colorObj && Object.keys(this.colorObj)?.length > 0 && !['kpi161', 'kpi146', 'kpi148'].includes(kpiId)) {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
@@ -1483,8 +1491,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1), agType);
       } else if (this.selectedTab.toLowerCase() === 'release') {
         this.getChartDataforRelease(data[key]?.kpiId, (this.allKpiArray?.length - 1), agType);
-      } else if(this.selectedTab.toLowerCase() === 'backlog') {
-        this.getChartDataForBacklog(data[key]?.kpiId, this.ifKpiExist(data[key]?.kpiId), data[key]?.kpiDetail?.aggregationCriteria)
       }
     }
   }
@@ -1505,7 +1511,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
           this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, [], 'Overall')
         } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-          this.getDropdownArray(data[key]?.kpiId);
+          this.getDropdownArrayForBacklog(data[key]?.kpiId);
           const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
           if (formType?.toLowerCase() == 'radiobutton') {
             this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
@@ -1524,9 +1530,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.getChartDataForBacklog(data[key]?.kpiId, (this.allKpiArray?.length - 1), agType);
 
       } else {
-        if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
-        }
+        // if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
+        //   this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
+        // }
+        this.getDropdownArrayForCard(data[key]?.kpiId);
         this.getChartDataForCard(data[key]?.kpiId, this.ifKpiExist(data[key]?.kpiId));
       }
 
@@ -1912,13 +1919,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         dropdownArr.forEach(arr => {
           arr = Array.from(arr);
           const obj = {};
-          const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
-          // if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
-          //   const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
-          //   if (index > -1) {
-          //     arr?.splice(index, 1);
-          //   }
-          // }
 
           obj['filterType'] = 'Select a filter';
           if (arr.length > 0) {
@@ -1949,9 +1949,87 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
+  getDropdownArrayForBacklog(kpiId) {
+    const idx = this.ifKpiExist(kpiId);
+    let trendValueList = [];
+    const optionsArr = [];
+    let filters = {};
+
+    if (idx != -1) {
+      trendValueList = this.allKpiArray[idx]?.trendValueList;
+      filters = this.allKpiArray[idx]?.filters;
+      if (filters && Object.keys(filters).length !== 0) {
+        Object.keys(filters)?.forEach(x => {
+          optionsArr.push(filters[x]);
+        });
+        this.kpiDropdowns[kpiId] = [...optionsArr];
+      }
+      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+        const obj = {};
+        for (let i = 0; i < trendValueList?.length; i++) {
+          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1) {
+            optionsArr?.push(trendValueList[i]?.filter);
+          }
+        }
+        obj['filterType'] = 'Select a filter';
+        obj['options'] = optionsArr;
+        this.kpiDropdowns[kpiId] = [];
+        this.kpiDropdowns[kpiId].push(obj);
+      } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+        const obj = {};
+        for (let i = 0; i < trendValueList?.length; i++) {
+          let ifExist = optionsArr.findIndex(x => x == trendValueList[i]?.filter1);
+          if (ifExist == -1) {
+            optionsArr?.push(trendValueList[i]?.filter1);
+          }
+        }
+        const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
+        if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
+          const index = optionsArr?.findIndex(x => x?.toLowerCase() == 'overall');
+          if (index > -1) {
+            optionsArr?.splice(index, 1);
+          }
+        }
+        obj['filterType'] = 'Select a filter';
+        obj['options'] = optionsArr;
+        this.kpiDropdowns[kpiId] = [];
+        this.kpiDropdowns[kpiId].push(obj);
+      }
+    }
+  }
+
+  getDropdownArrayForCard(kpiId) {
+    const idx = this.ifKpiExist(kpiId);
+    let filters = {};
+    const dropdownArr = [];
+
+    if (idx != -1) {
+      filters = this.allKpiArray[idx]?.filters;
+      if (filters && Object.keys(filters).length !== 0) {
+        Object.keys(filters)?.forEach(x => {
+          dropdownArr.push(filters[x]);
+        });
+      }
+    }
+    this.kpiDropdowns[kpiId] = [...dropdownArr];
+
+    // if (this.kpiDropdowns[kpiId]?.length > 1) {
+    //   this.kpiSelectedFilterObj[kpiId] = {};
+    //   for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
+    //     this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+    //   }
+    // }
+  }
+
   handleSelectedOption(event, kpi) {
     if (this.selectedTab.toLowerCase() === 'release') {
       this.handleSelectedOptionOnRelease(event, kpi);
+    } else if (this.selectedTab.toLowerCase() === 'backlog') {
+      if (kpi?.kpiDetail?.chartType) { 
+        this.handleSelectedOptionOnBacklog(event, kpi) 
+      } else { 
+        this.handleSelectedOptionForCard(event, kpi) 
+      }
     } else {
       // this.kpiSelectedFilterObj[kpi?.kpiId] = [];
       if (kpi.kpiId === "kpi72") {

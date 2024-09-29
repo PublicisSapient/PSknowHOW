@@ -46,7 +46,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   userRole: string;
   checkIfViewer: boolean;
   subscriptions: any[] = [];
-  filterOption = 'Overall';
   filterOptions: object = {};
   radioOption: string;
   filterMultiSelectOptionsData: object = {};
@@ -96,12 +95,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
               }
               else {
                 this.filterOptions = { ...this.filterOptions };
-                this.filterOption = 'Overall';
               }
             }
             else {
               this.filterOptions = { ...this.filterOptions };
-              this.filterOption = 'Overall';
             }
           } else {
             if (this.kpiData?.kpiId === "kpi72") {
@@ -114,11 +111,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
             }
             else {
-              this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
               this.filterOptions = Array.isArray(x[this.kpiData?.kpiId]) ? { 'filter1': x[this.kpiData?.kpiId] } : { ...x[this.kpiData?.kpiId] };
-              if (!this.filterOption) {
-                this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
-              }
             }
           }
         }
@@ -177,7 +170,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
     this.disableSettings = this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release'));
     this.initializeMenu();
-    console.log(this.kpiData.kpiDetail.chartType);
+    console.log(this.dropdownArr);
   }
 
   openCommentModal = () => {
@@ -229,12 +222,24 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   handleClearAll(event) {
-    for (const key in this.filterOptions) {
-      if (key?.toLowerCase() == event?.toLowerCase()) {
-        delete this.filterOptions[key];
+    if (this.dropdownArr.length === 1) {
+      for (const key in this.filterOptions) {
+        if (key?.toLowerCase() == event?.toLowerCase()) {
+          delete this.filterOptions[key];
+        }
       }
+      this.optionSelected.emit(['Overall']);
+    } else {
+      // hacky way - clear All sets null value, which we want to avoid
+      for (const key in this.filterOptions) {
+        if (key?.toLowerCase() == event?.toLowerCase()) {
+          this.filterOptions[key] = [];
+        } else if(!this.filterOptions[key]) {
+          this.filterOptions[key] = [];
+        }
+      }
+      this.optionSelected.emit(this.filterOptions);
     }
-    this.optionSelected.emit(['Overall']);
   }
 
   toggleMenu(event) {
