@@ -13331,59 +13331,6 @@ describe('ExecutiveV2Component', () => {
     expect(actualChartData).toEqual(expectedChartData);
   });
 
-  it('checkIfDataPresent should return true when data contains at least one object with a numeric "data" property', () => {
-    const data = [
-      { label: 'A', data: 10 },
-      { label: 'B', data: null },
-      { label: 'C', data: '20' },
-    ];
-
-    const result = component.checkIfDataPresent(data);
-
-    expect(result).toBe(true);
-  });
-
-  it('checkIfDataPresent should return true when data contains at least one object with a numeric "value.data" property', () => {
-    const data = [
-      { label: 'A', value: [{ label: 'A1', data: 10 }, { label: 'A2', data: null }] },
-      { label: 'B', value: [{ label: 'B1', data: '20' }, { label: 'B2', data: '30' }] },
-      { label: 'C', value: [] },
-    ];
-
-    const result = component.checkIfDataPresent(data);
-
-    expect(result).toBe(true);
-  });
-
-  it('checkIfDataPresent should return false when data does not contain any objects with a numeric "data" or "value.data" property', () => {
-    const data = [
-      { label: 'A', data: null },
-      { label: 'B', value: [{ label: 'B1', data: null }, { label: 'B2', data: undefined }] },
-      { label: 'C', data: 'invalid' },
-    ];
-
-    const result = component.checkIfDataPresent(data);
-
-    expect(result).toBe(false);
-  });
-
-  it('checkIfDataPresent should return false when data is an empty array', () => {
-    const data = [];
-
-    const result = component.checkIfDataPresent(data);
-
-    expect(result).toBe(false);
-  });
-
-  it('checkIfDataPresent should return false when data is null', () => {
-    const data = null;
-
-    const result = component.checkIfDataPresent(data);
-
-    expect(result).toBe(false);
-  });
-
-
   it('getChartData should set additional filters on developer tab', () => {
     component.selectedTab = 'developer';
     component.allKpiArray = [{
@@ -15198,46 +15145,6 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
 
-  it('should return true when data contains at least one numeric value', () => {
-    const mockData = [
-      { data: 'value1' },
-      { data: 2 },
-      { value: [{ data: 'value2' }, { data: 3 }] },
-    ];
-
-    const result = component.checkIfDataPresent(mockData);
-
-    expect(result).toBeTrue();
-  });
-
-  it('should return false when data does not contain any numeric value', () => {
-    const mockData = [
-      { data: 'value1' },
-      { data: 'value2' },
-      { value: [{ data: 'value3' }, { data: 'value4' }] },
-    ];
-
-    const result = component.checkIfDataPresent(mockData);
-
-    expect(result).toBeFalse();
-  });
-
-  it('should return false when data is undefined', () => {
-    const mockData = undefined;
-
-    const result = component.checkIfDataPresent(mockData);
-
-    expect(result).toBeFalse();
-  });
-
-  it('should return false when data is an empty array', () => {
-    const mockData = [];
-
-    const result = component.checkIfDataPresent(mockData);
-
-    expect(result).toBeFalse();
-  });
-
   it('should return the correct chart type when kpiId exists in updatedConfigGlobalData', () => {
     const mockKpiId = 'kpi1';
     component.updatedConfigGlobalData = [{
@@ -15893,6 +15800,113 @@ describe('ExecutiveV2Component', () => {
 
     expect(component.kpiSelectedFilterObj[mockKpi.kpiId]).toBeDefined();
   });
-});
 
+  describe('checkIfDataPresent', () => {
+    it('should return true if data is present and kpiStatusCode is "200"', () => {
+      component.kpiStatusCodeArr = { data: '200' };
+      component.kpiChartData = { data: [{ data: [1, 2, 3] }] };
+
+      const result = component.checkIfDataPresent('data');
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false if data is not present', () => {
+      component.kpiStatusCodeArr = { data: '200' };
+      component.kpiChartData = {};
+
+      const result = component.checkIfDataPresent('data');
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false if kpiStatusCode is not "200"', () => {
+      component.kpiStatusCodeArr = { data: '400' };
+      component.kpiChartData = { data: [{ data: [1, 2, 3] }] };
+
+      const result = component.checkIfDataPresent('data');
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false if data is not present at granular level', () => {
+      component.kpiStatusCodeArr = { data: '200' };
+      component.kpiChartData = { data: [{ data: [] }] };
+
+      const result = component.checkIfDataPresent('data');
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('checkDataAtGranularLevel', () => {
+    it('should return true if data is an array with non-empty data arrays', () => {
+      const data = [
+        { data: [1, 2, 3] },
+        { data: [4, 5, 6] },
+      ];
+
+      const result = component.checkDataAtGranularLevel(data);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return true if data is an array with non-empty value arrays or non-empty objects', () => {
+      const data = [
+        { value: [1, 2, 3] },
+        { value: { prop: 'value' } },
+      ];
+
+      const result = component.checkDataAtGranularLevel(data);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return true if data is an array with non-empty dataGroup arrays', () => {
+      const data = [
+        { dataGroup: [1, 2, 3] },
+        { dataGroup: [4, 5, 6] },
+      ];
+
+      const result = component.checkDataAtGranularLevel(data);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return true if data is an object with non-zero number of keys', () => {
+      const data = {
+        key1: 'value1',
+        key2: 'value2',
+      };
+
+      const result = component.checkDataAtGranularLevel(data);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false if data is an empty array', () => {
+      const data = [];
+
+      const result = component.checkDataAtGranularLevel(data);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false if data is an empty object', () => {
+      const data = {};
+
+      const result = component.checkDataAtGranularLevel(data);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false if data is not an array or object', () => {
+      const data = 'invalid data';
+
+      const result = component.checkDataAtGranularLevel(data);
+
+      expect(result).toBe(true);
+    });
+  });
+});
 

@@ -355,10 +355,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       data?.forEach(item => {
         if (Array.isArray(item.data) && item.data?.length) {
           ++dataCount;
-        } else if (item?.data && !isNaN(parseInt(item?.data))) {
+        } else if (item.data && !isNaN(parseInt(item.data))) {
           // dataCount += item?.data;
           ++dataCount;
-        } else if ((Array.isArray(item.value) && item.value.length) || Object.keys(item.value)?.length) {
+        } else if (item.value && ((Array.isArray(item.value) && item.value.length) || Object.keys(item.value)?.length)) {
           ++dataCount;
         } else if (item.dataGroup && item.dataGroup.length) {
           ++dataCount;
