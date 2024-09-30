@@ -541,6 +541,7 @@ describe('KpiCardV2Component', () => {
         label: 'Explore',
         icon: 'pi pi-table',
         command: jasmine.any(Function),
+        disabled: true
       },
       {
         label: 'Comments',
