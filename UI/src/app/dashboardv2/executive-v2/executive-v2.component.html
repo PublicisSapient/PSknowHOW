@@ -42,7 +42,7 @@
                                             [kpiDataStatusCode]="kpiStatusCodeArr[kpi.kpiId]"
                                             [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                                             [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
-                                            (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban, kpi?.kpiDetail?.isAdditionalFilterSupport)"
+                                            (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban, kpi?.kpiDetail?.isAdditionalFilterSupport, kpi?.kpiDetail?.chartType)"
                                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                                             (optionSelected)="handleSelectedOption($event, kpi);"
                                             [showExport]="(showChart === 'chart' || showChart === 'large')"

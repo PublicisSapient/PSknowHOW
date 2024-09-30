@@ -7639,7 +7639,7 @@ describe('ExecutiveV2Component', () => {
     };
     const spy = spyOn(component.exportExcelComponent, 'downloadExcel');
     component.iSAdditionalFilterSelected = false;
-    component.downloadExcel('kpi35', 'Defect Seepage Rate', false, false);
+    component.downloadExcel('kpi35', 'Defect Seepage Rate', false, false, 'multiline');
     expect(spy).toHaveBeenCalled();
   }));
 
@@ -12198,7 +12198,7 @@ describe('ExecutiveV2Component', () => {
 
     it('should work download excel functionality', () => {
       spyOn(component.exportExcelComponent, 'downloadExcel')
-      component.downloadExcel('kpi70', 'name', true, true);
+      component.downloadExcel('kpi70', 'name', true, true, 'multiline');
       expect(exportExcelComponent).toBeDefined();
     });
   });

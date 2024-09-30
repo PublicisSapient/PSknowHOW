@@ -1540,7 +1540,7 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * for all the duplicate issues, present in sprintdetails find out the minimum
 	 * closed dates
-	 * 
+	 *
 	 * @param duplicateIssues
 	 * @param customFieldMapping
 	 * @return
@@ -1657,7 +1657,7 @@ public class KpiHelperService { // NOPMD
 
 	/**
 	 * check number of saturday, sunday between dates
-	 * 
+	 *
 	 * @param d1
 	 *            start date
 	 * @param d2
@@ -1677,7 +1677,7 @@ public class KpiHelperService { // NOPMD
 
 	/**
 	 * check if day is weekend
-	 * 
+	 *
 	 * @param localDateTime
 	 *            localdatetime of day
 	 * @return boolean
@@ -2033,26 +2033,31 @@ public class KpiHelperService { // NOPMD
 	}
 
 	private boolean isMandatoryFieldSet(KPICode kpi, ObjectId basicProjectConfigId) {
-		List<String> fieldMappingName = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase()).getFields();
-		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
-		List<String> mandatoryFieldMappingName = fieldMappingStructureList.stream()
-				.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory() && fieldMappingName.contains(fieldMappingStructure.getFieldName()) )
-				.map(FieldMappingStructure::getFieldName).toList();
+		try {
+			List<String> fieldMappingName = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase()).getFields();
+			List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
+			List<String> mandatoryFieldMappingName = fieldMappingStructureList.stream()
+					.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory() && fieldMappingName.contains(fieldMappingStructure.getFieldName()))
+					.map(FieldMappingStructure::getFieldName).toList();
 
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(basicProjectConfigId);
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(basicProjectConfigId);
 
-		for (String fieldName : mandatoryFieldMappingName) {
-			try {
-				Field field = FieldMapping.class.getDeclaredField(fieldName);
-				field.setAccessible(true); // NOSONAR
-				if(checkNullValue(field.get(fieldMapping)))
-					return false;
-			} catch (NoSuchFieldException e) {
-				log.warn(fieldName + " does not exist in fieldMapping.");
-			} catch (IllegalAccessException e) {
-				log.warn("Error accessing " + fieldName + " field.");
+			for (String fieldName : mandatoryFieldMappingName) {
+				try {
+					Field field = FieldMapping.class.getDeclaredField(fieldName);
+					field.setAccessible(true); // NOSONAR
+					if (checkNullValue(field.get(fieldMapping)))
+						return false;
+				} catch (NoSuchFieldException e) {
+					log.warn(fieldName + " does not exist in fieldMapping.");
+				} catch (IllegalAccessException e) {
+					log.warn("Error accessing " + fieldName + " field.");
+				}
 			}
+		} catch (IllegalArgumentException exception) {
+			log.warn(kpi.getKpiId() + " No fieldMapping Found");
+			return true;
 		}
 		return true;
 	}
