@@ -438,7 +438,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     });
   }
 
-  // Used for grouping all Sonar kpi from master data and calling Sonar kpi.(only for scrum).
+  // Used for grouping all Jira kpi from master data and calling Jira kpi.(only for scrum).
   groupJiraKpi(kpiIdsForCurrentBoard) {
     this.jiraKpiData = {};
     // creating a set of unique group Ids
@@ -1091,8 +1091,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
     this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, this.selectedTab, refreshValue, initialValue, this.filterApplyData['ids']?.length ? this.filterApplyData['ids'][0] : {}, filters)
-    if(this.selectedTab !== 'backlog') {
-    this.getDropdownArray(kpiId);
+    if (this.selectedTab !== 'backlog') {
+      this.getDropdownArray(kpiId);
     } else {
       if (this.updatedConfigGlobalData.filter(kpi => kpi?.kpiId == kpiId)[0]?.kpiDetail?.chartType) {
         this.getDropdownArrayForBacklog(kpiId);
@@ -1660,20 +1660,35 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       // this.kpiSpecificLoader.push('kpi171');
-      const kpi171Payload = JSON.parse(JSON.stringify(this.kpiJira));
-      const kpi171 = kpi171Payload.kpiList.filter(kpi => kpi.kpiId === 'kpi171')[0];
-      kpi171['filterDuration'] = {
-        duration: this.durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
-        value: !isNaN(+this.durationFilter.split(' ')[1]) ? +this.durationFilter.split(' ')[1] : 1
-      };
+      const kpi171Payload = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
+      const groupIdSet = new Set();
+      this.updatedConfigGlobalData?.forEach((obj) => {
+        if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
+          groupIdSet.add(obj['kpiDetail'].groupId);
+        }
+      });
 
-      kpi171Payload.kpiList = [kpi171];
+      // sending requests after grouping the the KPIs according to group Id   
+      groupIdSet.forEach((groupId) => {
+        if (groupId) {
+          this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpi171Payload, groupId, 'backlog');
+          const kpi171 = this.kpiJira.kpiList.filter(kpi => kpi.kpiId === 'kpi171')[0];
+          if (kpi171) {
+            kpi171['filterDuration'] = {
+              duration: this.durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
+              value: !isNaN(+this.durationFilter.split(' ')[1]) ? +this.durationFilter.split(' ')[1] : 1
+            };
+            this.kpiJira.kpiList = [kpi171];
+            this.kpiLoader.add('kpi171');
 
-      this.httpService.postKpiNonTrend(kpi171Payload, 'jira').subscribe(data => {
-        const kpi171Data = data.find(kpi => kpi.kpiId === kpiId);
-        this.allKpiArray.push(kpi171Data);
-        this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi171Data.trendValueList)));
-        // this.kpiSpecificLoader.pop();
+            this.httpService.postKpiNonTrend(this.kpiJira, 'jira').subscribe(data => {
+              const kpi171Data = data.find(kpi => kpi.kpiId === kpiId);
+              this.allKpiArray.push(kpi171Data);
+              this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi171Data.trendValueList)));
+              this.kpiLoader.delete('kpi171');
+            });
+          }
+        }
       });
 
     } else {
@@ -2025,10 +2040,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.selectedTab.toLowerCase() === 'release') {
       this.handleSelectedOptionOnRelease(event, kpi);
     } else if (this.selectedTab.toLowerCase() === 'backlog') {
-      if (kpi?.kpiDetail?.chartType) { 
-        this.handleSelectedOptionOnBacklog(event, kpi) 
-      } else { 
-        this.handleSelectedOptionForCard(event, kpi) 
+      if (kpi?.kpiDetail?.chartType) {
+        this.handleSelectedOptionOnBacklog(event, kpi)
+      } else {
+        this.handleSelectedOptionForCard(event, kpi)
       }
     } else {
       // this.kpiSelectedFilterObj[kpi?.kpiId] = [];
