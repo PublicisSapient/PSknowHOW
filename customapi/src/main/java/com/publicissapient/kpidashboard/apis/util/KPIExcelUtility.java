@@ -1205,7 +1205,8 @@ public class KPIExcelUtility {
 
     }
 
-    public static void populatePRDeclineRateExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+	public static void populatePRDeclineRateExcelData(List<RepoToolValidationData> repoToolValidationDataList,
+			List<KPIExcelData> kpiExcelData) {
 
 		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
@@ -1215,7 +1216,7 @@ public class KPIExcelUtility {
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
-				excelData.setPrDeclineRate(repoToolValidationData.getPrDeclineRate());
+				excelData.setPrDeclineRate(roundingOff(repoToolValidationData.getPrDeclineRate()));
 				kpiExcelData.add(excelData);
 			});
 		}
