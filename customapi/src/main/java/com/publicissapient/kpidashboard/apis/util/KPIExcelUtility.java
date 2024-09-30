@@ -1179,7 +1179,7 @@ public class KPIExcelUtility {
                 excelData.setBranch(repoToolValidationData.getBranchName());
                 excelData.setDeveloper(repoToolValidationData.getDeveloperName());
                 excelData.setDaysWeeks(repoToolValidationData.getDate());
-                excelData.setRevertRate(repoToolValidationData.getRevertRate());
+                excelData.setRevertRate(roundingOff(repoToolValidationData.getRevertRate()));
                 excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
                 kpiExcelData.add(excelData);
             });
