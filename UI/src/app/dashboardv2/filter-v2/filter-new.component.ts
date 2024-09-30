@@ -158,6 +158,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (!this.dateRangeFilter.types.includes('Months')) {
         this.dateRangeFilter.types.push('Months');
       }
+      if(this.selectedTab === 'developer'){
+        this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
+      }
     } else {
       this.kanban = false;
       this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
