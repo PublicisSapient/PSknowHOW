@@ -16783,6 +16783,237 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
+  it("should createapiarry when we have filter property in trending list", () => {
+    const data = {
+      kpi141: {
+        kpiId: "kpi141",
+        kpiName: "Defect Count by Status",
+        chartType: "",
+        kpiInfo: {
+          definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+        },
+        id: "64b4ed7acba3c12de164732c",
+        isDeleted: false,
+        kpiCategory: "Release",
+        kpiUnit: "Count",
+        kanban: false,
+        kpiSource: "Jira",
+        trendValueList: [
+          {
+            filter: 'story',
+            value: [
+              {
+                data: "1",
+                value: [
+                  {
+                    value: 0,
+                  },
+                ],
+                kpiGroup: "Issue Count"
+              }
+            ]
+          }
+        ],
+        groupId: 9
+      }
+    };
+
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi141',
+        kpiName: 'Deployment Frequency',
+        isEnabled: true,
+        order: 23,
+        kpiDetail: {
+          kpiFilter: 'multiDropdown',
+          chartType: "graph"
+        },
+        shown: true
+      }
+    ];
+
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['story']
+    }
+    component.kpiDropdowns = {
+      kpi141: {
+        options: ['story']
+      }
+    }
+    spyOn(component, 'ifKpiExist').and.returnValue(-1)
+    spyOn(component, 'createTrendData');
+    component.createAllKpiArray(data);
+    expect(component.kpiSelectedFilterObj).toBeDefined();
+  })
+
+  it('should prepare data from trending value list when there is no kpi filter and value is blank', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: []
+
+      }
+    }];
+    component.getChartDataForCard('kpi124', 0);
+    expect(component.kpiChartData).toBeDefined();
+  })
+
+  it('should prepare data from trending value list when there is no kpi filter and value is not blank', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: [
+          {
+            data: [{
+              "label": "Scope added",
+              "value": 1,
+              "value1": 0,
+              "labelInfo": "(Issue Count/Original Estimate)",
+              "unit": "",
+            }]
+          }
+        ]
+
+      }
+    }];
+    component.getChartDataForCard('kpi124', 0);
+    expect(component.kpiChartData).toBeDefined();
+  })
+
+  it('should prepare data from trending value list when there is no kpi filter and trendinglist is array ', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: [
+        {
+          value: [
+            {
+              data: [{
+                "label": "Scope added",
+                "value": 1,
+                "value1": 0,
+                "labelInfo": "(Issue Count/Original Estimate)",
+                "unit": "",
+              }]
+            }
+          ]
+        }
+      ]
+    }];
+    component.getChartDataForCard('kpi124', 0);
+    expect(component.kpiChartData).toBeDefined();
+  })
+
+
+  it('should prepare data from trending value list when have multi dropdown filter', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: [
+          {
+            filter1: "Overall",
+            filter2: "Overall",
+            data: [{
+              "label": "Scope added",
+              "value": 1,
+              "value1": 0,
+              "labelInfo": "(Issue Count/Original Estimate)",
+              "unit": "",
+            }]
+          }
+        ]
+
+      }
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['story'],
+      filter2: ['bug']
+    }
+    component.getChartDataForCard('kpi124', 0);
+    expect(component.kpiChartData).toBeDefined();
+  })
+
+  it('should prepare data from trending value list when have single dropdown filter', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: [
+          {
+            filter1: "Overall",
+            data: [{
+              "label": "Scope added",
+              "value": 1,
+              "value1": 0,
+              "labelInfo": "(Issue Count/Original Estimate)",
+              "unit": "",
+            }]
+          }
+        ]
+
+      }
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['story'],
+    }
+    component.getChartDataForCard('kpi124', 0);
+    expect(component.kpiChartData).toBeDefined();
+  })
+
+  it('should prepare data from trending value list when have radio button', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: {
+        value: [
+          {
+            filter1: "Overall",
+            data: [{
+              "label": "Scope added",
+              "value": 1,
+              "value1": 0,
+              "labelInfo": "(Issue Count/Original Estimate)",
+              "unit": "",
+            }]
+          }
+        ]
+
+      }
+    }];
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: 'story',
+    }
+    component.getChartDataForCard('kpi124', 0);
+    expect(component.kpiChartData).toBeDefined();
+  })
+
+  it("should create kpi array when trendvalueList is object", () => {
+    let kpi = [{
+        kpiId: "kpi141",
+        trendValueList: {
+            value: [
+                {
+                    filter1: "Overall",
+                    data: [{
+                        "label": "Scope added",
+                    }]
+                }
+            ]
+
+        },
+        filters: ['f1', "f2"]
+    },]
+    component.updatedConfigGlobalData = [
+        {
+            kpiId: 'kpi125',
+            kpiDetail: {
+                chartType: 'GroupBarChart'
+            }
+        }
+    ];
+    const fakeKPi = helperService.createKpiWiseId(kpi);
+    spyOn(component, 'ifKpiExist').and.returnValue(1);
+    component.createAllKpiArrayForBacklog(fakeKPi)
+    expect(component.allKpiArray.length).toBeGreaterThan(0);
+})
+
 
 });
 
