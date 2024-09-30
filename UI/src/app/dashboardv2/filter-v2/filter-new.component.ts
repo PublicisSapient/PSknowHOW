@@ -66,6 +66,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   hierarchies: any;
   noSprint: boolean = false;
   projectList = [];
+  blockUI: boolean = false;
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -338,6 +339,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   getBoardConfig(projectList, event = null) {
     if (!this.compareStringArrays(projectList, this.projectList)) {
+      this.blockUI = true;
       this.projectList = [...projectList];
       this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
         (response) => {
@@ -389,6 +391,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.primaryFilterConfig = {};
             this.additionalFilterConfig = [];
             this.processBoardData(data);
+            this.blockUI = false;
             if (event) {
               this.prepareKPICalls(event);
             }
@@ -881,6 +884,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   fetchData() {
+    this.blockUI = true;
     const sprintId = this.selectedSprint['nodeId'];
     const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
     if (sprintState?.toLowerCase() === 'active') {
@@ -908,6 +912,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.lastSyncData = response['data'];
 
           if (response['data']?.fetchSuccessful === true) {
+            this.blockUI = false;
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'SUCCESS';
             this.handlePrimaryFilterChange(this.previousFilterEvent);
@@ -925,6 +930,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
 
         }, error => {
+          this.blockUI = false;
           this.subject.next(true);
           this.lastSyncData = {};
           this.messageService.add({
