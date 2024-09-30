@@ -73,10 +73,6 @@
         *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
         <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" />Syncing
       </span>
-      <!-- <span class="success-state p-p-2" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful"
-        (click)="onUpdateKPI()">
-        <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update" />Update
-      </span> -->
     </div>
 
   </div>
@@ -126,13 +122,20 @@
       </p-multiSelect>
     </div>
 
-    <div class="date-filter-container cursor-pointer" *ngIf="kanban || selectedTab?.toLowerCase() === 'developer'">
-      <div *ngIf="!(selectedTab?.toLowerCase() === 'dora' && kanban)">
-        <div class="position-relative">
-          <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
-            [ngClass]="{'active': toggleDateDropdown}" (click)="toggleDateDropdown = !toggleDateDropdown">
-            <i class="pi pi-calendar-plus p-mr-2"></i>
-            Date Filter
+    <div class="date-filter-container cursor-pointer" *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity'">
+      <!-- Date filter start -->
+      <div class="position-relative">
+        <div class="p-d-flex p-align-center p-p-2 rounded p-ml-2 date-filter-btn" #dateToggleButton
+          [ngClass]="{'active': toggleDateDropdown}" (click)="toggleDateDropdown = !toggleDateDropdown">
+          <i class="pi pi-calendar-plus p-mr-2"></i>
+          Date Filter
+        </div>
+        <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
+          <div class="filter-options filter-date p-d-flex p-jc-evenly">
+            <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts"
+              [(ngModel)]="selectedDateValue"></p-dropdown>
+            <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types"
+              [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
           </div>
           <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
             <div class="filter-options filter-date p-d-flex p-jc-evenly">

@@ -55,7 +55,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -65,12 +64,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * @author kunkambl
+ */
 @Component
 @Slf4j
-public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
-	
-	private static final String ASSIGNEE = "assignee";
+public class InnovationRateServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
 
+	private static final String ASSIGNEE = "assignee";
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -85,20 +86,37 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE.name();
+		return KPICode.INNOVATION_RATE.name();
 	}
 
+	/**
+	 * create data count
+	 *
+	 * @param kpiRequest
+	 * 		kpi request
+	 * @param kpiElement
+	 * 		kpi element
+	 * @param projectNode
+	 * 		project node
+	 * @return kpi element
+	 * @throws ApplicationException
+	 * 		application exception
+	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 		Map<String, Node> mapTmp = new HashMap<>();
 		mapTmp.put(projectNode.getId(), projectNode);
 		projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
+		String sanitizedRequestId = kpiRequest.getRequestTrackerId().replaceAll("[^a-zA-Z0-9-_]", "");
+		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", sanitizedRequestId, projectNode);
+
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE);
+		calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.INNOVATION_RATE);
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
-				KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE);
+				KPICode.INNOVATION_RATE);
+
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((statusType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
@@ -122,11 +140,24 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		return kpiElement;
 	}
 
+	/**
+	 * Populates KPI value to project leaf nodes. It also gives the trend analysis project wise.
+	 *
+	 * @param kpiElement
+	 * 		kpi element
+	 * @param mapTmp
+	 * 		node map
+	 * @param projectLeafNode
+	 * 		leaf node of project
+	 * @param kpiRequest
+	 * 		kpi request
+	 */
+	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectLeafNode,
 			KpiRequest kpiRequest) {
 
-		String requestTrackerId = getRequestTrackerId();
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
+		String requestTrackerId = getRequestTrackerId();
 		LocalDate localEndDate = dateRange.getEndDate();
 
 		int dataPoints = kpiRequest.getXAxisDataPoints();
@@ -137,82 +168,106 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		ProjectFilter projectFilter = projectLeafNode.getProjectFilter();
 		ObjectId projectBasicConfigId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
 		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(projectBasicConfigId);
-		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = kpiHelperService.getRepoToolsKpiMetricResponse(
-				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration,
-				dataPoints, customApiConfig.getRepoToolMeanTimeToMergeUrl());
-		if (CollectionUtils.isEmpty(repoToolKpiMetricRespons)) {
+
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = kpiHelperService.getRepoToolsKpiMetricResponse(
+				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration, dataPoints,
+				customApiConfig.getInnovationRateUrl());
+
+		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
 			return;
 		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Tool> reposList = kpiHelperService.populateSCMToolsRepoList(toolListMap);
-		String projectName = projectLeafNode.getProjectFilter().getName();
 		if (CollectionUtils.isEmpty(reposList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
 					projectLeafNode.getProjectFilter());
 			return;
 		}
 
-		Map<String, List<DataCount>> aggDataMap = new LinkedHashMap<>();
+		String projectName = projectLeafNode.getProjectFilter().getName();
+		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 		Map<String, Object> resultmap = fetchKPIDataFromDb(List.of(projectLeafNode), null, null, kpiRequest);
 		Set<Assignee> assignees = (Set<Assignee>) resultmap.get(ASSIGNEE);
-
-		LocalDate currentDate = LocalDate.now();
-		Set<String> overAllUsers = repoToolKpiMetricRespons.stream().flatMap(value -> value.getUsers().stream())
+		Set<String> overAllUsers = repoToolKpiMetricResponseList.stream().flatMap(value -> value.getUsers().stream())
 				.map(RepoToolUserDetails::getEmail).collect(Collectors.toSet());
+		LocalDate currentDate = LocalDate.now();
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
-
 		for (int i = 0; i < dataPoints; i++) {
 
 			LocalDate finalCurrentDate = currentDate;
 			CustomDateRange weekRange = KpiDataHelper.getStartAndEndDateForDataFiltering(finalCurrentDate, duration);
 			String date = KpiHelperService.getDateRange(weekRange, duration);
-			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricRespons.stream()
-					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
-			Double overAllMeanTimeToMerge = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getAverage)
-					.orElse(0.0d);
-			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					KpiHelperService.convertMilliSecondsToHours(overAllMeanTimeToMerge*1000), aggDataMap);
 
+			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
+					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
+
+			Double overallPickupTime = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getInnovationRatePercentage).orElse(0.0d);
+
+			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
+					overallPickupTime, aggDataMap);
+			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
+					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
+			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
+					projectName, date, aggDataMap);
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
-
-					String branchName = getBranchSubFilter(repo, projectName);
-					double meanTimeToMerge = 0.0d;
-					String overallKpiGroup = branchName + "#" + Constant.AGGREGATED_VALUE;
 					List<RepoToolUserDetails> repoToolUserDetailsList = new ArrayList<>();
+					String branchName = getBranchSubFilter(repo, projectName);
+					Double innovationRate = 0.0d;
+					String overallKpiGroup = branchName + "#" + Constant.AGGREGATED_VALUE;
 					if (repoToolKpiMetricResponse.isPresent()) {
 						Optional<Branches> matchingBranch = repoToolKpiMetricResponse.get().getRepositories().stream()
 								.filter(repository -> repository.getName().equals(repo.getRepositoryName()))
 								.flatMap(repository -> repository.getBranches().stream())
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
-						meanTimeToMerge = matchingBranch.map(Branches::getAverage).orElse(0.0d);
+
+						innovationRate = matchingBranch.map(Branches::getInnovationRatePercentageBranch).orElse(0.0d);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(
 							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
 									date, aggDataMap));
-					setDataCount(projectName, date, overallKpiGroup,
-							KpiHelperService.convertMilliSecondsToHours(meanTimeToMerge*1000), aggDataMap);
-
+					setDataCount(projectName, date, overallKpiGroup, innovationRate, aggDataMap);
 				}
 			});
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
-							projectName, date, aggDataMap);
 
-			currentDate = KpiHelperService.getNextRangeDate(duration, finalCurrentDate);
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
-
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
+
 		populateExcelDataObject(requestTrackerId, repoToolValidationDataList, excelData);
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.REPO_TOOL_MEAN_TIME_TO_MERGE.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.INNOVATION_RATE.getColumns());
 	}
-	
+
+	/**
+	 * fetch data from db
+	 *
+	 * @param leafNodeList
+	 * 		leaf node list
+	 * @param startDate
+	 * 		start date
+	 * @param endDate
+	 * 		end date
+	 * @param kpiRequest
+	 * 		kpi request
+	 * @return map of data
+	 */
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
+				leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
+		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(ASSIGNEE, assignees);
+		return resultMap;
+	}
+
 	/**
 	 * set data count for user filter
 	 *
@@ -223,70 +278,69 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	 * @param assignees
 	 * 		assignee data
 	 * @param repo
-	 * 		repo tool
+	 * 		repo tool item
 	 * @param projectName
 	 * 		project name
 	 * @param date
 	 * 		date
-	 * @param aggDataMap
+	 * @param dateUserWiseAverage
 	 * 		total data map
-	 * @return repo tool validation data
+	 * @return repotool validation data
 	 */
 	private List<RepoToolValidationData> setUserDataCounts(Set<String> overAllUsers,
 			List<RepoToolUserDetails> repoToolUserDetailsList, Set<Assignee> assignees, Tool repo,
-			String projectName, String date, Map<String, List<DataCount>> aggDataMap) {
+			String projectName, String date,  Map<String, List<DataCount>> dateUserWiseAverage) {
 		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
 		overAllUsers.forEach(userEmail -> {
 			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
 					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
 			Optional<Assignee> assignee = assignees.stream().filter(
-					assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
+							assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
-			Double userAverageSeconds = repoToolUserDetails.map(RepoToolUserDetails::getAverage).orElse(0.0d);
-			Long userAverageHrs = KpiHelperService.convertMilliSecondsToHours(userAverageSeconds*1000);
+			Double userInnovationRate = repoToolUserDetails.map(RepoToolUserDetails::getPercentage).orElse(0.0d);
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
-			if (repoToolUserDetails.isPresent() && repo != null) {
-				repoToolUserDetails.get().getMergeRequestList().forEach(mr -> {
-					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
-					repoToolValidationData.setProjectName(projectName);
-					repoToolValidationData.setBranchName(repo.getBranch());
-					repoToolValidationData.setDeveloperName(developerName);
-					repoToolValidationData.setDate(date);
-					repoToolValidationData.setMeanTimeToMerge(
-							KpiHelperService.convertMilliSecondsToHours(mr.getTimeToMerge()*1000.0));
-					repoToolValidationData.setMergeRequestUrl(mr.getLink());
-					repoToolValidationData.setRepoUrl(repo.getRepositoryName());
-					repoToolValidationDataList.add(repoToolValidationData);
-				});
+			if(repoToolUserDetails.isPresent() && repo != null) {
+				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+				repoToolValidationData.setProjectName(projectName);
+				repoToolValidationData.setBranchName(repo.getBranch());
+				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+				repoToolValidationData.setDeveloperName(developerName);
+				repoToolValidationData.setDate(date);
+				repoToolValidationData.setInnovationRate(userInnovationRate);
+				repoToolValidationDataList.add(repoToolValidationData);
 			}
-			setDataCount(projectName, date, userKpiGroup, userAverageHrs, aggDataMap);
+
+			setDataCount(projectName, date, userKpiGroup, userInnovationRate, dateUserWiseAverage);
+
 		});
 		return repoToolValidationDataList;
 	}
 
 	/**
 	 * set individual data count
+	 *
 	 * @param projectName
-	 * 				project name
+	 * 		project name
 	 * @param week
-	 * 				date
+	 * 		date
 	 * @param kpiGroup
-	 * 				combined filter
+	 * 		combined filter
 	 * @param value
-	 * 				value
+	 * 		value
 	 * @param dataCountMap
-	 * 				data count map by filter
+	 * 		data count map by filter
 	 */
-	private void setDataCount(String projectName, String week, String kpiGroup, Long value,
+	private void setDataCount(String projectName, String week, String kpiGroup, Double value,
 			Map<String, List<DataCount>> dataCountMap) {
 		List<DataCount> dataCounts = dataCountMap.get(kpiGroup);
-		Optional<DataCount> optionalDataCount = dataCounts!=null? dataCounts.stream()
-				.filter(dataCount1 -> dataCount1.getDate().equals(week)).findFirst():Optional.empty();
+		Optional<DataCount> optionalDataCount = dataCounts != null
+				? dataCounts.stream().filter(dataCount1 -> dataCount1.getDate().equals(week)).findFirst()
+				: Optional.empty();
 		if (optionalDataCount.isPresent()) {
 			DataCount updatedDataCount = optionalDataCount.get();
-			updatedDataCount.setValue(((Number) updatedDataCount.getValue()).longValue() + value);
+			updatedDataCount.setValue(((Number) updatedDataCount.getValue()).doubleValue() + value);
 			dataCounts.set(dataCounts.indexOf(optionalDataCount.get()), updatedDataCount);
 		} else {
 			DataCount dataCount = new DataCount();
@@ -300,39 +354,35 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		}
 	}
 
+	/**
+	 * populate excel data
+	 *
+	 * @param requestTrackerId
+	 * 				request tracker id
+	 * @param repoToolUserDetails
+	 * 				repo tool validation data
+	 * @param validationDataMap
+	 * 				excel data map
+	 */
+	private void populateExcelDataObject(String requestTrackerId, List<RepoToolValidationData> repoToolUserDetails,
+			List<KPIExcelData> validationDataMap) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+			KPIExcelUtility.populateInnovationRateExcelData(repoToolUserDetails, validationDataMap);
+		}
+	}
+
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
 	}
 
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
-				leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
-		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
-		Map<String, Object> resultMap = new HashMap<>();
-		resultMap.put(ASSIGNEE, assignees);
-		return resultMap;
-	}
-
-	private void populateExcelDataObject(String requestTrackerId,
-			List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> validationDataMap) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateMeanTimeMergeExcelData(repoToolValidationDataList, validationDataMap);
-
-		}
-	}
-
-	@Override
-	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
-		return calculateKpiValueForDouble(valueList, kpiName);
+	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
+		return calculateKpiValueForDouble(valueList, kpiId);
 	}
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI158(),
-				KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI185(), KPICode.INNOVATION_RATE.getKpiId());
 	}
-
 }

@@ -325,12 +325,11 @@ export class JiraConfigComponent implements OnInit {
         });
       }
     }, (err) => {
-      console.log("getJenkinsJobNames in err block ",err);
       this.jenkinsJobNameList = [];
       this.hideLoadingOnFormElement('jobName');
       this.messenger.add({
         severity: 'error',
-        summary: err.error.message,
+        summary: err?.error.message ? err.error.message : err?.statusText,
       });
     });
   }
@@ -548,7 +547,7 @@ export class JiraConfigComponent implements OnInit {
     const postData = {
       connectionId: self.selectedConnection.id,
       projectKey: self.toolForm.controls['projectKey'].value,
-      boardType: self.selectedProject['type']
+      boardType: self.selectedProject['type'] || self.selectedProject['Type']
     };
 
     self.isLoading = true;

@@ -111,7 +111,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'iteration') {
+      if (sharedobject?.filterData?.length) {
         this.allKpiArray = [];
         this.kpiChartData = {};
         this.kpiSelectedFilterObj = {};

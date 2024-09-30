@@ -170,7 +170,6 @@
   @media only screen and (max-width: 1600px){
     :host ::ng-deep .capacity-table-container {
       max-width: 1170px;
-      overflow-x: scroll; 
     }
   }
   
@@ -218,7 +217,6 @@
   
   :host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell span.editable{
     display: inline-flex;
-    max-width: 90%;
     white-space: break-spaces;
   }
   

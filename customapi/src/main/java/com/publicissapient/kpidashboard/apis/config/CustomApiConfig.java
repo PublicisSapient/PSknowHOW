@@ -284,6 +284,25 @@ public class CustomApiConfig {// NOPMD
 
 	@Value("${zephyrCloudBaseUrl}")
 	private String zephyrCloudBaseUrl;
+	private String innovationRateUrl;
+	private String repoToolMembersUrl;
+	private String defectRateUrl;
+
+	public String getDefectRateUrl() {
+		return defectRateUrl;
+	}
+
+	public void setDefectRateUrl(String defectRateUrl) {
+		this.defectRateUrl = defectRateUrl;
+	}
+
+	public String getInnovationRateUrl() {
+		return innovationRateUrl;
+	}
+
+	public void setInnovationRateUrl(String innovationRateUrl) {
+		this.innovationRateUrl = innovationRateUrl;
+	}
 
 	public String getRepoToolMembersUrl() {
 		return repoToolMembersUrl;
@@ -292,8 +311,6 @@ public class CustomApiConfig {// NOPMD
 	public void setRepoToolMembersUrl(String repoToolMembersUrl) {
 		this.repoToolMembersUrl = repoToolMembersUrl;
 	}
-
-	private String repoToolMembersUrl;
 
 	public String getRepoToolReworkRateUrl() {
 		return repoToolReworkRateUrl;

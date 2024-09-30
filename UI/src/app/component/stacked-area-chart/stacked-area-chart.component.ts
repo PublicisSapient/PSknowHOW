@@ -3,8 +3,7 @@ import * as d3 from 'd3';
 
 @Component({
   selector: 'app-stacked-area-chart',
-  templateUrl: './stacked-area-chart.component.html',
-  styleUrls: ['./stacked-area-chart.component.css']
+  templateUrl: './stacked-area-chart.component.html'
 })
 export class StackedAreaChartComponent implements OnInit {
   @Input() data: any; // json data
