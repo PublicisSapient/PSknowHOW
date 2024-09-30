@@ -65,9 +65,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
         data[this.selectedType]?.forEach((board) => {
           if (board?.filters) {
-            if (levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0]) {
-              board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
-            }
+            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0]?.hierarchyLevelName;
             if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
               board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0]?.hierarchyLevelName;
             }
@@ -76,10 +74,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
             }
 
             if (board.boardSlug !== 'developer') {
-              board.filters.additionalFilters?.forEach(element => {
-                if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
-                  element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
-                }
+              board.filters.additionalFilters.forEach(element => {
+                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]?.hierarchyLevelName;
               });
             }
           }
