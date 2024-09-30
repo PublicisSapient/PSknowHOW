@@ -166,7 +166,7 @@ public interface UserInfoService {
 
 	boolean deleteFromCentralAuthUser(String user);
 
-	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username);
+	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String authCookieToken);
 
 	boolean getCentralAuthUserDeleteUserToken(String authCookieToken);
 
