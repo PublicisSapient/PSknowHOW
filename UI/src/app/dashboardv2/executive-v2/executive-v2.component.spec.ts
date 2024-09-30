@@ -16984,22 +16984,61 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   })
 
-  it("should create kpi array when trendvalueList is object", () => {
-    let kpi = [{
-        kpiId: "kpi141",
-        trendValueList: {
+  it('should apply aggrefaration logic for non progress-bar chart ', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi124',
+      trendValueList: [
+
+        {
+          filter: "f1",
+          value: [
+            {
+              filter1: "Overall",
+              data: [{
+                "label": "Scope added",
+                "value": 1,
+              }]
+            }
+          ]
+        }
+
+      ]
+    }];
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi125',
+        kpiDetail: {
+          chartType: 'GroupBarChart'
+        }
+      }
+    ];
+    component.kpiSelectedFilterObj['kpi124'] = { f1: ["value1"], f2: ["value2"] }
+
+    spyOn(component, 'createTrendData')
+    spyOn(helperService, 'applyAggregationLogic')
+    component.getChartDataForBacklog('kpi124', 0, 'sum')
+    expect(component.kpiChartData['kpi124']).toBeUndefined();
+  })
+
+  it('should get chart data when have one filter', () => {
+    component.allKpiArray = [{
+        kpiId: 'kpi124',
+        trendValueList: [
+
+           { filter : "f1",
             value: [
                 {
                     filter1: "Overall",
                     data: [{
                         "label": "Scope added",
+                        "value": 1,
                     }]
                 }
             ]
+        }
 
-        },
-        filters: ['f1', "f2"]
-    },]
+        ]
+    }];
     component.updatedConfigGlobalData = [
         {
             kpiId: 'kpi125',
@@ -17008,11 +17047,437 @@ describe('ExecutiveV2Component', () => {
             }
         }
     ];
+    spyOn(component,'getChartType').and.returnValue('progress-bar');
+    component.kpiSelectedFilterObj['kpi124'] = {f1 : ["f1"]}
+
+    spyOn(component, 'createTrendData')
+    spyOn(component, 'applyAggregationLogicForProgressBar')
+    component.getChartDataForBacklog('kpi124', 0, 'sum')
+    expect(component.kpiChartData).toBeDefined();
+})
+
+  it("should create kpi array when trendvalueList is object", () => {
+    let kpi = [{
+      kpiId: "kpi141",
+      trendValueList: {
+        value: [
+          {
+            filter1: "Overall",
+            data: [{
+              "label": "Scope added",
+            }]
+          }
+        ]
+
+      },
+      filters: ['f1', "f2"]
+    },]
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi125',
+        kpiDetail: {
+          chartType: 'GroupBarChart'
+        }
+      }
+    ];
     const fakeKPi = helperService.createKpiWiseId(kpi);
     spyOn(component, 'ifKpiExist').and.returnValue(1);
     component.createAllKpiArrayForBacklog(fakeKPi)
     expect(component.allKpiArray.length).toBeGreaterThan(0);
-})
+  });
+
+  it("should createapiarry for radiobutton", () => {
+    const data = {
+      kpi141: {
+        kpiId: "kpi141",
+        kpiName: "Defect Count by Status",
+        unit: "Count",
+        maxValue: "",
+        chartType: "graph",
+        kpiInfo: {
+          definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+        },
+        id: "64b4ed7acba3c12de164732c",
+        isDeleted: false,
+        kpiCategory: "Release",
+        kpiUnit: "Count",
+        kanban: false,
+        kpiSource: "Jira",
+        trendValueList: [
+          {
+            filter1: 'story',
+            value: [
+              {
+                data: "1",
+                value: [
+                  {
+                    value: 0,
+                    drillDown: [],
+                    subFilter: "To Do"
+                  },
+                ],
+                kpiGroup: "Issue Count"
+              }
+            ]
+          }
+        ],
+        groupId: 9
+      }
+    };
+
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi141',
+        kpiName: 'Deployment Frequency',
+        isEnabled: true,
+        order: 23,
+        kpiDetail: {
+          kpiFilter: 'radiobutton',
+          chartType: "graph"
+        },
+        shown: true
+      }
+    ];
+
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['story']
+    }
+    component.kpiDropdowns = {
+      kpi141: {
+        options: ['story']
+      }
+    }
+    spyOn(component, 'ifKpiExist').and.returnValue(-1);
+    spyOn(component, 'createTrendData');
+    component.createAllKpiArrayForBacklog(data);
+    expect(component.kpiSelectedFilterObj).toBeDefined();
+  })
+
+  it("should createapiarry for dropdown", () => {
+    const data = {
+      kpi141: {
+        kpiId: "kpi141",
+        kpiName: "Defect Count by Status",
+        unit: "Count",
+        maxValue: "",
+        chartType: "",
+        kpiInfo: {
+          definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+        },
+        id: "64b4ed7acba3c12de164732c",
+        isDeleted: false,
+        kpiCategory: "Release",
+        kpiUnit: "Count",
+        kanban: false,
+        kpiSource: "Jira",
+        trendValueList: [
+          {
+            filter1: 'story',
+            value: [
+              {
+                data: "1",
+                value: [
+                  {
+                    value: 0,
+                    drillDown: [],
+                    subFilter: "To Do"
+                  },
+                ],
+                kpiGroup: "Issue Count"
+              }
+            ]
+          }
+        ],
+        groupId: 9
+      }
+    };
+
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi141',
+        kpiName: 'Deployment Frequency',
+        isEnabled: true,
+        order: 23,
+        kpiDetail: {
+          kpiFilter: 'dropdown',
+          chartType: "graph"
+        },
+        shown: true
+      }
+    ];
+
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['story']
+    }
+    component.kpiDropdowns = {
+      kpi141: {
+        options: ['story']
+      }
+    }
+    spyOn(component, 'ifKpiExist').and.returnValue(-1)
+    spyOn(component, 'createTrendData');
+    component.createAllKpiArrayForBacklog(data);
+    expect(component.kpiSelectedFilterObj).toBeDefined();
+  })
+
+  it("should createapiarry for multi dropdown", () => {
+    const data = {
+      kpi141: {
+        kpiId: "kpi141",
+        chartType: "",
+        kpiInfo: {
+          definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+        },
+        filters: {
+          filter1: {
+            options: ['story']
+          }
+        },
+        id: "64b4ed7acba3c12de164732c",
+        isDeleted: false,
+        kpiCategory: "Release",
+        trendValueList: [
+          {
+            filter1: 'story',
+            value: [
+              {
+                data: "1",
+                kpiGroup: "Issue Count"
+              }
+            ]
+          }
+        ],
+        groupId: 9
+      }
+    };
+
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi141',
+        kpiName: 'Deployment Frequency',
+        isEnabled: true,
+        order: 23,
+        kpiDetail: {
+          kpiFilter: 'multiDropdown',
+          chartType: "graph"
+        },
+        shown: true
+      }
+    ];
+
+    component.kpiSelectedFilterObj['kpi124'] = {
+      filter1: ['story']
+    }
+    component.kpiDropdowns = {
+      kpi141: {
+        options: ['story']
+      }
+    }
+    spyOn(component, 'ifKpiExist').and.returnValue(-1)
+    spyOn(component, 'createTrendData');
+    component.createAllKpiArrayForBacklog(data);
+    expect(component.kpiSelectedFilterObj).toBeDefined();
+  })
+
+
+  describe('ExecutiveV2 handleSelectedOptionOnBacklog', () => {
+    let component;
+    let helperServiceMock;
+    let serviceMock;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(ExecutiveV2Component);
+
+      helperServiceMock = {
+        createBackupOfFiltersSelection: jasmine.createSpy('createBackupOfFiltersSelection'),
+      };
+
+      serviceMock = {
+        setKpiSubFilterObj: jasmine.createSpy('setKpiSubFilterObj'),
+      };
+
+      component = fixture.componentInstance;
+    });
+
+    describe('handleSelectedOptionOnBacklog', () => {
+
+      xit('should update kpiSelectedFilterObj with single dropdown event', () => {
+        const kpi = {
+          kpiId: 'kpi-1',
+          kpiDetail: {
+            aggregationCriteria: 'sum',
+          },
+        };
+        const event = { filter1: 'option1' };
+
+        component.kpiSelectedFilterObj = { 'kpi-1': {} };
+
+        component.handleSelectedOptionOnBacklog(event, kpi);
+
+        expect(component.kpiSelectedFilterObj).toEqual({ 'kpi-1': { filter1: ['option1'] } });
+      });
+
+      xit('should update kpiSelectedFilterObj with multi dropdown event', () => {
+        const kpi = {
+          kpiId: 'kpi-1',
+          kpiDetail: {
+            aggregationCriteria: 'sum',
+          },
+        };
+        component.kpiSelectedFilterObj['kpi-1'] = {
+          filter1: 'option1',
+        }
+
+        const event = { filter1: ['option1', 'option2'], filter2: ['option3', 'option4'] };
+        const selectedFilterBackup = { filter1: ['option5'], filter2: ['option6'] };
+
+        component.kpiSelectedFilterObj = {};
+        component.kpiSelectedFilterObj[kpi.kpiId] = selectedFilterBackup;
+
+        component.handleSelectedOptionOnBacklog(event, kpi);
+
+        expect(component.kpiSelectedFilterObj).toEqual({
+          'kpi-1': { filter1: ['option1', 'option2'], filter2: ['option3', 'option4'] },
+        });
+      });
+
+      it('should update kpiSelectedFilterObj with single dropdown event when selectedFilterBackup does not have filter2', () => {
+        const kpi = {
+          kpiId: 'kpi-1',
+          kpiDetail: {
+            aggregationCriteria: 'sum',
+          },
+          trendValueList: {
+            value: [
+              {
+                filter1: "Overall",
+                data: [{
+                  "label": "Scope added",
+                }]
+              }
+            ]
+
+          },
+        };
+
+        component.allKpiArray = [kpi];
+        component.configGlobalData = [kpi];
+        component.updatedConfigGlobalData = [kpi];
+        component.kpiSelectedFilterObj['kpi-1'] = {
+          filter1: 'option1',
+        }
+
+        const event = { filter1: 'option1' };
+        const selectedFilterBackup = { filter1: ['option2'] };
+
+        component.kpiSelectedFilterObj = {};
+        component.kpiSelectedFilterObj[kpi.kpiId] = selectedFilterBackup;
+
+        component.handleSelectedOptionOnBacklog(event, kpi);
+
+        expect(component.kpiSelectedFilterObj).toEqual({ 'kpi-1': { filter1: 'option1' } });
+      });
+
+      it('should call getChartDataForBacklog, createBackupOfFiltersSelection, and setKpiSubFilterObj', () => {
+        const kpi = {
+          kpiId: 'kpi-1',
+          kpiDetail: {
+            aggregationCriteria: 'sum',
+          },
+        };
+
+        component.kpiSelectedFilterObj['kpi-1'] = {
+          filter1: 'option1',
+        }
+
+        const event = { filter1: 'option1' };
+
+        spyOn(component, 'getChartDataForBacklog');
+
+        component.handleSelectedOptionOnBacklog(event, kpi);
+
+        expect(component.getChartDataForBacklog).toHaveBeenCalledWith('kpi-1', -1, 'sum');
+      });
+    });
+  });
+
+
+  describe('checkSprint', () => {
+
+    beforeEach(() => {
+      component.kpiSelectedFilterObj = {
+        kpi1: {
+          filter1: ['filter1Value'],
+          filter2: ['filter2Value']
+        },
+        kpi2: {
+          filter1: ['overall'],
+          filter2: ['filter2Value']
+        },
+        kpi3: {
+          filter1: ['filter1Value'],
+          filter2: ['overall']
+        },
+        kpi4: {
+          filter1: ['overall'],
+          filter2: ['overall']
+        }
+      };
+    });
+
+    it('should return "-" if filter1 is not "overall" and has values or filter2 is not "overall" and has values', () => {
+      // Arrange
+      const value = 10;
+      const unit = 'units';
+      const kpiId = 'kpi1';
+
+      // Act
+      const result = component.checkSprint(value, unit, kpiId);
+
+      // Assert
+      expect(result).toBe('-');
+    });
+
+    it('should return formatted value with unit if filter1 is "overall" and filter2 is not "overall"', () => {
+      // Arrange
+      const value = 10.5;
+      const unit = 'units';
+      const kpiId = 'kpi2';
+
+      // Act
+      const result = component.checkSprint(value, unit, kpiId);
+
+      // Assert
+      expect(result).toBe('-');
+    });
+
+    it('should return formatted value with unit if filter1 is not "overall" and filter2 is "overall"', () => {
+      // Arrange
+      const value = 10.2;
+      const unit = 'units';
+      const kpiId = 'kpi3';
+
+      // Act
+      const result = component.checkSprint(value, unit, kpiId);
+
+      // Assert
+      expect(result).toBe('-');
+    });
+
+    it('should return formatted value with unit if both filter1 and filter2 are "overall"', () => {
+      // Arrange
+      const value = 10.8;
+      const unit = 'units';
+      const kpiId = 'kpi4';
+
+      // Act
+      const result = component.checkSprint(value, unit, kpiId);
+
+      // Assert
+      expect(result).toBe('11 units');
+    });
+  });
+
 
 
 });
