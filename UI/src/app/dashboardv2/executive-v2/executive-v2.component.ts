@@ -1150,7 +1150,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     }
 
-    if (this.colorObj && Object.keys(this.colorObj)?.length > 0 && !['kpi161', 'kpi146', 'kpi148'].includes(kpiId)) {
+    if (this.colorObj && Object.keys(this.colorObj)?.length > 0 && !['kpi161', 'kpi146', 'kpi148','kpi169'].includes(kpiId)) {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
@@ -1160,7 +1160,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
       }
     });
-
   }
 
   getChartType(kpiId) {
