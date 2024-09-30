@@ -217,7 +217,7 @@ public class BitBucketServiceRTest {
 	public void TestProcessApplicationException() throws Exception {
 		bitbucketServiceCache.put(KPISource.EXCEL.name(), codeCommitServiceImpl);
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
@@ -237,7 +237,7 @@ public class BitBucketServiceRTest {
 	public void TestProcessNullPointer() throws Exception {
 		bitbucketServiceCache.put(KPISource.EXCEL.name(), codeCommitServiceImpl);
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
@@ -256,7 +256,7 @@ public class BitBucketServiceRTest {
 	public void TestProcessExcel() throws Exception {
 		bitbucketServiceCache.put(KPISource.EXCEL.name(), codeCommitServiceImpl);
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);

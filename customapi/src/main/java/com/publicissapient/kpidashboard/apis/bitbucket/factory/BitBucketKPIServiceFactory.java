@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
  * @author anisingh4
  */
 @Service
+@Builder
 public class BitBucketKPIServiceFactory {
 
 	private static final Map<String, BitBucketKPIService<?, ?, ?>> BIT_BUCKET_SERVICE_CACHE = new HashMap<>();

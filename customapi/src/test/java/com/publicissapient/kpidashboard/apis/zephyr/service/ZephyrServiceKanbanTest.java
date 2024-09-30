@@ -171,7 +171,7 @@ public class ZephyrServiceKanbanTest {
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
@@ -193,7 +193,7 @@ public class ZephyrServiceKanbanTest {
 
 	@Test
 	public void sonarViolationsTestProcessThrowApplication() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
@@ -215,7 +215,7 @@ public class ZephyrServiceKanbanTest {
 
 	@Test
 	public void sonarViolationsTestProcessThrowNullPointer() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))

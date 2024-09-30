@@ -232,7 +232,7 @@ public class JiraServiceRTest {
 
 	@Test
 	public void testProcess() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(5);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
@@ -242,7 +242,7 @@ public class JiraServiceRTest {
 
 	@Test
 	public void testProcess_Application() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(5);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
@@ -253,7 +253,7 @@ public class JiraServiceRTest {
 
 	@Test
 	public void testProcess_NullPointer() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(5);
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);

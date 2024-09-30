@@ -153,7 +153,7 @@ public class BitBucketServiceKanbanRTest {
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
 				.thenReturn(projectKey);
 		List<KpiElement> resultList = null;
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
@@ -176,7 +176,7 @@ public class BitBucketServiceKanbanRTest {
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
 				.thenReturn(projectKey);
 		List<KpiElement> resultList = null;
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
@@ -200,7 +200,7 @@ public class BitBucketServiceKanbanRTest {
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
 				.thenReturn(projectKey);
 		List<KpiElement> resultList = null;
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
 			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))

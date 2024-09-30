@@ -310,9 +310,12 @@ public class ZephyrService {
 						.get(CommonConstant.PROJECT.toLowerCase());
 
 				if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-						|| kpiHelperService.isKpiSpecificCheckValid(kpi, kpiElement, projectNodes.get(0)))) {
+						|| kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
 					kpiElement = zephyrKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
 					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+					if (projectNodes.size() == 1) {
+						kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, projectNodes.get(0));
+					}
 				}
 
 				long processTime = System.currentTimeMillis() - startTime;

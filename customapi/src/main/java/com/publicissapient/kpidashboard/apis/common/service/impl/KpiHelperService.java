@@ -68,7 +68,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.MasterResponse;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
@@ -2017,16 +2016,19 @@ public class KpiHelperService { // NOPMD
 	}
 
 
-	public boolean isKpiSpecificCheckValid(KPICode kpi, KpiElement kpiElement, Node nodeDataClone) {
+	public boolean isToolConfigured(KPICode kpi, KpiElement kpiElement, Node nodeDataClone) {
 		ObjectId basicProjectConfigId = nodeDataClone.getProjectFilter().getBasicProjectConfigId();
-		if(isToolConfigured(kpi, basicProjectConfigId)){
-			if(!isMandatoryFieldSet(kpi,basicProjectConfigId)){
-				kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
-				return false;
-			}
-		}
-		else{
+		if (!isToolConfigured(kpi, basicProjectConfigId)) {
 			kpiElement.setResponseCode(CommonConstant.TOOL_NOT_CONFIGURED);
+			return false;
+		}
+		return true;
+	}
+
+	public boolean isMandatoryFieldSet(KPICode kpi, KpiElement kpiElement, Node nodeDataClone) {
+		ObjectId basicProjectConfigId = nodeDataClone.getProjectFilter().getBasicProjectConfigId();
+		if (!isMandatoryFieldSet(kpi, basicProjectConfigId)) {
+			kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
 			return false;
 		}
 		return true;

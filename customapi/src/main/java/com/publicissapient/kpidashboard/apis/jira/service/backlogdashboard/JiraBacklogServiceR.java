@@ -331,9 +331,10 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 				} else {
 					Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
 					if (Objects.nonNull(nodeDataClone)
-							&& kpiHelperService.isKpiSpecificCheckValid(kpi, kpiElement, nodeDataClone)) {
+							&& kpiHelperService.isToolConfigured(kpi, kpiElement, nodeDataClone)) {
 						kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone);
 						kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+						kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, nodeDataClone);
 					}
 
 					long processTime = System.currentTimeMillis() - startTime;

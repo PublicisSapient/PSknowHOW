@@ -196,9 +196,10 @@ public class BitBucketServiceKanbanR {
 
 			Node filteredNodeClone = (Node) SerializationUtils.clone(filteredNode);
 			if (Objects.nonNull(filteredNodeClone)
-					&& kpiHelperService.isKpiSpecificCheckValid(kpi, kpiElement, filteredNodeClone)) {
+					&& kpiHelperService.isToolConfigured(kpi, kpiElement, filteredNodeClone)) {
 				kpiElement = bitBucketKPIService.getKpiData(kpiRequest, kpiElement, filteredNodeClone);
 				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+				kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, filteredNodeClone);
 			}
 
 			long processTime = System.currentTimeMillis() - startTime;

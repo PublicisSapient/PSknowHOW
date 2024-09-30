@@ -150,7 +150,7 @@ public class JenkinsServiceKanbanRTest {
 
 	@Test
 	public void testProcess1() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
 
 		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("CODE_BUILD_TIME_KANBAN"));
@@ -160,7 +160,7 @@ public class JenkinsServiceKanbanRTest {
 
 	@Test
 	public void testProcess_throwApplication() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
 
@@ -181,7 +181,7 @@ public class JenkinsServiceKanbanRTest {
 
 	@Test
 	public void testProcess_NullPointer() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
 		List<KpiElement> resultList;

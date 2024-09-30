@@ -266,7 +266,7 @@ public class JiraServiceKanbanRTest {
 	public void TestProcess() throws Exception {
 		KpiRequest kpiRequest = createKPIRequest();
 		kpiRequest.setLabel("PROJECT");
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
@@ -278,7 +278,7 @@ public class JiraServiceKanbanRTest {
 	public void TestProcess_ApplicationException() throws Exception {
 		KpiRequest kpiRequest = createKPIRequest();
 		kpiRequest.setLabel("PROJECT");
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
@@ -290,7 +290,7 @@ public class JiraServiceKanbanRTest {
 	public void TestProcess_NullPointerException() throws Exception {
 		KpiRequest kpiRequest = createKPIRequest();
 		kpiRequest.setLabel("PROJECT");
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = jiraServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));

@@ -46,8 +46,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockedStatic.Verification;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -158,7 +156,7 @@ public class JenkinsServiceRTest {
 	@Test
 	public void testProcess() throws Exception {
 
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
 		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
@@ -169,7 +167,7 @@ public class JenkinsServiceRTest {
 	@Test
 	public void testProcess_ApplicatioException() throws Exception {
 
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 		when(codeBuildTimeServiceImpl.getKpiData(any(), any(),any())).thenThrow(ApplicationException.class);
 		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
@@ -180,7 +178,7 @@ public class JenkinsServiceRTest {
 	@Test
 	public void testProcess_NullPointer() throws Exception {
 
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
 		when(codeBuildTimeServiceImpl.getKpiData(any(), any(),any())).thenThrow(NullPointerException.class);

@@ -169,7 +169,7 @@ public class SonarServiceKanbanRTest {
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
 			List<KpiElement> resultList = sonarService.process(kpiRequest);
@@ -178,7 +178,7 @@ public class SonarServiceKanbanRTest {
 
 	@Test
 	public void sonarViolationsTestProcess_ApplicationException() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
@@ -187,7 +187,7 @@ public class SonarServiceKanbanRTest {
 
 	@Test
 	public void sonarViolationsTestProcess_NullPointer() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = sonarService.process(kpiRequest);

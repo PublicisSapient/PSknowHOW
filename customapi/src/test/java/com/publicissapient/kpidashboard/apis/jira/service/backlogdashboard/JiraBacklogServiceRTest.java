@@ -190,7 +190,7 @@ public class JiraBacklogServiceRTest {
 	public void TestProcess() throws Exception {
 		when(kpiHelperService.getProjectKeyCache(any(), any(), anyBoolean())).thenReturn(kpiRequest.getIds());
 		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
 
@@ -198,7 +198,7 @@ public class JiraBacklogServiceRTest {
 
 	@Test
 	public void TestProcess_ApplicationException() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
 		when(flowLoadService.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
@@ -208,7 +208,7 @@ public class JiraBacklogServiceRTest {
 
 	@Test
 	public void TestProcess_NPException() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		jiraServiceCache.put(KPICode.FLOW_LOAD.name(), flowLoadService);
 		when(flowLoadService.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);

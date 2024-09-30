@@ -278,10 +278,13 @@ public class JiraServiceR {
 							.clone(treeAggregatorDetail);
 					List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
 							.get(CommonConstant.PROJECT.toLowerCase());
-					if (!projectNodes.isEmpty() && (projectNodes.size() > 1 || kpiHelperService
-							.isKpiSpecificCheckValid(kpi, kpiElement, projectNodes.get(0)))) {
+					if (!projectNodes.isEmpty() && (projectNodes.size() > 1
+							|| kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
 						kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
 						kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+						if (projectNodes.size() == 1) {
+							kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, projectNodes.get(0));
+						}
 					}
 					long processTime = System.currentTimeMillis() - startTime;
 					log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),

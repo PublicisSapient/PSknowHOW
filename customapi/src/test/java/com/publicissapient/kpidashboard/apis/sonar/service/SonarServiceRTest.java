@@ -173,7 +173,7 @@ public class SonarServiceRTest {
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
@@ -182,7 +182,7 @@ public class SonarServiceRTest {
 
 	@Test
 	public void sonarViolationsApplication() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
@@ -191,7 +191,7 @@ public class SonarServiceRTest {
 
 	@Test
 	public void sonarViolationsNullPointer() throws Exception {
-		when(kpiHelperService.isKpiSpecificCheckValid(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
 		initialization();
 		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
