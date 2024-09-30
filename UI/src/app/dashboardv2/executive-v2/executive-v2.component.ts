@@ -391,8 +391,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   // download excel functionality
-  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
-    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, this.iSAdditionalFilterSelected);
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, charType) {
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, this.iSAdditionalFilterSelected, charType);
   }
 
 
