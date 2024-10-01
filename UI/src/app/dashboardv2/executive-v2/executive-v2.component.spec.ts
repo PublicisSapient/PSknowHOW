@@ -16848,13 +16848,13 @@ describe('ExecutiveV2Component', () => {
 
   it('should prepare data from trending value list when there is no kpi filter and value is blank', () => {
     component.allKpiArray = [{
-      kpiId: 'kpi124',
+      kpiId: 'kpi138',
       trendValueList: {
         value: []
 
       }
     }];
-    component.getChartDataForCard('kpi124', 0);
+    component.getChartDataForCard('kpi138', 0);
     expect(component.kpiChartData).toBeDefined();
   })
 
@@ -17479,6 +17479,24 @@ describe('ExecutiveV2Component', () => {
   });
 
 
+  describe('onTabSwitch', () => {
+    it('should update the component properties', () => {
+      const data = { selectedBoard: 'Speed' };
 
+      spyOn(service, 'setSelectedBoard');
+
+      service.onTabSwitch.next(data);
+
+      expect(component.noFilterApplyData).toBe(false);
+      expect(component.kpiLoader).toEqual(new Set());
+      expect(component.kpiStatusCodeArr).toEqual({});
+      expect(component.immediateLoader).toBe(true);
+      expect(component.processedKPI11Value).toEqual({});
+      expect(component.selectedBranchFilter).toBe('Select');
+      expect(component.serviceObject).toEqual({});
+      expect(component.selectedtype).toBe('Scrum');
+      expect(component.kpiTrendObject).toEqual({});
+    });
+  });
 });
 
