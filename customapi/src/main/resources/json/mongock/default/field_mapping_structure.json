@@ -3765,6 +3765,39 @@
     "mandatory": true
   },
   {
+    "fieldName": "thresholdValueKPI180",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI182",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI181",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
     "fieldName" : "thresholdValueKPI185",
     "fieldLabel" : "Target KPI Value",
     "fieldType" : "number",
