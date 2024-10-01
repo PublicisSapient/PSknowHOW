@@ -210,7 +210,7 @@
   {
     "boardId": 7,
     "projectTypeSwitch": {
-      "enabled": false,
+      "enabled": true,
       "visible": true
     },
     "primaryFilter": {

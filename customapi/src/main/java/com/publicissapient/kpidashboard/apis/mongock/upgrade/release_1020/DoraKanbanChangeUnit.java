@@ -36,6 +36,7 @@ public class DoraKanbanChangeUnit {
 	public static final String BG_COLOR = "bgColor";
 	public static final String DISPLAY_RANGE = "displayRange";
 	public static final String LABEL = "label";
+	public static final String BOARD_ID = "boardId";
 	private final MongoTemplate mongoTemplate;
 
 	public DoraKanbanChangeUnit(MongoTemplate mongoTemplate) {
@@ -49,6 +50,7 @@ public class DoraKanbanChangeUnit {
 		updateFilterBoardId(16, 17);
 		updateFilterBoardId(15, 16);
 		updateFilterBoardId(13, 15);
+		updateProjectTypeSwitchEnabled(7, true);
 	}
 
 	public void insertDoraKanban() {
@@ -126,23 +128,30 @@ public class DoraKanbanChangeUnit {
 
 	/**
 	 * Moving dora to scrum, kanban thus changing the boardId
-	 * @param oldBoardId older board id
-	 * @param newBoardId new board id
+	 * 
+	 * @param oldBoardId
+	 *            older board id
+	 * @param newBoardId
+	 *            new board id
 	 */
 	private void updateFilterBoardId(int oldBoardId, int newBoardId) {
-		mongoTemplate.getCollection("filters").updateMany(
-				new Document("boardId", oldBoardId),
-				new Document("$set", new Document("boardId", newBoardId))
-		);
+		mongoTemplate.getCollection("filters").updateMany(new Document(BOARD_ID, oldBoardId),
+				new Document("$set", new Document(BOARD_ID, newBoardId)));
+	}
+
+	private void updateProjectTypeSwitchEnabled(int boardId, boolean enabled) {
+		mongoTemplate.getCollection("filters").updateMany(new Document(BOARD_ID, boardId),
+				new Document("$set", new Document("projectTypeSwitch.enabled", enabled)));
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		rollbackKPIDocs();
-		updateFilterBoardId(7,14);
-		updateFilterBoardId(15,13);
-		updateFilterBoardId(16,15);
-		updateFilterBoardId(17,16);
+		updateFilterBoardId(7, 14);
+		updateFilterBoardId(15, 13);
+		updateFilterBoardId(16, 15);
+		updateFilterBoardId(17, 16);
+		updateProjectTypeSwitchEnabled(14, false);
 	}
 
 	private void rollbackKPIDocs() {
