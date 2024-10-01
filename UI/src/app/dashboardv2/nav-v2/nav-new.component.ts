@@ -73,7 +73,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
               board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0]?.hierarchyLevelName;
             }
 
-            if (board.boardSlug !== 'developer') {
+            if (board.boardSlug !== 'developer' && board.boardSlug !== 'dora') {
               board.filters.additionalFilters.forEach(element => {
                 element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]?.hierarchyLevelName;
               });
