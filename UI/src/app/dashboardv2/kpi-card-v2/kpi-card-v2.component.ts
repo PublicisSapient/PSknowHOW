@@ -75,6 +75,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   commentDialogRef: DynamicDialogRef | undefined;
   disableSettings: boolean = false;
   @Input() immediateLoader: boolean = true;
+  warning = '';
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
@@ -192,6 +193,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.isTooltip = val;
   }
 
+  showWarning(val) {
+    if (val) {
+      this.warning = 'Configure the missing mandatory field mappings in KPI Settings for accurate data display.';
+    } else {
+      this.warning = null;
+    }
+  }
+
   handleChange(type, value = null, filterIndex = 0) {
     if (value && value.value && Array.isArray(value.value)) {
       value.value.forEach(selectedItem => {
@@ -235,7 +244,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       for (const key in this.filterOptions) {
         if (key?.toLowerCase() == event?.toLowerCase()) {
           this.filterOptions[key] = [];
-        } else if(!this.filterOptions[key]) {
+        } else if (!this.filterOptions[key]) {
           this.filterOptions[key] = [];
         }
       }
@@ -352,7 +361,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    return data === '200' && this.checkDataAtGranularLevel(this.trendValueList);
+    return (data === '200' || data === '201') && this.checkDataAtGranularLevel(this.trendValueList);
   }
 
   checkDataAtGranularLevel(data) {

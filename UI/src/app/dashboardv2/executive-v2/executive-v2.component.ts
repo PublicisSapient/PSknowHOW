@@ -1829,7 +1829,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   checkIfDataPresent(data) {
     if (this.kpiStatusCodeArr[data]) {
-      return this.kpiStatusCodeArr[data] === '200' && this.checkDataAtGranularLevel(this.kpiChartData[data]);
+      return (this.kpiStatusCodeArr[data] === '200' || this.kpiStatusCodeArr[data] === '201') && this.checkDataAtGranularLevel(this.kpiChartData[data]);
     }
     return false;
   }

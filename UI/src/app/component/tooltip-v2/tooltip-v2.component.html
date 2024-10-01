@@ -1,7 +1,7 @@
 <div class="tooltip p-p-3" *ngIf="show" (mouseleave)="hideTooltip($event)"
   [ngStyle]="relativeTooltipTop > 0 ? {'top': toolTipTop ? 150 + 'px' : 30 + 'px'} : {'top': relativeTooltipTop + 'px'}"
-  [ngClass]="{'tooltip-kpi': kpiName?.length > 0,'tooltip-width': kpiName?.length > 25, 'tooltip-wider': showingMaturityRange, 'bottomArrow': bottomArrow, 'p-d-none': !show}">
-  <div class="tooltip-wrapper" [ngClass]="{'tooltip-wrapper-card' : !(showChartView === 'chart')}">
+  [ngClass]="{'tooltip-kpi': kpiName?.length > 0,'tooltip-width': kpiName?.length > 25, 'tooltip-wider': showingMaturityRange, 'bottomArrow': bottomArrow, 'allText': allText, 'p-d-none': !show}">
+  <div class="tooltip-wrapper" *ngIf="!allText" [ngClass]="{'tooltip-wrapper-card' : !(showChartView === 'chart')}">
     <p class="p-mb-1 paragraph">{{data?.definition}}</p>
     <div class="" *ngIf="!filterNo">
       <ng-container *ngIf="data?.formula?.length > 0">
@@ -63,5 +63,11 @@
         </p>
       </ng-container>
     </div>
+  </div>
+
+  <div *ngIf="allText">
+    <p class=" paragraph p-pl-3 p-mb-0">
+      {{data}}
+    </p>
   </div>
 </div>
