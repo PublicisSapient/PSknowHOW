@@ -86,9 +86,9 @@ public class DeploymentFrequencyKanbanServiceImpl
 
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
 		projectWiseLeafNodeValue(mapTmp, projectList, kpiElement);
-
+		String sanitizedRequestTrackerId = kpiRequest.getRequestTrackerId().replace("\n", "").replace("\r", "");
 		log.debug("[DEPLOYMENT-FREQUENCY-KANBAN-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
-				kpiRequest.getRequestTrackerId(), root);
+				sanitizedRequestTrackerId, root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEPLOYMENT_FREQUENCY_KANBAN);

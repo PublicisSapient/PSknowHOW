@@ -95,9 +95,9 @@ public class ChangeFailureRateKanbanServiceImpl
 
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
 		projectWiseLeafNodeValue(kpiElement, mapTmp, projectList);
-
+		String sanitizedRequestTrackerId = kpiRequest.getRequestTrackerId().replace("\n", "").replace("\r", "");
 		log.debug("[CHANGE-FAILURE-RATE-KANBAN-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
-				kpiRequest.getRequestTrackerId(), root);
+				sanitizedRequestTrackerId, root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.CHANGE_FAILURE_RATE_KANBAN);

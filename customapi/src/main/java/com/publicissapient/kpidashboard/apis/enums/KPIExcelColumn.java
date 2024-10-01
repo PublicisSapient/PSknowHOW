@@ -324,6 +324,12 @@ public enum KPIExcelColumn {
 			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
 	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Rework Rate")),
 
+	REVERT_RATE("kpi180", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Revert Rate")),
+
+	PR_SUCCESS_RATE("kpi182", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Success Rate")),
+
+	PR_DECLINE_RATE("kpi181", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "PR Decline Rate")),
+
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
 
 	RELEASE_PLAN("kpi179", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",

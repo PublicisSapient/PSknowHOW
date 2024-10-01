@@ -34,12 +34,13 @@ export class AdditionalFilterComponent implements OnChanges {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
         this.selectedFilters = [];
-
         this.selectedTrends = this.service.getSelectedTrends();
 
         if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
           this.filterData = [];
           this.previousSelectedTrends = [...this.selectedTrends];
+          // project changed, reset addtnl. filters
+          this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         }
 
         Object.keys(data).forEach((f, index) => {
