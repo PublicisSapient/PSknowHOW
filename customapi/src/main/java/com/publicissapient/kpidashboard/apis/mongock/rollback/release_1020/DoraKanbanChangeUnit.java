@@ -44,16 +44,26 @@ public class DoraKanbanChangeUnit {
 	@Execution
 	public void execution() {
 		rollbackKPIDocs();
+		updateFilterBoardId(7,14);
+		updateFilterBoardId(15,13);
+		updateFilterBoardId(16,15);
+		updateFilterBoardId(17,16);
 	}
 	private void rollbackKPIDocs() {
 		mongoTemplate.getCollection("kpi_master")
 				.deleteMany(new Document(KPI_ID, new Document("$in", List.of("kpi184", "kpi183"))));
+
 	}
 
 
 	@RollbackExecution
 	public void rollback() {
 		insertDoraKanban();
+		updateFilterBoardId(14, 7);
+		updateFilterBoardId(16, 17);
+		updateFilterBoardId(15, 16);
+		updateFilterBoardId(13, 15);
+
 	}
 
 	public void insertDoraKanban() {
@@ -128,4 +138,17 @@ public class DoraKanbanChangeUnit {
 
 		mongoTemplate.getCollection("kpi_master").insertMany(kpiDocuments);
 	}
+
+	/**
+	 * Moving dora to scrum, kanban thus changing the boardId
+	 * @param oldBoardId older board id
+	 * @param newBoardId new board id
+	 */
+	private void updateFilterBoardId(int oldBoardId, int newBoardId) {
+		mongoTemplate.getCollection("filters").updateMany(
+				new Document("boardId", oldBoardId),
+				new Document("$set", new Document("boardId", newBoardId))
+		);
+	}
+
 }

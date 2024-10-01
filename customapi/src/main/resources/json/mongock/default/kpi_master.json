@@ -4741,6 +4741,6 @@
         "displayRange" : "0,1"
       }
     ],
-    "combinedKpiSource" : "Jenkins/Bambo  o/GitHubAction/AzurePipeline/Teamcity"
+    "combinedKpiSource" : "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"
   }
 ]
