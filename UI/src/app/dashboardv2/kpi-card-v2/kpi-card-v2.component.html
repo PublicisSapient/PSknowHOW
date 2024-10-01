@@ -24,8 +24,8 @@
       </ng-template>
     </p-menu>
   </div>
-  <!-- kpiFilter -->
-  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" *ngIf="checkIfDataPresent(trendValueList);"
+  <!-- kpiFilter *ngIf="checkIfDataPresent(trendValueList);"-->
+  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" 
     [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' }" class="kpi-filter p-pr-5 p-pl-5"
     #kpiFilterContainer>
     <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">

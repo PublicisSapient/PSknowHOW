@@ -332,8 +332,11 @@ public enum KPIExcelColumn {
 			"Issue Status", "Root Cause List", "Priority", "Testing Phase", "Assignee")),
 
 	DEFECT_COUNT_BY_EXPORT("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
-			"Issue Status", "Root Cause", "Priority", "Testing Phase", "Assignee"));
-
+			"Issue Status", "Root Cause", "Priority", "Testing Phase", "Assignee")),
+	INNOVATION_RATE("kpi185",
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Innovation Rate")), DEFECT_RATE(
+					"kpi186", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "No of Merge",
+							"Defect Rate"));
 
 	// @formatter:on
 

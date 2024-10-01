@@ -1,5 +1,5 @@
 
-import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -20,28 +20,23 @@ export class NavNewComponent implements OnInit, OnDestroy {
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
 
-  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, private helperService: HelperService) {
+  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, public helperService: HelperService) {
   }
 
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
     this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
-    this.subscriptions.push(this.sharedService.onTypeOrTabRefresh.subscribe((data) => {
-      this.selectedType = data.selectedType ? data.selectedType : 'scrum';
-      this.sharedService.setSelectedType(this.selectedType)
-    }));
-
+    
+    this.sharedService.setSelectedBoard(this.selectedTab);
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
-    this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
-    this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+    this.sharedService.setScrumKanban(this.selectedType);
 
-    this.subscriptions.push(this.sharedService.selectedTrendsEvent.subscribe((data) => {
-      if (!this.compareStringArrays(this.selectedBasicConfigIds, data.map(proj => proj['basicProjectConfigId']))) {
-        this.selectedBasicConfigIds = data.map(proj => proj['basicProjectConfigId']).sort();
-        this.getBoardConfig(this.selectedBasicConfigIds);
-      }
-    }));
+    if (this.sharedService.getSelectedTrends() && this.sharedService.getSelectedTrends()[0]) {
+      this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+    } else {
+      this.getBoardConfig([]);
+    }
   }
 
   // unsubscribing all Kpi Request
@@ -68,19 +63,19 @@ export class NavNewComponent implements OnInit, OnDestroy {
       let data = response.data.userBoardConfigDTO;
       if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
         const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
-        data[this.selectedType].forEach((board) => {
+        data[this.selectedType]?.forEach((board) => {
           if (board?.filters) {
-            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
+            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0]?.hierarchyLevelName;
             if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-              board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+              board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0]?.hierarchyLevelName;
             }
             if (board.filters.parentFilter?.emittedLevel) {
-              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0]?.hierarchyLevelName;
             }
 
             if (board.boardSlug !== 'developer') {
               board.filters.additionalFilters.forEach(element => {
-                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
+                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]?.hierarchyLevelName;
               });
             }
           }
@@ -99,7 +94,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         });
         data['configDetails'] = response.data.configDetails;
         if (!this.deepEqual(this.dashConfigData, data)) {
-          this.sharedService.setDashConfigData(data);
+          // this.sharedService.setDashConfigData(data);
           this.dashConfigData = data;
         }
 
@@ -115,7 +110,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
-          if (res.data) {          
+          if (res.data) {
             localStorage.setItem('completeHierarchyData', JSON.stringify(res.data));
             this.setBoards(response);
           }
@@ -127,7 +122,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
   handleMenuTabFunctionality(obj) {
     this.selectedTab = obj['boardSlug'];
     if (this.selectedTab !== 'unauthorized access') {
-      this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+      // this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+      this.sharedService.setSelectedBoard(this.selectedTab);
     }
     if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
       || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
@@ -160,21 +156,4 @@ export class NavNewComponent implements OnInit, OnDestroy {
 
     return true;
   }
-
-  compareStringArrays(array1, array2) {
-    // Check if both arrays have the same length
-    if (array1.length !== array2.length) {
-      return false;
-    }
-
-    // Check if each corresponding element is the same
-    for (let i = 0; i < array1.length; i++) {
-      if (array1[i] !== array2[i]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
 }

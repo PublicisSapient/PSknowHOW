@@ -51,13 +51,20 @@ export class AdditionalFilterComponent implements OnChanges {
                     Sprint: 'sprint',
                     Squad: 'sqd'
                   }
-                  if (this.filterData[index]?.length && correctLevelMapping[this.additionalFilterConfig[index].defaultLevel.labelName] === this.filterData[index][0].labelName) {
+                  if (this.filterData[index]?.length && correctLevelMapping[this.additionalFilterConfig[index]?.defaultLevel?.labelName] === this.filterData[index][0].labelName) {
                     this.filterData[index].push(element);
                   } else {
                     this.filterData[index] = data[f];
                   }
                 }
               });
+
+              this.filterData.forEach((filterSet, index) => {
+                if (!data[Object.keys(data)[index]]) {
+                  this.filterData.splice(index,1);
+                }
+              });
+
             } else {
               this.filterData[index] = data[f];
             }
@@ -92,12 +99,9 @@ export class AdditionalFilterComponent implements OnChanges {
                 this.selectedFilters[correctIndex] = this.stateFilters[key];
               }
             });
+
           }
-
-        }
-
-        // Apply the first/ Overall filter
-        if (this.selectedTab.toLowerCase() === 'developer') {
+        } else {
           this.applyDefaultFilter();
         }
       } else {
@@ -126,8 +130,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
     this.filterData.forEach((filter, index) => {
       if (filter.map(f => f.nodeName).includes('Overall')) {
-        // filter.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
-        // filter.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
+       
         fakeEvent['value'] = 'Overall';
 
         this.selectedFilters[index] = { nodeId: 'Overall', nodeName: 'Overall' };
@@ -148,10 +151,15 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedTab']) {
+    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
       this.filterSet = new Set();
       this.selectedFilters = [];
+      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     }
+  }
+
+  compareObjects(obj1, obj2) {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
   }
 
   applyAdditionalFilter(e, index, multi = false, fromBackup = false) {
@@ -171,9 +179,9 @@ export class AdditionalFilterComponent implements OnChanges {
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
       } else {
         this.onAdditionalFilterChange.emit(e);
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
       }
     } else {
-      // this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
       this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
@@ -206,7 +214,7 @@ export class AdditionalFilterComponent implements OnChanges {
       );
 
       // Combine selected and unselected, with selected on top
-      if(!selected) return;
+      if (!selected) return;
       this.filterData[index] = [...selected, ...unselected];
     }
   }

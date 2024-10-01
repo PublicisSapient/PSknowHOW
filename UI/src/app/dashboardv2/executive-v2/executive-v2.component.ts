@@ -117,11 +117,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   timeRemaining = 0;
   immediateLoader = true;
   projectCount: number = 0;
-
+  globalConfig: any;
   constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService, private route: ActivatedRoute) {
     const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
+    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+
+    this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.noFilterApplyData = false;
       this.kpiLoader = new Set();
       this.immediateLoader = true;
@@ -129,11 +130,21 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedBranchFilter = 'Select';
       this.serviceObject = {};
       this.selectedtype = data.selectedType;
-      this.selectedTab = data.selectedTab;
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
     }));
 
+    this.subscriptions.push(this.service.onTabSwitch.subscribe((data) => {
+      this.noFilterApplyData = false;
+      this.kpiLoader = new Set();
+      this.immediateLoader = true;
+      this.processedKPI11Value = {};
+      this.selectedBranchFilter = 'Select';
+      this.serviceObject = {};
+      this.selectedTab = data.selectedBoard;
+    }));
+
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
+      this.globalConfig = globalConfig;
       this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       setTimeout(() => {
@@ -258,11 +269,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
       }
     }
-    if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
+    if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
-
-      this.configGlobalData = this.service.getDashConfigData()[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
+      this.globalConfig = $event.dashConfigData;
+      this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
       const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName.toLowerCase() === 'release')[0];
       const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
       this.releaseEndDate = endDate;
@@ -712,7 +723,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postJiraKPIForRelease(postData, source) {
     /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
     /** Todo : Need to rework when BE cache issue will fix */
-    this.updatedConfigGlobalData.forEach(kpi=>{
+    this.updatedConfigGlobalData.forEach(kpi => {
       postData.kpiList.push(kpi.kpiDetail)
     });
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
@@ -855,7 +866,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
-    if (this.selectedTab.toLowerCase() === 'developer') {
+    let developerBopardKpis = this.globalConfig[this.kanbanActivated ? 'kanban' : 'scrum']?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
+    if (this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis?.includes(kpiId)) {
       if (!trendValueList?.length) {
         this.additionalFiltersArr = {};
         this.service.setAdditionalFilters(this.additionalFiltersArr);
@@ -871,7 +883,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
 
         if (!kpiFilterChange) {
-
           Object.keys(this.additionalFiltersArr).forEach((filterProp) => {
             this.additionalFiltersArr[filterProp] = this.additionalFiltersArr[filterProp].map((f) => {
               return {
@@ -905,8 +916,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
             else {
               const tempArr = {};
-              for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-                tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+              if (Array.isArray(this.kpiSelectedFilterObj[kpiId])) {
+                for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+                  tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+                }
+              } else {
+                tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
               }
               this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
             }
@@ -1552,12 +1567,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             if (event[key]?.length == 0) {
               delete event[key];
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-            } else if (Array.isArray(event[key])){
+            } else if (Array.isArray(event[key])) {
               for (let i = 0; i < event[key]?.length; i++) {
                 this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
               }
-            }else{
-             this.kpiSelectedFilterObj[kpi?.kpiId] = Array.isArray(event[key]) ? event[key] : [event[key]];
+            } else {
+              if (kpi.kpiDetail.kpiFilter !== 'dropDown') {
+                this.kpiSelectedFilterObj[kpi?.kpiId] = Array.isArray(event[key]) ? event[key] : [event[key]];
+              } else {
+                this.kpiSelectedFilterObj[kpi?.kpiId] = event
+              }
             }
           }
         } else if (this.selectedTab.toLowerCase() === 'developer') {
@@ -1617,7 +1636,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (maturity == undefined) {
       return 'NA';
     }
-    maturity = 'M'+maturity;
+    maturity = 'M' + maturity;
     return maturity;
   }
 

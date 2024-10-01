@@ -94,7 +94,7 @@
                                                     <div class="p-d-flex p-align-center">
                                                         <h3 class="color-grey">Added Users</h3>&nbsp;&nbsp;
                                                         <p> (*If the desired Domain name is not visible, kindly contact
-                                                            us on knowhowfeedback@publicissapient.com)</p>
+                                                            us on knowhowfeedback&#64;publicissapient.com)</p>
                                                     </div>
                                                     <p-button styleClass="p-button-secondary p-button-sm edit-button"
                                                         [disabled]="!isAdminForSelectedProject"
@@ -173,7 +173,7 @@
                                             </ng-template>
                                         </td>
                                         <td class="expanded-table-body-cell">
-                                            <input type="number" min="0" pInputText
+                                            <input type="number" min="0" pInputText [style]="{'width':'60px'}"
                                                 *ngIf="projectCapacityEditMode;else showPlannedCapacity"
                                                 (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')"
                                                 [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity"
@@ -184,6 +184,7 @@
                                         <td class="expanded-table-body-cell" [style]="{'position':'relative'}">
                                             <input type="number" min="0" (keypress)="validateInput($event)" pInputText
                                                 *ngIf="projectCapacityEditMode;else showLeaves"
+                                                [style]="{'width':'60px'}"
                                                 [formControl]="selectedSprintAssigneFormArray[rowIndex]?.leaves"
                                                 (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'leaves')"
                                                 [ngClass]="{'ng-invalid':selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors }">
@@ -282,7 +283,7 @@
                                                         <h3 class="color-grey">Added Users</h3>&nbsp;&nbsp;
                                                         <p> (*If the desired Domain name is not visible, kindly <br />
                                                             contact us
-                                                            on ''knowhowfeedback@publicissapient.com'')</p>
+                                                            on ''knowhowfeedback&#64;publicissapient.com'')</p>
                                                     </div>
                                                     <p-button styleClass="p-button-secondary p-button-sm edit-button"
                                                         title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
@@ -295,7 +296,7 @@
                                                     </p-button>
                                                 </div>
 
-                                                <div >
+                                                <div>
                                                     <p-table [value]="item.assigneeCapacity" dataKey="userId"
                                                         [paginator]="true" [rows]="20" [rowsPerPageOptions]="[20,25,30]"
                                                         [showCurrentPageReport]="true">
@@ -309,7 +310,7 @@
                                             </div>
                                         </th>
                                         <th scope="col" pSortableColumn="email" class="expanded-table-header-cell"
-                                            [style]="{'min-width':'170px'}">
+                                            [style]="{'max-width':'170px'}">
                                             <div>
                                                 <span [ngClass]="{'editable': projectCapacityEditMode}">Email Id</span>
                                             </div>
@@ -338,14 +339,14 @@
                                             class="expanded-table-header-cell">
                                             <div>
                                                 <span [ngClass]="{'editable': projectCapacityEditMode}">Planned Capacity
-                                                    <br/>(in
+                                                    <br />(in
                                                     Hrs)</span>
                                                 <p-sortIcon field="plannedCapacity"></p-sortIcon>
                                             </div>
                                         </th>
                                         <th scope="col" pSortableColumn="leaves" class="expanded-table-header-cell">
                                             <div>
-                                                <span [ngClass]="{'editable': projectCapacityEditMode}">Leaves<br/> (in
+                                                <span [ngClass]="{'editable': projectCapacityEditMode}">Leaves<br /> (in
                                                     Hrs)</span>
                                                 <p-sortIcon field="leaves"></p-sortIcon>
                                             </div>
@@ -354,7 +355,7 @@
                                             class="expanded-table-header-cell">
                                             <div>
                                                 <span [ngClass]="{'editable': projectCapacityEditMode}">Available
-                                                    Capacity <br/>
+                                                    Capacity <br />
                                                     (in Hrs)</span>
                                                 <p-sortIcon field="availableCapacity"></p-sortIcon>
                                             </div>
@@ -367,7 +368,7 @@
                                             '-
                                             -'}}</td>
                                         <td class="expanded-table-body-cell"
-                                            [style]="{'min-width':'170px', 'word-wrap': 'break-word'}">
+                                            [style]="{'max-width':'170px', 'word-wrap': 'break-word'}">
 
                                             <p-multiSelect [options]="projectAssigneeEmailsCopy"
                                                 *ngIf="projectCapacityEditMode;else showUserEmail"
@@ -412,7 +413,7 @@
                                             <input type="number" min="0" pInputText
                                                 *ngIf="projectCapacityEditMode;else showPlannedCapacity"
                                                 (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')"
-                                                [style]="{'width':'120px'}"
+                                                [style]="{'width':'60px'}"
                                                 [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity"
                                                 (keypress)="validateInput($event)">
                                             <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ?
@@ -423,7 +424,7 @@
                                                 *ngIf="projectCapacityEditMode;else showLeaves"
                                                 [formControl]="selectedSprintAssigneFormArray[rowIndex]?.leaves"
                                                 (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'leaves')"
-                                                [style]="{'width':'120px'}"
+                                                [style]="{'width':'60px'}"
                                                 [ngClass]="{'ng-invalid':selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors }">
                                             <small
                                                 *ngIf="selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors && projectCapacityEditMode"
