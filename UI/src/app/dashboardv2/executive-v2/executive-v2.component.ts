@@ -322,12 +322,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.filterApplyData = $event.filterApplyData;
         this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
 
-        // if (this.filterApplyData?.selectedMap['date']) {
-        //   this.updatedConfigGlobalData?.forEach((kpi) => {
-        //     kpi.kpiDetail.xaxisLabel = this.filterApplyData.selectedMap['date'][0];
-        //   });
-        // }
-
         this.selectedJobFilter = 'Select';
         this.loading = $event.loading;
         if (this.filterData?.length && $event.makeAPICall) {
@@ -1117,7 +1111,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (this.getChartType(kpiId) === 'progress-bar') {
           this.kpiChartData[kpiId] = this.applyAggregationLogicForProgressBar(tempArr);
         } else {
-          this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
+          if (tempArr) {
+            this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
+          }
         }
       } else {
         if (Object.values(this.kpiSelectedFilterObj[kpiId]).length === 1) {
@@ -1132,9 +1128,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       let preAggregatedValues = [];
       for (let i = 0; i < filters?.length; i++) {
         if (Object.keys(this.kpiSelectedFilterObj[kpiId]).length === 1) {
-          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList && trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         } else {
-          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] && x['filter2'] == filter2[i])];
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList && trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] && x['filter2'] == filter2[i])];
         }
       }
       this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
@@ -1150,7 +1146,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     }
 
-    if (this.colorObj && Object.keys(this.colorObj)?.length > 0 && !['kpi161', 'kpi146', 'kpi148','kpi169'].includes(kpiId)) {
+    if (this.colorObj && Object.keys(this.colorObj)?.length > 0 && !['kpi161', 'kpi146', 'kpi148', 'kpi169'].includes(kpiId)) {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
@@ -1274,11 +1270,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
           }
           if (preAggregatedValues?.length > 1) {
-            // if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
-            //   this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
-            // } else {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-            // }
           } else {
             this.kpiChartData[kpiId] = [...preAggregatedValues];
           }
@@ -1293,11 +1285,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
           }
           if (preAggregatedValues?.length > 1) {
-            // if (this.getKpiChartType(kpiId) === 'GroupBarChart' || this.getKpiChartType(kpiId) === 'horizontalPercentBarChart') {
-            //   this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
-            // } else {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-            // }
           } else {
             if (preAggregatedValues[0]?.hasOwnProperty('value')) {
               this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
@@ -1532,13 +1520,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.getChartDataForBacklog(data[key]?.kpiId, (this.allKpiArray?.length - 1), agType);
 
       } else {
-        // if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
-        //   this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
-        // }
         this.getDropdownArrayForCard(data[key]?.kpiId);
         this.getChartDataForCard(data[key]?.kpiId, this.ifKpiExist(data[key]?.kpiId));
       }
-
     }
   }
 
@@ -1600,7 +1584,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       } else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
-        if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
+        if (trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
           this.kpiChartData[kpiId]?.push(trendValueList['value']?.filter((x) => x['filter1'] == 'Overall')[0]);
         } else if (trendValueList?.length > 0) {
           this.kpiChartData[kpiId] = [...trendValueList];
@@ -1662,11 +1646,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       // this.kpiSpecificLoader.push('kpi171');
-      const kpi171Payload = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
+      const kpi171Payload = this.updatedConfigGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       const groupIdSet = new Set();
       this.updatedConfigGlobalData?.forEach((obj) => {
-        if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
-          groupIdSet.add(obj['kpiDetail'].groupId);
+        if (!obj['kpiDetail']?.kanban && obj['kpiDetail']?.kpiSource === 'Jira') {
+          groupIdSet.add(obj['kpiDetail']?.groupId);
         }
       });
 

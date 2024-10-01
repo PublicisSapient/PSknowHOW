@@ -71,7 +71,7 @@ import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
-
+import { BlockUIModule } from 'primeng/blockui';
 /******************************************************/
 
 
@@ -268,6 +268,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         MenuModule,
         CheckboxModule,
         SkeletonModule,
+        BlockUIModule,
         SharedModuleModule,
         InputTextModule,
         ScrollTopModule
