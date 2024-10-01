@@ -4734,12 +4734,12 @@
         }
       ]
     },
-    "upperThresholdBG" : "red",
-    "lowerThresholdBG" : "white",
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "thresholdValue" : "50",
     "xAxisLabel" : "Weeks",
     "yAxisLabel" : "Percentage",
-    "isPositiveTrend" : false,
+    "isPositiveTrend" : true,
     "showTrend" : true,
     "kpiFilter" : "dropDown",
     "aggregationCriteria" : "average",

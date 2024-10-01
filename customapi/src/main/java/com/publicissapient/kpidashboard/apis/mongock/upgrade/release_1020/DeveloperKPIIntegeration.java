@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1020;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.bson.Document;
@@ -34,6 +35,7 @@ public class DeveloperKPIIntegeration {
 			+ "minimum a project should maintain for a KPI. User should just input the number and"
 			+ " the unit like percentage, hours will automatically be considered."
 			+ " If the threshold is empty, then a common target KPI line will be shown";
+	public static final String WHITE = "white";
 
 	private final MongoTemplate mongoTemplate;
 
@@ -44,24 +46,35 @@ public class DeveloperKPIIntegeration {
 	@Execution
 	public void execution() {
 		List<String> levels = Arrays.asList("-80", "80-50", "50-20", "20-5", "5-");
-		insertKpis("kpi180", "Revert Rate", "The percentage of total pull requests opened that are reverts.", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/197263361/Developer+Revert+Rate", levels);
-        insertKpis("kpi181", "PR Decline Rate", "The percentage of opened Pull Requests that are declined within a timeframe.", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/205357058/Developer+PR+Decline+Rate", levels);
-        insertKpis("kpi182", "PR Success Rate", "PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/75726849/Developer+PR+Success+Rate", Arrays.asList("-5","5-20","20-50","50-80","80-"));
+		insertKpis("kpi180", "Revert Rate", "The percentage of total pull requests opened that are reverts.",
+				"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/197263361/Developer+Revert+Rate", levels,
+				false, "red", WHITE);
+		insertKpis("kpi181", "PR Decline Rate",
+				"The percentage of opened Pull Requests that are declined within a timeframe.",
+				"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/205357058/Developer+PR+Decline+Rate",
+				levels, false, "red", WHITE);
+		insertKpis("kpi182", "PR Success Rate",
+				"PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste",
+				"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/75726849/Developer+PR+Success+Rate",
+				Arrays.asList("-5", "5-20", "20-50", "50-80", "80-"), true, WHITE, "red");
 		fieldMappingStructureInsert("thresholdValueKPI182", THRESHOLD);
 		fieldMappingStructureInsert("thresholdValueKPI181", THRESHOLD);
 		fieldMappingStructureInsert("thresholdValueKPI180", THRESHOLD);
 	}
 
-	public void insertKpis(String kpiId, String kpiName, String kpiInfo, String link, List<String> maturityRange) {
+	public void insertKpis(String kpiId, String kpiName, String kpiInfo, String link, List<String> maturityRange,
+			boolean isPositiveTrend, String upperThresholdBG, String lowerThresholdBG) {
 		Document kpiDocument = new Document().append("kpiId", kpiId).append("kpiName", kpiName).append("maxValue", "")
 				.append("kpiUnit", "%").append("isDeleted", false).append("defaultOrder", 5).append("groupId", 2)
-				.append("kpiSource", "BitBucket").append("combinedKpiSource","RepoTool").append("kanban", false).append("chartType", "line")
+				.append("kpiSource", "BitBucket").append("combinedKpiSource", "RepoTool").append("kanban", false)
+				.append("chartType", "line")
 				.append("kpiInfo", new Document().append("definition", kpiInfo).append("details",
-						Arrays.asList(new Document().append("type", "link").append("kpiLinkDetail",
+						Collections.singletonList(new Document().append("type", "link").append("kpiLinkDetail",
 								new Document().append("text", "Detailed Information at").append("link", link)))))
-				.append("xAxisLabel", "Weeks").append("yAxisLabel", "Percentage").append("isPositiveTrend", false)
-				.append("upperThresholdBG", "red").append("lowerThresholdBG", "white").append("thresholdValue", "50")
-				.append("showTrend", true).append("kpiFilter", "dropDown").append("aggregationCriteria", "average")
+				.append("xAxisLabel", "Weeks").append("yAxisLabel", "Percentage")
+				.append("isPositiveTrend", isPositiveTrend).append("upperThresholdBG", upperThresholdBG)
+				.append("lowerThresholdBG", lowerThresholdBG).append("thresholdValue", "50").append("showTrend", true)
+				.append("kpiFilter", "dropDown").append("aggregationCriteria", "average")
 				.append("isAdditionalFilterSupport", false).append("calculateMaturity", false)
 				.append("hideOverallFilter", true).append("isRepoToolKpi", true).append("kpiCategory", "Developer")
 				.append("maturityRange", maturityRange);
@@ -81,11 +94,11 @@ public class DeveloperKPIIntegeration {
 	@RollbackExecution
 	public void rollBack() {
 		deleteKpiMaster("kpi180");
-        deleteKpiMaster("kpi181");
+		deleteKpiMaster("kpi181");
 		deleteKpiMaster("kpi182");
 		fieldMappingStructureDelete("thresholdValueKPI180");
-        fieldMappingStructureDelete("thresholdValueKPI181");
-        fieldMappingStructureDelete("thresholdValueKPI182");
+		fieldMappingStructureDelete("thresholdValueKPI181");
+		fieldMappingStructureDelete("thresholdValueKPI182");
 	}
 
 	public void deleteKpiMaster(String kpiId) {
