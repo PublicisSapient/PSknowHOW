@@ -2049,7 +2049,7 @@ public class KpiHelperService { // NOPMD
 				try {
 					Field field = FieldMapping.class.getDeclaredField(fieldName);
 					field.setAccessible(true); // NOSONAR
-					if (checkNullValue(field.get(fieldMapping)))
+					if (CommonUtils.checkObjectNullValue(field.get(fieldMapping)))
 						return false;
 				} catch (NoSuchFieldException e) {
 					log.warn(fieldName + " does not exist in fieldMapping.");
@@ -2066,29 +2066,18 @@ public class KpiHelperService { // NOPMD
 
 	private boolean isToolConfigured(KPICode kpi, ObjectId basicProjectConfigId) {
 		Set<String> configuredTools = configHelperService.getProjectToolConfigMap()
-				.getOrDefault(basicProjectConfigId, Collections.emptyMap())
-				.keySet()
-				.stream()
-				.map(String::toUpperCase)
+				.getOrDefault(basicProjectConfigId, Collections.emptyMap()).keySet().stream().map(String::toUpperCase)
 				.collect(Collectors.toSet());
 
-		return Arrays.stream(configHelperService.loadKpiSource().get(kpi.getKpiId().toUpperCase()).split("/"))
+		List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
+		Map<String, String> toolWiseKpiSource = masterList.stream().filter(
+				d -> StringUtils.isNotEmpty(d.getCombinedKpiSource()) || StringUtils.isNotEmpty(d.getKpiSource()))
+				.collect(Collectors.toMap(k -> k.getKpiId().toUpperCase(),
+						k -> (StringUtils.isNotEmpty(k.getCombinedKpiSource()) ? k.getCombinedKpiSource().toUpperCase()
+								: k.getKpiSource().toUpperCase())));
+
+		return Arrays.stream(toolWiseKpiSource.get(kpi.getKpiId().toUpperCase()).split("/"))
 				.anyMatch(configuredTools::contains);
 	}
 
-	private boolean checkNullValue(Object value){
-		if(ObjectUtils.isEmpty(value)){
-			return true;
-		}
-		else{
-			if(value instanceof List){
-				return CollectionUtils.isEmpty((List<?>) value);
-			}
-			if (value instanceof String[]){
-				return  ((String[]) value).length<1;
-			}
-
-		}
-		return false;
-	}
 }
