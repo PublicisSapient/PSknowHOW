@@ -661,7 +661,7 @@ export class MultilineV2Component implements OnChanges {
 
       // used to allign data on x axis ticks
       svgX
-        .select('.x')
+        .select('.x-axis')
         .selectAll('.tick')
         .each(function (dataObj, index) {
           const tick = d3.select(this);

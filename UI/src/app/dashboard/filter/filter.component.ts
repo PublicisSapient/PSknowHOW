@@ -1755,18 +1755,7 @@ this.resetAddtionalFIlters();
         if (activeSprintStatus['success']) {
           interval(3000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
             if (response?.['success']) {
-              this.selectedProjectLastSyncStatus = '';
-              this.lastSyncData = response['data'];
-              if (response['data']?.fetchSuccessful === true) {
-                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-                this.selectedProjectLastSyncStatus = 'SUCCESS';
-                this.subject.next(true);
-              } else if (response['data']?.errorInFetch) {
-                this.lastSyncData = {};
-                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-                this.selectedProjectLastSyncStatus = 'FAILURE';
-                this.subject.next(true);
-              }
+             this.checkStatusAndSendRequest(response);
             } else {
               this.subject.next(true);
               this.lastSyncData = {};
@@ -1783,6 +1772,21 @@ this.resetAddtionalFIlters();
           this.lastSyncData = {};
         }
       });
+    }
+  }
+
+  checkStatusAndSendRequest(response) {
+    this.selectedProjectLastSyncStatus = '';
+    this.lastSyncData = response['data'];
+    if (response['data']?.fetchSuccessful === true) {
+      this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+      this.selectedProjectLastSyncStatus = 'SUCCESS';
+      this.subject.next(true);
+    } else if (response['data']?.errorInFetch) {
+      this.lastSyncData = {};
+      this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+      this.selectedProjectLastSyncStatus = 'FAILURE';
+      this.subject.next(true);
     }
   }
 

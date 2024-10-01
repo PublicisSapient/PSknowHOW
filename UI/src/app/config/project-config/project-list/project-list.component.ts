@@ -147,41 +147,8 @@ export class ProjectListComponent implements OnInit {
       if (responseList[0].success) {
         this.projectList = responseList[0]?.data;
         if (this.projectList?.length > 0) {
-          for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
-            const obj = {
-              id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
-              heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
-            };
-            this.cols?.push(obj);
-          }
-          const projectObj = {
-            id: 'name',
-            heading: 'Project'
-          };
-          this.cols?.unshift(projectObj);
-          const typeObj = {
-            id: 'type',
-            heading: 'Type'
-          };
-          this.cols?.push(typeObj);
-          for (let i = 0; i < this.cols?.length; i++) {
-            this.globalSearchFilter?.push(this.cols[i]?.id);
-          }
-
-          for (let i = 0; i < this.projectList?.length; i++) {
-            const obj = {
-              id: this.projectList[i]?.id,
-              name: this.projectList[i]?.projectName,
-              type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
-              saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
-              developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
-              projectOnHold: this.projectList[i]?.projectOnHold,
-            };
-            for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
-              obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
-            }
-            this.allProjectList?.push(obj);
-          }
+          this.fillColumns();
+          this.addProjectType();
         }
         this.loading = false;
         this.table?.reset();
@@ -194,6 +161,47 @@ export class ProjectListComponent implements OnInit {
         });
       }
     });
+  }
+
+  fillColumns() {
+    for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
+      const obj = {
+        id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
+        heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
+      };
+      this.cols?.push(obj);
+    }
+  }
+
+  addProjectType() {
+    const projectObj = {
+      id: 'name',
+      heading: 'Project'
+    };
+    this.cols?.unshift(projectObj);
+    const typeObj = {
+      id: 'type',
+      heading: 'Type'
+    };
+    this.cols?.push(typeObj);
+    for (let i = 0; i < this.cols?.length; i++) {
+      this.globalSearchFilter?.push(this.cols[i]?.id);
+    }
+
+    for (let i = 0; i < this.projectList?.length; i++) {
+      const obj = {
+        id: this.projectList[i]?.id,
+        name: this.projectList[i]?.projectName,
+        type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
+        saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
+        developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
+        projectOnHold: this.projectList[i]?.projectOnHold,
+      };
+      for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
+        obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
+      }
+      this.allProjectList?.push(obj);
+    }
   }
 
   newProject() {

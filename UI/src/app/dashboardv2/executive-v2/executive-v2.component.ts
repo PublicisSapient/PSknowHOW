@@ -750,22 +750,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
-          const localVariable = this.helperService.createKpiWiseId(getData);
+          let localVariable = this.helperService.createKpiWiseId(getData);
           this.fillKPIResponseCode(localVariable);
-          const localVarKpi = localVariable['kpi127'] || localVariable['kpi170'] || localVariable['kpi3']
-          if (localVarKpi) {
-            if (localVarKpi.trendValueList && localVarKpi.xAxisValues) {
-              localVarKpi.trendValueList.forEach(trendElem => {
-                trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVarKpi.xAxisValues.length === 5) {
-                    valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVarKpi.xAxisValues[index];
-                    });
-                  }
-                });
-              });
-            }
-          }
+
+          this.updateXAxisTicks(localVariable);
 
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArrayForBacklog(this.jiraKpiData);
@@ -777,6 +765,23 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           });
         }
       });
+  }
+
+  updateXAxisTicks(localVariable) {
+    let localVarKpi = localVariable['kpi127'] || localVariable['kpi170'] || localVariable['kpi3']
+    if (localVarKpi) {
+      if (localVarKpi.trendValueList && localVarKpi.xAxisValues) {
+        localVarKpi.trendValueList.forEach(trendElem => {
+          trendElem.value.forEach(valElem => {
+            if (valElem.value.length === 5 && localVarKpi.xAxisValues.length === 5) {
+              valElem.value.forEach((element, index) => {
+                element['xAxisTick'] = localVarKpi.xAxisValues[index];
+              });
+            }
+          });
+        });
+      }
+    }
   }
 
 
@@ -1624,11 +1629,30 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     if (preAggregatedValues?.length > 1) {
-      this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+      this.kpi171Check(kpiId, preAggregatedValues);
     } else {
       this.kpiChartData[kpiId] = [...preAggregatedValues];
     }
   }
+
+  kpi171Check(kpiId, preAggregatedValues) {
+    if (kpiId === 'kpi171') {
+      //calculate number of days for lead time
+      let kpi3preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
+      kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
+        return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
+      });
+
+      /** I don't think these below three lines will execute since return statement will take out from this flow */
+      // kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
+
+      // kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
+      // this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
+    } else {
+      this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+    }
+  }
+
 
   getkpi171Data(kpiId, trendValueList) {
     let durationChanged = false;

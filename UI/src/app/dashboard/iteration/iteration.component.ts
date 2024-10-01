@@ -882,7 +882,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       excelData = this.modalDetails['tableValues'];
       columns = this.modalDetails['tableHeadings'];
     } else {
-      excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+      excelData = this.tableComponent?.filteredValue || this.modalDetails['tableValues'];
       columns = this.tableHeaders;
     }
 
