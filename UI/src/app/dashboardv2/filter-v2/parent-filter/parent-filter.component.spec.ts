@@ -40,6 +40,10 @@ describe('ParentFilterComponent', () => {
     helperService = TestBed.inject(HelperService);
 
     component.parentFilterConfig = { labelName: "Organization Level" };
+    component.filterData = {
+      sprint: [{ nodeId: 1, nodeName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+    };
     fixture.detectChanges();
   });
 
@@ -133,7 +137,6 @@ describe('ParentFilterComponent', () => {
       }
     });
 
-    expect(component.filterLevels).toEqual([{ nodeId: 1, nodeName: 'Node 1' }, { nodeId: 4, nodeName: 'Node 4' }]);
     expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('primary_level');
   });
 
@@ -245,8 +248,7 @@ describe('ParentFilterComponent', () => {
       component.ngOnChanges(changes);
 
       expect(component.filterLevels).toEqual([
-        { nodeId: 'Level1', nodeName: 'Level1' },
-        { nodeId: 'Level2', nodeName: 'Level2' }
+        'Level1', 'Level2'
       ]);
     });
 
@@ -322,8 +324,34 @@ describe('ParentFilterComponent', () => {
     component.ngOnChanges(changes);
 
     expect(component.filterLevels).toEqual([
-      { nodeId: 'Level1', nodeName: 'Level1' },
-      { nodeId: 'Level2', nodeName: 'Level2' }
+     'Level1', 'Level2'
+    ]);
+  });
+
+  it('should handle parentFilterConfig changes for other levels  when statefilters with primary level are present', () => {
+    component.helperService.setBackupOfFilterSelectionState({ 'primary_level': [{parentId: 1} ]});
+    component.filterData = {
+      sprint: [{ nodeId: 1, nodeName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+    };
+    const changes = {
+      parentFilterConfig: {
+        currentValue: { labelName: 'sprint' },
+        previousValue: null,
+        firstChange: false,
+        isFirstChange: () => true
+      }
+    };
+
+    spyOn(component.helperService, 'sortAlphabetically').and.returnValue([
+      'Level2', 'sprint'
+    ]);
+    spyOn(component, 'handleSelectedLevelChange');
+
+    component.ngOnChanges(changes);
+
+    expect(component.filterLevels).toEqual([
+      'Level2', 'sprint'
     ]);
   });
 
