@@ -19,7 +19,7 @@ export class ParentFilterComponent implements OnChanges {
   additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
   filterValue: string = '';
-  constructor(private helperService: HelperService) { }
+  constructor(public helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['parentFilterConfig']) {
@@ -96,11 +96,11 @@ export class ParentFilterComponent implements OnChanges {
 
   handleSelectedLevelChange(parentLevelChanged = false) {
     if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
-      this.onSelectedLevelChange.emit(this.selectedLevel.nodeName);
+      this.onSelectedLevelChange.emit(this.selectedLevel?.nodeName);
       if (parentLevelChanged) {
         this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel.nodeName, 'primary_level': null });
       } else {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel.nodeName });
+        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName });
       }
     } else {
       let selectedNode = this.filterData[this['parentFilterConfig']['labelName']].filter((filter) => filter.nodeId === this.selectedLevel.nodeId);

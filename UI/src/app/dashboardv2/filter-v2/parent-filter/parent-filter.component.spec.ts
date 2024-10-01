@@ -193,4 +193,157 @@ describe('ParentFilterComponent', () => {
 
     expect(component.additionalFilterLevels).toEqual([]);
   });
+
+  describe('ngOnChanges', () => {
+    it('should handle parentFilterConfig changes for Organization Level', () => {
+      component.filterData = {
+        Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
+        Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+      };
+      const changes = {
+        parentFilterConfig: {
+          currentValue: { labelName: 'Organization Level' },
+          previousValue: null,
+          firstChange: false,
+          isFirstChange: () => true
+        }
+      };
+
+      spyOn(component, 'fillAdditionalFilterLevels');
+      spyOn(component.helperService, 'getBackupOfFilterSelectionState').and.returnValue('parent_level');
+      spyOn(component, 'handleSelectedLevelChange');
+
+      component.ngOnChanges(changes);
+
+      expect(component.fillAdditionalFilterLevels).toHaveBeenCalled();
+      expect(component.filterLevels).toEqual([
+        { nodeId: 'Level1', nodeName: 'Level1' },
+        { nodeId: 'Level2', nodeName: 'Level2' }
+      ]);
+    });
+
+    it('should handle parentFilterConfig changes for other levels', () => {
+      component.filterData = {
+        Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
+        Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+      };
+      const changes = {
+        parentFilterConfig: {
+          currentValue: { labelName: 'Level1' },
+          previousValue: null,
+          firstChange: false,
+          isFirstChange: () => true
+        }
+      };
+
+      spyOn(component.helperService, 'sortAlphabetically').and.returnValue([
+        'Level1', 'Level2'
+      ]);
+      spyOn(component.helperService, 'getBackupOfFilterSelectionState').and.returnValue('primary_level');
+      spyOn(component, 'handleSelectedLevelChange');
+
+      component.ngOnChanges(changes);
+
+      expect(component.filterLevels).toEqual([
+        { nodeId: 'Level1', nodeName: 'Level1' },
+        { nodeId: 'Level2', nodeName: 'Level2' }
+      ]);
+    });
+
+    it('should not handle changes if parentFilterConfig is not changed', () => {
+      component.filterData = {
+        Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
+        Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+      };
+      const changes = {
+        parentFilterConfig: null
+      };
+
+      spyOn(component, 'fillAdditionalFilterLevels');
+      spyOn(component.helperService, 'getBackupOfFilterSelectionState');
+      spyOn(component, 'handleSelectedLevelChange');
+
+      component.ngOnChanges(changes);
+
+      expect(component.fillAdditionalFilterLevels).not.toHaveBeenCalled();
+      expect(component.helperService.getBackupOfFilterSelectionState).not.toHaveBeenCalled();
+      expect(component.handleSelectedLevelChange).not.toHaveBeenCalled();
+    });
+  });
+
+
+  it('should handle parentFilterConfig changes for Organization Level when statefilters are present', () => {
+    component.helperService.setBackupOfFilterSelectionState({ 'parent_level': {nodeId: 'Level1', nodeName: 'Level1'}, 'primary_level': null });
+    component.filterData = {
+      Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+    };
+    const changes = {
+      parentFilterConfig: {
+        currentValue: { labelName: 'Organization Level' },
+        previousValue: null,
+        firstChange: false,
+        isFirstChange: () => true
+      }
+    };
+
+    spyOn(component, 'fillAdditionalFilterLevels');
+    spyOn(component, 'handleSelectedLevelChange');
+
+    component.ngOnChanges(changes);
+
+    expect(component.fillAdditionalFilterLevels).toHaveBeenCalled();
+    expect(component.filterLevels).toEqual([
+      { nodeId: 'Level1', nodeName: 'Level1' },
+      { nodeId: 'Level2', nodeName: 'Level2' }
+    ]);
+  });
+
+  it('should handle parentFilterConfig changes for other levels  when statefilters are present', () => {
+    component.helperService.setBackupOfFilterSelectionState({ 'parent_level': {labelName: 'Level1'} });
+    component.filterData = {
+      Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+    };
+    const changes = {
+      parentFilterConfig: {
+        currentValue: { labelName: 'Level1' },
+        previousValue: null,
+        firstChange: false,
+        isFirstChange: () => true
+      }
+    };
+
+    spyOn(component.helperService, 'sortAlphabetically').and.returnValue([
+      'Level1', 'Level2'
+    ]);
+    spyOn(component, 'handleSelectedLevelChange');
+
+    component.ngOnChanges(changes);
+
+    expect(component.filterLevels).toEqual([
+      { nodeId: 'Level1', nodeName: 'Level1' },
+      { nodeId: 'Level2', nodeName: 'Level2' }
+    ]);
+  });
+
+  it('should not handle changes if parentFilterConfig is not changed  when statefilters are present', () => {
+    component.filterData = {
+      Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+    };
+    const changes = {
+      parentFilterConfig: null
+    };
+
+    spyOn(component, 'fillAdditionalFilterLevels');
+    spyOn(component.helperService, 'getBackupOfFilterSelectionState');
+    spyOn(component, 'handleSelectedLevelChange');
+
+    component.ngOnChanges(changes);
+
+    expect(component.fillAdditionalFilterLevels).not.toHaveBeenCalled();
+    expect(component.helperService.getBackupOfFilterSelectionState).not.toHaveBeenCalled();
+    expect(component.handleSelectedLevelChange).not.toHaveBeenCalled();
+  });
 });
