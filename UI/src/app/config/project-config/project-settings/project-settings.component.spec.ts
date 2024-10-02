@@ -629,4 +629,76 @@ describe('ProjectSettingsComponent', () => {
   });
   // -> end of updateProjectSelection
 
+  describe('onProjectActiveStatusChange', () => {
+    it('should call updateProjectDetails when event.checked is true and confirmation is accepted', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
+        params.accept();
+      });
+      spyOn(component, 'updateProjectDetails');
+
+      component.onProjectActiveStatusChange({ checked: true });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.updateProjectDetails).toHaveBeenCalledWith('Project data collection paused!');
+    });
+
+    it('should set projectOnHold to false when event.checked is true and confirmation is rejected', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.reject();
+      });
+
+      component.onProjectActiveStatusChange({ checked: true });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.projectOnHold).toBe(false);
+    });
+
+    it('should call updateProjectDetails when event.checked is false and confirmation is accepted', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.accept();
+      });
+      spyOn(component, 'updateProjectDetails');
+
+      component.onProjectActiveStatusChange({ checked: false });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.updateProjectDetails).toHaveBeenCalledWith('Project data collection resumed!');
+    });
+
+    it('should set projectOnHold to true when event.checked is false and confirmation is rejected', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.reject();
+      });
+
+      component.onProjectActiveStatusChange({ checked: false });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.projectOnHold).toBe(true);
+    });
+  });
+
+  describe('onProjectDevKpiStatusChange', () => {
+    it('should call updateProjectDetails when confirmation is accepted', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.accept();
+      });
+      spyOn(component, 'updateProjectDetails');
+
+      component.onProjectDevKpiStatusChange();
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.updateProjectDetails).toHaveBeenCalledWith('Developer KPI for this project enabled!');
+    });
+
+    it('should set developerKpiEnabled to false when confirmation is rejected', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.reject();
+      });
+
+      component.onProjectDevKpiStatusChange();
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.developerKpiEnabled).toBe(false);
+    });
+  });
 });
