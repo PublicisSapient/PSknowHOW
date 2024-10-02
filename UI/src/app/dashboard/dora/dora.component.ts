@@ -184,6 +184,7 @@ export class DoraComponent implements OnInit {
         this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
       }
     }
+    this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
     this.processKpiConfigData();
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
