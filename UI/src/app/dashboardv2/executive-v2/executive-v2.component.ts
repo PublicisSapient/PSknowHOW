@@ -1642,12 +1642,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
         return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
       });
-
-      /** I don't think these below three lines will execute since return statement will take out from this flow */
-      // kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
-
-      // kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
-      // this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
     } else {
       this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
     }
@@ -1669,7 +1663,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.allKpiArray.splice(idx, 1);
       }
 
-      // this.kpiSpecificLoader.push('kpi171');
       const kpi171Payload = this.updatedConfigGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       const groupIdSet = new Set();
       this.updatedConfigGlobalData?.forEach((obj) => {
@@ -1779,42 +1772,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         item['value1'] = +(item['value1']?.toFixed(2));
       }
     });
-    // let evalvateExpression = [];
-    // if (aggregatedArr[0]['data']) {
-    //   evalvateExpression = aggregatedArr[0]['data'].filter(el => el.hasOwnProperty('expressions'));
-    // }
-    // if (evalvateExpression.length > 0) {
-    //   evalvateExpression.forEach(item => {
-    //     this.evalvateExpression(item, aggregatedArr[0]['data'], arr);
-    //   });
-    // }
     return aggregatedArr;
   }
-
-  // applyAggregationForChart(arr) {
-  //   const aggregatedArr = JSON.parse(JSON.stringify(arr[0]));
-  //   for (let i = 1; i < arr.length; i++) {
-  //     for (let j = 0; j < arr[i].value.length; j++) {
-  //       if (typeof aggregatedArr.value[j].value === 'number') {
-  //         aggregatedArr.value[j].value += arr[i].value[j].value;
-  //         aggregatedArr.value[j].hoverValue = { ...aggregatedArr.value[j].hoverValue, ...arr[i].value[j].hoverValue };
-  //       }
-  //       if (typeof aggregatedArr.value[j].value === 'object') {
-  //         if (!Array.isArray(aggregatedArr.value[j].value)) {
-  //           for (const key in aggregatedArr.value[j].value) {
-  //             aggregatedArr.value[j].value[key] += arr[i].value[j].value[key];
-  //           }
-  //         } else {
-  //           // kpi147
-  //           for (const key in aggregatedArr.value[j].value) {
-  //             Object.assign(aggregatedArr.value[j].value[key], arr[i].value[j].value[key]);
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return [aggregatedArr];
-  // }
 
   convertToHoursIfTime(val, unit) {
     if (unit?.toLowerCase() == 'hours') {
@@ -1878,30 +1837,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     return parseInt(dataCount + '') > 0;
   }
-
-
-  // evalvateExpression(element, aggregatedArr, filteredArr) {
-
-  //   const tempArr = [];
-  //   const operandsArr = element['expressions'];
-
-  //   operandsArr.forEach(op => {
-  //     if (op === 'percentage') {
-  //       const op2 = tempArr.pop();
-  //       const op1 = tempArr.pop();
-  //       tempArr.push(+((op1 / op2) * 100).toFixed(2));
-  //     } else if (op === 'average') {
-  //       const op2 = tempArr.pop();
-  //       const op1 = tempArr.pop();
-  //       tempArr.push(+(op1 / op2).toFixed(2));
-  //     } else {
-  //       const opValue = aggregatedArr.find(x => x.label === op)?.value;
-  //       tempArr.push(opValue);
-  //     }
-  //   });
-
-  //   element.value = tempArr[0];
-  // }
 
 
   generateColorObj(kpiId, arr) {
