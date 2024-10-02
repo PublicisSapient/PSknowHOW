@@ -16783,7 +16783,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it("should createapiarry when we have filter property in trending list", () => {
+  it("should createapiarry when we have filter property in trendValueList list", () => {
     const data = {
       kpi141: {
         kpiId: "kpi141",
@@ -17496,6 +17496,41 @@ describe('ExecutiveV2Component', () => {
       expect(component.serviceObject).toEqual({});
       expect(component.selectedtype).toBe('Scrum');
       expect(component.kpiTrendObject).toEqual({});
+    });
+  });
+
+  describe('setUpTabs', () => {
+    it('should set up tabs for selectedTab "release"', () => {
+      component.selectedTab = 'release';
+      component.configGlobalData = [
+        { kpiDetail: { kpiSubCategory: 'Tab1' } },
+        { kpiDetail: { kpiSubCategory: 'Tab2' } },
+        { kpiDetail: { kpiSubCategory: 'Tab3' } }
+      ];
+      spyOn(component.service, 'getDashConfigData').and.returnValue({
+        scrum: [{ boardName: 'Tab1' }, { boardName: 'Tab2' }],
+        others: [{ boardName: 'Tab3' }]
+      });
+
+      component.setUpTabs();
+
+      expect(component.tabsArr).toEqual(new Set(['Tab1', 'Tab2', 'Tab3']));
+      expect(component.selectedKPITab).toBe('Tab1');
+    });
+
+    it('should set up tabs for selectedTab other than "release"', () => {
+      component.selectedTab = 'other';
+      component.configGlobalData = [
+        { kpiDetail: { kpiSubCategory: 'Tab1' } },
+        { kpiDetail: { kpiSubCategory: 'Tab2' } },
+        { kpiDetail: { kpiSubCategory: 'Tab3' } }
+      ];
+      spyOn(component.service, 'getDashConfigData').and.returnValue({});
+
+      component.setUpTabs();
+
+      expect(component.tabsArr).toEqual(new Set(['Tab1', 'Tab2', 'Tab3']));
+      expect(component.selectedKPITab).toBe('Tab1');
     });
   });
 });

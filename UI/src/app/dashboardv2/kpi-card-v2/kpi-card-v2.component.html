@@ -6,7 +6,7 @@
         <span *ngIf="kpiData?.kpiDetail?.kpiInfo" aria-hidden="true" class="info-icon" (mouseover)="showTooltip(true)"
           (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}">
           <img alt="info" class="" src="../../../assets/img/Info.svg" />
-          <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3 p-ml-1" [data]="kpiData?.kpiDetail?.kpiInfo"
+          <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
             [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
         </span>
