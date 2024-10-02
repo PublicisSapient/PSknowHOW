@@ -35,6 +35,7 @@ public class DoraKanbanChangeUnit {
 	public static final String BG_COLOR = "bgColor";
 	public static final String DISPLAY_RANGE = "displayRange";
 	public static final String LABEL = "label";
+	public static final String BOARD_ID = "boardId";
 	private final MongoTemplate mongoTemplate;
 
 	public DoraKanbanChangeUnit(MongoTemplate mongoTemplate) {
@@ -44,17 +45,23 @@ public class DoraKanbanChangeUnit {
 	@Execution
 	public void execution() {
 		rollbackKPIDocs();
-		updateFilterBoardId(7,14);
-		updateFilterBoardId(15,13);
-		updateFilterBoardId(16,15);
-		updateFilterBoardId(17,16);
+		updateFilterBoardId(7, 14);
+		updateFilterBoardId(15, 13);
+		updateFilterBoardId(16, 15);
+		updateFilterBoardId(17, 16);
+		updateProjectTypeSwitchEnabled(14, false);
 	}
+
 	private void rollbackKPIDocs() {
 		mongoTemplate.getCollection("kpi_master")
 				.deleteMany(new Document(KPI_ID, new Document("$in", List.of("kpi184", "kpi183"))));
 
 	}
 
+	private void updateProjectTypeSwitchEnabled(int boardId, boolean enabled) {
+		mongoTemplate.getCollection("filters").updateMany(new Document(BOARD_ID, boardId),
+				new Document("$set", new Document("projectTypeSwitch.enabled", enabled)));
+	}
 
 	@RollbackExecution
 	public void rollback() {
@@ -63,7 +70,7 @@ public class DoraKanbanChangeUnit {
 		updateFilterBoardId(16, 17);
 		updateFilterBoardId(15, 16);
 		updateFilterBoardId(13, 15);
-
+		updateProjectTypeSwitchEnabled(7, true);
 	}
 
 	public void insertDoraKanban() {
@@ -77,7 +84,7 @@ public class DoraKanbanChangeUnit {
 						.append("kpiSource", "Jenkins").append("maxValue", "100").append("thresholdValue", "30")
 						.append("kanban", true).append("groupId", 5)
 						.append("kpiInfo", new Document().append("definition",
-										"Measures the proportion of builds that have failed over a given period of time")
+								"Measures the proportion of builds that have failed over a given period of time")
 								.append("formula",
 										List.of(new Document().append("lhs", "Change Failure Rate")
 												.append("operator", "division")
@@ -125,7 +132,7 @@ public class DoraKanbanChangeUnit {
 						.append("maturityRange", List.of("0-2", "2-4", "4-6", "6-8", "8-"))
 						.append("maturityLevel",
 								List.of(new Document().append(LEVEL, "M5").append(BG_COLOR, "#167a26")
-												.append(LABEL, ">= 2 per week").append(DISPLAY_RANGE, "8 and Above"),
+										.append(LABEL, ">= 2 per week").append(DISPLAY_RANGE, "8 and Above"),
 										new Document().append(LEVEL, "M4").append(BG_COLOR, "#4ebb1a")
 												.append(LABEL, "Once per week").append(DISPLAY_RANGE, "6,7"),
 										new Document().append(LEVEL, "M3").append(BG_COLOR, "#ef7643")
@@ -141,14 +148,15 @@ public class DoraKanbanChangeUnit {
 
 	/**
 	 * Moving dora to scrum, kanban thus changing the boardId
-	 * @param oldBoardId older board id
-	 * @param newBoardId new board id
+	 * 
+	 * @param oldBoardId
+	 *            older board id
+	 * @param newBoardId
+	 *            new board id
 	 */
 	private void updateFilterBoardId(int oldBoardId, int newBoardId) {
-		mongoTemplate.getCollection("filters").updateMany(
-				new Document("boardId", oldBoardId),
-				new Document("$set", new Document("boardId", newBoardId))
-		);
+		mongoTemplate.getCollection("filters").updateMany(new Document(BOARD_ID, oldBoardId),
+				new Document("$set", new Document(BOARD_ID, newBoardId)));
 	}
 
 }
