@@ -18,11 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 @Data
 public class RepoToolUserDetails {
@@ -34,13 +35,15 @@ public class RepoToolUserDetails {
 	private Long linesChanged;
 	private Double hours;
 	private Double userReworkRatePercent;
+	private Double userRevertRateGrade;
+	private Double userRevertRatePercentage;
+	private Double percentage;
 	private Long count;
 	@JsonProperty("mr_count")
 	private Long mrCount;
 	private Map<String, Double> mergeRequestsPT;
 	@JsonProperty("merge_requests")
 	private List<MergeRequests> mergeRequestList;
-	private double percentage;
 	private int mergeRequestsNumber;
 	private double memberDefectMergeRequestPercentage;
 }

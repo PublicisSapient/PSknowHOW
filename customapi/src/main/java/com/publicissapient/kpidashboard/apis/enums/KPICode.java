@@ -509,6 +509,18 @@ public enum KPICode {
      */
     DEFECT_COUNT_BY("kpi178", KPISource.JIRA.name()),
     /**
+     * Revert Rate (Developer)
+     */
+    REVERT_RATE("kpi180", KPISource.BITBUCKET.name()),
+    /**
+     * PR Decline Rate (Developer)
+     */
+    PR_DECLINE_RATE("kpi181", KPISource.BITBUCKET.name()),
+    /**
+     * Success Rate (Developer)
+     */
+    PR_SUCCESS_RATE("kpi182", KPISource.BITBUCKET.name()),
+    /**
      * Innovation Rate (Developer)
      */
     INNOVATION_RATE("kpi185", KPISource.BITBUCKET.name()),

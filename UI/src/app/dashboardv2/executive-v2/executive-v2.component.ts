@@ -1944,6 +1944,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         dropdownArr.forEach(arr => {
           arr = Array.from(arr);
           const obj = {};
+          const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
+          if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter'] === true))) {
+            const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
+            if (index > -1) {
+              arr?.splice(index, 1);
+            }
+          }
 
           obj['filterType'] = 'Select a filter';
           if (arr.length > 0) {
