@@ -98,7 +98,6 @@ export class DoraComponent implements OnInit {
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
       this.processKpiConfigData();
     }));
-
   }
 
   ngOnInit(): void {
