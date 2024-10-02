@@ -111,7 +111,7 @@ export class PrimaryFilterComponent implements OnChanges {
           }
         }
       } else {
-        if (Object.keys(this.stateFilters['parent_level'])?.length) {
+        if (this.stateFilters['parent_level'] && Object.keys(this.stateFilters['parent_level'])?.length) {
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [this.stateFilters['parent_level']] });
         }
         this.service.setNoSprints(true);
@@ -155,7 +155,11 @@ export class PrimaryFilterComponent implements OnChanges {
       }
     } else {
       this.selectedLevel = 'Project';
-      this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
+      if (this.filterData && this.filterData[this.selectedLevel]) {
+        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
+      } else {
+        this.filters = [];
+      }
     }
   }
 
