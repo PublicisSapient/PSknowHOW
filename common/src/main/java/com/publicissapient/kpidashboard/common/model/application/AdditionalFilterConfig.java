@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import lombok.Data;
 
 @Data
-public class AdditionalFilterConfig {
+public class AdditionalFilterConfig implements Serializable {
 	private String filterId;
 	private String identifyFrom;
 	private String identificationField;

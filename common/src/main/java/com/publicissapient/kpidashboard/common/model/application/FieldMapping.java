@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +40,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Document(collection = "field_mapping")
-public class FieldMapping extends FieldMappingHistory {
+public class FieldMapping extends FieldMappingHistory implements Serializable {
 
 	public static final String READY_FOR_TESTING = "Ready For Testing";
 	public static final String IN_TESTING = "In Testing";

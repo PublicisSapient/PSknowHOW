@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -41,7 +42,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tool {
+public class Tool implements Serializable {
 
 	private ObjectId projectIds;
 

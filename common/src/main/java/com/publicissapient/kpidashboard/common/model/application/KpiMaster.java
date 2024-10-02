@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "kpi_master")
-public class KpiMaster extends BasicModel {
+public class KpiMaster extends BasicModel implements Serializable {
 	private String kpiId;
 	private String kpiName;
 	private String isDeleted;

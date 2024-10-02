@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.userboardconfig;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.Data;
@@ -28,7 +29,7 @@ import lombok.Data;
  *
  */
 @Data
-public class Board {
+public class Board implements Serializable {
 	private int boardId;
 	private String boardName;
 	private List<BoardKpis> kpis;

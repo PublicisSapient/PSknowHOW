@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
@@ -39,7 +40,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseFieldMappingStructure extends BasicModel {
+public class BaseFieldMappingStructure extends BasicModel implements Serializable {
 	private String fieldName;
 	private String fieldLabel;
 	private String placeHolderText;
@@ -62,7 +63,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	@Data
 	@Getter
 	@Setter
-	public static class MappingToolTip {
+	public static class MappingToolTip implements Serializable {
 		String definition;
 		String kpiImpacted;
 		String toggleDefinition;
@@ -71,7 +72,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	@Data
 	@Getter
 	@Setter
-	public static class Options {
+	public static class Options implements Serializable {
 		String label;
 		Object value;
 		String labelValue;

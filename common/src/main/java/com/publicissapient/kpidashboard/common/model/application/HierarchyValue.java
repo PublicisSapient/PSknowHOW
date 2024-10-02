@@ -18,12 +18,13 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import lombok.Data;
 
 @Data
-public class HierarchyValue {
+public class HierarchyValue implements Serializable {
 
 	private HierarchyLevel hierarchyLevel;
 	private String value;

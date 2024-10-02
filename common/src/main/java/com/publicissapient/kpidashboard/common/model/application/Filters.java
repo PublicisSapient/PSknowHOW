@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.util.List;
 
 /** store all filters needed for a dashboard
@@ -32,7 +33,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "filters")
-public class Filters extends BasicModel {
+public class Filters extends BasicModel implements Serializable {
     private Integer boardId;
     private ProjectTypeSwitch projectTypeSwitch;
     private BasicFilter primaryFilter;
@@ -42,7 +43,7 @@ public class Filters extends BasicModel {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProjectTypeSwitch {
+    public static class ProjectTypeSwitch implements Serializable {
         private boolean enabled;
         private boolean visible;
     }
@@ -50,7 +51,7 @@ public class Filters extends BasicModel {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class BasicFilter {
+    public static class BasicFilter implements Serializable {
         private String type;
         private DefaultLevel defaultLevel;
     }
@@ -58,7 +59,7 @@ public class Filters extends BasicModel {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DefaultLevel {
+    public static class DefaultLevel implements Serializable {
         private String labelName;
         private String sortBy;
     }
@@ -66,7 +67,7 @@ public class Filters extends BasicModel {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ParentFilter {
+    public static class ParentFilter implements Serializable {
         private String labelName;
         private String emittedLevel;
     }

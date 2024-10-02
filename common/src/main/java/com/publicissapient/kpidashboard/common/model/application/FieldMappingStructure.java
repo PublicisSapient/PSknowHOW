@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -38,7 +39,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "field_mapping_structure")
-public class FieldMappingStructure extends BaseFieldMappingStructure {
+public class FieldMappingStructure extends BaseFieldMappingStructure implements Serializable {
 	private List<BaseFieldMappingStructure> nestedFields;
 
 }

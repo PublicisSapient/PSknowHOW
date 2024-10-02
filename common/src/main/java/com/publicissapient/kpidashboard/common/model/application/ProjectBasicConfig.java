@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -41,7 +42,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "project_basic_configs")
-public class ProjectBasicConfig extends BasicModel {
+public class ProjectBasicConfig extends BasicModel implements Serializable {
 
 	private String emmUpdatedOn;
 	private String consumerCreatedOn;

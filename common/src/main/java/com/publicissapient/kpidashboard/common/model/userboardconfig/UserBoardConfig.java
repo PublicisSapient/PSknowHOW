@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.userboardconfig;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -35,7 +36,7 @@ import lombok.Data;
 
 @Data
 @Document(collection = "user_board_config")
-public class UserBoardConfig {
+public class UserBoardConfig implements Serializable {
 	@Id
 	private ObjectId id;
 	private String username;

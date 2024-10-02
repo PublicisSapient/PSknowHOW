@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.Data;
@@ -27,7 +28,7 @@ import lombok.Data;
  *
  */
 @Data
-public class KpiDetail {
+public class KpiDetail implements Serializable {
 
 	private String type;
 	private String value;

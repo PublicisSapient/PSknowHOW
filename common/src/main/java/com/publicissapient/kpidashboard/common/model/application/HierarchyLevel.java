@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -41,7 +42,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "hierarchy_levels")
-public class HierarchyLevel extends BasicModel {
+public class HierarchyLevel extends BasicModel implements Serializable  {
 
 	private int level;
 	private String hierarchyLevelId;

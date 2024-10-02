@@ -26,6 +26,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @Builder
@@ -37,7 +39,7 @@ import lombok.Setter;
  * maintains the data of fieldmapping history
  * @author shi6
  */
-public class ConfigurationHistoryChangeLog {
+public class ConfigurationHistoryChangeLog implements Serializable {
 
 	@JsonProperty("Changed From")
 	private Object changedFrom;

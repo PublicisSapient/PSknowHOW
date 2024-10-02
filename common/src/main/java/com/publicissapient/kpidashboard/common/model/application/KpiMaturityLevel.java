@@ -19,13 +19,15 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author yasbano
  *
  */
 @Data
-public class KpiMaturityLevel {
+public class KpiMaturityLevel implements Serializable {
 
 	private String level;
 	private String bgColor;

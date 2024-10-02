@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -43,7 +44,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "project_tool_configs")
-public class ProjectToolConfig extends BasicModel {
+public class ProjectToolConfig extends BasicModel implements Serializable {
 
 	private String toolName;
 	private ObjectId basicProjectConfigId;

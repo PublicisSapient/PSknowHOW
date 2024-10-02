@@ -19,13 +19,15 @@ package com.publicissapient.kpidashboard.common.model.userboardconfig;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author narsingh9
  *
  */
 @Data
-public class BoardKpis {
+public class BoardKpis implements Serializable {
 	private String kpiId;
 	private String kpiName;
 	private boolean isEnabled;

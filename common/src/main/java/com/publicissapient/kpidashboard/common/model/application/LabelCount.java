@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * Model class to hold data about label & its respective count.
  *
@@ -31,7 +33,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LabelCount {
+public class LabelCount implements Serializable {
     String labelValue;
     Integer countValue;
 }
