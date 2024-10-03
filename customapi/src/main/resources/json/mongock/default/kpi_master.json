@@ -4679,7 +4679,7 @@
     "defaultOrder" : 5,
     "groupId" : 2,
     "kpiSource" : "BitBucket",
-    "combinedKpiSource": "RepoTool",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
     "kanban" : false,
     "chartType" : "line",
     "kpiInfo" : {
@@ -4719,7 +4719,7 @@
     "defaultOrder" : 5,
     "groupId" : 2,
     "kpiSource" : "BitBucket",
-    "combinedKpiSource": "RepoTool",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
     "kanban" : false,
     "chartType" : "line",
     "kpiInfo" : {
@@ -4759,7 +4759,7 @@
     "defaultOrder" : 5,
     "groupId" : 2,
     "kpiSource" : "BitBucket",
-    "combinedKpiSource": "RepoTool",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
     "kanban" : false,
     "chartType" : "line",
     "kpiInfo" : {
