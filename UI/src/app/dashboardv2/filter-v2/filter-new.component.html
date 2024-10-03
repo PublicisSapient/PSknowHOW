@@ -137,19 +137,11 @@
             <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types"
               [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
           </div>
-          <div class="filter-options-container date-filter-dropdown" *ngIf="toggleDateDropdown" #dateDrpmenu>
-            <div class="filter-options filter-date p-d-flex p-jc-evenly">
-              <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.counts"
-                [(ngModel)]="selectedDateValue"></p-dropdown>
-              <p-dropdown [styleClass]="'date-filter-ddn'" [options]="dateRangeFilter?.types"
-                [(ngModel)]="selectedDayType" (onChange)="setSelectedDateType($event.value)"></p-dropdown>
-            </div>
-            <div class="p-d-flex p-justify-end p-align-center btn-container">
-              <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply p-mr-1"
-                (click)="applyDateFilter()"></button>
-                <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm btn-apply"
-                (click)="closeDateFilterModel()"></button>
-            </div>
+          <div class="p-d-flex p-justify-end p-align-center btn-container">
+            <button pButton pRipple label="Apply" class="p-button-secondary p-button-sm btn-apply p-mr-1"
+              (click)="applyDateFilter()"></button>
+              <button pButton pRipple label="Cancel" class="p-button-secondary p-button-sm btn-apply"
+              (click)="closeDateFilterModel()"></button>
           </div>
         </div>
       </div>

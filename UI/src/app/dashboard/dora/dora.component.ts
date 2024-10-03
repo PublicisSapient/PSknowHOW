@@ -37,7 +37,6 @@ export class DoraComponent implements OnInit {
   updatedConfigGlobalData;
   kpiConfigData = {};
   kpiLoader = true;
-  loadedKpi = new Set();
   noTabAccess = false;
   trendBoxColorObj: any;
   kpiDropdowns = {};
@@ -98,20 +97,6 @@ export class DoraComponent implements OnInit {
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
       this.processKpiConfigData();
-    }));
-
-    this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
-      this.selectedtype = data.selectedType;
-      this.selectedTab = data.selectedTab;
-      this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
-    }));
-
-    this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-      setTimeout(() => {
-        this.processKpiConfigData();
-      }, 500);
     }));
   }
 
@@ -199,11 +184,7 @@ export class DoraComponent implements OnInit {
         this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
       }
     }
-    if(this.kanbanActivated && this.selectedTab.toLowerCase() === 'dora'){
-      this.configGlobalData = this.service.getDashConfigData()['kanban'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
-    }else{
-      this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
-    }
+    this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
     this.processKpiConfigData();
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
@@ -213,13 +194,8 @@ export class DoraComponent implements OnInit {
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
       if (this.configGlobalData?.length > 0) {
-        if(this.kanbanActivated){
-          this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
-          this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
-        }else{
-          this.groupJenkinsKpi(kpiIdsForCurrentBoard);
-          this.groupJiraKpi(kpiIdsForCurrentBoard);
-        }
+        this.groupJenkinsKpi(kpiIdsForCurrentBoard);
+        this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
       }
     } else {
@@ -287,92 +263,6 @@ export class DoraComponent implements OnInit {
 
   }
 
-  // Used for grouping all Jenkins kpi of kanban from master data and calling jenkins kpi.
-  groupJenkinsKanbanKpi(kpiIdsForCurrentBoard) {
-    this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
-    if (this.kpiJenkins?.kpiList?.length > 0) {
-      let kpiArr = this.kpiJenkins.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
-      kpiArr.forEach(element => this.loadedKpi.add(element));
-      this.postJenkinsKanbanKpi(this.kpiJenkins, 'jenkins');
-    }
-  }
-
-  // Used for grouping all jira kpi of kanban from master data and calling jira kpi of kanban.
-  groupJiraKanbanKpi(kpiIdsForCurrentBoard) {
-    this.jiraKpiData = {};
-    // creating a set of unique group Ids
-    const groupIdSet = new Set();
-    this.updatedConfigGlobalData?.forEach((obj) => {
-      if (obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira') {
-        groupIdSet.add(obj['kpiDetail'].groupId);
-      }
-    });
-
-    // sending requests after grouping the the KPIs according to group Id
-    groupIdSet.forEach((groupId) => {
-      if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');
-        if (this.kpiJira?.kpiList?.length > 0) {
-          let kpiArr = this.kpiJira.kpiList.map((kpi: { kpiId: any; }) => kpi.kpiId);
-          kpiArr.forEach(element => this.loadedKpi.add(element)); 
-          this.postJiraKanbanKpi(this.kpiJira, 'jira');
-        }
-      }
-    });
-  }    
-
-  // post request of Jira(Kanban)
-  postJiraKanbanKpi(postData, source): void {
-    this.httpService.postKpiKanban(postData, source)
-      .subscribe(getData => {
-        if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-          // creating array into object where key is kpi id
-          const localVariable = this.helperService.createKpiWiseId(getData);
-          const kpi997 = localVariable['kpi997'];
-          if (kpi997 && kpi997.trendValueList && kpi997.xAxisValues && kpi997.xAxisValues.length === 5) {
-            kpi997.trendValueList.forEach(trendElem => {
-              trendElem.value
-                .filter(valElem => valElem.value.length === 5)
-                .forEach((valElem, index) => {
-                  valElem.value['xAxisTick'] = kpi997.xAxisValues[index];
-                });
-            });
-          }
-
-          this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
-          this.createAllKpiArray(localVariable);
-          this.removeLoaderFromKPIs(localVariable);
-        } else {
-          this.jiraKpiData = getData;
-          postData.kpiList.forEach(element => {
-           this.loadedKpi.delete(element.kpiId);
-          });
-        }
-      });
-  }    
-
-  // calling post request of Jenkins of Kanban and storing in jenkinsKpiData id wise
-  postJenkinsKanbanKpi(postData, source): void {
-    this.loaderJenkins = true;
-    if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
-      this.jenkinsKpiRequest.unsubscribe();
-    }
-    this.jenkinsKpiRequest = this.httpService.postKpiKanban(postData, source)
-      .subscribe(getData => {
-        this.loaderJenkins = false;
-        // move Overall to top of trendValueList
-        if (getData !== null) { // && getData[0] !== 'error') {
-          this.jenkinsKpiData = getData;
-          this.createAllKpiArray(this.jenkinsKpiData);
-          this.removeLoaderFromKPIs(this.jenkinsKpiData);
-        } else {
-          postData.kpiList.forEach(element => {
-            this.loadedKpi.delete(element.kpiId);
-          });
-        }
-      });
-  }
-
   // calling post request of Jenkins of scrum and storing in jenkinsKpiData id wise
   postJenkinsKpi(postData, source): void {
     this.loaderJenkins = true;
@@ -415,17 +305,6 @@ export class DoraComponent implements OnInit {
         }
         this.kpiLoader = false;
       });
-  }
-
-  removeLoaderFromKPIs(data) {
-    if (Array.isArray(data)) {
-      let kpis = data.map(kpi => kpi.kpiId);
-     kpis.forEach((kpi) => this.loadedKpi.delete(kpi));
-    } else {
-      for (const kpi in data) {
-        this.loadedKpi.delete(kpi);
-      }
-    }
   }
 
 
