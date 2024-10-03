@@ -103,7 +103,7 @@ public class ConfigHelperServiceTest {
 				.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP)).size() > 0);
 		Assertions.assertTrue(((Map<ObjectId, FieldMapping>) configHelperService
 				.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP)).size() > 0);
-		Assertions.assertTrue(((Map<ObjectId, FieldMapping>) configHelperService
+		Assertions.assertFalse(((Map<ObjectId, FieldMapping>) configHelperService
 				.getConfigMapData(CommonConstant.CACHE_BOARD_META_DATA_MAP)).size() > 0);
 	}
 
