@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.lang.reflect.Field;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,8 +38,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -65,7 +68,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.MasterResponse;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
@@ -1537,7 +1539,7 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * for all the duplicate issues, present in sprintdetails find out the minimum
 	 * closed dates
-	 * 
+	 *
 	 * @param duplicateIssues
 	 * @param customFieldMapping
 	 * @return
@@ -1654,7 +1656,7 @@ public class KpiHelperService { // NOPMD
 
 	/**
 	 * check number of saturday, sunday between dates
-	 * 
+	 *
 	 * @param d1
 	 *            start date
 	 * @param d2
@@ -1674,7 +1676,7 @@ public class KpiHelperService { // NOPMD
 
 	/**
 	 * check if day is weekend
-	 * 
+	 *
 	 * @param localDateTime
 	 *            localdatetime of day
 	 * @return boolean
@@ -2011,6 +2013,71 @@ public class KpiHelperService { // NOPMD
 					mapOfListOfTools.get(GITHUB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITHUB));
 		}
 		return reposList;
+	}
+
+
+	public boolean isToolConfigured(KPICode kpi, KpiElement kpiElement, Node nodeDataClone) {
+		ObjectId basicProjectConfigId = nodeDataClone.getProjectFilter().getBasicProjectConfigId();
+		if (!isToolConfigured(kpi, basicProjectConfigId)) {
+			kpiElement.setResponseCode(CommonConstant.TOOL_NOT_CONFIGURED);
+			return false;
+		}
+		return true;
+	}
+
+	public boolean isMandatoryFieldSet(KPICode kpi, KpiElement kpiElement, Node nodeDataClone) {
+		ObjectId basicProjectConfigId = nodeDataClone.getProjectFilter().getBasicProjectConfigId();
+		if (!isMandatoryFieldSet(kpi, basicProjectConfigId)) {
+			kpiElement.setResponseCode(CommonConstant.MANDATORY_FIELD_MAPPING);
+			return false;
+		}
+		return true;
+	}
+
+	private boolean isMandatoryFieldSet(KPICode kpi, ObjectId basicProjectConfigId) {
+		try {
+			List<String> fieldMappingName = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase()).getFields();
+			List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
+			List<String> mandatoryFieldMappingName = fieldMappingStructureList.stream()
+					.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory() && fieldMappingName.contains(fieldMappingStructure.getFieldName()))
+					.map(FieldMappingStructure::getFieldName).toList();
+
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(basicProjectConfigId);
+
+			for (String fieldName : mandatoryFieldMappingName) {
+				try {
+					Field field = FieldMapping.class.getDeclaredField(fieldName);
+					field.setAccessible(true); // NOSONAR
+					if (CommonUtils.checkObjectNullValue(field.get(fieldMapping)))
+						return false;
+				} catch (NoSuchFieldException e) {
+					log.warn(fieldName + " does not exist in fieldMapping.");
+				} catch (IllegalAccessException e) {
+					log.warn("Error accessing " + fieldName + " field.");
+				}
+			}
+		} catch (IllegalArgumentException exception) {
+			log.warn(kpi.getKpiId() + " No fieldMapping Found");
+			return true;
+		}
+		return true;
+	}
+
+	private boolean isToolConfigured(KPICode kpi, ObjectId basicProjectConfigId) {
+		Set<String> configuredTools = configHelperService.getProjectToolConfigMap()
+				.getOrDefault(basicProjectConfigId, Collections.emptyMap()).keySet().stream().map(String::toUpperCase)
+				.collect(Collectors.toSet());
+
+		List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
+		Map<String, String> toolWiseKpiSource = masterList.stream().filter(
+				d -> StringUtils.isNotEmpty(d.getCombinedKpiSource()) || StringUtils.isNotEmpty(d.getKpiSource()))
+				.collect(Collectors.toMap(k -> k.getKpiId().toUpperCase(),
+						k -> (StringUtils.isNotEmpty(k.getCombinedKpiSource()) ? k.getCombinedKpiSource().toUpperCase()
+								: k.getKpiSource().toUpperCase())));
+
+		return Arrays.stream(toolWiseKpiSource.get(kpi.getKpiId().toUpperCase()).split("/"))
+				.anyMatch(configuredTools::contains);
 	}
 
 }

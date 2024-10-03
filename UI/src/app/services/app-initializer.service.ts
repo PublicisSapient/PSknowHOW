@@ -61,7 +61,7 @@ export class AppInitializerService {
             }
         },
         {
-            path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'backlog', component: !localStorage.getItem('newUI') ? BacklogComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Backlog"
             }
