@@ -161,7 +161,7 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		when(deploymentRepository.findDeploymentList(anyMap(), anySet(), anyString(), anyString()))
 				.thenReturn(deploymentList);
 
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name()))
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name()))
 				.thenReturn(kpiRequest.getRequestTrackerId());
 
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
@@ -193,7 +193,7 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		when(deploymentRepository.findDeploymentList(anyMap(), anySet(), anyString(), anyString()))
 				.thenReturn(deploymentList);
 
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name()))
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name()))
 				.thenReturn(kpiRequest.getRequestTrackerId());
 
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();

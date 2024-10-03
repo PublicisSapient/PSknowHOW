@@ -155,7 +155,7 @@ public class ChangeFailureRateKanbanServiceImplTest {
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 
 		String kpiRequestTrackerId = "Excel-JENKINS-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name()))
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
 
@@ -181,7 +181,7 @@ public class ChangeFailureRateKanbanServiceImplTest {
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 
 		String kpiRequestTrackerId = "Excel-JENKINS-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name()))
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
 
