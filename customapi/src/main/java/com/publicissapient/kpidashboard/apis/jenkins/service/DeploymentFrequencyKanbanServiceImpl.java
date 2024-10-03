@@ -128,7 +128,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
 			KpiElement kpiElement) {
 
-		String requestTrackerId = getRequestTrackerId();
+		String requestTrackerId = getKanbanRequestTrackerId();
 		Map<String, Object> durationFilter = KpiDataHelper.getDurationFilter(kpiElement);
 		LocalDateTime localStartDate = (LocalDateTime) durationFilter.get(Constant.DATE);
 		LocalDateTime localEndDate = LocalDateTime.now();
