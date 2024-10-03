@@ -144,7 +144,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 					return (List<KpiElement>) cachedData;
 				}
 
-				Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
+				Node filteredNode = getFilteredNodes(filteredAccountDataList);
 				if (filteredNode != null) {
 					if (!CollectionUtils.isEmpty(origRequestedKpis)
 							&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
@@ -202,7 +202,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		return responseList;
 	}
 
-	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+	private Node getFilteredNodes(List<AccountHierarchyData> filteredAccountDataList) {
 		Optional<Node> sprintNode = filteredAccountDataList.get(0).getNode().stream()
 				.filter(node -> node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
 				.findFirst();
