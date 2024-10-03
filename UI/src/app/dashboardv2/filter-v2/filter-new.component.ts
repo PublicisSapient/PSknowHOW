@@ -371,7 +371,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                     }
                   }
 
-                  if (board.boardSlug !== 'developer') {
+                  if (board.boardSlug !== 'developer' &&  board.boardSlug !== 'dora') {
                     board.filters.additionalFilters.forEach(element => {
                       if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
                         element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;

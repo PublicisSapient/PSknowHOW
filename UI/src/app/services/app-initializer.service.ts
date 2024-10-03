@@ -73,7 +73,7 @@ export class AppInitializerService {
             }
         },
         {
-            path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'dora', component: !localStorage.getItem('newUI') ? DoraComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Dora"
             }

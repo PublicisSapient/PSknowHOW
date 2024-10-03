@@ -18,6 +18,7 @@ package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 
 import java.util.Arrays;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -33,6 +34,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shi6
  */
+@Slf4j
 @ChangeUnit(id = "kpi_sonar_code_quality", order = "8104", author = "shi6", systemVersion = "8.1.0")
 public class KpiSonarCodeQuality {
 	private static final String KPI_ID = "kpiId";
@@ -113,6 +115,8 @@ public class KpiSonarCodeQuality {
 				kpiCategoryMapping.insertOne(new Document().append(KPI_ID, KPI_168).append("categoryId", categoryId)
 						.append("kpiOrder", 15).append("kanban", false));
 			}
+		} else {
+			log.info("KPI_168 already exists in the collection.");
 		}
 	}
 

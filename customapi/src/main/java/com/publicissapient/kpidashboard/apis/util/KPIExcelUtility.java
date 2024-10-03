@@ -1711,19 +1711,18 @@ public class KPIExcelUtility {
 	private static HashMap<String, String> getStatusNameAndWeekName(
 			Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
 		HashMap<String, String> data = new HashMap<>();
-		for (String week : weekAndTypeMap.keySet()) {
-			for (String type : weekAndTypeMap.get(week).keySet()) {
-				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
+		for (Map.Entry<String, Map<String, List<JiraIssue>>> weekEntry : weekAndTypeMap.entrySet()) {
+			for (Map.Entry<String, List<JiraIssue>> typeEntry : weekEntry.getValue().entrySet()) {
+				for (JiraIssue issue : typeEntry.getValue()) {
 					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
-						data.put(STATUS, type);
-						data.put(WEEK, week);
+						data.put(STATUS, typeEntry.getKey());
+						data.put(WEEK, weekEntry.getKey());
 					}
 				}
 			}
 		}
 		return data;
 	}
-
 	public static void populateReleaseDefectRelatedExcelData(List<JiraIssue> jiraIssues,
 			List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
