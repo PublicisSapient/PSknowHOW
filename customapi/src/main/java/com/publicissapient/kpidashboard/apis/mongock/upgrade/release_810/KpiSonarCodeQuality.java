@@ -16,6 +16,8 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 
+import static org.reflections.Reflections.log;
+
 import java.util.Arrays;
 
 import org.bson.Document;
@@ -114,7 +116,7 @@ public class KpiSonarCodeQuality {
 						.append("kpiOrder", 15).append("kanban", false));
 			}
 		} else {
-			System.out.println("KPI_168 already exists in the collection.");
+			log.info("KPI_168 already exists in the collection.");
 		}
 
 	}
