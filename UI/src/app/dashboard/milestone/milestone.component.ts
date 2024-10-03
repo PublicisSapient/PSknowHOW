@@ -353,21 +353,25 @@ export class MilestoneComponent implements OnInit {
       } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
-        if (formType?.toLowerCase() == 'radiobutton') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
-        }
-        else if (formType?.toLowerCase() == 'dropdown') {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
-        }
-        else if (filters && Object.keys(filters)?.length > 0) {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
-        } else {
-          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
-        }
+        this.checkFilterType(formType, data, key, filters);
       } else if (!trendValueList || trendValueList?.length == 0) {
         this.getDropdownArray(data[key]?.kpiId);
       }
       this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
+    }
+  }
+
+  checkFilterType(formType, data, key, filters) {
+    if (formType?.toLowerCase() == 'radiobutton') {
+      this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
+    }
+    else if (formType?.toLowerCase() == 'dropdown') {
+      this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
+    }
+    else if (filters && Object.keys(filters)?.length > 0) {
+      this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
+    } else {
+      this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
     }
   }
 
@@ -385,7 +389,7 @@ export class MilestoneComponent implements OnInit {
       this.kpiChartData[kpiId].push({
         data: this.allKpiArray[idx]?.issueData,
         filters: this.allKpiArray[idx]?.filterGroup,
-        modalHeads:  this.allKpiArray[idx]?.modalHeads
+        modalHeads: this.allKpiArray[idx]?.modalHeads
       });
 
     } else {
@@ -427,7 +431,7 @@ export class MilestoneComponent implements OnInit {
             this.kpiChartData[kpiId] = [...trendValueList];
           } else {
             const obj = JSON.parse(JSON.stringify(trendValueList));
-            if(obj?.length > 0 || Object.keys(obj)?.length > 0){
+            if (obj?.length > 0 || Object.keys(obj)?.length > 0) {
               this.kpiChartData[kpiId]?.push(obj);
             }
           }
@@ -489,7 +493,7 @@ export class MilestoneComponent implements OnInit {
           this.kpiChartData[kpiId] = [...trendValueList];
         } else {
           const obj = JSON.parse(JSON.stringify(trendValueList));
-          if(obj?.length > 0 || Object.keys(obj)?.length > 0){
+          if (obj?.length > 0 || Object.keys(obj)?.length > 0) {
             this.kpiChartData[kpiId]?.push(obj);
           }
         }
@@ -653,7 +657,7 @@ export class MilestoneComponent implements OnInit {
   /** Reload KPI once field mappoing updated */
   reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Release');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Release');
     if (currentKPIGroup?.kpiList?.length > 0) {
       this.postJiraKpi(this.kpiJira, 'jira');
     }

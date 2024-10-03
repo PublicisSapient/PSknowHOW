@@ -2046,22 +2046,27 @@ public class KpiHelperService { // NOPMD
 					.get(basicProjectConfigId);
 
 			for (String fieldName : mandatoryFieldMappingName) {
-				try {
-					Field field = FieldMapping.class.getDeclaredField(fieldName);
-					field.setAccessible(true); // NOSONAR
-					if (CommonUtils.checkObjectNullValue(field.get(fieldMapping)))
-						return false;
-				} catch (NoSuchFieldException e) {
-					log.warn(fieldName + " does not exist in fieldMapping.");
-				} catch (IllegalAccessException e) {
-					log.warn("Error accessing " + fieldName + " field.");
-				}
+				if (checkNullValues(fieldName, fieldMapping)) return false;
 			}
 		} catch (IllegalArgumentException exception) {
 			log.warn(kpi.getKpiId() + " No fieldMapping Found");
 			return true;
 		}
 		return true;
+	}
+
+	private static boolean checkNullValues(String fieldName, FieldMapping fieldMapping) {
+		try {
+			Field field = FieldMapping.class.getDeclaredField(fieldName);
+			field.setAccessible(true); // NOSONAR
+			if (CommonUtils.checkObjectNullValue(field.get(fieldMapping)))
+				return true;
+		} catch (NoSuchFieldException e) {
+			log.warn(fieldName + " does not exist in fieldMapping.");
+		} catch (IllegalAccessException e) {
+			log.warn("Error accessing " + fieldName + " field.");
+		}
+		return false;
 	}
 
 	private boolean isToolConfigured(KPICode kpi, ObjectId basicProjectConfigId) {

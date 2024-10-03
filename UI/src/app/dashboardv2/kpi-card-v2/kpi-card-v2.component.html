@@ -6,11 +6,18 @@
         <span *ngIf="kpiData?.kpiDetail?.kpiInfo" aria-hidden="true" class="info-icon" (mouseover)="showTooltip(true)"
           (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}">
           <img alt="info" class="" src="../../../assets/img/Info.svg" />
-          <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3 p-ml-1" [data]="kpiData?.kpiDetail?.kpiInfo"
+          <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
             [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
         </span>
       </div>
+      <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' && checkIfDataPresent(kpiDataStatusCode)"
+        (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)"  [style]="{'position': 'relative'}">
+        <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
+          src="../../../assets/img/Warning.svg" />
+        <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
+          [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true"></app-tooltip-v2>
+      </span>
     </div>
     <div class="kpi-menu-container" (click)="toggleMenu($event)">
       <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
@@ -54,8 +61,8 @@
           inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
           (onChange)="handleChange('multi', $event, k)" [filter]="false" [showHeader]="false" [maxSelectedLabels]="3"
           selectedItemsLabel="{0} items selected" (onClear)="handleClearAll('filter'+(k+1))"
-          [style]="{'max-width': '100%', 'height': '32px', 'margin-left': '5px'}" [showClear]="true" defaultLabel="{{filter?.filterType}}"
-          [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+          [style]="{'max-width': '100%', 'height': '32px', 'margin-left': '5px'}" [showClear]="true"
+          defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
         </p-multiSelect>
       </ng-container>
     </div>

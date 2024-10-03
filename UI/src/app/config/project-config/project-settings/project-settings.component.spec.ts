@@ -629,4 +629,153 @@ describe('ProjectSettingsComponent', () => {
   });
   // -> end of updateProjectSelection
 
+  describe('onProjectActiveStatusChange', () => {
+    it('should call updateProjectDetails when event.checked is true and confirmation is accepted', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
+        params.accept();
+      });
+      spyOn(component, 'updateProjectDetails');
+
+      component.onProjectActiveStatusChange({ checked: true });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.updateProjectDetails).toHaveBeenCalledWith('Project data collection paused!');
+    });
+
+    it('should set projectOnHold to false when event.checked is true and confirmation is rejected', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.reject();
+      });
+
+      component.onProjectActiveStatusChange({ checked: true });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.projectOnHold).toBe(false);
+    });
+
+    it('should call updateProjectDetails when event.checked is false and confirmation is accepted', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.accept();
+      });
+      spyOn(component, 'updateProjectDetails');
+
+      component.onProjectActiveStatusChange({ checked: false });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.updateProjectDetails).toHaveBeenCalledWith('Project data collection resumed!');
+    });
+
+    it('should set projectOnHold to true when event.checked is false and confirmation is rejected', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.reject();
+      });
+
+      component.onProjectActiveStatusChange({ checked: false });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.projectOnHold).toBe(true);
+    });
+  });
+
+  describe('onProjectDevKpiStatusChange', () => {
+    it('should call updateProjectDetails when confirmation is accepted', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.accept();
+      });
+      spyOn(component, 'updateProjectDetails');
+
+      component.onProjectDevKpiStatusChange();
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.updateProjectDetails).toHaveBeenCalledWith('Developer KPI for this project enabled!');
+    });
+
+    it('should set developerKpiEnabled to false when confirmation is rejected', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.reject();
+      });
+
+      component.onProjectDevKpiStatusChange();
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(component.developerKpiEnabled).toBe(false);
+    });
+  });
+
+  describe('deleteProject', () => {
+    it('should set isDeleteClicked and projectConfirm to true', () => {
+      spyOn(confirmationService, 'confirm');
+
+      component.deleteProject({ name: 'Test Project' });
+
+      expect(component.isDeleteClicked).toBe(true);
+      expect(component.projectConfirm).toBe(true);
+      expect(confirmationService.confirm).toHaveBeenCalled();
+    });
+
+    it('should call httpService.deleteProject and navigate to the correct route on accept', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.accept();
+      });
+      spyOn<any>(httpService, 'deleteProject').and.returnValue({ subscribe: () => {} });
+
+      component.deleteProject({ name: 'Test Project', id: 1 });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(httpService.deleteProject).toHaveBeenCalledWith({ name: 'Test Project', id: 1 });
+      expect(component.router.navigate).toHaveBeenCalledWith(['/dashboard/Config/ConfigSettings/1'], {
+        queryParams: { type: 'scrum', tab: 0 },
+      });
+    });
+
+    it('should update the currentUserDetails on accept', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.accept();
+      });
+      spyOn(component.sharedService, 'getCurrentUserDetails').and.returnValue({ projectsAccess: [{ projects: [{ projectId: 1 }] }] });
+      spyOn(component.sharedService, 'setCurrentUserDetails');
+
+      component.deleteProject({ name: 'Test Project', id: 1 });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      // expect(component.sharedService.getCurrentUserDetails).toHaveBeenCalledWith('projectsAccess');
+      // expect(component.sharedService.setCurrentUserDetails).toHaveBeenCalledWith({ projectsAccess: [] });
+    });
+
+    it('should call projectDeletionStatus on error', () => {
+      spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
+        params.accept();
+      });
+      spyOn<any>(httpService, 'deleteProject').and.returnValue({ subscribe: (_, error) => error('Error') });
+      spyOn(component, 'projectDeletionStatus');
+
+      component.deleteProject({ name: 'Test Project' });
+
+      expect(confirmationService.confirm).toHaveBeenCalled();
+      expect(httpService.deleteProject).toHaveBeenCalled();
+      expect(component.projectDeletionStatus).toHaveBeenCalledWith('Error');
+    });
+  });
+
+  describe('projectDeletionStatus', () => {
+    it('should set projectConfirm to false and call confirmationService.confirm with success message on data.success', () => {
+      spyOn(confirmationService, 'confirm');
+      const data = { success: true, message: 'Project deleted successfully!' };
+
+      component.projectDeletionStatus(data);
+
+      expect(component.projectConfirm).toBe(false);
+      expect(confirmationService.confirm).toHaveBeenCalled();
+    });
+
+    it('should set projectConfirm to false and call confirmationService.confirm with error message on !data.success', () => {
+      spyOn(confirmationService, 'confirm');
+      const data = { success: false };
+
+      component.projectDeletionStatus(data);
+
+      expect(component.projectConfirm).toBe(false);
+      expect(confirmationService.confirm).toHaveBeenCalled();
+    });
+  });
 });

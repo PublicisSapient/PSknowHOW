@@ -1084,7 +1084,7 @@ export class ConnectionListComponent implements OnInit {
 
     // } else {
     /* Enable/Disable fields on the basis of flag selection at one time */
-    if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
+    if (this.enableDisableOnToggle.enableDisableEachTime[field]?.length) {
       this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
         if (event.checked) {
           this.basicConnectionForm.controls[element.field]?.enable();
@@ -1094,7 +1094,7 @@ export class ConnectionListComponent implements OnInit {
       });
     }
     /* Enable/Disable fields on the basis of flag selection at second time */
-    if (!!this.enableDisableOnToggle.enableDisableAnotherTime[field] && this.enableDisableOnToggle.enableDisableAnotherTime[field].length) {
+    if (this.enableDisableOnToggle.enableDisableAnotherTime[field]?.length) {
       this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
         if (event.checked) {
           this.basicConnectionForm.controls[element.field]?.disable();

@@ -113,10 +113,7 @@ public class KpiSonarCodeQuality {
 				kpiCategoryMapping.insertOne(new Document().append(KPI_ID, KPI_168).append("categoryId", categoryId)
 						.append("kpiOrder", 15).append("kanban", false));
 			}
-		} else {
-			System.out.println("KPI_168 already exists in the collection.");
 		}
-
 	}
 
 	@RollbackExecution
