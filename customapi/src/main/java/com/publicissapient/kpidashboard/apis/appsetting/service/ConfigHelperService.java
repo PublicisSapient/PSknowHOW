@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.Filters;
-import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,6 +34,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.Filters;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
@@ -45,6 +45,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
@@ -247,7 +248,6 @@ public class ConfigHelperService {
 		log.info("loading KPI Master data");
 		return kpiMasterRepository.findAll();
 	}
-
 
 	@Cacheable(CommonConstant.CACHE_MATURITY_RANGE)
 	public Map<String, List<String>> calculateMaturity() {

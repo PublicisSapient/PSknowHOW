@@ -7,7 +7,7 @@
         <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
         <p-menu [model]="appList" [popup]="true" #appItems class="app-switch"></p-menu>
      </div>
-      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo" (click)="navigateToMyKnowHOW()"/>
+      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo"/>
     </div>
 
     <div class="p-d-flex p-align-center p-p-1">
@@ -21,7 +21,7 @@
       </div>
       <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
 
-      <div class="back-btn-wraper" *ngIf="userDetails['authorities']?.includes('ROLE_PROJECT_ADMIN') || userDetails['authorities']?.includes('ROLE_SUPERADMIN')">
+      <div class="back-btn-wraper" *ngIf="userDetails['authorities']?.includes('ROLE_PROJECT_ADMIN') || userDetails['authorities']?.includes('ROLE_SUPERADMIN') || userDetails['authorities']?.includes('ROLE_PROJECT_VIEWER')">
         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')"
           class="back-btn-container rounded p-mr-3">
           <button pButton pRipple class="back-btn" [ngClass]="noToolsConfigured ? 'p-d-none' : ''" [disabled]="backToDashboardLoader" routerLinkActive="active"
