@@ -75,6 +75,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   commentDialogRef: DynamicDialogRef | undefined;
   disableSettings: boolean = false;
   @Input() immediateLoader: boolean = true;
+  warning = '';
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
@@ -169,9 +170,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
-    this.disableSettings = this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release'));
+    this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
+      || !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
-    console.log(this.kpiData);
   }
 
   openCommentModal = () => {
@@ -190,6 +191,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   showTooltip(val) {
     this.isTooltip = val;
+  }
+
+  showWarning(val) {
+    if (val) {
+      this.warning = 'Configure the missing mandatory field mappings in KPI Settings for accurate data display.';
+    } else {
+      this.warning = null;
+    }
   }
 
   handleChange(type, value = null, filterIndex = 0) {
@@ -235,7 +244,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       for (const key in this.filterOptions) {
         if (key?.toLowerCase() == event?.toLowerCase()) {
           this.filterOptions[key] = [];
-        } else if(!this.filterOptions[key]) {
+        } else if (!this.filterOptions[key]) {
           this.filterOptions[key] = [];
         }
       }
@@ -352,7 +361,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    return data === '200' && this.checkDataAtGranularLevel(this.trendValueList);
+    return (data === '200' || data === '201') && this.checkDataAtGranularLevel(this.trendValueList);
   }
 
   checkDataAtGranularLevel(data) {

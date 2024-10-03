@@ -729,4 +729,176 @@ describe('PrimaryFilterComponent', () => {
       );
     });
   });
+
+  describe('applyDefaultFilters', () => {
+    it('should set selectedFilters based on stateFilters primary_level when conditions are met', (done) => {
+      component.hierarchyLevels = ['Level 1', 'Level 2'];
+      component.selectedLevel = 'Level 1';
+      component.filterData = { 'Level 1': [{nodeId: 1, labelName: 'Level 1'}]}
+      
+      component.primaryFilterConfig = {
+        defaultLevel: { labelName: 'Level 1' },
+        type: 'singleSelect',
+      };
+      component.stateFilters = {
+        primary_level: [{ labelName: 'Level 1', nodeId: 1 }],
+        parent_level: null
+      };
+
+      component.applyDefaultFilters();
+
+      setTimeout(() => {
+        expect(component.selectedFilters).toEqual([{ labelName: 'Level 1', nodeId: 1 }]);
+        done();
+      }, 200);
+    });
+
+    it('should reset selectedFilters and call applyPrimaryFilters when conditions are met', (done) => {
+      component.hierarchyLevels = ['Level 1', 'Level 2'];
+      component.selectedLevel = 'Level 1';
+      component.filterData = { 'Level 1': [{nodeId: 1, labelName: 'Level 1'}]}
+      component.primaryFilterConfig = {
+        defaultLevel: { labelName: 'Level 1' },
+        type: 'singleSelect',
+      };
+      component.stateFilters = {
+        primary_level: [{ labelName: 'Level 2', nodeId: 2 }],
+      };
+      spyOn(component, 'applyPrimaryFilters');
+
+      component.applyDefaultFilters();
+
+      setTimeout(() => {
+        expect(component.selectedFilters).toEqual([{ labelName: 'Level 1', nodeId: 1 }]);
+        expect(component.applyPrimaryFilters).toHaveBeenCalled();
+        done();
+      }, 200);
+    });
+
+    it('should set selectedFilters based on stateFilters parent_level when conditions are met', (done) => {
+      component.hierarchyLevels = ['Level 1', 'Level 2'];
+      component.selectedLevel = 'Level 1';
+      component.filterData = { 'Level 1': [{nodeId: 1, labelName: 'Level 1'}]}
+      component.primaryFilterConfig = {
+        defaultLevel: { labelName: 'Level 1' },
+        type: 'singleSelect',
+      };
+      component.stateFilters = {
+        parent_level: { labelName: 'Level 1', nodeId: 1 },
+      };
+
+      component.applyDefaultFilters();
+
+      setTimeout(() => {
+        expect(component.selectedFilters).toEqual([{ labelName: 'Level 1', nodeId: 1 }]);
+        done();
+      }, 200);
+    });
+
+    it('should set selectedFilters to empty array and call onPrimaryFilterChange when conditions are met', (done) => {
+      component.hierarchyLevels = ['Level 1', 'Level 2'];
+      component.selectedLevel = 'Level 1';
+      component.filterData = { 'Level 1': [{nodeId: 1, labelName: 'Level 1'}]}
+      component.primaryFilterConfig = {
+        defaultLevel: { labelName: 'Level 1' },
+        type: 'singleSelect',
+      };
+      component.stateFilters = {};
+
+      spyOn(component.onPrimaryFilterChange, 'emit');
+
+      component.applyDefaultFilters();
+
+      setTimeout(() => {
+        expect(component.selectedFilters).toEqual([{ nodeId: 1, labelName: 'Level 1' }]);
+        expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([{ nodeId: 1, labelName: 'Level 1' }]);
+        done();
+      }, 200);
+    });
+
+
+    it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', (done) => {
+      component.hierarchyLevels = ['sprint'];
+      component.selectedLevel = 'sprint';
+      component.filterData = { 'sprint': [{nodeId: 2, labelName: 'Level 2'}]}
+      component.primaryFilterConfig = {
+        defaultLevel: { labelName: 'sprint' },
+        type: 'singleSelect',
+      };
+      component.stateFilters = {
+        parent_level: [{ labelName: 'Level 1', nodeId: 1 }],
+      };
+      spyOn(component.onPrimaryFilterChange, 'emit');
+
+      component.applyDefaultFilters();
+
+      setTimeout(() => {
+        expect(component.selectedFilters).toBe(undefined);
+        expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
+        done();
+      }, 200);
+    });
+
+    it('should reset selectedFilters and call applyPrimaryFilters for sprint/release  when conditions are met', (done) => {
+      component.hierarchyLevels = ['sprint', 'Level 2'];
+      component.selectedLevel = 'sprint';
+      component.filterData = { 'sprint': [{nodeId: 1, labelName: 'sprint'}]}
+      component.primaryFilterConfig = {
+        defaultLevel: { labelName: 'sprint' },
+        type: 'singleSelect',
+      };
+      component.helperService.setBackupOfFilterSelectionState({
+        primary_level: [{ labelName: 'sprint', nodeId: 1 }],
+      });
+      spyOn(component, 'applyPrimaryFilters');
+
+      component.applyDefaultFilters();
+
+      setTimeout(() => {
+        expect(component.selectedFilters).toEqual([{ labelName: 'sprint', nodeId: 1 }]);
+        expect(component.applyPrimaryFilters).toHaveBeenCalled();
+        done();
+      }, 200);
+    });
+
+    it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', (done) => {
+      component.hierarchyLevels = ['sprint', 'Level 2'];
+      component.selectedLevel = 'sprint';
+      component.filterData = { 'sprint': [{nodeId: 1, labelName: 'sprint'}]}
+      component.primaryFilterConfig = {
+        defaultLevel: { labelName: 'sprint' },
+        type: 'singleSelect',
+      };
+      component.stateFilters = {
+        parent_level: { labelName: 'sprint', nodeId: 1 },
+      };
+
+      component.applyDefaultFilters();
+
+      setTimeout(() => {
+        expect(component.selectedFilters).toEqual([{ labelName: 'sprint', nodeId: 1 }]);
+        done();
+      }, 200);
+    });
+
+    it('should set selectedFilters to empty array and call onPrimaryFilterChange for sprint/release when conditions are met', (done) => {
+      component.hierarchyLevels = ['sprint', 'Level 2'];
+      component.selectedLevel = 'sprint';
+      component.filterData = { 'sprint': [{nodeId: 1, labelName: 'sprint'}]}
+      component.primaryFilterConfig = {
+        defaultLevel: { labelName: 'sprint' },
+        type: 'singleSelect',
+      };
+      component.stateFilters = {};
+
+      spyOn(component.onPrimaryFilterChange, 'emit');
+
+      component.applyDefaultFilters();
+
+      setTimeout(() => {
+        expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
+        done();
+      }, 200);
+    });
+  });
 });

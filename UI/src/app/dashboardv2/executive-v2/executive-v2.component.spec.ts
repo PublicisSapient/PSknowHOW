@@ -16273,6 +16273,23 @@ describe('ExecutiveV2Component', () => {
     expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
   });
 
+  it('should update the kpiSelectedFilterObj correctly when the event is not empty for kpi138', () => {
+    // create sample data
+    const event = { filter1: 'value1', filter2: 'value2' };
+    const kpi = { kpiId: 'kpi138' };
+    // call the method
+    spyOn(component, 'getChartDataForCard').and.callThrough();
+    spyOn(service, 'setKpiSubFilterObj');
+    component.handleSelectedOptionForCard(event, kpi);
+
+    // check if the kpiSelectedFilterObj was updated correctly
+    expect(component.kpiSelectedFilterObj).toEqual({
+      'kpi138': { filter1: 'value1', filter2: 'value2' }
+    });
+    expect(component.getChartDataForCard).toHaveBeenCalledWith('kpi138', -1);
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
+  });
+
   it('should apply aggregation logic for kpi138', () => {
     const arr = [
       {
@@ -16783,7 +16800,7 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiChartData).toBeDefined();
   });
 
-  it("should createapiarry when we have filter property in trending list", () => {
+  it("should createapiarry when we have filter property in trendValueList list", () => {
     const data = {
       kpi141: {
         kpiId: "kpi141",
@@ -17022,39 +17039,40 @@ describe('ExecutiveV2Component', () => {
 
   it('should get chart data when have one filter', () => {
     component.allKpiArray = [{
-        kpiId: 'kpi124',
-        trendValueList: [
+      kpiId: 'kpi124',
+      trendValueList: [
 
-           { filter : "f1",
-            value: [
-                {
-                    filter1: "Overall",
-                    data: [{
-                        "label": "Scope added",
-                        "value": 1,
-                    }]
-                }
-            ]
+        {
+          filter: "f1",
+          value: [
+            {
+              filter1: "Overall",
+              data: [{
+                "label": "Scope added",
+                "value": 1,
+              }]
+            }
+          ]
         }
 
-        ]
+      ]
     }];
     component.updatedConfigGlobalData = [
-        {
-            kpiId: 'kpi125',
-            kpiDetail: {
-                chartType: 'GroupBarChart'
-            }
+      {
+        kpiId: 'kpi125',
+        kpiDetail: {
+          chartType: 'GroupBarChart'
         }
+      }
     ];
-    spyOn(component,'getChartType').and.returnValue('progress-bar');
-    component.kpiSelectedFilterObj['kpi124'] = {f1 : ["f1"]}
+    spyOn(component, 'getChartType').and.returnValue('progress-bar');
+    component.kpiSelectedFilterObj['kpi124'] = { f1: ["f1"] }
 
     spyOn(component, 'createTrendData')
     spyOn(component, 'applyAggregationLogicForProgressBar')
     component.getChartDataForBacklog('kpi124', 0, 'sum')
     expect(component.kpiChartData).toBeDefined();
-})
+  })
 
   it("should create kpi array when trendvalueList is object", () => {
     let kpi = [{
@@ -17498,5 +17516,298 @@ describe('ExecutiveV2Component', () => {
       expect(component.kpiTrendObject).toEqual({});
     });
   });
-});
 
+  describe('setUpTabs', () => {
+    it('should set up tabs for selectedTab "release"', () => {
+      component.selectedTab = 'release';
+      component.configGlobalData = [
+        { kpiDetail: { kpiSubCategory: 'Tab1' } },
+        { kpiDetail: { kpiSubCategory: 'Tab2' } },
+        { kpiDetail: { kpiSubCategory: 'Tab3' } }
+      ];
+      spyOn(component.service, 'getDashConfigData').and.returnValue({
+        scrum: [{ boardName: 'Tab1' }, { boardName: 'Tab2' }],
+        others: [{ boardName: 'Tab3' }]
+      });
+
+      component.setUpTabs();
+
+      expect(component.tabsArr).toEqual(new Set(['Tab1', 'Tab2', 'Tab3']));
+      expect(component.selectedKPITab).toBe('Tab1');
+    });
+
+    it('should set up tabs for selectedTab other than "release"', () => {
+      component.selectedTab = 'other';
+      component.configGlobalData = [
+        { kpiDetail: { kpiSubCategory: 'Tab1' } },
+        { kpiDetail: { kpiSubCategory: 'Tab2' } },
+        { kpiDetail: { kpiSubCategory: 'Tab3' } }
+      ];
+      spyOn(component.service, 'getDashConfigData').and.returnValue({});
+
+      component.setUpTabs();
+
+      expect(component.tabsArr).toEqual(new Set(['Tab1', 'Tab2', 'Tab3']));
+      expect(component.selectedKPITab).toBe('Tab1');
+    });
+  });
+
+  describe('setFilterValueIfAlreadyHaveBackup', () => {
+    it('should set the filter value and call getDropdownArray for selectedTab other than "backlog"', () => {
+      component.selectedTab = 'tab1';
+      component.kpiSelectedFilterObj = {};
+      const kpiId = 'kpi1';
+      const refreshValue = 'refresh1';
+      const initialValue = 'initial1';
+      const filters = {};
+
+      spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
+
+      spyOn(component, 'getDropdownArray');
+
+      component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
+
+      expect(component.kpiSelectedFilterObj).toEqual({});
+      expect(component.getDropdownArray).toHaveBeenCalledWith(kpiId);
+    });
+
+    it('should set the filter value and call getDropdownArrayForBacklog for selectedTab "backlog" with chartType', () => {
+      component.selectedTab = 'backlog';
+      component.kpiSelectedFilterObj = {};
+      component.updatedConfigGlobalData = [
+        { kpiId: 'kpi1', kpiDetail: { chartType: 'chart1' } }
+      ];
+      const kpiId = 'kpi1';
+      const refreshValue = 'refresh1';
+      const initialValue = 'initial1';
+      const filters = {};
+
+      spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
+
+      spyOn(component, 'getDropdownArrayForBacklog');
+
+      component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
+
+      expect(component.kpiSelectedFilterObj).toEqual({});
+      expect(component.getDropdownArrayForBacklog).toHaveBeenCalledWith(kpiId);
+    });
+
+    it('should set the filter value and call getDropdownArrayForCard for selectedTab "backlog" without chartType', () => {
+      component.selectedTab = 'backlog';
+      component.kpiSelectedFilterObj = {};
+      component.updatedConfigGlobalData = [
+        { kpiId: 'kpi1', kpiDetail: {} }
+      ];
+      const kpiId = 'kpi1';
+      const refreshValue = 'refresh1';
+      const initialValue = 'initial1';
+      const filters = {};
+
+      spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
+
+      spyOn(component, 'getDropdownArrayForCard');
+
+      component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
+
+      expect(component.kpiSelectedFilterObj).toEqual({});
+      expect(component.getDropdownArrayForCard).toHaveBeenCalledWith(kpiId);
+    });
+  });
+
+  describe('handleSelectedOptionOnBacklog', () => {
+    it('should handle selected option for single dropdown', () => {
+      const event = { filter1: 'value1' };
+      const kpi = { kpiId: 'kpi1', kpiDetail: {} };
+
+      component.kpiSelectedFilterObj = {};
+      spyOn(component, 'getChartDataForBacklog');
+      spyOn(component.helperService, 'createBackupOfFiltersSelection');
+      spyOn(component.service, 'setKpiSubFilterObj');
+
+      component.handleSelectedOptionOnBacklog(event, kpi);
+
+      expect(component.kpiSelectedFilterObj).toEqual({ kpi1: { filter1: 'value1' } });
+      expect(component.getChartDataForBacklog).toHaveBeenCalledWith('kpi1', -1, undefined);
+      expect(component.helperService.createBackupOfFiltersSelection).toHaveBeenCalledWith(component.kpiSelectedFilterObj, 'backlog', '');
+      expect(component.service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
+    });
+
+    it('should handle selected option for multi dropdown', () => {
+      const event = { filter1: ['value1', 'value2'], filter2: ['value3', 'value4'] };
+      const kpi = { kpiId: 'kpi1', kpiDetail: {} };
+
+      component.kpiSelectedFilterObj = { kpi1: { filter1: ['previousValue'], filter2: ['previousValue'] } };
+      spyOn(component, 'getChartDataForBacklog');
+      spyOn(component.helperService, 'createBackupOfFiltersSelection');
+      spyOn(component.service, 'setKpiSubFilterObj');
+
+      component.handleSelectedOptionOnBacklog(event, kpi);
+
+      expect(component.kpiSelectedFilterObj).toEqual({
+        kpi1: { filter1: ['value1', 'value2'], filter2: ['value3', 'value4'] }
+      });
+      expect(component.getChartDataForBacklog).toHaveBeenCalledWith('kpi1', -1, undefined);
+      expect(component.helperService.createBackupOfFiltersSelection).toHaveBeenCalledWith(component.kpiSelectedFilterObj, 'backlog', '');
+      expect(component.service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
+    });
+
+    it('should handle selected option for single dropdown with existing backup', () => {
+      const event = { filter1: 'value1' };
+      const kpi = { kpiId: 'kpi1', kpiDetail: {} };
+
+      component.kpiSelectedFilterObj = { kpi1: { filter2: ['previousValue'] } };
+      spyOn(component, 'getChartDataForBacklog');
+      spyOn(component.helperService, 'createBackupOfFiltersSelection');
+      spyOn(component.service, 'setKpiSubFilterObj');
+
+      component.handleSelectedOptionOnBacklog(event, kpi);
+
+      expect(component.kpiSelectedFilterObj).toEqual({ kpi1: { filter1: ['value1'], filter2: ['previousValue'] } });
+      expect(component.getChartDataForBacklog).toHaveBeenCalledWith('kpi1', -1, undefined);
+      expect(component.helperService.createBackupOfFiltersSelection).toHaveBeenCalledWith(component.kpiSelectedFilterObj, 'backlog', '');
+      expect(component.service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
+    });
+  });
+
+  describe('receiveSharedData', () => {
+    xit('should set the hierarchyLevel and filterData when completeHierarchyData and dashConfigData are present', () => {
+      component.service.setSelectedType('scrum');
+      component.selectedtype = 'scrum';
+      component.kanbanActivated = false;
+      component.selectedtype = 'Type1';
+      component.filterApplyData = {};
+      component.globalConfig = {};
+      component.configGlobalData = [];
+      component.updatedConfigGlobalData = [];
+      component.tooltip = {};
+      component.additionalFiltersArr = {};
+      component.allKpiArray = [];
+      component.kpiChartData = {};
+      component.chartColorList = {};
+      component.kpiSelectedFilterObj = {};
+      component.kpiDropdowns = {};
+      component.kpiTrendsObj = {};
+      component.kpiTableDataObj = {};
+      component.kpiLoader = new Set();
+      component.kpiStatusCodeArr = {};
+      component.immediateLoader = false;
+      component.noFilterApplyData = false;
+      component.noOfFilterSelected = 0;
+      component.noTabAccess = false;
+      component.showCommentIcon = false;
+
+      spyOn(localStorage, 'getItem').and.returnValue('{"Type1": {"hierarchyLevelId": "level1"}}');
+      spyOn(JSON, 'parse').and.callThrough();
+
+      component.receiveSharedData({
+        dashConfigData: { Type1: { scrum: [{ boardName: 'Tab1', kpis: [] }] } },
+        filterData: [{ labelName: 'label1', level: 'level1' }],
+        filterApplyData: { level: 'level1' },
+        configDetails: {},
+        loading: false,
+        makeAPICall: true,
+        selectedTab: 'Tab1'
+      });
+
+      expect(component.hierarchyLevel).toEqual({ hierarchyLevelId: 'level1' });
+      expect(localStorage.getItem).toHaveBeenCalledWith('completeHierarchyData');
+      expect(JSON.parse).toHaveBeenCalledWith('{"Type1": {"hierarchyLevelId": "level1"}}');
+      expect(component.filterData).toEqual([{ labelName: 'label1', level: 'level1' }]);
+      expect(component.filterApplyData).toEqual({ level: 'level1' });
+      expect(component.globalConfig).toEqual({ Type1: { scrum: [{ boardName: 'Tab1', kpis: [] }] } });
+      expect(component.configGlobalData).toEqual([]);
+      expect(component.updatedConfigGlobalData).toEqual([]);
+      expect(component.tooltip).toEqual({});
+      expect(component.additionalFiltersArr).toEqual({});
+      expect(component.allKpiArray).toEqual([]);
+      expect(component.kpiChartData).toEqual({});
+      expect(component.chartColorList).toEqual({});
+      expect(component.kpiSelectedFilterObj).toEqual({});
+      expect(component.kpiDropdowns).toEqual({});
+      expect(component.kpiTrendsObj).toEqual({});
+      expect(component.kpiTableDataObj).toEqual({});
+      expect(component.kpiLoader).toEqual(new Set());
+      expect(component.kpiStatusCodeArr).toEqual({});
+      expect(component.immediateLoader).toBe(false);
+      expect(component.noFilterApplyData).toBe(false);
+      expect(component.noOfFilterSelected).toBe(1);
+      expect(component.noTabAccess).toBe(false);
+      expect(component.showCommentIcon).toBe(false);
+    });
+
+    it('should call the necessary group functions and set showCommentIcon to true', () => {
+      component.service.setSelectedType('scrum');
+      component.selectedtype = 'scrum';
+      component.kanbanActivated = false;
+      component.filterData = [];
+      component.filterApplyData = { level: 'level1' };
+      component.configGlobalData = [{ boardName: 'Tab1', kpis: [] }];
+      component.selectedtype = 'Type1';
+      component.hierarchyLevel = [{ hierarchyLevelId: 'level1' }];
+
+      spyOn(component, 'groupJiraKpi');
+      spyOn(component, 'groupSonarKpi');
+      spyOn(component, 'groupJenkinsKpi');
+      spyOn(component, 'groupZypherKpi');
+      spyOn(component, 'groupBitBucketKpi');
+      spyOn(component, 'createKpiTableHeads');
+      spyOn(component, 'getKpiCommentsCount');
+
+      component.receiveSharedData({
+        dashConfigData: { scrum: [{ boardName: 'Tab1', boardSlug: 'Tab1', kpis: [{ kpiId: 'kpi1', shown: true }] }] },
+        filterData: [{ level: 'level1' }, { level: 'level2' }],
+        filterApplyData: { level: 'level1', ids: ['Proj1'] },
+        configDetails: {},
+        loading: false,
+        makeAPICall: true,
+        selectedTab: 'Tab1'
+      });
+
+      expect(component.groupJiraKpi).toHaveBeenCalled();
+      expect(component.groupSonarKpi).toHaveBeenCalled();
+      expect(component.groupJenkinsKpi).toHaveBeenCalled();
+      expect(component.groupZypherKpi).toHaveBeenCalled();
+      expect(component.groupBitBucketKpi).toHaveBeenCalled();
+      expect(component.createKpiTableHeads).toHaveBeenCalledWith('type1');
+      // expect(component.getKpiCommentsCount).toHaveBeenCalled();
+      expect(component.showCommentIcon).toBe(false);
+    });
+  });
+
+  it('should call the necessary group functions for Kanban and set showCommentIcon to true', () => {
+    component.service.setSelectedType('kanban');
+    component.filterData = [];
+    component.filterApplyData = { level: 'level1' };
+    component.configGlobalData = [{ boardName: 'Tab1', kpis: [] }];
+    component.selectedtype = 'kanban';
+    component.kanbanActivated = true;
+    component.hierarchyLevel = [{ hierarchyLevelId: 'level1' }];
+
+    spyOn(component, 'groupJiraKanbanKpi');
+    spyOn(component, 'groupSonarKanbanKpi');
+    spyOn(component, 'groupJenkinsKanbanKpi');
+    spyOn(component, 'groupZypherKanbanKpi');
+    spyOn(component, 'groupBitBucketKanbanKpi');
+    spyOn(component, 'createKpiTableHeads');
+    spyOn(component, 'getKpiCommentsCount');
+
+    component.receiveSharedData({
+      dashConfigData: { kanban: [{ boardName: 'Tab1', boardSlug: 'Tab1', kpis: [{ kpiId: 'kpi1', shown: true }] }] },
+      filterData: [{ level: 'level1' }, { level: 'level2' }],
+      filterApplyData: { level: 'level1', ids: ['Proj1'] },
+      configDetails: {},
+      loading: false,
+      makeAPICall: true,
+      selectedTab: 'Tab1'
+    });
+
+    expect(component.groupJiraKanbanKpi).toHaveBeenCalled();
+    expect(component.groupSonarKanbanKpi).toHaveBeenCalled();
+    expect(component.groupJenkinsKanbanKpi).toHaveBeenCalled();
+    expect(component.groupZypherKanbanKpi).toHaveBeenCalled();
+    expect(component.groupBitBucketKanbanKpi).toHaveBeenCalled();
+    // expect(component.createKpiTableHeads).toHaveBeenCalledWith('type1');
+    // expect(component.getKpiCommentsCount).toHaveBeenCalled();
+    expect(component.showCommentIcon).toBe(false);
+  });
+});

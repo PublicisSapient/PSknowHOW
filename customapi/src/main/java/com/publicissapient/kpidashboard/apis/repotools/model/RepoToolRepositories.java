@@ -18,17 +18,19 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 @Data
 public class RepoToolRepositories {
 
     private String name;
     private String repository;
+    private String repositoryName;
     private double average;
     @JsonProperty("commit_count")
     private long commitCount;
@@ -42,5 +44,8 @@ public class RepoToolRepositories {
     private double innovationRatePercentageRepo;
     private int mergeRequestsNumber;
     private double repoDefectMergeRequestPercentage;
+    private double repoRevertRatePercentage;
+    private double revertRateGrade;
+    private double repositoryPercentage;
 
 }

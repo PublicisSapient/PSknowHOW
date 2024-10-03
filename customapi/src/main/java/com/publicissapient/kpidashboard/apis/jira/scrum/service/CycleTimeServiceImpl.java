@@ -50,6 +50,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -65,7 +66,6 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 	private static final String DOR_TO_DOD_KPI = "DOR to DOD";
 	private static final String DOD_TO_LIVE_KPI = "DOD to Live";
 	private static final String LEAD_TIME_KPI = "LEAD TIME";
-	private static final String PROJECT = "project";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
 	private static final String SEARCH_BY_DURATION = "Duration";
 	@Autowired
