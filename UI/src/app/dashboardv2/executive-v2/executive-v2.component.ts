@@ -1856,7 +1856,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   checkIfPartialDataPresent(kpi) {
-    console.log(this.allKpiArray);
     let kpiData = this.ifKpiExist(kpi.kpiId) ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
     let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
     if (kpiData && filters) {

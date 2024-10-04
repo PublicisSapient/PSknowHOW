@@ -174,7 +174,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
       || !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
-    console.log(this.partialData);
   }
 
   openCommentModal = () => {
@@ -380,7 +379,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           ++dataCount;
         } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
           if (this.checkIfArrayHasData(item) && item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
-            
+
             ++dataCount;
           } else if (this.checkIfArrayHasData(item) && this.checkIfArrayHasData(item.value) && this.checkIfArrayHasData(item.value[0].value)) {
             ++dataCount;
