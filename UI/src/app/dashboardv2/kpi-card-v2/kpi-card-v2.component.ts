@@ -366,6 +366,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkDataAtGranularLevel(data) {
+    if(this.selectedTab === "developer") {
+      return true;
+    }
     if (!data) {
       return false;
     }
