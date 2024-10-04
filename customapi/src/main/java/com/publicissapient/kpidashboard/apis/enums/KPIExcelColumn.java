@@ -121,6 +121,8 @@ public enum KPIExcelColumn {
 
 	CHANGE_FAILURE_RATE("kpi116", Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
 			"Build Failure Percentage", "Weeks")),
+	CHANGE_FAILURE_RATE_KANBAN("kpi184", Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
+			"Build Failure Percentage", "Weeks")),
 	BUILD_FREQUENCY("kpi172", Arrays.asList("Project Name", "Job Name","Weeks", "Start Date", "Build Url")),
 
 	TEST_EXECUTION_AND_PASS_PERCENTAGE("kpi70",
@@ -133,6 +135,7 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
 	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
+	DEPLOYMENT_FREQUENCY_KANBAN("kpi183", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
 
 	DEFECTS_WITHOUT_STORY_LINK("kpi80",
 			Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
@@ -320,6 +323,12 @@ public enum KPIExcelColumn {
 	CYCLE_TIME("kpi171", Arrays.asList("Issue Id", "Issue Type", "Issue Description","DOR Date", "Intake to DOR",
 			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
 	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Rework Rate")),
+
+	REVERT_RATE("kpi180", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Revert Rate")),
+
+	PR_SUCCESS_RATE("kpi182", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Success Rate")),
+
+	PR_DECLINE_RATE("kpi181", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "PR Decline Rate")),
 
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status", "Priority", "Created Date", "Assignee")),
 

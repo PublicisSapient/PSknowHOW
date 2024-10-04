@@ -65,7 +65,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedBoard: any;
   hierarchies: any;
   noSprint: boolean = false;
-  projectList = [];
+  projectList = null;
   blockUI: boolean = false;
   constructor(
     private httpService: HttpService,
@@ -159,7 +159,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (!this.dateRangeFilter.types.includes('Months')) {
         this.dateRangeFilter.types.push('Months');
       }
-      if(this.selectedTab === 'developer'){
+      if (this.selectedTab === 'developer') {
         this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
       }
     } else {
@@ -196,6 +196,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   // unsubscribing all Kpi Request
   ngOnDestroy() {
     this.subscriptions?.forEach(subscription => subscription?.unsubscribe());
+    this.parentFilterConfig = {};
+    this.primaryFilterConfig = {};
+    this.boardData = {};
+    this.projectList = null;
   }
 
   setSelectedDateType(label: string) {
@@ -325,6 +329,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compareStringArrays(array1, array2) {
+    if(!array1 || !array2) {
+      return false;
+    }
     // Check if both arrays have the same length
     if (array1.length !== array2.length) {
       return false;
@@ -364,7 +371,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                     }
                   }
 
-                  if (board.boardSlug !== 'developer') {
+                  if (board.boardSlug !== 'developer' &&  board.boardSlug !== 'dora') {
                     board.filters.additionalFilters.forEach(element => {
                       if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
                         element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;

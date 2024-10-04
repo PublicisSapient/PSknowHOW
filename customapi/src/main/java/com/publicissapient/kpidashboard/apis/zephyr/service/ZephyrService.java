@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
@@ -88,15 +89,16 @@ public class ZephyrService {
 	 * Process the zephyr based KPI requests.
 	 *
 	 * @param kpiRequest
-	 * @return
+	 *            kpiRequest
+	 * @return list of kpielement
 	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[ZEPHYR][{}]. Processing KPI calculation for data {}", kpiRequest.getIds(), kpiRequest.getKpiList());
-		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
-				.collect(Collectors.toList());
+		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new).toList();
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] projectKeyCache = null;
 		try {
@@ -142,10 +144,8 @@ public class ZephyrService {
 				}
 
 				ForkJoinTask.invokeAll(listOfTask);
-				List<KpiElement> missingKpis = origRequestedKpis.stream()
-						.filter(reqKpi -> responseList.stream()
-								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
-						.collect(Collectors.toList());
+				List<KpiElement> missingKpis = origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
+						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
 				responseList.addAll(missingKpis);
 				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 			} else {
@@ -162,8 +162,10 @@ public class ZephyrService {
 
 	/**
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 * @return
+	 *            filteredAccountDataList
+	 * @return list of hierarchy
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
@@ -190,9 +192,13 @@ public class ZephyrService {
 	 * Sets cache.
 	 *
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param responseList
+	 *            responseList
 	 * @param groupId
+	 *            groupId
 	 * @param projectKeyCache
+	 *            projectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projectKeyCache) {
@@ -246,6 +252,7 @@ public class ZephyrService {
 	 */
 	public class ParallelZephyrServices extends RecursiveAction {
 
+		@Serial
 		private static final long serialVersionUID = 1L;
 		private final KpiRequest kpiRequest;
 		private final transient List<KpiElement> responseList;
@@ -275,11 +282,7 @@ public class ZephyrService {
 		 */
 		@Override
 		public void compute() {
-			try {
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
-			} catch (Exception e) {
-				log.error("[PARALLEL_ZEPHYR_SERVICE].Exception occured {}", e);
-			}
+			responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, treeAggregatorDetail));
 		}
 
 		/**
@@ -287,32 +290,46 @@ public class ZephyrService {
 		 * method of these KPIs
 		 *
 		 * @param kpiRequest
-		 *            Zephyr KPI request
-		 * @param responseList
-		 *            List of KpiElement having data of each KPIs
+		 *            kpiRequest
 		 * @param kpiElement
+		 *            kpiElement
 		 * @param treeAggregatorDetail
-		 *            filter tree object
-		 * @throws ApplicationException
-		 * @throws EntityNotFoundException
+		 *            treeAggregatorDetail
+		 * @return KpiElement kpielement
 		 */
-		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+				TreeAggregatorDetail treeAggregatorDetail) {
 
-			ZephyrKPIService<?, ?, ?> zephyrKPIService = null;
+			try {
+				KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+				ZephyrKPIService<?, ?, ?> zephyrKPIService = ZephyrKPIServiceFactory.getZephyrKPIService(kpi.name());
+				long startTime = System.currentTimeMillis();
+				TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+						.clone(treeAggregatorDetail);
+				List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
+						.get(CommonConstant.PROJECT.toLowerCase());
 
-			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+				if (!projectNodes.isEmpty() && (projectNodes.size() > 1
+						|| kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
+					kpiElement = zephyrKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
+					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+					if (projectNodes.size() == 1) {
+						kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, projectNodes.get(0));
+					}
+				}
 
-			zephyrKPIService = ZephyrKPIServiceFactory.getZephyrKPIService(kpi.name());
-
-			long startTime = System.currentTimeMillis();
-
-			TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-					.clone(treeAggregatorDetail);
-			responseList.add(zephyrKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
-
-			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[ZEPHYR-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
+				long processTime = System.currentTimeMillis() - startTime;
+				log.info("[ZEPHYR-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+						processTime);
+			} catch (ApplicationException exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+				log.error("Kpi not found", exception);
+			} catch (Exception exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+				log.error("[PARALLEL_ZEPHYR_SERVICE].Exception occured", exception);
+				return kpiElement;
+			}
+			return kpiElement;
 		}
 	}
 

@@ -4669,5 +4669,275 @@
     "hideOverallFilter" : true,
     "isRepoToolKpi" : true,
     "kpiCategory" : "Developer"
+  },
+  {
+    "kpiId" : "kpi180",
+    "kpiName" : "Revert Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 5,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "The percentage of total pull requests opened that are reverts.",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/197263361/Developer+Revert+Rate"
+          }
+        }
+      ]
+    },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
+    "thresholdValue" : "50",
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer",
+    "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
+  },
+  {
+    "kpiId" : "kpi182",
+    "kpiName" : "PR Success Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 5,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "PR success rate measures the number of pull requests that went through the process without being abandoned or discarded as against the total PRs raised in a defined period  A low or declining Pull Request Success Rate represents high or increasing waste",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/106528769/Developer+PR+Success+Rate"
+          }
+        }
+      ]
+    },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
+    "thresholdValue" : "50",
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : true,
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer",
+    "maturityRange" : [ "-5","5-20","20-50","50-80","80-" ]
+  },
+  {
+    "kpiId" : "kpi181",
+    "kpiName" : "PR Decline Rate",
+    "maxValue" : "",
+    "kpiUnit" : "%",
+    "isDeleted" : false,
+    "defaultOrder" : 5,
+    "groupId" : 2,
+    "kpiSource" : "BitBucket",
+    "combinedKpiSource": "Bitbucket/AzureRepository/GitHub/GitLab",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "The percentage of opened Pull Requests that are declined within a timeframe.",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/205357058/Developer+PR+Decline+Rate"
+          }
+        }
+      ]
+    },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
+    "thresholdValue" : "50",
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "showTrend" : true,
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "hideOverallFilter" : true,
+    "isRepoToolKpi" : true,
+    "kpiCategory" : "Developer",
+    "maturityRange" : [ "-80", "80-50", "50-20", "20-5", "5-" ]
+  },
+  {
+    "kpiId" : "kpi184",
+    "kpiName" : "Change Failure Rate",
+    "isDeleted" : "False",
+    "defaultOrder" : 19,
+    "kpiCategory" : "Dora",
+    "kpiUnit" : "%",
+    "chartType" : "line",
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Percentage",
+    "showTrend" : true,
+    "isPositiveTrend" : false,
+    "calculateMaturity" : true,
+    "hideOverallFilter" : true,
+    "kpiSource" : "Jenkins",
+    "maxValue" : "100",
+    "thresholdValue" : "30",
+    "kanban" : true,
+    "groupId" : 5,
+    "kpiInfo" : {
+      "definition" : "Measures the proportion of builds that have failed over a given period of time",
+      "formula" : [
+        {
+          "lhs" : "Change Failure Rate",
+          "operator" : "division",
+          "operands" : [ "Total number of failed Builds", "Total number of Builds" ]
+        }
+      ],
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71958608/DORA+Change+Failure+Rate"
+          }
+        }
+      ],
+      "_class" : "com.publicissapient.kpidashboard.common.model.application.KpiInfo"
+    },
+    "kpiFilter" : "dropDown",
+    "aggregationCriteria" : "average",
+    "aggregationCircleCriteria" : "average",
+    "isTrendCalculative" : false,
+    "isAdditionalFilterSupport" : false,
+    "maturityRange" : [ "-60", "60-45", "45-30", "30-15", "15-" ],
+    "maturityLevel" : [
+      {
+        "level" : "M5",
+        "bgColor" : "#167a26",
+        "displayRange" : "0-15 %"
+      },
+      {
+        "level" : "M4",
+        "bgColor" : "#4ebb1a",
+        "displayRange" : "15-30 %"
+      },
+      {
+        "level" : "M3",
+        "bgColor" : "#ef7643",
+        "displayRange" : "30-45 %"
+      },
+      {
+        "level" : "M2",
+        "bgColor" : "#f53535",
+        "displayRange" : "45-60 %"
+      },
+      {
+        "level" : "M1",
+        "bgColor" : "#c91212",
+        "displayRange" : "60 % and Above"
+      }
+    ],
+    "combinedKpiSource" : "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"
+  },
+  {
+    "kpiId" : "kpi183",
+    "kpiName" : "Deployment Frequency",
+    "isDeleted" : "False",
+    "defaultOrder" : 20,
+    "kpiCategory" : "Dora",
+    "kpiUnit" : "Number",
+    "chartType" : "line",
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
+    "xAxisLabel" : "Weeks",
+    "yAxisLabel" : "Count",
+    "showTrend" : true,
+    "isPositiveTrend" : true,
+    "calculateMaturity" : true,
+    "hideOverallFilter" : false,
+    "kpiSource" : "Jenkins",
+    "maxValue" : "100",
+    "thresholdValue" : "6",
+    "kanban" : true,
+    "groupId" : 5,
+    "kpiInfo" : {
+      "definition" : "Measures how often code is deployed to production in a period",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827544/DORA+Deployment+Frequency"
+          }
+        }
+      ],
+      "_class" : "com.publicissapient.kpidashboard.common.model.application.KpiInfo"
+    },
+    "kpiFilter" : "multiSelectDropDown",
+    "aggregationCriteria" : "sum",
+    "aggregationCircleCriteria" : "sum",
+    "isTrendCalculative" : false,
+    "isAdditionalFilterSupport" : false,
+    "maturityRange" : [ "0-2", "2-4", "4-6", "6-8", "8-" ],
+    "maturityLevel" : [
+      {
+        "level" : "M5",
+        "bgColor" : "#167a26",
+        "label" : ">= 2 per week",
+        "displayRange" : "8 and Above"
+      },
+      {
+        "level" : "M4",
+        "bgColor" : "#4ebb1a",
+        "label" : "Once per week",
+        "displayRange" : "6,7"
+      },
+      {
+        "level" : "M3",
+        "bgColor" : "#ef7643",
+        "label" : "Once in 2 weeks",
+        "displayRange" : "4,5"
+      },
+      {
+        "level" : "M2",
+        "bgColor" : "#f53535",
+        "label" : "Once in 4 weeks",
+        "displayRange" : "2,3"
+      },
+      {
+        "level" : "M1",
+        "bgColor" : "#c91212",
+        "label" : "< Once in 8 weeks",
+        "displayRange" : "0,1"
+      }
+    ],
+    "combinedKpiSource" : "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity"
   }
 ]

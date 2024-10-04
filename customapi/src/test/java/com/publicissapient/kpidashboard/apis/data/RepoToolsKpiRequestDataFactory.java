@@ -37,6 +37,7 @@ public class RepoToolsKpiRequestDataFactory {
 
     private static final String FILE_PATH_PROCESSOR_ITEMS_DATA = "/json/non-JiraProcessors/repo_tools_response.json";
     private List<RepoToolKpiMetricResponse> repoToolsKpiRequestDataFactory;
+    private List<RepoToolKpiMetricResponse> repoToolsRevertRate;
     private ObjectMapper mapper;
 
     private RepoToolsKpiRequestDataFactory() {
@@ -64,6 +65,7 @@ public class RepoToolsKpiRequestDataFactory {
                     new TypeReference<RepoToolKpiBulkMetricResponse>() {
                     });
             repoToolsKpiRequestDataFactory = repoToolKpiBulkMetricResponse.getValues().get(0);
+            repoToolsRevertRate = repoToolKpiBulkMetricResponse.getValues().get(1);
         } catch (IOException e) {
             log.error("Error in reading account hierarchies from file = " + filePath, e);
         }
@@ -82,6 +84,10 @@ public class RepoToolsKpiRequestDataFactory {
 
     public List<RepoToolKpiMetricResponse> getRepoToolsKpiRequest() {
         return repoToolsKpiRequestDataFactory;
+    }
+
+    public List<RepoToolKpiMetricResponse> getRepoToolsRevertRate() {
+        return repoToolsRevertRate;
     }
 
 }

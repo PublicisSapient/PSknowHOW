@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -509,8 +510,11 @@ public final class CommonUtils {
 
 	/**
 	 * Method to get next working date i.e excluding sat sun
-	 * @param currentDate currentDate
-	 * @param daysToAdd count of days to add
+	 * 
+	 * @param currentDate
+	 *            currentDate
+	 * @param daysToAdd
+	 *            count of days to add
 	 * @return
 	 */
 	public static java.time.LocalDate getNextWorkingDate(java.time.LocalDate currentDate, long daysToAdd) {
@@ -542,7 +546,6 @@ public final class CommonUtils {
 		}
 		return sb.toString();
 	}
-
 
 	// -- auth-N-auth changes starts here ------
 
@@ -580,5 +583,18 @@ public final class CommonUtils {
 		return uriBuilder.toUriString();
 	}
 
-	// -- auth-N-auth changes ends here ------
+	public static boolean checkObjectNullValue(Object value) {
+		if (ObjectUtils.isEmpty(value)) {
+			return true;
+		} else {
+			if (value instanceof List) {
+				return CollectionUtils.isEmpty((List<?>) value);
+			}
+			if (value instanceof String[]) {
+				return ((String[]) value).length < 1;
+			}
+
+		}
+		return false;
+	}
 }
