@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
@@ -123,20 +124,12 @@ public class ConfigHelperService {
 	 */
 	public void loadBoardMetaData() {
 		log.info("loading project board meta data");
-		projectConfigMap.clear();
 		boardMetaDataMap.clear();
 
-		List<ProjectBasicConfig> projectList = projectConfigRepository.findAll();
 		List<BoardMetadata> boardMetaDataList = boardMetadataServiceImpl.findAll();
 
-		projectList.forEach(projectConfig -> {
-			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
-			BoardMetadata boardMetadata = boardMetaDataList.stream()
-					.filter(x -> null != x.getProjectBasicConfigId()
-							&& x.getProjectBasicConfigId().equals(projectConfig.getId()))
-					.findAny().orElse(new BoardMetadata());
-			boardMetaDataMap.put(projectConfig.getId(), boardMetadata);
-		});
+		boardMetaDataMap = boardMetaDataList.stream()
+				.collect(Collectors.toMap(BoardMetadata::getProjectBasicConfigId, Function.identity()));
 
 	}
 
