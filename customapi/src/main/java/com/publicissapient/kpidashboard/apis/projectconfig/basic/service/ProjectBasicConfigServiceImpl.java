@@ -379,24 +379,13 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		log.info("For projectId: {} : Returning getProjectBasicConfig response: {}", basicProjectConfigId, config);
 		if (config.isPresent()) {
 			projectBasicConfig = config.get();
-			projectBasicConfigSortedBasedOnHierarchyLevel(projectBasicConfig);
 		}
 		return projectBasicConfig;
 	}
 
 	@Override
-	public void projectBasicConfigSortedBasedOnHierarchyLevel(ProjectBasicConfig projectBasicConfig) {
-		List<HierarchyValue> sortedHierarchy = CollectionUtils.emptyIfNull(projectBasicConfig.getHierarchy()).stream()
-				.sorted(Comparator
-						.comparing((HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()))
-				.collect(Collectors.toList());
-		projectBasicConfig.setHierarchy(sortedHierarchy);
-	}
-
-	@Override
 	public List<ProjectBasicConfig> getAllProjectsBasicConfigs() {
 		List<ProjectBasicConfig> list = new ArrayList<>();
-		List<ProjectBasicConfig> configListSortBasedOnLevels = new ArrayList<>();
 		if (userAuthorizedProjectsService.ifSuperAdminUser()) {
 			list.addAll(getAllProjectBasicConfigs());
 		} else {
@@ -406,16 +395,18 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				for (String id : basicProjectConfigIds) {
 					configIds.add(new ObjectId(id));
 				}
-				list.addAll(basicConfigRepository.findByIdIn(configIds));
+				Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+						.cacheProjectConfigMapData();
 
+				List<ProjectBasicConfig> projectList = Optional.ofNullable(basicConfigMap)
+						.filter(MapUtils::isNotEmpty)
+						.map(map -> map.entrySet().stream()
+								.filter(entry -> configIds.contains(entry.getKey())) // Filter by configIds
+								.map(Map.Entry::getValue) // Extract the value (ProjectBasicConfig)
+								.collect(Collectors.toList())) // Collect to a list
+						.orElseGet(ArrayList::new);
+				list.addAll(projectList);
 			}
-		}
-		if (CollectionUtils.isNotEmpty(list)) {
-			List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
-			list.stream().forEach(projectBasicConfig -> {
-				projectBasicConfigSortedBasedOnHierarchyLevel(projectBasicConfig);
-				configListSortBasedOnLevels.add(projectBasicConfig);
-			});
 		}
 		log.info("Returning getProjectBasicConfig response: {}", list);
 		return list;
@@ -727,7 +718,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * Method to find out all the parent nodes of a tree
 	 */
 	public void findParents(List<ProjectBasicConfigNode> nodes, List<ProjectBasicConfigNode> parents) {
-		if (CollectionUtils.isNotEmpty(nodes)) {
+		if (CollectionUtils.isNotEmpty(nodes) && nodes.get(0) !=null) {
 			for (ProjectBasicConfigNode node : nodes) {
 				if (node.getParent() != null) {
 					parents.addAll(node.getParent());
@@ -819,6 +810,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			organizationHierarchy = organizationHierarchyService.findByNodeId(organizationHierarchy.getParentId());
 		}
 
+		hierarchy.sort(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
 		return hierarchy;
 	}
 

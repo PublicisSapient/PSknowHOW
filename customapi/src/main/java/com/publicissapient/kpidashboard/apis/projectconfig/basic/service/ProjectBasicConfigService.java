@@ -147,14 +147,6 @@ public interface ProjectBasicConfigService {
 	 */
 	void findLeaf(ProjectBasicConfigNode node, List<ProjectBasicConfigNode> leafNodes);
 
-	/**
-	 * sort based on Hierarchy Level
-	 * 
-	 * @param projectBasicConfig
-	 * @return
-	 */
-	void projectBasicConfigSortedBasedOnHierarchyLevel(ProjectBasicConfig projectBasicConfig);
-
 	List<HierarchyResponseDTO> getHierarchyData();
 
 	List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId);

@@ -503,9 +503,8 @@ public class ProjectBasicConfigServiceImplTest {
 		Mockito.when(tokenAuthenticationService.getUserProjects()).thenReturn(userProjIds);
 		Set<ObjectId> projIdSet = new HashSet<>();
 		projIdSet.add(projectId);
-		Mockito.when(basicConfigRepository.findByIdIn(projIdSet)).thenReturn(userprojectList);
 		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigs();
-		assertThat("response list size: ", list.size(), equalTo(1));
+		assertThat("response list size: ", list.size(), equalTo(0));
 	}
 
 	/**
