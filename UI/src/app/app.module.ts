@@ -22,130 +22,107 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { InterceptorModule } from './module/interceptor.module';
-import { AppRoutingModule } from './module/app-routing.module';
 import { CommonModule, DatePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { DropdownModule } from 'primeng/dropdown';
-import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { AccordionModule } from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { MenuModule } from 'primeng/menu';
-import { CheckboxModule } from 'primeng/checkbox';
-import { ScrollTopModule } from 'primeng/scrolltop';
 /******************************************************/
 
 /******************* components   ***********************/
 import { AppComponent } from './app.component';
-import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
-import { HeaderComponent } from './dashboardv2/header-v2/header.component';
-import { NavComponent } from './dashboard/nav/nav.component';
-import { CircularProgressComponent } from './component/circular-progress/circular-progress.component';
-import { ProgressbarComponent } from './component/progressbar/progressbar.component';
-import { CircularchartComponent } from './component/circularchart/circularchart.component';
-import { NumberchartComponent } from './component/numberchart/numberchart.component';
-import { BarchartComponent } from './component/barchart/barchart.component';
-import { LineBarChartComponent } from './component/line-bar-chart/line-bar-chart.component';
-import { LineBarChartWithHowerComponent } from './component/line-bar-chart-with-hover/line-bar-chart-with-hover.component';
-import { GaugechartComponent } from './component/gaugechart/gaugechart.component';
-import { MultilineComponent } from './component/multiline/multiline.component';
-import { ExecutiveComponent } from './dashboard/executive/executive.component';
-import { MaturityComponent } from './dashboard/maturity/maturity.component';
-import { FilterComponent } from './dashboard/filter/filter.component';
-import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { PiechartComponent } from './component/piechart/piechart.component';
-import { ErrorComponent } from './dashboard/error/error.component';
-import { KpiComponent } from './component/kpi-line-gauge/kpi-line-gauge.component';
-import { SharedModuleModule } from '../app/shared-module/shared-module.module';
-import { InputSwitchModule } from 'primeng/inputswitch';
-import { BadgeModule } from 'primeng/badge';
-import { TabViewModule } from 'primeng/tabview';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { TabMenuModule } from 'primeng/tabmenu';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { SkeletonModule } from 'primeng/skeleton';
-import { BlockUIModule } from 'primeng/blockui';
+import { DashboardV2Component } from './features/dashboardv2/dashboard-v2/dashboard-v2.component';
+import { HeaderComponent } from './features/dashboardv2/header-v2/header.component';
+import { NavComponent } from './features/dashboard/nav/nav.component';
+import { ExecutiveComponent } from './features/dashboard/executive/executive.component';
+import { MaturityComponent } from './features/dashboard/maturity/maturity.component';
+import { FilterComponent } from './features/dashboard/filter/filter.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { ErrorComponent } from './features/dashboard/error/error.component';
 /******************************************************/
 
 
 
 /******************* Services   ***********************/
-import { ExcelService } from './services/excel.service';
-import { SharedService } from './services/shared.service';
-import { GetAuthService } from './services/getauth.service';
-import { APP_CONFIG, AppConfig } from './services/app.config';
+import { APP_CONFIG, AppConfig } from './core/configs/app.config';
 
-import { HelperService } from './services/helper.service';
-import { GetAuthorizationService } from './services/get-authorization.service';
-import { JsonExportImportService } from './services/json-export-import.service';
-import { IterationComponent } from './dashboard/iteration/iteration.component';
-import { OverlappedProgressbarComponent } from './component/overlapped-progressbar/overlapped-progressbar.component';
-import { HorizontalStackProgressbarComponent } from './component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
-import { CircularProgressWithLegendsComponent } from './component/circular-progress-with-legends/circular-progress-with-legends.component';
-import { ExternalUrlDirective } from './external-url.directive';
-import { MessageService } from 'primeng/api';
-import { DialogModule } from 'primeng/dialog';
-import { DialogService } from 'primeng/dynamicdialog';
-import { KpiCardComponent } from './dashboard/kpi-card/kpi-card.component';
-import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indicator.component';
-import { NoAccessComponent } from './component/no-access/no-access.component';
-import { TooltipComponent } from './component/tooltip/tooltip.component';
-import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
-import { BacklogComponent } from './dashboard/backlog/backlog.component';
-import { TableComponent } from './component/table/table.component';
+import { IterationComponent } from './features/dashboard/iteration/iteration.component';
+import { ExternalUrlDirective } from './shared/directives/external-url.directive';
+import { KpiCardComponent } from './features/dashboard/kpi-card/kpi-card.component';
+import { TrendIndicatorComponent } from './features/dashboard/trend-indicator/trend-indicator.component';
+import { BacklogComponent } from './features/dashboard/backlog/backlog.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { ExportExcelComponent } from './component/export-excel/export-excel.component';
-import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
-import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
-import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
-import { CommentsComponent } from './component/comments/comments.component';
-import { CommentsV2Component } from './component/comments-v2/comments-v2.component';
-import { MilestoneComponent } from './dashboard/milestone/milestone.component';
-import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
-import { CumulativeLineChartComponent } from './component/cumulative-line-chart/cumulative-line-chart.component';
-import { InputTextModule } from 'primeng/inputtext';
-import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
-import { FeedbackComponent } from './feedback/feedback.component';
-import { KpiTableComponent } from './dashboard/kpi-table/kpi-table.component';
-import { DailyScrumComponent } from './dashboard/daily-scrum/daily-scrum.component';
-import { DailyScrumTabComponent } from './dashboard/daily-scrum-tab/daily-scrum-tab.component';
-import { AssigneeBoardComponent } from './dashboard/assignee-board/assignee-board.component';
-import { IssueCardComponent } from './dashboard/issue-card/issue-card.component';
-import { IssueBodyComponent } from './dashboard/issue-body/issue-body.component';
-import { DailyScrumGraphComponent } from './component/daily-scrum-graph/daily-scrum-graph.component';
-import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
-import { DoraComponent } from './dashboard/dora/dora.component';
-import { DeveloperComponent } from './dashboard/developer/developer.component';
-import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
-import { FeatureFlagsService } from './services/feature-toggle.service';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { AppInitializerService } from './services/app-initializer.service';
-import { AuthGuard } from './services/auth.guard';
-import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
-import { NavNewComponent } from './dashboardv2/nav-v2/nav-new.component';
-import { FilterNewComponent } from './dashboardv2/filter-v2/filter-new.component';
-import { ParentFilterComponent } from './dashboardv2/filter-v2/parent-filter/parent-filter.component';
-import { PrimaryFilterComponent } from './dashboardv2/filter-v2/primary-filter/primary-filter.component';
-import { AdditionalFilterComponent } from './dashboardv2/filter-v2/additional-filter/additional-filter.component';
-import { ExecutiveV2Component } from './dashboardv2/executive-v2/executive-v2.component';
-import { KpiCardV2Component } from './dashboardv2/kpi-card-v2/kpi-card-v2.component';
-import { MultilineV2Component } from './component/multiline-v2/multiline-v2.component';
-import { TrendIndicatorV2Component } from './dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
-import { GroupedColumnPlusLineChartV2Component } from './component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
-import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
-import { TooltipV2Component } from './component/tooltip-v2/tooltip-v2.component';
-import { HorizontalPercentBarChartv2Component } from './component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
-import { RecommendationsComponent } from './component/recommendations/recommendations.component';
-import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
-import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
-import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
+import { UnauthorisedAccessComponent } from './features/dashboard/unauthorised-access/unauthorised-access.component';
+import { MilestoneComponent } from './features/dashboard/milestone/milestone.component';
+import { FeedbackComponent } from './pages/feedback/feedback.component';
+import { KpiTableComponent } from './features/dashboard/kpi-table/kpi-table.component';
+import { DailyScrumComponent } from './features/dashboard/daily-scrum/daily-scrum.component';
+import { DailyScrumTabComponent } from './features/dashboard/daily-scrum-tab/daily-scrum-tab.component';
+import { AssigneeBoardComponent } from './features/dashboard/assignee-board/assignee-board.component';
+import { IssueCardComponent } from './features/dashboard/issue-card/issue-card.component';
+import { IssueBodyComponent } from './features/dashboard/issue-body/issue-body.component';
+import { DoraComponent } from './features/dashboard/dora/dora.component';
+import { DeveloperComponent } from './features/dashboard/developer/developer.component';
+import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
+import { AuthGuard } from './core/guards/auth.guard';
+import { RecentCommentsComponent } from './shared/component/recent-comments/recent-comments.component';
+import { NavNewComponent } from './features/dashboardv2/nav-v2/nav-new.component';
+import { FilterNewComponent } from './features/dashboardv2/filter-v2/filter-new.component';
+import { ParentFilterComponent } from './features/dashboardv2/filter-v2/parent-filter/parent-filter.component';
+import { PrimaryFilterComponent } from './features/dashboardv2/filter-v2/primary-filter/primary-filter.component';
+import { AdditionalFilterComponent } from './features/dashboardv2/filter-v2/additional-filter/additional-filter.component';
+import { ExecutiveV2Component } from './features/dashboardv2/executive-v2/executive-v2.component';
+import { KpiCardV2Component } from './features/dashboardv2/kpi-card-v2/kpi-card-v2.component';
+import { TrendIndicatorV2Component } from './features/dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
+import { StickyHeaderV2Component } from './features/dashboardv2/sticky-header-v2/sticky-header-v2.component';
+import { OverlappedProgressbarComponent } from './shared/component/overlapped-progressbar/overlapped-progressbar.component';
+import { HorizontalStackProgressbarComponent } from './shared/component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
+import { CircularProgressWithLegendsComponent } from './shared/component/circular-progress-with-legends/circular-progress-with-legends.component';
+import { TooltipComponent } from './shared/component/tooltip/tooltip.component';
+import { NoAccessComponent } from './shared/component/no-access/no-access.component';
+import { GroupedColumnPlusLineChartComponent } from './shared/component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
+import { TableComponent } from './shared/component/table/table.component';
+import { ExportExcelComponent } from './shared/component/export-excel/export-excel.component';
+import { CommentsComponent } from './shared/component/comments/comments.component';
+import { CommentsV2Component } from './shared/component/comments-v2/comments-v2.component';
+import { SsoAuthFailureComponent } from './shared/component/sso-auth-failure/sso-auth-failure.component';
+import { GroupBarChartComponent } from './shared/component/group-bar-chart/group-bar-chart.component';
+import { HorizontalPercentBarChartComponent } from './shared/component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
+import { CumulativeLineChartComponent } from './shared/component/cumulative-line-chart/cumulative-line-chart.component';
+import { StackedAreaChartComponent } from './shared/component/stacked-area-chart/stacked-area-chart.component';
+import { MultilineStyleComponent } from './shared/component/multiline-style/multiline-style.component';
+import { DailyScrumGraphComponent } from './shared/component/daily-scrum-graph/daily-scrum-graph.component';
+import { BarWithYAxisGroupComponent } from './shared/component/bar-with-y-axis-group/bar-with-y-axis-group.component';
+import { MultilineV2Component } from './shared/component/multiline-v2/multiline-v2.component';
+import { GroupedColumnPlusLineChartV2Component } from './shared/component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
+import { MultilineStyleV2Component } from './shared/component/multiline-style-v2/multiline-style-v2.component';
+import { TooltipV2Component } from './shared/component/tooltip-v2/tooltip-v2.component';
+import { HorizontalPercentBarChartv2Component } from './shared/component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
+import { RecommendationsComponent } from './shared/component/recommendations/recommendations.component';
+import { ChartWithFiltersComponent } from './shared/component/chart-with-filters/chart-with-filters.component';
+import { KpiAdditionalFilterComponent } from './shared/component/kpi-additional-filter/kpi-additional-filter.component';
+import { CircularProgressComponent } from './shared/component/circular-progress/circular-progress.component';
+import { ProgressbarComponent } from './shared/component/progressbar/progressbar.component';
+import { CircularchartComponent } from './shared/component/circularchart/circularchart.component';
+import { NumberchartComponent } from './shared/component/numberchart/numberchart.component';
+import { BarchartComponent } from './shared/component/barchart/barchart.component';
+import { LineBarChartComponent } from './shared/component/line-bar-chart/line-bar-chart.component';
+import { LineBarChartWithHowerComponent } from './shared/component/line-bar-chart-with-hover/line-bar-chart-with-hover.component';
+import { GaugechartComponent } from './shared/component/gaugechart/gaugechart.component';
+import { MultilineComponent } from './shared/component/multiline/multiline.component';
+import { GroupstackchartComponent } from './shared/component/groupedstackchart/groupstackchart.component';
+import { PiechartComponent } from './shared/component/piechart/piechart.component';
+import { KpiComponent } from './shared/component/kpi-line-gauge/kpi-line-gauge.component';
+import { AppInitializerService } from './core/services/app-initializer.service';
+import { ExcelService } from './core/services/excel.service';
+import { SharedService } from './core/services/shared.service';
+import { GetAuthService } from './core/services/getauth.service';
+import { HelperService } from './core/services/helper.service';
+import { GetAuthorizationService } from './core/services/get-authorization.service';
+import { JsonExportImportService } from './core/services/json-export-import.service';
+import { FeatureFlagsService } from './core/services/feature-toggle.service';
+import { SharedModuleModule } from './shared/module/shared-module.module';
+import { AppRoutingModule } from './shared/module/app-routing.module';
+import { InterceptorModule } from './core/interceptors/interceptor.module';
+import { NgPrimeModuleModule } from './shared/module/ng-Prime-module.module';
 
 
 /******************************************************/
@@ -237,7 +214,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         StickyHeaderV2Component
     ],
     imports: [
-        DropdownModule,
         BrowserModule,
         CommonModule,
         FormsModule,
@@ -246,32 +222,11 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         InterceptorModule,
         AppRoutingModule,
         // NgSelectModule,
-        MultiSelectModule,
-        SelectButtonModule,
         BrowserAnimationsModule,
-        InputSwitchModule,
-        RippleModule,
-        BadgeModule,
-        TabViewModule,
-        TableModule,
-        ButtonModule,
-        TabMenuModule,
-        ToastModule,
-        DialogModule,
-        RadioButtonModule,
-        InputTextareaModule,
-        AccordionModule,
-        DialogModule,
         FontAwesomeModule,
         DragDropModule,
-        OverlayPanelModule,
-        MenuModule,
-        CheckboxModule,
-        SkeletonModule,
-        BlockUIModule,
         SharedModuleModule,
-        InputTextModule,
-        ScrollTopModule
+        NgPrimeModuleModule
     ],
     providers: [
         ExcelService,
@@ -281,11 +236,9 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         HelperService,
         GetAuthorizationService,
         JsonExportImportService,
-        MessageService,
         DatePipe,
         FeatureFlagsService,
         AuthGuard,
-        DialogService,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,

@@ -1,0 +1,37 @@
+import { Injectable } from '@angular/core';
+import { GetAuthorizationService } from './get-authorization.service';
+import { HttpService } from './http.service';
+import { features } from '../configs/featureFlagConfig';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FeatureFlagsService {
+  config = null;
+
+  constructor(private roleService: GetAuthorizationService, private http: HttpService) { }
+
+  loadConfig() {
+    return this.http.getFeatureFlags();
+  }
+
+  async isFeatureEnabled(key: string) {
+    if (this.config?.length) {
+      this.config = features.concat(this.config);
+      let requiredConfig = this.config.filter(feature => feature['name']?.toLowerCase() === key?.toLowerCase())[0];
+      if (requiredConfig) {
+        if (requiredConfig.enabled) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    } else {
+      this.config = await this.loadConfig();
+      this.config = features.concat(this.config);
+      return this.isFeatureEnabled(key);
+    }
+  }
+}
