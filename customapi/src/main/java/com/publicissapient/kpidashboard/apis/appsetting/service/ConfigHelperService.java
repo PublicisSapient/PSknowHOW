@@ -51,8 +51,8 @@ import com.publicissapient.kpidashboard.common.repository.application.KpiMasterR
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
-import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
+import com.publicissapient.kpidashboard.common.service.BoardMetadataServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,7 +74,7 @@ public class ConfigHelperService {
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 	@Autowired
-	private BoardMetadataRepository boardMetadataRepository;
+	private BoardMetadataServiceImpl boardMetadataServiceImpl;
 	@Autowired
 	private ProjectToolConfigRepositoryCustom toolConfigRepository;
 	@Autowired
@@ -127,7 +127,7 @@ public class ConfigHelperService {
 		boardMetaDataMap.clear();
 
 		List<ProjectBasicConfig> projectList = projectConfigRepository.findAll();
-		List<BoardMetadata> boardMetaDataList = (List<BoardMetadata>) boardMetadataRepository.findAll();
+		List<BoardMetadata> boardMetaDataList = boardMetadataServiceImpl.findAll();
 
 		projectList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
