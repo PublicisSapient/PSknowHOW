@@ -940,7 +940,9 @@ public abstract class ToolsKPIService<R, S> {
 			}
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
-			if (kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) && CollectionUtils.isNotEmpty(values)) {
+			if ((kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name())
+					|| kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name()))
+					&& CollectionUtils.isNotEmpty(values)) {
 				aggValue = (R) String.valueOf(Integer.parseInt(String.valueOf(aggValue)) / values.size());
 			}
 		}

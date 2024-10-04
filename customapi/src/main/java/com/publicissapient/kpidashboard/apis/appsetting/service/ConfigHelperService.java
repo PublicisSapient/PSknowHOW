@@ -261,7 +261,6 @@ public class ConfigHelperService {
 		return kpiMasterRepository.findAll();
 	}
 
-
 	@Cacheable(CommonConstant.CACHE_MATURITY_RANGE)
 	public Map<String, List<String>> calculateMaturity() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
@@ -337,7 +336,7 @@ public class ConfigHelperService {
 
 	/**
 	 * this method will update projectConfigMap and update cache object
-	 * 
+	 *
 	 * @param projectBasicConfig
 	 */
 	public void updateCacheProjectBasicConfig(ProjectBasicConfig projectBasicConfig) {

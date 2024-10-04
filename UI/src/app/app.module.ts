@@ -37,6 +37,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ScrollTopModule } from 'primeng/scrolltop';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -70,7 +71,7 @@ import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SkeletonModule } from 'primeng/skeleton';
-
+import { BlockUIModule } from 'primeng/blockui';
 /******************************************************/
 
 
@@ -267,8 +268,10 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         MenuModule,
         CheckboxModule,
         SkeletonModule,
+        BlockUIModule,
         SharedModuleModule,
-        InputTextModule
+        InputTextModule,
+        ScrollTopModule
     ],
     providers: [
         ExcelService,

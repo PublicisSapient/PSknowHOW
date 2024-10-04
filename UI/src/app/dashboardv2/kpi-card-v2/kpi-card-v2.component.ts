@@ -33,6 +33,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() showCommentIcon: boolean;
   showComments: boolean = false;
   @Input() kpiSize;
+  @Input() kpiDataStatusCode: string = '';
   // showComments: boolean = false;
   loading: boolean = false;
   noData: boolean = false;
@@ -45,7 +46,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   userRole: string;
   checkIfViewer: boolean;
   subscriptions: any[] = [];
-  filterOption = 'Overall';
   filterOptions: object = {};
   radioOption: string;
   filterMultiSelectOptionsData: object = {};
@@ -74,13 +74,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   colorCssClassArray = ['sprint-hover-project1', 'sprint-hover-project2', 'sprint-hover-project3', 'sprint-hover-project4', 'sprint-hover-project5', 'sprint-hover-project6'];
   commentDialogRef: DynamicDialogRef | undefined;
   disableSettings: boolean = false;
-  @Input() immediateLoader : boolean = true;
+  @Input() immediateLoader: boolean = true;
+  warning = '';
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
+      this.filterOptions = {};
       if (Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
@@ -94,12 +96,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
               }
               else {
                 this.filterOptions = { ...this.filterOptions };
-                this.filterOption = 'Overall';
               }
             }
             else {
               this.filterOptions = { ...this.filterOptions };
-              this.filterOption = 'Overall';
             }
           } else {
             if (this.kpiData?.kpiId === "kpi72") {
@@ -112,11 +112,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
             }
             else {
-              this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
               this.filterOptions = Array.isArray(x[this.kpiData?.kpiId]) ? { 'filter1': x[this.kpiData?.kpiId] } : { ...x[this.kpiData?.kpiId] };
-              if (!this.filterOption) {
-                this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
-              }
             }
           }
         }
@@ -150,14 +146,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: ($event) => {
           this.prepareData();
         },
-        disabled: this.selectedTab === 'release'
+        disabled: this.selectedTab === 'release' || this.selectedTab === 'backlog'
       },
       {
         label: 'Explore',
         icon: 'pi pi-table',
         command: () => {
           this.exportToExcel();
-        }
+        },
+        disabled: !this.kpiData.kpiDetail.chartType
       },
       {
         label: 'Comments',
@@ -173,7 +170,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
-    this.disableSettings = this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release'));
+    this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
+      || !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
   }
 
@@ -195,9 +193,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.isTooltip = val;
   }
 
+  showWarning(val) {
+    if (val) {
+      this.warning = 'Configure the missing mandatory field mappings in KPI Settings for accurate data display.';
+    } else {
+      this.warning = null;
+    }
+  }
+
   handleChange(type, value = null, filterIndex = 0) {
-    if (value) {
-      value?.value?.forEach(selectedItem => {
+    if (value && value.value && Array.isArray(value.value)) {
+      value.value.forEach(selectedItem => {
         this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
         this.dropdownArr[filterIndex]?.options.unshift(selectedItem)// this will add selected item on the top
       });
@@ -226,12 +232,24 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   handleClearAll(event) {
-    for (const key in this.filterOptions) {
-      if (key?.toLowerCase() == event?.toLowerCase()) {
-        delete this.filterOptions[key];
+    if (this.dropdownArr.length === 1) {
+      for (const key in this.filterOptions) {
+        if (key?.toLowerCase() == event?.toLowerCase()) {
+          delete this.filterOptions[key];
+        }
       }
+      this.optionSelected.emit(['Overall']);
+    } else {
+      // hacky way - clear All sets null value, which we want to avoid
+      for (const key in this.filterOptions) {
+        if (key?.toLowerCase() == event?.toLowerCase()) {
+          this.filterOptions[key] = [];
+        } else if (!this.filterOptions[key]) {
+          this.filterOptions[key] = [];
+        }
+      }
+      this.optionSelected.emit(this.filterOptions);
     }
-    this.optionSelected.emit(['Overall']);
   }
 
   toggleMenu(event) {
@@ -343,7 +361,28 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    return (Array.isArray(data) || typeof data === 'object') && Object.keys(data)?.length > 0 && (!this.loader);
+    return (data === '200' || data === '201') && this.checkDataAtGranularLevel(this.trendValueList);
+  }
+
+  checkDataAtGranularLevel(data) {
+    let dataCount = 0;
+    if (Array.isArray(data)) {
+      data?.forEach(item => {
+        if (Array.isArray(item.data) && item.data?.length) {
+          ++dataCount;
+        } else if (item.data && !isNaN(parseInt(item.data))) {
+          // dataCount += item?.data;
+          ++dataCount;
+        } else if (item.value && ((Array.isArray(item.value) && item.value.length) || Object.keys(item.value)?.length)) {
+          ++dataCount;
+        } else if (item.dataGroup && item.dataGroup.length) {
+          ++dataCount;
+        }
+      });
+    } else if (data && Object.keys(data).length) {
+      dataCount = Object.keys(data).length;
+    }
+    return parseInt(dataCount + '') > 0;
   }
 
   getColorCssClasses(index) {

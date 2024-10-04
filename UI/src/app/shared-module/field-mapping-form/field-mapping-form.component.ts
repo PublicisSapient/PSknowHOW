@@ -229,9 +229,19 @@ private setting = {
         break;
       case 'releases':
         if (this.fieldMappingMetaData && this.fieldMappingMetaData.releases) {
-          this.fieldMappingMetaData.releases.forEach((item : any) => (
-              item['disabled']= item.data.includes("duration - days")
-          ));
+          // Set the 'disabled' property and segregate items in a single pass
+          const { enabledItems, disabledItems } = this.fieldMappingMetaData.releases.reduce((acc: any, item: any) => {
+            item['disabled'] = item.data.includes("duration - days");
+            if (item['disabled']) {
+              acc.disabledItems.push(item);
+            } else {
+              acc.enabledItems.push(item);
+            }
+            return acc;
+          }, { enabledItems: [], disabledItems: [] });
+
+          // Concatenate the non-disabled items with the disabled items
+          this.fieldMappingMetaData.releases = [...enabledItems, ...disabledItems];
           this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.releases;
         } else {
           this.fieldMappingMultiSelectValues = [];

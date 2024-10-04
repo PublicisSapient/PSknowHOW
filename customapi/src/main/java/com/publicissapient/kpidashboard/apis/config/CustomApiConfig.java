@@ -231,7 +231,6 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	private String repoToolUpdateConnectionUrl;
-	private Boolean isRepoToolEnable;
 	private Boolean isGitlabFieldEnable;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
@@ -242,6 +241,7 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolPRSizeUrl;
 	private String repoToolPickupTimeUrl;
 	private String repoToolMeanTimeToMergeUrl;
+	private String repoToolPRDeclineRateUrl;
 	private List<String> flowEfficiencyXAxisRange;
 	private List<String> leadTimeRange;
 	private List<String> cycleTimeRange;
@@ -277,6 +277,8 @@ public class CustomApiConfig {// NOPMD
 	@Value("${exposed_api_key}")
 	private String xApiKey;
 	private String repoToolReworkRateUrl;
+	private String repoToolRevertRateUrl;
+	private String repoToolPRSuccessRateUrl;
 
 	@Value("${max-age-seconds}")
 	private long maxAgeInSeconds;
@@ -285,6 +287,25 @@ public class CustomApiConfig {// NOPMD
 
 	@Value("${zephyrCloudBaseUrl}")
 	private String zephyrCloudBaseUrl;
+	private String innovationRateUrl;
+	private String repoToolMembersUrl;
+	private String defectRateUrl;
+
+	public String getDefectRateUrl() {
+		return defectRateUrl;
+	}
+
+	public void setDefectRateUrl(String defectRateUrl) {
+		this.defectRateUrl = defectRateUrl;
+	}
+
+	public String getInnovationRateUrl() {
+		return innovationRateUrl;
+	}
+
+	public void setInnovationRateUrl(String innovationRateUrl) {
+		this.innovationRateUrl = innovationRateUrl;
+	}
 
 	public String getRepoToolMembersUrl() {
 		return repoToolMembersUrl;
@@ -294,14 +315,20 @@ public class CustomApiConfig {// NOPMD
 		this.repoToolMembersUrl = repoToolMembersUrl;
 	}
 
-	private String repoToolMembersUrl;
-
 	public String getRepoToolReworkRateUrl() {
 		return repoToolReworkRateUrl;
 	}
 
 	public void setRepoToolReworkRateUrl(String repoToolReworkRateUrl) {
 		this.repoToolReworkRateUrl = repoToolReworkRateUrl;
+	}
+
+	public String getRepoToolRevertRateUrl() {
+		return repoToolRevertRateUrl;
+	}
+
+	public void setRepoToolRevertRateUrl(String repoToolRevertRateUrl) {
+		this.repoToolRevertRateUrl = repoToolRevertRateUrl;
 	}
 
 	public String getxApiKey() {
@@ -406,14 +433,6 @@ public class CustomApiConfig {// NOPMD
 
 	public String getRepoToolDeleteRepoUrl() {
 		return repoToolDeleteRepoUrl;
-	}
-
-	public Boolean getIsRepoToolEnable() {
-		return isRepoToolEnable;
-	}
-
-	public void setIsRepoToolEnable(Boolean isRepoToolEnable) {
-		this.isRepoToolEnable = isRepoToolEnable;
 	}
 
 	public Boolean getIsGitlabFieldEnable() {
@@ -1277,4 +1296,20 @@ public class CustomApiConfig {// NOPMD
 	public void setZephyrCloudBaseUrl(String zephyrCloudBaseUrl) {
 		this.zephyrCloudBaseUrl = zephyrCloudBaseUrl;
 	}
+
+	public void setRepoToolPRSuccessRateUrl(String repoToolPRSuccessRateUrl) {
+		this.repoToolPRSuccessRateUrl = repoToolPRSuccessRateUrl;
+	}
+
+	public String getRepoToolPRSuccessRateUrl() {
+		return repoToolPRSuccessRateUrl;
+	}
+
+    public String getRepoToolPRDeclineRateUrl() {
+        return repoToolPRDeclineRateUrl;
+    }
+
+    public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
+        this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
+    }
 }

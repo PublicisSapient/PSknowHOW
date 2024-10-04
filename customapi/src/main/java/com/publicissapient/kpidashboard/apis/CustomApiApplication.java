@@ -19,6 +19,13 @@
 package com.publicissapient.kpidashboard.apis;
 
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -49,18 +56,6 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.util.DefaultLogoInsertor;
 
 import io.mongock.runner.springboot.EnableMongock;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-
-import javax.net.ssl.SSLContext;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 
 /**
  * CustomApiApplication class is the entry point of all Sprint boot application.
@@ -95,28 +90,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 		imageInsertor.insertDefaultImage();
 	}
 
-	/**
-	 * This method provide the configuration to integrate Swagger 2 into an existing
-	 * Sprint Boot CustomApiApplication
-	 * 
-	 * @return Bean of Docket class
-	 */
-	@Bean
-	public Docket documentation() {
-		return new Docket(DocumentationType.SWAGGER_2).enable(true).select().apis(RequestHandlerSelectors.any())
-				.paths(PathSelectors.any()).build().pathMapping("/").apiInfo(metadata());
-	}
 
-	/**
-	 * This method provide the informational part of documentation for swagger:
-	 * title, version, license, description, etc.
-	 * 
-	 * @return An instance of AppInfor class
-	 */
-	private ApiInfo metadata() {
-		return new ApiInfoBuilder().title("KnowHOW API").description("API Documentation for KnowHOW").version("2.0")
-				.build();
-	}
 
 	/**
 	 * This method provide the instance of LocalValidatorFactoryBean which supports

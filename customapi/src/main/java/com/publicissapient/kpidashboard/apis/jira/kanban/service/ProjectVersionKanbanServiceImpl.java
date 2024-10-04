@@ -134,7 +134,10 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 				Map<String, Double> dateCount = getLastNMonth(customApiConfig.getJiraXaxisMonthCount());
 				List<DataCount> dc = new ArrayList<>();
 				List<ProjectVersion> projectVersionList = Lists.newArrayList();
-				for (ProjectVersion pv : projectRelease.getListProjectVersion()) {
+				// Filter to include only released versions
+				List<ProjectVersion> releasedVersions = projectRelease.getListProjectVersion().stream()
+						.filter(ProjectVersion::isReleased).toList();
+				for (ProjectVersion pv : releasedVersions) {
 					if (pv.getReleaseDate() != null && dateCount.keySet().contains(
 							pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear())) {
 						String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH

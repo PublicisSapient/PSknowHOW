@@ -68,8 +68,7 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List<Object>, Map<String, Object>> {
-
-	private static final String REPO_TOOLS = "RepoTool";
+	
 	private static final String ASSIGNEE = "assignee";
 
 	@Autowired
@@ -99,7 +98,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE);
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
-				KPICode.MEAN_TIME_TO_MERGE);
+				KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE);
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((statusType, dataCounts) -> {
 			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
@@ -135,28 +134,27 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = kpiHelperService.getRepoToolsKpiMetricResponse(localEndDate, toolMap,
-				projectLeafNode, duration, dataPoints, customApiConfig.getRepoToolMeanTimeToMergeUrl());
+		ProjectFilter projectFilter = projectLeafNode.getProjectFilter();
+		ObjectId projectBasicConfigId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
+		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(projectBasicConfigId);
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = kpiHelperService.getRepoToolsKpiMetricResponse(
+				localEndDate, kpiHelperService.getScmToolJobs(toolListMap, projectLeafNode), projectLeafNode, duration,
+				dataPoints, customApiConfig.getRepoToolMeanTimeToMergeUrl());
 		if (CollectionUtils.isEmpty(repoToolKpiMetricRespons)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}", projectLeafNode);
 			return;
 		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
+		List<Tool> reposList = kpiHelperService.populateSCMToolsRepoList(toolListMap);
 		String projectName = projectLeafNode.getProjectFilter().getName();
-
-		ProjectFilter accountHierarchyData = projectLeafNode.getProjectFilter();
-		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null
-				? Collections.emptyList()
-				: toolMap.get(configId).get(REPO_TOOLS);
 		if (CollectionUtils.isEmpty(reposList)) {
 			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
 					projectLeafNode.getProjectFilter());
 			return;
 		}
 
-		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
+		Map<String, List<DataCount>> aggDataMap = new LinkedHashMap<>();
 		Map<String, Object> resultmap = fetchKPIDataFromDb(List.of(projectLeafNode), null, null, kpiRequest);
 		Set<Assignee> assignees = (Set<Assignee>) resultmap.get(ASSIGNEE);
 
@@ -175,7 +173,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			Double overAllMeanTimeToMerge = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getAverage)
 					.orElse(0.0d);
 			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					KpiHelperService.convertMilliSecondsToHours(overAllMeanTimeToMerge), aggDataMap);
+					KpiHelperService.convertMilliSecondsToHours(overAllMeanTimeToMerge*1000), aggDataMap);
 
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
@@ -197,7 +195,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 							setUserDataCounts(overAllUsers, repoToolUserDetailsList, assignees, repo, projectName,
 									date, aggDataMap));
 					setDataCount(projectName, date, overallKpiGroup,
-							KpiHelperService.convertMilliSecondsToHours(meanTimeToMerge), aggDataMap);
+							KpiHelperService.convertMilliSecondsToHours(meanTimeToMerge*1000), aggDataMap);
 
 				}
 			});
@@ -212,9 +210,9 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
 		populateExcelDataObject(requestTrackerId, repoToolValidationDataList, excelData);
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.MEAN_TIME_TO_MERGE.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.REPO_TOOL_MEAN_TIME_TO_MERGE.getColumns());
 	}
-
+	
 	/**
 	 * set data count for user filter
 	 *
@@ -241,22 +239,27 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		overAllUsers.forEach(userEmail -> {
 			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
 					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
-			Optional<Assignee> assignee = assignees.stream().filter(assign -> assign.getEmail().contains(userEmail))
+			Optional<Assignee> assignee = assignees.stream().filter(
+					assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userAverageSeconds = repoToolUserDetails.map(RepoToolUserDetails::getAverage).orElse(0.0d);
-			Long userAverageHrs = KpiHelperService.convertMilliSecondsToHours(userAverageSeconds);
+			Long userAverageHrs = KpiHelperService.convertMilliSecondsToHours(userAverageSeconds*1000);
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
 			if (repoToolUserDetails.isPresent() && repo != null) {
-				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
-				repoToolValidationData.setProjectName(projectName);
-				repoToolValidationData.setBranchName(repo.getBranch());
-				repoToolValidationData.setDeveloperName(developerName);
-				repoToolValidationData.setDate(date);
-				repoToolValidationData.setMeanTimeToMerge(userAverageHrs);
-				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
-				repoToolValidationDataList.add(repoToolValidationData);
+				repoToolUserDetails.get().getMergeRequestList().forEach(mr -> {
+					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+					repoToolValidationData.setProjectName(projectName);
+					repoToolValidationData.setBranchName(repo.getBranch());
+					repoToolValidationData.setDeveloperName(developerName);
+					repoToolValidationData.setDate(date);
+					repoToolValidationData.setMeanTimeToMerge(
+							KpiHelperService.convertMilliSecondsToHours(mr.getTimeToMerge()*1000.0));
+					repoToolValidationData.setMergeRequestUrl(mr.getLink());
+					repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+					repoToolValidationDataList.add(repoToolValidationData);
+				});
 			}
 			setDataCount(projectName, date, userKpiGroup, userAverageHrs, aggDataMap);
 		});
@@ -278,14 +281,23 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	 */
 	private void setDataCount(String projectName, String week, String kpiGroup, Long value,
 			Map<String, List<DataCount>> dataCountMap) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(week);
-		dataCount.setValue(value);
-		dataCount.setKpiGroup(kpiGroup);
-		dataCount.setHoverValue(new HashMap<>());
-		dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
+		List<DataCount> dataCounts = dataCountMap.get(kpiGroup);
+		Optional<DataCount> optionalDataCount = dataCounts!=null? dataCounts.stream()
+				.filter(dataCount1 -> dataCount1.getDate().equals(week)).findFirst():Optional.empty();
+		if (optionalDataCount.isPresent()) {
+			DataCount updatedDataCount = optionalDataCount.get();
+			updatedDataCount.setValue(((Number) updatedDataCount.getValue()).longValue() + value);
+			dataCounts.set(dataCounts.indexOf(optionalDataCount.get()), updatedDataCount);
+		} else {
+			DataCount dataCount = new DataCount();
+			dataCount.setData(String.valueOf(value));
+			dataCount.setSProjectName(projectName);
+			dataCount.setDate(week);
+			dataCount.setValue(value);
+			dataCount.setKpiGroup(kpiGroup);
+			dataCount.setHoverValue(new HashMap<>());
+			dataCountMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dataCount);
+		}
 	}
 
 	@Override
@@ -297,7 +309,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(
-				leafNodeList.get(0).getId());
+				leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
 		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(ASSIGNEE, assignees);

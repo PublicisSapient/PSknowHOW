@@ -92,7 +92,7 @@ export class ProjectSettingsComponent implements OnInit {
       },
       {
         name: 'Enable Developer KPIs',
-        description: 'Provide consent to clone your code repositories (BitBucket, GitLab, GitHub) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to valuable KPIs on the Developer dashboard.',
+        description: 'Provide consent to clone your code repositories (BitBucket, GitLab, GitHub, Azure Repository) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to valuable KPIs on the Developer dashboard.',
         actionItem: 'switch-developer-kpi',
       }
     ];
@@ -116,7 +116,7 @@ export class ProjectSettingsComponent implements OnInit {
   }
 
   onProjectActiveStatusChange(event) {
-    if(event.checked) {
+    if (event.checked) {
       this.confirmationService.confirm({
         message: `Are you sure you want to keep this project on hold?`,
         header: 'Pause data collection',
@@ -164,43 +164,7 @@ export class ProjectSettingsComponent implements OnInit {
     this.httpService.getProjectListData().subscribe(responseList => {
       if (responseList[0].success) {
         this.projectList = responseList[0]?.data;
-        if (this.projectList?.length > 0) {
-          for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
-            const obj = {
-              id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
-              heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
-            };
-            this.cols?.push(obj);
-          }
-          const projectObj = {
-            id: 'name',
-            heading: 'Project'
-          };
-          this.cols?.unshift(projectObj);
-          const typeObj = {
-            id: 'type',
-            heading: 'Type'
-          };
-          this.cols?.push(typeObj);
-          for (let i = 0; i < this.cols?.length; i++) {
-            this.globalSearchFilter?.push(this.cols[i]?.id);
-          }
-
-          for (let i = 0; i < this.projectList?.length; i++) {
-            const obj = {
-              id: this.projectList[i]?.id,
-              name: this.projectList[i]?.projectName,
-              type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
-              saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
-              developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
-              projectOnHold: this.projectList[i]?.projectOnHold,
-            };
-            for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
-              obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
-            }
-            this.allProjectList?.push(obj);
-          }
-        }
+        this.fillColumns();
         this.loading = false;
         this.sharedService.setProjectList(this.allProjectList);
         this.getProjects();
@@ -212,6 +176,58 @@ export class ProjectSettingsComponent implements OnInit {
         });
       }
     });
+  }
+
+  fillColumns() {
+    if (this.projectList?.length > 0) {
+      for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
+        const obj = {
+          id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
+          heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
+        };
+        this.cols?.push(obj);
+      }
+
+      for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
+        const obj = {
+          id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
+          heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
+        };
+        this.cols?.push(obj);
+      }
+      const projectObj = {
+        id: 'name',
+        heading: 'Project'
+      };
+      this.cols?.unshift(projectObj);
+      this.setProjectType();
+    }
+  }
+
+  setProjectType() {
+    const typeObj = {
+      id: 'type',
+      heading: 'Type'
+    };
+    this.cols?.push(typeObj);
+    for (let i = 0; i < this.cols?.length; i++) {
+      this.globalSearchFilter?.push(this.cols[i]?.id);
+    }
+
+    for (let i = 0; i < this.projectList?.length; i++) {
+      const obj = {
+        id: this.projectList[i]?.id,
+        name: this.projectList[i]?.projectName,
+        type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
+        saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
+        developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
+        projectOnHold: this.projectList[i]?.projectOnHold,
+      };
+      for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
+        obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
+      }
+      this.allProjectList?.push(obj);
+    }
   }
 
   getProjects() {
@@ -235,7 +251,7 @@ export class ProjectSettingsComponent implements OnInit {
 
   updateProjectSelection() {
     this.sharedService.setSelectedProject(this.selectedProject);
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { tab: 0 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase(), tab: 0 } });
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
     this.projectOnHold = this.selectedProject?.projectOnHold;
@@ -275,7 +291,7 @@ export class ProjectSettingsComponent implements OnInit {
       accept: () => {
         this.httpService.deleteProject(project).subscribe(response => {
           this.projectDeletionStatus(response);
-          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { tab: 0 } });
+          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase(), tab: 0 } });
           this.selectedProject = this.userProjects[0];
           let arr = this.sharedService.getCurrentUserDetails('projectsAccess');
           if (arr?.length) {
@@ -425,7 +441,7 @@ export class ProjectSettingsComponent implements OnInit {
       this.displayGeneratedToken = true;
       if (response['success'] && response['data']) {
         this.generatedToken = response['data'].apiToken;
-        this.messageService.add({ severity: 'success', summary: 'Token copied!' });
+        this.messageService.add({ severity: 'success', summary: 'Token generated!' });
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
       }
@@ -436,6 +452,7 @@ export class ProjectSettingsComponent implements OnInit {
     if (this.generatedToken) {
       this.tokenCopied = true;
       navigator.clipboard.writeText(this.generatedToken);
+      this.messageService.add({ severity: 'success', summary: 'Token copied!' });
     }
   }
 

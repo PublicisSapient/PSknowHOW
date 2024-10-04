@@ -7,7 +7,49 @@
 }
 
 .text-container {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--color-black);
   vertical-align: middle;
+}
+
+.selectedfilter {
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  background-color: #e0e0e0;
+  box-shadow: 0 2px 4px 0 rgba(255, 255, 255, .5);
+  border-radius: 3px;
+  margin: 2px 4px;
+  overflow: hidden;
+  transition: background-color .1s;
+  max-width: 200px;
+  padding: 2px 4px;
+}
+
+ul li.selectedfilter .selected-node-label .align-list-marker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right:5px;
+}
+
+
+.selected-node {
+  display: flex column;
+  align-items: flex-start;
+  position: relative;
+}
+
+.selected-node-label {
+  max-width: 400px;
+  line-height: 1.3;
+  word-break: break-all;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.align-marker {
+  margin: 0 1rem 0 0;
 }

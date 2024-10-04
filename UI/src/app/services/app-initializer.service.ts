@@ -61,7 +61,7 @@ export class AppInitializerService {
             }
         },
         {
-            path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'backlog', component: !localStorage.getItem('newUI') ? BacklogComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Backlog"
             }
@@ -73,7 +73,7 @@ export class AppInitializerService {
             }
         },
         {
-            path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'dora', component: !localStorage.getItem('newUI') ? DoraComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Dora"
             }

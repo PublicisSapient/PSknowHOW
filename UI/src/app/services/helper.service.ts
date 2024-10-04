@@ -68,7 +68,7 @@ export class HelperService {
     // type is quality or productivity
     groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type, selectedTab) {
         const kpiRequestObject = <any>{};
-
+        const visibleKpis = masterData?.filter(obj => obj.isEnabled && obj.shown).map(x => x.kpiId);
         kpiRequestObject.kpiList = <any>[];
         for (let i = 0; i < masterData?.length; i++) {
             const obj = { ...masterData[i]?.kpiDetail };
@@ -91,7 +91,7 @@ export class HelperService {
                     if (obj.isEnabled && obj.shown) {
                         kpiRequestObject.kpiList.push(obj);
                     }
-                } else {
+                } else if (visibleKpis.includes(obj.kpiId)) {
                     kpiRequestObject.kpiList.push(obj);
                 }
             }
@@ -402,7 +402,9 @@ export class HelperService {
             objArray.sort((a, b) => {
                 const aName = a.nodeName || a.data || a.date || a;
                 const bName = b.nodeName || b.data || b.date || b;
-                return aName.localeCompare(bName);
+                if (typeof aName === 'string' && typeof bName === 'string') {
+                    return aName.localeCompare(bName);
+                }
             });
         }
         return objArray;
@@ -426,6 +428,38 @@ export class HelperService {
         });
 
         return objArray;
+    }
+
+    releaseSorting(releaseList) {
+        if (releaseList && releaseList.length) {
+            releaseList.sort((a, b) => {
+                // First, sort by releaseState (Unreleased first, Released second)
+                if (a.releaseState === 'Unreleased' && b.releaseState === 'Released') {
+                    return -1;
+                } else if (a.releaseState === 'Released' && b.releaseState === 'Unreleased') {
+                    return 1;
+                }
+
+                // Both are in the same state, so we sort by releaseEndDate
+                const dateA = a.releaseEndDate ? new Date(a.releaseEndDate).getTime() : null;
+                const dateB = b.releaseEndDate ? new Date(b.releaseEndDate).getTime() : null;
+
+                if (a.releaseState === 'Unreleased') {
+                    // For Unreleased, sort by ascending releaseEndDate, keeping null dates last
+                    if (dateA === null) return 1;
+                    if (dateB === null) return -1;
+                    return dateA - dateB;
+                } else {
+                    // For Released, sort by descending releaseEndDate, keeping null dates last
+                    if (dateA === null) return 1;
+                    if (dateB === null) return -1;
+                    return dateB - dateA;
+                }
+            });
+            return releaseList
+        } else {
+            return [];
+        }
     }
 
     /** logic to apply multiselect filter */
@@ -696,10 +730,14 @@ export class HelperService {
     }
 
     getBackupOfFilterSelectionState = (prop = null) => {
-        if (prop) {
-            return this.selectedFilters[prop];
+        if (this.selectedFilters) {
+            if (prop) {
+                return this.selectedFilters[prop];
+            } else {
+                return this.selectedFilters;
+            }
         } else {
-            return this.selectedFilters;
+            return null;
         }
     }
 
@@ -780,5 +818,13 @@ export class HelperService {
                 }
             }
         })
+    }
+
+    getObjectKeys(obj) {
+        if (obj && Object.keys(obj).length) {
+            return Object.keys(obj);
+        } else {
+            return [];
+        }
     }
 }

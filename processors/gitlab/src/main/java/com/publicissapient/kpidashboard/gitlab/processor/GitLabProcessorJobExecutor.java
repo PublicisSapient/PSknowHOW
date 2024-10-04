@@ -558,7 +558,9 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 
 	private List<ProjectBasicConfig> getSelectedProjects() {
 
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll().stream()
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()))
+				.toList();
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
@@ -567,7 +569,7 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 		}
 		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
 				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
-				.collect(Collectors.toList());
+				.toList();
 
 	}
 

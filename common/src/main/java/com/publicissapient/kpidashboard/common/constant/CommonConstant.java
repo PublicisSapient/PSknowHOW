@@ -196,7 +196,6 @@ public final class CommonConstant {
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
-	public static final String REPO_TOOLS = "RepoTool";
     public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
 	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
@@ -343,6 +342,14 @@ public final class CommonConstant {
 	public static final String NUMBER = "number";
 
 	//-- auth-N-auth changes ends here --
+
+	public static final String KPI_PASSED= "200";
+	public static final String KPI_FAILED= "400";
+	public static final String MANDATORY_FIELD_MAPPING= "201";
+	public static final String TOOL_NOT_CONFIGURED= "202";
+	public static final String KPI_COMBINED_SORCE= "kpi_combined_source";
+
+
 
 
 	private CommonConstant() {

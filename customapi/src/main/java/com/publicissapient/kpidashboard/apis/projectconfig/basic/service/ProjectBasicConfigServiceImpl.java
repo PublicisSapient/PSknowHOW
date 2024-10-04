@@ -522,10 +522,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig) {
-
+		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
+				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
 		Boolean isRepoTool = tools.stream()
-				.anyMatch(toolConfig -> ProcessorConstants.REPO_TOOLS.equals(toolConfig.getToolName()));
+				.anyMatch(toolConfig -> scmToolList.contains(toolConfig.getToolName())
+						&& projectBasicConfig.isDeveloperKpiEnabled());
 		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 
@@ -768,10 +770,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				int level = hirarchy.getHierarchyLevel().getLevel();
 				String value = hirarchy.getValue();
 				switch (level) {
-				case 1 -> dto.setBu(value);
-				case 2 -> dto.setVertical(value);
-				case 3 -> dto.setAccount(value);
-				default -> dto.setEngagement(value);
+				case 1 -> dto.setHierarchyLevelOne(value);
+				case 2 -> dto.setHierarchyLevelTwo(value);
+				case 3 -> dto.setHierarchyLevelThree(value);
+				default -> dto.setHierarchyLevelFour(value);
 				}
 			});
 			dto.setSprintDetailsList(groupedByProject.getOrDefault(projectBasicConfig.getId(), new ArrayList<>()));

@@ -29,8 +29,7 @@
     </div>
     <div class="p-ml-3">
         <div class="p-d-flex p-align-center position-relative p-pb-3">
-            <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject.id]" [queryParams]="{tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left"
-                class="p-button-raised p-button-secondary back-button p-mr-4"></a>
+            <a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject.id]" [queryParams]="{type: (selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase()), tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-raised p-button-secondary back-button p-mr-4"></a>
             <h5 class="card__primary__title__text p-m-0">{{formTitle}} Configuration</h5>
         </div>
         <div class="p-mb-4">
@@ -56,9 +55,9 @@
                                 {{col.header}}
                             </th>
                             <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
-                            formTitle?.toLowerCase() == 'azure' || formTitle?.toLowerCase() == 'zephyr'">Edit</th>
+                            formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">Edit</th>
                             <th class="p-text-center" scope="col" *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
-                            formTitle?.toLowerCase() !== 'azure' && formTitle?.toLowerCase() !== 'zephyr'">Delete</th>
+                            formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">Delete</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-tool let-columns="columns">
@@ -67,13 +66,13 @@
                                 {{tool[col.field]}}
                             </td>
                             <td *ngIf="formTitle?.toLowerCase() == 'jira' || formTitle?.toLowerCase() == 'jiratest' ||
-                            formTitle?.toLowerCase() == 'azure' || formTitle?.toLowerCase() == 'zephyr'">
+                            formTitle?.toLowerCase() == 'azure boards' || formTitle?.toLowerCase() == 'zephyr'">
                                 <div class="action-btns p-d-flex p-justify-center" (click)="editTool(tool)">
                                     <i class="far fa-edit"></i>
                                 </div>
                             </td>
                             <td *ngIf="formTitle?.toLowerCase() !== 'jira' && formTitle?.toLowerCase() !== 'jiratest' &&
-                            formTitle?.toLowerCase() !== 'azure' && formTitle?.toLowerCase() !== 'zephyr'">
+                            formTitle?.toLowerCase() !== 'azure boards' && formTitle?.toLowerCase() !== 'zephyr'">
                                 <div  class="action-btns p-d-flex p-justify-center" (click)="confirmDeteleTool(tool)">
                                     <i class="far fa-trash-alt"></i>
                                 </div>

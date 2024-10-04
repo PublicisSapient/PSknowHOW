@@ -17,14 +17,12 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { SharedService } from '../../../services/shared.service';
 import { HttpService } from '../../../services/http.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
-import { SelectButtonModule } from 'primeng/selectbutton';
 @Component({
   selector: 'app-tool-menu',
   templateUrl: './tool-menu.component.html',
@@ -61,27 +59,24 @@ export class ToolMenuComponent implements OnInit {
     public router: Router,
     public sharedService: SharedService,
     private httpService: HttpService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     public getAuthorizationService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService,
-    private route: ActivatedRoute) {
+    private ga: GoogleAnalyticsService) {
   }
 
   ngOnInit() {
     this.selectedProject = this.sharedService.getSelectedProject();
-    this.sharedService.currentUserDetailsObs.subscribe(details => {
-      if (details) {
-        this.userName = details['user_name'];
-      }
-    });
+    // this.sharedService.currentUserDetailsObs.subscribe(details => {
+    //   if (details) {
+    //     this.userName = details['user_name'];
+    //   }
+    // });
     this.projectTypeOptions = [
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
     ];
     this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
 
-    const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
+    const selectedType = (this.selectedProject?.type || this.selectedProject?.Type)?.toLowerCase() !== 'scrum' ? 'kanban' : 'scrum';
     const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType].map((x) => {
       return {
         id: x['hierarchyLevelId'],
@@ -113,9 +108,9 @@ export class ToolMenuComponent implements OnInit {
   }
 
   getToolsConfigured() {
-    this.httpService.getAllToolConfigs(this.selectedProject.id).subscribe(response => {
+    this.httpService.getAllToolConfigs(this.selectedProject?.id).subscribe(response => {
       this.dataLoading = false;
-      if (response && response['success']) {
+      if (response?.success) {
         this.sharedService.setSelectedToolConfig(response['data']);
         this.selectedTools = response['data'];
         this.setGaData();
@@ -123,8 +118,10 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-        if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?tab=2` || this.router.url === '/dashboard/Config/ConfigSettings?tab=2') {
-          this.buttonText = 'Set Up';
+        let typeOfSelectedProject = this.selectedProject.type?.toLowerCase() || this.selectedProject.Type?.toLowerCase();
+        //if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings`) {
+        if(this.router.url.includes('tab=2')){ 
+        this.buttonText = 'Set Up';
           this.tools = [
             {
               toolName: 'Jira',
@@ -271,17 +268,6 @@ export class ToolMenuComponent implements OnInit {
               updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'GitHubAction')[0]?.updatedAt
             },
             {
-              toolName: 'RepoTool',
-              category: 'Source Code Management',
-              description: '-',
-              icon: '',
-              routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
-              queryParams1: 'RepoTool',
-              index: 12,
-              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'RepoTool')[0]?.connectionName,
-              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'RepoTool')[0]?.updatedAt
-            },
-            {
               toolName: 'ArgoCD',
               category: 'Build',
               description: '-',
@@ -303,12 +289,12 @@ export class ToolMenuComponent implements OnInit {
           };
           this.projectTypeChange(fakeEvent, false);
           this.selectedType = jiraOrAzure[0].toolName === 'Azure';
-          const kpiID = this.selectedProject['Type'] === 'Kanban' ? 'kpi1' : 'kpi0';
+          const kpiID = this.selectedProject['type'] === 'Kanban' ? 'kpi1' : 'kpi0';
           let obj = {
             "releaseNodeId": null
           }
           this.httpService.getFieldMappingsWithHistory(jiraOrAzure[0].id, kpiID, obj).subscribe(mappings => {
-            if (mappings && mappings['success']) {
+            if (mappings?.success) {
               this.sharedService.setSelectedFieldMapping(mappings['data']);
               this.disableSwitch = true;
             } else {
@@ -319,14 +305,6 @@ export class ToolMenuComponent implements OnInit {
 
 
       }
-      // filtering tools based on repoToolFlag
-      this.tools = this.tools.filter(details => {
-        if (this.repoToolsEnabled) {
-          return !this.repoTools.includes(details.toolName)
-        } else {
-          return details.toolName !== 'RepoTool';
-        }
-      })
     });
   }
 
@@ -356,19 +334,11 @@ export class ToolMenuComponent implements OnInit {
       updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
     };
     this.tools = this.tools.filter((tool) => tool.toolName !== 'Azure' && tool.toolName !== 'Jira');
-    if (isClicked) {
       if (event && event.value) {
         this.tools.unshift(azureType);
       } else {
         this.tools.unshift(jiraType);
       }
-    } else {
-      if (event && event.value) {
-        this.tools.unshift(azureType);
-      } else {
-        this.tools.unshift(jiraType);
-      }
-    }
 
   }
 
@@ -423,12 +393,12 @@ export class ToolMenuComponent implements OnInit {
 
   updateProjectSelection() {
     this.setSelectedProject();
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject['id']}`], { queryParams: { tab: 2 } });
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': (this.selectedProject?.type?.toLowerCase() || this.selectedProject?.Type?.toLowerCase()) ,tab: 2 } });
     this.getToolsConfigured();
-  }
+}
 
   gotoProcessor() {
-    this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject['id'] } });
+    this.router.navigate(['/dashboard/Config/AdvancedSettings'], { queryParams: { pid: this.selectedProject?.id } });
   }
 
   setSelectedProject() {
