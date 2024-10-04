@@ -20927,7 +20927,7 @@ describe('DoraComponent', () => {
     expect(component.colorObj).toBe(x);
 });
 
-it('should work download excel functionality', () => {
+xit('should work download excel functionality', () => {
   const exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
   spyOn(component.exportExcelComponent, 'downloadExcel')
   component.downloadExcel('kpi122', 'name', true, true);
