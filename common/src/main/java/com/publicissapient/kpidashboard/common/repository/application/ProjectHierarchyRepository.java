@@ -31,4 +31,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectHierarch
 public interface ProjectHierarchyRepository extends MongoRepository<ProjectHierarchy, ObjectId> {
 
 	List<ProjectHierarchy> findByBasicProjectConfigId(ObjectId projectBasicConfig);
+
+	List<ProjectHierarchy> findByBasicProjectConfigIdIn(List<ObjectId> basicProjectConfigIdList);
 }

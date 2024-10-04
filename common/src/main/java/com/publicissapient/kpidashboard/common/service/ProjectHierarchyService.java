@@ -19,8 +19,11 @@
 
 package com.publicissapient.kpidashboard.common.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 
@@ -32,4 +35,6 @@ public interface ProjectHierarchyService {
 			String hierarchyLevelId);
 
 	void saveAll(Set<ProjectHierarchy> projectHierarchies);
+
+	List<ProjectHierarchy> findAllByBasicProjectConfigIds(List<ObjectId> basicProjectConfigIdList);
 }

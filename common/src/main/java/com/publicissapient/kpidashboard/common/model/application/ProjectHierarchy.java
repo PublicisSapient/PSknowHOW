@@ -20,6 +20,7 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.bson.types.ObjectId;
@@ -59,5 +60,10 @@ public class ProjectHierarchy extends OrganizationHierarchy implements Serializa
 	@Override
 	public int hashCode() {
 		return Objects.hash(basicProjectConfigId, sprintState, releaseState, beginDate, endDate);
+	}
+
+	public ProjectHierarchy(String nodeId, String nodeName, String nodeDisplayName, String hierarchyLevelId,
+			String parentId, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+		super(nodeId, nodeName, nodeDisplayName, hierarchyLevelId, parentId, createdDate, modifiedDate);
 	}
 }

@@ -160,4 +160,6 @@ public interface ProjectBasicConfigService {
 	List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId);
 
 	ProjectBasicConfig getProjectBasicConfig(String projectBasicConfigId);
+
+	List<ProjectBasicConfig> getAllProjectsBasicConfigs(boolean isKanban);
 }

@@ -63,4 +63,8 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 	private List<ProjectHierarchy> getProjectRelatedHierachy(String projectConfigId) {
 		return projectHierarchyRepository.findByBasicProjectConfigId(new ObjectId(projectConfigId));
 	}
+
+	@Override public List<ProjectHierarchy> findAllByBasicProjectConfigIds(List<ObjectId> basicProjectConfigIdList) {
+		return projectHierarchyRepository.findByBasicProjectConfigIdIn(basicProjectConfigIdList);
+	}
 }

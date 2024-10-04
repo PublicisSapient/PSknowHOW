@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -164,8 +163,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Autowired
 	private HierarchyLevelRepository hierarchyLevelRepository;
 
-    @Autowired
-    private ConfigHelperService configHelperService;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	/**
 	 * method to save basic configuration
@@ -177,24 +176,24 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Override
 	public ServiceResponse addBasicConfig(ProjectBasicConfigDTO projectBasicConfigDTO) {
 		ServiceResponse response;
-		//HB : todo remove projectName condition
+		// HB : todo remove projectName condition
 		ProjectBasicConfig basicConfig = basicConfigRepository
 				.findByProjectName(projectBasicConfigDTO.getProjectName());
-		if(StringUtils.isNotEmpty(projectBasicConfigDTO.getProjectNodeId())){
-			basicConfig  = basicConfigRepository
-					.findByProjectNodeId(projectBasicConfigDTO.getProjectNodeId());
+		if (StringUtils.isNotEmpty(projectBasicConfigDTO.getProjectNodeId())) {
+			basicConfig = basicConfigRepository.findByProjectNodeId(projectBasicConfigDTO.getProjectNodeId());
 		}
 		String username = authenticationService.getLoggedInUser();
 		if (basicConfig != null) {
 			response = new ServiceResponse(false, "Try with different Project name.", null);
 		} else {
 			tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
-			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(projectBasicConfigDTO, username);
+			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(projectBasicConfigDTO,
+					username);
 			ModelMapper mapper = new ModelMapper();
 			basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 			basicConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 			basicConfig.setCreatedBy(authenticationService.getLoggedInUser());
-			if(StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())){
+			if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
 				basicConfig.setProjectNodeId(UUID.randomUUID().toString());
 			}
 			if (accessRoleOfParent == null) {
@@ -231,7 +230,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * @param projectNodeId
 	 *            String
 	 */
-	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO, String projectNodeId) {
+	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO,
+			String projectNodeId) {
 		if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
 			Optional<HierarchyValueDTO> maxLevel = projectBasicConfigDTO.getHierarchy().stream()
 					.max(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
@@ -272,7 +272,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	public ServiceResponse updateBasicConfig(String basicConfigId, ProjectBasicConfigDTO projectBasicConfigDTO) {
 		ServiceResponse response;
 		Optional<ProjectBasicConfig> savedConfigOpt = basicConfigRepository.findById(new ObjectId(basicConfigId));
-		//HB : todo remove projectName condition
+		// HB : todo remove projectName condition
 		ProjectBasicConfig diffIdSameName = basicConfigRepository
 				.findByProjectNameAndIdNot(projectBasicConfigDTO.getProjectName(), new ObjectId(basicConfigId));
 		if (savedConfigOpt.isPresent()) {
@@ -428,10 +428,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 				.cacheProjectConfigMapData();
 
-		return Optional.ofNullable(basicConfigMap)
-				.filter(MapUtils::isNotEmpty)
-				.map(map -> new ArrayList<>(map.values()))
-				.orElseGet(ArrayList::new);
+		return Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
+				.map(map -> new ArrayList<>(map.values())).orElseGet(ArrayList::new);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -441,10 +439,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 				.cacheProjectConfigMapData();
 
-		return Optional.ofNullable(basicConfigMap)
-				.filter(MapUtils::isNotEmpty)
-				.map(map -> map.get(projectBasicConfigId))
-				.orElse(null);
+		return Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
+				.map(map -> map.get(projectBasicConfigId)).orElse(null);
 	}
 
 	@Override
@@ -525,9 +521,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
 				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
-		Boolean isRepoTool = tools.stream()
-				.anyMatch(toolConfig -> scmToolList.contains(toolConfig.getToolName())
-						&& projectBasicConfig.isDeveloperKpiEnabled());
+		Boolean isRepoTool = tools.stream().anyMatch(toolConfig -> scmToolList.contains(toolConfig.getToolName())
+				&& projectBasicConfig.isDeveloperKpiEnabled());
 		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 
@@ -789,8 +784,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		List<SprintDetails> sprintDetailsList = sprintRepository
-				.findByBasicProjectConfigIdInAndStateInOrderByStartDateASC(basicProjectConfigIds,
-						sprintStatusList);
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateASC(basicProjectConfigIds, sprintStatusList);
 
 		// Sort by beginDate in descending order
 
@@ -829,7 +823,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private HierarchyValue createHierarchyValue(List<HierarchyLevel> hierarchyLevels,
-												OrganizationHierarchy organizationHierarchy) {
+			OrganizationHierarchy organizationHierarchy) {
 
 		HierarchyValue hierarchyValue = new HierarchyValue();
 
@@ -844,13 +838,21 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	private HierarchyLevel getHierarchyLevel(List<HierarchyLevel> hierarchyLevels, String hierarchyLevelId) {
 		return hierarchyLevels.stream()
-				.filter(hierarchy -> hierarchy.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId))
-				.findFirst()
-				//Setting this explicitly to maintain backward compatibility
+				.filter(hierarchy -> hierarchy.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId)).findFirst()
+				// Setting this explicitly to maintain backward compatibility
 				.map(hierarchyLevel -> {
 					hierarchyLevel.setId(null);
 					return hierarchyLevel;
-				})
-				.orElse(null);
+				}).orElse(null);
+	}
+
+	@Override
+	public List<ProjectBasicConfig> getAllProjectsBasicConfigs(boolean isKanban) {
+		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+				.cacheProjectConfigMapData();
+
+		List<ProjectBasicConfig> basicConfigList = basicConfigMap.values().stream().collect(Collectors.toList());
+		return basicConfigList.stream().filter(projectBasicConfig -> projectBasicConfig.isKanban() == isKanban)
+				.collect(Collectors.toList());
 	}
 }
