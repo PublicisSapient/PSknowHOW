@@ -89,10 +89,14 @@ export class HelperService {
                 }
                 if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
                     if (obj.isEnabled && obj.shown) {
-                        kpiRequestObject.kpiList.push(obj);
+                        if(!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                            kpiRequestObject.kpiList.push(obj)
+                        }
                     }
                 } else if (visibleKpis.includes(obj.kpiId)) {
-                    kpiRequestObject.kpiList.push(obj);
+                    if(!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                        kpiRequestObject.kpiList.push(obj)
+                    }
                 }
             }
         }

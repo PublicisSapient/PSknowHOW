@@ -75,6 +75,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   commentDialogRef: DynamicDialogRef | undefined;
   disableSettings: boolean = false;
   @Input() immediateLoader: boolean = true;
+  @Input() partialData: boolean = false;
   warning = '';
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
@@ -173,6 +174,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
       || !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
+    console.log(this.partialData);
   }
 
   openCommentModal = () => {
@@ -365,6 +367,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkDataAtGranularLevel(data) {
+    if (!data) {
+      return false;
+    }
     let dataCount = 0;
     if (Array.isArray(data)) {
       data?.forEach(item => {
@@ -373,8 +378,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         } else if (item.data && !isNaN(parseInt(item.data))) {
           // dataCount += item?.data;
           ++dataCount;
-        } else if (item.value && ((Array.isArray(item.value) && item.value.length) || Object.keys(item.value)?.length)) {
-          ++dataCount;
+        } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
+          if (this.checkIfArrayHasData(item) && item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
+            
+            ++dataCount;
+          } else if (this.checkIfArrayHasData(item) && this.checkIfArrayHasData(item.value) && this.checkIfArrayHasData(item.value[0].value)) {
+            ++dataCount;
+          }
         } else if (item.dataGroup && item.dataGroup.length) {
           ++dataCount;
         }
@@ -383,6 +393,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       dataCount = Object.keys(data).length;
     }
     return parseInt(dataCount + '') > 0;
+  }
+
+  checkIfArrayHasData(item) {
+    return (Array.isArray(item.value) && item.value.length)
   }
 
   getColorCssClasses(index) {
