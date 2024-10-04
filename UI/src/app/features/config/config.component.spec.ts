@@ -37,7 +37,6 @@ import { DashboardconfigComponent } from './dashboard-config/dashboard-config.co
 import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ScrumKanbanPipe } from './pipes/scrumKanbanPipe';
 // import { TextMaskPipe } from './pipes/textMaskPipe';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { MessageService } from 'primeng/api';
@@ -50,7 +49,7 @@ import { of } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
 import { SharedService } from 'src/app/core/services/shared.service';
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
-import { SharedModuleModule } from 'src/app/shared/module/shared-module.module';
+import { SharedModuleModule } from 'src/app/shared/shared-module.module';
 describe('ConfigComponent', () => {
   let component: ConfigComponent;
   let fixture: ComponentFixture<ConfigComponent>;
@@ -87,7 +86,7 @@ describe('ConfigComponent', () => {
         UploadComponent,
         DashboardconfigComponent,
         AdvancedSettingsComponent,
-        ScrumKanbanPipe,
+        //ScrumKanbanPipe,
         // TextMaskPipe,
       ],
       providers: [MessageService, ConfirmationService, GetAuthorizationService,SharedService]

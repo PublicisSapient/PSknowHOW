@@ -20,8 +20,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from 'src/app/core/services/http.service';
 import { SharedService } from 'src/app/core/services/shared.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { environment } from "../../../../../environments/environment";
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'app-access-mgmt',

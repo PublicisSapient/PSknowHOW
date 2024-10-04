@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule,FormsModule } from '@angular/forms';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { SharedModuleModule } from 'src/app/shared/module/shared-module.module';
+import { SharedModuleModule } from 'src/app/shared/shared-module.module';
 import { NgPrimeModuleModule } from 'src/app/shared/module/ng-Prime-module.module';
 
 

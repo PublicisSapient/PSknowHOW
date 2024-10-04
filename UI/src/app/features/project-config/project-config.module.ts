@@ -30,7 +30,7 @@ import { ConnectionListComponent } from './connection-list/connection-list.compo
 import { ConfigSettingsComponent } from './config-settings/config-settings.component';
 import { ProjectSettingsComponent } from './project-settings/project-settings.component'
 import { JiraConfigComponent } from './jira-config/jira-config.component';
-import { SharedModuleModule } from 'src/app/shared/module/shared-module.module';
+import { SharedModuleModule } from 'src/app/shared/shared-module.module';
 import { NgPrimeModuleModule } from 'src/app/shared/module/ng-Prime-module.module';
 @NgModule({
   declarations: [ProjectConfigComponent,

@@ -20,22 +20,18 @@ import { NgModule } from '@angular/core';
 import { ConfigRoutingModule } from './config.route';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AutoCompleteComponent } from '../../shared/component/auto-complete/auto-complete.component';
 import { ConfigComponent } from './config.component';
 import { UploadComponent } from './upload/upload.component';
 import { DashboardconfigComponent } from './dashboard-config/dashboard-config.component';
-import { ProfileModule } from './profile/profile.module';
-import { ProjectConfigModule } from './project-config/project-config.module';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings.component';
-import { ViewNewUserAuthRequestComponent } from './profile/view-new-user-auth-request/view-new-user-auth-request.component';
-import { TypeofPipe } from './pipes/type-of.pipe';
-import { CompareStartEndWithCurrentDatePipe } from './pipes/compareStartEndWithCurrentDate';
 import { ManageAssigneeComponent } from './manage-assignee/manage-assignee.component';
 import { RatingComponent } from './rating/rating.component';
 import { CapacityPlanningComponent } from './capacity-planning/capacity-planning.component';
-import { SharedModuleModule } from 'src/app/shared/module/shared-module.module';
+import { SharedModuleModule } from 'src/app/shared/shared-module.module';
 import { NgPrimeModuleModule } from 'src/app/shared/module/ng-Prime-module.module';
+import { ProfileModule } from '../profile/profile.module';
+import { ProjectConfigModule } from '../project-config/project-config.module';
 
 @NgModule({
   imports: [
@@ -51,13 +47,9 @@ import { NgPrimeModuleModule } from 'src/app/shared/module/ng-Prime-module.modul
   ],
   declarations: [
     ConfigComponent,
-    AutoCompleteComponent,
     UploadComponent,
     DashboardconfigComponent,
     AdvancedSettingsComponent,
-    ViewNewUserAuthRequestComponent,
-    TypeofPipe,
-    CompareStartEndWithCurrentDatePipe,
     ManageAssigneeComponent,
     RatingComponent,
     CapacityPlanningComponent

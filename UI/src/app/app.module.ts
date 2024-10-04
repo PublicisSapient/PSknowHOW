@@ -63,7 +63,7 @@ import { DoraComponent } from './features/dashboard/dora/dora.component';
 import { DeveloperComponent } from './features/dashboard/developer/developer.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { AuthGuard } from './core/guards/auth.guard';
-import { RecentCommentsComponent } from './shared/component/recent-comments/recent-comments.component';
+// import { RecentCommentsComponent } from './shared/component/recent-comments/recent-comments.component';
 import { NavNewComponent } from './features/dashboardv2/nav-v2/nav-new.component';
 import { FilterNewComponent } from './features/dashboardv2/filter-v2/filter-new.component';
 import { ParentFilterComponent } from './features/dashboardv2/filter-v2/parent-filter/parent-filter.component';
@@ -73,44 +73,6 @@ import { ExecutiveV2Component } from './features/dashboardv2/executive-v2/execut
 import { KpiCardV2Component } from './features/dashboardv2/kpi-card-v2/kpi-card-v2.component';
 import { TrendIndicatorV2Component } from './features/dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
 import { StickyHeaderV2Component } from './features/dashboardv2/sticky-header-v2/sticky-header-v2.component';
-import { OverlappedProgressbarComponent } from './shared/component/overlapped-progressbar/overlapped-progressbar.component';
-import { HorizontalStackProgressbarComponent } from './shared/component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
-import { CircularProgressWithLegendsComponent } from './shared/component/circular-progress-with-legends/circular-progress-with-legends.component';
-import { TooltipComponent } from './shared/component/tooltip/tooltip.component';
-import { NoAccessComponent } from './shared/component/no-access/no-access.component';
-import { GroupedColumnPlusLineChartComponent } from './shared/component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
-import { TableComponent } from './shared/component/table/table.component';
-import { ExportExcelComponent } from './shared/component/export-excel/export-excel.component';
-import { CommentsComponent } from './shared/component/comments/comments.component';
-import { CommentsV2Component } from './shared/component/comments-v2/comments-v2.component';
-import { SsoAuthFailureComponent } from './shared/component/sso-auth-failure/sso-auth-failure.component';
-import { GroupBarChartComponent } from './shared/component/group-bar-chart/group-bar-chart.component';
-import { HorizontalPercentBarChartComponent } from './shared/component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
-import { CumulativeLineChartComponent } from './shared/component/cumulative-line-chart/cumulative-line-chart.component';
-import { StackedAreaChartComponent } from './shared/component/stacked-area-chart/stacked-area-chart.component';
-import { MultilineStyleComponent } from './shared/component/multiline-style/multiline-style.component';
-import { DailyScrumGraphComponent } from './shared/component/daily-scrum-graph/daily-scrum-graph.component';
-import { BarWithYAxisGroupComponent } from './shared/component/bar-with-y-axis-group/bar-with-y-axis-group.component';
-import { MultilineV2Component } from './shared/component/multiline-v2/multiline-v2.component';
-import { GroupedColumnPlusLineChartV2Component } from './shared/component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
-import { MultilineStyleV2Component } from './shared/component/multiline-style-v2/multiline-style-v2.component';
-import { TooltipV2Component } from './shared/component/tooltip-v2/tooltip-v2.component';
-import { HorizontalPercentBarChartv2Component } from './shared/component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
-import { RecommendationsComponent } from './shared/component/recommendations/recommendations.component';
-import { ChartWithFiltersComponent } from './shared/component/chart-with-filters/chart-with-filters.component';
-import { KpiAdditionalFilterComponent } from './shared/component/kpi-additional-filter/kpi-additional-filter.component';
-import { CircularProgressComponent } from './shared/component/circular-progress/circular-progress.component';
-import { ProgressbarComponent } from './shared/component/progressbar/progressbar.component';
-import { CircularchartComponent } from './shared/component/circularchart/circularchart.component';
-import { NumberchartComponent } from './shared/component/numberchart/numberchart.component';
-import { BarchartComponent } from './shared/component/barchart/barchart.component';
-import { LineBarChartComponent } from './shared/component/line-bar-chart/line-bar-chart.component';
-import { LineBarChartWithHowerComponent } from './shared/component/line-bar-chart-with-hover/line-bar-chart-with-hover.component';
-import { GaugechartComponent } from './shared/component/gaugechart/gaugechart.component';
-import { MultilineComponent } from './shared/component/multiline/multiline.component';
-import { GroupstackchartComponent } from './shared/component/groupedstackchart/groupstackchart.component';
-import { PiechartComponent } from './shared/component/piechart/piechart.component';
-import { KpiComponent } from './shared/component/kpi-line-gauge/kpi-line-gauge.component';
 import { AppInitializerService } from './core/services/app-initializer.service';
 import { ExcelService } from './core/services/excel.service';
 import { SharedService } from './core/services/shared.service';
@@ -119,7 +81,7 @@ import { HelperService } from './core/services/helper.service';
 import { GetAuthorizationService } from './core/services/get-authorization.service';
 import { JsonExportImportService } from './core/services/json-export-import.service';
 import { FeatureFlagsService } from './core/services/feature-toggle.service';
-import { SharedModuleModule } from './shared/module/shared-module.module';
+import { SharedModuleModule } from './shared/shared-module.module';
 import { AppRoutingModule } from './shared/module/app-routing.module';
 import { InterceptorModule } from './core/interceptors/interceptor.module';
 import { NgPrimeModuleModule } from './shared/module/ng-Prime-module.module';
@@ -136,46 +98,18 @@ export function initializeApp(appInitializerService: AppInitializerService) {
     declarations: [
         AppComponent,
         NavComponent,
-        CircularProgressComponent,
-        ProgressbarComponent,
-        CircularchartComponent,
-        NumberchartComponent,
-        BarchartComponent,
-        LineBarChartComponent,
-        LineBarChartWithHowerComponent,
-        GaugechartComponent,
-        MultilineComponent,
         ExecutiveComponent,
         MaturityComponent,
         FilterComponent,
         DashboardComponent,
-        GroupstackchartComponent,
-        PiechartComponent,
-        KpiComponent,
         ErrorComponent,
-        // FooterComponent,
         IterationComponent,
-        OverlappedProgressbarComponent,
-        HorizontalStackProgressbarComponent,
-        CircularProgressWithLegendsComponent,
         ExternalUrlDirective,
         KpiCardComponent,
         TrendIndicatorComponent,
-        TooltipComponent,
-        NoAccessComponent,
-        GroupedColumnPlusLineChartComponent,
         BacklogComponent,
-        TableComponent,
-        ExportExcelComponent,
-        CommentsComponent,
-        CommentsV2Component,
-        SsoAuthFailureComponent,
         UnauthorisedAccessComponent,
-        GroupBarChartComponent,
         MilestoneComponent,
-        HorizontalPercentBarChartComponent,
-        CumulativeLineChartComponent,
-        StackedAreaChartComponent,
         FeedbackComponent,
         KpiTableComponent,
         DailyScrumComponent,
@@ -183,12 +117,9 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         AssigneeBoardComponent,
         IssueCardComponent,
         IssueBodyComponent,
-        DailyScrumGraphComponent,
-        MultilineStyleComponent,
         DoraComponent,
         FeedbackComponent,
         DeveloperComponent,
-        BarWithYAxisGroupComponent,
         DeveloperComponent,
         PageNotFoundComponent,
         HeaderComponent,
@@ -197,20 +128,11 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         PrimaryFilterComponent,
         AdditionalFilterComponent,
         NavNewComponent,
-        RecentCommentsComponent,
         ExecutiveV2Component,
         DashboardV2Component,
         KpiCardV2Component,
-        MultilineV2Component,
         TrendIndicatorV2Component,
-        GroupedColumnPlusLineChartV2Component,
-        MultilineStyleV2Component,
-        TooltipV2Component,
-        HorizontalPercentBarChartv2Component,
         PageNotFoundComponent,
-        RecommendationsComponent,
-        ChartWithFiltersComponent,
-        KpiAdditionalFilterComponent,
         StickyHeaderV2Component
     ],
     imports: [
@@ -221,7 +143,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         HttpClientModule,
         InterceptorModule,
         AppRoutingModule,
-        // NgSelectModule,
         BrowserAnimationsModule,
         FontAwesomeModule,
         DragDropModule,

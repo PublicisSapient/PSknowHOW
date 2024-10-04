@@ -29,8 +29,9 @@ import { UserMgmtComponent } from './user-mgmt/user-mgmt.component';
 import { MyprofileComponent } from './myprofile/myprofile.component';
 import { AccessMgmtComponent } from './access-mgmt/access-mgmt.component';
 import { AutoApprovalComponent } from './auto-approval/auto-approval.component';
-import { SharedModuleModule } from 'src/app/shared/module/shared-module.module';
+import { SharedModuleModule } from 'src/app/shared/shared-module.module';
 import { NgPrimeModuleModule } from 'src/app/shared/module/ng-Prime-module.module';
+import { ViewNewUserAuthRequestComponent } from './view-new-user-auth-request/view-new-user-auth-request.component';
 
 
 @NgModule({
@@ -43,7 +44,17 @@ import { NgPrimeModuleModule } from 'src/app/shared/module/ng-Prime-module.modul
     SharedModuleModule,
     NgPrimeModuleModule,
   ],
-  declarations: [RaiseAccessRequestComponent, ProfileComponent, ViewRequestsComponent, RequestStatusComponent, UserMgmtComponent, MyprofileComponent, AccessMgmtComponent, AutoApprovalComponent],
+  declarations: [
+    RaiseAccessRequestComponent, 
+    ProfileComponent, 
+    ViewRequestsComponent, 
+    RequestStatusComponent, 
+    UserMgmtComponent, 
+    MyprofileComponent, 
+    AccessMgmtComponent, 
+    AutoApprovalComponent,
+    ViewNewUserAuthRequestComponent
+  ],
   providers: [],
   exports: [RaiseAccessRequestComponent]
 })

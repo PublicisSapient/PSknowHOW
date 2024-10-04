@@ -37,7 +37,7 @@ export const ConfigRoutes: Routes = [
             {
                 path: '',
                 canActivate: [GuestGuard],
-                loadChildren: () => import('./project-config/project-config.module').then(m => m.ProjectConfigModule), canLoad: [FeatureGuard],
+                loadChildren: () => import('./../project-config/project-config.module').then(m => m.ProjectConfigModule), canLoad: [FeatureGuard],
                 data: {
                   feature: "Project Config"
                 }
@@ -61,7 +61,7 @@ export const ConfigRoutes: Routes = [
             {
                 path: 'Profile',
                 canActivate: [GuestGuard],
-                loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule), canLoad: [FeatureGuard],
+                loadChildren: () => import('./../profile/profile.module').then(m => m.ProfileModule), canLoad: [FeatureGuard],
                 data: {
                   feature: "Profile"
                 }
