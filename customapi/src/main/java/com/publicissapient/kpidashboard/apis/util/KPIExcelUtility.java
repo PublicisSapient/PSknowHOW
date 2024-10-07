@@ -242,7 +242,7 @@ public class KPIExcelUtility {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sprint
 	 *            sprint
 	 * @param totalBugList
@@ -1028,7 +1028,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * populate excel data function for build frequency kpi
-	 * 
+	 *
 	 * @param kpiExcelData
 	 * @param projectName
 	 * @param buildFrequencyInfo
@@ -1579,7 +1579,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Common method to populate modal window of Iteration KPI's
-	 * 
+	 *
 	 * @param jiraIssue
 	 * @param fieldMapping
 	 * @param modalObjectMap
