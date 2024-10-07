@@ -40,7 +40,6 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.Metadata;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 
 /**
  * This class provides various methods to TEST operations on EditKPIConfig
@@ -66,7 +65,7 @@ public class EditKpiConfigServiceImplTest {
 	@InjectMocks
 	private EditKpiConfigServiceImpl editKpiConfigServiceImpl;
 	@Mock
-	private BoardMetadataRepository boardMetadataRepository;
+	private ConfigHelperService configHelperService;
 	@Mock
 	private AccountHierarchyRepository accountHierarchyRepository;
 
@@ -127,7 +126,7 @@ public class EditKpiConfigServiceImplTest {
 		testType = "Test";
 		List<BoardMetadata> testListBoardMetadata = new ArrayList<>();
 		testListBoardMetadata.add(testBoardMetadata);
-		when(boardMetadataRepository.findByProjectBasicConfigId(new ObjectId(testProjectconfigid)))
+		when(configHelperService.getBoardMetaData(new ObjectId(testProjectconfigid)))
 				.thenReturn(testBoardMetadata);
 		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigIdAndReleaseStateOrderByEndDateDesc("release",
 				new ObjectId(testProjectconfigid), "Released")).thenReturn(ahlist);

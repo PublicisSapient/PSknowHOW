@@ -19,11 +19,11 @@ export class ParentFilterComponent implements OnChanges {
   additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
   filterValue: string = '';
-  constructor(private helperService: HelperService) { }
+  constructor(public helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['parentFilterConfig']) {
-      if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
+      if (changes['parentFilterConfig'].currentValue['labelName'] === 'Organization Level') {
         this.fillAdditionalFilterLevels();
         this.filterLevels = Object.keys(this.filterData).map((item) => {
           return {
@@ -47,7 +47,7 @@ export class ParentFilterComponent implements OnChanges {
           this.handleSelectedLevelChange();
         });
       } else {
-        this.filterLevels = this.filterData[this['parentFilterConfig']['labelName']]?.map((item) => {
+        this.filterLevels = this.filterData[changes['parentFilterConfig'].currentValue['labelName']]?.map((item) => {
           return {
             nodeId: item.nodeId,
             nodeName: item.nodeName
@@ -61,12 +61,12 @@ export class ParentFilterComponent implements OnChanges {
             if (Array.isArray(this.stateFilters)) {
               this.stateFilters = this.stateFilters[0];
             }
-            if (this.stateFilters['labelName']?.toLowerCase() === this['parentFilterConfig']['labelName']?.toLowerCase()) {
+            if (this.stateFilters['labelName']?.toLowerCase() === changes['parentFilterConfig'].currentValue['labelName']?.toLowerCase()) {
               this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId === this.stateFilters['nodeId'] })[0];
             } else if (this.stateFilters['labelName']?.toLowerCase() === 'sprint' || this.stateFilters['labelName']?.toLowerCase() === 'release') {
               this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId === this.stateFilters['parentId'] })[0];
             } else {
-              this.selectedLevel = this.filterLevels[0];
+              this.selectedLevel = this.filterLevels?.length ? this.filterLevels[0] : {};
               this.handleSelectedLevelChange(true);
               return;
             }
@@ -96,11 +96,11 @@ export class ParentFilterComponent implements OnChanges {
 
   handleSelectedLevelChange(parentLevelChanged = false) {
     if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
-      this.onSelectedLevelChange.emit(this.selectedLevel.nodeName);
+      this.onSelectedLevelChange.emit(this.selectedLevel?.nodeName);
       if (parentLevelChanged) {
         this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel.nodeName, 'primary_level': null });
       } else {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel.nodeName });
+        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName });
       }
     } else {
       let selectedNode = this.filterData[this['parentFilterConfig']['labelName']].filter((filter) => filter.nodeId === this.selectedLevel.nodeId);

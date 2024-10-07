@@ -110,13 +110,27 @@ export class MultilineV2Component implements OnChanges {
       d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
       d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
-      const formatedData = this?.data[0]?.value.map(details => {
-        const XValue = details.date || details.sSprintName;
-        const projectName = '_' + this.service.getSelectedTrends()[0]?.nodeName;
-        const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName, '') : XValue;
-        return { ...details, sortSprint: removeProject };
-      })
-      const isAllBelowFromThreshold = this.data[0]?.value.every(details => ((Math.round(details.value * 100) / 100) < this.thresholdValue))
+      let formatedData;
+      // if (this.board !== 'backlog') {
+        formatedData = this.data[0]?.value?.map(details => {
+          const XValue = details.date || details.sSprintName;
+          const projectName = '_' + this.service.getSelectedTrends()[0]?.nodeName;
+          const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName, '') : XValue;
+          return { ...details, sortSprint: removeProject };
+        })
+      // } else {
+      //   formatedData = this?.data.map((project, i) => {
+      //     const index = this.service.getSelectedTrends().findIndex(seleceProject => seleceProject.nodeName.toLowerCase() === project.data.toLowerCase())
+      //     project.value.map(details => {
+      //       const XValue = details.date || details.sSprintName;
+      //       const projectName = '_' + this.service.getSelectedTrends()[index]?.nodeName;
+      //       const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName, '') : XValue;
+      //       details['sortSprint'] = removeProject;
+      //     })
+      //     return project;
+      //   })
+      // }
+      const isAllBelowFromThreshold = this.data[0]?.value?.every(details => ((Math.round(details.value * 100) / 100) < this.thresholdValue))
       if (this.data[0]) {
         this.data[0].value = formatedData;
       }
@@ -149,7 +163,7 @@ export class MultilineV2Component implements OnChanges {
       const showWeek = false;
       const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
       const board = this.board;
-      const sprintList = data[0]?.value.map(details => details.date || details?.sortSprint);
+      const sprintList = data[0]?.value?.map(details => details.date || details?.sortSprint);
       const unitAbbs = {
         'hours': 'Hrs',
         'sp': 'SP',
@@ -168,19 +182,19 @@ export class MultilineV2Component implements OnChanges {
       let maxObjectNo = 0;
       // used to find object whose value is max on x axis
       for (const maxCount in data) {
-        if (maxXValueCount < data[maxCount].value.length) {
-          maxXValueCount = data[maxCount].value.length;
+        if (maxXValueCount < data[maxCount].value?.length) {
+          maxXValueCount = data[maxCount].value?.length;
           maxObjectNo = parseInt(maxCount, 10);
         }
       }
       let maxYValue = 0;
       // used to find maxvalue of y axis
       for (const i in data) {
-        for (let j = 0; j < data[i].value.length; j++) {
+        for (let j = 0; j < data[i].value?.length; j++) {
           data[i].value[j].xName = data[i]?.value[j]?.hasOwnProperty('xAxisTick')
             ? data[i]?.value[j]?.xAxisTick
             : j + 1;
-          if (maxYValue < parseInt(data[i].value[j].value, 10)) {
+          if (maxYValue < parseInt(data[i].value[j]?.value, 10)) {
             maxYValue = data[i].value[j].value;
           }
         }
@@ -196,8 +210,8 @@ export class MultilineV2Component implements OnChanges {
       }
 
       /* Format Data */
-      data.forEach(function (d) {
-        d.value.forEach(function (dataObj: { value: number }) {
+      data?.forEach(function (d) {
+        d.value?.forEach(function (dataObj: { value: number }) {
           dataObj.value = +dataObj.value;
         });
       });
@@ -217,7 +231,7 @@ export class MultilineV2Component implements OnChanges {
           .rangeRound([0, width])
           .padding(0)
           .domain(
-            data[maxObjectNo].value.map(function (d, i) {
+            data[maxObjectNo].value?.map(function (d, i) {
               let returnObj = '';
               if (board == 'dora') {
                 returnObj = d.date;
@@ -264,7 +278,7 @@ export class MultilineV2Component implements OnChanges {
         .domain([0, maxYValue])
         .range([height - margin, 0]);
 
-      if (selectedProjectCount === 1 && (board === 'my-knowhow' || board === 'quality' || board ==='speed' || board === 'value' || board === 'developer' || board === 'backlog' || board === 'dora')) {
+      if (selectedProjectCount === 1 && (board === 'my-knowhow' || board === 'quality' || board === 'speed' || board === 'value' || board === 'developer' || board === 'backlog' || board === 'dora')) {
         d3.select(this.elem).select('#horizontalSVG').select('div').remove();
         d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
         /** Adding tooltip container */
@@ -458,7 +472,7 @@ export class MultilineV2Component implements OnChanges {
         .selectAll('.tick line')
         .style('display', 'none');
 
-        d3.select(this.elem).select('#verticalSVG')
+      d3.select(this.elem).select('#verticalSVG')
         .select('.y.axis')
         .selectAll('.tick line')
         .style('display', 'none');
@@ -647,7 +661,7 @@ export class MultilineV2Component implements OnChanges {
 
       // used to allign data on x axis ticks
       svgX
-        .select('.x')
+        .select('.x-axis')
         .selectAll('.tick')
         .each(function (dataObj, index) {
           const tick = d3.select(this);

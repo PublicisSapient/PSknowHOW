@@ -34,12 +34,13 @@ export class AdditionalFilterComponent implements OnChanges {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
         this.selectedFilters = [];
-
         this.selectedTrends = this.service.getSelectedTrends();
 
         if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
           this.filterData = [];
           this.previousSelectedTrends = [...this.selectedTrends];
+          // project changed, reset addtnl. filters
+          this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         }
 
         Object.keys(data).forEach((f, index) => {
@@ -47,15 +48,7 @@ export class AdditionalFilterComponent implements OnChanges {
             if (this.selectedTab === 'developer') {
               data[f].forEach(element => {
                 if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                  const correctLevelMapping = {
-                    Sprint: 'sprint',
-                    Squad: 'sqd'
-                  }
-                  if (this.filterData[index]?.length && correctLevelMapping[this.additionalFilterConfig[index]?.defaultLevel?.labelName] === this.filterData[index][0].labelName) {
                     this.filterData[index].push(element);
-                  } else {
-                    this.filterData[index] = data[f];
-                  }
                 }
               });
 
@@ -104,9 +97,10 @@ export class AdditionalFilterComponent implements OnChanges {
         } else {
           this.applyDefaultFilter();
         }
-      } else {
-        this.filterData = [];
-      }
+      } 
+      // else {
+      //   this.filterData = [];
+      // }
     }));
   }
 
@@ -143,11 +137,12 @@ export class AdditionalFilterComponent implements OnChanges {
           this.selectedFilters = ['Overall'];
         }
       }
+      Promise.resolve().then(() => {
+        this.applyAdditionalFilter(fakeEvent, index + 1);
+      });
+     
     });
-
-    Promise.resolve().then(() => {
-      this.applyAdditionalFilter(fakeEvent, 0 + 1);
-    });
+    
   }
 
   ngOnChanges(changes: SimpleChanges): void {

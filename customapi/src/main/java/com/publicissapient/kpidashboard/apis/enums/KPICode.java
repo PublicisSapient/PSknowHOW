@@ -269,11 +269,15 @@ public enum KPICode {
     /**
      * Change Failure Rate kpi code for kanban
      */
-    CHANGE_FAILURE_RATE_KANBAN("kpi117", KPISource.JENKINSKANBAN.name()),
+    CHANGE_FAILURE_RATE_KANBAN("kpi184", KPISource.JENKINSKANBAN.name()),
     /**
      * Deployment Frequency kpi code
      */
     DEPLOYMENT_FREQUENCY("kpi118", KPISource.JENKINS.name()),
+    /**
+     * Deployment Frequency kpi code for kanban
+     */
+    DEPLOYMENT_FREQUENCY_KANBAN("kpi183", KPISource.JENKINSKANBAN.name()),
     /**
      * Open Ticket Aging By Priority kpi code
      */
@@ -508,6 +512,18 @@ public enum KPICode {
      * Defect Count By (Release->Quality)
      */
     DEFECT_COUNT_BY("kpi178", KPISource.JIRA.name()),
+    /**
+     * Revert Rate (Developer)
+     */
+    REVERT_RATE("kpi180", KPISource.BITBUCKET.name()),
+    /**
+     * PR Decline Rate (Developer)
+     */
+    PR_DECLINE_RATE("kpi181", KPISource.BITBUCKET.name()),
+    /**
+     * Success Rate (Developer)
+     */
+    PR_SUCCESS_RATE("kpi182", KPISource.BITBUCKET.name()),
     /**
      * Innovation Rate (Developer)
      */

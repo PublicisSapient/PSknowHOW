@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -44,7 +45,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.SymbolValueUnit;
@@ -393,6 +393,7 @@ public final class CommonUtils {
 		cacheManagerMap.put(Constant.KPI_REQUEST_TRACKER_ID_KEY, "requestTrackerCache");
 
 		cacheManagerMap.put(CommonConstant.CACHE_FIELD_MAPPING_MAP, CommonConstant.CACHE_FIELD_MAPPING_MAP);
+		cacheManagerMap.put(CommonConstant.CACHE_BOARD_META_DATA_MAP, CommonConstant.CACHE_BOARD_META_DATA_MAP);
 		cacheManagerMap.put(CommonConstant.CACHE_TOOL_CONFIG_MAP, CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheManagerMap.put(CommonConstant.CACHE_PROJECT_CONFIG_MAP, CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 
@@ -509,8 +510,11 @@ public final class CommonUtils {
 
 	/**
 	 * Method to get next working date i.e excluding sat sun
-	 * @param currentDate currentDate
-	 * @param daysToAdd count of days to add
+	 * 
+	 * @param currentDate
+	 *            currentDate
+	 * @param daysToAdd
+	 *            count of days to add
 	 * @return
 	 */
 	public static java.time.LocalDate getNextWorkingDate(java.time.LocalDate currentDate, long daysToAdd) {
@@ -542,7 +546,6 @@ public final class CommonUtils {
 		}
 		return sb.toString();
 	}
-
 
 	// -- auth-N-auth changes starts here ------
 
@@ -580,5 +583,18 @@ public final class CommonUtils {
 		return uriBuilder.toUriString();
 	}
 
-	// -- auth-N-auth changes ends here ------
+	public static boolean checkObjectNullValue(Object value) {
+		if (ObjectUtils.isEmpty(value)) {
+			return true;
+		} else {
+			if (value instanceof List) {
+				return CollectionUtils.isEmpty((List<?>) value);
+			}
+			if (value instanceof String[]) {
+				return ((String[]) value).length < 1;
+			}
+
+		}
+		return false;
+	}
 }

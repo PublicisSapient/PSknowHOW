@@ -94,8 +94,6 @@ public class CommonServiceImpl implements CommonService {
 
 		String maturityRange = Arrays.toString(maturityRangeList.toArray());
 
-		log.info("Fetching maturity level for {} with value: {} and range: {}", kpiId, actualMaturityVal,
-				maturityRange);
 		try {
 			if (actualMaturityVal == null || Constant.NOT_AVAILABLE.equalsIgnoreCase(actualMaturityVal)) {
 				return Constant.ZERO;

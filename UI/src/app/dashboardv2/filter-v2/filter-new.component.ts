@@ -65,7 +65,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedBoard: any;
   hierarchies: any;
   noSprint: boolean = false;
-  projectList = [];
+  projectList = null;
+  blockUI: boolean = false;
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -158,6 +159,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (!this.dateRangeFilter.types.includes('Months')) {
         this.dateRangeFilter.types.push('Months');
       }
+      if (this.selectedTab === 'developer') {
+        this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
+      }
     } else {
       this.kanban = false;
       this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
@@ -192,6 +196,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   // unsubscribing all Kpi Request
   ngOnDestroy() {
     this.subscriptions?.forEach(subscription => subscription?.unsubscribe());
+    this.parentFilterConfig = {};
+    this.primaryFilterConfig = {};
+    this.boardData = {};
+    this.projectList = null;
   }
 
   setSelectedDateType(label: string) {
@@ -321,6 +329,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compareStringArrays(array1, array2) {
+    if (!array1 || !array2) {
+      return false;
+    }
     // Check if both arrays have the same length
     if (array1.length !== array2.length) {
       return false;
@@ -338,6 +349,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   getBoardConfig(projectList, event = null) {
     if (!this.compareStringArrays(projectList, this.projectList)) {
+      this.blockUI = true;
       this.projectList = [...projectList];
       this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
         (response) => {
@@ -359,7 +371,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                     }
                   }
 
-                  if (board.boardSlug !== 'developer') {
+                  if (board.boardSlug !== 'developer' && board.boardSlug !== 'dora') {
                     board.filters.additionalFilters.forEach(element => {
                       if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
                         element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
@@ -389,6 +401,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.primaryFilterConfig = {};
             this.additionalFilterConfig = [];
             this.processBoardData(data);
+            this.blockUI = false;
             if (event) {
               this.prepareKPICalls(event);
             }
@@ -446,24 +459,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
 
-        Object.keys(stateFilters['additional_level']).forEach((level) => {
-          stateFilters['additional_level'][level] = stateFilters['additional_level'][level].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
-          if (!stateFilters['additional_level'][level]?.length) {
-            delete stateFilters['additional_level'][level];
-          }
-        });
-
-        if (!Object.keys(stateFilters['additional_level']).length) {
-          delete stateFilters['additional_level'];
-        }
+        delete stateFilters['additional_level'];
 
         this.filterApplyData['selectedMap']['Project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
         this.service.setSelectedTrends(stateFilters['primary_level']);
-        if (!stateFilters['additional_level'] && stateFilters['primary_level']) {
-          this.handlePrimaryFilterChange(stateFilters['primary_level']);
-        } else {
-          this.handlePrimaryFilterChange(stateFilters);
-        }
+
+        this.handlePrimaryFilterChange(stateFilters['primary_level']);
         this.helperService.setBackupOfFilterSelectionState(stateFilters);
       }
     }
@@ -881,6 +882,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   fetchData() {
+    this.blockUI = true;
     const sprintId = this.selectedSprint['nodeId'];
     const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
     if (sprintState?.toLowerCase() === 'active') {
@@ -908,6 +910,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.lastSyncData = response['data'];
 
           if (response['data']?.fetchSuccessful === true) {
+            this.blockUI = false;
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'SUCCESS';
             this.handlePrimaryFilterChange(this.previousFilterEvent);
@@ -925,6 +928,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
 
         }, error => {
+          this.blockUI = false;
           this.subject.next(true);
           this.lastSyncData = {};
           this.messageService.add({

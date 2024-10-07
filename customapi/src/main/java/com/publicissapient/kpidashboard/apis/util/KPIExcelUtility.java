@@ -242,7 +242,7 @@ public class KPIExcelUtility {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sprint
 	 *            sprint
 	 * @param totalBugList
@@ -857,7 +857,7 @@ public class KPIExcelUtility {
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
 						LocalDateTime dateTime = LocalDateTime.parse(epic.getChangeDate(), formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
-						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DATE_YEAR_MONTH_FORMAT));
+						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_FORMAT));
 					}
 					excelData.setMonth(month);
 					excelData.setEpicEndDate(epicEndDate);
@@ -927,7 +927,7 @@ public class KPIExcelUtility {
 				excelData.setProjectName(projectName);
 				excelData.setReleaseName(pv.getName());
 				excelData.setReleaseDesc(pv.getDescription());
-				excelData.setReleaseEndDate(pv.getReleaseDate().toString(DATE_YEAR_MONTH_FORMAT));
+				excelData.setReleaseEndDate(pv.getReleaseDate().toString(DateUtil.DISPLAY_DATE_FORMAT));
 				excelData.setMonth(pv.getReleaseDate().toString(MONTH_YEAR_FORMAT));
 				kpiExcelData.add(excelData);
 
@@ -1028,7 +1028,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * populate excel data function for build frequency kpi
-	 * 
+	 *
 	 * @param kpiExcelData
 	 * @param projectName
 	 * @param buildFrequencyInfo
@@ -1152,8 +1152,7 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateCodeCommit(List<RepoToolValidationData> repoToolValidationDataList,
-			List<KPIExcelData> kpiExcelData) {
+	public static void populateCodeCommit(List<RepoToolValidationData>repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
 
 		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
 			repoToolValidationDataList.forEach(repoToolValidationData -> {
@@ -1165,6 +1164,59 @@ public class KPIExcelUtility {
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setNumberOfCommit(String.valueOf(repoToolValidationData.getCommitCount()));
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
+    public static void populateRevertRateExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+
+        if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+            repoToolValidationDataList.forEach(repoToolValidationData -> {
+                KPIExcelData excelData = new KPIExcelData();
+                excelData.setProject(repoToolValidationData.getProjectName());
+                excelData.setRepo(repoToolValidationData.getRepoUrl());
+                excelData.setBranch(repoToolValidationData.getBranchName());
+                excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+                excelData.setDaysWeeks(repoToolValidationData.getDate());
+                excelData.setRevertRate(roundingOff(repoToolValidationData.getRevertRate()));
+                excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+                kpiExcelData.add(excelData);
+            });
+        }
+
+    }
+
+	public static void populatePRSuccessRateExcelData(List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> kpiExcelData) {
+
+        if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+            repoToolValidationDataList.forEach(repoToolValidationData -> {
+                KPIExcelData excelData = new KPIExcelData();
+                excelData.setProject(repoToolValidationData.getProjectName());
+                excelData.setRepo(repoToolValidationData.getRepoUrl());
+                excelData.setBranch(repoToolValidationData.getBranchName());
+                excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+                excelData.setDaysWeeks(repoToolValidationData.getDate());
+                excelData.setPRSccessRate(repoToolValidationData.getPRSuccessRate());
+                excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+                kpiExcelData.add(excelData);
+            });
+        }
+
+    }
+
+	public static void populatePRDeclineRateExcelData(List<RepoToolValidationData> repoToolValidationDataList,
+			List<KPIExcelData> kpiExcelData) {
+
+		if (CollectionUtils.isNotEmpty(repoToolValidationDataList)) {
+			repoToolValidationDataList.forEach(repoToolValidationData -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(repoToolValidationData.getProjectName());
+				excelData.setRepo(repoToolValidationData.getRepoUrl());
+				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setPrDeclineRate(roundingOff(repoToolValidationData.getPrDeclineRate()));
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -1527,7 +1579,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Common method to populate modal window of Iteration KPI's
-	 * 
+	 *
 	 * @param jiraIssue
 	 * @param fieldMapping
 	 * @param modalObjectMap
@@ -1659,19 +1711,18 @@ public class KPIExcelUtility {
 	private static HashMap<String, String> getStatusNameAndWeekName(
 			Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
 		HashMap<String, String> data = new HashMap<>();
-		for (String week : weekAndTypeMap.keySet()) {
-			for (String type : weekAndTypeMap.get(week).keySet()) {
-				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
+		for (Map.Entry<String, Map<String, List<JiraIssue>>> weekEntry : weekAndTypeMap.entrySet()) {
+			for (Map.Entry<String, List<JiraIssue>> typeEntry : weekEntry.getValue().entrySet()) {
+				for (JiraIssue issue : typeEntry.getValue()) {
 					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
-						data.put(STATUS, type);
-						data.put(WEEK, week);
+						data.put(STATUS, typeEntry.getKey());
+						data.put(WEEK, weekEntry.getKey());
 					}
 				}
 			}
 		}
 		return data;
 	}
-
 	public static void populateReleaseDefectRelatedExcelData(List<JiraIssue> jiraIssues,
 			List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
