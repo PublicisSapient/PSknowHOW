@@ -19,9 +19,12 @@
 package com.publicissapient.kpidashboard.apis.filter.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +32,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
+import com.publicissapient.kpidashboard.apis.data.ProjectHierarchyDataFactory;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,8 +69,6 @@ import com.publicissapient.kpidashboard.common.repository.application.KanbanAcco
 public class AccountHierarchyServiceKanbanImplTest {
 	List<KanbanAccountHierarchy> kanbanAccountHierarchyList = new ArrayList<>();
 	@Mock
-	private KanbanAccountHierarchyRepository accountHierarchyRepository;
-	@Mock
 	private CacheService cacheService;
 	@Mock
 	private CustomApiConfig customApiConfig;
@@ -74,6 +84,14 @@ public class AccountHierarchyServiceKanbanImplTest {
 	private AccountHierarchyServiceKanbanImpl accountHierarchyServiceImpl;
 	@Mock
 	private FilterHelperService filterHelperService;
+	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
+
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
+
+	@Mock
+	private ProjectBasicConfigService projectBasicConfigService;
 	private List<HierarchyLevel> hierarchyLevels;
 
 	@Before
@@ -81,6 +99,29 @@ public class AccountHierarchyServiceKanbanImplTest {
 		kanbanAccountHierarchyList = AccountHierarchiesKanbanDataFactory.newInstance().getAccountHierarchies();
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("66f88deaed6a46340d6ab05e"));
+		projectBasicConfig.setProjectName("Global Deploy D1");
+		projectBasicConfig.setUpdatedBy("KnowHOW System Admin");
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setSaveAssigneeDetails(false);
+		projectBasicConfig.setDeveloperKpiEnabled(false);
+		projectBasicConfig.setProjectOnHold(false);
+		projectBasicConfig.setProjectNodeId("project_unique_004");
+
+		List<HierarchyValue> hierarchyList = new ArrayList<>();
+		hierarchyList.add(new HierarchyValue(new HierarchyLevel(1, "hierarchyLevelOne", "BU",""), "hierarchyLevelOne_unique_001", "Sample One Value"));
+		hierarchyList.add(new HierarchyValue(new HierarchyLevel(2, "hierarchyLevelTwo", "Vertical",""), "hierarchyLevelTwo_unique_001", "Sample Two Value"));
+		hierarchyList.add(new HierarchyValue(new HierarchyLevel(3, "hierarchyLevelThree", "Account",""), "hierarchyLevelThree_unique_001", "Sample Three Value"));
+		projectBasicConfig.setHierarchy(hierarchyList);
+
+		when(projectBasicConfigService.getAllProjectsBasicConfigs(anyBoolean())).thenReturn(Arrays.asList(projectBasicConfig));
+
+		OrganizationHierarchyDataFactory organizationHierarchyDataFactory=OrganizationHierarchyDataFactory.newInstance();
+		ProjectHierarchyDataFactory projectHierarchyDataFactory=ProjectHierarchyDataFactory.newInstance();
+		List<OrganizationHierarchy> organizationHierarchies=organizationHierarchyDataFactory.getOrganizationHierarchies();
+		when(organizationHierarchyService.findAll()).thenReturn(organizationHierarchies);
+		when(projectHierarchyService.findAllByBasicProjectConfigIds(anyList())).thenReturn(projectHierarchyDataFactory.getProjectHierarchies());
 
 	}
 
@@ -106,9 +147,8 @@ public class AccountHierarchyServiceKanbanImplTest {
 	@Test
 	public void testGetFilteredList_ProjectLevelWithFilter() {
 		Set<String> userProjects = new HashSet<>();
-		userProjects.add("6335368249794a18e8a4479f");
+		userProjects.add("66f88deaed6a46340d6ab05e");
 		AccountFilterRequest request = FilterRequestDataFactory.newInstance().getFilterRequest();
-		when(accountHierarchyRepository.findAll()).thenReturn(kanbanAccountHierarchyList);
 		List<AccountHierarchyDataKanban> accountHierarchies = accountHierarchyServiceImpl.createHierarchyData();
 		when(cacheService.cacheAccountHierarchyKanbanData()).thenReturn(accountHierarchies);
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
@@ -119,9 +159,8 @@ public class AccountHierarchyServiceKanbanImplTest {
 	@Test
 	public void testGetFilteredList_Project() {
 		Set<String> userProjects = new HashSet<>();
-		userProjects.add("6335368249794a18e8a4479f");
+		userProjects.add("66f88deaed6a46340d6ab05e");
 		AccountFilterRequest request = FilterRequestDataFactory.newInstance().getFilterRequest();
-		when(accountHierarchyRepository.findAll()).thenReturn(kanbanAccountHierarchyList);
 		Map<String, Integer> map = new HashMap<>();
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
@@ -135,6 +174,6 @@ public class AccountHierarchyServiceKanbanImplTest {
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		when(tokenAuthenticationService.getUserProjects()).thenReturn(userProjects);
 		Set<AccountFilteredData> filterList = accountHierarchyServiceImpl.getFilteredList(request);
-		Assert.assertEquals(4, filterList.size());
+		Assert.assertEquals(filterList.size(),7);
 	}
 }

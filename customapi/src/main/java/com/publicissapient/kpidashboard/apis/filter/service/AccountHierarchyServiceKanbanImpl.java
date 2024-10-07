@@ -96,6 +96,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 		Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
 		if (!authorizedProjectsService.ifSuperAdminUser() && CollectionUtils.isNotEmpty(hierarchyDataAll)) {
 			hierarchyDataAll = hierarchyDataAll.stream()
+					.filter(data -> data.getBasicProjectConfigId()!=null)
 					.filter(data -> basicProjectConfigIds.contains(data.getBasicProjectConfigId().toHexString()))
 					.collect(Collectors.toList());
 		}
@@ -230,7 +231,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 			Map<String, Integer> hierarchyLevelIdMap) {
 		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(), hierarchy.getParentId(),
 				hierarchy.getHierarchyLevelId(), hierarchy);
-		node.setLevel(hierarchyLevelIdMap.get(hierarchy.getHierarchyLevelId()));
+		node.setLevel(hierarchyLevelIdMap.getOrDefault(hierarchy.getHierarchyLevelId(), 0));
 		accountHierarchyData.setLabelName(hierarchy.getHierarchyLevelId());
 		accountHierarchyData.setLeafNodeId(hierarchy.getNodeId());
 		if (CollectionUtils.isEmpty(accountHierarchyData.getNode())) {

@@ -32,7 +32,7 @@ public class OrganizationHierarchyServiceImplTest {
 
 	@Before
 	public void setUp() {
-		organizationHierarchyList = OrganizationHierarchyDataFactory.newInstance("").getOrganizationHierarchies();
+		organizationHierarchyList = OrganizationHierarchyDataFactory.newInstance().getOrganizationHierarchies();
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class OrganizationHierarchyServiceImplTest {
 	public void testFindByNodeId() {
 		OrganizationHierarchy orgHierarchy = new OrganizationHierarchy();
 
-		orgHierarchy.setNodeId("project_unique_001");
+		orgHierarchy.setNodeId("project_unique_004");
 		orgHierarchy.setNodeName("Test Project");
 		orgHierarchy.setNodeDisplayName("Test Project");
 		orgHierarchy.setHierarchyLevelId("project");
@@ -58,7 +58,7 @@ public class OrganizationHierarchyServiceImplTest {
 
 		when(configHelperService.loadAllOrganizationHierarchy()).thenReturn(organizationHierarchyList);
 
-		OrganizationHierarchy result = organizationHierarchyService.findByNodeId("project_unique_001");
+		OrganizationHierarchy result = organizationHierarchyService.findByNodeId("project_unique_004");
 
 		assertEquals(orgHierarchy, result);
 	}
