@@ -329,7 +329,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compareStringArrays(array1, array2) {
-    if(!array1 || !array2) {
+    if (!array1 || !array2) {
       return false;
     }
     // Check if both arrays have the same length
@@ -371,7 +371,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                     }
                   }
 
-                  if (board.boardSlug !== 'developer' &&  board.boardSlug !== 'dora') {
+                  if (board.boardSlug !== 'developer' && board.boardSlug !== 'dora') {
                     board.filters.additionalFilters.forEach(element => {
                       if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
                         element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
@@ -459,24 +459,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
 
-        Object.keys(stateFilters['additional_level']).forEach((level) => {
-          stateFilters['additional_level'][level] = stateFilters['additional_level'][level].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
-          if (!stateFilters['additional_level'][level]?.length) {
-            delete stateFilters['additional_level'][level];
-          }
-        });
-
-        if (!Object.keys(stateFilters['additional_level']).length) {
-          delete stateFilters['additional_level'];
-        }
+        delete stateFilters['additional_level'];
 
         this.filterApplyData['selectedMap']['Project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
         this.service.setSelectedTrends(stateFilters['primary_level']);
-        if (!stateFilters['additional_level'] && stateFilters['primary_level']) {
-          this.handlePrimaryFilterChange(stateFilters['primary_level']);
-        } else {
-          this.handlePrimaryFilterChange(stateFilters);
-        }
+
+        this.handlePrimaryFilterChange(stateFilters['primary_level']);
         this.helperService.setBackupOfFilterSelectionState(stateFilters);
       }
     }

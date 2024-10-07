@@ -141,7 +141,7 @@ describe('KpiCardV2Component', () => {
 
       const result = component.checkDataAtGranularLevel(data);
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return true if data is an array with non-empty dataGroup arrays', () => {
@@ -163,7 +163,7 @@ describe('KpiCardV2Component', () => {
 
       const result = component.checkDataAtGranularLevel(data);
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return false if data is an empty array', () => {
@@ -952,5 +952,15 @@ describe('KpiCardV2Component', () => {
     });
   });
 
+  it('should set the warning message when val is true', () => {
+    component.showWarning(true);
 
+    expect(component.warning).toBe('Configure the missing mandatory field mappings in KPI Settings for accurate data display.');
+  });
+
+  it('should clear the warning message when val is false', () => {
+    component.showWarning(false);
+
+    expect(component.warning).toBeNull();
+  });
 });

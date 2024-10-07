@@ -45,7 +45,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.SymbolValueUnit;
@@ -394,6 +393,7 @@ public final class CommonUtils {
 		cacheManagerMap.put(Constant.KPI_REQUEST_TRACKER_ID_KEY, "requestTrackerCache");
 
 		cacheManagerMap.put(CommonConstant.CACHE_FIELD_MAPPING_MAP, CommonConstant.CACHE_FIELD_MAPPING_MAP);
+		cacheManagerMap.put(CommonConstant.CACHE_BOARD_META_DATA_MAP, CommonConstant.CACHE_BOARD_META_DATA_MAP);
 		cacheManagerMap.put(CommonConstant.CACHE_TOOL_CONFIG_MAP, CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheManagerMap.put(CommonConstant.CACHE_PROJECT_CONFIG_MAP, CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 
