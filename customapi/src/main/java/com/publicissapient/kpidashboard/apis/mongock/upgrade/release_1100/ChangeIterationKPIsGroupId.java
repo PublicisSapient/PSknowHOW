@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author purgupta2
  */
-@ChangeUnit(id = "change_iteration_kpis_groupId", order = "11001", author = "purgupta2", systemVersion = "11.0.0")
+@ChangeUnit(id = "change_iteration_kpis_groupId", order = "11001", author = "purgupta2", systemVersion = "Test.0.0")
 public class ChangeIterationKPIsGroupId {
 	private final MongoTemplate mongoTemplate;
 
