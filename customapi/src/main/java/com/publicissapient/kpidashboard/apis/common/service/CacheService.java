@@ -89,6 +89,8 @@ public interface CacheService {
 
 	Object cacheFieldMappingMapData();
 
+	Object cacheBoardMetaDataMapData();
+
 	Object cacheToolConfigMapData();
 
 	Object cacheProjectToolConfigMapData();

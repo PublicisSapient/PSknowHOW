@@ -131,6 +131,14 @@ public class CacheServiceImpl implements CacheService {
 
 	}
 	
+	@Cacheable(CommonConstant.CACHE_BOARD_META_DATA_MAP)
+	@Override
+	public Object cacheBoardMetaDataMapData() {
+		log.info("updating BoardMetaData Cache");
+		configHelperService.loadBoardMetaData();
+		return configHelperService.getConfigMapData(CommonConstant.CACHE_BOARD_META_DATA_MAP);
+
+	}
 
 	@Cacheable(CommonConstant.CACHE_TOOL_CONFIG_MAP)
 	@Override
