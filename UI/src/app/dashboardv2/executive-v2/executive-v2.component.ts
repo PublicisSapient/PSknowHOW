@@ -768,18 +768,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   updateXAxisTicks(localVariable) {
-    let localVarKpi = localVariable['kpi127'] || localVariable['kpi170'] || localVariable['kpi3']
-    if (localVarKpi) {
-      if (localVarKpi.trendValueList && localVarKpi.xAxisValues) {
-        localVarKpi.trendValueList.forEach(trendElem => {
-          trendElem.value.forEach(valElem => {
-            if (valElem.value.length === 5 && localVarKpi.xAxisValues.length === 5) {
-              valElem.value.forEach((element, index) => {
-                element['xAxisTick'] = localVarKpi.xAxisValues[index];
-              });
-            }
+    for(const kpi in localVariable){
+      const localVarKpi = localVariable[kpi].trendValueList && localVariable[kpi].xAxisValues
+      if (localVarKpi) {
+          localVariable[kpi].trendValueList.forEach(trendElem => {
+            trendElem.value.forEach(valElem => {
+              if (valElem.value.length === 5 && localVariable[kpi].xAxisValues.length === 5) {
+                valElem.value.forEach((element, index) => {
+                  element['xAxisTick'] = localVariable[kpi].xAxisValues[index];
+                });
+              }
+            });
           });
-        });
       }
     }
   }

@@ -4365,7 +4365,7 @@
         }
       ]
     },
-    "xAxisLabel" : "Duration",
+    "xAxisLabel" : "Range",
     "yAxisLabel" : "Percentage",
     "isPositiveTrend" : false,
     "upperThresholdBG" : "red" ,
