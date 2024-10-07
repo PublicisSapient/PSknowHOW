@@ -22,6 +22,7 @@
 package com.publicissapient.kpidashboard.apis.filter.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
@@ -35,6 +36,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
+import com.publicissapient.kpidashboard.apis.data.ProjectHierarchyDataFactory;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
+import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,6 +105,15 @@ public class AccountHierarchyServiceImplTest {
 	private List<AccountHierarchyData> accountHierarchyDataList;
 
 	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
+
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
+
+	@Mock
+	private ProjectBasicConfigService projectBasicConfigService;
+
+	@Mock
 	private CustomApiConfig customApiConfig;
 
 	@Before
@@ -112,6 +131,29 @@ public class AccountHierarchyServiceImplTest {
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("66f88deaed6a46340d6ab05e"));
+		projectBasicConfig.setProjectName("Global Deploy D1");
+		projectBasicConfig.setUpdatedBy("KnowHOW System Admin");
+		projectBasicConfig.setIsKanban(false);
+		projectBasicConfig.setSaveAssigneeDetails(false);
+		projectBasicConfig.setDeveloperKpiEnabled(false);
+		projectBasicConfig.setProjectOnHold(false);
+		projectBasicConfig.setProjectNodeId("project_unique_004");
+
+		List<HierarchyValue> hierarchyList = new ArrayList<>();
+		hierarchyList.add(new HierarchyValue(new HierarchyLevel(1, "bu", "BU",""), "hierarchyLevelOne_unique_001", "Sample One Value"));
+		hierarchyList.add(new HierarchyValue(new HierarchyLevel(2, "ver", "Vertical",""), "hierarchyLevelTwo_unique_001", "Sample Two Value"));
+		hierarchyList.add(new HierarchyValue(new HierarchyLevel(3, "acc", "Account",""), "hierarchyLevelThree_unique_001", "Sample Three Value"));
+		projectBasicConfig.setHierarchy(hierarchyList);
+
+		when(projectBasicConfigService.getAllProjectsBasicConfigs(anyBoolean())).thenReturn(Arrays.asList(projectBasicConfig));
+
+		OrganizationHierarchyDataFactory organizationHierarchyDataFactory=OrganizationHierarchyDataFactory.newInstance();
+		ProjectHierarchyDataFactory projectHierarchyDataFactory=ProjectHierarchyDataFactory.newInstance();
+		List<OrganizationHierarchy> organizationHierarchies=organizationHierarchyDataFactory.getOrganizationHierarchies();
+		when(organizationHierarchyService.findAll()).thenReturn(organizationHierarchies);
+		when(projectHierarchyService.findAllByBasicProjectConfigIds(anyList())).thenReturn(projectHierarchyDataFactory.getProjectHierarchies());
 		Map<String, Object> permissionMap = new HashMap<>();
 
 		permissionMap.put("role", "ROLE_SUPERADMIN");
@@ -131,7 +173,7 @@ public class AccountHierarchyServiceImplTest {
 
 		// no filter selected
 		Set<AccountFilteredData> filterList = accountHierarchyServiceImpl.getFilteredList(request);
-		Assert.assertEquals(9, filterList.size());
+		Assert.assertEquals(1, filterList.size());
 	}
 
 	@Test
@@ -158,7 +200,6 @@ public class AccountHierarchyServiceImplTest {
 		AccountFilterRequest request = new AccountFilterRequest();
 		request.setKanban(false);
 		request.setSprintIncluded(null);
-		when(accountHierarchyRepository.findAll()).thenReturn(ahdList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(15);
 
 		Map<String, Integer> map = new HashMap<>();
@@ -169,7 +210,7 @@ public class AccountHierarchyServiceImplTest {
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		List<AccountHierarchyData> accountHierarchies = accountHierarchyServiceImpl.createHierarchyData();
 
-		Assert.assertEquals(5, accountHierarchies.size());
+		Assert.assertEquals(3, accountHierarchies.size());
 
 	}
 

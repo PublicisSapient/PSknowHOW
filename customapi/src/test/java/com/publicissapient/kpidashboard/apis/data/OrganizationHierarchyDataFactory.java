@@ -31,6 +31,11 @@ public class OrganizationHierarchyDataFactory {
 		factory.init(filePath);
 		return factory;
 	}
+
+	public static OrganizationHierarchyDataFactory newInstance() {
+
+		return newInstance(null);
+	}
 	
 	private void init(String filePath) {
 		try {

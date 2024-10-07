@@ -20,9 +20,13 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.Objects;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class HierarchyValue {
 
 	private HierarchyLevel hierarchyLevel;
