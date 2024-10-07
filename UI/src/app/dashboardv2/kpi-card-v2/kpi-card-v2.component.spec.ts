@@ -163,7 +163,7 @@ describe('KpiCardV2Component', () => {
 
       const result = component.checkDataAtGranularLevel(data);
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return false if data is an empty array', () => {

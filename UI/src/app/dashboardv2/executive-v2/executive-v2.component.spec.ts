@@ -15882,7 +15882,7 @@ describe('ExecutiveV2Component', () => {
 
       const result = component.checkDataAtGranularLevel(data, 'line');
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return false if data is an empty array', () => {
@@ -15890,7 +15890,7 @@ describe('ExecutiveV2Component', () => {
 
       const result = component.checkDataAtGranularLevel(data, 'line');
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return false if data is an empty object', () => {
@@ -15898,7 +15898,7 @@ describe('ExecutiveV2Component', () => {
 
       const result = component.checkDataAtGranularLevel(data, 'line');
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return false if data is not an array or object', () => {
