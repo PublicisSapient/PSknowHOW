@@ -4366,7 +4366,7 @@
       ]
     },
     "xAxisLabel" : "Range",
-    "yaxisLabel" : "Percentage",
+    "yAxisLabel" : "Percentage",
     "isPositiveTrend" : false,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
