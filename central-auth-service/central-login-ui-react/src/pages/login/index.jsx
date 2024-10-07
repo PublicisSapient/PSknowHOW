@@ -13,6 +13,7 @@ import Cookies from 'js-cookie';
 
 const SAML_USERNAME_COOKIE_NAME = "samlUsernameCookie";
 const _loginButtonText = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_LOGIN_BUTTON_TEXT : process.env.REACT_APP_LOGIN_BUTTON_TEXT;
+const _standeredExpandCtaText = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_STANDERED_EXPAND_CTA_TEXT : process.env.REACT_APP_STANDERED_EXPAND_CTA_TEXT;
 
 const LoginPage = ({search}) => {
 
@@ -165,7 +166,7 @@ const LoginPage = ({search}) => {
                   } clickFn={ShowLoginWithCredentials}
                 >
                   <Text className="text-white text-left">
-                    Login with credentials
+                    {_standeredExpandCtaText ? _standeredExpandCtaText : 'Login using Standard PSKnowHOW credentials'}
                   </Text>
                 </Button>
               {
