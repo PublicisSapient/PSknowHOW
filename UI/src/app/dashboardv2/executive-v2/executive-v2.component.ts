@@ -1020,7 +1020,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             for (let i = 0; i < tempArr?.length; i++) {
               preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
             }
-            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
           }
           else if (filterPropArr.includes('filter1')
             || filterPropArr.includes('filter2')) {
