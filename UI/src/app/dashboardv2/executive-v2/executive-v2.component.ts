@@ -1813,6 +1813,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   checkIfDataPresent(kpi) {
+    if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70') {
+      if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
+        return true;
+      }
+    }
     if (this.kpiStatusCodeArr[kpi.kpiId]) {
       return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType);
     }
@@ -1820,10 +1825,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   checkDataAtGranularLevel(data, chartType) {
-    if(this.selectedTab === "developer") {
+    if (this.selectedTab === "developer" && data?.length) {
       return true;
     }
-    if (!data) {
+    if (!data || !data?.length) {
       return false;
     }
     let dataCount = 0;
@@ -1835,14 +1840,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           // dataCount += item?.data;
           ++dataCount;
         } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-          if (this.checkIfArrayHasData(item) && item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
+          if (item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
             if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
               ++dataCount;
             } else if (parseInt(item.value[0].data) > 0) {
               ++dataCount;
             }
-          } else if (this.checkIfArrayHasData(item) && this.checkIfArrayHasData(item.value) && this.checkIfArrayHasData(item.value[0].value)) {
-            ++dataCount;
+          } else if (this.checkIfArrayHasData(item.value[0])) {
+            if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
+              ++dataCount;
+            } else if (parseInt(item.value[0].value[0].data) > 0) {
+              ++dataCount;
+            }
           }
         } else if (item.dataGroup && item.dataGroup.length) {
           ++dataCount;
@@ -1855,7 +1864,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   checkIfArrayHasData(item) {
-    return (Array.isArray(item.value) && item.value.length)
+    return (Array.isArray(item.value) && item.value.length > 0)
   }
 
   checkIfPartialDataPresent(kpi) {
@@ -1865,7 +1874,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (filters.length === 2) {
         let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
         let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
-        if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.charType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.charType)) || (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.charType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.charType))) {
+        if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType)) ||
+          (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType))) {
           return true;
         }
       } else {
@@ -1918,14 +1928,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           arr = Array.from(arr);
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
-          if(this.selectedTab.toLowerCase() !== 'developer') {
-          if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter'] === true))) {
-            const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
-            if (index > -1) {
-              arr?.splice(index, 1);
+          if (this.selectedTab.toLowerCase() !== 'developer' || kpiId !== 'kpi168') {
+            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter'] === true))) {
+              const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
+              if (index > -1) {
+                arr?.splice(index, 1);
+              }
             }
           }
-        }
 
           obj['filterType'] = 'Select a filter';
           if (arr.length > 0) {
