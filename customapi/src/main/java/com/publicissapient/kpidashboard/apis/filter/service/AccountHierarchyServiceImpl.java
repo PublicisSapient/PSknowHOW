@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +46,6 @@ import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
@@ -140,7 +138,6 @@ public class AccountHierarchyServiceImpl
 						.sprintStartDate(acc.getBeginDate()).sprintEndDate(acc.getEndDate()).level(level).build();
 			}
 			if (acc.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
-				// todo HB set basic config id
 				data.setBasicProjectConfigId(acc.getBasicProjectConfigId());
 			}
 		}
@@ -157,26 +154,8 @@ public class AccountHierarchyServiceImpl
 
 		List<ProjectBasicConfig> projectBasicConfigList = projectBasicConfigService.getAllProjectsBasicConfigs(false);
 
-		List<ObjectId> projectBasicConfigIds = projectBasicConfigList.stream().map(ProjectBasicConfig::getId)
-				.collect(Collectors.toList());
-
-		Set<String> hierarchyNodes = projectBasicConfigList.stream().flatMap(a -> a.getHierarchy().stream())
-				.map(hierarchyValue -> hierarchyValue.getOrgHierarchyNodeId()).collect(Collectors.toSet());
-
-		hierarchyNodes.addAll(
-				projectBasicConfigList.stream().map(ProjectBasicConfig::getProjectNodeId).collect(Collectors.toSet()));
-
-		List<OrganizationHierarchy> configureOrganizationHierarchyList = organizationHierarchyService.findAll().stream()
-				.filter(organizationHierarchy -> hierarchyNodes.contains(organizationHierarchy.getNodeId())).toList();
-
-		List<ProjectHierarchy> configureHierarchies = projectHierarchyService
-				.findAllByBasicProjectConfigIds(projectBasicConfigIds);
-
-		configureOrganizationHierarchyList.stream()
-				.map(orgHierarchy -> new ProjectHierarchy(orgHierarchy.getNodeId(), orgHierarchy.getNodeName(),
-						orgHierarchy.getNodeDisplayName(), orgHierarchy.getHierarchyLevelId(),
-						orgHierarchy.getParentId(), orgHierarchy.getCreatedDate(), orgHierarchy.getModifiedDate()))
-				.forEach(configureHierarchies::add);
+		List<ProjectHierarchy> configureHierarchies = getConfigureProjectsHierarchies(projectBasicConfigList,
+				organizationHierarchyService, projectHierarchyService);
 
 		Map<String, List<ProjectHierarchy>> parentWiseMap = configureHierarchies.stream()
 				.filter(fd -> fd.getParentId() != null).collect(Collectors.groupingBy(ProjectHierarchy::getParentId));
@@ -382,15 +361,6 @@ public class AccountHierarchyServiceImpl
 			accountHierarchyData.setBasicProjectConfigId(hierarchy.getBasicProjectConfigId());
 			accountHierarchyData.setLabelName(hierarchy.getHierarchyLevelId());
 			listHierarchyData.add(accountHierarchyData);
-		}
-	}
-
-	private boolean isParentChildHierarchy(AccountHierarchy parent, AccountHierarchy child) {
-		if (StringUtils.isEmpty(parent.getPath())) {
-			return true;
-		} else {
-			return child.getPath()
-					.contains(parent.getNodeId() + CommonConstant.ACC_HIERARCHY_PATH_SPLITTER + parent.getPath());
 		}
 	}
 

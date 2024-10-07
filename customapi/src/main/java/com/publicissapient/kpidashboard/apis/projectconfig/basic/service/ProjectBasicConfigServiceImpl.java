@@ -391,17 +391,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		} else {
 			Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
 			if (Optional.ofNullable(basicProjectConfigIds).isPresent()) {
-				Set<ObjectId> configIds = new HashSet<>();
-				for (String id : basicProjectConfigIds) {
-					configIds.add(new ObjectId(id));
-				}
+
 				Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
 						.cacheProjectConfigMapData();
 
 				List<ProjectBasicConfig> projectList = Optional.ofNullable(basicConfigMap)
 						.filter(MapUtils::isNotEmpty)
 						.map(map -> map.entrySet().stream()
-								.filter(entry -> configIds.contains(entry.getKey())) // Filter by configIds
+								.filter(entry -> basicProjectConfigIds.contains(entry.getKey())) // Filter by configIds
 								.map(Map.Entry::getValue) // Extract the value (ProjectBasicConfig)
 								.collect(Collectors.toList())) // Collect to a list
 						.orElseGet(ArrayList::new);
