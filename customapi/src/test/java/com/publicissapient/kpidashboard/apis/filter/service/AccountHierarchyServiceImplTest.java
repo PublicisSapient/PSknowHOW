@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
+import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.data.ProjectHierarchyDataFactory;
 import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
@@ -131,15 +132,9 @@ public class AccountHierarchyServiceImplTest {
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
-		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
-		projectBasicConfig.setId(new ObjectId("66f88deaed6a46340d6ab05e"));
-		projectBasicConfig.setProjectName("Global Deploy D1");
-		projectBasicConfig.setUpdatedBy("KnowHOW System Admin");
+		ProjectBasicConfigDataFactory projectBasicConfigDataFactory=ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json");
+		ProjectBasicConfig projectBasicConfig = projectBasicConfigDataFactory.getProjectBasicConfigs().get(1);
 		projectBasicConfig.setIsKanban(false);
-		projectBasicConfig.setSaveAssigneeDetails(false);
-		projectBasicConfig.setDeveloperKpiEnabled(false);
-		projectBasicConfig.setProjectOnHold(false);
-		projectBasicConfig.setProjectNodeId("project_unique_004");
 
 		List<HierarchyValue> hierarchyList = new ArrayList<>();
 		hierarchyList.add(new HierarchyValue(new HierarchyLevel(1, "bu", "BU",""), "hierarchyLevelOne_unique_001", "Sample One Value"));
