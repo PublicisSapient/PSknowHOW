@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1030;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1100;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +30,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author purgupta2
  */
-@ChangeUnit(id = "r_change_iteration_kpis_groupId", order = "010301", author = "purgupta2", systemVersion = "10.3.0")
+@ChangeUnit(id = "r_change_iteration_kpis_groupId", order = "011001", author = "purgupta2", systemVersion = "11.0.0")
 public class ChangeIterationKPIsGroupId {
 	private final MongoTemplate mongoTemplate;
 

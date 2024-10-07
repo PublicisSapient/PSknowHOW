@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1030;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1100;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author purgupta2
  */
-@ChangeUnit(id = "change_iteration_kpis_groupId", order = "10301", author = "purgupta2", systemVersion = "10.3.0")
+@ChangeUnit(id = "change_iteration_kpis_groupId", order = "11001", author = "purgupta2", systemVersion = "11.0.0")
 public class ChangeIterationKPIsGroupId {
 	private final MongoTemplate mongoTemplate;
 
