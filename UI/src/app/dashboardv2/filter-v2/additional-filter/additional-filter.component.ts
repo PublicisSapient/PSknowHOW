@@ -146,7 +146,7 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
+    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue) || this.selectedTab === 'value') {
       this.filterSet = new Set();
       this.selectedFilters = [];
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
