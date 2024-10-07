@@ -25,7 +25,7 @@ public class FlowEfficiencyKPI {
         // Create the filter
         Document filter = new Document("kpiId", kpiId);
         // Create the update
-        Document update = new Document("$set", new Document("xaxisLabel", label));
+        Document update = new Document("$set", new Document("xAxisLabel", label));
         // Perform the update
         kpiMaster.updateOne(filter, update);
     }
