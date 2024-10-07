@@ -1813,7 +1813,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   checkIfDataPresent(kpi) {
-    if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70') {
+    if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
       if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
         return true;
       }
