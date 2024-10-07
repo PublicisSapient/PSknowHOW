@@ -470,7 +470,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  handlePrimaryFilterChange(event) {
+  handlePrimaryFilterChange(event, additionalFilterRemoved = false) {
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
         if (!event['additional_level'][key]?.length) {
@@ -490,7 +490,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+      (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType) || additionalFilterRemoved) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -744,9 +744,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         delete this.previousFilterEvent['additional_level'];
       }
       if (!this.previousFilterEvent['additional_level']) {
-        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent);
+        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent, true);
       } else {
-        this.handlePrimaryFilterChange(this.previousFilterEvent);
+        this.handlePrimaryFilterChange(this.previousFilterEvent, true);
       }
       return;
     }
