@@ -768,18 +768,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   updateXAxisTicks(localVariable) {
-    for(const kpi in localVariable){
+    for (const kpi in localVariable) {
       const localVarKpi = localVariable[kpi].trendValueList && localVariable[kpi].xAxisValues
       if (localVarKpi) {
-          localVariable[kpi].trendValueList.forEach(trendElem => {
-            trendElem.value.forEach(valElem => {
-              if (valElem.value.length === 5 && localVariable[kpi].xAxisValues.length === 5) {
-                valElem.value.forEach((element, index) => {
-                  element['xAxisTick'] = localVariable[kpi].xAxisValues[index];
-                });
-              }
-            });
+        localVariable[kpi].trendValueList.forEach(trendElem => {
+          trendElem.value.forEach(valElem => {
+            if (valElem.value.length === 5 && localVariable[kpi].xAxisValues.length === 5) {
+              valElem.value.forEach((element, index) => {
+                element['xAxisTick'] = localVariable[kpi].xAxisValues[index];
+              });
+            }
           });
+        });
       }
     }
   }
@@ -1814,13 +1814,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   checkIfDataPresent(kpi) {
-    if(kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146') {
+    if (kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146') {
       if (this.kpiChartData[kpi.kpiId]?.length) {
         return true;
       }
     }
 
-    if(kpi.kpiId === 'kpi139') {
+    if (kpi.kpiId === 'kpi139' || kpi.kpiId === 'kpi127') {
       if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length) {
         return true;
       }
