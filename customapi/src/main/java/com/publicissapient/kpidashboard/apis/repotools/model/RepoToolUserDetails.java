@@ -46,4 +46,6 @@ public class RepoToolUserDetails {
 	private List<MergeRequests> mergeRequestList;
 	private int mergeRequestsNumber;
 	private double memberDefectMergeRequestPercentage;
+	private long addedLines;
+	private long changedLines;
 }

@@ -19,37 +19,20 @@
 package com.publicissapient.kpidashboard.apis.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
 
-/**
- * The interface Authentication repository.
- *
- * @author Hiren Babariya
- */
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+	Optional<User> findByUsername(String username);
 
-	/**
-	 * Find by username authentication.
-	 *
-	 * @param username
-	 *            the username
-	 * @return the authentication
-	 */
-	User findByUsername(String username);
+	Optional<User> findByEmail(String email);
 
 	void deleteByUsername(String username);
-
-	/**
-	 * Find by email list.
-	 *
-	 * @param email
-	 *            the email
-	 * @return the authentication object
-	 */
-	User findByEmail(String email);
 
 	/**
 	 * @param userName
@@ -57,10 +40,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 */
 	List<User> findByUsernameIn(List<String> userName);
 
-	/**
-	 * @param approved
-	 * @return
-	 */
 	List<User> findByUserVerifiedAndApprovedOrderByIdDesc(Boolean userVerified, Boolean approved);
 
 }
