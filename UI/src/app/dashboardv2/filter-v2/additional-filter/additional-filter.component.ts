@@ -26,7 +26,6 @@ export class AdditionalFilterComponent implements OnChanges {
   @Output() onAdditionalFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   stateFilters: any;
-  resetFlag: boolean = true;
 
   constructor(public service: SharedService, public helperService: HelperService) {
   }
@@ -48,20 +47,12 @@ export class AdditionalFilterComponent implements OnChanges {
           if (this.filterData[index]) {
             if (this.selectedTab === 'developer') {
               data[f].forEach(element => {
-                if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId) && element.labelName) {
-                  const correctLevelMapping = {
-                    Sprint: 'sprint',
-                    Squad: 'sqd'
-                  }
-                  this.additionalFilterConfig.forEach((addtnlFilterConfig) => {
-                    if (correctLevelMapping[addtnlFilterConfig.defaultLevel.labelName] === element.labelName) {
-                      this.filterData[index].push(element);
-                      this.resetFlag = false;
-                    }
-                  });
-                  if(this.resetFlag) {
+                
+                if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
+                  if(this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index].defaultLevel.labelName) {
                     this.filterData[index] = [];
                   }
+                  this.filterData[index].push(element);
                 }
               });
 
