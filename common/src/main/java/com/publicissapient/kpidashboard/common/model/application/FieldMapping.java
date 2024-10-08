@@ -475,6 +475,8 @@ public class FieldMapping extends FieldMappingHistory {
 	private String thresholdValueKPI180;
 	private String thresholdValueKPI181;
 	private String thresholdValueKPI182;
+	private String thresholdValueKPI183;
+	private String thresholdValueKPI184;
 	private String thresholdValueKPI185;
 	private String thresholdValueKPI186;
 

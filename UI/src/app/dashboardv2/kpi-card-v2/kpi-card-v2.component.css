@@ -327,6 +327,17 @@
   color: var(--color-red);
 }
 
+.warning-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 3px 0 0 20px;
+}
+
+:host ::ng-deep .warning-text {
+  color: #F68605;
+}
+
 :host ::ng-deep .p-inputtext {
   font-family: Poppins_Regular, sans-serif;
   font-size: 12px;

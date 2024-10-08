@@ -77,7 +77,7 @@ public class DeveloperKPIIntegeration {
 			boolean isPositiveTrend, String upperThresholdBG, String lowerThresholdBG) {
 		Document kpiDocument = new Document().append("kpiId", kpiId).append("kpiName", kpiName).append("maxValue", "")
 				.append("kpiUnit", "%").append("isDeleted", false).append("defaultOrder", 5).append("groupId", 2)
-				.append("kpiSource", "BitBucket").append("combinedKpiSource", "RepoTool").append("kanban", false)
+				.append("kpiSource", "BitBucket").append("combinedKpiSource", "Bitbucket/AzureRepository/GitHub/GitLab").append("kanban", false)
 				.append("chartType", "line")
 				.append("kpiInfo", new Document().append("definition", kpiInfo).append("details",
 						Collections.singletonList(new Document().append("type", "link").append("kpiLinkDetail",

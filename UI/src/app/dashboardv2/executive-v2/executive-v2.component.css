@@ -80,3 +80,69 @@
     border-bottom: 2px solid #0B4BC8;
     font-weight: bold;
 }
+
+
+.text-data {
+    font-size: 1.5rem;
+    color: var(--color-secondary-blue);
+    margin: 0;
+}
+
+.text-label {
+    color: var(--color-cyan-blue);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.text-time {
+    color: var(--color-red);
+}
+.text-data .unit{
+    font-size: 1.5rem;
+}
+.btn-arrow-down{
+    color: var(--color-black);
+    width: .8rem;
+    cursor: pointer;
+}
+.card-type-1{
+    position: relative;
+}
+
+.text-blue{
+    color: var(--color-secondary-blue);
+    text-decoration: underline;
+}
+
+.p-h-100{
+    height: 100%;
+}
+
+.kpi-content-container{
+    border-right: 1px solid #c0c0c0;
+}
+
+:host::ng-deep .p-dialog{
+    width: auto !important;
+    max-width: 90vw !important;
+    min-width: 544px;
+}
+
+:host ::ng-deep.p-dialog-header-icons{
+    top: -8px;
+    right: -8px;
+    border-radius: 2px;
+    background-color: black;
+    border: none;
+    padding: 5px;
+}
+
+:host ::ng-deep .p-dialog-header-close-icon {
+    color: white;
+  }
+
+.export-button{
+    position: absolute;
+    right: 10px;
+    top: 14px;
+}

@@ -216,31 +216,11 @@ export class KpiCardComponent implements OnInit, OnDestroy, OnChanges {
             this.columnList.push({ field: d.name + ' params', header: d.name + ' Calculation Details', unit: 'unit' });
           });
 
-          selectedProjectTrend.value.forEach(element => {
-            let tempObj = {};
-            tempObj['duration'] = element['sSprintName'] || element['date'];
 
-            element.dataValue.forEach((d, i) => {
-              tempObj[d.name + ' value'] = (Math.round(d['value'] * 100) / 100);
-              tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
-              if (d['hoverValue'] && Object.keys(d['hoverValue'])?.length > 0) {
-                tempObj[d.name + ' params'] = Object.entries(d['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
-              }
-            });
+          hoverObjectListTemp = this.createTempObj(hoverObjectListTemp, selectedProjectTrend);
 
-            hoverObjectListTemp.push(tempObj);
-          });
         } else {
-          selectedProjectTrend.value.forEach(element => {
-            let tempObj = {};
-            tempObj['duration'] = element['sSprintName'] || element['date'];
-            tempObj['value'] = element['lineValue'] !== undefined ? element['lineValue'] : (Math.round(element['value'] * 100) / 100);
-            tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
-            if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
-              tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
-            }
-            hoverObjectListTemp.push(tempObj);
-          });
+          hoverObjectListTemp = this.createTempObj2(hoverObjectListTemp, selectedProjectTrend);
         }
         this.sprintDetailsList.push({
           ['project']: selectedProjectTrend['data'],
@@ -256,6 +236,37 @@ export class KpiCardComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
     this.displaySprintDetailsModal = true;
+  }
+
+  createTempObj(hoverObjectListTemp, selectedProjectTrend) {
+    selectedProjectTrend.value.forEach(element => {
+      let tempObj = {};
+      tempObj['duration'] = element['sSprintName'] || element['date'];
+
+      element.dataValue.forEach((d, i) => {
+        tempObj[d.name + ' value'] = (Math.round(d['value'] * 100) / 100);
+        tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
+        if (d['hoverValue'] && Object.keys(d['hoverValue'])?.length > 0) {
+          tempObj[d.name + ' params'] = Object.entries(d['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
+        }
+      });
+      hoverObjectListTemp.push(tempObj);
+    });
+    return hoverObjectListTemp;
+  }
+
+  createTempObj2(hoverObjectListTemp, selectedProjectTrend) {
+    selectedProjectTrend.value.forEach(element => {
+      let tempObj = {};
+      tempObj['duration'] = element['sSprintName'] || element['date'];
+      tempObj['value'] = element['lineValue'] !== undefined ? element['lineValue'] : (Math.round(element['value'] * 100) / 100);
+      tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
+      if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
+        tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
+      }
+      hoverObjectListTemp.push(tempObj);
+    });
+    return hoverObjectListTemp;
   }
 
   hasData(field: string): boolean {

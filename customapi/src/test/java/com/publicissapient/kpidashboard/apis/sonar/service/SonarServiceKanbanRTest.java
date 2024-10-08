@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -168,6 +169,33 @@ public class SonarServiceKanbanRTest {
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
+		initialization();
+		when(service.getKpiData(any(), any(), any())).thenReturn(kpiRequest.getKpiList().get(0));
+			List<KpiElement> resultList = sonarService.process(kpiRequest);
+			assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_PASSED));
+	}
+
+	@Test
+	public void sonarViolationsTestProcess_ApplicationException() throws Exception {
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
+		initialization();
+		when(service.getKpiData(any(), any(), any())).thenThrow(ApplicationException.class);
+		List<KpiElement> resultList = sonarService.process(kpiRequest);
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+	}
+
+	@Test
+	public void sonarViolationsTestProcess_NullPointer() throws Exception {
+		when(kpiHelperService.isToolConfigured(any(), any(), any())).thenReturn(true);
+		initialization();
+		when(service.getKpiData(any(), any(), any())).thenThrow(NullPointerException.class);
+		List<KpiElement> resultList = sonarService.process(kpiRequest);
+		assertThat("Kpi Name :", resultList.get(0).getResponseCode(), equalTo(CommonConstant.KPI_FAILED));
+	}
+
+
+	private void initialization() throws EntityNotFoundException {
 		String[] exampleStringList = { "exampleElement", "exampleElement" };
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
@@ -183,13 +211,6 @@ public class SonarServiceKanbanRTest {
 		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
 		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
 				.thenReturn(accountHierarchyKanbanDataList);
-
-		try {
-			List<KpiElement> resultList = sonarService.process(kpiRequest);
-		} catch (Exception e) {
-
-		}
-
 	}
 
 

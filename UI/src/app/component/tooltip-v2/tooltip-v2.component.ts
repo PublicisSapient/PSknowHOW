@@ -30,6 +30,7 @@ export class TooltipV2Component implements OnChanges {
   @Input() kpiName;
   @Input() showingMaturityRange: boolean = false;
   @Input() toolTipTop = 0;
+  @Input() allText: boolean = false;
   relativeTooltipTop = 400;
   show: boolean = true;
   bottomArrow: boolean = false;

@@ -33,14 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.mongock.data.FiltersDataFactory;
-import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
-import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
-import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
-import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,29 +41,37 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.KpiMasterDataFactory;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.mongock.data.FiltersDataFactory;
 import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryDataFactory;
 import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiMasterDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.Board;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.BoardKpis;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.ProjectListRequested;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
+import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
-import org.springframework.http.ResponseEntity;
 
 /**
  * @author yasbano
@@ -304,7 +304,7 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban(anyString(), anyBoolean())).thenReturn(filteredMaster);
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig(listOfReqProjects);
-		assertEquals(userBoardConfigDTO.getOthers().size(), 4);
+		assertEquals(userBoardConfigDTO.getOthers().size(), 3);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}

@@ -506,7 +506,7 @@
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                               [trendData]="kpiTrendObject[kpi?.kpiId]"
-                              (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.isAdditionalFilterSupport, kpi?.kpiDetail?.chartType)"
+                              (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban, kpi?.kpiDetail?.isAdditionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                               [showChartView]="'chart'"

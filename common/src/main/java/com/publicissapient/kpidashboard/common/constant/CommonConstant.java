@@ -37,6 +37,7 @@ public final class CommonConstant {
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
+	public static final String CACHE_BOARD_META_DATA_MAP = "boardMetaDataMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
 
@@ -341,6 +342,14 @@ public final class CommonConstant {
 	public static final String NUMBER = "number";
 
 	//-- auth-N-auth changes ends here --
+
+	public static final String KPI_PASSED= "200";
+	public static final String KPI_FAILED= "400";
+	public static final String MANDATORY_FIELD_MAPPING= "201";
+	public static final String TOOL_NOT_CONFIGURED= "202";
+	public static final String KPI_COMBINED_SORCE= "kpi_combined_source";
+
+
 
 
 	private CommonConstant() {

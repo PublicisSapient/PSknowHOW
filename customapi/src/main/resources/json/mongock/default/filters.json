@@ -190,7 +190,7 @@
     ]
   },
   {
-    "boardId": 13,
+    "boardId": 15,
     "projectTypeSwitch": {
       "enabled": false,
       "visible": true
@@ -208,9 +208,9 @@
     }
   },
   {
-    "boardId": 14,
+    "boardId": 7,
     "projectTypeSwitch": {
-      "enabled": false,
+      "enabled": true,
       "visible": true
     },
     "primaryFilter": {
@@ -225,7 +225,7 @@
     }
   },
   {
-    "boardId": 15,
+    "boardId": 16,
     "projectTypeSwitch": {
       "enabled": false,
       "visible": true
@@ -240,7 +240,7 @@
     "parentFilter": null
   },
   {
-    "boardId": 16,
+    "boardId": 17,
     "projectTypeSwitch": {
       "enabled": true,
       "visible": true
