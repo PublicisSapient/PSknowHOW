@@ -198,6 +198,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions?.forEach(subscription => subscription?.unsubscribe());
     this.parentFilterConfig = {};
     this.primaryFilterConfig = {};
+    this.additionalFilterConfig = {};
     this.boardData = {};
     this.projectList = null;
   }
@@ -651,6 +652,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+    this.service.setSelectedMap(this.filterApplyData['selectedMap']);
     if (this.filterDataArr[this.selectedType]) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         if (this.selectedLevel) {
@@ -753,16 +755,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.compileGAData(event);
     this.filterApplyData['level'] = event[0].level;
     this.filterApplyData['label'] = event[0].labelName;
-
+    this.filterApplyData['selectedMap'] = this.service.getSelectedMap();
     // if Additional Filters are selected
     if (this.filterApplyData['level'] <= 4) return;
+
     if (this.selectedTab?.toLowerCase() === 'backlog') {
+      this.filterApplyData['selectedMap']['sprint'] = [];
       this.filterApplyData['selectedMap']['sprint']?.push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
     }
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
     let additionalFilterSelected = this.filterApplyData['label'] === 'sqd' ? true : false;
+    
+    this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
     if (this.filterApplyData['selectedMap']) {
       if (!this.selectedLevel) {
