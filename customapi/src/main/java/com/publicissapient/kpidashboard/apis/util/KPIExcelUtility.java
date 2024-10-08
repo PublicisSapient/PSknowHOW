@@ -1129,6 +1129,8 @@ public class KPIExcelUtility {
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
+				excelData.setAddedLines(repoToolValidationData.getAddedLines());
+				excelData.setTotalLineChanges(repoToolValidationData.getChangedLines());
 				excelData.setInnovationRate(String.format("%.2f", repoToolValidationData.getInnovationRate()));
 				kpiExcelData.add(excelData);
 			});
@@ -1146,6 +1148,7 @@ public class KPIExcelUtility {
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				excelData.setDefectPRs(repoToolValidationData.getDefectPrs());
 				excelData.setDefectRate(String.format("%.2f", repoToolValidationData.getDefectRate()));
 				kpiExcelData.add(excelData);
 			});
@@ -1444,6 +1447,7 @@ public class KPIExcelUtility {
 				excelData.setProjectName(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
+				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setNumberOfCommit(String.valueOf(repoToolValidationData.getCommitCount()));
 				kpiExcelData.add(excelData);
