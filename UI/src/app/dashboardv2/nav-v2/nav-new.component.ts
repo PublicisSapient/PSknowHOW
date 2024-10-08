@@ -20,7 +20,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
 
-  constructor(private httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, public helperService: HelperService) {
+  constructor(public httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, public helperService: HelperService) {
   }
 
   ngOnInit(): void {

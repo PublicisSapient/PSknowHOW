@@ -20,7 +20,9 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,7 +39,6 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.Metadata;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
@@ -52,18 +53,21 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	public static final String RELEASE_KEY = "releases";
 	public static final String LABEL_NAME = "release";
 	public static final String STATE = "Released";
-	private final BoardMetadataRepository boardMetadataRepository;
+	private final ConfigHelperService configHelperService;
 	private final AccountHierarchyRepository accountHierarchyRepository;
 	DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
 
 	/**
-	 * @param boardMetadataRepository
-	 *            -for fetch
+	 *
+	 * @param configHelperService
+	 *            for board meta data
+	 * @param accountHierarchyRepository
+	 *            account hierarchy
 	 */
 	@Autowired
-	public EditKpiConfigServiceImpl(BoardMetadataRepository boardMetadataRepository,
+	public EditKpiConfigServiceImpl(ConfigHelperService configHelperService,
 			AccountHierarchyRepository accountHierarchyRepository) {
-		this.boardMetadataRepository = boardMetadataRepository;
+		this.configHelperService = configHelperService;
 		this.accountHierarchyRepository = accountHierarchyRepository;
 	}
 
@@ -81,11 +85,10 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	public Map<String, List<MetadataValue>> getDataForType(String projectBasicConfigid, String kpiCode) {
 
 		Map<String, List<MetadataValue>> data = new HashMap<>();
-		BoardMetadata boardmetadata = boardMetadataRepository
-				.findByProjectBasicConfigId(new ObjectId(projectBasicConfigid));
+		BoardMetadata boardmetadata = configHelperService.getBoardMetaData(new ObjectId(projectBasicConfigid));
 		if (boardmetadata != null && CollectionUtils.isNotEmpty(boardmetadata.getMetadata())) {
-			data = boardmetadata.getMetadata().stream()
-					.collect(Collectors.toMap(Metadata::getType, Metadata::getValue));
+			data = boardmetadata.getMetadata().stream().collect(Collectors.toMap(Metadata::getType,
+					metadata -> new ArrayList<>(new HashSet<>(metadata.getValue()))));
 		}
 
 		getClosedReleaseName(projectBasicConfigid, kpiCode, data);

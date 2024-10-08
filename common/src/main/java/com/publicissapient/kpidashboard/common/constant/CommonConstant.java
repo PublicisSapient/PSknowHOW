@@ -39,6 +39,7 @@ public final class CommonConstant {
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
+	public static final String CACHE_BOARD_META_DATA_MAP = "boardMetaDataMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
 

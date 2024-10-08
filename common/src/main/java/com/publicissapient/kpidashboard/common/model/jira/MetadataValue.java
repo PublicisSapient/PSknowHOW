@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
 
+import java.util.Objects;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,4 +30,18 @@ public class MetadataValue {
 	private String key;
 	private String data;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		MetadataValue that = (MetadataValue) o;
+		return Objects.equals(key, that.key) && Objects.equals(data, that.data);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(key, data);
+	}
 }

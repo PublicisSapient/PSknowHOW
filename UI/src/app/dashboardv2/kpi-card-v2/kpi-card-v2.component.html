@@ -11,8 +11,9 @@
             [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
         </span>
       </div>
-      <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' && checkIfDataPresent(kpiDataStatusCode)"
-        (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)"  [style]="{'position': 'relative'}">
+      <span class="warning-icon"
+        *ngIf="kpiDataStatusCode === '201'"
+        (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
         <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
           src="../../../assets/img/Warning.svg" />
         <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
@@ -77,11 +78,10 @@
   'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
     <!--place for chart to be rendered-->
     <ng-content
-      *ngIf="!loader && !immediateLoader && checkIfDataPresent(kpiDataStatusCode) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
+      *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
     <ng-template #noData>
-      <!-- <div class="min-ht" *ngIf="(!checkIfDataPresent(trendValueList) && !iSAdditionalFilterSelected) || (!checkIfDataPresent(trendValueList) && kpi?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)"> -->
       <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && !checkIfDataPresent(kpiDataStatusCode) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
+        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode) && !partialData) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>
@@ -94,7 +94,7 @@
         </div>
       </div>
       <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && !checkIfDataPresent(kpiDataStatusCode) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
+        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode) && !partialData) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>
@@ -115,7 +115,7 @@
     </div>
   </div>
   <div class="kpi-card-footer p-pr-5 p-pl-5">
-    <app-trend-indicator-v2 *ngIf="trendValueList && trendValueList.length > 0 " [trendData]="trendData"
+    <app-trend-indicator-v2 *ngIf="checkIfDataPresent(kpiDataStatusCode)" [trendData]="trendData"
       [colorObj]="trendBoxColorObj">
     </app-trend-indicator-v2>
   </div>

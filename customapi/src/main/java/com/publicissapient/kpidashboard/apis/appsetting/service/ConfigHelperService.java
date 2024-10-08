@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -42,6 +43,7 @@ import com.publicissapient.kpidashboard.common.model.application.OrganizationHie
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
@@ -54,6 +56,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
+import com.publicissapient.kpidashboard.common.service.BoardMetadataServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,6 +78,8 @@ public class ConfigHelperService {
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 	@Autowired
+	private BoardMetadataServiceImpl boardMetadataServiceImpl;
+	@Autowired
 	private ProjectToolConfigRepositoryCustom toolConfigRepository;
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
@@ -95,6 +100,7 @@ public class ConfigHelperService {
 	@Autowired
 	private FieldMappingStructureRepository fieldMappingStructureRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private Map<ObjectId, BoardMetadata> boardMetaDataMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfMap = new HashMap<>();
 
 	/**
@@ -122,6 +128,20 @@ public class ConfigHelperService {
 					.findAny().orElse(new FieldMapping());
 			fieldMappingMap.put(projectConfig.getId(), mapping);
 		});
+
+	}
+
+	/**
+	 * Load project board meta data.
+	 */
+	public void loadBoardMetaData() {
+		log.info("loading project board meta data");
+		boardMetaDataMap.clear();
+
+		List<BoardMetadata> boardMetaDataList = boardMetadataServiceImpl.findAll();
+
+		boardMetaDataMap = boardMetaDataList.stream()
+				.collect(Collectors.toMap(BoardMetadata::getProjectBasicConfigId, Function.identity()));
 
 	}
 
@@ -193,6 +213,17 @@ public class ConfigHelperService {
 	}
 
 	/**
+	 * Gets Project Board metadata.
+	 *
+	 * @param key
+	 *            the key
+	 * @return the Board Meta data
+	 */
+	public BoardMetadata getBoardMetaData(ObjectId key) {
+		return getBoardMetaDataMap().get(key);
+	}
+
+	/**
 	 * Gets project config map.
 	 *
 	 * @return the project config map
@@ -231,24 +262,39 @@ public class ConfigHelperService {
 	}
 
 	/**
+	 * Gets board meta data map.
+	 *
+	 * @return the board meta data map
+	 */
+	public Map<ObjectId, BoardMetadata> getBoardMetaDataMap() {
+		return (Map<ObjectId, BoardMetadata>) cacheService.cacheBoardMetaDataMapData();
+	}
+
+	/**
+	 * Sets board meta data map.
+	 *
+	 * @param boardMetaDataMap
+	 *            the field mapping map
+	 */
+	public void setBoardMetaDataMap(Map<ObjectId, BoardMetadata> boardMetaDataMap) {
+		this.boardMetaDataMap = boardMetaDataMap;
+	}
+
+	/**
 	 * return Config data to cache service based on cache key
 	 *
 	 * @param key
 	 * @return config object
 	 */
 	public Object getConfigMapData(String key) {
-		switch (key) {
-		case CommonConstant.CACHE_PROJECT_CONFIG_MAP:
-			return projectConfigMap;
-		case CommonConstant.CACHE_FIELD_MAPPING_MAP:
-			return fieldMappingMap;
-		case CommonConstant.CACHE_TOOL_CONFIG_MAP:
-			return toolItemMap;
-		case CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP:
-			return projectToolConfMap;
-		default:
-			return null;
-		}
+		return switch (key) {
+		case CommonConstant.CACHE_PROJECT_CONFIG_MAP -> projectConfigMap;
+		case CommonConstant.CACHE_FIELD_MAPPING_MAP -> fieldMappingMap;
+		case CommonConstant.CACHE_BOARD_META_DATA_MAP -> boardMetaDataMap;
+		case CommonConstant.CACHE_TOOL_CONFIG_MAP -> toolItemMap;
+		case CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP -> projectToolConfMap;
+		default -> null;
+		};
 	}
 
 	/**
