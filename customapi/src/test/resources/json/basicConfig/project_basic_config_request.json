@@ -39,7 +39,7 @@
     "projectName": "Global Deploy D1",
     "projectNodeId": "project_unique_004",
     "projectDisplayName": "Test Project 1",
-    "_id": "66f88deaed6a46340d6ab05e",
+    "id": "66f88deaed6a46340d6ab05e",
     "createdAt": "2022-08-08T09:30:32",
     "kanban": true
   }
