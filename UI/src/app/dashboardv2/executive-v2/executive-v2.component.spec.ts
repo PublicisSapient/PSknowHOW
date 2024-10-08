@@ -13723,11 +13723,13 @@ describe('ExecutiveV2Component', () => {
       filter: [
         {
           "nodeId": "Overall",
-          "nodeName": "Overall"
+          "nodeName": "Overall",
+          labelName: 'developer'
         },
         {
           "nodeId": "master -> PSknowHOW -> PSknowHOW",
-          "nodeName": "master -> PSknowHOW -> PSknowHOW"
+          "nodeName": "master -> PSknowHOW -> PSknowHOW",
+          labelName: 'developer'
         }
       ]
     };
