@@ -21,6 +21,7 @@ export class PrimaryFilterComponent implements OnChanges {
   subscriptions: any[] = [];
   stateFilters: any = {};
   hierarchyLevels: any[] = [];
+  defaultFilterCounter: number = 0;
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
 
@@ -173,18 +174,23 @@ export class PrimaryFilterComponent implements OnChanges {
         this.service.setNoSprints(false);
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
           let addtnlStateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
-          if (addtnlStateFilters) {
+          if (addtnlStateFilters && (!this.previousSelectedFilters?.length || this.arraysEqual(this.selectedFilters, this.previousSelectedFilters))) {
             let combinedEvent = {};
             combinedEvent['additional_level'] = addtnlStateFilters;
             combinedEvent['primary_level'] = [...this.selectedFilters];
+            this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit(combinedEvent);
           } else {
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+            // project selection changed, reset addtnl. filters
+            this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
           }
+          // this.defaultFilterCounter++;
         } else {
           this.service.setNoSprints(true);
           this.onPrimaryFilterChange.emit([]);
+          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null })
         }
 
         if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {

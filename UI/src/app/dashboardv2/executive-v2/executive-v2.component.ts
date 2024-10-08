@@ -1929,7 +1929,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
           if (this.selectedTab.toLowerCase() !== 'developer' || kpiId !== 'kpi168') {
-            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter'] === true))) {
+            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown')) {
               const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
               if (index > -1) {
                 arr?.splice(index, 1);
