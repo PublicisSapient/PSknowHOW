@@ -33,8 +33,8 @@ import { of } from 'rxjs';
 import { ProjectListComponent } from '../project-list/project-list.component';
 import { url } from 'inspector';
 import { ConfigSettingsComponent } from '../config-settings/config-settings.component';
-import { AdvancedSettingsComponent } from '../../advanced-settings/advanced-settings.component';
 import { GoogleAnalyticsService } from 'src/app/core/services/google-analytics.service';
+import { AdvancedSettingsComponent } from '../../config/advanced-settings/advanced-settings.component';
 
 describe('ToolMenuComponent', () => {
   let component: ToolMenuComponent;
@@ -48,9 +48,9 @@ describe('ToolMenuComponent', () => {
   let router: Router;
   const baseUrl = environment.baseUrl;
 
-  const toolsData = require('../../../../../test/resource/fakeToolsData.json');
-  const mappingData = require('../../../../../test/resource/fakeToolMappings.json');
-  const fakeCompleteHiearchyData = require('../../../../../test/resource/fakeCompleteHierarchyData.json');
+  const toolsData = require('../../../../test/resource/fakeToolsData.json');
+  const mappingData = require('../../../../test/resource/fakeToolMappings.json');
+  const fakeCompleteHiearchyData = require('../../../../test/resource/fakeCompleteHierarchyData.json');
   const fakeProject = {
     id: '6335363749794a18e8a4479b',
     name: 'Scrum Project',

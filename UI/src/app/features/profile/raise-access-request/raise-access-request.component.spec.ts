@@ -24,13 +24,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpService } from 'src/app/core/services/http.service';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
 import { MessageService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { from, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/core/services/shared.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('RaiseRequestComponent', () => {
   let component: RaiseAccessRequestComponent;
@@ -40,8 +40,8 @@ describe('RaiseRequestComponent', () => {
   let messageService;
   const baseUrl = environment.baseUrl;  // Servers Env
 
-  const fakeRoleList = require('../../../../../test/resource/fakeRolesList.json');
-  const fakeRolesData = require('../../../../../test/resource/fakeRolesData.json');
+  const fakeRoleList = require('../../../../test/resource/fakeRolesList.json');
+  const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
 
   const fakeRequestData = {
     username: 'testUser',

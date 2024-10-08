@@ -50,7 +50,7 @@ describe('BasicConfigComponent', () => {
   let ga: GoogleAnalyticsService;
   let httpMock;
   const baseUrl = environment.baseUrl;
-  // const toolsData = require('../../../../../test/resource/fakeToolsData.json');
+  // const toolsData = require('../../../../test/resource/fakeToolsData.json');
 
   const hierarchyData = [
     {

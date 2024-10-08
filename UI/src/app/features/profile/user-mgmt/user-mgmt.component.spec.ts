@@ -30,7 +30,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';

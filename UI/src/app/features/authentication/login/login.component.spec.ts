@@ -30,11 +30,11 @@ import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
-import { MyprofileComponent } from '../../config/profile/myprofile/myprofile.component';
 import { of } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/core/services/google-analytics.service';
 import { SharedService } from 'src/app/core/services/shared.service';
 import { HttpService } from 'src/app/core/services/http.service';
+import { MyprofileComponent } from '../../profile/myprofile/myprofile.component';
 
 describe('LoginComponent', () => {
 

@@ -24,7 +24,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpService } from 'src/app/core/services/http.service';
 import { SharedService } from 'src/app/core/services/shared.service';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
 import { MessageService } from 'primeng/api';
 import { DropdownModule } from 'primeng/dropdown';
 import { environment } from 'src/environments/environment';
@@ -33,6 +32,7 @@ import { TableModule } from 'primeng/table';
 import { ViewRequestsComponent } from './view-requests.component';
 import { of } from 'rxjs';
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('ViewRequestsComponent', () => {
   let component: ViewRequestsComponent;

@@ -4,7 +4,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedService } from 'src/app/core/services/shared.service';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from 'src/app/core/services/http.service';

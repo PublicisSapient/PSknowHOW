@@ -41,7 +41,7 @@ describe('ProjectSettingsComponent', () => {
   let httpMock;
   const baseUrl = environment.baseUrl;
   const navigateSpy = jasmine.createSpyObj('Router', ['navigate']);
-  const projectListData = require('../../../../../test/resource/projectListData.json');
+  const projectListData = require('../../../../test/resource/projectListData.json');
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

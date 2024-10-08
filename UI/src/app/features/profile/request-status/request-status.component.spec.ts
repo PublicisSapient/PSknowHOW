@@ -24,7 +24,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpService } from 'src/app/core/services/http.service';
 import { SharedService } from 'src/app/core/services/shared.service';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
 import { MessageService } from 'primeng/api';
 import { ConfirmationService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
@@ -32,6 +31,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RequestStatusComponent } from './request-status.component';
 import { TableModule } from 'primeng/table';
 import { of } from 'rxjs';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('RequestStatusComponent', () => {
   let component: RequestStatusComponent;

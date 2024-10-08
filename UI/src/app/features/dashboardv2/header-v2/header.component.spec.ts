@@ -11,14 +11,14 @@ import { of } from 'rxjs';
 import { Router, Routes } from '@angular/router';
 import { LoginComponent } from 'src/app/features/authentication/login/login.component';
 import { IterationComponent } from 'src/app/features/dashboard/iteration/iteration.component';
-import { RequestStatusComponent } from 'src/app/features/config/profile/request-status/request-status.component';
-import { ViewNewUserAuthRequestComponent } from 'src/app/features/config/profile/view-new-user-auth-request/view-new-user-auth-request.component';
-import { ViewRequestsComponent } from 'src/app/features/config/profile/view-requests/view-requests.component';
 import { HelperService } from 'src/app/core/services/helper.service';
 import { SharedService } from 'src/app/core/services/shared.service';
 import { GetAuthService } from 'src/app/core/services/getauth.service';
 import { HttpService } from 'src/app/core/services/http.service';
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
+import { RequestStatusComponent } from '../../profile/request-status/request-status.component';
+import { ViewNewUserAuthRequestComponent } from '../../profile/view-new-user-auth-request/view-new-user-auth-request.component';
+import { ViewRequestsComponent } from '../../profile/view-requests/view-requests.component';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;

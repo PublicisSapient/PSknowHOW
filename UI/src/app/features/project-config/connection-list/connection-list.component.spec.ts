@@ -263,7 +263,7 @@ describe('ConnectionListComponent', () => {
   ];
 
 
-  const getConnectionsResponse = require('../../../../../test/resource/fakeGetConnectionResponse.json');
+  const getConnectionsResponse = require('../../../../test/resource/fakeGetConnectionResponse.json');
 
 
   const connectionLabelsFields = [

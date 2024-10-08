@@ -25,7 +25,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CommonModule } from '@angular/common';
 import { HttpService } from 'src/app/core/services/http.service';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
 import { ProfileComponent } from '../profile.component';
 import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
@@ -33,6 +32,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { MessageService } from 'primeng/api';
 import { SharedService } from 'src/app/core/services/shared.service';
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 describe('MyprofileComponent', () => {
   let component: MyprofileComponent;
   let fixture: ComponentFixture<MyprofileComponent>;

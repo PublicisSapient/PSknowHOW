@@ -46,7 +46,7 @@ describe('ProjectListComponent', () => {
   const baseUrl = environment.baseUrl;
   let confirmationService;
 
-  const projectListData = require('../../../../../test/resource/projectListData.json');
+  const projectListData = require('../../../../test/resource/projectListData.json');
   const formFieldData = [
     {
       level: 1,

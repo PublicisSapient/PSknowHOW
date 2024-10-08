@@ -28,13 +28,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpService } from 'src/app/core/services/http.service';
 import { SharedService } from 'src/app/core/services/shared.service';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccessMgmtComponent } from './access-mgmt.component';
 import { of, throwError } from 'rxjs';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 describe('AccessMgmtComponent', () => {
   let component: AccessMgmtComponent;
   let fixture: ComponentFixture<AccessMgmtComponent>;
@@ -45,14 +45,14 @@ describe('AccessMgmtComponent', () => {
   const baseUrl = environment.baseUrl;  // Servers Env
   let sharedService : SharedService;
 
-  const fakeUserData = require('../../../../../test/resource/fakeUserData.json');
-  const fakeRolesData = require('../../../../../test/resource/fakeRolesData.json');
-  const fakeServiceInputInvalid = require('../../../../../test/resource/fakeUserDataChange.json');
-  const fakeServiceInputValid = require('../../../../../test/resource/fakeUserDataChangeValid.json');
-  const fakeFilterByProjectData = require('../../../../../test/resource/fakeFilterByProjectData.json');
-  const fakeFilterByRoleData = require('../../../../../test/resource/fakeFilterByRoleData.json');
-  const accessNodes = require('../../../../../test/resource/fakeAccessNodes.json')
-  const fakeDeleteAccess = require('../../../../../test/resource/fakeDeleteAccessRequest.json');
+  const fakeUserData = require('../../../../test/resource/fakeUserData.json');
+  const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
+  const fakeServiceInputInvalid = require('../../../../test/resource/fakeUserDataChange.json');
+  const fakeServiceInputValid = require('../../../../test/resource/fakeUserDataChangeValid.json');
+  const fakeFilterByProjectData = require('../../../../test/resource/fakeFilterByProjectData.json');
+  const fakeFilterByRoleData = require('../../../../test/resource/fakeFilterByRoleData.json');
+  const accessNodes = require('../../../../test/resource/fakeAccessNodes.json')
+  const fakeDeleteAccess = require('../../../../test/resource/fakeDeleteAccessRequest.json');
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [AccessMgmtComponent],

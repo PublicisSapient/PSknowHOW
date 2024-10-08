@@ -4,7 +4,7 @@ import { AutoApprovalComponent } from './auto-approval.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MessageService } from 'primeng/api';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 import { environment } from 'src/environments/environment';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { of, throwError } from 'rxjs';

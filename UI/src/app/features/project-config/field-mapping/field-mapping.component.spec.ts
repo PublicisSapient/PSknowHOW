@@ -621,8 +621,8 @@ const fakeSelectedFieldMappingWithAdditionalFilters = {
     }
   ]
 };
-const dropDownMetaData = require('../../../../../test/resource/KPIConfig.json');
-const fakeKpiFieldMappingList = require('../../../../../test/resource/fakeMappingFieldConfig.json');
+const dropDownMetaData = require('../../../../test/resource/KPIConfig.json');
+const fakeKpiFieldMappingList = require('../../../../test/resource/fakeMappingFieldConfig.json');
 
 describe('FieldMappingComponent', () => {
   let component: FieldMappingComponent;

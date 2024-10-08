@@ -25,7 +25,6 @@ import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, FormControl, 
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_CONFIG, AppConfig } from '../../../../core/configs/app.config';
 import { Router, NavigationEnd, ActivatedRoute, Params, Data } from '@angular/router';
 
 import { InputSwitchModule } from 'primeng/inputswitch';
@@ -42,6 +41,7 @@ import { of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { compareNumbers } from '@fullcalendar/core';
 import { GetAuthorizationService } from 'src/app/core/services/get-authorization.service';
+import { APP_CONFIG, AppConfig } from 'src/app/core/configs/app.config';
 
 describe('JiraConfigComponent', () => {
   let component: JiraConfigComponent;
@@ -55,17 +55,17 @@ describe('JiraConfigComponent', () => {
   const mockActivatedRoute = {
     queryParams: of({ toolName: 'Jira' })
   };
-  const fakeFetchBoards = require('../../../../../test/resource/fakeFetchBoards.json');
-  const fakeSonarVersionsList = require('../../../../../test/resource/fakeSonarVersionsList.json');
-  const fakeJiraConnections = require('../../../../../test/resource/fakeJiraConnections.json');
-  const fakeBambooPlans = require('../../../../../test/resource/fakeBambooPlans.json');
-  const fakeDeploymentProjects = require('../../../../../test/resource/fakeDeploymentProjects.json');
-  const fakeJenkinsJobNames = require('../../../../../test/resource/fakeJenkinsJobNames.json');
-  const fakeAzurePipelinesList = require('../../../../../test/resource/fakeAzurePipelinesList.json');
-  const fakeProjectKeyList = require('../../../../../test/resource/fakeProjectKeyList.json');
-  const fakeBranchesForProject = require('../../../../../test/resource/fakeBranchesForProject.json');
-  const fakeConfiguredTools = require('../../../../../test/resource/fakeConfiguredTools.json');
-  const fakeCompleteHiearchyData = require('../../../../../test/resource/fakeCompleteHierarchyData.json');
+  const fakeFetchBoards = require('../../../../test/resource/fakeFetchBoards.json');
+  const fakeSonarVersionsList = require('../../../../test/resource/fakeSonarVersionsList.json');
+  const fakeJiraConnections = require('../../../../test/resource/fakeJiraConnections.json');
+  const fakeBambooPlans = require('../../../../test/resource/fakeBambooPlans.json');
+  const fakeDeploymentProjects = require('../../../../test/resource/fakeDeploymentProjects.json');
+  const fakeJenkinsJobNames = require('../../../../test/resource/fakeJenkinsJobNames.json');
+  const fakeAzurePipelinesList = require('../../../../test/resource/fakeAzurePipelinesList.json');
+  const fakeProjectKeyList = require('../../../../test/resource/fakeProjectKeyList.json');
+  const fakeBranchesForProject = require('../../../../test/resource/fakeBranchesForProject.json');
+  const fakeConfiguredTools = require('../../../../test/resource/fakeConfiguredTools.json');
+  const fakeCompleteHiearchyData = require('../../../../test/resource/fakeCompleteHierarchyData.json');
   const fakeSelectedTool = [{
     id: '5fc086b9410df80001701334',
     toolName: 'Jira',
@@ -79,7 +79,7 @@ describe('JiraConfigComponent', () => {
     boardQuery: '',
     metadataTemplateID : "641d986af8d42d02b0c2558f"
   }];
-  const fakeBranchListForProject = require('../../../../../test/resource/fakeBranchListForProject.json')
+  const fakeBranchListForProject = require('../../../../test/resource/fakeBranchListForProject.json')
   const fakeProject = {
     id: '6335363749794a18e8a4479b',
     name: 'Scrum Project',
