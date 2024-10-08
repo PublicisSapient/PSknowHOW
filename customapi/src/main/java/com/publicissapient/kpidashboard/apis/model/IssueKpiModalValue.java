@@ -168,4 +168,9 @@ public class IssueKpiModalValue implements Serializable {
 	@JsonProperty("Live Date")
 	private String liveDate;
 
+	@JsonProperty("Category")
+	private List<String> category;
+
+	@JsonProperty("Value")
+	private Double value;
 }
