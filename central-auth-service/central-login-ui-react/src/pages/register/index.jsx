@@ -24,6 +24,9 @@ const RegisterPage = () => {
     const emailPatthern = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$/;
     const userNamePattern = /^[A-Za-z0-9]+$/;
     const password = methods.watch('password', '');
+    const restrictedDomainsRaw = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_RESTRICTED_EMAIL_DOMAINS : process.env.REACT_APP_RESTRICTED_EMAIL_DOMAINS;
+    const restrictedDomains = restrictedDomainsRaw ? restrictedDomainsRaw.split(','): [];
+    const emailErrorMsg = process.env.NODE_ENV === 'production' ? window.env.REACT_APP_RESTRICTED_EMAIL_ERROS_MSG : process.env.REACT_APP_RESTRICTED_EMAIL_ERROS_MSG;
 
     const onSubmit = (data) => {
         setShowLoader(true);
@@ -107,6 +110,13 @@ const RegisterPage = () => {
                                     "value": emailPatthern,
                                     "message": 'Invalid Email'
                                 }
+                            }}
+                            validateValueFn={(value) => {
+                                const domain = value.split('@')[1].toLowerCase(); // Extract the domain and convert to lowercase
+                                if (restrictedDomains.includes(domain)) {
+                                    return `The email domain ${domain} is not allowed.${emailErrorMsg}`;
+                                }
+                                return true; // Return true if the domain is not restricted
                             }}>
                         </FloatingInput>
                         {(methods.formState.errors['email']) && <p className='errMsg'>{methods.formState.errors['email'].message}</p>}

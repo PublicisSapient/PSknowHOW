@@ -143,7 +143,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		UserInfo userinfoKnowHow = userInfoRepository.findByUsername(username);
 		httpServletResponse.setCharacterEncoding("UTF-8");
 		if (Objects.isNull(userinfoKnowHow)) {
-			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username);
+			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username , authToken);
 			UserInfo centralUserInfo = new UserInfo();
 			if (Objects.nonNull(centralUserInfoDTO)) {
 				setUserDetailsFromCentralAuth(username, centralUserInfoDTO, centralUserInfo);
