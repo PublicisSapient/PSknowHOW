@@ -198,6 +198,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions?.forEach(subscription => subscription?.unsubscribe());
     this.parentFilterConfig = {};
     this.primaryFilterConfig = {};
+    this.additionalFilterConfig = {};
     this.boardData = {};
     this.projectList = null;
   }
@@ -470,7 +471,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  handlePrimaryFilterChange(event) {
+  handlePrimaryFilterChange(event, additionalFilterRemoved = false) {
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
         if (!event['additional_level'][key]?.length) {
@@ -490,7 +491,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+      (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType) || additionalFilterRemoved) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -651,6 +652,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+    this.service.setSelectedMap(this.filterApplyData['selectedMap']);
     if (this.filterDataArr[this.selectedType]) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         if (this.selectedLevel) {
@@ -744,25 +746,29 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         delete this.previousFilterEvent['additional_level'];
       }
       if (!this.previousFilterEvent['additional_level']) {
-        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent);
+        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent, true);
       } else {
-        this.handlePrimaryFilterChange(this.previousFilterEvent);
+        this.handlePrimaryFilterChange(this.previousFilterEvent, true);
       }
       return;
     }
     this.compileGAData(event);
     this.filterApplyData['level'] = event[0].level;
     this.filterApplyData['label'] = event[0].labelName;
-
+    this.filterApplyData['selectedMap'] = this.service.getSelectedMap();
     // if Additional Filters are selected
     if (this.filterApplyData['level'] <= 4) return;
+
     if (this.selectedTab?.toLowerCase() === 'backlog') {
+      this.filterApplyData['selectedMap']['sprint'] = [];
       this.filterApplyData['selectedMap']['sprint']?.push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
     }
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
     let additionalFilterSelected = this.filterApplyData['label'] === 'sqd' ? true : false;
+    
+    this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
     if (this.filterApplyData['selectedMap']) {
       if (!this.selectedLevel) {
