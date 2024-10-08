@@ -957,7 +957,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.additionalFiltersArr[filterProp] = this.additionalFiltersArr[filterProp].map((f) => {
               return {
                 nodeId: f,
-                nodeName: f
+                nodeName: f,
+                labelName: filterProp === 'filter1' ? 'branch' : 'developer'
               }
             })
           });
