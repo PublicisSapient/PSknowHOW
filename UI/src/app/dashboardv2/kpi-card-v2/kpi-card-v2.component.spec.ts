@@ -529,7 +529,7 @@ describe('KpiCardV2Component', () => {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: jasmine.any(Function),
-        disabled: true
+        disabled: false
       },
       {
         label: 'List View',
