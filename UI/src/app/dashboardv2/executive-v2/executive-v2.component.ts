@@ -787,10 +787,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   postJiraKPIForRelease(postData, source) {
     /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
-    /** Todo : Need to rework when BE cache issue will fix */
+    /** Todo : Need to rework when BE cache issue will be fixed */
     postData.kpiList.forEach(kpi => {
-      if (!postData.kpiList.filter(obj => !obj.kpiDetail)) {
-        postData.kpiList.push(this.updatedConfigGlobalData.filter(updKPI => updKPI.kpiId === kpi.kpiId)[0].kpiDetail)
+      if (!postData.kpiList.map(obj => obj.kpiDetail.kpiId).includes(kpi.kpiId)) {
+        postData.kpiList.push(kpi.kpiDetail);
       }
     });
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
