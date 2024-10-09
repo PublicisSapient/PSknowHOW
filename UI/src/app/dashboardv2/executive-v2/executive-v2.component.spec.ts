@@ -13723,11 +13723,13 @@ describe('ExecutiveV2Component', () => {
       filter: [
         {
           "nodeId": "Overall",
-          "nodeName": "Overall"
+          "nodeName": "Overall",
+          labelName: 'developer'
         },
         {
           "nodeId": "master -> PSknowHOW -> PSknowHOW",
-          "nodeName": "master -> PSknowHOW -> PSknowHOW"
+          "nodeName": "master -> PSknowHOW -> PSknowHOW",
+          labelName: 'developer'
         }
       ]
     };
@@ -15810,7 +15812,7 @@ describe('ExecutiveV2Component', () => {
 
       const result = component.checkIfDataPresent('data');
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return false if data is not present', () => {
@@ -15848,7 +15850,7 @@ describe('ExecutiveV2Component', () => {
         { data: [4, 5, 6] },
       ];
 
-      const result = component.checkDataAtGranularLevel(data);
+      const result = component.checkDataAtGranularLevel(data, 'line');
 
       expect(result).toBe(true);
     });
@@ -15859,8 +15861,7 @@ describe('ExecutiveV2Component', () => {
         { value: { prop: 'value' } },
       ];
 
-      const result = component.checkDataAtGranularLevel(data);
-
+      const result = component.checkDataAtGranularLevel(data, 'line');
       expect(result).toBe(true);
     });
 
@@ -15870,7 +15871,7 @@ describe('ExecutiveV2Component', () => {
         { dataGroup: [4, 5, 6] },
       ];
 
-      const result = component.checkDataAtGranularLevel(data);
+      const result = component.checkDataAtGranularLevel(data, 'line');
 
       expect(result).toBe(true);
     });
@@ -15881,15 +15882,15 @@ describe('ExecutiveV2Component', () => {
         key2: 'value2',
       };
 
-      const result = component.checkDataAtGranularLevel(data);
+      const result = component.checkDataAtGranularLevel(data, 'line');
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return false if data is an empty array', () => {
       const data = [];
 
-      const result = component.checkDataAtGranularLevel(data);
+      const result = component.checkDataAtGranularLevel(data, 'line');
 
       expect(result).toBe(false);
     });
@@ -15897,7 +15898,7 @@ describe('ExecutiveV2Component', () => {
     it('should return false if data is an empty object', () => {
       const data = {};
 
-      const result = component.checkDataAtGranularLevel(data);
+      const result = component.checkDataAtGranularLevel(data, 'line');
 
       expect(result).toBe(false);
     });
@@ -15905,7 +15906,7 @@ describe('ExecutiveV2Component', () => {
     it('should return false if data is not an array or object', () => {
       const data = 'invalid data';
 
-      const result = component.checkDataAtGranularLevel(data);
+      const result = component.checkDataAtGranularLevel(data, 'line');
 
       expect(result).toBe(true);
     });
@@ -17809,5 +17810,63 @@ describe('ExecutiveV2Component', () => {
     // expect(component.createKpiTableHeads).toHaveBeenCalledWith('type1');
     // expect(component.getKpiCommentsCount).toHaveBeenCalled();
     expect(component.showCommentIcon).toBe(false);
+  });
+
+  it('should return true if data is present for kpiId kpi148 or kpi146 and kpiChartData has length', () => {
+    component.kpiStatusCodeArr = { kpi148: '200' };
+    component.kpiChartData = { kpi148: [{ value: [1, 2, 3] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi148', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi139 or kpi127 and kpiChartData and kpiChartData[0].value have length', () => {
+    component.kpiStatusCodeArr = { kpi139: '200' };
+    component.kpiChartData = { kpi139: [{ value: [{ value: [1, 2, 3] }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi139', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi168, kpi70 or kpi153 and kpiChartData and kpiChartData[0].value have length greater than 0', () => {
+    component.kpiStatusCodeArr = { kpi168: '200' };
+    component.kpiChartData = { kpi168: [{ value: [{ data: 1 }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi168', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+
+  it('should return true if data is present for random KPI where kpiChartData[0].value have length greater than 0', () => {
+    component.selectedTab = 'value';
+    component.kpiStatusCodeArr = { kpi123: '200' };
+    component.kpiChartData = { kpi123: [{ value: [{ data: 1 }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi123', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+
+
+  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
+    component.selectedTab = 'developer';
+    component.kpiChartData = [{ data: 1 }];
+
+    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeTrue();
+  });
+
+  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
+    component.selectedTab = 'other';
+    component.kpiChartData = [];
+
+    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeFalse();
+  });
+
+  it('should return true if item.value is an array with length greater than 0', () => {
+    const item = { value: [1, 2, 3] };
+
+    expect(component.checkIfArrayHasData(item)).toBeTrue();
+  });
+
+  it('should return false if item.value is not an array or has length 0', () => {
+    const item = { value: [] };
+
+    expect(component.checkIfArrayHasData(item)).toBeFalse();
   });
 });

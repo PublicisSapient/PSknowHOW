@@ -63,7 +63,6 @@ public class CacheServiceImpl implements CacheService {
 	private AccountHierarchyServiceImpl accountHierarchyService;
 	@Autowired
 	private AccountHierarchyServiceKanbanImpl accountHierarchyServiceKanban;
-
 	@Autowired
 	@Qualifier("cacheManager")
 	private CacheManager cacheManager;
@@ -141,6 +140,15 @@ public class CacheServiceImpl implements CacheService {
 		log.info("updating FieldMapping Cache");
 		configHelperService.loadConfigData();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP);
+
+	}
+
+	@Cacheable(CommonConstant.CACHE_BOARD_META_DATA_MAP)
+	@Override
+	public Object cacheBoardMetaDataMapData() {
+		log.info("updating BoardMetaData Cache");
+		configHelperService.loadBoardMetaData();
+		return configHelperService.getConfigMapData(CommonConstant.CACHE_BOARD_META_DATA_MAP);
 
 	}
 

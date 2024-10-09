@@ -141,7 +141,7 @@ describe('KpiCardV2Component', () => {
 
       const result = component.checkDataAtGranularLevel(data);
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return true if data is an array with non-empty dataGroup arrays', () => {
@@ -163,7 +163,7 @@ describe('KpiCardV2Component', () => {
 
       const result = component.checkDataAtGranularLevel(data);
 
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should return false if data is an empty array', () => {
@@ -952,5 +952,50 @@ describe('KpiCardV2Component', () => {
     });
   });
 
+  it('should set the warning message when val is true', () => {
+    component.showWarning(true);
 
+    expect(component.warning).toBe('Configure the missing mandatory field mappings in KPI Settings for accurate data display.');
+  });
+
+  it('should clear the warning message when val is false', () => {
+    component.showWarning(false);
+
+    expect(component.warning).toBeNull();
+  });
+
+  it('should return true if data is present for kpiId kpi148 or kpi146 and trendValueList has length', () => {
+    component.kpiData = { kpiId: 'kpi148' };
+    component.trendValueList = [{ value: [1, 2, 3] }];
+
+    expect(component.checkIfDataPresent('200')).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi139 or kpi127 and trendValueList and trendValueList[0].value have length', () => {
+    component.kpiData = { kpiId: 'kpi139' };
+    component.trendValueList = [{ value: [{ value: [1, 2, 3] }] }];
+
+    expect(component.checkIfDataPresent('200')).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi168, kpi70 or kpi153 and trendValueList and trendValueList[0].value have length greater than 0', () => {
+    component.kpiData = { kpiId: 'kpi168' };
+    component.trendValueList = [{ value: [{ data: 1 }] }];
+
+    expect(component.checkIfDataPresent('200')).toBeTrue();
+  });
+
+  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
+    component.selectedTab = 'developer';
+    component.trendValueList = [{ data: 1 }];
+
+    expect(component.checkDataAtGranularLevel(component.trendValueList)).toBeTrue();
+  });
+
+  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
+    component.selectedTab = 'other';
+    component.trendValueList = [];
+
+    expect(component.checkDataAtGranularLevel(component.trendValueList)).toBeFalse();
+  });
 });

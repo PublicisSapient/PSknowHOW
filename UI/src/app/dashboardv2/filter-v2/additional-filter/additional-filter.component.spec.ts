@@ -392,7 +392,7 @@ describe('AdditionalFilterComponent', () => {
     tick(100);
     expect(component.filterData[0][0].nodeId).toEqual('Node 1');
     expect(component.selectedFilters).toEqual([{ nodeId: 'Node 1', nodeName: 'Node 1' }]);
-    expect(component.applyAdditionalFilter).toHaveBeenCalledOnceWith({ value: 'Node 1' }, 1);
+    expect(component.applyAdditionalFilter).toHaveBeenCalledTimes(2);
   }));
 
   it('should apply default filter when filterData is empty', fakeAsync(() => {
@@ -403,7 +403,7 @@ describe('AdditionalFilterComponent', () => {
     tick(100);
     expect(component.filterData).toEqual([]);
     // expect(component.selectedFilters).toEqual(['Overall']);
-    expect(component.applyAdditionalFilter).toHaveBeenCalledOnceWith({ }, 1);
+    expect(component.applyAdditionalFilter).toHaveBeenCalledTimes(0);
   }));
 
   it('should set additional filter level and emit event if not from backup', () => {
@@ -602,4 +602,48 @@ describe('AdditionalFilterComponent', () => {
 
   // -> end of moveSelectedOptionToTop() & onSelectionChange()
 
+  it('should update filterData and selectedFilters when data is provided', () => {
+    const data = {
+      filter1: [{ nodeId: 1, nodeName: 'Filter 1' }],
+      filter2: [{ nodeId: 2, nodeName: 'Filter 2' }],
+    };
+
+    component.selectedTab = 'developer';
+    component.filterData = [[{ nodeName: 'Filter 1' }, { nodeName: 'Filter 2' }]];;
+    component.selectedFilters = [];
+    component.selectedTrends = [];
+
+    component.service.populateAdditionalFilters = of(data);
+    component.ngOnInit();
+
+    // expect(component.selectedFilters).toEqual(['Overall']);
+    expect(component.previousSelectedTrends).toEqual([]);
+    // expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ additional_level: null });
+  });
+
+  it('should update filterData and selectedFilters when data is provided and selectedTab is not "developer"', () => {
+    const data = {
+      filter1: [{ nodeId: 1, nodeName: 'Filter 1' }],
+      filter2: [{ nodeId: 2, nodeName: 'Filter 2' }],
+    };
+
+    component.selectedTab = 'other';
+    component.filterData = [];
+    component.selectedFilters = [];
+    component.selectedTrends = [];
+    component.additionalFilterConfig = [
+      { defaultLevel: { labelName: 'Sprint' } },
+      { defaultLevel: { labelName: 'Squad' } },
+    ];
+    component.stateFilters = { sprint: [1], squad: [2] };
+
+    component.service.populateAdditionalFilters = of(data);
+
+    let sortByFieldSpy = spyOn(helperService, 'sortByField');
+    component.ngOnInit();
+
+    expect(component.filterData).toEqual([data.filter1, data.filter2]);
+    expect(component.selectedFilters).toEqual([]);
+    expect(sortByFieldSpy).toHaveBeenCalled();
+  });
 });

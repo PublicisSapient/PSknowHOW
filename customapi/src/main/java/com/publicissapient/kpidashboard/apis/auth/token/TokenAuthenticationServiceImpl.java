@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -33,11 +32,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -66,6 +65,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of {@link TokenAuthenticationService}
@@ -73,8 +73,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 @Slf4j
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
-
-	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String ROLES_CLAIM = "roles";
 	private static final String DETAILS_CLAIM = "details";
@@ -82,7 +80,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String USER_EMAIL = "emailAddress";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final Object USER_AUTHORITIES = "authorities";
-	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	public static final String EXCEPTION_MSG = "No implementation is found for SSO";
 	@Autowired
 	AuthenticationService authenticationService;
@@ -195,11 +192,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 					authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
 			Date tokenExpiration = claims.getExpiration();
-			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(tokenExpiration));
+			boolean isJWTTokenExpired = new Date().after(tokenExpiration);
+			if (isJWTTokenExpired) {
+				response.setStatus(HttpStatus.UNAUTHORIZED.value());
+				return null;
+			}
 
 			return authentication;
 
 		} catch (ExpiredJwtException e) {
+			log.error("JWT filtering failed with message: {}", e.getMessage());
 			return null;
 		}
 	}
@@ -273,23 +275,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		List<UserTokenData> dataList = userTokenReopository.findAllByUserName(username);
 		dataList.stream().forEach(data -> data.setExpiryDate(expiryDate));
 		userTokenReopository.saveAll(dataList);
-	}
-
-	@Override
-	public String setUpdateAuthFlag(Date tokenExpiration) {
-		if (tokenExpiration != null) {
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
-			String expiryDate = dateFormat.format(tokenExpiration);
-
-			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
-					.optionalEnd().toFormatter();
-			if (LocalDateTime.parse(expiryDate, formatter).isAfter(LocalDateTime.now())) {
-				return Boolean.toString(true);
-			}
-		}
-		return Boolean.toString(false);
 	}
 
 	@Override
