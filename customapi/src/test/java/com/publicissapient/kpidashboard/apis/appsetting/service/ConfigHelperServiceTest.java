@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import static org.mockito.Mockito.when;
@@ -25,19 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -183,7 +169,8 @@ public class ConfigHelperServiceTest {
 		kpiMaster.setAggregationCircleCriteria("criteriaX");
 		kpiMasters.add(kpiMaster);
 		Mockito.when(kpiMasterRepository.findAll()).thenReturn(kpiMasters);
-		Assertions.assertEquals("criteriaX", configHelperService.calculateCriteriaForCircleKPI().get("5fd9ab0995fe13000165d0ba"));
+		Assertions.assertEquals("criteriaX",
+				configHelperService.calculateCriteriaForCircleKPI().get("5fd9ab0995fe13000165d0ba"));
 	}
 
 	@Test
@@ -207,7 +194,8 @@ public class ConfigHelperServiceTest {
 		kpiMaster.setMaturityRange(maturityRange);
 		kpiMasters.add(kpiMaster);
 		Mockito.when(kpiMasterRepository.findAll()).thenReturn(kpiMasters);
-		Assertions.assertEquals("criteriaX", configHelperService.calculateMaturity().get("5fd9ab0995fe13000165d0ba").get(0));
+		Assertions.assertEquals("criteriaX",
+				configHelperService.calculateMaturity().get("5fd9ab0995fe13000165d0ba").get(0));
 	}
 
 	@Test
@@ -224,12 +212,13 @@ public class ConfigHelperServiceTest {
 	}
 
 	@Test
-	public void loadAllFilters(){
+	public void loadAllFilters() {
 		when(filtersRepository.findAll()).thenReturn(null);
 		Assertions.assertNull(configHelperService.loadAllFilters());
 	}
+
 	@Test
-	public void loadAllOrganizationHierarchy(){
+	public void loadAllOrganizationHierarchy() {
 		when(organizationHierarchyRepository.findAll()).thenReturn(organizationHierarchyList);
 		Assertions.assertNotNull(configHelperService.loadAllOrganizationHierarchy());
 	}
