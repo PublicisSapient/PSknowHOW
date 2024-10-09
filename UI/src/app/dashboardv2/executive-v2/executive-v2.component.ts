@@ -314,6 +314,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiTableDataObj[nodeName] = [];
       }
 
+      this.service.setAddtionalFilterBackup({});
+      this.service.setKpiSubFilterObj({});
+
       if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
         this.noFilterApplyData = true;
       } else {
