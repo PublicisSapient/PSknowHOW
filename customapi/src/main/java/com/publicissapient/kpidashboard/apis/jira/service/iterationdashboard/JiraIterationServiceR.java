@@ -96,6 +96,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private boolean referFromProjectCache = true;
+	private String sprintId="";
 
 	/**
 	 * This method process scrum jira based Iteration kpis request, cache data and
@@ -148,7 +149,14 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 				if (filteredNode != null) {
 					if (!CollectionUtils.isEmpty(origRequestedKpis)
 							&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
-						updateJiraIssueList(kpiRequest, filteredAccountDataList);
+						if (sprintDetails == null || !sprintId.equals(kpiRequest.getSelectedMap().get("sprint").toString())) {
+							synchronized (this) {
+								if (sprintDetails == null || !sprintId.equals(kpiRequest.getSelectedMap().get("sprint").toString())) {
+									updateJiraIssueList(kpiRequest, filteredAccountDataList);
+									sprintId=kpiRequest.getSelectedMap().get("sprint").toString();
+								}
+							}
+						}
 					}
 					// set filter value to show on trend line. If subprojects are
 					// in

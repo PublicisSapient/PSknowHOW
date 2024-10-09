@@ -93,6 +93,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private boolean referFromProjectCache = true;
+	private String sprintId="";
 
 	/**
 	 * This method process scrum jira based Backlog kpis request, cache data and
@@ -144,7 +145,14 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 				if (!CollectionUtils.isEmpty(origRequestedKpis)
 						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
-					updateJiraIssueList(filteredAccountDataList);
+					if (jiraIssueList == null || !sprintId.equals(kpiRequest.getSelectedMap().get("project").toString())) {
+						synchronized (this) {
+							if (jiraIssueList == null || !sprintId.equals(kpiRequest.getSelectedMap().get("project").toString())) {
+								updateJiraIssueList(filteredAccountDataList);
+								sprintId=kpiRequest.getSelectedMap().get("project").toString();
+							}
+						}
+					}
 				}
 				// set filter value to show on trend line. If subprojects are
 				// in
