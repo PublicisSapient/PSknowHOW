@@ -145,14 +145,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 				if (!CollectionUtils.isEmpty(origRequestedKpis)
 						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
-					if (jiraIssueList == null || !sprintId.equals(kpiRequest.getSelectedMap().get("project").toString())) {
-						synchronized (this) {
-							if (jiraIssueList == null || !sprintId.equals(kpiRequest.getSelectedMap().get("project").toString())) {
-								updateJiraIssueList(filteredAccountDataList);
-								sprintId=kpiRequest.getSelectedMap().get("project").toString();
-							}
-						}
-					}
+					extracted(kpiRequest, filteredAccountDataList);
 				}
 				// set filter value to show on trend line. If subprojects are
 				// in
@@ -184,6 +177,17 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 		}
 
 		return responseList;
+	}
+
+	private void extracted(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+		if (jiraIssueList == null || !sprintId.equals(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).toString())) {
+			synchronized (this) {
+				if (jiraIssueList == null || !sprintId.equals(kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).toString())) {
+					updateJiraIssueList(filteredAccountDataList);
+					sprintId= kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).toString();
+				}
+			}
+		}
 	}
 
 	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
