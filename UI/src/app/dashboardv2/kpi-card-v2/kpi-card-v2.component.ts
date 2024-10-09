@@ -362,7 +362,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    if (this.kpiData?.kpiId === 'kpi168' || this.kpiData?.kpiId === 'kpi70' || this.kpiData?.kpiId === 'kpi153') {
+    if((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
+      if (this.trendValueList?.length) {
+        return true;
+      }
+    }
+    if((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')) {
+      if (this.trendValueList?.length && this.trendValueList[0].value?.length) {
+        return true;
+      }
+    }
+    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi168' || this.kpiData?.kpiId === 'kpi70' || this.kpiData?.kpiId === 'kpi153')) {
       if (this.trendValueList?.length && this.trendValueList[0]?.value?.length > 0) {
         return true;
       }

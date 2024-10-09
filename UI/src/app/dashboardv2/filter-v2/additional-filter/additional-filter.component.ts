@@ -49,7 +49,7 @@ export class AdditionalFilterComponent implements OnChanges {
               data[f].forEach(element => {
                 
                 if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                  if(this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index].defaultLevel.labelName) {
+                  if(this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
                     this.filterData[index] = [];
                   }
                   this.filterData[index].push(element);
@@ -133,7 +133,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
         fakeEvent['value'] = 'Overall';
 
-        this.selectedFilters[index] = { nodeId: 'Overall', nodeName: 'Overall' };
+        this.selectedFilters[index] = filter[filter.findIndex(x=>x.nodeName === 'Overall')];
       } else {
         if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
           fakeEvent['value'] = this.filterData[0][0].nodeId;
