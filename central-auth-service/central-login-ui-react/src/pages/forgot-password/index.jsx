@@ -23,11 +23,17 @@ const ForgotPasswordPage = () => {
             email: data.email
         })
             .then(function (response) {
-                console.log(response);
-                setSuccess('Reset Password Link sent successfully');
-                setError('');
-                methods.formState.errors['email'] = '';
-                setShowLoader(false);
+                if(response.success){
+                  setSuccess('Reset Password Link sent successfully');
+                  setError('');
+                  methods.formState.errors['email'] = '';
+                  setShowLoader(false);
+                } else {
+                 setError(response.data.message);
+                 setSuccess('');
+                 methods.formState.errors['email'] = '';
+                 setShowLoader(false);
+                }
             })
             .catch(function (error) {
                 console.log(error.response.data.message);

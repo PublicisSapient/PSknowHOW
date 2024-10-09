@@ -768,18 +768,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   updateXAxisTicks(localVariable) {
-    let localVarKpi = localVariable['kpi127'] || localVariable['kpi170'] || localVariable['kpi3']
-    if (localVarKpi) {
-      if (localVarKpi.trendValueList && localVarKpi.xAxisValues) {
-        localVarKpi.trendValueList.forEach(trendElem => {
-          trendElem.value.forEach(valElem => {
-            if (valElem.value.length === 5 && localVarKpi.xAxisValues.length === 5) {
-              valElem.value.forEach((element, index) => {
-                element['xAxisTick'] = localVarKpi.xAxisValues[index];
-              });
-            }
+    for(const kpi in localVariable){
+      const localVarKpi = localVariable[kpi].trendValueList && localVariable[kpi].xAxisValues
+      if (localVarKpi) {
+          localVariable[kpi].trendValueList.forEach(trendElem => {
+            trendElem.value.forEach(valElem => {
+              if (valElem.value.length === 5 && localVariable[kpi].xAxisValues.length === 5) {
+                valElem.value.forEach((element, index) => {
+                  element['xAxisTick'] = localVariable[kpi].xAxisValues[index];
+                });
+              }
+            });
           });
-        });
       }
     }
   }
@@ -788,8 +788,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postJiraKPIForRelease(postData, source) {
     /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
     /** Todo : Need to rework when BE cache issue will fix */
-    this.updatedConfigGlobalData.forEach(kpi => {
-      postData.kpiList.push(kpi.kpiDetail)
+    postData.kpiList.forEach(kpi => {
+      if (!postData.kpiList.filter(obj => !obj.kpiDetail)) {
+        postData.kpiList.push(this.updatedConfigGlobalData.filter(updKPI => updKPI.kpiId === kpi.kpiId)[0].kpiDetail)
+      }
     });
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
@@ -1018,7 +1020,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             for (let i = 0; i < tempArr?.length; i++) {
               preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
             }
-            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
           }
           else if (filterPropArr.includes('filter1')
             || filterPropArr.includes('filter2')) {
@@ -1810,14 +1812,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
 
-  checkIfDataPresent(data) {
-    if (this.kpiStatusCodeArr[data]) {
-      return (this.kpiStatusCodeArr[data] === '200' || this.kpiStatusCodeArr[data] === '201') && this.checkDataAtGranularLevel(this.kpiChartData[data]);
+  checkIfDataPresent(kpi) {
+    if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
+      if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
+        return true;
+      }
+    }
+    if (this.kpiStatusCodeArr[kpi.kpiId]) {
+      return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType);
     }
     return false;
   }
 
-  checkDataAtGranularLevel(data) {
+  checkDataAtGranularLevel(data, chartType) {
+    if (this.selectedTab === "developer" && data?.length) {
+      return true;
+    }
+    if (!data || !data?.length) {
+      return false;
+    }
     let dataCount = 0;
     if (Array.isArray(data)) {
       data?.forEach(item => {
@@ -1826,8 +1839,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else if (item.data && !isNaN(parseInt(item.data))) {
           // dataCount += item?.data;
           ++dataCount;
-        } else if (item.value && ((Array.isArray(item.value) && item.value.length) || Object.keys(item.value)?.length)) {
-          ++dataCount;
+        } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
+          if (item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
+            if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
+              ++dataCount;
+            } else if (parseInt(item.value[0].data) > 0) {
+              ++dataCount;
+            }
+          } else if (this.checkIfArrayHasData(item.value[0])) {
+            if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
+              ++dataCount;
+            } else if (parseInt(item.value[0].value[0].data) > 0) {
+              ++dataCount;
+            }
+          }
         } else if (item.dataGroup && item.dataGroup.length) {
           ++dataCount;
         }
@@ -1836,6 +1861,29 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       dataCount = Object.keys(data).length;
     }
     return parseInt(dataCount + '') > 0;
+  }
+
+  checkIfArrayHasData(item) {
+    return (Array.isArray(item.value) && item.value.length > 0)
+  }
+
+  checkIfPartialDataPresent(kpi) {
+    let kpiData = this.ifKpiExist(kpi.kpiId) ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
+    let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
+    if (kpiData && filters) {
+      if (filters.length === 2) {
+        let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
+        let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
+        if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType)) ||
+          (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType))) {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
 
@@ -1880,10 +1928,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           arr = Array.from(arr);
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
-          if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter'] === true))) {
-            const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
-            if (index > -1) {
-              arr?.splice(index, 1);
+          if (this.selectedTab.toLowerCase() !== 'developer' || kpiId !== 'kpi168') {
+            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown')) {
+              const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
+              if (index > -1) {
+                arr?.splice(index, 1);
+              }
             }
           }
 
@@ -1979,13 +2029,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
     this.kpiDropdowns[kpiId] = [...dropdownArr];
-
-    // if (this.kpiDropdowns[kpiId]?.length > 1) {
-    //   this.kpiSelectedFilterObj[kpiId] = {};
-    //   for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-    //     this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
-    //   }
-    // }
   }
 
   handleSelectedOption(event, kpi) {
@@ -1998,7 +2041,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.handleSelectedOptionForCard(event, kpi)
       }
     } else {
-      // this.kpiSelectedFilterObj[kpi?.kpiId] = [];
       if (kpi.kpiId === "kpi72") {
         if (event.hasOwnProperty('filter1') || event.hasOwnProperty('filter2')) {
           if (!Array.isArray(event.filter1) || !Array.isArray(event.filter2)) {
@@ -2020,7 +2062,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
         }
-
       }
       else {
         if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {
@@ -2128,20 +2169,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   checkMaturity(item) {
-    // let maturity = item.maturity;
-    // if (maturity == undefined) {
-    //   return 'NA';
-    // }
-    // if (item.value.length >= 5) {
-    //   const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
-    //   const tempArr = last5ArrItems.filter(x => x.data != 0);
-    //   if (tempArr.length == 0) {
-    //     maturity = '--';
-    //   }
-    // } else {
-    //   maturity = '--';
-    // }
-    // maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M' + maturity : maturity;
     let maturity = item.maturity;
     if (maturity == undefined) {
       return 'NA';
@@ -2149,50 +2176,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     maturity = 'M' + maturity;
     return maturity;
   }
-
-  // checkLatestAndTrendValueForKpi(kpiData, item) {
-  //   let latest: string = '';
-  //   let trend: string = '';
-  //   const unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
-  //   const modUnit = (unit ? ' ' + unit : '');
-  //   if (item?.value?.length > 0) {
-  //     let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-  //     latest = tempVal > 0 ? ((Math.round(tempVal * 10) / 10) + modUnit) : (tempVal + modUnit);
-  //   }
-  //   if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
-  //     if (kpiData?.kpiDetail?.trendCalculative) {
-  //       let lhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.lhs : '';
-  //       let rhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.rhs : '';
-  //       let lhs = item?.value[item?.value?.length - 1][lhsKey];
-  //       let rhs = item?.value[item?.value?.length - 1][rhsKey];
-  //       let operator = lhs < rhs ? '<' : lhs > rhs ? '>' : '=';
-  //       let trendObj = kpiData?.kpiDetail?.trendCalculation?.find((item) => item.operator == operator);
-  //       if (trendObj) {
-  //         trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '-- --';
-  //       } else {
-  //         trend = 'NA';
-  //       }
-  //     } else {
-  //       let lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-  //       let secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
-  //       let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
-  //       if (secondLastVal > lastVal && !isPositive) {
-  //         trend = '+ve';
-  //       } else if (secondLastVal < lastVal && !isPositive) {
-  //         trend = '-ve';
-  //       } else if (secondLastVal < lastVal && isPositive) {
-  //         trend = '+ve';
-  //       } else if (secondLastVal > lastVal && isPositive) {
-  //         trend = '-ve';
-  //       } else {
-  //         trend = '-- --';
-  //       }
-  //     }
-  //   } else {
-  //     trend = 'NA';
-  //   }
-  //   return [latest, trend, unit];
-  // }
 
   checkLatestAndTrendValue(kpiData, item) {
     let latest: string = '';
@@ -2387,31 +2370,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.service.setMaturiyTableLoader(true);
     }
   }
-
-  // getLastConfigurableTrendingListData(KpiData) {
-  //   if (this.tooltip && this.tooltip.sprintCountForKpiCalculation !== undefined) {
-  //     if (!(this.filterApplyData['label'] === 'sqd' && this.filterApplyData['selectedMap']['sprint'].length !== 0)) {
-  //       KpiData.map(kpiList => {
-  //         kpiList.trendValueList?.map(trendData => {
-  //           if (trendData.hasOwnProperty('filter') || trendData.hasOwnProperty('filter1')) {
-  //             trendData?.value.map(projectWiseData => {
-  //               const valueLength = projectWiseData.value.length;
-  //               if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
-  //                 projectWiseData.value = projectWiseData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
-  //               }
-  //             })
-  //           } else {
-  //             const valueLength = trendData.value.length;
-  //             if (valueLength > this.tooltip.sprintCountForKpiCalculation) {
-  //               trendData.value = trendData.value.splice(-this.tooltip.sprintCountForKpiCalculation)
-  //             }
-  //           }
-
-  //         })
-  //       })
-  //     }
-  //   }
-  // }
 
   coundMaxNoOfSprintSelectedForProject($event) {
     let maxSprints = 0;

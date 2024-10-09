@@ -269,11 +269,15 @@ public enum KPICode {
     /**
      * Change Failure Rate kpi code for kanban
      */
-    CHANGE_FAILURE_RATE_KANBAN("kpi117", KPISource.JENKINSKANBAN.name()),
+    CHANGE_FAILURE_RATE_KANBAN("kpi184", KPISource.JENKINSKANBAN.name()),
     /**
      * Deployment Frequency kpi code
      */
     DEPLOYMENT_FREQUENCY("kpi118", KPISource.JENKINS.name()),
+    /**
+     * Deployment Frequency kpi code for kanban
+     */
+    DEPLOYMENT_FREQUENCY_KANBAN("kpi183", KPISource.JENKINSKANBAN.name()),
     /**
      * Open Ticket Aging By Priority kpi code
      */

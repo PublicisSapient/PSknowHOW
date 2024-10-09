@@ -65,7 +65,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedBoard: any;
   hierarchies: any;
   noSprint: boolean = false;
-  projectList = [];
+  projectList = null;
   blockUI: boolean = false;
   constructor(
     private httpService: HttpService,
@@ -159,7 +159,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (!this.dateRangeFilter.types.includes('Months')) {
         this.dateRangeFilter.types.push('Months');
       }
-      if(this.selectedTab === 'developer'){
+      if (this.selectedTab === 'developer') {
         this.dateRangeFilter.types = this.dateRangeFilter.types.filter((type) => type !== 'Months');
       }
     } else {
@@ -196,6 +196,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   // unsubscribing all Kpi Request
   ngOnDestroy() {
     this.subscriptions?.forEach(subscription => subscription?.unsubscribe());
+    this.parentFilterConfig = {};
+    this.primaryFilterConfig = {};
+    this.additionalFilterConfig = {};
+    this.boardData = {};
+    this.projectList = null;
   }
 
   setSelectedDateType(label: string) {
@@ -325,6 +330,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compareStringArrays(array1, array2) {
+    if (!array1 || !array2) {
+      return false;
+    }
     // Check if both arrays have the same length
     if (array1.length !== array2.length) {
       return false;
@@ -364,7 +372,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                     }
                   }
 
-                  if (board.boardSlug !== 'developer') {
+                  if (board.boardSlug !== 'developer' && board.boardSlug !== 'dora') {
                     board.filters.additionalFilters.forEach(element => {
                       if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
                         element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
@@ -452,30 +460,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         }
 
-        Object.keys(stateFilters['additional_level']).forEach((level) => {
-          stateFilters['additional_level'][level] = stateFilters['additional_level'][level].filter(addtnlFilter => stateFilters['primary_level'].map((primary) => primary.nodeId).includes(addtnlFilter.parentId));
-          if (!stateFilters['additional_level'][level]?.length) {
-            delete stateFilters['additional_level'][level];
-          }
-        });
-
-        if (!Object.keys(stateFilters['additional_level']).length) {
-          delete stateFilters['additional_level'];
-        }
+        delete stateFilters['additional_level'];
 
         this.filterApplyData['selectedMap']['Project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
         this.service.setSelectedTrends(stateFilters['primary_level']);
-        if (!stateFilters['additional_level'] && stateFilters['primary_level']) {
-          this.handlePrimaryFilterChange(stateFilters['primary_level']);
-        } else {
-          this.handlePrimaryFilterChange(stateFilters);
-        }
+
+        this.handlePrimaryFilterChange(stateFilters['primary_level']);
         this.helperService.setBackupOfFilterSelectionState(stateFilters);
       }
     }
   }
 
-  handlePrimaryFilterChange(event) {
+  handlePrimaryFilterChange(event, additionalFilterRemoved = false) {
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
         if (!event['additional_level'][key]?.length) {
@@ -495,7 +491,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+      (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType) || additionalFilterRemoved) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -656,6 +652,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+    this.service.setSelectedMap(this.filterApplyData['selectedMap']);
     if (this.filterDataArr[this.selectedType]) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         if (this.selectedLevel) {
@@ -749,25 +746,29 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         delete this.previousFilterEvent['additional_level'];
       }
       if (!this.previousFilterEvent['additional_level']) {
-        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent);
+        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent, true);
       } else {
-        this.handlePrimaryFilterChange(this.previousFilterEvent);
+        this.handlePrimaryFilterChange(this.previousFilterEvent, true);
       }
       return;
     }
     this.compileGAData(event);
     this.filterApplyData['level'] = event[0].level;
     this.filterApplyData['label'] = event[0].labelName;
-
+    this.filterApplyData['selectedMap'] = this.service.getSelectedMap();
     // if Additional Filters are selected
     if (this.filterApplyData['level'] <= 4) return;
+
     if (this.selectedTab?.toLowerCase() === 'backlog') {
+      this.filterApplyData['selectedMap']['sprint'] = [];
       this.filterApplyData['selectedMap']['sprint']?.push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
     }
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
     let additionalFilterSelected = this.filterApplyData['label'] === 'sqd' ? true : false;
+    
+    this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
     if (this.filterApplyData['selectedMap']) {
       if (!this.selectedLevel) {

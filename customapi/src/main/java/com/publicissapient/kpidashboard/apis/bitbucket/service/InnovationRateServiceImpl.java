@@ -309,6 +309,8 @@ public class InnovationRateServiceImpl extends BitBucketKPIService<Double, List<
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
 				repoToolValidationData.setInnovationRate(userInnovationRate);
+				repoToolValidationData.setAddedLines(repoToolUserDetails.get().getAddedLines());
+				repoToolValidationData.setChangedLines(repoToolUserDetails.get().getChangedLines());
 				repoToolValidationDataList.add(repoToolValidationData);
 			}
 

@@ -11,18 +11,20 @@ const apiProvider = {
         return axios.post(`${API_BASE_URL}/api/login`, data);
     },
 
+    handleSamlLogin: `${API_BASE_URL}/api/saml-login`,
+
     handleUserRegistration: (data) => {
-        return axios.post(`${API_BASE_URL}/api/registerUser`, data);
+        return axios.post(`${API_BASE_URL}/api/register-user`, data);
     },
 
-    handleSamlLogin: `${API_BASE_URL}/api/saml/login`,
+    handleSamlLogout: `${API_BASE_URL}/api/saml-logout`,
 
     handleForgotPassword: (data) => {
-        return axios.post(`${API_BASE_URL}/api/forgotPassword`, data);
+        return axios.post(`${API_BASE_URL}/api/forgot-password`, data);
     },
 
     handlePasswordReset: (data) => {
-        return axios.post(`${API_BASE_URL}/api/resetPassword`, data);
+        return axios.post(`${API_BASE_URL}/api/reset-password`, data);
     },
 
     getStandardLoginStatus: () => {

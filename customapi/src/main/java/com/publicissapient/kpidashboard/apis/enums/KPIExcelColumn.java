@@ -121,6 +121,8 @@ public enum KPIExcelColumn {
 
 	CHANGE_FAILURE_RATE("kpi116", Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
 			"Build Failure Percentage", "Weeks")),
+	CHANGE_FAILURE_RATE_KANBAN("kpi184", Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
+			"Build Failure Percentage", "Weeks")),
 	BUILD_FREQUENCY("kpi172", Arrays.asList("Project Name", "Job Name","Weeks", "Start Date", "Build Url")),
 
 	TEST_EXECUTION_AND_PASS_PERCENTAGE("kpi70",
@@ -133,6 +135,7 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
 	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
+	DEPLOYMENT_FREQUENCY_KANBAN("kpi183", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
 
 	DEFECTS_WITHOUT_STORY_LINK("kpi80",
 			Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
@@ -180,7 +183,10 @@ public enum KPIExcelColumn {
 			"Build Status", "Build Url")),
 
 	CODE_COMMIT_MERGE_KANBAN("kpi65",
-			Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No. Of Commit")),
+			Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No Of Commit")),
+
+	REPO_TOOL_CODE_COMMIT_MERGE_KANBAN("kpi159",
+			Arrays.asList("Project Name", "Repo", "Branch", "Developer", "Days/Weeks", "No Of Commit")),
 
 	TEAM_CAPACITY_KANBAN("kpi58",
 			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
@@ -337,9 +343,10 @@ public enum KPIExcelColumn {
 	DEFECT_COUNT_BY_EXPORT("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
 			"Issue Status", "Root Cause", "Priority", "Testing Phase", "Assignee")),
 	INNOVATION_RATE("kpi185",
-			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Innovation Rate")), DEFECT_RATE(
-					"kpi186", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "No of Merge",
-							"Defect Rate"));
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Added Lines", "Total Lines Changed",
+					"Innovation Rate")), DEFECT_RATE("kpi186",
+							Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Defect PR",
+									"No of Merge", "Defect Rate"));
 
 	// @formatter:on
 

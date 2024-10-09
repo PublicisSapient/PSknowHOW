@@ -40,29 +40,25 @@ export class AdditionalFilterComponent implements OnChanges {
           this.filterData = [];
           this.previousSelectedTrends = [...this.selectedTrends];
           // project changed, reset addtnl. filters
-          this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+          // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         }
 
         Object.keys(data).forEach((f, index) => {
           if (this.filterData[index]) {
             if (this.selectedTab === 'developer') {
               data[f].forEach(element => {
+                
                 if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                  const correctLevelMapping = {
-                    Sprint: 'sprint',
-                    Squad: 'sqd'
+                  if(this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index].defaultLevel.labelName) {
+                    this.filterData[index] = [];
                   }
-                  if (this.filterData[index]?.length && correctLevelMapping[this.additionalFilterConfig[index]?.defaultLevel?.labelName] === this.filterData[index][0].labelName) {
-                    this.filterData[index].push(element);
-                  } else {
-                    this.filterData[index] = data[f];
-                  }
+                  this.filterData[index].push(element);
                 }
               });
 
               this.filterData.forEach((filterSet, index) => {
                 if (!data[Object.keys(data)[index]]) {
-                  this.filterData.splice(index,1);
+                  this.filterData.splice(index, 1);
                 }
               });
 
@@ -97,7 +93,9 @@ export class AdditionalFilterComponent implements OnChanges {
                 }
               });
               if (this.stateFilters[key].length) {
-                this.selectedFilters[correctIndex] = this.stateFilters[key];
+                setTimeout(() => {
+                  this.selectedFilters[correctIndex] = this.stateFilters[key];
+                }, 100);
               }
             });
 
@@ -105,9 +103,10 @@ export class AdditionalFilterComponent implements OnChanges {
         } else {
           this.applyDefaultFilter();
         }
-      } else {
-        this.filterData = [];
       }
+      // else {
+      //   this.filterData = [];
+      // }
     }));
   }
 
@@ -131,7 +130,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
     this.filterData.forEach((filter, index) => {
       if (filter.map(f => f.nodeName).includes('Overall')) {
-       
+
         fakeEvent['value'] = 'Overall';
 
         this.selectedFilters[index] = { nodeId: 'Overall', nodeName: 'Overall' };
@@ -144,18 +143,21 @@ export class AdditionalFilterComponent implements OnChanges {
           this.selectedFilters = ['Overall'];
         }
       }
+      Promise.resolve().then(() => {
+        this.applyAdditionalFilter(fakeEvent, index + 1);
+      });
+
     });
 
-    Promise.resolve().then(() => {
-      this.applyAdditionalFilter(fakeEvent, 0 + 1);
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
+    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue) || this.selectedTab === 'value') {
       this.filterSet = new Set();
       this.selectedFilters = [];
-      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+      if (this.selectedTab === 'value') {
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+      }
     }
   }
 

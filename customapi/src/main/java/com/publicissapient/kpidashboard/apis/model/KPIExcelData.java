@@ -442,4 +442,13 @@ public class KPIExcelData {
 	@JsonProperty("Defect Rate")
 	private String defectRate;
 
+	@JsonProperty("Added Lines")
+	private Long addedLines;
+
+	@JsonProperty("Total Lines Changed")
+	private Long totalLineChanges;
+
+	@JsonProperty("Defect PR")
+	private Long defectPRs;
+
 }

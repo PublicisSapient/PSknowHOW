@@ -119,6 +119,8 @@ export class SharedService {
   isRecommendationsEnabledSubject = new BehaviorSubject<boolean>(false);
   isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
 
+  selectedMap = {};
+
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -203,6 +205,15 @@ export class SharedService {
   // Additional Filters in New UI
   applyAdditionalFilters(filters) {
     this.triggerAdditionalFilters.emit(filters);
+  }
+
+  // getter-setter for selectedMap
+  getSelectedMap() {
+    return this.selectedMap;
+  }
+
+  setSelectedMap(data) {
+    this.selectedMap = data;
   }
 
   // login account type
