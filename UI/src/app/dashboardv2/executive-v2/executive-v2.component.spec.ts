@@ -17811,4 +17811,62 @@ describe('ExecutiveV2Component', () => {
     // expect(component.getKpiCommentsCount).toHaveBeenCalled();
     expect(component.showCommentIcon).toBe(false);
   });
+
+  it('should return true if data is present for kpiId kpi148 or kpi146 and kpiChartData has length', () => {
+    component.kpiStatusCodeArr = { kpi148: '200' };
+    component.kpiChartData = { kpi148: [{ value: [1, 2, 3] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi148', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi139 or kpi127 and kpiChartData and kpiChartData[0].value have length', () => {
+    component.kpiStatusCodeArr = { kpi139: '200' };
+    component.kpiChartData = { kpi139: [{ value: [{ value: [1, 2, 3] }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi139', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi168, kpi70 or kpi153 and kpiChartData and kpiChartData[0].value have length greater than 0', () => {
+    component.kpiStatusCodeArr = { kpi168: '200' };
+    component.kpiChartData = { kpi168: [{ value: [{ data: 1 }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi168', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+
+  it('should return true if data is present for random KPI where kpiChartData[0].value have length greater than 0', () => {
+    component.selectedTab = 'value';
+    component.kpiStatusCodeArr = { kpi123: '200' };
+    component.kpiChartData = { kpi123: [{ value: [{ data: 1 }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi123', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+
+
+  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
+    component.selectedTab = 'developer';
+    component.kpiChartData = [{ data: 1 }];
+
+    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeTrue();
+  });
+
+  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
+    component.selectedTab = 'other';
+    component.kpiChartData = [];
+
+    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeFalse();
+  });
+
+  it('should return true if item.value is an array with length greater than 0', () => {
+    const item = { value: [1, 2, 3] };
+
+    expect(component.checkIfArrayHasData(item)).toBeTrue();
+  });
+
+  it('should return false if item.value is not an array or has length 0', () => {
+    const item = { value: [] };
+
+    expect(component.checkIfArrayHasData(item)).toBeFalse();
+  });
 });
