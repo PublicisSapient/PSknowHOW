@@ -152,9 +152,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.globalConfig = globalConfig;
       this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      if(!this.configGlobalData) {
+        this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      }
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       setTimeout(() => {
         this.processKpiConfigData();
+        this.setUpTabs();
       }, 500);
     }));
 
