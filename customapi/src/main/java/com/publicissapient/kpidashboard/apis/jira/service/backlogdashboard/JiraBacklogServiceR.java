@@ -96,8 +96,6 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private boolean referFromProjectCache = true;
 	private final Map<String, List<JiraIssue>> localCache = new ConcurrentHashMap<>();
-	// Class-level cache to store filtered results
-	private final Map<String, List<AccountHierarchyData>> filteredDataCache = new ConcurrentHashMap<>();
 
 	/**
 	 * This method process scrum jira based Backlog kpis request, cache data and
@@ -193,25 +191,22 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
+		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
+				.cacheAccountHierarchyData();
 
-		String projectId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).get(0);
 		List<AccountHierarchyData> hierarchyData = new ArrayList<>();
 
-		// Use computeIfAbsent to atomically compute and store filtered results if not already cached
-		return filteredDataCache.computeIfAbsent(projectId, id -> {
-			List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
-					.cacheAccountHierarchyData();
+		String targetNodeId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).get(0);
 
-			String targetNodeId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).get(0);
-			for (AccountHierarchyData data : accountDataListAll) {
-				if (data.getLeafNodeId().equalsIgnoreCase(targetNodeId)
-						|| data.getNode().stream().anyMatch(node -> node.getId().equalsIgnoreCase(targetNodeId))) {
-					hierarchyData.add(data);
-					break;
-				}
+		for (AccountHierarchyData data : accountDataListAll) {
+			if (data.getLeafNodeId().equalsIgnoreCase(targetNodeId)
+					|| data.getNode().stream().anyMatch(node -> node.getId().equalsIgnoreCase(targetNodeId))) {
+				hierarchyData.add(data);
+				break;
 			}
-			return hierarchyData;
-		});
+		}
+
+		return hierarchyData;
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
