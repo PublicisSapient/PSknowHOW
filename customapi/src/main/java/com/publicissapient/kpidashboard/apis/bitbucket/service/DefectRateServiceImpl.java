@@ -316,7 +316,7 @@ public class DefectRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
 				repoToolValidationData.setDefectRate(defectRate);
-				repoToolValidationData.setDefectPrs(defectMrs);
+				repoToolValidationData.setKpiPRs(defectMrs);
 				repoToolValidationData.setMrCount(repoToolUserDetails.map(RepoToolUserDetails::getMrCount).orElse(0L));
 				repoToolValidationDataList.add(repoToolValidationData);
 			}
