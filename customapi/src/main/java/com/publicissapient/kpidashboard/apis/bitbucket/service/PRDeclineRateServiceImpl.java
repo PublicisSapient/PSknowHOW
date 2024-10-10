@@ -204,7 +204,7 @@ public class PRDeclineRateServiceImpl extends BitBucketKPIService<Double, List<O
 						&& repo.getProcessorItemList().get(0).getId() != null) {
 					List<RepoToolUserDetails> repoToolUserDetailsList = new ArrayList<>();
 					String branchName = getBranchSubFilter(repo, projectName);
-					Double pickupTime = 0.0d;
+					Double declineRate = 0.0d;
 					String overallKpiGroup = branchName + "#" + Constant.AGGREGATED_VALUE;
 					if (repoToolKpiMetricResponse.isPresent()) {
 						Optional<Branches> matchingBranch = repoToolKpiMetricResponse.get().getRepositories().stream()
@@ -212,12 +212,12 @@ public class PRDeclineRateServiceImpl extends BitBucketKPIService<Double, List<O
 								.flatMap(repository -> repository.getBranches().stream())
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
 
-						pickupTime = matchingBranch.map(Branches::getHours).orElse(0.0d);
+						declineRate = matchingBranch.map(Branches::getBranchPercentage).orElse(0.0d);
 						repoToolUserDetailsList = matchingBranch.map(Branches::getUsers).orElse(new ArrayList<>());
 					}
 					repoToolValidationDataList.addAll(setUserDataCounts(overAllUsers, repoToolUserDetailsList,
 							assignees, repo, projectName, date, aggDataMap));
-					setDataCount(projectName, date, overallKpiGroup, pickupTime, aggDataMap);
+					setDataCount(projectName, date, overallKpiGroup, declineRate, aggDataMap);
 
 				}
 			});
@@ -293,6 +293,8 @@ public class PRDeclineRateServiceImpl extends BitBucketKPIService<Double, List<O
 				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
+				repoToolValidationData.setMrCount(repoToolUserDetails.get().getMergeRequests());
+				repoToolValidationData.setKpiPRs(repoToolUserDetails.get().getMrCount());
 				repoToolValidationData.setPrDeclineRate(prDeclineRate);
 				repoToolValidationDataList.add(repoToolValidationData);
 			}

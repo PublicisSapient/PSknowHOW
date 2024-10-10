@@ -21,22 +21,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.collections.MapUtils;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import com.publicissapient.kpidashboard.apis.service.MessageService;
-import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
-
-import lombok.extern.slf4j.Slf4j;
+import com.publicissapient.kpidashboard.apis.service.dto.EmailEventDTO;
 
 /**
  * This class is responsible to send message event to kafka topic
@@ -45,40 +47,34 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
+@AllArgsConstructor
 public class NotificationEventProducer {
-	@Autowired
-	private KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Autowired
-	private MessageService messageService;
+	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationEventProducer.class);
+	private static final String SUCCESS_MESSAGE = "Mail message to topic sent successfully";
+	private static final String FAILURE_MESSAGE = "Error Sending the mail message to topic and the exception is: ";
 
-	public void sendNotificationEvent(String key, EmailEvent email, Map<String, String> headerDetails, String topic,
-			KafkaTemplate<String, Object> kafkaTemplate) {
+	public void sendNotificationEvent(String key, EmailEventDTO email, Map<String, String> headerDetails, String topic,
+									  KafkaTemplate<String, Object> kafkaTemplate) {
 		try {
-			log.info("Notification Switch is on. Sending message now.....");
+			LOGGER.info("Notification Switch is on. Sending message now.....");
 			ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
-			log.info("created producer record.....");
-			ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
-			log.info("sent msg.....");
-			listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
-
-				@Override
-				public void onFailure(Throwable ex) {
+			LOGGER.info("created producer record.....");
+			CompletableFuture<SendResult<String, Object>> completableFuture = kafkaTemplate.send(producerRecord);
+			LOGGER.info("sent msg.....");
+			completableFuture.whenComplete((result, ex) -> {
+				if (ex == null) {
+					handleSuccess(key, email, result);
+				} else {
 					handleFailure(ex);
 				}
-
-				@Override
-				public void onSuccess(SendResult<String, Object> result) {
-					handleSuccess(key, email, result);
-				}
-
 			});
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			LOGGER.info(String.format("Notification Event %s", ex.getMessage()));
 		}
 	}
 
-	private ProducerRecord<String, Object> buildProducerRecord(String key, EmailEvent email,
+	private ProducerRecord<String, Object> buildProducerRecord(String key, EmailEventDTO email,
 			Map<String, String> headerDetails, String topic) {
 		List<Header> recordHeaders = new ArrayList<>();
 		if (MapUtils.isNotEmpty(headerDetails)) {
@@ -91,12 +87,12 @@ public class NotificationEventProducer {
 	}
 
 	private void handleFailure(Throwable ex) {
-		log.error(messageService.getMessage("error_mail_sent") + ": " + ex.getMessage(), ex);
+		LOGGER.error(FAILURE_MESSAGE + ex.getMessage(), ex);
 	}
 
-	private void handleSuccess(String key, EmailEvent email, SendResult<String, Object> result) {
-		log.info(messageService.getMessage("success_mail_sent") + " key : {}, value : {}, Partition : {}", key,
-				email.getSubject(), result.getRecordMetadata().partition());
+	private void handleSuccess(String key, EmailEventDTO email, SendResult<String, Object> result) {
+		LOGGER.info(SUCCESS_MESSAGE + " key : {}, value : {}, Partition : {}", key, email.getSubject(),
+				result.getRecordMetadata().partition());
 	}
 
 }

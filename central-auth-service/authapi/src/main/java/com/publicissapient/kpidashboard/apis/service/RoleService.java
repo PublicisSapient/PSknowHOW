@@ -19,24 +19,8 @@ package com.publicissapient.kpidashboard.apis.service;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.entity.Role;
-
-/**
- *
- * this service will using in future while central authorization
- * 
- * @author hargupta15
- */
 public interface RoleService {
-	Role validateRole(String roleName, Long id);
 
-	/**
-	 * fetch roles resource wise
-	 * 
-	 * @param resourceName
-	 * @return
-	 */
-	List<String> getResourceAllRoles(String resourceName);
+	List<String> getAllRolesByResourceName(String resourceName);
 
-	List<Role> getRootUserForResource(String resource);
 }

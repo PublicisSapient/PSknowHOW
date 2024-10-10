@@ -47,7 +47,7 @@ public class RepoToolsClient {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	private static final String X_API_KEY = "X_API_KEY";
+	private static final String X_API_KEY = "X-Api-Key";
 	private HttpHeaders httpHeaders;
 
 	/**

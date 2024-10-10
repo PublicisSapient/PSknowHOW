@@ -375,7 +375,7 @@ export class AccessMgmtComponent implements OnInit {
 
 	deleteAccessReq(userName, isSuperAdmin) {
 		this.httpService.deleteAccess({
-			userName : userName,
+			username : userName,
 		  }).subscribe(response => {
 			this.accessDeletionStatus(response, isSuperAdmin);
 		}, error => {

@@ -167,7 +167,7 @@ public class UserInfoControlllerTest {
 	 */
 	@Test
 	public void testdeleteUser() throws Exception {
-		when(userNameRequest.getUserName()).thenReturn("testuser");
+		when(userNameRequest.getUsername()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
 		doReturn(new ServiceResponse(true, "Deleted Successfully", "Ok")).when(userInfoService).deleteUser("testuser", false);
@@ -183,7 +183,7 @@ public class UserInfoControlllerTest {
 	 */
 	@Test
 	public void testdeleteSuperAdminUser() {
-		when(userNameRequest.getUserName()).thenReturn("testuser");
+		when(userNameRequest.getUsername()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("testuser");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
 		ServiceResponse response = userInfoController.deleteUser(userNameRequest).getBody();
@@ -200,7 +200,7 @@ public class UserInfoControlllerTest {
 	 */
 	@Test
 	public void testDelete_UserFromCentral() {
-		when(userNameRequest.getUserName()).thenReturn("testuser");
+		when(userNameRequest.getUsername()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("testuser");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
 		ServiceResponse response = userInfoController.deleteUserFromCentral(userNameRequest).getBody();
@@ -216,7 +216,7 @@ public class UserInfoControlllerTest {
 	 */
 	@Test
 	public void testDelete_UserFromCentralForSuperAdmin() {
-		when(userNameRequest.getUserName()).thenReturn("testuser");
+		when(userNameRequest.getUsername()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
 		when(userInfoService.deleteUser("testuser" , true) )

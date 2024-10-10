@@ -1,11 +1,16 @@
 #!/bin/bash
 
 ENVIRONMENT=${ENVIRONMENT:-dev} # default to dev you can pass external var to change to prod
-
+API_HOST=${API_HOST:-authnauth}
+API_PORT=${API_PORT:-8787}
 if [ "$ENVIRONMENT" = "prod" ]; then
    cp /tmp/nginx_prod.conf ${CONF_LOC}/nginx.conf
+   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOC}/nginx.conf
+   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOC}/nginx.conf
 else
    cp /tmp/nginx_dev.conf ${CONF_LOC}/nginx.conf
+   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOC}/nginx.conf
+   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOC}/nginx.conf
 fi
 
 if [ -e $CERT_LOC/knowhow_ssl.key ] || [ "$ENVIRONMENT" = "prod" ]; then

@@ -222,7 +222,7 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 					String overallKpiGroup = branchName + "#" + Constant.AGGREGATED_VALUE;
 					if (repoToolKpiMetricResponse.isPresent()) {
 						Optional<Branches> matchingBranch = repoToolKpiMetricResponse.get().getRepositories().stream()
-								.filter(repository -> repository.getName()!=null && repository.getName().equals(repo.getRepositoryName()))
+								.filter(repository -> repository.getRepositoryName()!=null && repository.getRepositoryName().equals(repo.getRepositoryName()))
 								.flatMap(repository -> repository.getBranches().stream())
 								.filter(branch -> branch.getName().equals(repo.getBranch())).findFirst();
 
@@ -307,6 +307,8 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
+				repoToolValidationData.setMrCount(repoToolUserDetails.get().getMergeRequests());
+				repoToolValidationData.setKpiPRs(repoToolUserDetails.get().getMrCount());
 				repoToolValidationData.setPRSuccessRate(userPRSuccessRate);
 				repoToolValidationDataList.add(repoToolValidationData);
 			}

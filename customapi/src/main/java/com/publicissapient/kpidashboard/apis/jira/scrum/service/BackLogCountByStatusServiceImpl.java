@@ -128,7 +128,9 @@ public class BackLogCountByStatusServiceImpl extends JiraBacklogKPIService<Integ
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			Set<String> excludeStatuses = new HashSet<>();
 
-			excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusKPI151()).orElse(""));
+			if (Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusKPI151()).isPresent()) {
+				excludeStatuses.addAll(fieldMapping.getJiraDefectRejectionStatusKPI151());
+			}
 
 			if (Optional.ofNullable(fieldMapping.getJiraDodKPI151()).isPresent()) {
 				excludeStatuses.addAll(fieldMapping.getJiraDodKPI151());

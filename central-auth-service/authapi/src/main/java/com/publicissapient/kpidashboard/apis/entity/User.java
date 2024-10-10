@@ -18,24 +18,16 @@
 
 package com.publicissapient.kpidashboard.apis.entity;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
+import com.google.common.hash.Hashing;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.hash.Hashing;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 /**
  * This class serves as the model for storing credential used for login and
@@ -56,17 +48,27 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	private String username;
 
 	private String samlEmail;
+
 	private String password;
+
 	private String firstName;
+
 	private String lastName;
+
 	private String displayName;
+
 	private long failedLoginAttemptCount;
+
 	private LocalDateTime lastUnsuccessfulLoginTime;
+
 	private String email;
+
 	private boolean approved = false;
+
 	private boolean userVerified = false;
 
 	private String authType;

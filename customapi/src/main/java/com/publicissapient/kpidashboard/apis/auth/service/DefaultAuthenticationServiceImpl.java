@@ -88,9 +88,6 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		this.cookieUtil = cookieUtil;
 	}
 
-	@Autowired
-	private RestTemplate restTemplate;
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -403,7 +400,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		ResponseEntity<String> response = null;
 		try {
 			response = restTemplate.exchange(changePasswordUrl, HttpMethod.POST, entity, String.class);
-			if (response.getStatusCode().is2xxSuccessful()) {
+			if (response.getStatusCode().is2xxSuccessful() && Objects.nonNull(response.getBody())) {
 				JSONObject jsonObject = new JSONObject(response.getBody());
 				ServiceResponse serviceResponse = new ServiceResponse();
 				serviceResponse.setMessage(jsonObject.getString("message"));

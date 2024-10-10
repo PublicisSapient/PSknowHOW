@@ -1,4 +1,4 @@
-<div style="display: flex; overflow-y: visible; overflow-x: visible;" #addnlFilterDiv *ngIf="selectedTab !== 'value'">
+<div style="display: flex; overflow-y: visible; overflow-x: visible;" #addnlFilterDiv>
     <ng-container *ngFor="let config of additionalFilterConfig; let i = index;">
         <span class="p-float-label"
             [pTooltip]="config.defaultLevel.labelName === 'Squad' && 'Squad selection applies to Sprint KPIs only'"

@@ -12,7 +12,7 @@ instance.interceptors.request.use((request) => {
     } else {
         request.headers.set('Content-Type', 'application/json;');
     }
-    console.log(request.headers);
+
     return request;
 }, (error) => {
     // Handle request error

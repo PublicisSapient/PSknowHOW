@@ -25,5 +25,5 @@ import javax.validation.constraints.NotNull;
 @Data
 public class UserNameRequest {
 	@NotNull
-	private String userName;
+	private String username;
 }

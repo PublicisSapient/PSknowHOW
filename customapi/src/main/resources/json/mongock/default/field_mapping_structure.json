@@ -1407,7 +1407,7 @@
   {
     "fieldName": "jiraDefectRejectionStatusKPI151",
     "fieldLabel": "Status to identify rejected defects",
-    "fieldType": "text",
+    "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "fieldDisplayOrder": 2,
@@ -3584,7 +3584,7 @@
   },
   {
     "fieldName": "jiraStatusForRefinedKPI161",
-    "fieldLabel": "Status to identify In Refined issues",
+    "fieldLabel": "Status to identify In Ready For Dev",
     "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
     "fieldCategory": "workflow",

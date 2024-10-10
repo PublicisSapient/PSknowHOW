@@ -1615,7 +1615,7 @@ describe('ConnectionListComponent', () => {
       (element) => {
         expect(
           component.basicConnectionForm.controls[element.field].enabled,
-        ).toBeFalsy();
+        ).toBeTrue();
       },
     );
   })
@@ -1635,7 +1635,7 @@ describe('ConnectionListComponent', () => {
       (element) => {
         expect(
           component.basicConnectionForm.controls[element.field].enabled,
-        ).toBeTruthy();
+        ).toBeFalse();
       },
     );
   })

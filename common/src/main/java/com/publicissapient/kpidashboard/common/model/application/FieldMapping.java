@@ -110,7 +110,7 @@ public class FieldMapping extends FieldMappingHistory {
 
 	private String jiraDefectRejectionStatus;
 	private String jiraDefectRejectionStatusKPI152;
-	private String jiraDefectRejectionStatusKPI151;
+	private List<String> jiraDefectRejectionStatusKPI151;
 	private String jiraDefectRejectionStatusAVR;
 	private String jiraDefectRejectionStatusKPI28;
 	private String jiraDefectRejectionStatusKPI37;
