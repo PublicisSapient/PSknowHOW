@@ -72,7 +72,6 @@ public class CacheServiceImpl implements CacheService {
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
 	@Autowired
 	private AuthenticationService authNAuthService;
-	List<AccountHierarchyData> accountHierarchyDataList;
 
 	@Override
 	public void clearCache(String cacheName) {
@@ -93,15 +92,13 @@ public class CacheServiceImpl implements CacheService {
 	@Cacheable(CommonConstant.CACHE_ACCOUNT_HIERARCHY)
 	@Override
 	public Object cacheAccountHierarchyData() {
-		accountHierarchyDataList=accountHierarchyService.createHierarchyData();
-		cacheSprintLevelData();
-		return accountHierarchyDataList;
+		return accountHierarchyService.createHierarchyData();
 	}
 
 	@Cacheable(CommonConstant.CACHE_SPRINT_HIERARCHY)
 	@Override
 	public Object cacheSprintLevelData() {
-		return accountHierarchyDataList.stream()
+		return ((List<AccountHierarchyData>) cacheAccountHierarchyData()).stream()
 				.filter(data -> data.getNode().stream()
 						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
 								&& node.getAccountHierarchy().getSprintState() != null)).toList();
