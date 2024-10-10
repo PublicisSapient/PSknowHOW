@@ -255,7 +255,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (this.selectedBoard.filters.additionalFilters) {
         this.additionalFilterConfig = [...this.selectedBoard.filters.additionalFilters];
       } else {
-        this.additionalFilterConfig = [];
+        this.additionalFilterConfig = null;
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
       }
       this.cdr.detectChanges();
     }
@@ -373,7 +374,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                   }
 
                   if (board.boardSlug !== 'developer' && board.boardSlug !== 'dora') {
-                    board.filters.additionalFilters.forEach(element => {
+                    board.filters.additionalFilters?.forEach(element => {
                       if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
                         element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
                       }
@@ -767,7 +768,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
     let additionalFilterSelected = this.filterApplyData['label'] === 'sqd' ? true : false;
-    
+
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
     if (this.filterApplyData['selectedMap']) {
@@ -991,11 +992,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   showHideKPIs() {
-    const kpiArray = this.dashConfigData[this.kanban ? 'kanban' : 'scrum'];
+    const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
-        this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.masterData['kpiList'];
+        if (this.dashConfigData[this.selectedType][i]) {
+          this.dashConfigData[this.selectedType][i]['kpis'] = this.masterData['kpiList'];
+        } else {
+          this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] =  this.masterData['kpiList'];
+          break;
+        }
       }
     }
 
