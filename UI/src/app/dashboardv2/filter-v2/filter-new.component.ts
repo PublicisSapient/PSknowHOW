@@ -991,12 +991,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   showHideKPIs() {
-    const kpiArray = this.dashConfigData[this.kanban ? 'kanban' : 'scrum'].concat(this.dashConfigData['others']);
+    const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
-        if (this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]) {
-          this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.masterData['kpiList'];
+        if (this.dashConfigData[this.selectedType][i]) {
+          this.dashConfigData[this.selectedType][i]['kpis'] = this.masterData['kpiList'];
         } else {
           this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] =  this.masterData['kpiList'];
           break;
