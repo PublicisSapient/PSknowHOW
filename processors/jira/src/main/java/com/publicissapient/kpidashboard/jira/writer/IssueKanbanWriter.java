@@ -32,15 +32,15 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +58,7 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 	@Autowired
 	private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
 	@Autowired
-	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepository;
+	private ProjectHierarchyService projectHierarchyService;
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
@@ -71,7 +71,7 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 	public void write(Chunk<? extends CompositeResult> kanbanCompositeResults) throws Exception {
 		Map<String, KanbanJiraIssue> jiraIssues = new HashMap<>();
 		Map<String, KanbanIssueCustomHistory> kanbanIssueCustomHistory = new HashMap<>();
-		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();
+		Set<ProjectHierarchy> projectHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
 		Set<Assignee> assignee = new HashSet<>();
 
@@ -86,8 +86,8 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 						+ kanbanCompositeResult.getKanbanIssueCustomHistory().getBasicProjectConfigId();
 				kanbanIssueCustomHistory.putIfAbsent(key, kanbanCompositeResult.getKanbanIssueCustomHistory());
 			}
-			if (CollectionUtils.isNotEmpty(kanbanCompositeResult.getKanbanAccountHierarchies())) {
-				accountHierarchies.addAll(kanbanCompositeResult.getKanbanAccountHierarchies());
+			if (CollectionUtils.isNotEmpty(kanbanCompositeResult.getProjectHierarchies())) {
+				projectHierarchies.addAll(kanbanCompositeResult.getProjectHierarchies());
 			}
 			addAssignees(assigneesToSave, assignee, kanbanCompositeResult);
 		}
@@ -97,8 +97,8 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 		if (MapUtils.isNotEmpty(kanbanIssueCustomHistory)) {
 			writeKanbanJiraHistory(kanbanIssueCustomHistory);
 		}
-		if (CollectionUtils.isNotEmpty(accountHierarchies)) {
-			writeKanbanAccountHierarchy(accountHierarchies);
+		if (CollectionUtils.isNotEmpty(projectHierarchies)) {
+			writeKanbanAccountHierarchy(projectHierarchies);
 		}
 		if (MapUtils.isNotEmpty(assigneesToSave)) {
 			writeAssigneeDetails(assigneesToSave);
@@ -136,9 +136,9 @@ public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
 		kanbanJiraIssueHistoryRepository.saveAll(jiraIssueCustomHistories);
 	}
 
-	public void writeKanbanAccountHierarchy(Set<KanbanAccountHierarchy> accountHierarchies) {
+	public void writeKanbanAccountHierarchy(Set<ProjectHierarchy> projectHierarchySet) {
 		log.info("Writing issues to kanban_account_hierarchy Collection");
-		kanbanAccountHierarchyRepository.saveAll(accountHierarchies);
+		projectHierarchyService.saveAll(projectHierarchySet);
 	}
 
 	public void writeAssigneeDetails(Map<String, AssigneeDetails> assigneesToSave) {

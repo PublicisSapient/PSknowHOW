@@ -93,7 +93,6 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 			ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields) {
 
 		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
-		jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
 		jiraIssueHistory.setProjectKey(jiraIssue.getProjectKey());
 		jiraIssueHistory.setStoryType(jiraIssue.getTypeName());
 		jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
