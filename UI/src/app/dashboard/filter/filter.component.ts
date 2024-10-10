@@ -293,12 +293,14 @@ export class FilterComponent implements OnInit, OnDestroy {
 
       this.service.globalDashConfigData.subscribe(data => {
         this.kpiListData = data;
-        let selectedBoard = this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
-        if (!selectedBoard) {
-          selectedBoard = this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
-        }
-        if(!selectedBoard.filters?.additionalFilters) {
-          this.noAdditionalFilters = true;
+        if (this.kpiListData) {
+          let selectedBoard = this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
+          if (!selectedBoard) {
+            selectedBoard = this.kpiListData['others']?.find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
+          }
+          if (!selectedBoard.filters?.additionalFilters) {
+            this.noAdditionalFilters = true;
+          }
         }
       }),
 
