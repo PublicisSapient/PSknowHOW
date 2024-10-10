@@ -194,7 +194,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
 
-		String projectId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).get(0).toString();
+		String projectId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).get(0);
 		List<AccountHierarchyData> hierarchyData = new ArrayList<>();
 
 		// Use computeIfAbsent to atomically compute and store filtered results if not already cached
