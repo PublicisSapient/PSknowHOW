@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -96,7 +97,8 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private boolean referFromProjectCache = true;
-	private String sprintId="";
+	// Class-level cache to store filtered results
+	private final Map<String, List<AccountHierarchyData>> filteredDataCache = new ConcurrentHashMap<>();
 
 	/**
 	 * This method process scrum jira based Iteration kpis request, cache data and
@@ -198,6 +200,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			threadLocalSprintDetails.remove();
 			threadLocalJiraIssues.remove();
 			threadLocalHistory.remove();
+			filteredDataCache.clear();
 		}
 
 		return responseList;
@@ -228,18 +231,33 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest, String groupName) {
-		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
-				.cacheSprintLevelData();
+		// Create a unique cache key based on the KPI request and groupName
+		String cacheKey = generateCacheKey(kpiRequest, groupName);
 
-		List<String> selectedValue = kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList());
-		List<String> orDefault = kpiRequest.getSelectedMap().getOrDefault(CommonConstant.SPRINT,
-				Collections.emptyList());
-		return accountDataListAll.stream()
-				.filter(data -> data.getNode().stream().anyMatch(
-						d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
-				.filter(data -> data.getNode().stream().anyMatch(
-						d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT) && orDefault.contains(d.getId())))
-				.collect(Collectors.toList());
+		// Use computeIfAbsent to atomically compute and store filtered results if not already cached
+		return filteredDataCache.computeIfAbsent(cacheKey, key -> {
+			// Fetch the cached sprint-level data
+			List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService.cacheSprintLevelData();
+
+			// Get the selected values for filtering
+			List<String> selectedValue = kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList());
+			List<String> sprintSelectedValue = kpiRequest.getSelectedMap().getOrDefault(CommonConstant.SPRINT, Collections.emptyList());
+
+			// Filter the data based on the groupName and sprint ID
+			return accountDataListAll.stream()
+					.filter(data -> data.getNode().stream().anyMatch(
+							d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
+					.filter(data -> data.getNode().stream().anyMatch(
+							d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT) && sprintSelectedValue.contains(d.getId())))
+					.collect(Collectors.toList());
+		});
+	}
+
+	// Method to generate a unique cache key for each combination of KpiRequest and groupName
+	private String generateCacheKey(KpiRequest kpiRequest, String groupName) {
+		String sprintId = kpiRequest.getSelectedMap().getOrDefault(CommonConstant.SPRINT, Collections.emptyList()).toString();
+		String groupSelectedValues = kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList()).toString();
+		return sprintId + "-" + groupSelectedValues;
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
