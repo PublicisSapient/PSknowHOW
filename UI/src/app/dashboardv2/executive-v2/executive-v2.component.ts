@@ -314,6 +314,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiTableDataObj[nodeName] = [];
       }
 
+      this.service.setAddtionalFilterBackup({});
+      this.service.setKpiSubFilterObj({});
+
       if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
         this.noFilterApplyData = true;
       } else {
@@ -768,18 +771,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   updateXAxisTicks(localVariable) {
-    for(const kpi in localVariable){
+    for (const kpi in localVariable) {
       const localVarKpi = localVariable[kpi].trendValueList && localVariable[kpi].xAxisValues
       if (localVarKpi) {
-          localVariable[kpi].trendValueList.forEach(trendElem => {
-            trendElem.value.forEach(valElem => {
-              if (valElem.value.length === 5 && localVariable[kpi].xAxisValues.length === 5) {
-                valElem.value.forEach((element, index) => {
-                  element['xAxisTick'] = localVariable[kpi].xAxisValues[index];
-                });
-              }
-            });
+        localVariable[kpi].trendValueList.forEach(trendElem => {
+          trendElem.value.forEach(valElem => {
+            if (valElem.value.length === 5 && localVariable[kpi].xAxisValues.length === 5) {
+              valElem.value.forEach((element, index) => {
+                element['xAxisTick'] = localVariable[kpi].xAxisValues[index];
+              });
+            }
           });
+        });
       }
     }
   }
@@ -787,10 +790,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   postJiraKPIForRelease(postData, source) {
     /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
-    /** Todo : Need to rework when BE cache issue will fix */
+    /** Todo : Need to rework when BE cache issue will be fixed */
     postData.kpiList.forEach(kpi => {
-      if (!postData.kpiList.filter(obj => !obj.kpiDetail)) {
-        postData.kpiList.push(this.updatedConfigGlobalData.filter(updKPI => updKPI.kpiId === kpi.kpiId)[0].kpiDetail)
+      if (!postData.kpiList.map(obj => obj?.kpiDetail?.kpiId).includes(kpi.kpiId)) {
+        postData.kpiList.push(kpi.kpiDetail);
       }
     });
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
@@ -806,7 +809,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.jiraKpiData = getData;
           postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element.kpiId);
+            this.kpiLoader.delete(element?.kpiId);
           });
         }
       });
@@ -957,7 +960,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.additionalFiltersArr[filterProp] = this.additionalFiltersArr[filterProp].map((f) => {
               return {
                 nodeId: f,
-                nodeName: f
+                nodeName: f,
+                labelName: filterProp === 'filter1' ? 'branch' : 'developer'
               }
             })
           });
@@ -1813,12 +1817,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   checkIfDataPresent(kpi) {
-    if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
-      if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
-        return true;
-      }
-    }
     if (this.kpiStatusCodeArr[kpi.kpiId]) {
+      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146')) {
+        if (this.kpiChartData[kpi.kpiId]?.length) {
+          return true;
+        }
+      }
+
+      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi139' || kpi.kpiId === 'kpi127')) {
+        if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length) {
+          return true;
+        }
+      }
+
+      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153')) {
+        if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
+          return true;
+        }
+      }
+
       return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType);
     }
     return false;
