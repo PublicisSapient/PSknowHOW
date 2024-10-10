@@ -373,7 +373,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setUpTabs() {
-    const tabsArray = new Set(this.configGlobalData.map(element => element?.kpiDetail?.kpiSubCategory));
+    const tabsArray = new Set(this.configGlobalData.map(element => element.shown && element.isEnabled && element?.kpiDetail?.kpiSubCategory));
     if (this.selectedTab === 'release') {
       const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
       const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
