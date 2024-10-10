@@ -451,4 +451,15 @@ public class KPIExcelData {
 	@JsonProperty("Defect PR")
 	private Long defectPRs;
 
+	@JsonProperty("Revert PR")
+	private Long revertPrs;
+
+	@JsonProperty("Declined PR")
+	private Long declinedPRs;
+
+	@JsonProperty("Closed PR")
+	private Long closedPRs;
+
+
+
 }
