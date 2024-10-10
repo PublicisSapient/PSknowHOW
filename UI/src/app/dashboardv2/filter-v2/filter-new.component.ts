@@ -528,7 +528,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         });
       }
     } else if (!event.length || event[0].labelName.toLowerCase() !== this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase()) {
-      // if (this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'sprint' || this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase() === 'release') {
       this.noSprint = true;
       this.service.setAdditionalFilters([]);
       this.previousSelectedTab = this.selectedTab;

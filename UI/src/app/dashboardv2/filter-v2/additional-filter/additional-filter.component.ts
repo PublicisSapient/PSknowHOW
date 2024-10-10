@@ -78,7 +78,7 @@ export class AdditionalFilterComponent implements OnChanges {
               filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
             }
           });
-          
+
           const correctLevelMapping = {
             Sprint: 'sprint',
             Squad: 'sqd'
@@ -103,9 +103,9 @@ export class AdditionalFilterComponent implements OnChanges {
           this.applyDefaultFilter();
         }
       }
-      // else {
-      //   this.filterData = [];
-      // }
+      else {
+        this.filterData = [];
+      }
     }));
   }
 
