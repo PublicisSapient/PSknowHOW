@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-import java.util.List;
-
 import lombok.*;
 
 @Getter
@@ -27,11 +25,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class KpiData {
-	private String key;
+public class KpiDataSummary {
 	private String name;
-	private Integer order;
 	private String aggregation;
-	private String unit;
-	private boolean showAsLegend;
 }

@@ -261,8 +261,14 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 	 * @param fieldMapping
 	 * @return
 	 */
-	private List<KpiData> createDataGroup(FieldMapping fieldMapping) {
-		List<KpiData> dataGroup = new ArrayList<>();
+	private KpiDataGroup createDataGroup(FieldMapping fieldMapping) {
+		KpiDataGroup dataGroup = new KpiDataGroup();
+
+		KpiDataSummary summary = new KpiDataSummary();
+		summary.setName("Overall Commitment");
+		summary.setAggregation("sum");
+
+		List<KpiData> dataGroup1 = new ArrayList<>();
 		String unit;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -271,8 +277,11 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 			unit = CommonConstant.DAY;
 		}
 
-		dataGroup.add(createKpiData("", "Issues", 1, "count", ""));
-		dataGroup.add(createKpiData("Value", "Story Point", 2, "sum", unit));
+		dataGroup1.add(createKpiData("", "Issues", 1, "count", ""));
+		dataGroup1.add(createKpiData("Value", "Story Point", 2, "sum", unit));
+
+		dataGroup.setSummary(summary);
+		dataGroup.setDataGroup1(dataGroup1);
 		return dataGroup;
 	}
 
@@ -292,6 +301,7 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 		data.setOrder(order);
 		data.setAggregation(aggregation);
 		data.setUnit(unit);
+		data.setShowAsLegend(false);
 		return data;
 	}
 
@@ -304,9 +314,9 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 		categoryData.setCategoryKey("Category");
 
 		List<KpiDataCategory> categoryGroup = new ArrayList<>();
-		categoryGroup.add(createKpiDataCategory(INITIAL_COMMITMENT, "positive", 1));
-		categoryGroup.add(createKpiDataCategory(SCOPE_ADDED, "positive", 2));
-		categoryGroup.add(createKpiDataCategory(SCOPE_REMOVED, "negative", -1));
+		categoryGroup.add(createKpiDataCategory(INITIAL_COMMITMENT, "+", 1));
+		categoryGroup.add(createKpiDataCategory(SCOPE_ADDED, "+", 2));
+		categoryGroup.add(createKpiDataCategory(SCOPE_REMOVED, "-", -1));
 		categoryData.setCategoryGroup(categoryGroup);
 		return categoryData;
 	}

@@ -18,20 +18,17 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-import java.util.List;
-
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class KpiData {
-	private String key;
-	private String name;
-	private Integer order;
-	private String aggregation;
-	private String unit;
-	private boolean showAsLegend;
+public class KpiDataGroup {
+	private KpiDataSummary summary;
+	private List<KpiData> dataGroup1;
+	private List<KpiData> dataGroup2;
 }
