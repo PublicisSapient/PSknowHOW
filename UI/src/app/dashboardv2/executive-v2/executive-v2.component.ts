@@ -152,9 +152,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.globalConfig = globalConfig;
       this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      if(!this.configGlobalData) {
+        this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      }
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
       setTimeout(() => {
         this.processKpiConfigData();
+        this.setUpTabs();
       }, 500);
     }));
 
@@ -369,7 +373,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setUpTabs() {
-    const tabsArray = new Set(this.configGlobalData.map(element => element?.kpiDetail?.kpiSubCategory));
+    const tabsArray = new Set(this.configGlobalData.map(element => element.shown && element.isEnabled && element?.kpiDetail?.kpiSubCategory));
     if (this.selectedTab === 'release') {
       const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
       const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));

@@ -767,7 +767,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
     let additionalFilterSelected = this.filterApplyData['label'] === 'sqd' ? true : false;
-    
+
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
     if (this.filterApplyData['selectedMap']) {
@@ -991,11 +991,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   showHideKPIs() {
-    const kpiArray = this.dashConfigData[this.kanban ? 'kanban' : 'scrum'];
+    const kpiArray = this.dashConfigData[this.kanban ? 'kanban' : 'scrum'].concat(this.dashConfigData['others']);
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
-        this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.masterData['kpiList'];
+        if (this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]) {
+          this.dashConfigData[this.kanban ? 'kanban' : 'scrum'][i]['kpis'] = this.masterData['kpiList'];
+        } else {
+          this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] =  this.masterData['kpiList'];
+          break;
+        }
       }
     }
 

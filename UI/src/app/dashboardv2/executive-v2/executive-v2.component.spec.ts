@@ -17522,9 +17522,9 @@ describe('ExecutiveV2Component', () => {
     it('should set up tabs for selectedTab "release"', () => {
       component.selectedTab = 'release';
       component.configGlobalData = [
-        { kpiDetail: { kpiSubCategory: 'Tab1' } },
-        { kpiDetail: { kpiSubCategory: 'Tab2' } },
-        { kpiDetail: { kpiSubCategory: 'Tab3' } }
+        { kpiDetail: { kpiSubCategory: 'Tab1' }, shown: true, isEnabled: true },
+        { kpiDetail: { kpiSubCategory: 'Tab2' }, shown: true, isEnabled: true },
+        { kpiDetail: { kpiSubCategory: 'Tab3' }, shown: true, isEnabled: true }
       ];
       spyOn(component.service, 'getDashConfigData').and.returnValue({
         scrum: [{ boardName: 'Tab1' }, { boardName: 'Tab2' }],
@@ -17540,9 +17540,9 @@ describe('ExecutiveV2Component', () => {
     it('should set up tabs for selectedTab other than "release"', () => {
       component.selectedTab = 'other';
       component.configGlobalData = [
-        { kpiDetail: { kpiSubCategory: 'Tab1' } },
-        { kpiDetail: { kpiSubCategory: 'Tab2' } },
-        { kpiDetail: { kpiSubCategory: 'Tab3' } }
+        { kpiDetail: { kpiSubCategory: 'Tab1' }, shown: true, isEnabled: true },
+        { kpiDetail: { kpiSubCategory: 'Tab2' }, shown: true, isEnabled: true },
+        { kpiDetail: { kpiSubCategory: 'Tab3' }, shown: true, isEnabled: true }
       ];
       spyOn(component.service, 'getDashConfigData').and.returnValue({});
 
