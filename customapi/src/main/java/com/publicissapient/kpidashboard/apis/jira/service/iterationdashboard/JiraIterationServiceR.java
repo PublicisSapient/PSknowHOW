@@ -149,7 +149,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 				if (filteredNode != null) {
 					if (!CollectionUtils.isEmpty(origRequestedKpis)
 							&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
-						extracted(kpiRequest, filteredAccountDataList);
+						updateJiraIssueList(kpiRequest, filteredAccountDataList);
 					}
 					// set filter value to show on trend line. If subprojects are
 					// in
@@ -201,17 +201,6 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		}
 
 		return responseList;
-	}
-
-	private void extracted(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-		if (sprintDetails == null || !sprintId.equals(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).toString())) {
-			synchronized (this) {
-				if (sprintDetails == null || !sprintId.equals(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).toString())) {
-					updateJiraIssueList(kpiRequest, filteredAccountDataList);
-					sprintId= kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).toString();
-				}
-			}
-		}
 	}
 
 	private Node getFilteredNodes(List<AccountHierarchyData> filteredAccountDataList) {
