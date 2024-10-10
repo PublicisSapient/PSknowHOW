@@ -379,7 +379,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
       this.tabsArr = new Set(tabTempSet.map(element => element.boardName));
     } else {
-      this.tabsArr = tabsArray;
+      this.tabsArr = new Set([...tabsArray].filter(Boolean));
     }
     let it = this.tabsArr.values();
     //get first entry:
