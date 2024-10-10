@@ -255,7 +255,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (this.selectedBoard.filters.additionalFilters) {
         this.additionalFilterConfig = [...this.selectedBoard.filters.additionalFilters];
       } else {
-        this.additionalFilterConfig = [];
+        this.additionalFilterConfig = null;
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
       }
       this.cdr.detectChanges();
     }
@@ -373,7 +374,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
                   }
 
                   if (board.boardSlug !== 'developer' && board.boardSlug !== 'dora') {
-                    board.filters.additionalFilters.forEach(element => {
+                    board.filters.additionalFilters?.forEach(element => {
                       if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
                         element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
                       }
