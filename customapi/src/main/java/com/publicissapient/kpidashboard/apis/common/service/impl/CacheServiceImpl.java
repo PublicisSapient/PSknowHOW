@@ -94,7 +94,6 @@ public class CacheServiceImpl implements CacheService {
 	@Override
 	public Object cacheAccountHierarchyData() {
 		accountHierarchyDataList=accountHierarchyService.createHierarchyData();
-		cacheSprintLevelData();
 		return accountHierarchyDataList;
 	}
 
