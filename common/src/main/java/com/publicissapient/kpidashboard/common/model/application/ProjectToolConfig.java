@@ -116,6 +116,8 @@ public class ProjectToolConfig extends BasicModel {
 	private boolean azureIterationStatusFieldUpdate;
 	private String projectComponent;
 	private Boolean isNew;
-	private Boolean azureRefreshActiveSprint;
+	//to revise active sprint report in the db from the start
+	@Builder.Default
+	private Boolean azureRefreshActiveSprintReport =false;
 
 }

@@ -94,7 +94,7 @@ public class SprintClientImpl implements SprintClient {
 				// fetched and db sprint is active then issues bucket compare as per
 				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)) {
-					if (projectConfig.getProjectToolConfig().getAzureRefreshActiveSprint()) {
+					if (projectConfig.getProjectToolConfig().getAzureRefreshActiveSprintReport()) {
 						// update all issues before sprint future sprint start
 						List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter,
 								azureServer, projectConfig, fetchedSprintDetails);
@@ -114,7 +114,7 @@ public class SprintClientImpl implements SprintClient {
 						fetchedSprintDetails.setId(dbSprintDetails.getId());
 						toBeSavedSprintDetails.add(fetchedSprintDetails);
 						log.debug(
-								"fetched sprint Id -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
+								"refreshing sprint Id from the start -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
 								fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
 								getIssuesIdList(toBeSavedNotCompletedIssues));
 					} else {
@@ -334,10 +334,11 @@ public class SprintClientImpl implements SprintClient {
 	 */
 	private void iterationStatusUpdateSPIssuesShuffle(ProjectConfFieldMapping projectConfig,
 			List<String> completedIssuesStatus) {
-		ProjectToolConfig projectToolConfig = projectToolConfigRepository
-				.findById(projectConfig.getAzureBoardToolConfigId().toString());
+		ProjectToolConfig projectToolConfig = projectConfig.getProjectToolConfig();
+		boolean sprintDetailsUpdate = false;
 		if (projectToolConfig.isAzureIterationStatusFieldUpdate()
 				&& CollectionUtils.isNotEmpty(completedIssuesStatus)) {
+			sprintDetailsUpdate = true;
 			List<SprintDetails> dbSprintDetailsList = sprintRepository
 					.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 			dbSprintDetailsList.stream().forEach(sprintDetails -> {
@@ -356,11 +357,16 @@ public class SprintClientImpl implements SprintClient {
 				}
 			});
 			sprintRepository.saveAll(dbSprintDetailsList);
-			projectToolConfig.setAzureIterationStatusFieldUpdate(false);
-			projectToolConfigRepository.save(projectToolConfig);
 			log.debug("sprint issues shuffle based on completedIssuesStatus field update -> ",
 					projectToolConfig.getBasicProjectConfigId());
 		}
+		if (Boolean.TRUE.equals(projectToolConfig.getAzureRefreshActiveSprintReport()) || sprintDetailsUpdate) {
+			projectToolConfig.setAzureIterationStatusFieldUpdate(false);
+			// reset activesprint check
+			projectToolConfig.setAzureRefreshActiveSprintReport(false);
+			projectToolConfigRepository.save(projectToolConfig);
+		}
+
 	}
 
 	/**

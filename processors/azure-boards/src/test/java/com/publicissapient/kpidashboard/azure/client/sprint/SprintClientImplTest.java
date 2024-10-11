@@ -150,6 +150,30 @@ public class SprintClientImplTest {
 	}
 
 	@Test
+	void collectIssuesAndPrepareSprintReportForActiveSprintWithRefresh() throws Exception {
+
+		AzureProcessor processor = new AzureProcessor();
+		processor.setId(new ObjectId("61d6b74df0d2833694dcceb7"));
+
+		when(sprintRepository.findBySprintID(sprintDetails2.getSprintID())).thenReturn(dbSprintDetailsList.get(0));
+		when(azureProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
+		List<String> issueItemList = new ArrayList<>();
+		issueItemList.add("1");
+		issueItemList.add("2");
+		issueItemList.add("3");
+		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "testSprint_TestAzure_5ba8e182d3735010e7f1fa45"))
+				.thenReturn(issueItemList);
+
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString()))
+				.thenReturn(jiraIssueList);
+		projectToolConfig.setAzureRefreshActiveSprintReport(true);
+		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
+		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
+
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
+	}
+
+	@Test
 	void collectIssuesAndPrepareSprintReportForFirstTime() throws Exception {
 
 		AzureProcessor processor = new AzureProcessor();

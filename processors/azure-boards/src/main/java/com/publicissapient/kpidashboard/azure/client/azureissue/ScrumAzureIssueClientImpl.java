@@ -219,8 +219,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// sprint report prepare and save sprint details
 				sprintClient.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, azureServer);
-				//reset activesprint check
-				projectConfig.getProjectToolConfig().setAzureRefreshActiveSprint(false);
+
 			}
 
 		} catch (JSONException | NullPointerException e) {
