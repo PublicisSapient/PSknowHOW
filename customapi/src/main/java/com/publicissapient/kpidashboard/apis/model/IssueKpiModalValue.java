@@ -173,4 +173,7 @@ public class IssueKpiModalValue implements Serializable {
 
 	@JsonProperty("Value")
 	private Double value;
+
+	private Integer issueBlockedTime;
+	private Integer issueWaitTime;
 }

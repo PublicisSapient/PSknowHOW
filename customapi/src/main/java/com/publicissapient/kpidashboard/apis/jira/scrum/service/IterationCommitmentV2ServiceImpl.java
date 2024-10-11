@@ -50,7 +50,6 @@ import lombok.extern.slf4j.Slf4j;
 public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
-	public static final String OVERALL_COMMITMENT = "Overall Commitment";
 	private static final String PUNTED_ISSUES = "puntedIssues";
 	private static final String ADDED_ISSUES = "addedIssues";
 	private static final String EXCLUDE_ADDED_ISSUES = "excludeAddedIssues";
@@ -211,7 +210,7 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 		} else {
 			data.getCategory().add(category);
 		}
-
+		data.setValue(0.0);
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			if(null != issue.getStoryPoints()) {
@@ -219,8 +218,6 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 			}
 		} else if(null != issue.getOriginalEstimateMinutes()){
 			data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
-		} else {
-			data.setValue(0.0);
 		}
 	}
 
@@ -232,8 +229,8 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, "Issue Type", "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, "Status", "Issue Status", 2));
+		filterList.add(createFilter(SINGLE, "Filter by issue type", "Issue Type", 1));
+		filterList.add(createFilter(SINGLE, "Filter by status", "Issue Status", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;

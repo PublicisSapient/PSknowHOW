@@ -536,7 +536,10 @@ public enum KPICode {
      * Iteration Committment V2
      */
     ITERATION_COMMITMENT_V2("kpi187", KPISource.JIRA.name()),
-
+    /**
+     * Wastage
+     */
+    WASTAGE_V2("kpi188", KPISource.JIRA.name()),
 
 
 
