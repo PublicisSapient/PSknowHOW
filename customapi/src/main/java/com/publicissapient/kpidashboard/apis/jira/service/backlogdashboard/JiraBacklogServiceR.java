@@ -19,9 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
@@ -95,7 +93,6 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private boolean referFromProjectCache = true;
-	private final Map<String, List<JiraIssue>> localCache = new ConcurrentHashMap<>();
 
 	/**
 	 * This method process scrum jira based Backlog kpis request, cache data and
@@ -147,7 +144,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 
 				if (!CollectionUtils.isEmpty(origRequestedKpis)
 						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
-					updateJiraIssueList(kpiRequest, filteredAccountDataList);
+					updateJiraIssueList(filteredAccountDataList);
 				}
 				// set filter value to show on trend line. If subprojects are
 				// in
@@ -176,7 +173,6 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 		} finally {
 			threadLocalJiraIssues.remove();
 			threadLocalHistory.remove();
-			localCache.clear();
 		}
 
 		return responseList;
@@ -209,19 +205,12 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 		return hierarchyData;
 	}
 
-	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-		String projectId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT).get(0).toString();
-
-		// Use computeIfAbsent to ensure only one thread fetches the data if it's not already in the cache
-		jiraIssueList = localCache.computeIfAbsent(projectId, id -> {
-			futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(),
-					SprintDetails.SPRINT_STATE_FUTURE);
-			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
-			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
-			fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
-
-			return jiraIssueList;
-		});
+	private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList) {
+		futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(),
+				SprintDetails.SPRINT_STATE_FUTURE);
+		fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+		fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+		fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
 	}
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
