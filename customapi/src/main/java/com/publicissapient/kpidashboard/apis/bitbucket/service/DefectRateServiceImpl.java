@@ -303,8 +303,9 @@ public class DefectRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 							assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
-			int mrCount = repoToolUserDetails.map(RepoToolUserDetails::getMergeRequestsNumber).orElse(0);
-			double defectRate = repoToolUserDetails.map(RepoToolUserDetails::getMemberDefectMergeRequestPercentage).orElse(0.0d);
+			int defectMrs = repoToolUserDetails.map(RepoToolUserDetails::getMergeRequestsNumber).orElse(0);
+			double defectRate = repoToolUserDetails.map(RepoToolUserDetails::getMemberDefectMergeRequestPercentage)
+					.orElse(0.0d);
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
 			if(repoToolUserDetails.isPresent() && repo != null) {
@@ -315,11 +316,12 @@ public class DefectRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
 				repoToolValidationData.setDefectRate(defectRate);
-				repoToolValidationData.setMrCount(mrCount);
+				repoToolValidationData.setKpiPRs(defectMrs);
+				repoToolValidationData.setMrCount(repoToolUserDetails.map(RepoToolUserDetails::getMrCount).orElse(0L));
 				repoToolValidationDataList.add(repoToolValidationData);
 			}
 
-			setDataCount(projectName, date, userKpiGroup, mrCount, defectRate, dateUserWiseAverage);
+			setDataCount(projectName, date, userKpiGroup, defectMrs, defectRate, dateUserWiseAverage);
 
 		});
 		return repoToolValidationDataList;

@@ -97,7 +97,7 @@
       </div>
     </div>
     <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-      *ngIf="selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release' && selectedTab !== 'dora' && selectedTab.toLowerCase() !== 'kpi-maturity'">
+      *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity'">
       <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
         <i class="pi pi-pause" style="font-size: 1rem"></i>
       </span>
@@ -161,4 +161,6 @@
   </p-footer>
 </p-dialog>
 
-<p-blockUI [blocked]="blockUI"></p-blockUI>
+<p-blockUI [blocked]="blockUI">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+</p-blockUI>

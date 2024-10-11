@@ -1086,21 +1086,13 @@ export class ConnectionListComponent implements OnInit {
     /* Enable/Disable fields on the basis of flag selection at one time */
     if (this.enableDisableOnToggle.enableDisableEachTime[field]?.length) {
       this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
-        if (event.checked) {
-          this.basicConnectionForm.controls[element.field]?.enable();
-        } else {
-          this.basicConnectionForm.controls[element.field]?.disable();
-        }
+       this.setEnabledOrDisabled(element, event);
       });
     }
     /* Enable/Disable fields on the basis of flag selection at second time */
     if (this.enableDisableOnToggle.enableDisableAnotherTime[field]?.length) {
       this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
-        if (event.checked) {
-          this.basicConnectionForm.controls[element.field]?.disable();
-        } else {
-          this.basicConnectionForm.controls[element.field]?.enable();
-        }
+        this.setEnabledOrDisabled(element, event);
       });
     }
 
@@ -1119,6 +1111,14 @@ export class ConnectionListComponent implements OnInit {
       this.checkZephyr();
     }
     this.enableDisableFieldsOnIsCloudSwithChange();
+  }
+
+  setEnabledOrDisabled(element, event) {
+    if (event.checked) {
+      this.basicConnectionForm.controls[element.field]?.enable();
+    } else {
+      this.basicConnectionForm.controls[element.field]?.disable();
+    }
   }
 
   testConnection() {
