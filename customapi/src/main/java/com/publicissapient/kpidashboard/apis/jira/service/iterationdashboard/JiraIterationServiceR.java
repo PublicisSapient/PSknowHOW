@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -97,7 +96,6 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private boolean referFromProjectCache = true;
-	private final Map<String, List<JiraIssue>> localCache = new ConcurrentHashMap<>();
 
 	/**
 	 * This method process scrum jira based Iteration kpis request, cache data and
@@ -199,7 +197,6 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			threadLocalSprintDetails.remove();
 			threadLocalJiraIssues.remove();
 			threadLocalHistory.remove();
-			localCache.clear();
 		}
 
 		return responseList;
@@ -249,18 +246,11 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 	}
 
 	private void updateJiraIssueList(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-		String sprintId = kpiRequest.getSelectedMap().get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT).get(0);
-
-		// Use computeIfAbsent to ensure only one thread fetches the data if it's not already in the cache
-		jiraIssueList = localCache.computeIfAbsent(sprintId, id -> {
-			fetchSprintDetails(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT));
-			String basicConfigId = filteredAccountDataList.get(0).getBasicProjectConfigId().toString();
-			List<String> sprintIssuesList = createIssuesList(basicConfigId);
-			fetchJiraIssues(kpiRequest, basicConfigId, sprintIssuesList);
-			fetchJiraIssuesCustomHistory(basicConfigId);
-
-			return jiraIssueList;
-		});
+		fetchSprintDetails(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT));
+		String basicConfigId = filteredAccountDataList.get(0).getBasicProjectConfigId().toString();
+		List<String> sprintIssuesList = createIssuesList(basicConfigId);
+		fetchJiraIssues(kpiRequest, basicConfigId, sprintIssuesList);
+		fetchJiraIssuesCustomHistory(basicConfigId);
 	}
 
 	public void fetchSprintDetails(List<String> sprintId) {
