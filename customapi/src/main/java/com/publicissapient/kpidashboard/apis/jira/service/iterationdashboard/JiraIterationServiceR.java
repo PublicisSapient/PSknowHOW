@@ -199,6 +199,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			threadLocalSprintDetails.remove();
 			threadLocalJiraIssues.remove();
 			threadLocalHistory.remove();
+			localCache.clear();
 		}
 
 		return responseList;
