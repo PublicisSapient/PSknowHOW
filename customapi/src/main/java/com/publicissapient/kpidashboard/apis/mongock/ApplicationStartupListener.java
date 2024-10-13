@@ -16,6 +16,7 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -37,6 +38,8 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 	SimplePolicyDefinition simplePolicyDefinition;
 	@Autowired
 	GlobalConfigRepository globalConfigRepository;
+	@Autowired
+	CacheService cacheService;
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -52,6 +55,8 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 		configHelperService.loadAllFilters();
 		configHelperService.loadConfigData();
 		configHelperService.loadBoardMetaData();
+		cacheService.cacheAccountHierarchyData();
+		cacheService.cacheSprintLevelData();
 		configHelperService.loadToolConfig();
 		simplePolicyDefinition.init();
 		globalConfigRepository.findAll();
