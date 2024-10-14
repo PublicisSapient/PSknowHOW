@@ -53,6 +53,8 @@ public class FixathonKpiMaster {
 	public void execution() {
 		updateLeadTimeForChange();
 		updateYAxisLabel();
+		changeKpiName("kpi38","Code Violations");
+		changeKpiName("kpi64","Code Violations");
 	}
 
 	private void updateLeadTimeForChange() {
@@ -76,8 +78,16 @@ public class FixathonKpiMaster {
 				new Document("$set", new Document("yAxisLabel", "No. of Releases")));
 	}
 
+	public void changeKpiName(String kpiId, String kpiName) {
+		mongoTemplate.getCollection("kpi_master").updateMany(
+				new Document("kpiId", new Document("$in", Arrays.asList(kpiId))),
+				new Document("$set", new Document("kpiName", kpiName)));
+	}
+
 	@RollbackExecution
 	public void rollBack() {
+		changeKpiName("kpi38","Sonar Violations");
+		changeKpiName("kpi64","Sonar Violations");
 	}
 
 }
