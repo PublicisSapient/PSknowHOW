@@ -825,16 +825,16 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   applyColumnFilter() {
-    this.saveKpiColumnsConfig(this.selectedColumns);
+    this.saveKpiColumnsConfig(this.selectedColumns,'APPLY');
   }
 
   saveTableColumnOrder() {
     if (this.tableComponent.columns.length > 0) {
-      this.saveKpiColumnsConfig(this.tableComponent.columns);
+      this.saveKpiColumnsConfig(this.tableComponent.columns,'SAVE');
     }
   }
 
-  saveKpiColumnsConfig(selectedColumns: any[]) {
+  saveKpiColumnsConfig(selectedColumns: any[],action:string) {
     const postData = {
       kpiId: '',
       basicProjectConfigId: '',
@@ -855,13 +855,18 @@ export class IterationComponent implements OnInit, OnDestroy {
     });
     postData['kpiColumnDetails'].sort((a, b) => a.order - b.order);
     this.tableHeaders = postData['kpiColumnDetails'].map(col => col.columnName);
-    this.httpService.postkpiColumnsConfig(postData).subscribe(response => {
-      if (response && response['success'] && response['data']) {
-        this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
-      } else {
-        this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
-      }
-    });
+    if(action === 'SAVE'){
+      this.httpService.postkpiColumnsConfig(postData).subscribe(response => {
+        if (response && response['success'] && response['data']) {
+          this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
+        }
+      });
+    }else{
+      this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations applied successfully!' });
+    }
+
   }
 
   generateTableColumnData() {

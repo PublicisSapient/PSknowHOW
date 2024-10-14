@@ -794,7 +794,7 @@ export class HelperService {
 
     logoutHttp(){
       this.httpService.logout().subscribe((responseData) => {
-        if (responseData?.success) {
+        // if (responseData?.success) {
           if(!environment['AUTHENTICATION_SERVICE']){
           this.isKanban = false;
           // Set blank selectedProject after logged out state
@@ -809,7 +809,7 @@ export class HelperService {
               let redirect_uri = window.location.href;
               window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
           }
-      }
+    //   }
     })
     }
 
