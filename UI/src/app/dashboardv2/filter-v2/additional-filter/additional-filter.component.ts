@@ -104,7 +104,9 @@ export class AdditionalFilterComponent implements OnChanges {
         }
       }
       else {
-        this.filterData = [];
+        if (this.selectedTab !== 'developer') {
+          this.filterData = [];
+        }
       }
     }));
   }
@@ -153,6 +155,7 @@ export class AdditionalFilterComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
       this.filterSet = new Set();
+      this.filterData = [];
       this.selectedFilters = [];
     }
   }
