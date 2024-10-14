@@ -966,7 +966,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               return {
                 nodeId: f,
                 nodeName: f,
-                labelName: filterProp === 'filter1' ? 'branch' : 'developer'
+                labelName: filterProp === 'filter1' ? 'branch' : filterProp === 'filter' ? 'branch' : 'developer'
               }
             })
           });

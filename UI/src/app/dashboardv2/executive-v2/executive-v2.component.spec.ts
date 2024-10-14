@@ -13724,12 +13724,12 @@ describe('ExecutiveV2Component', () => {
         {
           "nodeId": "Overall",
           "nodeName": "Overall",
-          labelName: 'developer'
+          labelName: 'branch'
         },
         {
           "nodeId": "master -> PSknowHOW -> PSknowHOW",
           "nodeName": "master -> PSknowHOW -> PSknowHOW",
-          labelName: 'developer'
+          labelName: 'branch'
         }
       ]
     };
