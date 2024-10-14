@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1110;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
@@ -47,11 +48,14 @@ public class FixathonKpiMaster {
 
 	@Execution
 	public void execution() {
-
+		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
+		changeKpiName("kpi38", "Sonar Violations", kpiMaster);
+		changeKpiName("kpi64", "Sonar Violations", kpiMaster);
+		changeKpiName("kpi124", "Estimation Hygiene", kpiMaster);
 	}
 
-	private void updateDuplicateInfo() {
-		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
+	private void updateDuplicateInfo(MongoCollection<Document> kpiMaster) {
+
 		kpiMaster.updateMany(new Document(KPIID, "kpi156"), new Document("$unset", new Document(KPIINFO_DETAILS, "")));
 		kpiMaster.updateMany(new Document(KPIID, "kpi150"), new Document("$unset", new Document(KPIINFO_DETAILS, "")));
 
@@ -71,9 +75,25 @@ public class FixathonKpiMaster {
 
 	}
 
+	// Change Y-axis of Release Frequency to ‘No. of Releases'
+	public void updateYAxisLabel(MongoCollection<Document> kpiMaster) {
+		kpiMaster.updateMany(new Document("kpiId", new Document("$in", Arrays.asList("kpi73", "kpi74"))),
+				new Document("$set", new Document("yAxisLabel", "No. of Releases")));
+	}
+
+	public void changeKpiName(String kpiId, String kpiName, MongoCollection<Document> kpiMaster) {
+		kpiMaster.updateMany(new Document("kpiId", new Document("$in", Arrays.asList(kpiId))),
+				new Document("$set", new Document("kpiName", kpiName)));
+	}
+
 	@RollbackExecution
 	public void rollBack() {
-		updateDuplicateInfo();
+		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
+		updateDuplicateInfo(kpiMaster);
+		updateYAxisLabel(kpiMaster);
+		changeKpiName("kpi38", "Code Violations", kpiMaster);
+		changeKpiName("kpi64", "Code Violations", kpiMaster);
+		changeKpiName("kpi124", "Issue Hygiene", kpiMaster);
 	}
 
 }

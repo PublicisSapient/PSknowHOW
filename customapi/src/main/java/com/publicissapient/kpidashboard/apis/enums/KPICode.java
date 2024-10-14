@@ -96,7 +96,7 @@ public enum KPICode {
     /**
      * Sonar violations kpi code.
      */
-    SONAR_VIOLATIONS("kpi38", KPISource.SONAR.name()),
+    CODE_VIOLATIONS("kpi38", KPISource.SONAR.name()),
     /**
      * Sprint velocity kpi code.
      */
@@ -180,7 +180,7 @@ public enum KPICode {
     /**
      * Sonar violations kanban kpi code.
      */
-    SONAR_VIOLATIONS_KANBAN("kpi64", KPISource.SONARKANBAN.name()),
+    CODE_VIOLATIONS_KANBAN("kpi64", KPISource.SONARKANBAN.name()),
     /**
      * Code commit kanban kpi code.
      */
@@ -349,7 +349,7 @@ public enum KPICode {
     /**
      * /** Estimation Hygiene
      */
-    ESTIMATION_HYGIENE("kpi124", KPISource.JIRA.name()),
+    ISSUE_HYGIENE("kpi124", KPISource.JIRA.name()),
     /**
      * ITERATION_BURNUP
      */

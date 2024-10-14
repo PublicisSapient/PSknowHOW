@@ -89,7 +89,7 @@ public class SonarControllerRTest {
 		kpiElement.setValue(100);
 		kpiElement.setId("5b6be4bf39e7aef89a0fc456");
 		kpiElement.setKpiSource("Sonar");
-		kpiElement.setKpiId(KPICode.SONAR_VIOLATIONS.getKpiId());
+		kpiElement.setKpiId(KPICode.CODE_VIOLATIONS.getKpiId());
 		kpiElementList.add(kpiElement);
 
 		when(sonarService.process(Mockito.any())).thenReturn(kpiElementList);
@@ -127,7 +127,7 @@ public class SonarControllerRTest {
 		kpiElement.setValue(100);
 		kpiElement.setId("5b6be4bf39e7aef89a0fc456");
 		kpiElement.setKpiSource("SonarKanban");
-		kpiElement.setKpiId(KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId());
+		kpiElement.setKpiId(KPICode.CODE_VIOLATIONS_KANBAN.getKpiId());
 		kpiElementList.add(kpiElement);
 
 		when(sonarServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
