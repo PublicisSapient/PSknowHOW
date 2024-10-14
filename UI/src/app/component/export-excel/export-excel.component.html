@@ -4,7 +4,7 @@
       <div>
         {{modalDetails['header']}}
         <div class="export-button">
-          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
+          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export View"
             class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
           <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
             class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
