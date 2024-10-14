@@ -157,19 +157,19 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 					kpiRequest.setFilterToShowOnTrend(groupName);
 
 					ExecutorService executorService = Executors
-							.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+							.newFixedThreadPool( 1);
 
 					List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-					for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-						CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+						for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 							threadLocalSprintDetails.set(sprintDetails);
 							threadLocalJiraIssues.set(jiraIssueList);
 							threadLocalHistory.set(jiraIssueCustomHistoryList);
 							responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredNode));
-						}, executorService);
-						futures.add(future);
-					}
+						}
+					}, executorService);
+					futures.add(future);
 
 					CompletableFuture<Void>[] futureArray = futures.toArray(new CompletableFuture[0]);
 
