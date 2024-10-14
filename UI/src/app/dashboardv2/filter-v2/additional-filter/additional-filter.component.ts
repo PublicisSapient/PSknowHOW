@@ -78,7 +78,7 @@ export class AdditionalFilterComponent implements OnChanges {
               filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
             }
           });
-          
+
           const correctLevelMapping = {
             Sprint: 'sprint',
             Squad: 'sqd'
@@ -103,9 +103,9 @@ export class AdditionalFilterComponent implements OnChanges {
           this.applyDefaultFilter();
         }
       }
-      // else {
-      //   this.filterData = [];
-      // }
+      else {
+        this.filterData = [];
+      }
     }));
   }
 
@@ -151,12 +151,9 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue) || this.selectedTab === 'value') {
+    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
       this.filterSet = new Set();
       this.selectedFilters = [];
-      if (this.selectedTab === 'value') {
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
-      }
     }
   }
 

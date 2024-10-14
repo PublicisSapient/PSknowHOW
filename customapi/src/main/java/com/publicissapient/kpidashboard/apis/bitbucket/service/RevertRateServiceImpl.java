@@ -309,9 +309,10 @@ public class RevertRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 				repoToolValidationData.setDeveloperName(developerName);
 				repoToolValidationData.setDate(date);
 				repoToolValidationData.setRevertRate(userRevertRatePercentage);
+				repoToolValidationData.setMrCount(repoToolUserDetails.get().getMergeRequests());
+				repoToolValidationData.setKpiPRs(repoToolUserDetails.get().getMrCount());
 				repoToolValidationDataList.add(repoToolValidationData);
 			}
-
 			setDataCount(projectName, date, userKpiGroup, userRevertRatePercentage, dateUserWiseAverage);
 
 		});
