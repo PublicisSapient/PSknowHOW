@@ -157,7 +157,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 					kpiRequest.setFilterToShowOnTrend(groupName);
 
 					ExecutorService executorService = Executors
-							.newFixedThreadPool( 1);
+							.newFixedThreadPool( 2);
 
 					List<CompletableFuture<Void>> futures = new ArrayList<>();
 
