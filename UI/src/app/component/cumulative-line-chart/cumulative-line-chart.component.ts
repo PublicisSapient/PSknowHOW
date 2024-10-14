@@ -267,7 +267,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     let htmlString = '';
 
     categories.forEach((d) => {
-      htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1">: ${d}</span></div>`;
+      htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1"> ${d}</span></div>`;
     });
 
     legendDiv.html(htmlString)
@@ -302,7 +302,7 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
           hideTooltip();
         });
 
-      htmlString += `<div class="legend_item"><div class="legend_color_indicator_dashed"></div> <span class="p-m-1">: ${this.data[0].additionalGroup[0]}</span></div>`;
+      htmlString += `<div class="legend_item"><div class="legend_color_indicator_dashed"></div> <span class="p-m-1"> ${this.data[0].additionalGroup[0]}</span></div>`;
       legendDiv.html(htmlString);
     }
 
