@@ -1641,8 +1641,10 @@ public class KPIExcelUtility {
 			String remEstimate = CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes());
 			issueKpiModalValue.setRemainingEstimateMinutes(remEstimate);
 			issueKpiModalValue.setRemainingTimeInDays(remEstimate);
+			issueKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes());
 		} else {
 			issueKpiModalValue.setRemainingEstimateMinutes(Constant.DASH);
+			issueKpiModalValue.setRemainingTime(0);
 		}
 		issueKpiModalValue.setTimeSpentInMinutes(CommonUtils.convertIntoDays(jiraIssue.getTimeSpentInMinutes()));
 		if (jiraIssue.getDevDueDate() != null)
