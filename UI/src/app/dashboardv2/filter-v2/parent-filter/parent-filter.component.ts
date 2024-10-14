@@ -112,4 +112,10 @@ export class ParentFilterComponent implements OnChanges {
       }
     }
   }
+
+  onDropdownChange($event:any){
+    if(this.helperService.isDropdownElementSelected($event)){
+      this.handleSelectedLevelChange(true)
+    }
+  }
 }
