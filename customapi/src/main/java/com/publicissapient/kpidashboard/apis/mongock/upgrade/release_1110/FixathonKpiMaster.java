@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1110;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
@@ -51,6 +52,7 @@ public class FixathonKpiMaster {
 	@Execution
 	public void execution() {
 		updateLeadTimeForChange();
+		updateYAxisLabel();
 	}
 
 	private void updateLeadTimeForChange() {
@@ -65,6 +67,13 @@ public class FixathonKpiMaster {
 						new Document("text", "Detailed Information at").append("link",
 								"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71663772/DORA+Lead+time+for+changes"))))));
 
+	}
+
+	// Change Y-axis of Release Frequency to ‘No. of Releases'
+	public void updateYAxisLabel() {
+		mongoTemplate.getCollection("kpi_master").updateMany(
+				new Document("kpiId", new Document("$in", Arrays.asList("kpi73", "kpi74"))),
+				new Document("$set", new Document("yAxisLabel", "No. of Releases")));
 	}
 
 	@RollbackExecution

@@ -1310,7 +1310,7 @@
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
     "xaxisLabel" : "Months" ,
-    "yaxisLabel" : "Count" ,
+    "yaxisLabel" : "No. of Releases" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -2124,7 +2124,7 @@
       ]
     } ,
     "xaxisLabel" : "Months" ,
-    "yaxisLabel" : "Count" ,
+    "yaxisLabel" : "No. of Releases" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,

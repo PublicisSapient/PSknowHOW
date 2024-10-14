@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1110;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
@@ -67,9 +68,17 @@ public class FixathonKpiMaster {
 
 	}
 
+	// Change Y-axis of Release Frequency to ‘No. of Releases'
+	public void updateYAxisLabel() {
+		mongoTemplate.getCollection("kpi_master").updateMany(
+				new Document("kpiId", new Document("$in", Arrays.asList("kpi73", "kpi74"))),
+				new Document("$set", new Document("yAxisLabel", "No. of Releases")));
+	}
+
 	@RollbackExecution
 	public void rollBack() {
 		updateLeadTimeForChange();
+		updateYAxisLabel();
 	}
 
 }
