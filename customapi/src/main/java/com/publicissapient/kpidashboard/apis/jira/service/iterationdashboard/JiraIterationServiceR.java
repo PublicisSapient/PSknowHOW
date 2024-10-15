@@ -161,15 +161,15 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 					List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-					for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-						CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+						for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 							threadLocalSprintDetails.set(sprintDetails);
 							threadLocalJiraIssues.set(jiraIssueList);
 							threadLocalHistory.set(jiraIssueCustomHistoryList);
 							responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredNode));
-						}, executorService);
-						futures.add(future);
-					}
+						}
+					}, executorService);
+					futures.add(future);
 
 					CompletableFuture<Void>[] futureArray = futures.toArray(new CompletableFuture[0]);
 
@@ -230,14 +230,18 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
 				.cacheSprintLevelData();
 
+		// Get the selected values for filtering
 		List<String> selectedValue = kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList());
-		List<String> orDefault = kpiRequest.getSelectedMap().getOrDefault(CommonConstant.SPRINT,
+		List<String> sprintSelectedValue = kpiRequest.getSelectedMap().getOrDefault(CommonConstant.SPRINT,
 				Collections.emptyList());
+
+		// Filter the data based on the groupName and sprint ID
 		return accountDataListAll.stream()
 				.filter(data -> data.getNode().stream().anyMatch(
 						d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
-				.filter(data -> data.getNode().stream().anyMatch(
-						d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT) && orDefault.contains(d.getId())))
+				.filter(data -> data.getNode().stream()
+						.anyMatch(d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT)
+								&& sprintSelectedValue.contains(d.getId())))
 				.collect(Collectors.toList());
 	}
 
