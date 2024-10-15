@@ -1882,6 +1882,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             } else if (parseInt(item.value[0].value[0].data) > 0) {
               ++dataCount;
             }
+          } else if(item.value.length) {
+            ++dataCount;
           }
         } else if (item.dataGroup && item.dataGroup.length) {
           ++dataCount;
@@ -1913,16 +1915,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     } else {
       if (kpi.kpiId === 'kpi171') {
-        kpiData = kpiData?.value;
-        filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
-        for (let i = 0; i < filters?.length; i++) {
-          let partialKpiData = kpiData.filter(x => x.filter1 === filters[i])[0];
-          if (partialKpiData && partialKpiData.data?.length) {
-            return true;
-          }
-        }
+       return this.checkIfPartialDataForKpi171(kpiData, filters);
       }
       return false;
+    }
+  }
+
+  checkIfPartialDataForKpi171(kpiData, filters) {
+    kpiData = kpiData?.value;
+    filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
+    for (let i = 0; i < filters?.length; i++) {
+      let partialKpiData = kpiData.filter(x => x.filter1 === filters[i])[0];
+      if (partialKpiData && partialKpiData.data?.length) {
+        return true;
+      }
     }
   }
 

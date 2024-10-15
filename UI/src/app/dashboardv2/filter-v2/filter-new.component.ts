@@ -917,12 +917,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             });
             this.subject.next(true);
           } else if (response['data']?.errorInFetch) {
-            this.lastSyncData = {};
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'FAILURE';
             this.subject.next(true);
+            this.lastSyncData = {};
+            return;
           }
-
         }, error => {
           this.blockUI = false;
           this.subject.next(true);
@@ -931,6 +931,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             severity: 'error',
             summary: 'Error in syncing data. Please try after some time.',
           });
+          return;
         });
       });
     }
