@@ -15,21 +15,22 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1100;
-
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1020;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
+
 /**
  * @author purgupta2
  */
-@ChangeUnit(id = "change_iteration_kpis_groupId", order = "11001", author = "purgupta2", systemVersion = "10.3.0")
+@ChangeUnit(id = "r_change_iteration_kpis_groupId", order = "010208", author = "purgupta2", systemVersion = "10.2.0")
 public class ChangeIterationKPIsGroupId {
 	private final MongoTemplate mongoTemplate;
 
@@ -39,7 +40,8 @@ public class ChangeIterationKPIsGroupId {
 
 	@Execution
 	public void execution() {
-		updateIterationKPIsGroupId();
+		updateGroupId(Arrays.asList("kpi119", "kpi132", "kp136", "kpi140", "kpi123", "kpi122", "kpi134", "kpi131",
+				"kpi75", "kpi124", "kpi135", "kpi176", "kpi125"), 8);
 	}
 
 	private void updateIterationKPIsGroupId() {
@@ -56,7 +58,6 @@ public class ChangeIterationKPIsGroupId {
 
 	@RollbackExecution
 	public void rollBack() {
-		updateGroupId(Arrays.asList("kpi119", "kpi132", "kp136", "kpi140", "kpi123", "kpi122", "kpi134", "kpi131",
-				"kpi75", "kpi124", "kpi135", "kpi176", "kpi125"), 8);
+		updateIterationKPIsGroupId();
 	}
 }
