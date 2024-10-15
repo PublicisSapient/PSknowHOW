@@ -370,7 +370,7 @@ public class KPIExcelData {
 	@JsonProperty("Merge Date")
 	private String mergeDate;
 
-	@JsonProperty("Release Date")
+	@JsonProperty("Change Release Date [B]")
 	private String releaseDate;
 
 	@JsonProperty("Merge Request Id")
@@ -468,5 +468,11 @@ public class KPIExcelData {
 
 	@JsonProperty("PR Merged Time")
 	private String prMergedTime;
+
+	@JsonProperty("Lead Time (In Days) [B-A]")
+	private String leadTimeForChange;
+
+	@JsonProperty("Change Completion Date [A]")
+	private String changeCompletionDate;
 
 }
