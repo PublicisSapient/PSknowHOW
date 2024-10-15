@@ -379,9 +379,9 @@ public enum KPICode {
      */
     UNPLANNED_WORK_STATUS("kpi134", KPISource.JIRA.name()),
     /**
-     * Issues Without Story Link
+     * Unlinked Work Items
      */
-    ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),
+    UNLINKED_WORK_ITEMS("kpi129", KPISource.JIRA.name()),
     /**
      * Backlog Readiness
      */

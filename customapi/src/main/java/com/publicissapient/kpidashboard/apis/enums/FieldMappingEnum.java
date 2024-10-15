@@ -158,7 +158,7 @@ public enum FieldMappingEnum {
 
 	KPI137("Defect Reopen Rate (Backlog)", KPISource.JIRA.name(), Arrays.asList("jiraDefectClosedStatusKPI137")),
 
-	KPI129("Issues Without Story Link", KPISource.JIRA.name(),
+	KPI129("Unlinked Work Items", KPISource.JIRA.name(),
 			Arrays.asList("jiraStoryIdentificationKPI129", "excludeStatusKpi129")),
 
 	KPI139("Refinement Rejection Rate", KPISource.JIRA.name(), Arrays.asList("jiraAcceptedInRefinementKPI139",

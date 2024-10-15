@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -69,7 +69,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
 @Component
-public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, List<Object>> {
+public class UnlinkedWorkItemsServiceImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
 	private static final String TESTCASES_WITHOUT_STORY_LINK = "Test Cases Without Story Link";
 	private static final String DEFECTS_WITHOUT_STORY_LINK = "Defects Without Story Link";
@@ -298,7 +298,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, L
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.ISSUES_WITHOUT_STORY_LINK.name();
+		return KPICode.UNLINKED_WORK_ITEMS.name();
 	}
 
 	private void projectWiseLeafNodeValue(DataCount trendValue, Node leafNode, KpiElement kpiElement,
@@ -366,7 +366,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, L
 		IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
 		iterationKpiValues.add(overAllIterationKpiValue);
 		trendValue.setValue(iterationKpiValues);
-		kpiElement.setModalHeads(KPIExcelColumn.ISSUES_WITHOUT_STORY_LINK.getColumns());
+		kpiElement.setModalHeads(KPIExcelColumn.UNLINKED_WORK_ITEMS.getColumns());
 		kpiElement.setTrendValueList(trendValue);
 
 	}
