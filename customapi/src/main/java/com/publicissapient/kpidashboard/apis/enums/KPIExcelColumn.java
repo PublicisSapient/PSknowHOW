@@ -52,7 +52,7 @@ public enum KPIExcelColumn {
 
 	MEAN_TIME_TO_MERGE("kpi84",
 			Arrays.asList("Project", "Repo", "Branch", "Merge Request Url", "Days/Weeks",
-					"Mean Time To Merge (In Hours)")),
+					"Mean Time To Merge (In Hours)", "PR Raised Time", "PR Merged Time")),
 	REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer",
 			"Merge Request Url", "Mean Time To Merge (In Hours)")),
 	AVERAGE_RESOLUTION_TIME(

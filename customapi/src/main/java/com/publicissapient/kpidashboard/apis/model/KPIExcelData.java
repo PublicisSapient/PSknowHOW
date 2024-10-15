@@ -463,6 +463,10 @@ public class KPIExcelData {
 	@JsonProperty("Closed PR")
 	private Long closedPRs;
 
+	@JsonProperty("PR Raised Time")
+	private String prRaisedTime;
 
+	@JsonProperty("PR Merged Time")
+	private String prMergedTime;
 
 }
