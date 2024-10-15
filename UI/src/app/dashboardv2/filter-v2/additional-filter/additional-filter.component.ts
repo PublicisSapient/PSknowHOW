@@ -106,6 +106,11 @@ export class AdditionalFilterComponent implements OnChanges {
       else {
         if (this.selectedTab !== 'developer') {
           this.filterData = [];
+        } else {
+          if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
+            this.filterData = [];
+            this.previousSelectedTrends = [...this.selectedTrends];
+          }
         }
       }
     }));
