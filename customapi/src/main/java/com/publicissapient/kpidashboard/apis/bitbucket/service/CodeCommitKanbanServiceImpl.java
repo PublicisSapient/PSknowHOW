@@ -230,17 +230,6 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		return filterWiseValue;
 	}
 
-	private LocalDate getNextRangeDate(KpiRequest kpiRequest, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(kpiRequest.getDuration())) {
-			currentDate = currentDate.minusWeeks(1);
-		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
-			currentDate = currentDate.minusMonths(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-		}
-		return currentDate;
-	}
-
 	private void prepareRepoWiseMap(Map<String, Long> filterWiseValue, String projectName, String dataCountDate,
 			Map<String, List<DataCount>> projectWiseDataMap) {
 		List<Long> commitCountList = new ArrayList<>();
