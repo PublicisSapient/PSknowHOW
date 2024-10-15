@@ -152,7 +152,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.globalConfig = globalConfig;
       this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      if(!this.configGlobalData) {
+      if (!this.configGlobalData) {
         this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
       }
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
@@ -795,7 +795,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   postJiraKPIForRelease(postData, source) {
     /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
     /** Todo : Need to rework when BE cache issue will be fixed */
-    postData.kpiList.forEach(kpi => {
+    this.updatedConfigGlobalData.forEach(kpi => {
       if (!postData.kpiList.map(obj => obj?.kpiId).includes(kpi.kpiId)) {
         postData.kpiList.push(kpi);
       }
@@ -1841,6 +1841,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       }
 
+      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi171')) {
+        if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data.length > 0) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
       return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType);
     }
     return false;
@@ -1890,9 +1898,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   checkIfPartialDataPresent(kpi) {
-    let kpiData = this.ifKpiExist(kpi.kpiId) ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
+    let kpiData = this.ifKpiExist(kpi.kpiId) >= 0 ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
     let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
-    if (kpiData && filters) {
+    if (kpiData && filters && kpi.kpiId !== 'kpi171') {
       if (filters.length === 2) {
         let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
         let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
@@ -1904,6 +1912,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         return false;
       }
     } else {
+      if (kpi.kpiId === 'kpi171') {
+        kpiData = kpiData?.value;
+        filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
+        for (let i = 0; i < filters?.length; i++) {
+          let partialKpiData = kpiData.filter(x => x.filter1 === filters[i])[0];
+          if (partialKpiData && partialKpiData.data?.length) {
+            return true;
+          }
+        }
+      }
       return false;
     }
   }

@@ -268,7 +268,7 @@
                                                 <ng-container>
                                                     <ng-template #showTable>
                                                         <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
-                                                            *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi.kpiId]?.length > 0;else noData">
+                                                            *ngIf="checkIfDataPresent(kpi);else noDataAccess">
                                                             <ng-container
                                                                 *ngFor="let item of kpiChartData[kpi.kpiId]; let index=index">
                                                                 <ng-container
@@ -344,7 +344,7 @@
                                             </div>
                                         </div>
                                     </ng-template>
-                                    <ng-template #noDataAccess let-data>
+                                    <ng-template #noDataAccess>
                                         <div class="min-ht">
                                             <div class="p-w-100  p-d-flex p-justify-center">
                                                 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
