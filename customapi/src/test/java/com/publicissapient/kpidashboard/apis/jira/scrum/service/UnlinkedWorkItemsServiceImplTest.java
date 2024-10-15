@@ -61,7 +61,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IssuesWithoutStoryLinkImplTest {
+public class UnlinkedWorkItemsServiceImplTest {
 
 	List<TestCaseDetails> totalTestCaseList = new ArrayList<>();
 	@Mock
@@ -75,7 +75,7 @@ public class IssuesWithoutStoryLinkImplTest {
 	@Mock
 	private TestCaseDetailsRepository testCaseDetailsRepository;
 	@InjectMocks
-	private IssuesWithoutStoryLinkImpl issuesWithoutStoryLink;
+	private UnlinkedWorkItemsServiceImpl unlinkedWorkItemsService;
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -119,7 +119,7 @@ public class IssuesWithoutStoryLinkImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(testCaseDetailsRepository.findNonRegressionTestDetails(Mockito.anyMap(), Mockito.anyMap(),
 				Mockito.anyString())).thenReturn(totalTestCaseList);
-		Map<String, Object> defectDataListMap = issuesWithoutStoryLink
+		Map<String, Object> defectDataListMap = unlinkedWorkItemsService
 				.fetchKPIDataFromDbForTestWithoutStory(leafNodeList.get(0));
 		assertNotNull(defectDataListMap);
 	}
@@ -131,7 +131,7 @@ public class IssuesWithoutStoryLinkImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = issuesWithoutStoryLink
+		Map<String, Object> defectDataListMap = unlinkedWorkItemsService
 				.fetchKPIDataFromDbForDefectsWithoutStoryLink(leafNodeList.get(0));
 		assertNotNull(defectDataListMap);
 	}
@@ -143,14 +143,14 @@ public class IssuesWithoutStoryLinkImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = issuesWithoutStoryLink.fetchKPIDataFromDb(leafNodeList.get(0), null,
+		Map<String, Object> defectDataListMap = unlinkedWorkItemsService.fetchKPIDataFromDb(leafNodeList.get(0), null,
 				null, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(issuesWithoutStoryLink.getQualifierType(), equalTo("ISSUES_WITHOUT_STORY_LINK"));
+		assertThat(unlinkedWorkItemsService.getQualifierType(), equalTo("ISSUES_WITHOUT_STORY_LINK"));
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class IssuesWithoutStoryLinkImplTest {
 			}
 		});
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiElement kpiData = issuesWithoutStoryLink.getKpiData(kpiRequest, kpiElement,
+		KpiElement kpiData = unlinkedWorkItemsService.getKpiData(kpiRequest, kpiElement,
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		assertEquals(null, kpiData.getValue());
 	}
