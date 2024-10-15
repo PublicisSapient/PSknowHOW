@@ -2703,7 +2703,7 @@
   } ,
   {
     "kpiId" : "kpi129" ,
-    "kpiName" : "Issues Without Story Link" ,
+    "kpiName" : "Unlinked Work Items" ,
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
