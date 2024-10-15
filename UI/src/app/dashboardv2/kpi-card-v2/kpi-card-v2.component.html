@@ -34,7 +34,7 @@
   </div>
   <!-- kpiFilter *ngIf="checkIfDataPresent(trendValueList);"-->
   <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" *ngIf="kpiData.kpiDetail.chartType !== 'stacked-area'"
-    [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' }" class="kpi-filter p-pr-5 p-pl-5"
+    [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }" class="kpi-filter p-pr-5 p-pl-5"
     #kpiFilterContainer>
     <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
       <ng-container *ngFor="let filter of dropdownArr;let k = index">
@@ -114,7 +114,7 @@
       <div class="loading-img"></div>
     </div>
   </div>
-  <div class="kpi-card-footer p-pr-5 p-pl-5">
+  <div class="kpi-card-footer p-pr-5 p-pl-5" [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
     <app-trend-indicator-v2 *ngIf="checkIfDataPresent(kpiDataStatusCode)" [trendData]="trendData"
       [colorObj]="trendBoxColorObj">
     </app-trend-indicator-v2>

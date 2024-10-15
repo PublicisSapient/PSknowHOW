@@ -126,7 +126,8 @@
                                                                     [viewType]="showChart">
                                                                 </app-multiline-style-v2>
 
-                                                                <ng-container *ngSwitchCase="'grouped_column_plus_line'">
+                                                                <ng-container
+                                                                    *ngSwitchCase="'grouped_column_plus_line'">
                                                                     <ng-container *ngIf="checkIfDataPresent(kpi)">
                                                                         <app-grouped-column-plus-line-chart-v2
                                                                             [data]="kpiChartData[kpi?.kpiId]"
@@ -232,9 +233,21 @@
                                                                         </app-chart-with-filters>
                                                                     </ng-container>
                                                                 </ng-container>
-                                                                <app-stacked-area-chart *ngSwitchCase="'stacked-area'"
-                                                                    [kpiId]="kpi?.kpiId"
-                                                                    [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
+
+
+                                                                <ng-container *ngSwitchCase="'stacked-area'">
+                                                                    <ng-container *ngIf="checkIfDataPresent(kpi)">
+                                                                        <app-stacked-area-chart [kpiId]="kpi?.kpiId"
+                                                                            [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
+                                                                    </ng-container>
+                                                                    <ng-container *ngIf="!checkIfDataPresent(kpi)">
+                                                                        <ng-container
+                                                                            *ngTemplateOutlet="partialData; context:  { $implicit: kpi }">
+                                                                        </ng-container>
+                                                                    </ng-container>
+                                                                </ng-container>
+
+
                                                                 <app-multiline-v2 *ngSwitchDefault
                                                                     [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                                                     [unit]="kpi?.kpiDetail?.kpiUnit"
@@ -337,7 +350,7 @@
                                                 <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
                                             </div>
                                             <div class="p-w-100">
-                                                <h4 class="p-text-center">No Data Available.123</h4>
+                                                <h4 class="p-text-center">No Data Available.</h4>
                                             </div>
                                         </div>
                                     </ng-template>
