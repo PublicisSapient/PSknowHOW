@@ -377,6 +377,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         return true;
       }
     }
+
+    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi171')) {
+      if (this.trendValueList?.length && this.trendValueList[0]?.data.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     return (data === '200' || data === '201') && this.checkDataAtGranularLevel(this.trendValueList);
   }
 
