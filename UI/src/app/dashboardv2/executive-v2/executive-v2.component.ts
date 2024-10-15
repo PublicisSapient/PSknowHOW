@@ -1903,20 +1903,24 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     let kpiData = this.ifKpiExist(kpi.kpiId) >= 0 ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
     let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
     if (kpiData && filters && kpi.kpiId !== 'kpi171') {
-      if (filters.length === 2) {
-        let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
-        let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
-        if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType)) ||
-          (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType))) {
-          return true;
-        }
-      } else {
-        return false;
-      }
+      return this.checkPartialDataCondition(kpi, kpiData, filters);
     } else {
       if (kpi.kpiId === 'kpi171') {
        return this.checkIfPartialDataForKpi171(kpiData, filters);
       }
+      return false;
+    }
+  }
+
+  checkPartialDataCondition(kpi, kpiData, filters) {
+    if (filters.length === 2) {
+      let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
+      let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
+      if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType)) ||
+        (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType))) {
+        return true;
+      }
+    } else {
       return false;
     }
   }
