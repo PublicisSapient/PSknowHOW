@@ -36,7 +36,6 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationD
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -132,8 +131,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 
 	private void dateWiseLeafNodeValue(Node projectNode, Map<String, Node> mapTmp, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
-		kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
-		kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
+
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
 		String startDate = dateRange.getStartDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		String endDate = dateRange.getEndDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));

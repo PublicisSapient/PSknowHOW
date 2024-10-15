@@ -116,7 +116,8 @@ public class BitBucketServiceKanbanR {
 						kpiRequest.getIds());
 				return (List<KpiElement>) cachedData;
 			}
-
+			kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
+			kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
 			Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
 
 			for (KpiElement kpiEle : kpiRequest.getKpiList()) {

@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -132,8 +131,6 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 	private void dateWiseLeafNodeValue(Node projectNode, Map<String, Node> mapTmp, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
-		kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
-		kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 		ProjectFilter projectFilter = projectNode.getProjectFilter();
