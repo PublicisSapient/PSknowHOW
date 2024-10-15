@@ -917,15 +917,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             });
             this.subject.next(true);
           } else if (response['data']?.errorInFetch) {
+            this.blockUI = false;
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'FAILURE';
-            this.subject.next(true);
+            this.subject.next(false);
             this.lastSyncData = {};
             return;
           }
         }, error => {
           this.blockUI = false;
-          this.subject.next(true);
+          this.subject.next(false);
           this.lastSyncData = {};
           this.messageService.add({
             severity: 'error',
