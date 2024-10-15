@@ -17990,6 +17990,26 @@ describe('ExecutiveV2Component', () => {
 
     expect(component.checkIfPartialDataForKpi171(kpiData, filters)).toBeFalsy();
   });
+
+  it('should return true if partial data condition is met', () => {
+    const kpi = { kpiDetail: { chartType: 'lineChart' } };
+    const kpiData = [{ filter1: 'filter1', data: [1, 2, 3] }, { filter1: 'filter2', data: [] }];
+    const filters = ['filter1', 'filter2'];
+
+    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(true);
+
+    expect(component.checkPartialDataCondition(kpi, kpiData, filters)).toBeFalsy();
+  });
+
+  it('should return false if partial data condition is not met', () => {
+    const kpi = { kpiDetail: { chartType: 'lineChart' } };
+    const kpiData = [{ filter1: 'filter1', data: [] }, { filter1: 'filter2', data: [] }];
+    const filters = ['filter1', 'filter2'];
+
+    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(false);
+
+    expect(component.checkPartialDataCondition(kpi, kpiData, filters)).toBeFalsy();
+  });
 });
 
 
