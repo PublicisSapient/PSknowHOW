@@ -142,8 +142,8 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
-				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
-						.orElse(Collections.emptyList());
+				List<String> defectTypes = new ArrayList<>(
+						Optional.ofNullable(fieldMapping.getJiradefecttype()).orElse(Collections.emptyList()));
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
 				sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
@@ -299,8 +299,8 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 					fieldMapping.getJiraDefectRejectionStatusKPI133());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, jiraIssueList, totalJiraIssues);
 
-			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
-					.orElse(Collections.emptyList());
+			List<String> defectTypes = new ArrayList<>(
+					Optional.ofNullable(fieldMapping.getJiradefecttype()).orElse(Collections.emptyList()));
 			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<JiraIssue> allDefects = totalJiraIssues.stream()
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());

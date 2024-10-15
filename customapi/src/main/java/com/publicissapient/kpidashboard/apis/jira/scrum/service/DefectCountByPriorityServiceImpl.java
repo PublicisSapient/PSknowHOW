@@ -16,21 +16,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
@@ -46,7 +45,6 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -116,8 +114,8 @@ public class DefectCountByPriorityServiceImpl extends JiraIterationKPIService {
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
-				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
-						.orElse(Collections.emptyList());
+				List<String> defectTypes = new ArrayList<>(
+						Optional.ofNullable(fieldMapping.getJiradefecttype()).orElse(Collections.emptyList()));
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
 				sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
@@ -279,7 +277,8 @@ public class DefectCountByPriorityServiceImpl extends JiraIterationKPIService {
 	}
 
 	private List<JiraIssue> filterDefects(Map<String, Object> resultMap, FieldMapping fieldMapping) {
-		List<String> defectStatuses = fieldMapping.getJiradefecttype();
+		List<String> defectStatuses = new ArrayList<>(
+				Optional.ofNullable(fieldMapping.getJiradefecttype()).orElse(Collections.emptyList()));
 		// subtask defects consider as BUG type in jira_issue
 		defectStatuses.add(NormalizedJira.DEFECT_TYPE.getValue());
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES))) {
