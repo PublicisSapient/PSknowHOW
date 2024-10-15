@@ -937,13 +937,14 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateDeploymentFrequencyExcelData(String projectName,
-			DeploymentFrequencyInfo deploymentFrequencyInfo, List<KPIExcelData> kpiExcelData) {
+															DeploymentFrequencyInfo deploymentFrequencyInfo, List<KPIExcelData> kpiExcelData, Map<String,String> deploymentMapPipelineNameWise) {
 		if (deploymentFrequencyInfo != null) {
 			for (int i = 0; i < deploymentFrequencyInfo.getJobNameList().size(); i++) {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProjectName(projectName);
 				excelData.setDate(deploymentFrequencyInfo.getDeploymentDateList().get(i));
 				excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
+				excelData.setPipelineName(deploymentMapPipelineNameWise.get(deploymentFrequencyInfo.getJobNameList().get(i)));
 				excelData.setWeeks(deploymentFrequencyInfo.getMonthList().get(i));
 				excelData.setDeploymentEnvironment(deploymentFrequencyInfo.getEnvironmentList().get(i));
 				kpiExcelData.add(excelData);

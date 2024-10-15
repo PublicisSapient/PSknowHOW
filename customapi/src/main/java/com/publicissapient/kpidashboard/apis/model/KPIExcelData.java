@@ -142,6 +142,9 @@ public class KPIExcelData {
 	@JsonProperty("Job Name")
 	private String jobName;
 
+	@JsonProperty("Pipeline Name")
+	private String pipelineName;
+
 	@JsonProperty("Unit Coverage")
 	private String unitCoverage;
 
