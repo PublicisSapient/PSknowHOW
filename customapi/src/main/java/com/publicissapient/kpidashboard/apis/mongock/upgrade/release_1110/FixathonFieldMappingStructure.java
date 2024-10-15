@@ -17,14 +17,17 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1110;
 
-import com.mongodb.client.model.Filters;
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.Arrays;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.Arrays;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * @author purgupta2
@@ -53,50 +56,68 @@ public class FixathonFieldMappingStructure {
 
 	@Execution
 	public void execution() {
-		updateFieldMappingStr();
-		deleteFieldMappingStr();
+		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
+				.getCollection(FIELD_MAPPING_STRUCTURE);
+		updateFieldMappingStr(fieldMappingStructCollection);
+		deleteFieldMappingStr(fieldMappingStructCollection);
+		// Unlinked Work Items field mapping update
+		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider as Stories",
+				fieldMappingStructCollection);
 	}
 
-	public void updateFieldMappingStr() {
+	public void updateFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
 		// Update for jiraIssueDeliverdStatusKPI138
 		updateFieldMappingByFieldName("jiraIssueDeliverdStatusKPI138", "Status to identify DOR",
-				"Workflow statuses to identify when an issue is considered 'Delivered' based on the Definition of Done (DoD), used to measure average velocity. Please list all statuses that mark an issue as 'Delivered'.");
+				"Workflow statuses to identify when an issue is considered 'Delivered' based on the Definition of Done (DoD), used to measure average velocity. Please list all statuses that mark an issue as 'Delivered'.",
+				fieldMappingStructCollection);
 
 		// Update for readyForDevelopmentStatusKPI138
 		updateFieldMappingByFieldName("readyForDevelopmentStatusKPI138", "Status to identify DOD",
-				"Workflow status/es that identify that a backlog item is ready to be taken in a sprint based on Definition of Ready (DOR)");
+				"Workflow status/es that identify that a backlog item is ready to be taken in a sprint based on Definition of Ready (DOR)",
+				fieldMappingStructCollection);
 	}
 
-	private void updateFieldMappingByFieldName(String fieldName, String fieldLabel, String tooltipDefinition) {
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateMany(
-				new Document(FIELD_NAME, new Document("$in", Arrays.asList(fieldName))), new Document("$set",
+	private void updateFieldMappingByFieldName(String fieldName, String fieldLabel, String tooltipDefinition,
+			MongoCollection<Document> fieldMappingStructCollection) {
+
+		fieldMappingStructCollection.updateMany(new Document(FIELD_NAME, new Document("$in", Arrays.asList(fieldName))),
+				new Document("$set",
 						new Document(FIELD_LABEL, fieldLabel).append("tooltip.definition", tooltipDefinition)));
 	}
 
-	private void deleteFieldMappingStr() {
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
-				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, DELIVERED_STATUS)));
+	private void deleteFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.deleteMany(Filters.or(Filters.eq(FIELD_NAME, DELIVERED_STATUS)));
 	}
 
 	@RollbackExecution
 	public void rollBack() {
+		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
+				.getCollection(FIELD_MAPPING_STRUCTURE);
 		updateFieldMappingByFieldName("readyForDevelopmentStatusKPI138",
 				"Status to identify issues Ready for Development",
-				"Status to identify Ready for development from the backlog.");
+				"Status to identify Ready for development from the backlog.", fieldMappingStructCollection);
 		updateFieldMappingByFieldName(DELIVERED_STATUS, "Issue Delivered Status",
-				"Status from workflow on which issue is delivered. <br> Example: Closed<hr>");
-		insertFieldMappingStructure();
+				"Status from workflow on which issue is delivered. <br> Example: Closed<hr>",
+				fieldMappingStructCollection);
+		insertFieldMappingStructure(fieldMappingStructCollection);
+		// Rollback Unlinked Work Items field mapping update
+		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider", fieldMappingStructCollection);
 	}
 
-	public void insertFieldMappingStructure() {
+	public void insertFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection) {
 		Document jiraIterationCompletionStatusKPI138 = new Document().append(FIELD_NAME, DELIVERED_STATUS)
 				.append(FIELD_LABEL, "Custom Completion status/es").append(FIELD_TYPE, CHIPS)
 				.append(FIELD_CATEGORY, "workflow").append(SECTION, "WorkFlow Status Mapping")
 				.append(TOOL_TIP, new Document(DEFINITION,
 						"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"));
 
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
-				.insertMany(Arrays.asList(jiraIterationCompletionStatusKPI138));
+		fieldMappingStructCollection.insertMany(Arrays.asList(jiraIterationCompletionStatusKPI138));
+	}
+
+	public void updateFieldLabel(String fieldName, String newLabelName,
+			MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
+				new Document("$set", new Document("fieldLabel", newLabelName)));
 	}
 
 }

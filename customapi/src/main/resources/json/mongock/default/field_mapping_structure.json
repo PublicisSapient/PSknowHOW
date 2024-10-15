@@ -499,7 +499,7 @@
   },
   {
     "fieldName": "jiraStoryIdentificationKPI129",
-    "fieldLabel": "Issue types to consider",
+    "fieldLabel": "Issue types to consider as Stories",
     "fieldDisplayOrder": 1,
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
