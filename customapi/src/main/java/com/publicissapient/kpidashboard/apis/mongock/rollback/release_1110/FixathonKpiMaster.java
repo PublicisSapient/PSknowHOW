@@ -52,6 +52,15 @@ public class FixathonKpiMaster {
 		changeKpiName("kpi38", "Sonar Violations", kpiMaster);
 		changeKpiName("kpi64", "Sonar Violations", kpiMaster);
 		changeKpiName("kpi124", "Estimation Hygiene", kpiMaster);
+		updateMaturityInfo("kpi5");
+	}
+
+	private void updateMaturityInfo(String kpiId) {
+		Document query = new Document("kpiId", kpiId);
+		Document update = new Document("$set",
+				new Document().append("maturityRange", Arrays.asList("60-", "40-60", "25-40", "10-25", "0-10"))
+						.append("aggregationCriteria", "deviation").append("calculateMaturity", true));
+		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
 	}
 
 	private void updateDuplicateInfo(MongoCollection<Document> kpiMaster) {

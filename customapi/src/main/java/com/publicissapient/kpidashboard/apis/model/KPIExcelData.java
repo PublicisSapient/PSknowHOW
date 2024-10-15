@@ -142,6 +142,9 @@ public class KPIExcelData {
 	@JsonProperty("Job Name")
 	private String jobName;
 
+	@JsonProperty("Pipeline Name")
+	private String pipelineName;
+
 	@JsonProperty("Unit Coverage")
 	private String unitCoverage;
 
@@ -460,6 +463,10 @@ public class KPIExcelData {
 	@JsonProperty("Closed PR")
 	private Long closedPRs;
 
+	@JsonProperty("PR Raised Time")
+	private String prRaisedTime;
 
+	@JsonProperty("PR Merged Time")
+	private String prMergedTime;
 
 }

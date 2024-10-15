@@ -937,13 +937,14 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateDeploymentFrequencyExcelData(String projectName,
-			DeploymentFrequencyInfo deploymentFrequencyInfo, List<KPIExcelData> kpiExcelData) {
+															DeploymentFrequencyInfo deploymentFrequencyInfo, List<KPIExcelData> kpiExcelData, Map<String,String> deploymentMapPipelineNameWise) {
 		if (deploymentFrequencyInfo != null) {
 			for (int i = 0; i < deploymentFrequencyInfo.getJobNameList().size(); i++) {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProjectName(projectName);
 				excelData.setDate(deploymentFrequencyInfo.getDeploymentDateList().get(i));
 				excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
+				excelData.setPipelineName(deploymentMapPipelineNameWise.get(deploymentFrequencyInfo.getJobNameList().get(i)));
 				excelData.setWeeks(deploymentFrequencyInfo.getMonthList().get(i));
 				excelData.setDeploymentEnvironment(deploymentFrequencyInfo.getEnvironmentList().get(i));
 				kpiExcelData.add(excelData);
@@ -1061,6 +1062,8 @@ public class KPIExcelUtility {
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
+				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
+				excelData.setPrMergedTime(repoToolValidationData.getPrMergedTime());
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
 				excelData.setMergeRequestUrl(mergeUrl);

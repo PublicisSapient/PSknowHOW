@@ -59,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
 
 	private static final Integer SP_CONSTANT = 3;
 	private static final String DEV = "DeveloperKpi";
@@ -258,8 +258,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	 * @return Double
 	 */
 	@Override
-	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseDefectMap) {
-		return (double) Math.round(100.0);
+	public Long calculateKPIMetrics(Map<String, Object> filterComponentIdWiseDefectMap) {
+		return Math.round(100.0);
 	}
 
 	/**
@@ -359,7 +359,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				dataCount.setSSprintName(node.getSprintFilter().getName());
 				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-				dataCount.setValue(predictability.get(currentNodeIdentifier));
 				dataCount.setValue(Math.round(predictability.get(currentNodeIdentifier)));
 				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 				mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
@@ -371,8 +370,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	}
 
 	@Override
-	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
-		return calculateKpiValueForDouble(valueList, kpiName);
+	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
+		return calculateKpiValueForLong(valueList, kpiName);
 	}
 
 	/**
