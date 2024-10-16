@@ -196,6 +196,12 @@ public class FixathonFieldMappingStructure {
 				new Document("$unset", new Document("redirectUrl", "")));
 	}
 
+	public void rollbackUpdateFieldDisplayOrder(String fieldName, MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateOne(
+				new Document("fieldName", fieldName),
+				new Document("$unset", new Document("fieldDisplayOrder", ""))
+		);
+	}
 	private void rollbackCycleTimeFieldMappingChanges(MongoCollection<Document> fieldMappingStructCollection) {
 		updateFieldLabel("jiraIssueTypeKPI171", "Issue types to consider ‘Completed status’",
 				fieldMappingStructCollection);
@@ -206,24 +212,24 @@ public class FixathonFieldMappingStructure {
 				fieldMappingStructCollection);
 		updateTooltipDefinition("storyFirstStatusKPI171", "All issue types that identify with a Story.",
 				fieldMappingStructCollection);
-		updateFieldDisplayOrder("storyFirstStatusKPI171", 1, fieldMappingStructCollection);
+		rollbackUpdateFieldDisplayOrder("storyFirstStatusKPI171", fieldMappingStructCollection);
 
 		updateFieldLabel("jiraDorKPI171", "DOR status", fieldMappingStructCollection);
 		updateTooltipDefinition("jiraDorKPI171",
 				"Status/es that identify that an issue is ready to be taken in the sprint",
 				fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraDorKPI171", 2, fieldMappingStructCollection);
+		rollbackUpdateFieldDisplayOrder("jiraDorKPI171", fieldMappingStructCollection);
 
 		updateFieldLabel("jiraDodKPI171", "Status to identify completed issues", fieldMappingStructCollection);
 		updateTooltipDefinition("jiraDodKPI171",
 				"All workflow statuses used to identify completed issues based on Definition of Done (DoD).",
 				fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraDodKPI171", 3, fieldMappingStructCollection);
+		updateFieldDisplayOrder("jiraDodKPI171", 8, fieldMappingStructCollection);
 
 		updateFieldLabel("jiraLiveStatusKPI171", "Live Status - Cycle Time", fieldMappingStructCollection);
 		updateTooltipDefinition("jiraLiveStatusKPI171", "Status/es that identify that an issue is LIVE in Production'",
 				fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraLiveStatusKPI171", 4, fieldMappingStructCollection);
+		rollbackUpdateFieldDisplayOrder("jiraLiveStatusKPI171", fieldMappingStructCollection);
 	}
 
 }
