@@ -1843,7 +1843,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi171')) {
-        if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data.length > 0) {
+        if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
           return true;
         } else {
           return false;
