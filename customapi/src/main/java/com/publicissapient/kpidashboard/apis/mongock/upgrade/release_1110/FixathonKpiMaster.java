@@ -56,6 +56,7 @@ public class FixathonKpiMaster {
 		//renaming Issue without Story link to Unlinked Work Items
 		changeKpiName("kpi129", "Unlinked Work Items", kpiMaster);
 		updateDuplicateInfo(kpiMaster);
+		updateMaturityInfo("kpi5");
 	}
 
 	private void updateDuplicateInfo(MongoCollection<Document> kpiMaster) {
@@ -88,6 +89,14 @@ public class FixathonKpiMaster {
 	public void changeKpiName(String kpiId, String kpiName, MongoCollection<Document> kpiMaster) {
 		kpiMaster.updateMany(new Document("kpiId", new Document("$in", Arrays.asList(kpiId))),
 				new Document("$set", new Document("kpiName", kpiName)));
+	}
+
+	private void updateMaturityInfo(String kpiId) {
+		Document query = new Document("kpiId", kpiId);
+		Document update = new Document("$set",
+				new Document().append("maturityRange", Arrays.asList("60-", "40-60", "25-40", "10-25", "0-10"))
+						.append("aggregationCriteria", "deviation").append("calculateMaturity", true));
+		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
 	}
 
 	@RollbackExecution
