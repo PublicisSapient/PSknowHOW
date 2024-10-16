@@ -63,6 +63,8 @@ public class FixathonFieldMappingStructure {
 		// Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider as Stories",
 				fieldMappingStructCollection);
+		updateFieldLabel("jiraDefectClosedStatusKPI137", "Status to identify Closed Issues",
+				fieldMappingStructCollection);
 		addRedirectUrlField(fieldMappingStructCollection);
 	}
 
@@ -109,6 +111,7 @@ public class FixathonFieldMappingStructure {
 		insertFieldMappingStructure(fieldMappingStructCollection);
 		// Rollback Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider", fieldMappingStructCollection);
+		updateFieldLabel("jiraDefectClosedStatusKPI137", "Status to identify Closed Bugs", fieldMappingStructCollection);
 		rollbackAddRedirectUrlField(fieldMappingStructCollection);
 	}
 
