@@ -49,13 +49,16 @@ public class FixathonKpiMaster {
 	@Execution
 	public void execution() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
-		updateYAxisLabel(kpiMaster);
+		// Change Y-axis of Release Frequency to ‘No. of Releases'
+		updateYAxisLabel(kpiMaster, Arrays.asList("kpi73", "kpi74"), "No. of Releases");
 		changeKpiName("kpi38", "Code Violations", kpiMaster);
 		changeKpiName("kpi64", "Code Violations", kpiMaster);
 		changeKpiName("kpi124", "Issue Hygiene", kpiMaster);
-		//renaming Issue without Story link to Unlinked Work Items
+		// renaming Issue without Story link to Unlinked Work Items
 		changeKpiName("kpi129", "Unlinked Work Items", kpiMaster);
 		updateDuplicateInfo(kpiMaster);
+		// renaming Iteration BurnUp y-axis
+		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Issue Count");
 	}
 
 	private void updateDuplicateInfo(MongoCollection<Document> kpiMaster) {
@@ -79,10 +82,10 @@ public class FixathonKpiMaster {
 
 	}
 
-	// Change Y-axis of Release Frequency to ‘No. of Releases'
-	public void updateYAxisLabel(MongoCollection<Document> kpiMaster) {
-		kpiMaster.updateMany(new Document("kpiId", new Document("$in", Arrays.asList("kpi73", "kpi74"))),
-				new Document("$set", new Document("yAxisLabel", "No. of Releases")));
+
+	public void updateYAxisLabel(MongoCollection<Document> kpiMaster, List<String> kpiIds, String yAxisLabel) {
+		kpiMaster.updateMany(new Document("kpiId", new Document("$in", kpiIds)),
+				new Document("$set", new Document("yAxisLabel", yAxisLabel)));
 	}
 
 	public void changeKpiName(String kpiId, String kpiName, MongoCollection<Document> kpiMaster) {
@@ -93,11 +96,14 @@ public class FixathonKpiMaster {
 	@RollbackExecution
 	public void rollBack() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
+		updateYAxisLabel(kpiMaster, Arrays.asList("kpi73", "kpi74"), "Count");
 		changeKpiName("kpi38", "Sonar Violations", kpiMaster);
-		changeKpiName("kpi64", "Sonar Violations", kpiMaster);
+		changeKpiName("kpi64", "Sonar Violations", 	kpiMaster);
 		changeKpiName("kpi124", "Estimation Hygiene", kpiMaster);
-		//rollback to  Issue without Story link from Unlinked Work Items
+		// rollback to Issue without Story link from Unlinked Work Items
 		changeKpiName("kpi129", "Issues Without Story Link", kpiMaster);
+		//rollback Iteration BurnUp y-axis change
+		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Count");
 	}
 
 }

@@ -2609,7 +2609,7 @@
       ]
     } ,
     "xaxisLabel" : "Days" ,
-    "yaxisLabel" : "Count" ,
+    "yaxisLabel" : "Issue Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
