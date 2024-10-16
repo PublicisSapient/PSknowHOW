@@ -50,11 +50,12 @@ public enum KPIExcelColumn {
 	REPO_TOOL_CODE_COMMIT("kpi157",
 			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer", "No Of Commit", "No of Merge")),
 
-	MEAN_TIME_TO_MERGE("kpi84",
-			Arrays.asList("Project", "Repo", "Branch", "Merge Request Url", "Days/Weeks",
-					"Mean Time To Merge (In Hours)", "PR Raised Time", "PR Merged Time")),
-	REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer",
-			"Merge Request Url", "Mean Time To Merge (In Hours)")),
+	MEAN_TIME_TO_MERGE("kpi84", Arrays.asList("Project", "Repo", "Branch", "Merge Request Url", "Days/Weeks",
+			"PR Raised Time", "PR Merged Time", "Mean Time To Merge (In Hours)")), REPO_TOOL_MEAN_TIME_TO_MERGE(
+					"kpi158",
+					Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer", "Merge Request Url",
+							"PR Raised Time", "PR Merged Time",
+							"Mean Time To Merge (In Hours)")),
 	AVERAGE_RESOLUTION_TIME(
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",

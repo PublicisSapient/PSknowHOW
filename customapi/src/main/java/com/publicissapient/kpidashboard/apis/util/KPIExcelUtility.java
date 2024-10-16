@@ -855,7 +855,7 @@ public class KPIExcelUtility {
 						DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 								.optionalStart().appendPattern(".")
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
-						LocalDateTime dateTime = LocalDateTime.parse(epic.getChangeDate(), formatter);
+						LocalDateTime dateTime = LocalDateTime.parse(epic.getEpicEndDate(), formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
 						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_FORMAT));
 					}
@@ -1063,7 +1063,7 @@ public class KPIExcelUtility {
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
 				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
-				excelData.setPrMergedTime(repoToolValidationData.getPrMergedTime());
+				excelData.setPrMergedTime(repoToolValidationData.getPrActivityTime());
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
 				excelData.setMergeRequestUrl(mergeUrl);
