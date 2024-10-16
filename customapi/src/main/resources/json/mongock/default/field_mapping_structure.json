@@ -3292,7 +3292,8 @@
     "tooltip": {
       "definition": "Enabled State (Kpi from data on Upload data screen)"
     },
-    "toggleLabelRight": "Upload Data"
+    "toggleLabelRight": "Upload Data",
+    "redirectUrl" : "/dashboard/Config/Upload"
   },
   {
     "fieldName": "uploadDataKPI16",
@@ -3303,7 +3304,8 @@
     "tooltip": {
       "definition": "Enabled State (Kpi from data on Upload data screen)"
     },
-    "toggleLabelRight": "Upload Data"
+    "toggleLabelRight": "Upload Data",
+    "redirectUrl" : "/dashboard/Config/Upload"
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI155",

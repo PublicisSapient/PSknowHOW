@@ -63,6 +63,7 @@ public class FixathonFieldMappingStructure {
 		// Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider as Stories",
 				fieldMappingStructCollection);
+		addRedirectUrlField(fieldMappingStructCollection);
 	}
 
 	public void updateFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
@@ -89,6 +90,12 @@ public class FixathonFieldMappingStructure {
 		fieldMappingStructCollection.deleteMany(Filters.or(Filters.eq(FIELD_NAME, DELIVERED_STATUS)));
 	}
 
+	public void addRedirectUrlField(MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateMany(
+				new Document("fieldName", new Document("$in", Arrays.asList("uploadDataKPI16", "uploadDataKPI42"))),
+				new Document("$set", new Document("redirectUrl", "/dashboard/Config/Upload")));
+	}
+
 	@RollbackExecution
 	public void rollBack() {
 		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
@@ -102,6 +109,7 @@ public class FixathonFieldMappingStructure {
 		insertFieldMappingStructure(fieldMappingStructCollection);
 		// Rollback Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider", fieldMappingStructCollection);
+		rollbackAddRedirectUrlField(fieldMappingStructCollection);
 	}
 
 	public void insertFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection) {
@@ -120,4 +128,9 @@ public class FixathonFieldMappingStructure {
 				new Document("$set", new Document("fieldLabel", newLabelName)));
 	}
 
+	public void rollbackAddRedirectUrlField(MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateMany(
+				new Document("fieldName", new Document("$in", Arrays.asList("uploadDataKPI16", "uploadDataKPI42"))),
+				new Document("$unset", new Document("redirectUrl", "")));
+	}
 }
