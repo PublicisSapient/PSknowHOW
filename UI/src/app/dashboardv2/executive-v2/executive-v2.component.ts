@@ -374,13 +374,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   setUpTabs() {
     const tabsArray = new Set(this.configGlobalData.map(element => element.shown && element.isEnabled && element?.kpiDetail?.kpiSubCategory));
-    if (this.selectedTab === 'release') {
-      const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
-      const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
-      this.tabsArr = new Set(tabTempSet.map(element => element.boardName));
-    } else {
-      this.tabsArr = new Set([...tabsArray].filter(Boolean));
-    }
+    // if (this.selectedTab === 'release') {
+    //   const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
+    //   const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
+    //   this.tabsArr = new Set(tabTempSet.map(element => element.boardName));
+    // } else {
+    this.tabsArr = new Set([...tabsArray].filter(Boolean));
+    // }
     let it = this.tabsArr.values();
     //get first entry:
     let first = it.next();
@@ -1882,7 +1882,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             } else if (parseInt(item.value[0].value[0].data) > 0) {
               ++dataCount;
             }
-          } else if(item.value.length) {
+          } else if (item.value.length) {
             ++dataCount;
           }
         } else if (item.dataGroup && item.dataGroup.length) {
@@ -1906,7 +1906,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return this.checkPartialDataCondition(kpi, kpiData, filters);
     } else {
       if (kpi.kpiId === 'kpi171') {
-       return this.checkIfPartialDataForKpi171(kpiData, filters);
+        return this.checkIfPartialDataForKpi171(kpiData, filters);
       }
       return false;
     }
