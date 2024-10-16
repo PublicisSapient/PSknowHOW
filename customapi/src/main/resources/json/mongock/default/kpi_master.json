@@ -1310,7 +1310,7 @@
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
     "xaxisLabel" : "Months" ,
-    "yaxisLabel" : "Count" ,
+    "yaxisLabel" : "No. of Releases" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -2124,7 +2124,7 @@
       ]
     } ,
     "xaxisLabel" : "Months" ,
-    "yaxisLabel" : "Count" ,
+    "yaxisLabel" : "No. of Releases" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -2435,7 +2435,7 @@
   } ,
   {
     "kpiId" : "kpi124" ,
-    "kpiName" : "Estimation Hygiene" ,
+    "kpiName" : "Issue Hygiene" ,
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
@@ -2703,7 +2703,7 @@
   } ,
   {
     "kpiId" : "kpi129" ,
-    "kpiName" : "Issues Without Story Link" ,
+    "kpiName" : "Unlinked Work Items" ,
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,

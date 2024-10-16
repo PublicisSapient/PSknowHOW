@@ -129,7 +129,7 @@ public enum FieldMappingEnum {
 	KPI75("Estimate vs Actual", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusKPI75", "jiraIterationIssuetypeKPI75", "jiraIssueTypeExcludeKPI75")),
 
-	KPI124("Estimation Hygiene", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI124",
+	KPI124("Issue Hygiene", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI124",
 			"jiraIterationIssuetypeKPI124", "issueStatusExcluMissingWorkKPI124", "jiraIssueTypeExcludeKPI124")),
 
 	KPI123("Issue Likely To Spill", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI123",
@@ -158,7 +158,7 @@ public enum FieldMappingEnum {
 
 	KPI137("Defect Reopen Rate (Backlog)", KPISource.JIRA.name(), Arrays.asList("jiraDefectClosedStatusKPI137")),
 
-	KPI129("Issues Without Story Link", KPISource.JIRA.name(),
+	KPI129("Unlinked Work Items", KPISource.JIRA.name(),
 			Arrays.asList("jiraStoryIdentificationKPI129", "excludeStatusKpi129")),
 
 	KPI139("Refinement Rejection Rate", KPISource.JIRA.name(), Arrays.asList("jiraAcceptedInRefinementKPI139",

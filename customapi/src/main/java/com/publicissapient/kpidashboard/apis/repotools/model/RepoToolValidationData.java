@@ -26,6 +26,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * RepoTool kpi validation data
  */
@@ -57,5 +60,7 @@ public class RepoToolValidationData {
 	private long addedLines;
 	private long changedLines;
 	private long kpiPRs;
+	private String prRaisedTime;
+	private String prMergedTime;
 
 }

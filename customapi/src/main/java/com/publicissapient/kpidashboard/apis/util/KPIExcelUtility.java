@@ -456,8 +456,8 @@ public class KPIExcelUtility {
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId())) {
 					excelData.setTechDebt(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())
-						|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId())) {
+				} else if (kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS.getKpiId())
+						|| kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS_KANBAN.getKpiId())) {
 					excelData.setSonarViolation(kpiSpecificDataList.get(i));
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
 					excelData.setCodeQuality(kpiSpecificDataList.get(i));
@@ -471,7 +471,7 @@ public class KPIExcelUtility {
 	private static void setSonarKpiWeekDayMonthColumn(String versionDate, KPIExcelData excelData, String kpiId) {
 		if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 				|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
-				|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())) {
+				|| kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS.getKpiId())) {
 			excelData.setWeeks(versionDate);
 		} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
 			excelData.setMonth(versionDate);
@@ -937,13 +937,14 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateDeploymentFrequencyExcelData(String projectName,
-			DeploymentFrequencyInfo deploymentFrequencyInfo, List<KPIExcelData> kpiExcelData) {
+															DeploymentFrequencyInfo deploymentFrequencyInfo, List<KPIExcelData> kpiExcelData, Map<String,String> deploymentMapPipelineNameWise) {
 		if (deploymentFrequencyInfo != null) {
 			for (int i = 0; i < deploymentFrequencyInfo.getJobNameList().size(); i++) {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProjectName(projectName);
 				excelData.setDate(deploymentFrequencyInfo.getDeploymentDateList().get(i));
 				excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
+				excelData.setPipelineName(deploymentMapPipelineNameWise.get(deploymentFrequencyInfo.getJobNameList().get(i)));
 				excelData.setWeeks(deploymentFrequencyInfo.getMonthList().get(i));
 				excelData.setDeploymentEnvironment(deploymentFrequencyInfo.getEnvironmentList().get(i));
 				kpiExcelData.add(excelData);
@@ -1061,6 +1062,8 @@ public class KPIExcelUtility {
 				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
+				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
+				excelData.setPrMergedTime(repoToolValidationData.getPrMergedTime());
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
 				excelData.setMergeRequestUrl(mergeUrl);
@@ -1988,12 +1991,10 @@ public class KPIExcelUtility {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProjectName(projectName);
 					excelData.setDate(weekOrMonthName);
+					excelData.setChangeCompletionDate(leadTimeChangeData.getClosedDate());
 					if (CommonConstant.REPO.equals(leadTimeConfigRepoTool)) {
-						excelData.setMergeDate(leadTimeChangeData.getClosedDate());
 						excelData.setMergeRequestId(leadTimeChangeData.getMergeID());
 						excelData.setBranch(leadTimeChangeData.getFromBranch());
-					} else {
-						excelData.setCompletionDate(leadTimeChangeData.getClosedDate());
 					}
 					Map<String, String> issueDetails = new HashMap<>();
 					issueDetails.put(leadTimeChangeData.getStoryID(), checkEmptyURL(leadTimeChangeData));

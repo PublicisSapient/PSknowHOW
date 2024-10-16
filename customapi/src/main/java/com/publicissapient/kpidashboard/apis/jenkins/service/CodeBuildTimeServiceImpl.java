@@ -315,9 +315,11 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 				codeBuildTimeInfo.addBuidJob(build.getBuildJob());
 			}
 			codeBuildTimeInfo.addBuildUrl(build.getBuildUrl());
-			codeBuildTimeInfo.addBuildStartTime(DateUtil.dateConverter(new Date(build.getStartTime())));
+			codeBuildTimeInfo.addBuildStartTime(
+					DateUtil.dateTimeFormatter(new Date(build.getStartTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 			codeBuildTimeInfo.addWeeks(date);
-			codeBuildTimeInfo.addBuildEndTime(DateUtil.dateConverter(new Date(build.getEndTime())));
+			codeBuildTimeInfo.addBuildEndTime(
+					DateUtil.dateTimeFormatter(new Date(build.getEndTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 			codeBuildTimeInfo.addDuration(createDurationString(minutes, seconds));
 			codeBuildTimeInfo.addBuildStatus(build.getBuildStatus().toString());
 			codeBuildTimeInfo.addStartedBy(build.getStartedBy());
