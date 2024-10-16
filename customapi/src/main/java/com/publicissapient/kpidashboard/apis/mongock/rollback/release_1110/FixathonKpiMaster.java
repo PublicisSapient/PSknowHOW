@@ -62,7 +62,7 @@ public class FixathonKpiMaster {
 
 	private void updateMaturityInfo(String kpiId) {
 		Document query = new Document("kpiId", kpiId);
-		Document update = new Document("$set",
+		Document update = new Document("$unset",
 				new Document().append("maturityRange", Arrays.asList("60-", "40-60", "25-40", "10-25", "0-10"))
 						.append("aggregationCriteria", "deviation").append("calculateMaturity", true));
 		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
