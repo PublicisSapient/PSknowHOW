@@ -191,7 +191,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("uploadDataKPI16", "thresholdValueKPI16", "jiraTestAutomationIssueType")),
 
 	KPI161("Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNamesKPI161",
-			"jiraStatusForInProgressKPI161", "jiraStatusForRefinedKPI161", "jiraStatusForNotRefinedKPI161")),
+			"jiraStatusForNotRefinedKPI161", "jiraStatusForRefinedKPI161", "jiraStatusForInProgressKPI161" )),
 
 	KPI164("Scope Churn", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI164","thresholdValueKPI164")),
 

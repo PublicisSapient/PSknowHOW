@@ -75,6 +75,11 @@ public class FixathonFieldMappingStructure {
 				"Workflow status/es to identify that an issue is live in Production.", fieldMappingStructCollection);
 		// cycle time kpi171 changes
 		cycleTimeFieldMappingChanges(fieldMappingStructCollection);
+		updateFieldDisplayOrder("jiraIssueTypeNamesKPI161", 1, fieldMappingStructCollection);
+		updateFieldDisplayOrder("jiraStatusForNotRefinedKPI161", 1, fieldMappingStructCollection);
+		updateFieldDisplayOrder("jiraStatusForRefinedKPI161", 2, fieldMappingStructCollection);
+		updateFieldDisplayOrder("jiraStatusForInProgressKPI161", 3, fieldMappingStructCollection);
+		updateFieldDisplayOrderForKPI161(fieldMappingStructCollection);
 	}
 
 	public void updateFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
@@ -160,6 +165,11 @@ public class FixathonFieldMappingStructure {
 
 		// rollback for cycle time kpi171
 		rollbackCycleTimeFieldMappingChanges(fieldMappingStructCollection);
+		rollBackFieldDisplayOrder("jiraIssueTypeNamesKPI161", 1, fieldMappingStructCollection);
+		rollBackFieldDisplayOrder("jiraStatusForNotRefinedKPI161", 1, fieldMappingStructCollection);
+		rollBackFieldDisplayOrder("jiraStatusForRefinedKPI161", 2, fieldMappingStructCollection);
+		rollBackFieldDisplayOrder("jiraStatusForInProgressKPI161", 3, fieldMappingStructCollection);
+		rollBackFieldDisplayOrderForKPI161(fieldMappingStructCollection);
 	}
 
 	public void insertFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection) {
@@ -188,6 +198,42 @@ public class FixathonFieldMappingStructure {
 			MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
 				new Document("$set", new Document("fieldDisplayOrder", newOrder)));
+	}
+
+	public void updateFieldDisplayOrder(String fieldName, Integer fieldDisplayOrder,
+			MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
+				new Document("$set", new Document("fieldDisplayOrder", fieldDisplayOrder)));
+	}
+
+	public void updateFieldDisplayOrderForKPI161(MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateOne(
+				new Document("fieldName", new Document("$in", Arrays.asList("jiraIssueTypeNamesKPI161"))),
+				new Document("$set", new Document("sectionOrder", 1)));
+		fieldMappingStructCollection.updateOne(
+				new Document("fieldName",
+						new Document("$in",
+								Arrays.asList("jiraStatusForNotRefinedKPI161", "jiraStatusForRefinedKPI161",
+										"jiraStatusForInProgressKPI161"))),
+				new Document("$set", new Document("sectionOrder", 2)));
+	}
+
+	public void rollBackFieldDisplayOrder(String fieldName, Integer fieldDisplayOrder,
+			MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
+				new Document("$unset", new Document("fieldDisplayOrder", fieldDisplayOrder)));
+	}
+
+	public void rollBackFieldDisplayOrderForKPI161(MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateOne(
+				new Document("fieldName", new Document("$in", Arrays.asList("jiraIssueTypeNamesKPI161"))),
+				new Document("$set", new Document("sectionOrder", 1)));
+		fieldMappingStructCollection.updateOne(
+				new Document("fieldName",
+						new Document("$in",
+								Arrays.asList("jiraStatusForNotRefinedKPI161", "jiraStatusForRefinedKPI161",
+										"jiraStatusForInProgressKPI161"))),
+				new Document("$set", new Document("sectionOrder", 2)));
 	}
 
 	public void rollbackAddRedirectUrlField(MongoCollection<Document> fieldMappingStructCollection) {

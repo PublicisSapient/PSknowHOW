@@ -1972,8 +1972,8 @@
     "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
     "fieldCategory": "workflow",
-    "fieldDisplayOrder": 6,
-    "sectionOrder": 4,
+    "fieldDisplayOrder": 3,
+    "sectionOrder": 2,
     "tooltip": {
       "definition": "All statuses that denote incomplete issues but have advanced from their initial creation status.."
     },
@@ -3324,6 +3324,8 @@
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "processorCommon": false,
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 1,
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All issue types used by your Jira project"
@@ -3581,6 +3583,8 @@
     "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 2,
+    "sectionOrder": 2,
     "tooltip": {
       "definition": "All statuses that correspond to refined status of Iteration Readiness."
     },
@@ -3592,6 +3596,8 @@
     "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 2,
     "tooltip": {
       "definition": "All statuses that correspond to not refined status of Iteration Readiness."
     },
