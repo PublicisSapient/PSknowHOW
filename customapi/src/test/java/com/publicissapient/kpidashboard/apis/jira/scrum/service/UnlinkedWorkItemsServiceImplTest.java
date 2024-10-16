@@ -150,7 +150,7 @@ public class UnlinkedWorkItemsServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(unlinkedWorkItemsService.getQualifierType(), equalTo("ISSUES_WITHOUT_STORY_LINK"));
+		assertThat(unlinkedWorkItemsService.getQualifierType(), equalTo("UNLINKED_WORK_ITEMS"));
 	}
 
 	@Test
