@@ -874,6 +874,15 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: colData, value: colData }));
       this.tableColumnForm[colName] = [];
     });
+    this.modalDetails['tableValues'].map(item =>{
+      Object.keys(item).forEach(key=>{
+        if(key.toLowerCase().includes('date') && item[key]=== '-'){
+          item[key] = '';
+        }
+      });
+      return item;
+    })
+
   }
 
   generateExcel(exportMode) {
@@ -955,18 +964,19 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
   }
 
-  customSort(event: SortEvent) {
-    const getSortValue = (data: any, field: string) => {
-      const value = (field in data) ? data[field].trim() : '-';
-      return (field.includes('Date') && value !== '-') ? new Date(value).toISOString().split('T')[0] : value;
-    };
+  // Removing this code as this is not giving expected result.
+  // customSort(event: SortEvent) {
+  //   const getSortValue = (data: any, field: string) => {
+  //     const value = (field in data) ? data[field].trim() : '-';
+  //     return (field.includes('Date') && value !== '-') ? new Date(value).toISOString().split('T')[0] : value;
+  //   };
 
-    event.data.sort((data1, data2) => {
-      const value1 = getSortValue(data1, event.field);
-      const value2 = getSortValue(data2, event.field);
-      const result = (value1 === '-' && value2 === '-') ? 0 : value1.localeCompare(value2);
-      return event.order * result;
-    });
-  }
+  //   event.data.sort((data1, data2) => {
+  //     const value1 = getSortValue(data1, event.field);
+  //     const value2 = getSortValue(data2, event.field);
+  //     const result = (value1 === '-' && value2 === '-') ? 0 : value1.localeCompare(value2);
+  //     return event.order * result;
+  //   });
+  // }
 
 }
