@@ -102,6 +102,14 @@ public class FixathonKpiMaster {
 		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
 	}
 
+	private void updateMaturityInfoRollBack(String kpiId) {
+		Document query = new Document("kpiId", kpiId);
+		Document update = new Document("$unset",
+				new Document().append("maturityRange", Arrays.asList("60-", "40-60", "25-40", "10-25", "0-10"))
+						.append("aggregationCriteria", "deviation").append("calculateMaturity", true));
+		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
+	}
+
 	@RollbackExecution
 	public void rollBack() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
@@ -113,6 +121,7 @@ public class FixathonKpiMaster {
 		changeKpiName("kpi129", "Issues Without Story Link", kpiMaster);
 		//rollback Iteration BurnUp y-axis change
 		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Count");
+		updateMaturityInfoRollBack("kpi5");
 	}
 
 }
