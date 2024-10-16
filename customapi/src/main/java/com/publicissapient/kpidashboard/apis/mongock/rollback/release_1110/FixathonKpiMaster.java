@@ -58,6 +58,8 @@ public class FixathonKpiMaster {
 		updateMaturityInfo("kpi5");
 		//rollback Iteration BurnUp y-axis change
 		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Count");
+		//Mean Time to Recover KPI, rollback aggregation criteria from average to sum
+		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "sum");
 	}
 
 	private void updateMaturityInfo(String kpiId) {
@@ -99,6 +101,11 @@ public class FixathonKpiMaster {
 				new Document("$set", new Document("kpiName", kpiName)));
 	}
 
+	private void updateAggregationCriteria(MongoCollection<Document> kpiMaster, List<String> kpiIds, String aggCriteria) {
+		kpiMaster.updateMany(new Document("kpiId", new Document("$in", kpiIds)),
+				new Document("$set", new Document("aggregationCriteria", aggCriteria)));
+	}
+
 	@RollbackExecution
 	public void rollBack() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
@@ -112,6 +119,8 @@ public class FixathonKpiMaster {
 		changeKpiName("kpi129", "Unlinked Work Items", kpiMaster);
 		// renaming Iteration BurnUp y-axis
 		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Issue Count");
+		//Mean Time to Recover KPI, update aggregation criteria from sum to average
+		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "average");
 	}
 
 }
