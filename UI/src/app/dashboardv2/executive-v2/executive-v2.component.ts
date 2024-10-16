@@ -1669,6 +1669,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // if duration filter (filter1) changes,  make an api call to fetch data
     if (durationChanged) {
+      delete this.kpiSelectedFilterObj[kpiId]['filter2'];
       const idx = this.ifKpiExist(kpiId);
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
