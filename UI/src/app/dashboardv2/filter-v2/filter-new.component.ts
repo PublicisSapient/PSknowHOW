@@ -472,7 +472,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  handlePrimaryFilterChange(event, additionalFilterRemoved = false) {
+  handlePrimaryFilterChange(event) {
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
         if (!event['additional_level'][key]?.length) {
@@ -492,7 +492,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      (!this.arrayDeepCompare(event, this.previousFilterEvent) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType) || additionalFilterRemoved) {
+      ((!this.objectsEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -518,15 +518,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.previousFilterEvent['additional_level'] = event['additional_level'];
       this.previousFilterEvent['primary_level'] = event['primary_level'];
-
-      if (!event['additional_level']) {
-        this.handlePrimaryFilterChange(event);
-      } else {
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
-        Object.keys(event['additional_level']).forEach(key => {
-          this.handleAdditionalChange({ [key]: event['additional_level'][key] })
-        });
-      }
+      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
+      Object.keys(event['additional_level']).forEach(key => {
+        this.handleAdditionalChange({ [key]: event['additional_level'][key] })
+      });
     } else if (!event.length || event[0].labelName.toLowerCase() !== this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase()) {
       this.noSprint = true;
       this.service.setAdditionalFilters([]);
@@ -535,7 +530,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.colorObj = {};
       this.additionalData = false;
       this.previousFilterEvent = [];
-      // }
     }
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['Sprint'] && event && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['Sprint'];
@@ -742,15 +736,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (!event?.length) {
       this.filterApplyData['selectedMap'][level] = [];
       delete this.previousFilterEvent['additional_level'][level];
-      if (!Object.keys(this.previousFilterEvent['additional_level'])?.length) {
-        delete this.previousFilterEvent['additional_level'];
+      if (!Object.keys(this.previousFilterEvent['additional_level']).length) 
+      {
+        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : [this.previousFilterEvent[0]]);
+        return;
       }
-      if (!this.previousFilterEvent['additional_level']) {
-        this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : this.previousFilterEvent, true);
-      } else {
-        this.handlePrimaryFilterChange(this.previousFilterEvent, true);
-      }
-      return;
     }
     this.compileGAData(event);
     this.filterApplyData['level'] = event[0].level;
@@ -927,20 +917,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             });
             this.subject.next(true);
           } else if (response['data']?.errorInFetch) {
-            this.lastSyncData = {};
+            this.blockUI = false;
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'FAILURE';
-            this.subject.next(true);
+            this.subject.next(false);
+            this.lastSyncData = {};
+            return;
           }
-
         }, error => {
           this.blockUI = false;
-          this.subject.next(true);
+          this.subject.next(false);
           this.lastSyncData = {};
           this.messageService.add({
             severity: 'error',
             summary: 'Error in syncing data. Please try after some time.',
           });
+          return;
         });
       });
     }
@@ -998,7 +990,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         if (this.dashConfigData[this.selectedType][i]) {
           this.dashConfigData[this.selectedType][i]['kpis'] = this.masterData['kpiList'];
         } else {
-          this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] =  this.masterData['kpiList'];
+          this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] = this.masterData['kpiList'];
           break;
         }
       }

@@ -172,7 +172,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
     this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
-      || this.checkIfViewer;
+      || this.checkIfViewer || !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
   }
 
@@ -377,6 +377,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         return true;
       }
     }
+
+    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi171')) {
+      if (this.trendValueList?.length && this.trendValueList[0]?.data.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     return (data === '200' || data === '201') && this.checkDataAtGranularLevel(this.trendValueList);
   }
 
