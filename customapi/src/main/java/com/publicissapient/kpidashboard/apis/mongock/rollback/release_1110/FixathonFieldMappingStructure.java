@@ -41,7 +41,6 @@ public class FixathonFieldMappingStructure {
 	public static final String FIELD_NAME = "fieldName";
 	public static final String TOOL_TIP = "tooltip";
 	public static final String DEFINITION = "definition";
-	public static final String LABEL = "label";
 	public static final String VALUE = "value";
 	private static final String FIELD_CATEGORY = "fieldCategory";
 	private static final String SECTION = "section";
@@ -69,6 +68,10 @@ public class FixathonFieldMappingStructure {
 		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider", fieldMappingStructCollection);
 		updateFieldLabel("jiraDefectClosedStatusKPI137", "Status to identify Closed Bugs", fieldMappingStructCollection);
 		rollbackAddRedirectUrlField(fieldMappingStructCollection);
+        updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI151","Status to identify rejected defects", fieldMappingStructCollection);
+        updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI155","Ticket Rejected/Dropped Status", fieldMappingStructCollection);
+        updateFieldMappingByFieldName("jiraIssueTypeKPI3","Issue types to consider ‘Completed status’","All issue types that should be included in Lead time calculation",fieldMappingStructCollection);
+        updateFieldMappingByFieldName("jiraLiveStatusKPI3","Live Status - Lead Time","Workflow status/es to identify that an issue is live in Production",fieldMappingStructCollection);
 	}
 
 	public void updateFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
@@ -91,13 +94,20 @@ public class FixathonFieldMappingStructure {
 						new Document(FIELD_LABEL, fieldLabel).append("tooltip.definition", tooltipDefinition)));
 	}
 
+    private void updateFieldMappingByFieldName(String fieldName, String fieldLabel ,
+											   MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateMany(
+                new Document(FIELD_NAME, new Document("$in", Arrays.asList(fieldName))), new Document("$set",
+                        new Document(FIELD_LABEL, fieldLabel)));
+    }
+
 	private void deleteFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.deleteMany(Filters.or(Filters.eq(FIELD_NAME, DELIVERED_STATUS)));
 	}
 
 	public void rollbackAddRedirectUrlField(MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateMany(
-				new Document("fieldName", new Document("$in", Arrays.asList("uploadDataKPI16", "uploadDataKPI42"))),
+				new Document(FIELD_NAME, new Document("$in", Arrays.asList("uploadDataKPI16", "uploadDataKPI42"))),
 				new Document("$unset", new Document("redirectUrl", "")));
 	}
 
@@ -112,7 +122,11 @@ public class FixathonFieldMappingStructure {
 				fieldMappingStructCollection);
 		updateFieldLabel("jiraDefectClosedStatusKPI137", "Status to identify Closed Issues", fieldMappingStructCollection);
 		addRedirectUrlField(fieldMappingStructCollection);
-	}
+        updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI151","Status to identify rejected issues", fieldMappingStructCollection);
+        updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI155","Status to identify rejected issues", fieldMappingStructCollection);
+        updateFieldMappingByFieldName("jiraIssueTypeKPI3","Issue types to consider","All issue types considered for Lead Time calculation.",fieldMappingStructCollection);
+        updateFieldMappingByFieldName("jiraLiveStatusKPI3","Status to identify Live issues","Workflow status/es to identify that an issue is live in Production.",fieldMappingStructCollection);
+    }
 
 	public void insertFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection) {
 		Document jiraIterationCompletionStatusKPI138 = new Document().append(FIELD_NAME, DELIVERED_STATUS)
@@ -126,13 +140,13 @@ public class FixathonFieldMappingStructure {
 
 	public void updateFieldLabel(String fieldName, String newLabelName,
 			MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
-				new Document("$set", new Document("fieldLabel", newLabelName)));
+		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
+				new Document("$set", new Document(FIELD_LABEL, newLabelName)));
 	}
 
 	public void addRedirectUrlField(MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateMany(
-				new Document("fieldName", new Document("$in", Arrays.asList("uploadDataKPI16", "uploadDataKPI42"))),
+				new Document(FIELD_NAME, new Document("$in", Arrays.asList("uploadDataKPI16", "uploadDataKPI42"))),
 				new Document("$set", new Document("redirectUrl", "/dashboard/Config/Upload")));
 	}
 

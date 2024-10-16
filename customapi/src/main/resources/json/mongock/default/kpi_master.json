@@ -608,7 +608,7 @@
   } ,
   {
     "kpiId" : "kpi38" ,
-    "kpiName" : "Sonar Violations" ,
+    "kpiName" : "Code Violations" ,
     "maxValue" : "" ,
     "kpiUnit" : "Number" ,
     "isDeleted" : "False" ,
@@ -1702,7 +1702,7 @@
   } ,
   {
     "kpiId" : "kpi64" ,
-    "kpiName" : "Sonar Violations" ,
+    "kpiName" : "Code Violations" ,
     "maxValue" : "" ,
     "kpiUnit" : "Number" ,
     "isDeleted" : "False" ,

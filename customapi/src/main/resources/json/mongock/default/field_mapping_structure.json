@@ -717,14 +717,14 @@
   },
   {
     "fieldName": "jiraIssueTypeKPI3",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue types to consider",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "All issue types that should be included in Lead time calculation"
+      "definition": "All issue types considered for Lead Time calculation"
     },
     "mandatory": true
   },
@@ -1406,7 +1406,7 @@
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI151",
-    "fieldLabel": "Status to identify rejected defects",
+    "fieldLabel": "Status to identify rejected issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1832,18 +1832,6 @@
   },
   {
     "fieldName": "jiraIterationCompletionStatusKPI131",
-    "fieldLabel": "Status to identify completed issues",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "fieldDisplayOrder": 8,
-    "sectionOrder": 4,
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "All workflow statuses used to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered."
-    }
-  },
-  {
-    "fieldName": "jiraIterationCompletionStatusKPI138",
     "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2747,12 +2735,12 @@
   },
   {
     "fieldName": "jiraIssueDeliverdStatusKPI138",
-    "fieldLabel": "Issue Delivered Status",
+    "fieldLabel": "Status to identify DOR",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+      "definition": "Workflow statuses to identify when an issue is considered 'Delivered' based on the Definition of Done (DoD), used to measure average velocity. Please list all statuses that mark an issue as 'Delivered'."
     },
     "mandatory": true
   },
@@ -2871,12 +2859,12 @@
   },
   {
     "fieldName": "jiraLiveStatusKPI3",
-    "fieldLabel": "Live Status - Lead Time",
+    "fieldLabel": "Status to identify Live issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is LIVE in Production."
+      "definition": "Workflow status/es to identify that an issue is live in Production"
     },
     "mandatory": true
   },
@@ -3101,12 +3089,12 @@
   },
   {
     "fieldName": "readyForDevelopmentStatusKPI138",
-    "fieldLabel": "Status to identify issues Ready for Development ",
+    "fieldLabel": "Status to identify DOD",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status to identify Ready for development from the backlog."
+      "definition": "Workflow status/es that identify that a backlog item is ready to be taken in a sprint based on Definition of Ready (DOR)."
     },
     "mandatory": true
   },
@@ -3309,7 +3297,7 @@
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI155",
-    "fieldLabel": "Ticket Rejected/Dropped Status",
+    "fieldLabel": "Status to identify rejected issues",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
