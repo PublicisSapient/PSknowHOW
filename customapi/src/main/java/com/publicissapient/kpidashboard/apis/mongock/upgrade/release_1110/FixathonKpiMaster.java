@@ -62,6 +62,13 @@ public class FixathonKpiMaster {
 		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Issue Count");
 		//Mean Time to Recover KPI, update aggregation criteria from sum to average
 		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "average");
+		//KPI Order Change for Backlog Health Dashboard
+		changeKpiOrder("kpi161", 1, kpiMaster);
+		changeKpiOrder("kpi138", 2, kpiMaster);
+		changeKpiOrder("kpi127", 3, kpiMaster);
+		changeKpiOrder("kpi137", 4, kpiMaster);
+		changeKpiOrder("kpi129", 5, kpiMaster);
+		changeKpiOrder("kpi139", 6, kpiMaster);
 	}
 
 	private void updateDuplicateInfo(MongoCollection<Document> kpiMaster) {
@@ -94,6 +101,11 @@ public class FixathonKpiMaster {
 	public void changeKpiName(String kpiId, String kpiName, MongoCollection<Document> kpiMaster) {
 		kpiMaster.updateMany(new Document("kpiId", new Document("$in", Arrays.asList(kpiId))),
 				new Document("$set", new Document("kpiName", kpiName)));
+	}
+
+	public void changeKpiOrder(String kpiId, Integer defaultOrder, MongoCollection<Document> kpiMaster) {
+		kpiMaster.updateMany(new Document("kpiId", new Document("$in", Arrays.asList(kpiId))),
+				new Document("$set", new Document("defaultOrder", defaultOrder)));
 	}
 
 	private void updateMaturityInfo(String kpiId) {
@@ -131,6 +143,12 @@ public class FixathonKpiMaster {
 		updateMaturityInfoRollBack("kpi5");
 		//Mean Time to Recover KPI, rollback aggregation criteria from average to sum
 		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "sum");
+		changeKpiOrder("kpi161", 4, kpiMaster);
+		changeKpiOrder("kpi138", 1, kpiMaster);
+		changeKpiOrder("kpi127", 2, kpiMaster);
+		changeKpiOrder("kpi137", 5, kpiMaster);
+		changeKpiOrder("kpi129", 3, kpiMaster);
+		changeKpiOrder("kpi139", 6, kpiMaster);
 	}
 
 }
