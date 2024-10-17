@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -47,12 +45,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SonarHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -384,7 +384,7 @@ public class SonarViolationsServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(svServiceImpl.getQualifierType(), equalTo("CODE_VIOLATIONS`"));
+		assertThat(svServiceImpl.getQualifierType(), equalTo("CODE_VIOLATIONS"));
 	}
 
 	@Test

@@ -1,20 +1,19 @@
-/*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
+/*
+ *   Copyright 2014 CapitalOne, LLC.
+ *   Further development Copyright 2022 Sapient Corporation.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1110;
 
 import java.util.Arrays;
@@ -40,6 +39,10 @@ public class FixathonKpiMaster {
 	public static final String FIELD_LABEL = "fieldLabel";
 	private static final String KPIID = "kpiId";
 	private static final String KPIINFO_DETAILS = "kpiInfo.details";
+	public static final String KPI_MASTER = "kpi_master";
+	public static final String KPI_129 = "kpi129";
+	public static final String UNSET = "$unset";
+	public static final String AGGREGATION_CRITERIA = "aggregationCriteria";
 	private final MongoTemplate mongoTemplate;
 
 	public FixathonKpiMaster(MongoTemplate mongoTemplate) {
@@ -48,27 +51,39 @@ public class FixathonKpiMaster {
 
 	@Execution
 	public void execution() {
-		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
+		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
+		updateYAxisLabel(kpiMaster, Arrays.asList("kpi73", "kpi74"), "Count");
 		changeKpiName("kpi38", "Sonar Violations", kpiMaster);
 		changeKpiName("kpi64", "Sonar Violations", kpiMaster);
 		changeKpiName("kpi124", "Estimation Hygiene", kpiMaster);
-		//rollback to  Issue without Story link from Unlinked Work Items
-		changeKpiName("kpi129", "Issues Without Story Link", kpiMaster);
+		// rollback to Issue without Story link from Unlinked Work Items
+		changeKpiName(KPI_129, "Issues Without Story Link", kpiMaster);
 		updateMaturityInfo("kpi5");
+		//rollback Iteration BurnUp y-axis change
+		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Count");
+		//Mean Time to Recover KPI, rollback aggregation criteria from average to sum
+		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "sum");
+		//rollback KPI Order Change for Backlog Health Dashboard
+		changeKpiOrder("kpi161", 4, kpiMaster);
+		changeKpiOrder("kpi138", 1, kpiMaster);
+		changeKpiOrder("kpi127", 2, kpiMaster);
+		changeKpiOrder("kpi137", 5, kpiMaster);
+		changeKpiOrder(KPI_129, 3, kpiMaster);
+		changeKpiOrder("kpi139", 6, kpiMaster);
 	}
 
 	private void updateMaturityInfo(String kpiId) {
-		Document query = new Document("kpiId", kpiId);
-		Document update = new Document("$set",
+		Document query = new Document(KPIID, kpiId);
+		Document update = new Document(UNSET,
 				new Document().append("maturityRange", Arrays.asList("60-", "40-60", "25-40", "10-25", "0-10"))
-						.append("aggregationCriteria", "deviation").append("calculateMaturity", true));
-		mongoTemplate.getCollection("kpi_master").updateOne(query, update);
+						.append(AGGREGATION_CRITERIA, "deviation").append("calculateMaturity", true));
+		mongoTemplate.getCollection(KPI_MASTER).updateOne(query, update);
 	}
 
 	private void updateDuplicateInfo(MongoCollection<Document> kpiMaster) {
 
-		kpiMaster.updateMany(new Document(KPIID, "kpi156"), new Document("$unset", new Document(KPIINFO_DETAILS, "")));
-		kpiMaster.updateMany(new Document(KPIID, "kpi150"), new Document("$unset", new Document(KPIINFO_DETAILS, "")));
+		kpiMaster.updateMany(new Document(KPIID, "kpi156"), new Document(UNSET, new Document(KPIINFO_DETAILS, "")));
+		kpiMaster.updateMany(new Document(KPIID, "kpi150"), new Document(UNSET, new Document(KPIINFO_DETAILS, "")));
 
 		// Step 2: Set new details
 		kpiMaster.updateMany(new Document(KPIID, "kpi156"), new Document("$set", new Document(KPIINFO_DETAILS, List.of(
@@ -86,28 +101,47 @@ public class FixathonKpiMaster {
 
 	}
 
-	// Change Y-axis of Release Frequency to ‘No. of Releases'
-	public void updateYAxisLabel(MongoCollection<Document> kpiMaster) {
-		kpiMaster.updateMany(new Document("kpiId", new Document("$in", Arrays.asList("kpi73", "kpi74"))),
-				new Document("$set", new Document("yAxisLabel", "No. of Releases")));
+	public void updateYAxisLabel(MongoCollection<Document> kpiMaster, List<String> kpiIds, String yAxisLabel) {
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", kpiIds)),
+				new Document("$set", new Document("yAxisLabel", yAxisLabel)));
 	}
 
 	public void changeKpiName(String kpiId, String kpiName, MongoCollection<Document> kpiMaster) {
-		kpiMaster.updateMany(new Document("kpiId", new Document("$in", Arrays.asList(kpiId))),
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(kpiId))),
 				new Document("$set", new Document("kpiName", kpiName)));
+	}
+
+	private void updateAggregationCriteria(MongoCollection<Document> kpiMaster, List<String> kpiIds, String aggCriteria) {
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", kpiIds)),
+				new Document("$set", new Document(AGGREGATION_CRITERIA, aggCriteria)));
+	}
+
+	public void changeKpiOrder(String kpiId, Integer defaultOrder, MongoCollection<Document> kpiMaster) {
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(kpiId))),
+				new Document("$set", new Document("defaultOrder", defaultOrder)));
 	}
 
 	@RollbackExecution
 	public void rollBack() {
-		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
+		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
 		updateDuplicateInfo(kpiMaster);
-		updateYAxisLabel(kpiMaster);
+		// Change Y-axis of Release Frequency to ‘No. of Releases'
+		updateYAxisLabel(kpiMaster, Arrays.asList("kpi73", "kpi74"), "No. of Releases");
 		changeKpiName("kpi38", "Code Violations", kpiMaster);
 		changeKpiName("kpi64", "Code Violations", kpiMaster);
 		changeKpiName("kpi124", "Issue Hygiene", kpiMaster);
-		//renaming Issue without Story link to Unlinked Work Items
-		changeKpiName("kpi129", "Unlinked Work Items", kpiMaster);
-
+		// renaming Issue without Story link to Unlinked Work Items
+		changeKpiName(KPI_129, "Unlinked Work Items", kpiMaster);
+		// renaming Iteration BurnUp y-axis
+		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Issue Count");
+		//Mean Time to Recover KPI, update aggregation criteria from sum to average
+		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "average");
+		changeKpiOrder("kpi161", 1, kpiMaster);
+		changeKpiOrder("kpi138", 2, kpiMaster);
+		changeKpiOrder("kpi127", 3, kpiMaster);
+		changeKpiOrder("kpi137", 4, kpiMaster);
+		changeKpiOrder(KPI_129, 5, kpiMaster);
+		changeKpiOrder("kpi139", 6, kpiMaster);
 	}
 
 }

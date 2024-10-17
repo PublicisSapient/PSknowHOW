@@ -541,7 +541,7 @@
   <div class="dialog-body p-mb-4">
     <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders"
       styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
-      [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true" scrollHeight="65vh" (sortFunction)="customSort($event)" [customSort]="true">
+      [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true" scrollHeight="65vh">
       <ng-template pTemplate="caption">
         <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
           selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
@@ -560,7 +560,7 @@
       <ng-template pTemplate="header" let-columns>
         <tr>
           <ng-container *ngFor="let item of tableHeaders;let i = index;">
-            <th [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn
+            <th [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn [pSortableColumn]="item"
               [pReorderableColumnDisabled]="forzenColumns.includes(item.toLowerCase())" pFrozenColumn alignFrozen="left"
               [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">
               <div class="table-head">
@@ -580,7 +580,7 @@
                       </p-multiSelect>
                     </ng-template>
                   </p-columnFilter>
-                  <p-sortIcon [pSortableColumn]="item" [field]="item"></p-sortIcon>
+                  <p-sortIcon [field]="item"></p-sortIcon>
                 </div>
               </div>
             </th>
@@ -608,11 +608,15 @@
                 </ng-container>
               </td>
               <ng-template #elseBlock>
-                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="x[item];">{{x[item]}}</td>
-                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="!x[item];">-</td>
+                <ng-container *ngIf="item.toLowerCase().includes('date'); else defaultcolumn">
+                  <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">{{x[item] | date: 'MM/dd/yyyy'}}</td>
+                </ng-container>
+                <ng-template #defaultcolumn>
+                  <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="x[item];">{{x[item]}}</td>
+                  <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="!x[item];">-</td>
+                </ng-template>
               </ng-template>
             </ng-container>
-
           </ng-container>
         </tr>
       </ng-template>
