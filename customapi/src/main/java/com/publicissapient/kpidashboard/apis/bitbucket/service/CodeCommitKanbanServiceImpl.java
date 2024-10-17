@@ -36,7 +36,6 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationD
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -134,7 +133,6 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 			KpiRequest kpiRequest) {
 
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
-
 		String startDate = dateRange.getStartDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		String endDate = dateRange.getEndDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -174,7 +172,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 
 			String dataCountDate = getRange(dateRange, kpiRequest);
 			prepareRepoWiseMap(filterValueMap, projectName, dataCountDate, projectWiseDataMap);
-			currentDate = getNextRangeDate(kpiRequest, currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(kpiRequest.getDuration(), currentDate);
 
 		}
 		if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
@@ -219,7 +217,8 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 					repoToolValidationData.setBranchName(tool.getBranch());
 					repoToolValidationData.setDate(DATE + DateUtil.localDateTimeConverter(currentDate));
 					repoToolValidationData.setCommitCount(commitCountValue);
-					repoToolValidationData.setRepoUrl(tool.getUrl());
+					repoToolValidationData.setRepoUrl(
+							tool.getRepositoryName() != null ? tool.getRepositoryName() : tool.getRepoSlug());
 					repoToolValidationDataList.add(repoToolValidationData);
 					currentDate = currentDate.plusDays(1);
 				}
@@ -228,17 +227,6 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 
 		}
 		return filterWiseValue;
-	}
-
-	private LocalDate getNextRangeDate(KpiRequest kpiRequest, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(kpiRequest.getDuration())) {
-			currentDate = currentDate.minusWeeks(1);
-		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
-			currentDate = currentDate.minusMonths(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-		}
-		return currentDate;
 	}
 
 	private void prepareRepoWiseMap(Map<String, Long> filterWiseValue, String projectName, String dataCountDate,
