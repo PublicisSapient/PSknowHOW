@@ -72,6 +72,7 @@ public class DataCount implements Serializable {
 	private String endDate;
 	private String kpiGroup;
 	private String url;
+	private String createdDate;// epic progress sorting
 
 	private List<String> sprintIds;
 	private List<String> sprintNames;

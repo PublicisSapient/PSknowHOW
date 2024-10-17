@@ -52,7 +52,7 @@ public enum KPIExcelColumn {
 
 	MEAN_TIME_TO_MERGE("kpi84",
 			Arrays.asList("Project", "Repo", "Branch", "Merge Request Url", "Days/Weeks",
-					"Mean Time To Merge (In Hours)")),
+					"Mean Time To Merge (In Hours)", "PR Raised Time", "PR Merged Time")),
 	REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer",
 			"Merge Request Url", "Mean Time To Merge (In Hours)")),
 	AVERAGE_RESOLUTION_TIME(
@@ -134,15 +134,15 @@ public enum KPIExcelColumn {
 	RELEASE_FREQUENCY("kpi73",
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
-	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
-	DEPLOYMENT_FREQUENCY_KANBAN("kpi183", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
+	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Pipeline Name", "Weeks", "Environment")),
+	DEPLOYMENT_FREQUENCY_KANBAN("kpi183", Arrays.asList("Project Name", "Date", "Job Name", "Pipeline Name", "Weeks", "Environment")),
 
 	DEFECTS_WITHOUT_STORY_LINK("kpi80",
 			Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
 
 	TEST_WITHOUT_STORY_LINK("kpi79", Arrays.asList("Project Name", "Test Case ID", "Linked to Story")),
 
-	ISSUES_WITHOUT_STORY_LINK("kpi129", Arrays.asList("Issue Id", "Issue Description")),
+	UNLINKED_WORK_ITEMS("kpi129", Arrays.asList("Issue Id", "Issue Description")),
 
 	PRODUCTION_DEFECTS_AGEING("kpi127",
 			Arrays.asList("Project Name", "Defect ID", "Issue Description", "Priority", "Created Date", "Status")),
@@ -297,8 +297,11 @@ public enum KPIExcelColumn {
 	//DTS-26123 end
 	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Squad", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
 
-	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days)",
-			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
+	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days) [B-A]",
+			"Change Completion Date [A]", "Change Release Date [B]")),
+
+	LEAD_TIME_FOR_CHANGE_REPO("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days) [B-A]",
+			"Change Completion Date [A]", "Change Release Date [B]", "Merge Request Id", "Branch")),
 
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
 			"Sprint Name", "Assignee", "Issue Status", "Testing Phase")),

@@ -40,7 +40,7 @@
       <ng-container *ngFor="let filter of dropdownArr;let k = index">
         <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"
           [(ngModel)]="filterOptions['filter'+(k+1)]" [autoDisplayFirst]="true"
-          [style]="{'width':'115px', 'max-width': '100%', 'margin-left': '5px', 'height': '32px'}"
+          [style]="{'margin-left': '5px', 'height': '32px'}"
           (onChange)="handleChange('single',k)" [virtualScroll]="true" [virtualScrollItemSize]="30"
           [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"></p-dropdown>
       </ng-container>
@@ -60,9 +60,10 @@
 
         <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
           inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
-          (onChange)="handleChange('multi', $event, k)" [filter]="false" [showHeader]="false" [maxSelectedLabels]="3"
-          selectedItemsLabel="{0} items selected" (onClear)="handleClearAll('filter'+(k+1))"
-          [style]="{'max-width': '100%', 'height': '32px', 'margin-left': '5px'}" [showClear]="true"
+          [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected"
+          (onChange)="handleChange('multi', $event, k)" (onClear)="handleClearAll('filter'+(k+1))"
+          [filter]="false" [showHeader]="false" [showClear]="true"
+          [style]="{'height': '32px', 'margin-left': '5px'}"
           defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
         </p-multiSelect>
       </ng-container>

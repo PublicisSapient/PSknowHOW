@@ -42,6 +42,7 @@ public class FieldMappingStructureForMongock {
 	private String fieldCategory;
 	private String toggleLabel;
 	private String section;
+	private String redirectUrl;
 	private boolean processorCommon;
 	private MappingToolTip tooltip;
 	private List<Options> options;

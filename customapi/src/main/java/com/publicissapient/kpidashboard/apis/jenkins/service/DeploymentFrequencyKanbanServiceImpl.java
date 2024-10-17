@@ -169,7 +169,11 @@ public class DeploymentFrequencyKanbanServiceImpl
 			mapTmp.get(node.getId()).setValue(trendValueMap);
 
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, excelData);
+				Map<String, String> deploymentMapPipelineNameWise = deploymentListProjectWise.stream().filter(
+								d -> StringUtils.isNotEmpty(d.getJobName()) && StringUtils.isNotEmpty(d.getPipelineName()))
+						.collect(Collectors.toMap(Deployment::getJobName, Deployment::getPipelineName, (e1, e2) -> e1,
+								LinkedHashMap::new));
+				KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, excelData, deploymentMapPipelineNameWise);
 			}
 		});
 		kpiElement.setExcelData(excelData);

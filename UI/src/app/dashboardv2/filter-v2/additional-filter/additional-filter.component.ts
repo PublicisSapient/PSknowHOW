@@ -232,4 +232,11 @@ export class AdditionalFilterComponent implements OnChanges {
     }
   }
 
+  onDropDownChange($event:any,index){
+    if(this.helperService.isDropdownElementSelected($event)){
+      this.applyAdditionalFilter($event, index)
+    }
+  }
+
+
 }

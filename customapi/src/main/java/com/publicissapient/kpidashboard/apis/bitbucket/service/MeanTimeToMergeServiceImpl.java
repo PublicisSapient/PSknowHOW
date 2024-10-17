@@ -3,14 +3,7 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -193,19 +186,23 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			for (MergeRequests mergeReq : mergeReqList) {
 				LocalDate closedDate = Instant.ofEpochMilli(mergeReq.getClosedDate()).atZone(ZoneId.systemDefault())
 						.toLocalDate();
-				if (closedDate.compareTo(dateRange.getStartDate()) >= 0 && closedDate.compareTo(
-						dateRange.getEndDate()) <= 0) {
+				if (closedDate.compareTo(dateRange.getStartDate()) >= 0
+						&& closedDate.compareTo(dateRange.getEndDate()) <= 0) {
 					Double mergeDuration = (double) (mergeReq.getClosedDate()) - mergeReq.getCreatedDate();
 					durationList.add(mergeDuration);
-					if(tool != null) {
+					if (tool != null) {
 						RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 						repoToolValidationData.setProjectName(projectName);
-						repoToolValidationData.setMeanTimeToMerge(
-								TimeUnit.MILLISECONDS.toHours(mergeDuration.longValue()));
+						repoToolValidationData
+								.setMeanTimeToMerge(TimeUnit.MILLISECONDS.toHours(mergeDuration.longValue()));
 						repoToolValidationData.setDate(getDateRange(dateRange, duration));
 						repoToolValidationData.setRepoUrl(repoName);
 						repoToolValidationData.setBranchName(tool.getBranch());
 						repoToolValidationData.setMergeRequestUrl(mergeReq.getMergeRequestUrl());
+						repoToolValidationData.setPrRaisedTime(DateUtil.dateTimeFormatter(
+								new Date(mergeReq.getCreatedDate()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
+						repoToolValidationData.setPrMergedTime(DateUtil.dateTimeFormatter(
+								new Date(mergeReq.getClosedDate()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 						repoToolValidationDataList.add(repoToolValidationData);
 					}
 				}
