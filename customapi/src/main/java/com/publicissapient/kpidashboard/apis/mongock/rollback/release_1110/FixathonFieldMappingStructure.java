@@ -1,20 +1,19 @@
-/*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
+/*
+ *   Copyright 2014 CapitalOne, LLC.
+ *   Further development Copyright 2022 Sapient Corporation.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1110;
 
 import java.util.Arrays;
@@ -46,6 +45,19 @@ public class FixathonFieldMappingStructure {
 	private static final String SECTION = "section";
 	private static final Object CHIPS = "chips";
 	private static final String DELIVERED_STATUS = "jiraIterationCompletionStatusKPI138";
+	public static final String ISSUE_TYPES_TO_CONSIDER = "Issue types to consider";
+	public static final String JIRA_ISSUE_TYPE_NAMES_KPI_161 = "jiraIssueTypeNamesKPI161";
+	public static final String JIRA_STATUS_FOR_NOT_REFINED_KPI_161 = "jiraStatusForNotRefinedKPI161";
+	public static final String JIRA_STATUS_FOR_REFINED_KPI_161 = "jiraStatusForRefinedKPI161";
+	public static final String JIRA_STATUS_FOR_IN_PROGRESS_KPI_161 = "jiraStatusForInProgressKPI161";
+	public static final String JIRA_ISSUE_TYPE_KPI_171 = "jiraIssueTypeKPI171";
+	public static final String STORY_FIRST_STATUS_KPI_171 = "storyFirstStatusKPI171";
+	public static final String JIRA_DOR_KPI_171 = "jiraDorKPI171";
+	public static final String JIRA_DOD_KPI_171 = "jiraDodKPI171";
+	public static final String JIRA_LIVE_STATUS_KPI_171 = "jiraLiveStatusKPI171";
+	public static final String FIELD_DISPLAY_ORDER = "fieldDisplayOrder";
+	public static final String SECTION_ORDER = "sectionOrder";
+	public static final String UNSET = "$unset";
 
 	private final MongoTemplate mongoTemplate;
 
@@ -65,7 +77,7 @@ public class FixathonFieldMappingStructure {
 				fieldMappingStructCollection);
 		insertFieldMappingStructure(fieldMappingStructCollection);
 		// Rollback Unlinked Work Items field mapping update
-		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider", fieldMappingStructCollection);
+		updateFieldLabel("jiraStoryIdentificationKPI129", ISSUE_TYPES_TO_CONSIDER, fieldMappingStructCollection);
 		updateFieldLabel("jiraDefectClosedStatusKPI137", "Status to identify Closed Bugs",
 				fieldMappingStructCollection);
 		rollbackAddRedirectUrlField(fieldMappingStructCollection);
@@ -79,10 +91,10 @@ public class FixathonFieldMappingStructure {
 				"Workflow status/es to identify that an issue is live in Production", fieldMappingStructCollection);
 		// rollback for cycle time kpi171
 		rollbackCycleTimeFieldMappingChanges(fieldMappingStructCollection);
-		rollBackFieldDisplayOrder("jiraIssueTypeNamesKPI161", 1, fieldMappingStructCollection);
-		rollBackFieldDisplayOrder("jiraStatusForNotRefinedKPI161", 1, fieldMappingStructCollection);
-		rollBackFieldDisplayOrder("jiraStatusForRefinedKPI161", 2, fieldMappingStructCollection);
-		rollBackFieldDisplayOrder("jiraStatusForInProgressKPI161", 3, fieldMappingStructCollection);
+		rollBackFieldDisplayOrder(JIRA_ISSUE_TYPE_NAMES_KPI_161, 1, fieldMappingStructCollection);
+		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_NOT_REFINED_KPI_161, 1, fieldMappingStructCollection);
+		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_REFINED_KPI_161, 2, fieldMappingStructCollection);
+		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_IN_PROGRESS_KPI_161, 3, fieldMappingStructCollection);
 		rollBackFieldDisplayOrderForKPI161(fieldMappingStructCollection);
 
 	}
@@ -120,56 +132,55 @@ public class FixathonFieldMappingStructure {
 	public void rollbackAddRedirectUrlField(MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateMany(
 				new Document(FIELD_NAME, new Document("$in", Arrays.asList("uploadDataKPI16", "uploadDataKPI42"))),
-				new Document("$unset", new Document("redirectUrl", "")));
+				new Document(UNSET, new Document("redirectUrl", "")));
 	}
 
 	private void rollbackCycleTimeFieldMappingChanges(MongoCollection<Document> fieldMappingStructCollection) {
-		updateFieldLabel("jiraIssueTypeKPI171", "Issue types to consider ‘Completed status’",
+		updateFieldLabel(JIRA_ISSUE_TYPE_KPI_171, "Issue types to consider ‘Completed status’",
 				fieldMappingStructCollection);
-		updateTooltipDefinition("jiraIssueTypeKPI171",
+		updateTooltipDefinition(JIRA_ISSUE_TYPE_KPI_171,
 				"All issue types that should be included in Lead time calculation", fieldMappingStructCollection);
 
-		updateFieldLabel("storyFirstStatusKPI171", "Status when 'Story' issue type is created",
+		updateFieldLabel(STORY_FIRST_STATUS_KPI_171, "Status when 'Story' issue type is created",
 				fieldMappingStructCollection);
-		updateTooltipDefinition("storyFirstStatusKPI171", "All issue types that identify with a Story.",
+		updateTooltipDefinition(STORY_FIRST_STATUS_KPI_171, "All issue types that identify with a Story.",
 				fieldMappingStructCollection);
-		rollbackUpdateFieldDisplayOrder("storyFirstStatusKPI171", fieldMappingStructCollection);
+		rollbackUpdateFieldDisplayOrder(STORY_FIRST_STATUS_KPI_171, fieldMappingStructCollection);
 
-		updateFieldLabel("jiraDorKPI171", "DOR status", fieldMappingStructCollection);
-		updateTooltipDefinition("jiraDorKPI171",
+		updateFieldLabel(JIRA_DOR_KPI_171, "DOR status", fieldMappingStructCollection);
+		updateTooltipDefinition(JIRA_DOR_KPI_171,
 				"Status/es that identify that an issue is ready to be taken in the sprint",
 				fieldMappingStructCollection);
-		rollbackUpdateFieldDisplayOrder("jiraDorKPI171", fieldMappingStructCollection);
+		rollbackUpdateFieldDisplayOrder(JIRA_DOR_KPI_171, fieldMappingStructCollection);
 
-		updateFieldLabel("jiraDodKPI171", "Status to identify completed issues", fieldMappingStructCollection);
-		updateTooltipDefinition("jiraDodKPI171",
+		updateFieldLabel(JIRA_DOD_KPI_171, "Status to identify completed issues", fieldMappingStructCollection);
+		updateTooltipDefinition(JIRA_DOD_KPI_171,
 				"All workflow statuses used to identify completed issues based on Definition of Done (DoD).",
 				fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraDodKPI171", 8, fieldMappingStructCollection);
+		updateFieldDisplayOrder(JIRA_DOD_KPI_171, 8, fieldMappingStructCollection);
 
-		updateFieldLabel("jiraLiveStatusKPI171", "Live Status - Cycle Time", fieldMappingStructCollection);
-		updateTooltipDefinition("jiraLiveStatusKPI171", "Status/es that identify that an issue is LIVE in Production'",
-				fieldMappingStructCollection);
-		rollbackUpdateFieldDisplayOrder("jiraLiveStatusKPI171", fieldMappingStructCollection);
+		updateFieldLabel(JIRA_LIVE_STATUS_KPI_171, "Live Status - Cycle Time", fieldMappingStructCollection);
+		updateTooltipDefinition(JIRA_LIVE_STATUS_KPI_171,
+				"Status/es that identify that an issue is LIVE in Production'", fieldMappingStructCollection);
+		rollbackUpdateFieldDisplayOrder(JIRA_LIVE_STATUS_KPI_171, fieldMappingStructCollection);
 	}
 
 	public void updateTooltipDefinition(String fieldName, String newTooltipDefinition,
 			MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
-				new Document("$set", new Document("tooltip", new Document("definition", newTooltipDefinition))));
+		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
+				new Document("$set", new Document(TOOL_TIP, new Document(DEFINITION, newTooltipDefinition))));
 	}
 
 	public void updateFieldDisplayOrder(String fieldName, int newOrder,
 			MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
-				new Document("$set", new Document("fieldDisplayOrder", newOrder)));
+		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
+				new Document("$set", new Document(FIELD_DISPLAY_ORDER, newOrder)));
 	}
 
-	public void rollbackUpdateFieldDisplayOrder(String fieldName, MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.updateOne(
-				new Document("fieldName", fieldName),
-				new Document("$unset", new Document("fieldDisplayOrder", ""))
-		);
+	public void rollbackUpdateFieldDisplayOrder(String fieldName,
+			MongoCollection<Document> fieldMappingStructCollection) {
+		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
+				new Document(UNSET, new Document(FIELD_DISPLAY_ORDER, "")));
 	}
 
 	@RollbackExecution
@@ -188,17 +199,17 @@ public class FixathonFieldMappingStructure {
 				fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI155", "Status to identify rejected issues",
 				fieldMappingStructCollection);
-		updateFieldMappingByFieldName("jiraIssueTypeKPI3", "Issue types to consider",
+		updateFieldMappingByFieldName("jiraIssueTypeKPI3", ISSUE_TYPES_TO_CONSIDER,
 				"All issue types considered for Lead Time calculation.", fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraLiveStatusKPI3", "Status to identify Live issues",
 				"Workflow status/es to identify that an issue is live in Production.", fieldMappingStructCollection);
 		// cycle time kpi171 changes
 		cycleTimeFieldMappingChanges(fieldMappingStructCollection);
 
-		updateFieldDisplayOrder("jiraIssueTypeNamesKPI161", 1, fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraStatusForNotRefinedKPI161", 1, fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraStatusForRefinedKPI161", 2, fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraStatusForInProgressKPI161", 3, fieldMappingStructCollection);
+		updateFieldDisplayOrder(JIRA_ISSUE_TYPE_NAMES_KPI_161, 1, fieldMappingStructCollection);
+		updateFieldDisplayOrder(JIRA_STATUS_FOR_NOT_REFINED_KPI_161, 1, fieldMappingStructCollection);
+		updateFieldDisplayOrder(JIRA_STATUS_FOR_REFINED_KPI_161, 2, fieldMappingStructCollection);
+		updateFieldDisplayOrder(JIRA_STATUS_FOR_IN_PROGRESS_KPI_161, 3, fieldMappingStructCollection);
 		updateFieldDisplayOrderForKPI161(fieldMappingStructCollection);
 	}
 
@@ -225,67 +236,68 @@ public class FixathonFieldMappingStructure {
 	}
 
 	private void cycleTimeFieldMappingChanges(MongoCollection<Document> fieldMappingStructCollection) {
-		updateFieldLabel("jiraIssueTypeKPI171", "Issue types to consider", fieldMappingStructCollection);
-		updateTooltipDefinition("jiraIssueTypeKPI171", "All issue types considered for Cycle calculation",
+		updateFieldLabel(JIRA_ISSUE_TYPE_KPI_171, ISSUE_TYPES_TO_CONSIDER, fieldMappingStructCollection);
+		updateTooltipDefinition(JIRA_ISSUE_TYPE_KPI_171, "All issue types considered for Cycle calculation",
 				fieldMappingStructCollection);
 
-		updateFieldLabel("storyFirstStatusKPI171", "First Status when issue is created", fieldMappingStructCollection);
-		updateTooltipDefinition("storyFirstStatusKPI171", "Default first status of all issue types in consideration",
+		updateFieldLabel(STORY_FIRST_STATUS_KPI_171, "First Status when issue is created",
 				fieldMappingStructCollection);
-		updateFieldDisplayOrder("storyFirstStatusKPI171", 1, fieldMappingStructCollection);
+		updateTooltipDefinition(STORY_FIRST_STATUS_KPI_171, "Default first status of all issue types in consideration",
+				fieldMappingStructCollection);
+		updateFieldDisplayOrder(STORY_FIRST_STATUS_KPI_171, 1, fieldMappingStructCollection);
 
-		updateFieldLabel("jiraDorKPI171", "Status to identify DOR", fieldMappingStructCollection);
-		updateTooltipDefinition("jiraDorKPI171",
+		updateFieldLabel(JIRA_DOR_KPI_171, "Status to identify DOR", fieldMappingStructCollection);
+		updateTooltipDefinition(JIRA_DOR_KPI_171,
 				"Workflow status/es that identify that a backlog item is ready to be taken in a sprint based on Definition of Ready (DOR)",
 				fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraDorKPI171", 2, fieldMappingStructCollection);
+		updateFieldDisplayOrder(JIRA_DOR_KPI_171, 2, fieldMappingStructCollection);
 
-		updateFieldLabel("jiraDodKPI171", "Status to identify DOD", fieldMappingStructCollection);
-		updateTooltipDefinition("jiraDodKPI171",
+		updateFieldLabel(JIRA_DOD_KPI_171, "Status to identify DOD", fieldMappingStructCollection);
+		updateTooltipDefinition(JIRA_DOD_KPI_171,
 				"Workflow status/es to identify when an issue is delivered based on Definition of Done (DOD)",
 				fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraDodKPI171", 3, fieldMappingStructCollection);
+		updateFieldDisplayOrder(JIRA_DOD_KPI_171, 3, fieldMappingStructCollection);
 
-		updateFieldLabel("jiraLiveStatusKPI171", "Status to identify Live issues", fieldMappingStructCollection);
-		updateTooltipDefinition("jiraLiveStatusKPI171",
+		updateFieldLabel(JIRA_LIVE_STATUS_KPI_171, "Status to identify Live issues", fieldMappingStructCollection);
+		updateTooltipDefinition(JIRA_LIVE_STATUS_KPI_171,
 				"Workflow status/es to identify that an issue is live in Production", fieldMappingStructCollection);
-		updateFieldDisplayOrder("jiraLiveStatusKPI171", 4, fieldMappingStructCollection);
+		updateFieldDisplayOrder(JIRA_LIVE_STATUS_KPI_171, 4, fieldMappingStructCollection);
 	}
 
 	public void updateFieldDisplayOrder(String fieldName, Integer fieldDisplayOrder,
 			MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
-				new Document("$set", new Document("fieldDisplayOrder", fieldDisplayOrder)));
+		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
+				new Document("$set", new Document(FIELD_DISPLAY_ORDER, fieldDisplayOrder)));
 	}
 
 	public void updateFieldDisplayOrderForKPI161(MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateOne(
-				new Document("fieldName", new Document("$in", Arrays.asList("jiraIssueTypeNamesKPI161"))),
-				new Document("$set", new Document("sectionOrder", 1)));
+				new Document(FIELD_NAME, new Document("$in", Arrays.asList(JIRA_ISSUE_TYPE_NAMES_KPI_161))),
+				new Document("$set", new Document(SECTION_ORDER, 1)));
 		fieldMappingStructCollection.updateOne(
-				new Document("fieldName",
+				new Document(FIELD_NAME,
 						new Document("$in",
-								Arrays.asList("jiraStatusForNotRefinedKPI161", "jiraStatusForRefinedKPI161",
-										"jiraStatusForInProgressKPI161"))),
-				new Document("$set", new Document("sectionOrder", 2)));
+								Arrays.asList(JIRA_STATUS_FOR_NOT_REFINED_KPI_161, JIRA_STATUS_FOR_REFINED_KPI_161,
+										JIRA_STATUS_FOR_IN_PROGRESS_KPI_161))),
+				new Document("$set", new Document(SECTION_ORDER, 2)));
 	}
 
 	public void rollBackFieldDisplayOrder(String fieldName, Integer fieldDisplayOrder,
 			MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.updateOne(new Document("fieldName", fieldName),
-				new Document("$unset", new Document("fieldDisplayOrder", fieldDisplayOrder)));
+		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
+				new Document(UNSET, new Document(FIELD_DISPLAY_ORDER, fieldDisplayOrder)));
 	}
 
 	public void rollBackFieldDisplayOrderForKPI161(MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateOne(
-				new Document("fieldName", new Document("$in", Arrays.asList("jiraIssueTypeNamesKPI161"))),
-				new Document("$set", new Document("sectionOrder", 1)));
+				new Document(FIELD_NAME, new Document("$in", Arrays.asList(JIRA_ISSUE_TYPE_NAMES_KPI_161))),
+				new Document("$set", new Document(SECTION_ORDER, 1)));
 		fieldMappingStructCollection.updateOne(
-				new Document("fieldName",
+				new Document(FIELD_NAME,
 						new Document("$in",
-								Arrays.asList("jiraStatusForNotRefinedKPI161", "jiraStatusForRefinedKPI161",
-										"jiraStatusForInProgressKPI161"))),
-				new Document("$set", new Document("sectionOrder", 2)));
+								Arrays.asList(JIRA_STATUS_FOR_NOT_REFINED_KPI_161, JIRA_STATUS_FOR_REFINED_KPI_161,
+										JIRA_STATUS_FOR_IN_PROGRESS_KPI_161))),
+				new Document("$set", new Document(SECTION_ORDER, 2)));
 	}
 
 }
