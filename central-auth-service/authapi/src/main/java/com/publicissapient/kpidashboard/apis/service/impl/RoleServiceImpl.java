@@ -20,28 +20,26 @@ package com.publicissapient.kpidashboard.apis.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.entity.Role;
 import com.publicissapient.kpidashboard.apis.repository.RoleRepository;
 import com.publicissapient.kpidashboard.apis.service.RoleService;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @AllArgsConstructor
 @Slf4j
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 
-    @Override
-    public List<String> getAllRolesByResourceName(String resourceName) {
+	@Override
+	public List<String> getAllRolesByResourceName(String resourceName) {
 
-        return roleRepository.findByResource_Name(resourceName)
-                             .stream()
-                             .map(Role::getName)
-                             .collect(Collectors.toList());
-    }
+		return roleRepository.findByResource_Name(resourceName).stream().map(Role::getName)
+				.collect(Collectors.toList());
+	}
 }
