@@ -540,6 +540,10 @@ public enum KPICode {
      * Wastage
      */
     WASTAGE_V2("kpi188", KPISource.JIRA.name()),
+    /**
+     * Work Remaining
+     */
+    WORK_REMAINING_V2("kpi189", KPISource.JIRA.name()),
 
 
 

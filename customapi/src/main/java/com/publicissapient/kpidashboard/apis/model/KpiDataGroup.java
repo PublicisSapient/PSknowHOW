@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.model;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -31,4 +32,6 @@ public class KpiDataGroup {
 	private KpiDataSummary summary;
 	private List<KpiData> dataGroup1;
 	private List<KpiData> dataGroup2;
+	private List<String> metaDataColumns;
+	private Map<String, String> markerInfo;
 }

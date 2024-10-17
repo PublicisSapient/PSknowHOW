@@ -61,7 +61,7 @@ public class IssueKpiModalValue implements Serializable {
 	@JsonProperty("Due Date")
 	private String dueDate;
 	@JsonProperty("Delay")
-	private String delay;
+	private Integer delay;
 	@JsonProperty("Remaining Estimate")
 	private String remainingEstimateMinutes;
 	@JsonProperty("Blocked Time")
