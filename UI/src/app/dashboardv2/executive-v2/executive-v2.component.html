@@ -86,7 +86,7 @@
 
                                                                 <app-table *ngSwitchCase="'table'"
                                                                     [trendBoxColorObj]="trendBoxColorObj"
-                                                                    [data]="kpiChartData[kpi?.kpiId].data"
+                                                                    [data]="kpiChartData[kpi?.kpiId]?.data"
                                                                     [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                                                                     [showMarker]="'true'"
                                                                     [showMarkerColumnNumber]="0"></app-table>
@@ -272,9 +272,9 @@
                                                             <ng-container
                                                                 *ngFor="let item of kpiChartData[kpi.kpiId]; let index=index">
                                                                 <ng-container
-                                                                    *ngFor="let x of item.data; let i = index">
+                                                                    *ngFor="let x of item?.data; let i = index">
                                                                     <div class="p-3 p-text-center"
-                                                                        [ngClass]="{'wrapper-w-50' : true ,'kpi-content-container': item.data.length ==2 && i!==1 }">
+                                                                        [ngClass]="{'wrapper-w-50' : true ,'kpi-content-container': item?.data?.length ==2 && i!==1 }">
                                                                         <h3 class="text-label">{{x?.label}}
                                                                             <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"
                                                                                 src="../../../assets/img/arrow-down.svg"
