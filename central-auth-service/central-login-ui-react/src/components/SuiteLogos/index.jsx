@@ -12,7 +12,7 @@ const SuiteLogos = () => {
             <div className="h-3/4 w-1/2 mt-36 m-auto">
             {
                 !isSpeedSuite && 
-                <BgItem key={0} item={bg[0]} />
+                <BgItem key={1} item={bg[1]} />
             }
             {
                 isSpeedSuite && 
