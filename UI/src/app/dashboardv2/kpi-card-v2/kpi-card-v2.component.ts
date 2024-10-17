@@ -203,6 +203,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   handleChange(type, value = null, filterIndex = 0) {
+
+    // moving selected option to top
     if (value && value.value && Array.isArray(value.value)) {
       value.value.forEach(selectedItem => {
         this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
@@ -379,7 +381,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi171')) {
-      if (this.trendValueList?.length && this.trendValueList[0]?.data.length > 0) {
+      if (this.trendValueList?.length && this.trendValueList[0]?.data?.length > 0) {
         return true;
       } else {
         return false;

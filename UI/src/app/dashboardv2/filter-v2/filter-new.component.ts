@@ -319,11 +319,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.getBoardConfig([selectedProject['basicProjectConfigId']]);
       } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
         let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
-        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+        if (selectedProject) {
+          this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+        }
       }
       else {
         let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
-        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+        if (selectedProject) {
+          this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+        }
       }
     } else {
       this.getBoardConfig([]);
@@ -410,6 +414,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
         },
         (error) => {
+          this.blockUI = false;
           this.messageService.add({
             severity: 'error',
             summary: error.message,
@@ -543,6 +548,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           this.noSprint = true;
           this.service.setAdditionalFilters([]);
         }
+        this.service.setSprintForRnR(null);
       }
     } else {
       this.noSprint = false;
@@ -736,8 +742,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (!event?.length) {
       this.filterApplyData['selectedMap'][level] = [];
       delete this.previousFilterEvent['additional_level'][level];
-      if (!Object.keys(this.previousFilterEvent['additional_level']).length) 
-      {
+      if (!Object.keys(this.previousFilterEvent['additional_level']).length) {
         this.handlePrimaryFilterChange(this.previousFilterEvent['primary_level'] ? this.previousFilterEvent['primary_level'] : [this.previousFilterEvent[0]]);
         return;
       }
@@ -920,18 +925,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.blockUI = false;
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
             this.selectedProjectLastSyncStatus = 'FAILURE';
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error in syncing data.',
+            });
             this.subject.next(false);
             this.lastSyncData = {};
             return;
           }
         }, error => {
           this.blockUI = false;
-          this.subject.next(false);
-          this.lastSyncData = {};
           this.messageService.add({
             severity: 'error',
             summary: 'Error in syncing data. Please try after some time.',
           });
+          this.subject.next(false);
+          this.lastSyncData = {};
           return;
         });
       });
