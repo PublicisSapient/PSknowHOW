@@ -22,14 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Data;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
+
+import lombok.Data;
 
 @Data
 @Configuration
@@ -46,7 +46,6 @@ public class AuthConfig {
 	private Long maxAgeSeconds;
 	private Boolean includeSubdomains;
 	private String contentSecurityPolicy;
-
 
 	private String baseUiUrl;
 

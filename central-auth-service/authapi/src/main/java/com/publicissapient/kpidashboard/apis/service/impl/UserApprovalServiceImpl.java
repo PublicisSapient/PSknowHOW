@@ -18,19 +18,22 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.errors.UsernameNotFoundException;
-import com.publicissapient.kpidashboard.apis.service.*;
+import com.publicissapient.kpidashboard.apis.service.NotificationService;
+import com.publicissapient.kpidashboard.apis.service.UserApprovalService;
+import com.publicissapient.kpidashboard.apis.service.UserService;
 import com.publicissapient.kpidashboard.apis.service.dto.UnapprovedUserDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
@@ -42,12 +45,8 @@ public class UserApprovalServiceImpl implements UserApprovalService {
 
 	@Override
 	public List<UnapprovedUserDTO> findAllUnapprovedUsers() {
-		return userService.findAllUnapprovedUsers()
-				.stream()
-				.map(user -> UnapprovedUserDTO.builder()
-											  .username(user.getUsername())
-											  .email(user.getEmail())
-											  .build())
+		return userService.findAllUnapprovedUsers().stream()
+				.map(user -> UnapprovedUserDTO.builder().username(user.getUsername()).email(user.getEmail()).build())
 				.collect(Collectors.toList());
 	}
 

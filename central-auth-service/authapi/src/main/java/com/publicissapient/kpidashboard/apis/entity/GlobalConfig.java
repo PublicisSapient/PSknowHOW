@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.entity;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

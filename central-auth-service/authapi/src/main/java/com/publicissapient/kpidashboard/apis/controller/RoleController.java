@@ -17,8 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.controller;
 
-import lombok.AllArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.service.RoleService;
 import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
+import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
@@ -41,10 +40,7 @@ public class RoleController {
 	@GetMapping(value = "/{resourceName}")
 	public ResponseEntity<ServiceResponseDTO> getAllRolesForByResourceName(@PathVariable String resourceName) {
 		return ResponseEntity.status(HttpStatus.OK)
-							 .body(new ServiceResponseDTO<>(true,
-															"",
-															roleService.getAllRolesByResourceName(resourceName))
-							 );
+				.body(new ServiceResponseDTO<>(true, "", roleService.getAllRolesByResourceName(resourceName)));
 	}
 
 }

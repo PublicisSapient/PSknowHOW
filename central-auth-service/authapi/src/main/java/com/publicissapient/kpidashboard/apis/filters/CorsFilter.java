@@ -2,16 +2,15 @@ package com.publicissapient.kpidashboard.apis.filters;
 
 import java.io.IOException;
 
-import lombok.AllArgsConstructor;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class CorsFilter extends OncePerRequestFilter {
@@ -24,8 +23,8 @@ public class CorsFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		response.setHeader(STRICT_TRANSPORT_SECURITY,
-						   "max-age=" + authConfig.getMaxAgeSeconds() + "; includeSubDomains");
+				"max-age=" + authConfig.getMaxAgeSeconds() + "; includeSubDomains");
 
-		filterChain.doFilter(request,response);
+		filterChain.doFilter(request, response);
 	}
 }

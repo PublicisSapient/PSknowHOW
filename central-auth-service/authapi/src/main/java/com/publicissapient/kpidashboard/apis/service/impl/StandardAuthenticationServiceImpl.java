@@ -1,39 +1,56 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
+import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.EMAIL_PATTERN;
+import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.WRONG_CREDENTIALS_ERROR_MESSAGE;
+
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
-
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.errors.*;
+import com.publicissapient.kpidashboard.apis.config.AuthConfig;
+import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
+import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
+import com.publicissapient.kpidashboard.apis.entity.User;
+import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
+import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.errors.EmailNotFoundException;
+import com.publicissapient.kpidashboard.apis.errors.GenericException;
+import com.publicissapient.kpidashboard.apis.errors.IdenticalPasswordException;
+import com.publicissapient.kpidashboard.apis.errors.PasswordContainsUsernameException;
+import com.publicissapient.kpidashboard.apis.errors.PasswordPatternException;
+import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.errors.UsernameNotFoundException;
+import com.publicissapient.kpidashboard.apis.errors.WrongPasswordException;
+import com.publicissapient.kpidashboard.apis.service.ForgotPasswordService;
+import com.publicissapient.kpidashboard.apis.service.ForgotPasswordTokenService;
+import com.publicissapient.kpidashboard.apis.service.MessageService;
+import com.publicissapient.kpidashboard.apis.service.NotificationService;
+import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
+import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.apis.service.UserRoleService;
+import com.publicissapient.kpidashboard.apis.service.UserService;
+import com.publicissapient.kpidashboard.apis.service.UserVerificationTokenService;
 import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
 import com.publicissapient.kpidashboard.apis.service.dto.ResetPasswordRequestDTO;
 import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
-import com.publicissapient.kpidashboard.apis.config.AuthConfig;
-import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
-import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
-import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
-import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
-import com.publicissapient.kpidashboard.apis.service.*;
-import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
 
-import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.EMAIL_PATTERN;
-import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.WRONG_CREDENTIALS_ERROR_MESSAGE;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @Service
@@ -92,10 +109,8 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 
 			if (user.checkPassword(password)) {
 				return new UsernamePasswordAuthenticationToken(userDTO, user.getPassword(),
-															   this.tokenAuthenticationService.createAuthorities(
-																	   this.userRoleService.getRolesNamesByUsername(
-																			   username))
-				);
+						this.tokenAuthenticationService
+								.createAuthorities(this.userRoleService.getRolesNamesByUsername(username)));
 			} else {
 				throw new BadCredentialsException(WRONG_CREDENTIALS_ERROR_MESSAGE);
 			}
@@ -107,8 +122,8 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	}
 
 	private boolean isTheUserAccountStillLocked(User user) {
-		return Objects.nonNull(user.getLastUnsuccessfulLoginTime()) && LocalDateTime.now().isBefore(
-				user.getLastUnsuccessfulLoginTime().plusMinutes(authConfig.getAccountLockedPeriod()));
+		return Objects.nonNull(user.getLastUnsuccessfulLoginTime()) && LocalDateTime.now()
+				.isBefore(user.getLastUnsuccessfulLoginTime().plusMinutes(authConfig.getAccountLockedPeriod()));
 	}
 
 	private User resetFailedLoginAttemptsCount(String userName) {
@@ -127,10 +142,8 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	@Override
 	public String addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = this.tokenAuthenticationService.createJWT(
-				this.tokenAuthenticationService.extractUsernameFromAuthentication(authentication),
-				AuthType.STANDARD,
-				authentication.getAuthorities()
-		);
+				this.tokenAuthenticationService.extractUsernameFromAuthentication(authentication), AuthType.STANDARD,
+				authentication.getAuthorities());
 
 		this.tokenAuthenticationService.addStandardCookies(jwt, response);
 
@@ -157,10 +170,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 			User user = saveUserDetails(request);
 
 			notificationService.sendVerificationMailToRegisterUser(user.getUsername(), user.getEmail(),
-																   createUserVerificationToken(user.getUsername(),
-																							   user.getEmail()
-																   )
-			);
+					createUserVerificationToken(user.getUsername(), user.getEmail()));
 
 			return true;
 		}
@@ -199,7 +209,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 *
 	 * @param token
 	 * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type
-	 * ResetPasswordTokenStatusEnum
+	 *         ResetPasswordTokenStatusEnum
 	 */
 	@Override
 	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
@@ -212,13 +222,16 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	}
 
 	private User saveUserDetails(UserDTO request) {
-		User user = User.builder().username(request.getUsername()).password(request.getPassword())
-						.email(request.getEmail().toLowerCase()).firstName(request.getFirstName())
-						.lastName(request.getLastName()).displayName(request.getDisplayName())
-						.createdDate(LocalDateTime.now()).modifiedDate(LocalDateTime.now())
-						.authType(AuthType.STANDARD.name()).userVerified(false).approved(false).build();
-
-		return this.userService.save(user);
+		String username = request.getUsername();
+		String password = request.getPassword();
+		String email = request.getEmail().toLowerCase();
+		String firstName = request.getFirstName();
+		String lastName = request.getLastName();
+		String displayName = request.getDisplayName();
+		LocalDateTime createdDate = LocalDateTime.now();
+		LocalDateTime modifiedDate = LocalDateTime.now();
+		return this.userService.save(new User(username, password, firstName, lastName, displayName, email, createdDate,
+				AuthType.STANDARD.name(), modifiedDate, false, false));
 	}
 
 	private String createUserVerificationToken(String username, String email) {
@@ -247,14 +260,15 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 *
 	 * @param resetPasswordRequest
 	 * @return authentication if the <tt>token</tt> is valid and <tt>username</tt>
-	 * from forgotPasswordToken exists in the database
-	 * @throws ApplicationException if either <tt>forgotPasswordToken</tt> is invalid or
-	 *                              <tt>username</tt> doen't exist in the database.
+	 *         from forgotPasswordToken exists in the database
+	 * @throws ApplicationException
+	 *             if either <tt>forgotPasswordToken</tt> is invalid or
+	 *             <tt>username</tt> doen't exist in the database.
 	 */
 	@Override
 	public UserDTO resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
-		Optional<ForgotPasswordToken> forgotPasswordTokenOptional = forgotPasswordTokenService.findByToken(
-				resetPasswordRequest.getResetToken());
+		Optional<ForgotPasswordToken> forgotPasswordTokenOptional = forgotPasswordTokenService
+				.findByToken(resetPasswordRequest.getResetToken());
 		if (forgotPasswordTokenOptional.isPresent()) {
 			ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenOptional.get();
 
@@ -267,32 +281,27 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 					throw new ApplicationException("User Does not Exist", ApplicationException.BAD_DATA);
 				} else {
 					validatePasswordRules(forgotPasswordToken.getUsername(), resetPasswordRequest.getPassword(),
-										  user.get()
-					);
+							user.get());
 					return userService.getUserDTO(user.get());
 				}
 			} else {
 				throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
 			}
 		} else {
-			throw new ApplicationException(
-					"Token is " + ResetPasswordTokenStatusEnum.INVALID, ApplicationException.BAD_DATA);
+			throw new ApplicationException("Token is " + ResetPasswordTokenStatusEnum.INVALID,
+					ApplicationException.BAD_DATA);
 		}
 
 	}
 
 	private boolean isPassContainUser(String reqPassword, String username) {
 
-		return !(
-				StringUtils.containsIgnoreCase(reqPassword, username)
-		);
+		return !(StringUtils.containsIgnoreCase(reqPassword, username));
 	}
 
 	private boolean isOldPassword(String reqPassword, String savedPassword) {
 
-		return !(
-				StringUtils.containsIgnoreCase(User.hash(reqPassword), savedPassword)
-		);
+		return !(StringUtils.containsIgnoreCase(User.hash(reqPassword), savedPassword));
 
 	}
 
@@ -301,8 +310,8 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 *
 	 * @param forgotPasswordToken
 	 * @return ResetPasswordTokenStatusEnum <tt>INVALID</tt> if token is
-	 * <tt>null</tt>, <tt>VALID</tt> if token is not expired,
-	 * <tt>EXPIRED</tt> if token is expired
+	 *         <tt>null</tt>, <tt>VALID</tt> if token is not expired,
+	 *         <tt>EXPIRED</tt> if token is expired
 	 */
 	private ResetPasswordTokenStatusEnum checkTokenValidity(ForgotPasswordToken forgotPasswordToken) {
 		if (forgotPasswordToken == null) {
@@ -323,7 +332,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 *
 	 * @param expiryDate
 	 * @return boolean <tt>true</tt> if expiryDate is invalid/expired,<tt>false</tt>
-	 * if token is valid
+	 *         if token is valid
 	 */
 	private boolean isExpired(Date expiryDate) {
 		return new Date().before(expiryDate);
@@ -340,8 +349,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 					userService.save(user);
 				} else {
 					throw new ApplicationException("Password should not be old password",
-												   ApplicationException.BAD_DATA
-					);
+							ApplicationException.BAD_DATA);
 				}
 			} else {
 				throw new ApplicationException("Password should not contain userName", ApplicationException.BAD_DATA);
@@ -349,18 +357,17 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 		} else {
 			throw new ApplicationException(
 					"At least 8 characters in length with Lowercase letters, Uppercase letters, Numbers and Special characters($,@,$,!,%,*,?,&)",
-					ApplicationException.BAD_DATA
-			);
+					ApplicationException.BAD_DATA);
 		}
 
 	}
 
 	@Override
 	public ServiceResponseDTO changePassword(ChangePasswordRequestDTO changePasswordRequestDTO,
-											 HttpServletResponse response) {
+			HttpServletResponse response) {
 		try {
-			Authentication authentication = forgotPasswordService.changePasswordAndReturnAuthentication(
-					changePasswordRequestDTO);
+			Authentication authentication = forgotPasswordService
+					.changePasswordAndReturnAuthentication(changePasswordRequestDTO);
 
 			addAuthentication(response, authentication);
 

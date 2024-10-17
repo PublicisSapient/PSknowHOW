@@ -24,7 +24,6 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.apis.entity.Resource;
 
-
 @Repository
 public interface ResourcesRepository extends JpaRepository<Resource, Long> {
 

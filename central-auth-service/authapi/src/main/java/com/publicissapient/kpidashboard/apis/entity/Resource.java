@@ -18,7 +18,11 @@
 package com.publicissapient.kpidashboard.apis.entity;
 
 import jakarta.persistence.Entity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * resource is which is our auth service is consume.

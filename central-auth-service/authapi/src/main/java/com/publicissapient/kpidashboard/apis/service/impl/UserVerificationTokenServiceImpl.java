@@ -4,9 +4,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.entity.User;
@@ -17,6 +14,8 @@ import com.publicissapient.kpidashboard.apis.service.NotificationService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
 import com.publicissapient.kpidashboard.apis.service.UserVerificationTokenService;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
@@ -45,7 +44,7 @@ public class UserVerificationTokenServiceImpl implements UserVerificationTokenSe
 	 *
 	 * @param token
 	 * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type
-	 * ResetPasswordTokenStatusEnum
+	 *         ResetPasswordTokenStatusEnum
 	 */
 	@Override
 	public ResetPasswordTokenStatusEnum verifyUserToken(String token) {
@@ -58,8 +57,8 @@ public class UserVerificationTokenServiceImpl implements UserVerificationTokenSe
 	 *
 	 * @param userVerificationToken
 	 * @return ResetPasswordTokenStatusEnum <tt>INVALID</tt> if token is
-	 * <tt>null</tt>, <tt>VALID</tt> if token is not expired,
-	 * <tt>EXPIRED</tt> if token is expired
+	 *         <tt>null</tt>, <tt>VALID</tt> if token is not expired,
+	 *         <tt>EXPIRED</tt> if token is expired
 	 */
 	private ResetPasswordTokenStatusEnum checkTokenValidity(UserVerificationToken userVerificationToken) {
 		if (userVerificationToken == null) {
@@ -89,8 +88,8 @@ public class UserVerificationTokenServiceImpl implements UserVerificationTokenSe
 		UserVerificationToken userVerificationToken = userVerificationTokenRepository.findByToken(token.toString());
 
 		if (userVerificationToken.getUsername() != null && userVerificationToken.getEmail() != null) {
-			this.notificationService.sendVerificationFailedMailUser(
-					userVerificationToken.getUsername(), userVerificationToken.getEmail());
+			this.notificationService.sendVerificationFailedMailUser(userVerificationToken.getUsername(),
+					userVerificationToken.getEmail());
 		}
 	}
 }

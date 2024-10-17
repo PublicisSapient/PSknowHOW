@@ -18,14 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import java.util.*;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -33,9 +27,14 @@ import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.repository.UserRepository;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
-import com.publicissapient.kpidashboard.apis.util.CookieUtil;
 import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
+import com.publicissapient.kpidashboard.apis.util.CookieUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
@@ -80,17 +79,9 @@ public class UserServiceImpl implements UserService {
 	public UserDTO getUserDTO(User user) {
 		UserDTO dto = null;
 		if (null != user) {
-			dto = UserDTO.builder()
-						 .id(user.getId())
-						 .username(user.getUsername())
-						 .email(user.getEmail())
-						 .firstName(user.getFirstName())
-						 .lastName(user.getLastName())
-						 .displayName(user.getDisplayName())
-						 .authType(user.getAuthType())
-						 .approved(user.isApproved())
-						 .verified(user.isUserVerified())
-						 .build();
+			dto = UserDTO.builder().id(user.getId()).username(user.getUsername()).email(user.getEmail())
+					.firstName(user.getFirstName()).lastName(user.getLastName()).displayName(user.getDisplayName())
+					.authType(user.getAuthType()).approved(user.isApproved()).verified(user.isUserVerified()).build();
 		}
 		return dto;
 	}

@@ -18,9 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -28,7 +27,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import com.publicissapient.kpidashboard.apis.errors.PendingApprovalException;
+import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
+
+import lombok.AllArgsConstructor;
 
 @Component
 @AllArgsConstructor
@@ -53,7 +55,8 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 
 	// TODO: what is this?
 	/**
-	 * @return true if this AuthenticationProvider supports the indicated Authentication object.
+	 * @return true if this AuthenticationProvider supports the indicated
+	 *         Authentication object.
 	 */
 	@Override
 	public boolean supports(Class<?> authentication) {

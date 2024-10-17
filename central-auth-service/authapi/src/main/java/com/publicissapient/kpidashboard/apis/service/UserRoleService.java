@@ -19,7 +19,6 @@ package com.publicissapient.kpidashboard.apis.service;
 
 import java.util.List;
 
-
 public interface UserRoleService {
 
 	List<String> getRolesNamesByUsername(String username);

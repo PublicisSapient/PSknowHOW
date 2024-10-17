@@ -17,17 +17,17 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.entity.UserRole;
 import com.publicissapient.kpidashboard.apis.repository.UserRoleRepository;
 import com.publicissapient.kpidashboard.apis.service.UserRoleService;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -39,9 +39,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 	public List<String> getRolesNamesByUsername(String username) {
 		List<UserRole> userPermissionList = userRoleRepository.findByUsername(username);
 
-		return userPermissionList.stream()
-								  .filter(userRole -> userRole.getRole() != null)
-								  .map(userRole -> userRole.getRole().getName())
-								  .collect(Collectors.toList());
+		return userPermissionList.stream().filter(userRole -> userRole.getRole() != null)
+				.map(userRole -> userRole.getRole().getName()).collect(Collectors.toList());
 	}
 }

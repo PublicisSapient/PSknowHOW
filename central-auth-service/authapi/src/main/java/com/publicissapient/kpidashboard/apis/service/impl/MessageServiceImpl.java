@@ -18,13 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.service.impl;
 
-import com.publicissapient.kpidashboard.apis.service.MessageService;
-import lombok.AllArgsConstructor;
+import java.util.Locale;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
+import com.publicissapient.kpidashboard.apis.service.MessageService;
+
+import lombok.AllArgsConstructor;
 
 /**
  * this service uses for one single Properties Configuration file message to

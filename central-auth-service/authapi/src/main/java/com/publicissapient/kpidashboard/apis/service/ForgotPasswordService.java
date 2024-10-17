@@ -5,7 +5,6 @@ import org.springframework.security.core.Authentication;
 import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
 import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
-
 public interface ForgotPasswordService {
 
 	Authentication changePasswordAndReturnAuthentication(ChangePasswordRequestDTO requestDTO);

@@ -18,25 +18,28 @@
 
 package com.publicissapient.kpidashboard.apis.controller;
 
+import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.ERROR_INVALID_USER;
+import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.SUCCESS_VALID_TOKEN;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import java.util.Objects;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.service.MessageService;
 import com.publicissapient.kpidashboard.apis.service.UserService;
 import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 
-import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @AllArgsConstructor
@@ -53,22 +56,20 @@ public class UserController {
 		UserDTO userDTO = userService.getCurrentUser(request);
 
 		if (Objects.nonNull(userDTO)) {
-			return ResponseEntity.ok(
-					new ServiceResponseDTO(true, messageService.getMessage(SUCCESS_VALID_TOKEN), userDTO));
+			return ResponseEntity
+					.ok(new ServiceResponseDTO(true, messageService.getMessage(SUCCESS_VALID_TOKEN), userDTO));
 		} else {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN)
-								 .body(new ServiceResponseDTO(false, messageService.getMessage(ERROR_INVALID_USER), null));
+					.body(new ServiceResponseDTO(false, messageService.getMessage(ERROR_INVALID_USER), null));
 		}
 	}
 
-	@PutMapping(value = "/users/updateProfile", consumes = APPLICATION_JSON_VALUE,
-				produces = APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/users/updateProfile", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponseDTO> updateUserProfile(@Valid @RequestBody UserDTO request) {
 		boolean isSuccess = userService.updateUserProfile(request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(
-				isSuccess, isSuccess ?
-				messageService.getMessage("success_profile_user") :
-				messageService.getMessage("error_update_profile"), null));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponseDTO(isSuccess, isSuccess ? messageService.getMessage("success_profile_user")
+						: messageService.getMessage("error_update_profile"), null));
 	}
 }

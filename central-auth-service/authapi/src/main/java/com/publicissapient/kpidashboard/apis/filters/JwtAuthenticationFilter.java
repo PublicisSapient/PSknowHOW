@@ -21,15 +21,6 @@ package com.publicissapient.kpidashboard.apis.filters;
 import java.util.Arrays;
 import java.util.Optional;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,6 +30,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.AuthEndpointsProperties;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
@@ -76,19 +75,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	public void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
-								 @NotNull FilterChain filterChain) {
+			@NotNull FilterChain filterChain) {
 		try {
 			if (isRequestForPublicURI(request)) {
 				// * public endpoints should just pass without any authentication.
 				filterChain.doFilter(request, response);
-			} if (isRequestForExternalURI(request)) {
+			}
+			if (isRequestForExternalURI(request)) {
 				String resourceAPIKey = request.getHeader(X_API_KEY);
 				String resource = request.getHeader(RESOURCE_KEY);
 
-				if (resourceAPIKey.isEmpty() ||
-					resource.isEmpty() ||
-					!resourceAPIKey.equals(authConfig.getServerApiKey())) {
-					throw  new BadCredentialsException(NO_RESOURCE_API_KEY_EXCEPTION);
+				if (resourceAPIKey.isEmpty() || resource.isEmpty()
+						|| !resourceAPIKey.equals(authConfig.getServerApiKey())) {
+					throw new BadCredentialsException(NO_RESOURCE_API_KEY_EXCEPTION);
 				} else {
 					filterChain.doFilter(request, response);
 				}

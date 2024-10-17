@@ -19,18 +19,11 @@
 package com.publicissapient.kpidashboard.apis.service.impl;
 
 import java.time.Instant;
-import java.util.*;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,14 +31,22 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.CookieConfig;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.errors.GenericException;
-import com.publicissapient.kpidashboard.apis.service.*;
+import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
 import com.publicissapient.kpidashboard.apis.util.CookieUtil;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
@@ -62,39 +63,31 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private final CookieConfig cookieConfig;
 
 	@Override
-	public String createJWT(@NotNull String subject, AuthType authType, Collection<? extends GrantedAuthority> authorities) {
+	public String createJWT(@NotNull String subject, AuthType authType,
+			Collection<? extends GrantedAuthority> authorities) {
 		Instant expirationInstant = Instant.now().plusSeconds(cookieConfig.getDuration());
 
-		return Jwts.builder()
-				   .setSubject(subject)
-				   .claim(DETAILS_CLAIM, authType)
-				   .claim(ROLES_CLAIM,
-						  Objects.nonNull(authorities)
-						   ? authorities.stream()
-									  .map(GrantedAuthority::getAuthority)
-									  .toList()
-						   : new ArrayList<>())
-				   .setExpiration(Date.from(expirationInstant))
-				   .signWith(SignatureAlgorithm.HS512, authProperties.getSecret())
-				   .compact();
+		return Jwts.builder().setSubject(subject).claim(DETAILS_CLAIM, authType)
+				.claim(ROLES_CLAIM,
+						Objects.nonNull(authorities) ? authorities.stream().map(GrantedAuthority::getAuthority).toList()
+								: new ArrayList<>())
+				.setExpiration(Date.from(expirationInstant))
+				.signWith(SignatureAlgorithm.HS512, authProperties.getSecret()).compact();
 	}
 
 	@Override
 	public void addStandardCookies(String jwt, HttpServletResponse response) {
 		CookieUtil.addCookie(response, CookieUtil.COOKIE_NAME, jwt, cookieConfig.getDuration(),
-							 cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure()
-		);
+				cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure());
 		CookieUtil.addCookie(response, CookieUtil.EXPIRY_COOKIE_NAME, cookieConfig.getDuration().toString(), false,
-							 cookieConfig.getDuration(), cookieConfig.getDomain(), cookieConfig.getIsSameSite(),
-							 cookieConfig.getIsSecure()
-		);
+				cookieConfig.getDuration(), cookieConfig.getDomain(), cookieConfig.getIsSameSite(),
+				cookieConfig.getIsSecure());
 	}
 
 	@Override
 	public void addSamlCookies(String username, String jwt, HttpServletResponse response) {
 		CookieUtil.addCookie(response, CookieUtil.USERNAME_COOKIE_NAME, username, false, cookieConfig.getDuration(),
-							 cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure()
-		);
+				cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure());
 
 		addStandardCookies(jwt, response);
 	}
