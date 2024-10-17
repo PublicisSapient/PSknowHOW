@@ -115,6 +115,8 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 		selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
 		kpiRequest.setSelectedMap(selectedMap);
 		kpiRequest.setLabel("PROJECT");
+		String[] ids = { "5" };
+		kpiRequest.setIds(ids);
 
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
