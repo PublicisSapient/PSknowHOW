@@ -25,6 +25,7 @@ import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { ExcelService } from 'src/app/services/excel.service';
 
 @Component({
   selector: 'app-executive-v2',
@@ -121,7 +122,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   globalConfig: any;
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
-  constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService, private route: ActivatedRoute) {
+  constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService, private route: ActivatedRoute, private excelService: ExcelService) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
@@ -151,11 +152,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.globalConfig = globalConfig;
-      this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      if (!this.configGlobalData) {
-        this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      }
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+      this.setGlobalConfigData(globalConfig);
       setTimeout(() => {
         this.processKpiConfigData();
         this.setUpTabs();
@@ -205,6 +202,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
       this.showChart = view;
     }));
+  }
+
+  setGlobalConfigData(globalConfig) {
+    this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    if (!this.configGlobalData) {
+      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    }
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
   }
 
   processKpiConfigData() {
@@ -1819,6 +1824,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
+  }
+
+  generateExcel() {
+    const kpiData = {
+      headerNames: [],
+      excelData: []
+    };
+    this.modalDetails['tableHeadings'].forEach(colHeader => {
+      kpiData.headerNames.push({
+        header: colHeader,
+        key: colHeader,
+        width: 25
+      });
+    });
+    this.modalDetails['tableValues'].forEach(colData => {
+      kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
+    });
+
+    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
 

@@ -217,7 +217,8 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 					repoToolValidationData.setBranchName(tool.getBranch());
 					repoToolValidationData.setDate(DATE + DateUtil.localDateTimeConverter(currentDate));
 					repoToolValidationData.setCommitCount(commitCountValue);
-					repoToolValidationData.setRepoUrl(tool.getUrl());
+					repoToolValidationData.setRepoUrl(
+							tool.getRepositoryName() != null ? tool.getRepositoryName() : tool.getRepoSlug());
 					repoToolValidationDataList.add(repoToolValidationData);
 					currentDate = currentDate.plusDays(1);
 				}
