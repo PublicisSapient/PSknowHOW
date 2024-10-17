@@ -18,16 +18,23 @@
 
 package com.publicissapient.kpidashboard.apis.entity;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.hash.Hashing;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
-import org.apache.commons.lang3.StringUtils;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This class serves as the model for storing credential used for login and
@@ -79,7 +86,8 @@ public class User {
 
 	@SuppressWarnings("java:S107")
 	public User(String username, String password, String firstName, String lastName, String displayName, String email,
-			LocalDateTime createdDate, String authType, LocalDateTime modifiedDate, boolean userVerified , boolean approved) {
+			LocalDateTime createdDate, String authType, LocalDateTime modifiedDate, boolean userVerified,
+			boolean approved) {
 		this.username = username;
 		this.password = hash(password);
 		this.firstName = firstName;
