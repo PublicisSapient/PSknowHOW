@@ -1,32 +1,46 @@
-[{
-  "projectName": "Test Project 1",
-  "createdAt": "2022-08-08T09:30:32",
-  "kanban": true,
-  "hierarchy": [
-    {
-      "hierarchyLevel": {
-        "level": 1,
-        "hierarchyLevelId": "hierarchyLevel1Id",
-        "hierarchyLevelName": "hierarchyLevel1Name"
+[
+  {
+    "projectName": "Test Project 1",
+    "projectNodeId": "project_unique_001",
+    "projectDisplayName": "Test Project 1",
+    "createdAt": "2022-08-08T09:30:32",
+    "kanban": true,
+    "hierarchy": [
+      {
+        "hierarchyLevel": {
+          "level": 1,
+          "hierarchyLevelId": "hierarchyLevel1Id",
+          "hierarchyLevelName": "hierarchyLevel1Name"
+        },
+        "orgHierarchyNodeId": "hL1ValueNodeId1",
+        "value": "hierarchyLevel1Value1"
       },
-      "value": "hierarchyLevel1Value1"
-    },
-    {
-      "hierarchyLevel": {
-        "level": 2,
-        "hierarchyLevelId": "hierarchyLevel2Id",
-        "hierarchyLevelName": "hierarchyLevel2Name"
+      {
+        "hierarchyLevel": {
+          "level": 2,
+          "hierarchyLevelId": "hierarchyLevel2Id",
+          "hierarchyLevelName": "hierarchyLevel2Name"
+        },
+        "orgHierarchyNodeId": "hL2ValueNodeId1",
+        "value": "hierarchyLevel2Value1"
       },
-      "value": "hierarchyLevel2Value1"
-    },
-    {
-      "hierarchyLevel": {
-        "level": 3,
-        "hierarchyLevelId": "hierarchyLevel3Id",
-        "hierarchyLevelName": "hierarchyLevel3Name"
-      },
-      "value": "hierarchyLevel3Value1"
-    }
-  ]
-}
+      {
+        "hierarchyLevel": {
+          "level": 3,
+          "hierarchyLevelId": "hierarchyLevel3Id",
+          "hierarchyLevelName": "hierarchyLevel3Name"
+        },
+        "orgHierarchyNodeId": "hL3ValueNodeId1",
+        "value": "hierarchyLevel3Value1"
+      }
+    ]
+  },
+  {
+    "projectName": "Global Deploy D1",
+    "projectNodeId": "project_unique_004",
+    "projectDisplayName": "Test Project 1",
+    "id": "66f88deaed6a46340d6ab05e",
+    "createdAt": "2022-08-08T09:30:32",
+    "kanban": true
+  }
 ]

@@ -214,7 +214,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 			subCategoryMap.forEach((subCategory, storyIdList) -> {
 				List<JiraIssue> additionalFilterDefectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA))
 						.stream()
-						.filter(f -> sprint.getKey().equals(f.getProjectID())
+						.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
 								&& CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
 						.collect(Collectors.toList());
 
