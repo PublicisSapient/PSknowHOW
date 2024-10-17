@@ -11,6 +11,9 @@
         <h5 class="p-m-0" *ngIf="selectedSprint">
             Sprint: {{selectedSprint?.nodeName}}
         </h5>
+        <h5 class="p-m-0 red" *ngIf="!selectedSprint">
+            No Sprint Available
+        </h5>
     </p-header>
     <div class="dialog-body p-mb-4">
         <p-tabView>
