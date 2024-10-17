@@ -172,7 +172,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
     this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
-      || !['superAdmin', 'projectAdmin'].includes(this.userRole);
+      || this.checkIfViewer || !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
   }
 
@@ -203,6 +203,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   handleChange(type, value = null, filterIndex = 0) {
+
+    // moving selected option to top
     if (value && value.value && Array.isArray(value.value)) {
       value.value.forEach(selectedItem => {
         this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
@@ -377,6 +379,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         return true;
       }
     }
+
+    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi171')) {
+      if (this.trendValueList?.length && this.trendValueList[0]?.data?.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     return (data === '200' || data === '201') && this.checkDataAtGranularLevel(this.trendValueList);
   }
 

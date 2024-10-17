@@ -34,7 +34,7 @@
   </div>
   <!-- kpiFilter *ngIf="checkIfDataPresent(trendValueList);"-->
   <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" *ngIf="kpiData.kpiDetail.chartType !== 'stacked-area'"
-    [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected))) }" class="kpi-filter p-pr-5 p-pl-5"
+    [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData && kpiData?.kpiId !== 'kpi171') || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }" class="kpi-filter p-pr-5 p-pl-5"
     #kpiFilterContainer>
     <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
       <ng-container *ngFor="let filter of dropdownArr;let k = index">
@@ -81,7 +81,7 @@
       *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
     <ng-template #noData>
       <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode) && !partialData) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
+        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>
@@ -94,7 +94,7 @@
         </div>
       </div>
       <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode) && !partialData) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
+        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
         <div class="p-w-100  p-d-flex p-justify-center">
           <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
         </div>

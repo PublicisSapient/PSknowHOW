@@ -146,9 +146,9 @@ public class StandardAuthenticationController {
 		String baseUiUrl = authConfig.getBaseUiUrl();
 
 		if (tokenStatus != null && tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
-			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getUiResetPath() + token);
+			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getResetPath() + token);
 		} else {
-			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getUiResetPath() + tokenStatus);
+			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getResetPath() + tokenStatus);
 		}
 	}
 

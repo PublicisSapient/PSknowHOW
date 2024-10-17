@@ -25,6 +25,7 @@ import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { ExcelService } from 'src/app/services/excel.service';
 
 @Component({
   selector: 'app-executive-v2',
@@ -121,7 +122,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   globalConfig: any;
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
-  constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService, private route: ActivatedRoute) {
+  constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService, private route: ActivatedRoute, private excelService: ExcelService) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
@@ -151,10 +152,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.globalConfig = globalConfig;
-      this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+      this.setGlobalConfigData(globalConfig);
       setTimeout(() => {
         this.processKpiConfigData();
+        this.setUpTabs();
       }, 500);
     }));
 
@@ -201,6 +202,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
       this.showChart = view;
     }));
+  }
+
+  setGlobalConfigData(globalConfig) {
+    this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    if (!this.configGlobalData) {
+      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    }
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
   }
 
   processKpiConfigData() {
@@ -314,6 +323,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiTableDataObj[nodeName] = [];
       }
 
+      this.service.setAddtionalFilterBackup({});
+      this.service.setKpiSubFilterObj({});
+
       if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
         this.noFilterApplyData = true;
       } else {
@@ -366,14 +378,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setUpTabs() {
-    const tabsArray = new Set(this.configGlobalData.map(element => element?.kpiDetail?.kpiSubCategory));
-    if (this.selectedTab === 'release') {
-      const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
-      const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
-      this.tabsArr = new Set(tabTempSet.map(element => element.boardName));
-    } else {
-      this.tabsArr = tabsArray;
-    }
+    const tabsArray = new Set(this.configGlobalData.map(element => element.shown && element.isEnabled && element?.kpiDetail?.kpiSubCategory));
+    // if (this.selectedTab === 'release') {
+    //   const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
+    //   const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
+    //   this.tabsArr = new Set(tabTempSet.map(element => element.boardName));
+    // } else {
+    this.tabsArr = new Set([...tabsArray].filter(Boolean));
+    // }
     let it = this.tabsArr.values();
     //get first entry:
     let first = it.next();
@@ -787,10 +799,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   postJiraKPIForRelease(postData, source) {
     /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
-    /** Todo : Need to rework when BE cache issue will fix */
-    postData.kpiList.forEach(kpi => {
-      if (!postData.kpiList.filter(obj => !obj.kpiDetail)) {
-        postData.kpiList.push(this.updatedConfigGlobalData.filter(updKPI => updKPI.kpiId === kpi.kpiId)[0].kpiDetail)
+    /** Todo : Need to rework when BE cache issue will be fixed */
+    this.updatedConfigGlobalData.forEach(kpi => {
+      if (!postData.kpiList.map(obj => obj?.kpiId).includes(kpi.kpiId)) {
+        postData.kpiList.push(kpi);
       }
     });
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
@@ -806,7 +818,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.jiraKpiData = getData;
           postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element.kpiId);
+            this.kpiLoader.delete(element?.kpiId);
           });
         }
       });
@@ -938,6 +950,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // additional filters depend on KPI response
     let developerBopardKpis = this.globalConfig[this.kanbanActivated ? 'kanban' : 'scrum']?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
     if (this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis?.includes(kpiId)) {
+      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
       if (!trendValueList?.length) {
         this.additionalFiltersArr = {};
         this.service.setAdditionalFilters(this.additionalFiltersArr);
@@ -958,7 +971,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               return {
                 nodeId: f,
                 nodeName: f,
-                labelName: filterProp === 'filter1' ? 'branch' : 'developer'
+                labelName: filterProp === 'filter1' ? 'branch' : filterProp === 'filter' ? 'branch' : 'developer'
               }
             })
           });
@@ -1661,6 +1674,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // if duration filter (filter1) changes,  make an api call to fetch data
     if (durationChanged) {
+      delete this.kpiSelectedFilterObj[kpiId]['filter2'];
       const idx = this.ifKpiExist(kpiId);
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
@@ -1812,6 +1826,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.modalDetails['tableValues'] = tableValues;
   }
 
+  generateExcel() {
+    const kpiData = {
+      headerNames: [],
+      excelData: []
+    };
+    this.modalDetails['tableHeadings'].forEach(colHeader => {
+      kpiData.headerNames.push({
+        header: colHeader,
+        key: colHeader,
+        width: 25
+      });
+    });
+    this.modalDetails['tableValues'].forEach(colData => {
+      kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
+    });
+
+    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+  }
+
 
   checkIfDataPresent(kpi) {
     if (this.kpiStatusCodeArr[kpi.kpiId]) {
@@ -1830,6 +1863,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153')) {
         if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
           return true;
+        }
+      }
+
+      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi171')) {
+        if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
+          return true;
+        } else {
+          return false;
         }
       }
 
@@ -1866,6 +1907,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             } else if (parseInt(item.value[0].value[0].data) > 0) {
               ++dataCount;
             }
+          } else if (item.value.length) {
+            ++dataCount;
           }
         } else if (item.dataGroup && item.dataGroup.length) {
           ++dataCount;
@@ -1882,21 +1925,39 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   checkIfPartialDataPresent(kpi) {
-    let kpiData = this.ifKpiExist(kpi.kpiId) ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
+    let kpiData = this.ifKpiExist(kpi.kpiId) >= 0 ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
     let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
-    if (kpiData && filters) {
-      if (filters.length === 2) {
-        let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
-        let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
-        if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType)) ||
-          (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType))) {
-          return true;
-        }
-      } else {
-        return false;
+    if (kpiData && filters && kpi.kpiId !== 'kpi171') {
+      return this.checkPartialDataCondition(kpi, kpiData, filters);
+    } else {
+      if (kpi.kpiId === 'kpi171') {
+        return this.checkIfPartialDataForKpi171(kpiData, filters);
+      }
+      return false;
+    }
+  }
+
+  checkPartialDataCondition(kpi, kpiData, filters) {
+    if (filters.length === 2) {
+      let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
+      let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
+      if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType)) ||
+        (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType))) {
+        return true;
       }
     } else {
       return false;
+    }
+  }
+
+  checkIfPartialDataForKpi171(kpiData, filters) {
+    kpiData = kpiData?.value;
+    filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
+    for (let i = 0; i < filters?.length; i++) {
+      let partialKpiData = kpiData.filter(x => x.filter1 === filters[i])[0];
+      if (partialKpiData && partialKpiData.data?.length) {
+        return true;
+      }
     }
   }
 

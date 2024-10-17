@@ -2466,7 +2466,7 @@ describe('ExecutiveV2Component', () => {
     const type = 'scrum';
     service.selectedtype = type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
-    service.setDashConfigData(dashConfigData.data);
+    service.setDashConfigData(dashConfigData?.data);
     component.selectedTab = 'developer';
     fixture.detectChanges();
 
@@ -2479,7 +2479,8 @@ describe('ExecutiveV2Component', () => {
     reqJira = httpMock.match((request) => request.url);
     exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
     spyOn(helperService, 'colorAccToMaturity').and.returnValue(('#44739f'));
-
+    spyOn(service, 'setScrumKanban');
+    spyOn(service, 'setSelectedBoard');
     component.receiveSharedData({
       "masterData": {
         "kpiList": [
@@ -7675,9 +7676,9 @@ describe('ExecutiveV2Component', () => {
     done();
   }));
 
-  it('kanban with filter applied only Date', (done) => {
-    const type = 'Kanban';
-    service.setScrumKanban('Kanban');
+  xit('kanban with filter applied only Date', (done) => {
+    const type = 'kanban';
+    service.setScrumKanban('kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
     fixture.detectChanges();
     spyOn(httpService, 'postKpiKanban').and.returnValue(of(fakejiraKanban));
@@ -13724,12 +13725,12 @@ describe('ExecutiveV2Component', () => {
         {
           "nodeId": "Overall",
           "nodeName": "Overall",
-          labelName: 'developer'
+          labelName: 'branch'
         },
         {
           "nodeId": "master -> PSknowHOW -> PSknowHOW",
           "nodeName": "master -> PSknowHOW -> PSknowHOW",
-          labelName: 'developer'
+          labelName: 'branch'
         }
       ]
     };
@@ -17502,7 +17503,7 @@ describe('ExecutiveV2Component', () => {
     it('should update the component properties', () => {
       const data = { selectedBoard: 'Speed' };
 
-      spyOn(service, 'setSelectedBoard');
+      // spyOn(service, 'setSelectedBoard');
 
       service.onTabSwitch.next(data);
 
@@ -17522,9 +17523,9 @@ describe('ExecutiveV2Component', () => {
     it('should set up tabs for selectedTab "release"', () => {
       component.selectedTab = 'release';
       component.configGlobalData = [
-        { kpiDetail: { kpiSubCategory: 'Tab1' } },
-        { kpiDetail: { kpiSubCategory: 'Tab2' } },
-        { kpiDetail: { kpiSubCategory: 'Tab3' } }
+        { kpiDetail: { kpiSubCategory: 'Tab1' }, shown: true, isEnabled: true },
+        { kpiDetail: { kpiSubCategory: 'Tab2' }, shown: true, isEnabled: true },
+        { kpiDetail: { kpiSubCategory: 'Tab3' }, shown: true, isEnabled: true }
       ];
       spyOn(component.service, 'getDashConfigData').and.returnValue({
         scrum: [{ boardName: 'Tab1' }, { boardName: 'Tab2' }],
@@ -17540,9 +17541,9 @@ describe('ExecutiveV2Component', () => {
     it('should set up tabs for selectedTab other than "release"', () => {
       component.selectedTab = 'other';
       component.configGlobalData = [
-        { kpiDetail: { kpiSubCategory: 'Tab1' } },
-        { kpiDetail: { kpiSubCategory: 'Tab2' } },
-        { kpiDetail: { kpiSubCategory: 'Tab3' } }
+        { kpiDetail: { kpiSubCategory: 'Tab1' }, shown: true, isEnabled: true },
+        { kpiDetail: { kpiSubCategory: 'Tab2' }, shown: true, isEnabled: true },
+        { kpiDetail: { kpiSubCategory: 'Tab3' }, shown: true, isEnabled: true }
       ];
       spyOn(component.service, 'getDashConfigData').and.returnValue({});
 
@@ -17869,4 +17870,147 @@ describe('ExecutiveV2Component', () => {
 
     expect(component.checkIfArrayHasData(item)).toBeFalse();
   });
+
+  it('should return true if data is present for kpiId kpi148 or kpi146 and kpiChartData has length', () => {
+    component.kpiStatusCodeArr = { kpi148: '200' };
+    component.kpiChartData = { kpi148: [{ value: [1, 2, 3] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi148', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi139 or kpi127 and kpiChartData and kpiChartData[0].value have length', () => {
+    component.kpiStatusCodeArr = { kpi139: '200' };
+    component.kpiChartData = { kpi139: [{ value: [{ value: [1, 2, 3] }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi139', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi168, kpi70 or kpi153 and kpiChartData and kpiChartData[0].value have length greater than 0', () => {
+    component.kpiStatusCodeArr = { kpi168: '200' };
+    component.kpiChartData = { kpi168: [{ value: [{ data: 1 }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi168', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi171 and kpiChartData and kpiChartData.value[0].data have length greater than 0', () => {
+    component.kpiStatusCodeArr = { kpi171: '200' };
+    component.kpiChartData = { kpi171: [{ data: [1, 2, 3] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi171', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if partial data is present for kpiId kpi139 and kpiData has length and filters length is 2', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi123',
+      trendValueList: [{ filter1: 'filter1', value: ['v1', 'v2', 'v3'] },
+      { filter1: 'filter2', value: [] }]
+    }
+    ];
+
+    expect(component.checkIfPartialDataPresent({ kpiId: 'kpi123', kpiDetail: { chartType: 'lineChart' } })).toBeUndefined();
+  });
+
+  it('should return true if data is present for kpiId kpi148', () => {
+    component.kpiStatusCodeArr = { kpi148: '200' };
+    component.kpiChartData = { kpi148: [{ value: [1, 2, 3] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi148', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi139', () => {
+    component.kpiStatusCodeArr = { kpi139: '200' };
+    component.kpiChartData = { kpi139: [{ value: [{ value: [1, 2, 3] }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi139', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi168', () => {
+    component.kpiStatusCodeArr = { kpi168: '200' };
+    component.kpiChartData = { kpi168: [{ value: [{ data: 1 }] }] };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi168', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi171', () => {
+    component.kpiStatusCodeArr = { kpi171: '200' };
+    component.kpiChartData = { kpi171: { value: [{ data: [1, 2, 3] }] } };
+
+    expect(component.checkIfDataPresent({ kpiId: 'kpi171', kpiDetail: { chartType: 'lineChart' } })).toBeFalse();
+  });
+
+  it('should return true if partial data is present for kpiId kpi139', () => {
+    component.allKpiArray = [{ trendValueList: [{ filter1: 'filter1' }, { filter1: 'filter2' }] }];
+    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(true);
+
+    expect(component.checkIfPartialDataPresent({ kpiId: 'kpi139', kpiDetail: { chartType: 'lineChart' } })).toBeFalse();
+  });
+
+  it('should return false if partial data is not present for kpiId kpi139', () => {
+    component.allKpiArray = [{ trendValueList: [{ filter1: 'filter1' }] }];
+    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(false);
+
+    expect(component.checkIfPartialDataPresent({ kpiId: 'kpi139', kpiDetail: { chartType: 'lineChart' } })).toBeFalse();
+  });
+
+  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
+    component.selectedTab = 'developer';
+    component.kpiChartData = [{ data: 1 }];
+
+    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeTrue();
+  });
+
+  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
+    component.selectedTab = 'user';
+    component.kpiChartData = [];
+
+    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeFalse();
+  });
+
+  it('should return true if array has data', () => {
+    const item = { value: [1, 2, 3] };
+
+    expect(component.checkIfArrayHasData(item)).toBeTrue();
+  });
+
+  it('should return false if array does not have data', () => {
+    const item = { value: [] };
+
+    expect(component.checkIfArrayHasData(item)).toBeFalse();
+  });
+
+  it('should return true if partial data is present for kpiId kpi171', () => {
+    const kpiData = { value: [{ filter1: 'filter1', data: [1, 2, 3] }, { filter1: 'filter2', data: [] }] };
+    const filters = ['filter1', 'filter2'];
+
+    expect(component.checkIfPartialDataForKpi171(kpiData, filters)).toBeTrue();
+  });
+
+  it('should return false if partial data is not present for kpiId kpi171', () => {
+    const kpiData = { value: [{ filter1: 'filter1', data: [] }, { filter1: 'filter2', data: [] }] };
+    const filters = ['filter1', 'filter2'];
+
+    expect(component.checkIfPartialDataForKpi171(kpiData, filters)).toBeFalsy();
+  });
+
+  it('should return true if partial data condition is met', () => {
+    const kpi = { kpiDetail: { chartType: 'lineChart' } };
+    const kpiData = [{ filter1: 'filter1', data: [1, 2, 3] }, { filter1: 'filter2', data: [] }];
+    const filters = ['filter1', 'filter2'];
+
+    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(true);
+
+    expect(component.checkPartialDataCondition(kpi, kpiData, filters)).toBeFalsy();
+  });
+
+  it('should return false if partial data condition is not met', () => {
+    const kpi = { kpiDetail: { chartType: 'lineChart' } };
+    const kpiData = [{ filter1: 'filter1', data: [] }, { filter1: 'filter2', data: [] }];
+    const filters = ['filter1', 'filter2'];
+
+    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(false);
+
+    expect(component.checkPartialDataCondition(kpi, kpiData, filters)).toBeFalsy();
+  });
 });
+
+

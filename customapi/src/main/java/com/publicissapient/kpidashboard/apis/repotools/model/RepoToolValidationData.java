@@ -56,6 +56,6 @@ public class RepoToolValidationData {
 	private double defectRate;
 	private long addedLines;
 	private long changedLines;
-	private long defectPrs;
+	private long kpiPRs;
 
 }
