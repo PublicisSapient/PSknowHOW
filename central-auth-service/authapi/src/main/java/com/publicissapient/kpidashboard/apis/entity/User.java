@@ -79,7 +79,7 @@ public class User {
 
 	@SuppressWarnings("java:S107")
 	public User(String username, String password, String firstName, String lastName, String displayName, String email,
-			LocalDateTime createdDate, String authType, LocalDateTime modifiedDate, boolean userVerified) {
+			LocalDateTime createdDate, String authType, LocalDateTime modifiedDate, boolean userVerified , boolean approved) {
 		this.username = username;
 		this.password = hash(password);
 		this.firstName = firstName;
@@ -90,6 +90,7 @@ public class User {
 		this.authType = authType;
 		this.modifiedDate = modifiedDate;
 		this.userVerified = userVerified;
+		this.approved = approved;
 
 	}
 
