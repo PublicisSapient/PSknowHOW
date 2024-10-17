@@ -117,7 +117,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			notificationService.sendRecoverPasswordEmail(email, user.getUsername(), token);
 
 			return new ServiceResponseDTO(true, messageService.getMessage(
-					"success_forgot_password"), userService.getUserDTO(user));
+					"reset_password_link_sent"), userService.getUserDTO(user));
 		}
 
 		return new ServiceResponseDTO(false, messageService.getMessage(
