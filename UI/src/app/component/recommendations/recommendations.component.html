@@ -16,7 +16,7 @@
         </h5>
     </p-header>
     <div class="dialog-body p-mb-4">
-        <p-tabView>
+        <p-tabView *ngIf="!noRecommendations">
             <p-tabPanel *ngFor="let tab of tabs" [header]="tab"
                 [headerStyleClass]="'tab-'+tab.split(' ').join('-')?.toLowerCase()">
 
