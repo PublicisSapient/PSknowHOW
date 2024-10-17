@@ -16,5 +16,5 @@ public class UserInterfacePathsConfig {
 
 	private String validateUser;
 
-	private String uiResetPath;
+	private String resetPath;
 }
