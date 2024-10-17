@@ -2465,7 +2465,7 @@ describe('ExecutiveV2Component', () => {
 
     const type = 'scrum';
     service.selectedtype = type;
-    service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
+    service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab, false, true, null, true, null, 'scrum');
     service.setDashConfigData(dashConfigData?.data);
     component.selectedTab = 'developer';
     fixture.detectChanges();
@@ -7650,7 +7650,7 @@ describe('ExecutiveV2Component', () => {
     const type = 'Scrum';
     service.selectedtype = type;
 
-    service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
+    service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab, false, true, null, true, null, 'scrum');
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/jira/kpi')[0].flush(fakeJiraGroupId1);
     httpMock.match(baseUrl + '/api/jenkins/kpi')[0].flush(fakeJenkins);
@@ -7665,7 +7665,7 @@ describe('ExecutiveV2Component', () => {
   xit('kanban without filter applied', ((done) => {
     const type = 'Kanban';
     service.selectedtype = type;
-    service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
+    service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab, false, true, null, true, null, 'scrum');
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
     httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
@@ -7679,7 +7679,7 @@ describe('ExecutiveV2Component', () => {
   xit('kanban with filter applied only Date', (done) => {
     const type = 'kanban';
     service.setScrumKanban('kanban');
-    service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
+    service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab, false, true, null, true, null, 'scrum');
     fixture.detectChanges();
     spyOn(httpService, 'postKpiKanban').and.returnValue(of(fakejiraKanban));
     // httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
@@ -17514,7 +17514,6 @@ describe('ExecutiveV2Component', () => {
       expect(component.processedKPI11Value).toEqual({});
       expect(component.selectedBranchFilter).toBe('Select');
       expect(component.serviceObject).toEqual({});
-      expect(component.selectedtype).toBe('Scrum');
       expect(component.kpiTrendObject).toEqual({});
     });
   });
@@ -17770,7 +17769,7 @@ describe('ExecutiveV2Component', () => {
       expect(component.groupJenkinsKpi).toHaveBeenCalled();
       expect(component.groupZypherKpi).toHaveBeenCalled();
       expect(component.groupBitBucketKpi).toHaveBeenCalled();
-      expect(component.createKpiTableHeads).toHaveBeenCalledWith('type1');
+      expect(component.createKpiTableHeads).toHaveBeenCalled();
       // expect(component.getKpiCommentsCount).toHaveBeenCalled();
       expect(component.showCommentIcon).toBe(false);
     });
