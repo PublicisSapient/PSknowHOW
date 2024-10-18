@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDTO;
 
 /**
  *
@@ -92,7 +93,7 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets access request which has the project id
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @return access requests
 	 */

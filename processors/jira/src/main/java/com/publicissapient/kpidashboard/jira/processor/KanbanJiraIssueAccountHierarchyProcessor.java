@@ -19,7 +19,7 @@ package com.publicissapient.kpidashboard.jira.processor;
 
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
@@ -35,6 +35,6 @@ public interface KanbanJiraIssueAccountHierarchyProcessor {
 	 *            projectConfFieldMapping
 	 * @return Set of KanbanAccountHierarchy
 	 */
-	Set<KanbanAccountHierarchy> createKanbanAccountHierarchy(KanbanJiraIssue kanbanJiraIssue,
+	Set<ProjectHierarchy> createKanbanAccountHierarchy(KanbanJiraIssue kanbanJiraIssue,
 			ProjectConfFieldMapping projectConfFieldMapping);
 }

@@ -64,7 +64,6 @@ public class JiraIssueCustomHistory extends BasicModel {
 	 */
 	private String devicePlatform;
 	private String projectKey;
-	private String projectComponentId;
 
 	private String developerId;
 	private String developerName;
@@ -98,10 +97,10 @@ public class JiraIssueCustomHistory extends BasicModel {
 		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ", storyType="
 				+ storyType + ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
 				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
-				+ ", projectComponentId=" + projectComponentId + ", statusUpdationLog=" + statusUpdationLog
-				+ ", assigneeUpdationLog=" + assigneeUpdationLog + ", priorityUpdationLog=" + priorityUpdationLog
-				+ ", fixVersionUpdationLog=" + fixVersionUpdationLog + ", labelUpdationLog=" + labelUpdationLog
-				+ ", dueDateUpdationLog=" + dueDateUpdationLog + ", sprintUpdationLog=" + sprintUpdationLog + "]";
+				+ ", statusUpdationLog=" + statusUpdationLog + ", assigneeUpdationLog=" + assigneeUpdationLog
+				+ ", priorityUpdationLog=" + priorityUpdationLog + ", fixVersionUpdationLog=" + fixVersionUpdationLog
+				+ ", labelUpdationLog=" + labelUpdationLog + ", dueDateUpdationLog=" + dueDateUpdationLog
+				+ ", sprintUpdationLog=" + sprintUpdationLog + "]";
 	}
 
 }

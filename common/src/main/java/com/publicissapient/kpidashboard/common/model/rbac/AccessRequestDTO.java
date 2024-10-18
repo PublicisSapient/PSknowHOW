@@ -33,7 +33,7 @@ public class AccessRequestDTO {
 	private String status;
 	private String reviewComments;
 	private String role;
-	private AccessNode accessNode;
+	private AccessNodeDTO accessNode;
 
 	private boolean deleted;
 

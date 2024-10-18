@@ -48,11 +48,11 @@ public class ApplicationStartupListener implements ApplicationListener<Applicati
 		configHelperService.calculateCriteria();
 		configHelperService.calculateCriteriaForCircleKPI();
 		configHelperService.loadProjectBasicTree();
-		configHelperService.loadHierarchyLevelSuggestion();
 		configHelperService.loadFieldMappingStructure();
 		configHelperService.loadUserBoardConfig();
 		configHelperService.loadAllProjectToolConfig();
 		configHelperService.loadAllFilters();
+		configHelperService.loadAllOrganizationHierarchy();
 		configHelperService.loadConfigData();
 		configHelperService.loadBoardMetaData();
 		configHelperService.loadToolConfig();

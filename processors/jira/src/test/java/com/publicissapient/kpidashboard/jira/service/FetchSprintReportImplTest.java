@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
@@ -108,6 +109,10 @@ public class FetchSprintReportImplTest {
 		projectConfig.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		projectConfig.setJira(projectToolConfig);
 		projectConfig.setProjectToolConfig(toolConfig);
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
+		projectBasicConfig.setProjectNodeId("projectNodeId");
+		projectConfig.setProjectBasicConfig(projectBasicConfig);
 
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setJiraStoryPointsCustomField(null);
