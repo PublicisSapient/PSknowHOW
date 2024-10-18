@@ -21,13 +21,15 @@ package com.publicissapient.kpidashboard.apis.entity;
 import java.util.Calendar;
 import java.util.Date;
 
-import lombok.*;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -45,7 +47,6 @@ public class ForgotPasswordToken {
 	private Date expiryDate;
 
 	private String username;
-
 
 	public void setExpiryDate(int minutes) {
 		Calendar now = Calendar.getInstance();

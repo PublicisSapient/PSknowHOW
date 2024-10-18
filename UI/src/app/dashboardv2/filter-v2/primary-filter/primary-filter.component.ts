@@ -174,7 +174,7 @@ export class PrimaryFilterComponent implements OnChanges {
         this.service.setNoSprints(false);
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
           let addtnlStateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
-          if (addtnlStateFilters && (!this.previousSelectedFilters?.length || this.arraysEqual(this.selectedFilters, this.previousSelectedFilters))) {
+          if (addtnlStateFilters && (!this.previousSelectedFilters?.length || this.arraysEqual(this.selectedFilters, this.previousSelectedFilters)) && this.selectedTab !== 'developer') {
             let combinedEvent = {};
             combinedEvent['additional_level'] = addtnlStateFilters;
             combinedEvent['primary_level'] = [...this.selectedFilters];

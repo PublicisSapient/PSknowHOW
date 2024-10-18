@@ -1,31 +1,43 @@
 package com.publicissapient.kpidashboard.apis.controller;
 
+import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.ERROR_REGISTER_AGAIN;
+import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.SUCCESS_SENT_APPROVAL;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
-import com.publicissapient.kpidashboard.apis.service.dto.*;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.UserInterfacePathsConfig;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.service.*;
+import com.publicissapient.kpidashboard.apis.service.MessageService;
+import com.publicissapient.kpidashboard.apis.service.StandardAuthenticationService;
+import com.publicissapient.kpidashboard.apis.service.UserApprovalService;
+import com.publicissapient.kpidashboard.apis.service.UserVerificationTokenService;
+import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ForgotPasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ResetPasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.UserDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.UserNameRequestDTO;
 
-import static com.publicissapient.kpidashboard.apis.constant.CommonConstant.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @AllArgsConstructor
@@ -48,41 +60,41 @@ public class StandardAuthenticationController {
 	public ResponseEntity<ServiceResponseDTO> registerUser(@Valid @RequestBody UserDTO request) {
 		boolean isSuccess = standardAuthenticationService.registerUser(request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess, isSuccess ?
-				messageService.getMessage(SUCCESS_SENT_APPROVAL) :
-				messageService.getMessage(ERROR_REGISTER_AGAIN), request.getUsername()));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponseDTO(isSuccess, isSuccess ? messageService.getMessage(SUCCESS_SENT_APPROVAL)
+						: messageService.getMessage(ERROR_REGISTER_AGAIN), request.getUsername()));
 	}
 
 	@GetMapping("/user-approvals/pending")
 	public ResponseEntity<ServiceResponseDTO> getAllUnapprovedUsers() {
-		return ResponseEntity.status(HttpStatus.OK)
-							 .body(new ServiceResponseDTO(true, messageService.getMessage("success_pending_approval"),
-														  userApprovalService.findAllUnapprovedUsers()
-							 ));
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(true,
+				messageService.getMessage("success_pending_approval"), userApprovalService.findAllUnapprovedUsers()));
 	}
 
 	@PutMapping(value = "/approve", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponseDTO> approveUserCreationRequest(@Valid @RequestBody UserNameRequestDTO usernameRequestDTO) {
+	public ResponseEntity<ServiceResponseDTO> approveUserCreationRequest(
+			@Valid @RequestBody UserNameRequestDTO usernameRequestDTO) {
 		boolean isSuccess = userApprovalService.approveUser(usernameRequestDTO.getUsername());
 
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess, isSuccess ?
-				messageService.getMessage("success_request_approve") :
-				messageService.getMessage("error_request_approve"), isSuccess));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponseDTO(isSuccess, isSuccess ? messageService.getMessage("success_request_approve")
+						: messageService.getMessage("error_request_approve"), isSuccess));
 
 	}
 
 	@PutMapping(value = "/reject", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponseDTO> deleteUser(@Valid @RequestBody UserNameRequestDTO usernameRequestDTO) {
 		boolean isSuccess = userApprovalService.rejectUser(usernameRequestDTO.getUsername());
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess, isSuccess ?
-				messageService.getMessage("rejected_user_deleted") :
-				messageService.getMessage("error_delete_user"), isSuccess));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ServiceResponseDTO(isSuccess, isSuccess ? messageService.getMessage("rejected_user_deleted")
+						: messageService.getMessage("error_delete_user"), isSuccess));
 	}
 
 	@PostMapping(value = "/forgot-password", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponseDTO> processForgotPassword(
 			@RequestBody ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
-		return ResponseEntity.ok().body(standardAuthenticationService.processForgotPassword(forgotPasswordRequestDTO.getEmail()));
+		return ResponseEntity.ok()
+				.body(standardAuthenticationService.processForgotPassword(forgotPasswordRequestDTO.getEmail()));
 	}
 
 	/**
@@ -95,11 +107,12 @@ public class StandardAuthenticationController {
 	 *
 	 * @param updatedPasswordRequest
 	 * @return ServiceResponse with <tt>sucess</tt> if the request is valid and
-	 * incase of a invalid request appends the logError message with
-	 * response code <tt>-14</tt>
+	 *         incase of a invalid request appends the logError message with
+	 *         response code <tt>-14</tt>
 	 */
 	@PostMapping(value = "/reset-password", produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponseDTO> resetPassword(@RequestBody ResetPasswordRequestDTO updatedPasswordRequest) {
+	public ResponseEntity<ServiceResponseDTO> resetPassword(
+			@RequestBody ResetPasswordRequestDTO updatedPasswordRequest) {
 		boolean isSuccess = false;
 		UserDTO user = null;
 		try {
@@ -115,27 +128,27 @@ public class StandardAuthenticationController {
 			return ResponseEntity.badRequest().body(new ServiceResponseDTO(isSuccess, e.getMessage(), null));
 		}
 		return ResponseEntity.ok()
-							 .body(new ServiceResponseDTO(isSuccess, messageService.getMessage("success_reset_password"),
-														  user
-							 ));
+				.body(new ServiceResponseDTO(isSuccess, messageService.getMessage("success_reset_password"), user));
 	}
 
 	/**
 	 * Change password.
 	 *
-	 * @param response the http servlet response
-	 * @param request  the request
+	 * @param response
+	 *            the http servlet response
+	 * @param request
+	 *            the request
 	 * @return the response entity
-	 * @throws IOException      the io exception
-	 * @throws ServletException the servlet exception
+	 * @throws IOException
+	 *             the io exception
+	 * @throws ServletException
+	 *             the servlet exception
 	 */
 	@PostMapping(value = "/change-password", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request,
-															 HttpServletResponse response) { // NOSONAR
+			HttpServletResponse response) { // NOSONAR
 		return ResponseEntity.ok().body(standardAuthenticationService.changePassword(request, response));
 	}
-
-
 
 	@GetMapping(value = "/validateEmailToken", produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public RedirectView validateToken(@RequestParam("token") UUID token) {
@@ -146,9 +159,9 @@ public class StandardAuthenticationController {
 		String baseUiUrl = authConfig.getBaseUiUrl();
 
 		if (tokenStatus != null && tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
-			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getUiResetPath() + token);
+			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getResetPath() + token);
 		} else {
-			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getUiResetPath() + tokenStatus);
+			return new RedirectView(baseUiUrl + userInterfacePathsConfig.getResetPath() + tokenStatus);
 		}
 	}
 

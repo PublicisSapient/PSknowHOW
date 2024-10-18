@@ -95,28 +95,11 @@ public class SprintClientImpl implements SprintClient {
 				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)) {
 					if (projectConfig.getProjectToolConfig().getAzureRefreshActiveSprintReport()) {
-						// update all issues before sprint future sprint start
-						List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter,
-								azureServer, projectConfig, fetchedSprintDetails);
-
-						Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
-						Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
-						Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
-						prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
-								toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
-
-						fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
-						fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
-						fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
-
-						fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-						fetchedSprintDetails.setProcessorId(azureProcessorId);
-						fetchedSprintDetails.setId(dbSprintDetails.getId());
+						// if azurerefreshSprintReport is active- then treat it just like the case
+						// when in db sprint is future and from server it is active.
+						overrideDBSprintReport(projectConfig, azureAdapter, azureServer, fetchedSprintDetails,
+								completedIssuesStatus, azureProcessorId, dbSprintDetails);
 						toBeSavedSprintDetails.add(fetchedSprintDetails);
-						log.debug(
-								"refreshing sprint Id from the start -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
-								fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
-								getIssuesIdList(toBeSavedNotCompletedIssues));
 					} else {
 						log.debug(
 								"DB Active Sprint State -> {} , dbCompletedIssues -> {} , dbNotCompletedIssues -> {} , dbAddedIssues -> {} , dbPuntedIssues -> {}",
@@ -199,27 +182,9 @@ public class SprintClientImpl implements SprintClient {
 				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE)) {
 					// update all issues before sprint future sprint start
-					List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer,
-							projectConfig, fetchedSprintDetails);
-
-					Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
-					Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
-					Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
-					prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
-							toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
-
-					fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
-					fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
-					fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
-
-					fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-					fetchedSprintDetails.setProcessorId(azureProcessorId);
-					fetchedSprintDetails.setId(dbSprintDetails.getId());
+					overrideDBSprintReport(projectConfig, azureAdapter, azureServer, fetchedSprintDetails,
+							completedIssuesStatus, azureProcessorId, dbSprintDetails);
 					toBeSavedSprintDetails.add(fetchedSprintDetails);
-					log.debug(
-							"fetched sprint Id -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
-							fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
-							getIssuesIdList(toBeSavedNotCompletedIssues));
 				}
 			}
 		});
@@ -227,6 +192,32 @@ public class SprintClientImpl implements SprintClient {
 		sprintRepository.saveAll(toBeSavedSprintDetails);
 
 		iterationStatusUpdateSPIssuesShuffle(projectConfig, completedIssuesStatus);
+	}
+
+	private void overrideDBSprintReport(ProjectConfFieldMapping projectConfig, AzureAdapter azureAdapter,
+			AzureServer azureServer, SprintDetails fetchedSprintDetails, List<String> completedIssuesStatus,
+			ObjectId azureProcessorId, SprintDetails dbSprintDetails) {
+		List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer, projectConfig,
+				fetchedSprintDetails);
+
+		Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
+		Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
+		Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
+		prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
+				toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
+
+		fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
+		fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
+		fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
+
+		fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+		fetchedSprintDetails.setProcessorId(azureProcessorId);
+		fetchedSprintDetails.setId(dbSprintDetails.getId());
+
+		log.debug(
+				"refreshing sprint Id from the start -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
+				fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
+				getIssuesIdList(toBeSavedNotCompletedIssues));
 	}
 
 	/**

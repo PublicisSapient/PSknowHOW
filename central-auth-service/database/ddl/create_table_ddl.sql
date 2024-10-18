@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 	saml_email VARCHAR(250),
 	password VARCHAR(250),
 	first_name VARCHAR(100) NOT NULL,
-	last_name VARCHAR(100) NOT NULL,
+	last_name VARCHAR(100),
 	display_name VARCHAR(250) NOT NULL,
 	email VARCHAR(250) NOT NULL,
 	approved BOOLEAN DEFAULT FALSE,
