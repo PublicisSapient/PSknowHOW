@@ -389,12 +389,13 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 					.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
 			Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssueHistoryDataList = historyDataList.stream()
 					.collect(Collectors.groupingBy(JiraIssueCustomHistory::getBasicProjectConfigId));
-
+			List<String> leadTimeTools = new ArrayList<>();
 			projectLeafNodeList.forEach(node -> {
 				String trendLineName = node.getProjectFilter().getName();
 				String basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId().toString();
 
 				String leadTimeConfigRepoTool = projectWiseLeadTimeConfigRepoTool.get(basicProjectConfigId);
+				leadTimeTools.add(leadTimeConfigRepoTool);
 				List<JiraIssueCustomHistory> jiraIssueHistoryDataList = projectWiseJiraIssueHistoryDataList
 						.get(basicProjectConfigId);
 				List<JiraIssue> jiraIssueDataList = projectWiseJiraIssueList.get(basicProjectConfigId);
@@ -431,6 +432,9 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			});
 			kpiElement.setExcelData(excelData);
 			kpiElement.setExcelColumns(KPIExcelColumn.LEAD_TIME_FOR_CHANGE.getColumns());
+			if(CollectionUtils.isNotEmpty(leadTimeTools) && leadTimeTools.contains(CommonConstant.REPO)) {
+				kpiElement.setExcelColumns(KPIExcelColumn.LEAD_TIME_FOR_CHANGE_REPO.getColumns());
+			}
 		}
 	}
 

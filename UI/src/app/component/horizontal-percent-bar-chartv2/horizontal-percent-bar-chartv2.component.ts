@@ -122,21 +122,21 @@ export class HorizontalPercentBarChartv2Component implements OnChanges {
           const xAxis = svg.append('g')
             .attr('transform', `translate(10, ${height})`)
             .attr('class', 'xAxis')
-            .call(d3.axisBottom(x).tickSize(0).tickFormat(d => d + '%').ticks(6));
+            .call(d3.axisBottom(x).tickSize(0).tickFormat(d => '').ticks(6)); //Removed text as part of fixthom
           xAxis.selectAll('path')
             .style('display', 'none');
   
-          //Add vertical gridlines for each x tick
-          svg.append('g')
-            .attr('transform', `translate(10, ${height})`).selectAll('line.gridline').data(x.ticks(6)).enter()
-            .append('svg:line')
-            .attr('x1', d => x(d))
-            .attr('x2', d => x(d))
-            .attr('y1', 0)
-            .attr('y2', -height)
-            .style('stroke', '#BDBDBD')
-            .style('fill', 'none')
-            .attr('class', 'gridline');
+          //Add vertical gridlines for each x tick 
+          // svg.append('g')
+          //   .attr('transform', `translate(10, ${height})`).selectAll('line.gridline').data(x.ticks(6)).enter()
+          //   .append('svg:line')
+          //   .attr('x1', d => x(d))
+          //   .attr('x2', d => x(d)) //Hide verticle lines part of fixthon
+          //   .attr('y1', 0)
+          //   .attr('y2', -height)
+          //   .style('stroke', '#BDBDBD')
+          //   .style('fill', 'none')
+          //   .attr('class', 'gridline');
   
           // Add Y axis
           const yAxis = svg.append('g')

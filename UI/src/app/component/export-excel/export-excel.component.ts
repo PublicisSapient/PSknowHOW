@@ -219,15 +219,21 @@ export class ExportExcelComponent implements OnInit {
     return typeof value === 'object' && value !== null;
   }
 
-  customSort(event: SortEvent) {
+  //custom sort for sorting Range. 
+  customSort(event: any) {
     let result = null;
     event.data.sort((data1, data2) => {
+        let value1 = data1[event.field];
+      let value2 = data2[event.field];
       const utcDate1: any = !isNaN(new Date(data1[event.field]).getTime()) && new Date(data1[event.field]).toISOString().slice(0, 10);
       const utcDate2: any = !isNaN(new Date(data2[event.field]).getTime()) && new Date(data2[event.field]).toISOString().slice(0, 10);
-      if (event.field === 'Created Date' || event.field === 'Closed Date') {
+      if (event.field.toLowerCase().includes('date')) {
         result = (utcDate1 < utcDate2) ? -1 : (utcDate1 > utcDate2) ? 1 : 0;
-      }
-      else {
+      } else if(event.field === 'Weeks'){
+        const date1 = new Date(value1.split('to')[0]);
+            const date2 = new Date(value2.split('to')[0]);
+             result = date1.getTime() - date2.getTime();
+      } else {
         result = data1[event.field].localeCompare(data2[event.field])
       }
       return event.order * result;

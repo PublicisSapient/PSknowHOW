@@ -161,3 +161,9 @@ label.btn-import-label {
   color: white !important;
   opacity: 0.6;
 } 
+
+.link{
+  color : var(--color-secondary-blue);
+  cursor: pointer;
+  text-decoration: underline;
+}

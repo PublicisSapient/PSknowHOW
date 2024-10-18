@@ -287,13 +287,22 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 			List<MeanTimeRecoverData> meanTimeRecoverListCurrentTime) {
 		double timeToRecover = meanTimeRecoverListCurrentTime.stream().filter(data -> data.getTimeToRecover() != null)
 				.mapToDouble(data -> Double.parseDouble(data.getTimeToRecover())).sum();
+		long count = meanTimeRecoverListCurrentTime.stream().filter(data -> data.getTimeToRecover() != null).count();
+		double meanTime = 0.0;
+		if (count != 0) {
+			meanTime = timeToRecover / count;
+		}
+
+		Map<String, Object> hoverMap = new HashMap<>();
+		hoverMap.put("Total Time", timeToRecover);
+		hoverMap.put("Issue Count", count);
 
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(timeToRecover));
+		dataCount.setData(String.valueOf(meanTime));
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setDate(weekOrMonthName);
-		dataCount.setValue(timeToRecover);
-		dataCount.setHoverValue(new HashMap<>());
+		dataCount.setValue(meanTime);
+		dataCount.setHoverValue(hoverMap);
 		return dataCount;
 	}
 

@@ -27,7 +27,7 @@
     <span *ngIf="primaryFilterConfig && primaryFilterConfig['type'] === 'singleSelect'" class="p-float-label">
         <p-dropdown *ngIf="selectedFilters" inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]"
             placeholder="Select"  optionLabel="nodeName"
-            [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}" (onChange)="applyPrimaryFilters($event)"
+            [style]="{'width':'300px', 'max-width': '100%', 'height': '40px'}" (onChange)="onDropdownChange($event)"
             [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }" [appendTo]="filterDiv"
             [filter]="true" [hidden]="selectedTab === 'iteration'">
             <ng-template pTemplate="selectedItem" *ngIf="selectedFilters?.length">

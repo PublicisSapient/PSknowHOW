@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -356,9 +357,11 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 				codeBuildTimeInfo.addBuidJob(build.getBuildJob());
 			}
 			codeBuildTimeInfo.addBuildUrl(build.getBuildUrl());
-			codeBuildTimeInfo.addBuildStartTime(new Date(build.getStartTime()).toString());
+			codeBuildTimeInfo.addBuildStartTime(
+					DateUtil.dateTimeFormatter(new Date(build.getStartTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 			codeBuildTimeInfo.addWeeks(date);
-			codeBuildTimeInfo.addBuildEndTime(new Date(build.getEndTime()).toString());
+			codeBuildTimeInfo.addBuildEndTime(
+					DateUtil.dateTimeFormatter(new Date(build.getEndTime()), DateUtil.DISPLAY_DATE_TIME_FORMAT));
 			codeBuildTimeInfo.addDuration(createDurationString(minutes, seconds));
 			codeBuildTimeInfo.addBuildStatus(build.getBuildStatus().toString());
 			codeBuildTimeInfo.addStartedBy(build.getStartedBy());

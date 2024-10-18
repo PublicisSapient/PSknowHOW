@@ -91,7 +91,7 @@ public class SonarServiceKanbanRTest {
 	@Mock
 	private CommonService commonService;
 	@Mock
-	private SonarViolationsKanbanServiceImpl sonarViolationsService;
+	private CodeViolationsKanbanServiceImpl sonarViolationsService;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
 	@SuppressWarnings("rawtypes")
