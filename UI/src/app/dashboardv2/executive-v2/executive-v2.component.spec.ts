@@ -18010,6 +18010,56 @@ describe('ExecutiveV2Component', () => {
 
     expect(component.checkPartialDataCondition(kpi, kpiData, filters)).toBeFalsy();
   });
+
+  describe('ExecutiveV2Component.checkAllValues() checkAllValues method', () => {
+    // Happy path tests
+    describe('Happy Path', () => {
+      it('should return true when at least one value is a number', () => {
+        const arr = [{ value: '123' }, { value: 'abc' }];
+        const result = component.checkAllValues(arr, 'value');
+        expect(result).toBe(true);
+      });
+  
+      it('should return false when no values are numbers', () => {
+        const arr = [{ value: 'abc' }, { value: 'def' }];
+        const result = component.checkAllValues(arr, 'value');
+        expect(result).toBe(false);
+      });
+    });
+  
+    // Edge case tests
+    describe('Edge Cases', () => {
+      it('should return false for an empty array', () => {
+        const arr: any[] = [];
+        const result = component.checkAllValues(arr, 'value');
+        expect(result).toBe(false);
+      });
+  
+      it('should return false when the property does not exist', () => {
+        const arr = [{ otherProp: '123' }];
+        const result = component.checkAllValues(arr, 'value');
+        expect(result).toBe(false);
+      });
+  
+      it('should return true when the property is a number in string format', () => {
+        const arr = [{ value: '123.45' }];
+        const result = component.checkAllValues(arr, 'value');
+        expect(result).toBe(true);
+      });
+  
+      it('should return false when the property is NaN', () => {
+        const arr = [{ value: 'NaN' }];
+        const result = component.checkAllValues(arr, 'value');
+        expect(result).toBe(false);
+      });
+  
+      it('should handle mixed types and return true if any number is present', () => {
+        const arr = [{ value: 'abc' }, { value: '123' }, { value: null }];
+        const result = component.checkAllValues(arr, 'value');
+        expect(result).toBe(true);
+      });
+    });
+  });
 });
 
 
