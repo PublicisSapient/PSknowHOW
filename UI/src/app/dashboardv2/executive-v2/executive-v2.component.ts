@@ -1906,16 +1906,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           // dataCount += item?.data;
           ++dataCount;
         } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-          if (item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
+          if (item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data')) {
             if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
               ++dataCount;
-            } else if (parseInt(item.value[0].data) > 0) {
+            } else if (this.checkAllValues(item.value, 'data')) {
               ++dataCount;
             }
           } else if (this.checkIfArrayHasData(item.value[0])) {
             if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
               ++dataCount;
-            } else if (parseInt(item.value[0].value[0].data) > 0) {
+            } else if (this.checkAllValues(item.value[0].value, 'data')) {
               ++dataCount;
             }
           } else if (item.value.length) {
@@ -1934,6 +1934,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   checkIfArrayHasData(item) {
     return (Array.isArray(item.value) && item.value.length > 0)
   }
+
+  checkAllValues(arr, prop) {
+    let result = false;
+    for (let i = 0; i < arr.length; i++) {
+      if (!isNaN(parseFloat(arr[i][prop]))) {
+        result = true;
+        break;
+      }
+    }
+    return result;
+  }
+
 
   checkIfPartialDataPresent(kpi) {
     let kpiData = this.ifKpiExist(kpi.kpiId) >= 0 ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
