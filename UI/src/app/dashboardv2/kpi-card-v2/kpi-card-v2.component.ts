@@ -364,12 +364,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   checkIfDataPresent(data) {
-    if((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
+    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
       if (this.trendValueList?.length) {
         return true;
       }
     }
-    if((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')) {
+    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')) {
       if (this.trendValueList?.length && this.trendValueList[0].value?.length) {
         return true;
       }
@@ -407,8 +407,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           // dataCount += item?.data;
           ++dataCount;
         } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-          if (this.checkIfArrayHasData(item) && item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
-
+          if (this.checkIfArrayHasData(item) && item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data')) {
             ++dataCount;
           } else if (this.checkIfArrayHasData(item) && this.checkIfArrayHasData(item.value) && this.checkIfArrayHasData(item.value[0].value)) {
             ++dataCount;
@@ -421,6 +420,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       dataCount = Object.keys(data).length;
     }
     return parseInt(dataCount + '') > 0;
+  }
+
+  checkAllValues(arr, prop) {
+    let result = false;
+    for (let i = 0; i < arr.length; i++) {
+      if (!isNaN(parseFloat(arr[i][prop]))) {
+        result = true;
+        break;
+      }
+    }
+    return result;
   }
 
   checkIfArrayHasData(item) {
