@@ -103,7 +103,7 @@ public class CacheServiceImpl implements CacheService {
 		return accountHierarchyDataList.stream()
 				.filter(data -> data.getNode().stream()
 						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-								&& node.getAccountHierarchy().getSprintState() != null)).toList();
+								&& node.getProjectHierarchy().getSprintState() != null)).toList();
 
 	}
 
