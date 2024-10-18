@@ -91,3 +91,6 @@
     max-width: 90vw !important;
     min-width: 544px;
 }
+.red {
+    color: var(--color-red);
+}

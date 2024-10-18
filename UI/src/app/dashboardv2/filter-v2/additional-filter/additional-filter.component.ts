@@ -104,7 +104,14 @@ export class AdditionalFilterComponent implements OnChanges {
         }
       }
       else {
-        this.filterData = [];
+        if (this.selectedTab !== 'developer') {
+          this.filterData = [];
+        } else {
+          if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
+            this.filterData = [];
+            this.previousSelectedTrends = [...this.selectedTrends];
+          }
+        }
       }
     }));
   }
@@ -153,6 +160,7 @@ export class AdditionalFilterComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
       this.filterSet = new Set();
+      this.filterData = [];
       this.selectedFilters = [];
     }
   }
