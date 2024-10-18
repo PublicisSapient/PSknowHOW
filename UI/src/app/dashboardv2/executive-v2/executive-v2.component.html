@@ -377,7 +377,11 @@
 </ng-template>
 <ng-template #noFilterApplyDataTemplate>
     <div class="p-d-flex p-align-center p-justify-center no-sprint-msg p-pb-5">
-        <h2 class="msg">The selected project need to have atleast one {{ selectedTab }} available for the KPI's to show
+        <h2 class="msg" *ngIf="selectedTab === 'iteration' || selectedTab ==='release'">The selected project need to
+            have atleast one {{ selectedTab }} available for the KPI's to show
+            up</h2>
+        <h2 class="msg" *ngIf="selectedTab !== 'iteration' && selectedTab !=='release'">The selected project need to
+            have atleast one project available for the KPI's to show
             up</h2>
     </div>
 </ng-template>

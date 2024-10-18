@@ -70,7 +70,7 @@ export class ParentFilterComponent implements OnChanges {
               this.handleSelectedLevelChange(true);
               return;
             }
-          } else {
+          } else if (this.filterLevels?.length) {
             this.selectedLevel = this.filterLevels[0];
             this.handleSelectedLevelChange(true);
             return;
@@ -103,12 +103,14 @@ export class ParentFilterComponent implements OnChanges {
         this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName });
       }
     } else {
-      let selectedNode = this.filterData[this['parentFilterConfig']['labelName']].filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
-      this.onSelectedLevelChange.emit({ nodeId: selectedNode[0]?.nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
-      if (parentLevelChanged) {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0], 'primary_level': null });
-      } else {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0] });
+      let selectedNode = this.filterData[this['parentFilterConfig']['labelName']]?.filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
+      if (selectedNode && selectedNode[0]) {
+        this.onSelectedLevelChange.emit({ nodeId: selectedNode[0]?.nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
+        if (parentLevelChanged) {
+          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0], 'primary_level': null });
+        } else {
+          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0] });
+        }
       }
     }
   }
