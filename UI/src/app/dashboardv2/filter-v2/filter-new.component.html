@@ -3,10 +3,10 @@
   <div class="p-d-flex p-col-fixed p-pl-0 p-pr-0 scrum-kanban-switch">
     <div class="tabs">
       <div class="tab" (click)="setSelectedType('Scrum')"
-        [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled }">Scrum
+        [ngClass]="{ 'active': selectedType === 'scrum', 'disabled': !kanbanRequired?.enabled || !scrumProjectsAvailable }">Scrum
       </div>
       <div class="tab" (click)="setSelectedType('Kanban')"
-        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled }">
+        [ngClass]="{ 'active': selectedType === 'kanban', 'disabled': !kanbanRequired?.enabled || !kanbanProjectsAvailable }">
         Kanban</div>
     </div>
   </div>

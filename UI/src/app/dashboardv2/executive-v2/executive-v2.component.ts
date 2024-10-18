@@ -164,6 +164,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.noFilterApplyData = res;
     }));
 
+    this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
+      this.noFilterApplyData = res;
+      if(res) {
+        this.noProjects = true;
+      } else {
+        this.noProjects = false;
+      }
+    }));
+
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
       this.maturityTableKpiList = [];
       this.colorObj = x;
@@ -331,6 +340,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noFilterApplyData = true;
       } else {
         this.noFilterApplyData = false;
+        this.noProjects = false;
         this.filterData = $event.filterData;
         this.filterApplyData = $event.filterApplyData;
         this.noOfFilterSelected = Object.keys(this.filterApplyData).length;

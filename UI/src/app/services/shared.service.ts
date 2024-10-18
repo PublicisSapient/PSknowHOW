@@ -281,7 +281,7 @@ export class SharedService {
   }
 
   // calls when user select different Tab (executive , quality etc)
-  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true, configDetails = null, loading = false, dashConfigData = null, selectedType = '') {
+  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true, configDetails = null, loading = false, dashConfigData = null, selectedType = null) {
     this.sharedObject = {};
     this.sharedObject.masterData = masterData;
     this.sharedObject.filterData = filterData;

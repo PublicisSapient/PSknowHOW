@@ -67,6 +67,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   noSprint: boolean = false;
   projectList = null;
   blockUI: boolean = false;
+
+  kanbanProjectsAvailable: boolean = true;
+  scrumProjectsAvailable: boolean = true;
+
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -175,7 +179,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         if (res.data) {
           this.hierarchies = res.data;
           localStorage.setItem('completeHierarchyData', JSON.stringify(this.hierarchies));
-          this.getFiltersData();
+          this.getFiltersData(true);
         }
       });
     } else {
@@ -262,7 +266,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  getFiltersData() {
+  getFiltersData(firstLoad = false) {
     this.selectedFilterData = {};
     this.selectedFilterData['kanban'] = this.kanban;
     this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
@@ -279,6 +283,47 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
         })
       );
+
+      if (firstLoad) {
+        this.selectedFilterData['kanban'] = true;
+        this.selectedFilterData['sprintIncluded'] = ['CLOSED'];
+        this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+          if (filterApiData['success']) {
+            if (filterApiData['data'].length >= 0) {
+              let kanbanProjects = filterApiData['data'].filter(x => x.labelName === 'project');
+              if (!kanbanProjects?.length) {
+                this.kanbanProjectsAvailable = false;
+                this.service.setNoProjects(true);
+              } else {
+                this.kanbanProjectsAvailable = true;
+                this.service.setNoProjects(false);
+              }
+            }
+          } else {
+            // error
+          }
+        });
+
+
+        this.selectedFilterData['kanban'] = false;
+        this.selectedFilterData['sprintIncluded'] = ['CLOSED', 'ACTIVE'];
+        this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+          if (filterApiData['success']) {
+            if (filterApiData['data'].length >= 0) {
+              let scrumProjects = filterApiData['data'].filter(x => x.labelName === 'project');
+              if (!scrumProjects?.length) {
+                this.scrumProjectsAvailable = false;
+                this.service.setNoProjects(true);
+              } else {
+                this.scrumProjectsAvailable = true;
+                this.service.setNoProjects(false);
+              }
+            }
+          } else {
+            // error
+          }
+        });
+      }
     }
   }
 
@@ -294,6 +339,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         result[category].push(currentItem);
         return result;
       }, {});
+      if(this.filterDataArr[this.selectedType]?.length) {
+        this.service.setNoProjects(false);
+      }
       this.setCategories();
     }
   }
@@ -307,27 +355,32 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
     dataCopy = this.removeUndefinedProperties(dataCopy);
     this.filterDataArr[this.selectedType] = dataCopy;
-    if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
-      let stateFilters = this.helperService.getBackupOfFilterSelectionState();
-      if (stateFilters && stateFilters['primary_level']) {
-        let selectedProject;
-        if (stateFilters['primary_level'][0].labelName === 'project') {
-          selectedProject = stateFilters['primary_level'][0];
-        } else {
-          selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
-        }
-        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
-      } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
-        let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
-        if (selectedProject) {
+    if (this.filterDataArr[this.selectedType][this.selectedLevel]?.length) {
+      if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
+        this.service.setNoProjects(false);
+        let stateFilters = this.helperService.getBackupOfFilterSelectionState();
+        if (stateFilters && stateFilters['primary_level']) {
+          let selectedProject;
+          if (stateFilters['primary_level'][0].labelName === 'project') {
+            selectedProject = stateFilters['primary_level'][0];
+          } else {
+            selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
+          }
           this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+        } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
+          let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
+          if (selectedProject) {
+            this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+          }
         }
-      }
-      else {
-        let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
-        if (selectedProject) {
-          this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+        else {
+          let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
+          if (selectedProject) {
+            this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+          }
         }
+      } else {
+        this.getBoardConfig([]);
       }
     } else {
       this.getBoardConfig([]);
