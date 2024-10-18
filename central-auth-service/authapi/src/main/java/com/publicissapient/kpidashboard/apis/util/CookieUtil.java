@@ -20,12 +20,11 @@ package com.publicissapient.kpidashboard.apis.util;
 import java.util.Arrays;
 import java.util.Optional;
 
-import lombok.NoArgsConstructor;
-
-import jakarta.validation.constraints.NotNull;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class CookieUtil {
@@ -57,10 +56,8 @@ public class CookieUtil {
 		return getCookie(request, name).map(Cookie::getValue);
 	}
 
-	public static void addCookie(
-			@NotNull HttpServletResponse response, @NotNull String name, @NotNull String path, @NotNull String value,
-			boolean httpOnly, int maxAge, String domain, boolean isSameSite, boolean isSecure
-	) {
+	public static void addCookie(@NotNull HttpServletResponse response, @NotNull String name, @NotNull String path,
+			@NotNull String value, boolean httpOnly, int maxAge, String domain, boolean isSameSite, boolean isSecure) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setPath(path);
 		cookie.setHttpOnly(httpOnly);
@@ -73,32 +70,23 @@ public class CookieUtil {
 		response.addCookie(cookie);
 	}
 
-	public static void addCookie(
-			@NotNull HttpServletResponse response, @NotNull String name, @NotNull String value, boolean httpOnly,
-			int maxAge, String domain, boolean isSameSite, boolean isSecure
-	) {
+	public static void addCookie(@NotNull HttpServletResponse response, @NotNull String name, @NotNull String value,
+			boolean httpOnly, int maxAge, String domain, boolean isSameSite, boolean isSecure) {
 		addCookie(response, name, DEFAULT_COOKIE_PATH, value, httpOnly, maxAge, domain, isSameSite, isSecure);
 	}
 
-	public static void addCookie(
-			@NotNull HttpServletResponse response, @NotNull String name, @NotNull String value, int maxAge,
-			String domain, boolean isSameSite, boolean isSecure
-	) {
+	public static void addCookie(@NotNull HttpServletResponse response, @NotNull String name, @NotNull String value,
+			int maxAge, String domain, boolean isSameSite, boolean isSecure) {
 		addCookie(response, name, API_COOKIE_PATH, value, Boolean.TRUE, maxAge, domain, isSameSite, isSecure);
 	}
 
-	public static void deleteCookie(
-			@NotNull HttpServletRequest request,
-			@NotNull HttpServletResponse response,
-			@NotNull String domain,
-			@NotNull String name,
-			@NotNull String path
-	) {
+	public static void deleteCookie(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+			@NotNull String domain, @NotNull String name, @NotNull String path) {
 		getCookie(request, name).ifPresent(foundCookie -> {
 			foundCookie.setMaxAge(0);
 			foundCookie.setValue("");
 			foundCookie.setPath(path);
-            foundCookie.setDomain(domain);
+			foundCookie.setDomain(domain);
 			response.addCookie(foundCookie);
 		});
 	}

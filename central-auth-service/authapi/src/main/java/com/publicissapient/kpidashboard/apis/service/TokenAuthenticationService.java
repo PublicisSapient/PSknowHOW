@@ -21,13 +21,13 @@ package com.publicissapient.kpidashboard.apis.service;
 import java.util.Collection;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
+
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 
 public interface TokenAuthenticationService {
 
@@ -36,7 +36,8 @@ public interface TokenAuthenticationService {
 	// will create the two cookies: authCookie & authCookie_EXPIRY
 	void addStandardCookies(String jwt, HttpServletResponse response);
 
-	// will create the three cookies: authCookie & authCookie_EXPIRY & samlUsernameCookie
+	// will create the three cookies: authCookie & authCookie_EXPIRY &
+	// samlUsernameCookie
 	void addSamlCookies(String username, String jwt, HttpServletResponse response);
 
 	String getSubject(String token);

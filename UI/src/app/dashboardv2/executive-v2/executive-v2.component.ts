@@ -58,7 +58,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   bitBucketKpiRequest;
   maturityColorCycleTime = ['#f5f5f5', '#f5f5f5', '#f5f5f5'];
   tooltip;
-  selectedtype = 'Scrum';
+  selectedtype: string = '';
   configGlobalData;
   selectedPriorityFilter = {};
   selectedSonarFilter;
@@ -162,6 +162,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
       this.noFilterApplyData = res;
+    }));
+
+    this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
+      this.noFilterApplyData = res;
+      if(res) {
+        this.noProjects = true;
+      } else {
+        this.noProjects = false;
+      }
     }));
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
@@ -277,11 +286,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   click apply and call kpi
    **/
   receiveSharedData($event) {
-    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false
+    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
+    this.selectedtype = $event.selectedType;
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
-      if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {
-        this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
+      if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype?.toLowerCase()]) {
+        this.hierarchyLevel = hierarchyData[this.selectedtype?.toLowerCase()];
       }
     }
     if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
@@ -330,6 +340,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noFilterApplyData = true;
       } else {
         this.noFilterApplyData = false;
+        this.noProjects = false;
         this.filterData = $event.filterData;
         this.filterApplyData = $event.filterApplyData;
         this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -358,7 +369,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               this.groupBitBucketKpi(kpiIdsForCurrentBoard)
             }
             this.immediateLoader = false;
-            this.createKpiTableHeads(this.selectedtype.toLowerCase());
+            this.createKpiTableHeads(this.selectedtype?.toLowerCase());
 
             let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
             if (projectLevel) {

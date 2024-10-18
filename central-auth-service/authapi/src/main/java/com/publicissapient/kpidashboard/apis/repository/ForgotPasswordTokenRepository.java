@@ -25,7 +25,6 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
 
-
 @Repository
 public interface ForgotPasswordTokenRepository extends JpaRepository<ForgotPasswordToken, Long> {
 

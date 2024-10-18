@@ -1,10 +1,11 @@
 package com.publicissapient.kpidashboard.apis.service;
 
-import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
-import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
+import java.util.UUID;
 
 import javax.validation.Valid;
-import java.util.UUID;
+
+import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
+import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 
 public interface UserVerificationTokenService {
 
