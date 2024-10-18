@@ -72,21 +72,13 @@ export class PrimaryFilterComponent implements OnChanges {
           } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName'].toLowerCase()) &&
             ['sprint', 'release'].includes(this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase())) {
             // reset
-            this.selectedFilters = [];
-            this.selectedFilters.push(this.filters[0]);
-            this.helperService.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
-            this.applyPrimaryFilters({});
-            this.setProjectAndLevelBackupBasedOnSelectedLevel();
+            this.reset();
             return;
           } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName'].toLowerCase())) {
             this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0]];
           } else {
             // reset
-            this.selectedFilters = [];
-            this.selectedFilters.push(this.filters[0]);
-            this.helperService.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
-            this.applyPrimaryFilters({});
-            this.setProjectAndLevelBackupBasedOnSelectedLevel();
+            this.reset();
             return;
 
           }
@@ -123,6 +115,15 @@ export class PrimaryFilterComponent implements OnChanges {
       this.applyPrimaryFilters({});
       this.setProjectAndLevelBackupBasedOnSelectedLevel();
     }, 100);
+  }
+
+
+  reset() {
+    this.selectedFilters = [];
+    this.selectedFilters.push(this.filters[0]);
+    this.helperService.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
+    this.applyPrimaryFilters({});
+    this.setProjectAndLevelBackupBasedOnSelectedLevel();
   }
 
   populateFilters() {
