@@ -176,7 +176,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 						String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
 								+ projectBasicConfig.getProjectNodeId();
 						releaseHierarchy.setNodeId(versionId);
-						releaseHierarchy.setNodeName(versionName + projectVersion.getName());
+						releaseHierarchy.setNodeName(versionName + projectBasicConfig.getProjectName());
 						releaseHierarchy.setNodeDisplayName(versionName + projectBasicConfig.getProjectDisplayName());
 						releaseHierarchy.setBeginDate(ObjectUtils.isNotEmpty(projectVersion.getStartDate())
 								? projectVersion.getStartDate().toString()
