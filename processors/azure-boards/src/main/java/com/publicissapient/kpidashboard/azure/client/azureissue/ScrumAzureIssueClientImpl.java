@@ -219,6 +219,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// sprint report prepare and save sprint details
 				sprintClient.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, azureServer);
+
 			}
 
 		} catch (JSONException | NullPointerException e) {
