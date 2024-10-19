@@ -837,19 +837,19 @@ export class HelperService {
                     // dataCount += item?.data;
                     ++dataCount;
                 } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-                    if (item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data')) {
+                    if (item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
                         if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
                             ++dataCount;
-                        } else if (this.checkAllValues(item.value, 'data')) {
+                        } else if (this.checkAllValues(item.value, 'data', chartType)) {
                             ++dataCount;
                         }
                     } else if (this.checkIfArrayHasData(item.value[0])) {
                         if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
                             ++dataCount;
-                        } else if (this.checkAllValues(item.value[0].value, 'data')) {
+                        } else if (this.checkAllValues(item.value[0].value, 'data', chartType)) {
                             ++dataCount;
                         }
-                    } else if (item.value.length) {
+                    } else if (item.value.length && chartType !== 'pieChart') {
                         ++dataCount;
                     }
                 } else if (item.dataGroup && item.dataGroup.length) {
@@ -862,12 +862,17 @@ export class HelperService {
         return parseInt(dataCount + '') > 0;
     }
 
-    checkAllValues(arr, prop) {
+    checkAllValues(arr, prop, chartType) {
         let result = false;
         for (let i = 0; i < arr.length; i++) {
-            if (!isNaN(parseFloat(arr[i][prop]))) {
-                result = true;
-                break;
+            if (!isNaN(parseInt(arr[i][prop]))) {
+                if (chartType === 'pieChart') {
+                    result = parseInt(arr[i][prop]) > 0;
+                    break;
+                } else {
+                    result = true;
+                    break;
+                }
             }
         }
         return result;
