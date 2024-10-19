@@ -17518,6 +17518,40 @@ describe('ExecutiveV2Component', () => {
     });
   });
 
+  describe('onScrumKanbanSwitch', () => {
+    it('should update the component properties', () => {
+      const data = { selectedType: 'scrum' };
+
+      // spyOn(service, 'setSelectedBoard');
+
+      service.onScrumKanbanSwitch.next(data);
+
+      expect(component.noFilterApplyData).toBe(false);
+      expect(component.kpiLoader).toEqual(new Set());
+      expect(component.kpiStatusCodeArr).toEqual({});
+      expect(component.immediateLoader).toBe(true);
+      expect(component.processedKPI11Value).toEqual({});
+      expect(component.selectedBranchFilter).toBe('Select');
+      expect(component.serviceObject).toEqual({});
+      expect(component.kpiTrendObject).toEqual({});
+    });
+  });
+
+  describe('resetToDefaults', () => {
+    it('should update the component properties', () => {
+      component.resetToDefaults();
+
+      expect(component.noFilterApplyData).toBe(false);
+      expect(component.kpiLoader).toEqual(new Set());
+      expect(component.kpiStatusCodeArr).toEqual({});
+      expect(component.immediateLoader).toBe(true);
+      expect(component.processedKPI11Value).toEqual({});
+      expect(component.selectedBranchFilter).toBe('Select');
+      expect(component.serviceObject).toEqual({});
+      expect(component.kpiTrendObject).toEqual({});
+    });
+  });
+
   describe('setUpTabs', () => {
     it('should set up tabs for selectedTab "release"', () => {
       component.selectedTab = 'release';

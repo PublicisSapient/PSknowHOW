@@ -127,26 +127,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
-      this.noFilterApplyData = false;
-      this.kpiLoader = new Set();
-      this.kpiStatusCodeArr = {};
-      this.immediateLoader = true;
-      this.processedKPI11Value = {};
-      this.selectedBranchFilter = 'Select';
-      this.serviceObject = {};
+      this.resetToDefaults();
       this.selectedtype = data.selectedType;
       this.kpiTrendObject = {}
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
     }));
 
     this.subscriptions.push(this.service.onTabSwitch.subscribe((data) => {
-      this.noFilterApplyData = false;
-      this.kpiLoader = new Set();
-      this.kpiStatusCodeArr = {};
-      this.immediateLoader = true;
-      this.processedKPI11Value = {};
-      this.selectedBranchFilter = 'Select';
-      this.serviceObject = {};
+      this.resetToDefaults();
       this.selectedTab = data.selectedBoard;
     }));
 
@@ -166,7 +154,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noFilterApplyData = res;
-      if(res) {
+      if (res) {
         this.noProjects = true;
       } else {
         this.noProjects = false;
@@ -211,6 +199,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
       this.showChart = view;
     }));
+  }
+
+  resetToDefaults() {
+    this.noFilterApplyData = false;
+    this.kpiLoader = new Set();
+    this.kpiStatusCodeArr = {};
+    this.immediateLoader = true;
+    this.processedKPI11Value = {};
+    this.selectedBranchFilter = 'Select';
+    this.serviceObject = {};
   }
 
   setGlobalConfigData(globalConfig) {
