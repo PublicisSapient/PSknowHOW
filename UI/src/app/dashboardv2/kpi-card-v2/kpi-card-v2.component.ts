@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
@@ -79,7 +80,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   warning = '';
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
+    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService,
+    private helperService: HelperService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
@@ -388,53 +390,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     }
 
-    return (data === '200' || data === '201') && this.checkDataAtGranularLevel(this.trendValueList);
-  }
-
-  checkDataAtGranularLevel(data) {
-    if (this.selectedTab === "developer" && data?.length) {
-      return true;
-    }
-    if (!data || !data?.length) {
-      return false;
-    }
-    let dataCount = 0;
-    if (Array.isArray(data)) {
-      data?.forEach(item => {
-        if (Array.isArray(item.data) && item.data?.length) {
-          ++dataCount;
-        } else if (item.data && !isNaN(parseInt(item.data))) {
-          // dataCount += item?.data;
-          ++dataCount;
-        } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-          if (this.checkIfArrayHasData(item) && item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data')) {
-            ++dataCount;
-          } else if (this.checkIfArrayHasData(item) && this.checkIfArrayHasData(item.value) && this.checkIfArrayHasData(item.value[0].value)) {
-            ++dataCount;
-          }
-        } else if (item.dataGroup && item.dataGroup.length) {
-          ++dataCount;
-        }
-      });
-    } else if (data && Object.keys(data).length) {
-      dataCount = Object.keys(data).length;
-    }
-    return parseInt(dataCount + '') > 0;
-  }
-
-  checkAllValues(arr, prop) {
-    let result = false;
-    for (let i = 0; i < arr.length; i++) {
-      if (!isNaN(parseFloat(arr[i][prop]))) {
-        result = true;
-        break;
-      }
-    }
-    return result;
-  }
-
-  checkIfArrayHasData(item) {
-    return (Array.isArray(item.value) && item.value.length)
+    return (data === '200' || data === '201') && this.helperService.checkDataAtGranularLevel(this.trendValueList, this.kpiData.kpiDetail.chartType, this.selectedTab);
   }
 
   getColorCssClasses(index) {
