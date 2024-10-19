@@ -17889,14 +17889,14 @@ describe('ExecutiveV2Component', () => {
     const kpiData = { value: [{ filter1: 'filter1', data: [1, 2, 3] }, { filter1: 'filter2', data: [] }] };
     const filters = ['filter1', 'filter2'];
 
-    expect(component.checkIfPartialDataForKpi171(kpiData, filters)).toBeTrue();
+    expect(component.checkIfPartialDataForKpi171(kpiData)).toEqual(true);
   });
 
   it('should return false if partial data is not present for kpiId kpi171', () => {
     const kpiData = { value: [{ filter1: 'filter1', data: [] }, { filter1: 'filter2', data: [] }] };
     const filters = ['filter1', 'filter2'];
 
-    expect(component.checkIfPartialDataForKpi171(kpiData, filters)).toBeFalsy();
+    expect(component.checkIfPartialDataForKpi171(kpiData)).toBeFalsy();
   });
 
   describe('ExecutiveV2Component.setGlobalConfigData() setGlobalConfigData method', () => {

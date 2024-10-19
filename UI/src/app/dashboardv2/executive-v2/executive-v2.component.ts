@@ -1891,7 +1891,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return this.checkPartialDataCondition(kpi, kpiData, filters);
     } else {
       if (kpi.kpiId === 'kpi171') {
-        return this.checkIfPartialDataForKpi171(kpiData, filters);
+        return this.checkIfPartialDataForKpi171(kpiData);
       }
       return false;
     }
@@ -1910,9 +1910,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  checkIfPartialDataForKpi171(kpiData, filters) {
+  checkIfPartialDataForKpi171(kpiData) {
     kpiData = kpiData?.value;
-    filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
+    let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
     for (let i = 0; i < filters?.length; i++) {
       let partialKpiData = kpiData.filter(x => x.filter1 === filters[i])[0];
       if (partialKpiData && partialKpiData.data?.length) {
