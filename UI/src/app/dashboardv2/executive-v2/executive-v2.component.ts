@@ -154,11 +154,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noFilterApplyData = res;
-      if (res) {
-        this.noProjects = true;
-      } else {
-        this.noProjects = false;
-      }
+      this.noProjects = res;
     }));
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
@@ -387,7 +383,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setUpTabs() {
-    const tabsArray = new Set(this.configGlobalData.map(element => element.shown && element.isEnabled && element?.kpiDetail?.kpiSubCategory));
+    const tabsArray = new Set(this.configGlobalData?.map(element => element.shown && element.isEnabled && element?.kpiDetail?.kpiSubCategory));
     // if (this.selectedTab === 'release') {
     //   const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
     //   const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
@@ -1883,67 +1879,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       }
 
-      return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType);
+      return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.helperService.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType, this.selectedTab);
     }
     return false;
   }
-
-  checkDataAtGranularLevel(data, chartType) {
-    if (this.selectedTab === "developer" && data?.length) {
-      return true;
-    }
-    if (!data || !data?.length) {
-      return false;
-    }
-    let dataCount = 0;
-    if (Array.isArray(data)) {
-      data?.forEach(item => {
-        if (Array.isArray(item.data) && item.data?.length) {
-          ++dataCount;
-        } else if (item.data && !isNaN(parseInt(item.data))) {
-          // dataCount += item?.data;
-          ++dataCount;
-        } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-          if (item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data')) {
-            if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
-              ++dataCount;
-            } else if (this.checkAllValues(item.value, 'data')) {
-              ++dataCount;
-            }
-          } else if (this.checkIfArrayHasData(item.value[0])) {
-            if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
-              ++dataCount;
-            } else if (this.checkAllValues(item.value[0].value, 'data')) {
-              ++dataCount;
-            }
-          } else if (item.value.length) {
-            ++dataCount;
-          }
-        } else if (item.dataGroup && item.dataGroup.length) {
-          ++dataCount;
-        }
-      });
-    } else if (data && Object.keys(data).length) {
-      dataCount = Object.keys(data).length;
-    }
-    return parseInt(dataCount + '') > 0;
-  }
-
-  checkIfArrayHasData(item) {
-    return (Array.isArray(item.value) && item.value.length > 0)
-  }
-
-  checkAllValues(arr, prop) {
-    let result = false;
-    for (let i = 0; i < arr.length; i++) {
-      if (!isNaN(parseFloat(arr[i][prop]))) {
-        result = true;
-        break;
-      }
-    }
-    return result;
-  }
-
 
   checkIfPartialDataPresent(kpi) {
     let kpiData = this.ifKpiExist(kpi.kpiId) >= 0 ? this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList : null;
@@ -1962,8 +1901,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (filters.length === 2) {
       let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
       let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
-      if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType)) ||
-        (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType))) {
+      if ((this.helperService.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType, this.selectedTab) && !this.helperService.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType, this.selectedTab)) ||
+        (this.helperService.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType, this.selectedTab) && !this.helperService.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType, this.selectedTab))) {
         return true;
       }
     } else {
