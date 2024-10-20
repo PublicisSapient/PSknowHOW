@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<ng-container *ngIf="!noProjects else noProjectsTemplate">
+<ng-container *ngIf="noProjects.hasOwnProperty(selectedtype.toLowerCase()) && !noProjects[selectedtype.toLowerCase()] else noProjectsTemplate">
     <div *ngIf="!noKpis else noKpiTemplate">
         <ng-container *ngIf="!noFilterApplyData else noFilterApplyDataTemplate">
             <div id="message"></div>
@@ -409,8 +409,8 @@
             <ng-template pTemplate="body" let-x>
                 <tr>
                     <td class="font-small">
-                        <a *ngIf="x['Issue URL']" [href]="x['Issue URL']" class="text-blue" target="_blank">{{x['Issue
-                            Id']}}</a>
+                        <a *ngIf="x['Issue URL']" [href]="x['Issue URL']" class="text-blue" target="_blank">
+                            {{x['Issue Id']}}</a>
                         <span *ngIf="!x['Issue URL']">{{x['Issue Id']}}</span>
                     </td>
                     <ng-container *ngFor="let item of modalDetails['tableHeadings']; let i = index;">
@@ -422,5 +422,4 @@
             </ng-template>
         </p-table>
     </div>
-
 </p-dialog>

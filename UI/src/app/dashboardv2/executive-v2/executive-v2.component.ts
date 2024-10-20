@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -102,7 +102,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendsObj = {};
   selectedTab = '';
   showCommentIcon = false;
-  noProjects = false;
+  noProjects = {};
   sprintsOverlayVisible: boolean = false;
   kpiCommentsCountObj: object = {};
   kpiTableHeadingArr: Array<object> = [];
@@ -122,7 +122,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   globalConfig: any;
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
-  constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService, private route: ActivatedRoute, private excelService: ExcelService) {
+  constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
+     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
@@ -131,11 +132,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedtype = data.selectedType;
       this.kpiTrendObject = {}
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+      // this.noProjects = this.service.noProjectsObj;
     }));
 
     this.subscriptions.push(this.service.onTabSwitch.subscribe((data) => {
       this.resetToDefaults();
       this.selectedTab = data.selectedBoard;
+      // this.noProjects = this.service.noProjectsObj;
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
@@ -152,8 +155,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.noFilterApplyData = res;
     }));
 
-    this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
-      this.noFilterApplyData = res;
+    this.subscriptions.push(this.service.noProjectsObjObs.subscribe((res) => {
       this.noProjects = res;
     }));
 
@@ -243,11 +245,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
-      this.noProjects = res;
-      this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
-    }));
-
     /** Get recommendations flag */
     this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
       this.isRecommendationsEnabled = item;
@@ -334,7 +331,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.noFilterApplyData = true;
       } else {
         this.noFilterApplyData = false;
-        this.noProjects = false;
         this.filterData = $event.filterData;
         this.filterApplyData = $event.filterApplyData;
         this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
