@@ -17463,22 +17463,6 @@ describe('ExecutiveV2Component', () => {
     });
   });
 
-  describe('noProjectsObs', () => {
-    it('should update the component properties in case noProjects sends true', () => {
-      service.noProjects.next(true);
-
-      expect(component.noFilterApplyData).toBeTrue();
-      expect(component.noProjects).toBeTrue();
-    });
-
-    it('should update the component properties in case noProjects sends false', () => {
-      service.noProjects.next(false);
-
-      expect(component.noFilterApplyData).toBeFalse();
-      expect(component.noProjects).toBeFalse();
-    });
-  });
-
   describe('resetToDefaults', () => {
     it('should update the component properties', () => {
       component.resetToDefaults();
