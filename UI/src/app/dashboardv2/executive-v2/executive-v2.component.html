@@ -65,7 +65,7 @@
 
                                                                 <ng-container *ngSwitchCase="'stackedColumn'">
                                                                     <ng-container *ngIf="checkIfDataPresent(kpi)">
-                                                                        <app-groupstackchart [legendType]="'normal'"
+                                                                        <app-groupstackchartv2 [legendType]="'normal'"
                                                                             [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
                                                                             [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                                                             [unit]="kpi?.kpiDetail?.kpiUnit"
@@ -75,7 +75,7 @@
                                                                             [color]="chartColorList"
                                                                             [kpiId]="kpi?.kpiId"
                                                                             [selectedtype]="selectedtype"
-                                                                            [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
+                                                                            [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchartv2>
                                                                     </ng-container>
                                                                     <ng-container *ngIf="!checkIfDataPresent(kpi)">
                                                                         <ng-container
