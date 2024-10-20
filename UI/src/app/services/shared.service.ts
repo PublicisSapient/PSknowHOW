@@ -73,6 +73,8 @@ export class SharedService {
   noSprints = new BehaviorSubject<any>(false);
   noSprintsObs = this.noSprints.asObservable();
   noProjects = new BehaviorSubject<boolean>(false);
+  noProjectsObj = {};
+  noProjectsObjObs = new BehaviorSubject<any>({});
   noProjectsObs = this.noProjects.asObservable();
   showTableView = new BehaviorSubject<string>('chart');
   showTableViewObs = this.showTableView.asObservable();
@@ -362,6 +364,12 @@ export class SharedService {
   setNoProjects(value) {
     this.noProjects.next(value);
   }
+
+  setNoProjectsForNewUI(valueObj) {
+    this.noProjectsObj = valueObj;
+    this.noProjectsObjObs.next(this.noProjectsObj);
+  }
+
   setClickedItem(event) {
     this.clickedItem.next(event);
   }
