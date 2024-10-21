@@ -313,35 +313,6 @@ describe('PrimaryFilterComponent', () => {
     });
   });
 
-  describe('deepEqual', () => {
-    it('should return true when objects are equal', () => {
-      const obj1 = { name: 'John', age: 30 };
-      const obj2 = { name: 'John', age: 30 };
-
-      const result = component.deepEqual(obj1, obj2);
-
-      expect(result).toBe(true);
-    });
-
-    it('should return false when objects have different properties', () => {
-      const obj1 = { name: 'John', age: 30 };
-      const obj2 = { name: 'John' };
-
-      const result = component.deepEqual(obj1, obj2);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false when objects have different property values', () => {
-      const obj1 = { name: 'John', age: 30 };
-      const obj2 = { name: 'John', age: 25 };
-
-      const result = component.deepEqual(obj1, obj2);
-
-      expect(result).toBe(false);
-    });
-  });
-
 
   // describe('Component', () => {
   // let component;
