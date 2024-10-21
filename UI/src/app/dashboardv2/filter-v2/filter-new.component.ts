@@ -43,6 +43,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   selectedDateValue: string;
   toggleDateDropdown = false;
   additionalFiltersArr = [];
+  additionalFilterLevelArr = [];
   filterType: string = '';
   selectedSprint: any;
   lastSyncData = {};
@@ -70,6 +71,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   kanbanProjectsAvailable: boolean = true;
   scrumProjectsAvailable: boolean = true;
+  squadLevel: any;
 
   constructor(
     private httpService: HttpService,
@@ -181,11 +183,23 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         if (res.data) {
           this.hierarchies = res.data;
           localStorage.setItem('completeHierarchyData', JSON.stringify(this.hierarchies));
+          this.setAdditionalHierarchyLevels();
           this.getFiltersData();
         }
       });
     } else {
+      this.setAdditionalHierarchyLevels();
       this.getFiltersData();
+    }
+  }
+
+  setAdditionalHierarchyLevels() {
+    this.additionalFilterLevelArr = [];
+    const projectLevel = this.hierarchies[this.selectedType]?.filter((x) => x.hierarchyLevelId == 'project')[0]?.level;
+    for (let i = 0; i < this.hierarchies[this.selectedType]?.length; i++) {
+      if (this.hierarchies[this.selectedType][i].level > projectLevel) {
+        this.additionalFilterLevelArr.push(this.hierarchies[this.selectedType][i]);
+      }
     }
   }
 
@@ -673,7 +687,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.filterApplyData['endDate'] = '';
       this.filterApplyData['selectedMap']['date'] = this.selectedDayType ? [this.selectedDayType] : ['Weeks'];
       this.filterApplyData['selectedMap']['release'] = [];
-      this.filterApplyData['selectedMap']['sqd'] = [];
+      if (this.squadLevel && this.squadLevel[0]) {
+        this.filterApplyData['selectedMap'][this.squadLevel[0].hierarchyLevelId] = [];
+      }
     }
 
     if (this.selectedTab?.toLowerCase() === 'backlog') {
@@ -797,7 +813,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-    let additionalFilterSelected = this.filterApplyData['label'] === 'sqd' ? true : false;
+    let additionalFilterSelected = this.filterApplyData['label'] === this.squadLevel[0].hierarchyLevelId || this.filterApplyData['label'] === this.squadLevel[0].hierarchyLevelName ? true : false;
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
@@ -860,13 +876,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
         this.additionalFiltersArr['filter' + (index + 1)] = [];
-       
-        let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][this.getCorrectLevelMapping(addtnlFilter.defaultLevel.labelName)] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
+
+        let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][this.getCorrectLevelMapping(addtnlFilter.defaultLevel.labelName)] ? this.filterDataArr[this.selectedType][this.getCorrectLevelMapping(addtnlFilter.defaultLevel.labelName)] : [];
         selectedProjectIds.forEach(nodeId => {
           if (allFilters?.length) {
             this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
               let parentId = '';
-              if (addtnlFilter.defaultLevel.labelName === 'Squad' && !this.kanban) {
+              let squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelId).includes(addtnlFilter.defaultLevel.labelName) ||
+                this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelName).includes(addtnlFilter.defaultLevel.labelName)
+              if (squadLevel && !this.kanban) {
+                this.squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelId);
+                if (!this.squadLevel.includes(addtnlFilter.defaultLevel.labelName)) {
+                  this.squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelName);
+                }
                 parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
               } else {
                 parentId = filterItem.parentId;
@@ -903,12 +925,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   getCorrectLevelMapping(level) {
-    if(level.toLowerCase() === 'sprint') {
-      return 'Sprint';
-    } 
-    if(level.toLowerCase() === 'squad' || level.toLowerCase() === 'sqd') {
-      return 'Squad';
+    let correctLevel = '';
+    let squadLevelIds = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelId);
+
+    let squadLevelNames = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelName)
+
+    if (!squadLevelIds.includes(level) && !squadLevelNames.includes(level)) {
+      correctLevel = this.additionalFilterLevelArr.filter(l => l.hierarchyLevelId.toLowerCase() === level.toLowerCase())[0]?.hierarchyLevelName;
+    } else {
+      correctLevel = this.additionalFilterLevelArr.filter(l => l.hierarchyLevelId.toLowerCase() === squadLevelIds[0].toLowerCase())[0]?.hierarchyLevelName;
+      if (!correctLevel?.length) {
+        correctLevel = this.additionalFilterLevelArr.filter(l => l.hierarchyLevelId.toLowerCase() === squadLevelNames[0].toLowerCase())[0]?.hierarchyLevelName;
+      }
     }
+    return correctLevel;
   }
 
   getProcessorsTraceLogsForProject() {
