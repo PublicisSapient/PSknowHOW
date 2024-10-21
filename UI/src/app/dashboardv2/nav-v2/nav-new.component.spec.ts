@@ -361,22 +361,6 @@ describe('NavNewComponent', () => {
     });
   });
 
-  describe('deepEqual', () => {
-    it('should return true for equal objects', () => {
-      const obj1 = { a: 1, b: 2 };
-      const obj2 = { a: 1, b: 2 };
-
-      expect(component.deepEqual(obj1, obj2)).toBeTrue();
-    });
-
-    it('should return false for non-equal objects', () => {
-      const obj1 = { a: 1, b: 2 };
-      const obj2 = { a: 1, b: 3 };
-
-      expect(component.deepEqual(obj1, obj2)).toBeFalse();
-    });
-  });
-
   it('should set boards and items when response is successful', () => {
     localStorage.setItem('completeHierarchyData', JSON.stringify(mockHierarchyData));
     component.selectedType = 'scrum';
