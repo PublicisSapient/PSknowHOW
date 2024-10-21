@@ -58,6 +58,7 @@ import { ExecutiveComponent } from './dashboard/executive/executive.component';
 import { MaturityComponent } from './dashboard/maturity/maturity.component';
 import { FilterComponent } from './dashboard/filter/filter.component';
 import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
+import { GroupstackchartComponentv2 } from './component/groupedstackchart-v2/groupstackchart-v2.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PiechartComponent } from './component/piechart/piechart.component';
 import { ErrorComponent } from './dashboard/error/error.component';
@@ -173,6 +174,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         FilterComponent,
         DashboardComponent,
         GroupstackchartComponent,
+        GroupstackchartComponentv2,
         PiechartComponent,
         KpiComponent,
         ErrorComponent,
