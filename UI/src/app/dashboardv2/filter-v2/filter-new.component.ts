@@ -114,7 +114,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch
         .subscribe(data => {
-
           setTimeout(() => {
             this.selectedType = JSON.parse(JSON.stringify(data.selectedType));
             this.setDateFilter();
@@ -151,7 +150,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.dateFilterSelectedDateType.subscribe(date => {
       this.selectedDayType = date;
-    }))
+    }));
+
+    this.firstLoadFilterCheck(true);
+    this.firstLoadFilterCheck(false);
 
     this.service.setScrumKanban(this.selectedType);
     this.service.setSelectedBoard(this.selectedTab);
@@ -179,7 +181,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         if (res.data) {
           this.hierarchies = res.data;
           localStorage.setItem('completeHierarchyData', JSON.stringify(this.hierarchies));
-          this.getFiltersData(true);
+          this.getFiltersData();
         }
       });
     } else {
@@ -238,6 +240,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.kanban = false;
         this.selectedType = 'scrum';
         this.setSelectedType(this.selectedType);
+        this.colorObj = {};
         return;
       }
 
@@ -266,7 +269,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  getFiltersData(firstLoad = false) {
+  getFiltersData() {
     this.selectedFilterData = {};
     this.selectedFilterData['kanban'] = this.kanban;
     this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
@@ -283,48 +286,32 @@ export class FilterNewComponent implements OnInit, OnDestroy {
           }
         })
       );
-
-      if (firstLoad) {
-        this.selectedFilterData['kanban'] = true;
-        this.selectedFilterData['sprintIncluded'] = ['CLOSED'];
-        this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
-          if (filterApiData['success']) {
-            if (filterApiData['data'].length >= 0) {
-              let kanbanProjects = filterApiData['data'].filter(x => x.labelName === 'project');
-              if (!kanbanProjects?.length) {
-                this.kanbanProjectsAvailable = false;
-                this.service.setNoProjects(true);
-              } else {
-                this.kanbanProjectsAvailable = true;
-                this.service.setNoProjects(false);
-              }
-            }
-          } else {
-            // error
-          }
-        });
-
-
-        this.selectedFilterData['kanban'] = false;
-        this.selectedFilterData['sprintIncluded'] = ['CLOSED', 'ACTIVE'];
-        this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
-          if (filterApiData['success']) {
-            if (filterApiData['data'].length >= 0) {
-              let scrumProjects = filterApiData['data'].filter(x => x.labelName === 'project');
-              if (!scrumProjects?.length) {
-                this.scrumProjectsAvailable = false;
-                this.service.setNoProjects(true);
-              } else {
-                this.scrumProjectsAvailable = true;
-                this.service.setNoProjects(false);
-              }
-            }
-          } else {
-            // error
-          }
-        });
-      }
     }
+  }
+
+  firstLoadFilterCheck(isKanban) {
+    let selectedFilterData = {};
+    selectedFilterData['kanban'] = isKanban;
+    selectedFilterData['sprintIncluded'] = isKanban ? ['CLOSED'] : ['CLOSED', 'ACTIVE'];
+    this.httpService.getFilterData(selectedFilterData).subscribe((filterApiData) => {
+      if (filterApiData['success']) {
+        if (filterApiData['data'].length >= 0) {
+          let projects = filterApiData['data'].filter(x => x.labelName === 'project');
+          if (isKanban) {
+            this.kanbanProjectsAvailable = projects?.length > 0;
+          } else {
+            this.scrumProjectsAvailable = projects?.length > 0;
+          }
+
+          this.service.setNoProjectsForNewUI({
+            kanban: !this.kanbanProjectsAvailable,
+            scrum: !this.scrumProjectsAvailable
+          });
+        }
+      } else {
+        // error
+      }
+    });
   }
 
   processFilterData(data) {
@@ -339,9 +326,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         result[category].push(currentItem);
         return result;
       }, {});
-      if(this.filterDataArr[this.selectedType]?.length) {
-        this.service.setNoProjects(false);
-      }
       this.setCategories();
     }
   }
@@ -357,7 +341,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterDataArr[this.selectedType] = dataCopy;
     if (this.filterDataArr[this.selectedType][this.selectedLevel]?.length) {
       if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
-        this.service.setNoProjects(false);
         let stateFilters = this.helperService.getBackupOfFilterSelectionState();
         if (stateFilters && stateFilters['primary_level']) {
           let selectedProject;
