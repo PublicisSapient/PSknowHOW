@@ -1,20 +1,19 @@
-/*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
+/*
+ *   Copyright 2014 CapitalOne, LLC.
+ *   Further development Copyright 2022 Sapient Corporation.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
@@ -34,6 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -49,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -60,6 +61,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
@@ -81,7 +83,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String HISTORY = "history";
 	public static final String UPDATED_AT = "updatedAt";
 	public static final String UPDATED_BY = "updatedBy";
-	public static final String DOUBLE = "java.lang.Double";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -203,6 +204,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		List<String> fields = fieldMappingEnum.getFields();
 		String releaseNodeId = requestData.getReleaseNodeId();
 		List<String> nodeSpecifFields = getNodeSpecificFields();
+		List<String> projectLevelThresholdFields = getProjectLevelThresholdFields();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(projectToolConfig.getBasicProjectConfigId());
 		List<FieldMappingResponse> fieldMappingResponses = new ArrayList<>();
@@ -212,6 +214,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				FieldMappingResponse mappingResponse = new FieldMappingResponse();
 				Object value = FieldMappingHelper.getFieldMappingData(fieldMapping, fieldMappingClass, field,
 						releaseNodeId, nodeSpecifFields.contains(field));
+				// If the threshold value is empty, populate it with the default value from kpi_master
+				value = populateDefaultKPIThreshold(kpi, field, projectLevelThresholdFields, value);
 				mappingResponse.setFieldName(field);
 				mappingResponse.setOriginalValue(value);
 				List<ConfigurationHistoryChangeLog> changeLogs = FieldMappingHelper.getFieldMappingHistory(fieldMapping,
@@ -576,6 +580,44 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			}
 			processorExecutionTraceLogRepository.saveAll(traceLogs);
 		}
+	}
+
+	/**
+	 * Retrieves a list of field names that are categorized under the project level
+	 * threshold.
+	 *
+	 * @return a list of field names that belong to the project level threshold
+	 *         section.
+	 */
+	private List<String> getProjectLevelThresholdFields() {
+		return ((List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure()).stream()
+				.filter(structure -> structure.getSection() != null
+						&& structure.getSection().equalsIgnoreCase(Constant.PROJECT_LEVEL_THRESHOLD))
+				.map(BaseFieldMappingStructure::getFieldName).toList();
+	}
+
+	/**
+	 * Populates the default KPI threshold value if the field is categorized under
+	 * project level threshold and the current value is null or not empty.
+	 *
+	 * @param kpi
+	 *            the KPI code
+	 * @param field
+	 *            the field name
+	 * @param projectLevelThresholdFields
+	 *            the list of project level threshold fields
+	 * @param value
+	 *            the current value of the field
+	 * @return the populated threshold value, from kpi_master if empty
+	 */
+	private Object populateDefaultKPIThreshold(KPICode kpi, String field, List<String> projectLevelThresholdFields,
+			Object value) {
+		if (projectLevelThresholdFields.contains(field) && ObjectUtils.isEmpty(value)) {
+			List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
+			value = masterList.stream().filter(j -> j.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
+					.mapToDouble(j -> j.getThresholdValue() != null ? j.getThresholdValue() : 0.0).sum();
+		}
+		return value;
 	}
 
 }
