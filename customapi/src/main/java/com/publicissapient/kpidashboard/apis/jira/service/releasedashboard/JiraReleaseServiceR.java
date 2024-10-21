@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
@@ -212,13 +213,18 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
 				.cacheAccountHierarchyData();
 
-		String targetNodeId = kpiRequest.getSelectedMap().get(CommonConstant.RELEASE.toLowerCase()).get(0);
+		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())
+				&& CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(CommonConstant.RELEASE.toLowerCase()))) {
+			String targetNodeId = kpiRequest.getSelectedMap().get(CommonConstant.RELEASE.toLowerCase()).get(0);
 
-		Optional<AccountHierarchyData> optionalData = accountDataListAll.stream()
-				.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId().equalsIgnoreCase(targetNodeId))
-				.findFirst();
+			Optional<AccountHierarchyData> optionalData = accountDataListAll.stream()
+					.filter(accountHierarchyData -> accountHierarchyData.getLeafNodeId().equalsIgnoreCase(targetNodeId))
+					.findFirst();
 
-		return optionalData.map(List::of).orElse(List.of());
+			return optionalData.map(List::of).orElse(List.of());
+		} else {
+			return new ArrayList<>();
+		}
 	}
 
 	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
@@ -227,9 +233,9 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 		filteredNode.setParent(parentNode);
 
 		filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getParent().getId(),
-				filteredNode.getParent().getName(), filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+				filteredNode.getParent().getName(), filteredNode.getProjectHierarchy().getBasicProjectConfigId()));
 		filteredNode.setReleaseFilter(new ReleaseFilter(filteredNode.getId(), filteredNode.getName(),
-				filteredNode.getAccountHierarchy().getBeginDate(), filteredNode.getAccountHierarchy().getEndDate()));
+				filteredNode.getProjectHierarchy().getBeginDate(), filteredNode.getProjectHierarchy().getEndDate()));
 
 		return filteredNode;
 	}

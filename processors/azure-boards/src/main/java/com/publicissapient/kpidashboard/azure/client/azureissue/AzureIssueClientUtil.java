@@ -23,17 +23,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.azure.model.Sprint;
 import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.azureboards.Fields;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,21 +63,6 @@ public final class AzureIssueClientUtil {
 			rt = oMapper.convertValue(fields, Map.class);
 		}
 		return rt;
-	}
-
-	/**
-	 * Gets Account Hierarchy
-	 * 
-	 * @param accountHierarchyRepository
-	 *            accountHierarchyRepository
-	 * @return Pair of NodeId and path and Account Hierarchy Map
-	 */
-	public static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(
-			AccountHierarchyRepository accountHierarchyRepository) {
-		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
-		return accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-
 	}
 
 	public static List<String> getLabelsList(Fields fields) {

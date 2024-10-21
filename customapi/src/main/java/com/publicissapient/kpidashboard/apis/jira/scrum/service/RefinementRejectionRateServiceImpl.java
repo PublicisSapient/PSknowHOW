@@ -119,7 +119,7 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
 		Map<String, Node> mapTmp = new HashMap<>();
-		mapTmp.put(projectNode.getId(),projectNode);
+		mapTmp.put(projectNode.getId(), projectNode);
 		projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest, mapTmp);
 
 		return kpiElement;
@@ -149,7 +149,8 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 	 * @param trendValueList
 	 * @param kpiElement
 	 */
-	private void projectWiseLeafNodeValue(Node node, List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest, Map<String, Node> mapTmp) {
+	private void projectWiseLeafNodeValue(Node node, List<DataCount> trendValueList, KpiElement kpiElement,
+			KpiRequest kpiRequest, Map<String, Node> mapTmp) {
 
 		CustomDateRange dateRange = KpiDataHelper.getDayForPastDataHistory(customApiConfig.getBacklogWeekCount() * 5);
 
@@ -421,7 +422,8 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 		Map<String, List<Map<String, Object>>> dataMap = new HashMap<>();
 		for (String map : resultMap.keySet()) {
 			List<JiraIssue> dataList = ((List<JiraIssue>) resultMap.get(map)).stream()
-					.filter(f -> f.getProjectID().equalsIgnoreCase(node.getProjectFilter().getId()))
+					.filter(f -> f.getBasicProjectConfigId()
+							.equalsIgnoreCase(node.getProjectFilter().getBasicProjectConfigId().toString()))
 					.collect(Collectors.toList());
 			Map<String, Object> subMap = new HashMap<>();
 			subMap.put(map, dataList);
