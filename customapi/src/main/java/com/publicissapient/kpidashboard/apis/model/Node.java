@@ -74,27 +74,27 @@ public class Node implements Serializable {
 	}
 
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			AccountHierarchy accountHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter) {
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 		this.sprintFilter = sprintFilter;
 	}
 
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			AccountHierarchy accountHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter,
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter,
 			ReleaseFilter releaseFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 		this.sprintFilter = sprintFilter;
