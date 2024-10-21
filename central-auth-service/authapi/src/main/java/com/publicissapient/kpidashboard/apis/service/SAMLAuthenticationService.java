@@ -1,8 +1,8 @@
 package com.publicissapient.kpidashboard.apis.service;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface SAMLAuthenticationService {
 

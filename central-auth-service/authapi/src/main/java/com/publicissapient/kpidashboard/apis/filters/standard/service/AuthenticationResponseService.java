@@ -18,10 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard.service;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public interface AuthenticationResponseService {

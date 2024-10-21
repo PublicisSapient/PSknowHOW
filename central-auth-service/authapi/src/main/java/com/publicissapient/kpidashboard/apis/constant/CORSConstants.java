@@ -24,9 +24,6 @@ package com.publicissapient.kpidashboard.apis.constant;
  * @author Hiren Babariya
  */
 public final class CORSConstants {
-	private CORSConstants() {
-	}
-
 	public static final String HEADER_NAME_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
 	public static final String HEADER_VALUE_ACCESS_CONTROL_ORIGIN = "Origin";
 	public static final String HEADER_NAME_ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
@@ -37,4 +34,6 @@ public final class CORSConstants {
 	public static final String HEADER_VALUE_ALLOWED_HEADERS = "authorization,cache-control,content-type,x-accept-filter,x-filter-id,x-filter-level,xsrf-token,selectedMap,userId,x-requested-with,request-Id";
 	public static final String HEADER_NAME_ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
 	public static final String HEADER_VALUE_EXPOSE_HEADERS = "xsrf-token, auth-details-updated";
+	private CORSConstants() {
+	}
 }

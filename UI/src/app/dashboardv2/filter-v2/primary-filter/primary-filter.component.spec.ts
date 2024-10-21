@@ -901,4 +901,19 @@ describe('PrimaryFilterComponent', () => {
       }, 200);
     });
   });
+
+  it('should reset the component state', () => {
+    component.filters = ['filter1', 'filter2'];
+    component.selectedFilters = ['filter3'];
+    spyOn(component, 'applyPrimaryFilters');
+    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
+    spyOn(helperService, 'setBackupOfFilterSelectionState');
+
+    component.reset();
+
+    expect(component.selectedFilters).toEqual(['filter1']);
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
+    expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
+  });
 });

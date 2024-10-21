@@ -67,6 +67,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   noSprint: boolean = false;
   projectList = null;
   blockUI: boolean = false;
+
+  kanbanProjectsAvailable: boolean = true;
+  scrumProjectsAvailable: boolean = true;
+
   constructor(
     private httpService: HttpService,
     public service: SharedService,
@@ -110,7 +114,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onScrumKanbanSwitch
         .subscribe(data => {
-
           setTimeout(() => {
             this.selectedType = JSON.parse(JSON.stringify(data.selectedType));
             this.setDateFilter();
@@ -147,7 +150,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.dateFilterSelectedDateType.subscribe(date => {
       this.selectedDayType = date;
-    }))
+    }));
+
+    this.firstLoadFilterCheck(true);
+    this.firstLoadFilterCheck(false);
 
     this.service.setScrumKanban(this.selectedType);
     this.service.setSelectedBoard(this.selectedTab);
@@ -234,6 +240,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.kanban = false;
         this.selectedType = 'scrum';
         this.setSelectedType(this.selectedType);
+        this.colorObj = {};
         return;
       }
 
@@ -282,6 +289,31 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+  firstLoadFilterCheck(isKanban) {
+    let selectedFilterData = {};
+    selectedFilterData['kanban'] = isKanban;
+    selectedFilterData['sprintIncluded'] = isKanban ? ['CLOSED'] : ['CLOSED', 'ACTIVE'];
+    this.httpService.getFilterData(selectedFilterData).subscribe((filterApiData) => {
+      if (filterApiData['success']) {
+        if (filterApiData['data'].length >= 0) {
+          let projects = filterApiData['data'].filter(x => x.labelName === 'project');
+          if (isKanban) {
+            this.kanbanProjectsAvailable = projects?.length > 0;
+          } else {
+            this.scrumProjectsAvailable = projects?.length > 0;
+          }
+
+          this.service.setNoProjectsForNewUI({
+            kanban: !this.kanbanProjectsAvailable,
+            scrum: !this.scrumProjectsAvailable
+          });
+        }
+      } else {
+        // error
+      }
+    });
+  }
+
   processFilterData(data) {
     if (Array.isArray(data)) {
       data.sort((a, b) => a.level - b.level);
@@ -307,27 +339,31 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
     dataCopy = this.removeUndefinedProperties(dataCopy);
     this.filterDataArr[this.selectedType] = dataCopy;
-    if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
-      let stateFilters = this.helperService.getBackupOfFilterSelectionState();
-      if (stateFilters && stateFilters['primary_level']) {
-        let selectedProject;
-        if (stateFilters['primary_level'][0].labelName === 'project') {
-          selectedProject = stateFilters['primary_level'][0];
-        } else {
-          selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
-        }
-        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
-      } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
-        let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
-        if (selectedProject) {
+    if (this.filterDataArr[this.selectedType][this.selectedLevel]?.length) {
+      if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
+        let stateFilters = this.helperService.getBackupOfFilterSelectionState();
+        if (stateFilters && stateFilters['primary_level']) {
+          let selectedProject;
+          if (stateFilters['primary_level'][0].labelName === 'project') {
+            selectedProject = stateFilters['primary_level'][0];
+          } else {
+            selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
+          }
           this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+        } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
+          let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
+          if (selectedProject) {
+            this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+          }
         }
-      }
-      else {
-        let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
-        if (selectedProject) {
-          this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+        else {
+          let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
+          if (selectedProject) {
+            this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+          }
         }
+      } else {
+        this.getBoardConfig([]);
       }
     } else {
       this.getBoardConfig([]);
@@ -657,13 +693,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (this.selectedTab.toLowerCase() !== 'developer') {
         if (this.selectedLevel) {
           if (typeof this.selectedLevel === 'string') {
-            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
           } else {
-            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+            this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
           }
         }
         else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
         }
       }
       else {
@@ -767,14 +803,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     // Promise.resolve(() => {
     if (this.filterApplyData['selectedMap']) {
       if (!this.selectedLevel) {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
         return;
       }
       if (typeof this.selectedLevel === 'string') {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
         return;
       }
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData);
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
       // });
     }
   }
@@ -793,13 +829,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (this.filterDataArr[this.selectedType]) {
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
         } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
         }
       }
       else if (!this.parentFilterConfig || !Object.keys(this.parentFilterConfig).length) {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
       }
     }
   }

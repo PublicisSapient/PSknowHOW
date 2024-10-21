@@ -1,9 +1,7 @@
 package com.publicissapient.kpidashboard.apis.service.dto;
 
-import lombok.Data;
-
 import jakarta.validation.constraints.NotNull;
-
+import lombok.Data;
 
 @Data
 public class UserNameRequestDTO {
