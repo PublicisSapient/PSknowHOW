@@ -860,8 +860,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.additionalFilterConfig?.forEach((addtnlFilter, index) => {
         this.additionalFiltersArr['filter' + (index + 1)] = [];
-
-        let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
+       
+        let allFilters = this.filterDataArr[this.selectedType] && this.filterDataArr[this.selectedType][this.getCorrectLevelMapping(addtnlFilter.defaultLevel.labelName)] ? this.filterDataArr[this.selectedType][addtnlFilter.defaultLevel.labelName] : [];
         selectedProjectIds.forEach(nodeId => {
           if (allFilters?.length) {
             this.additionalFiltersArr['filter' + (index + 1)].push(...allFilters?.filter((filterItem) => {
@@ -899,6 +899,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
       }
       this.service.setAdditionalFilters(this.additionalFiltersArr);
+    }
+  }
+
+  getCorrectLevelMapping(level) {
+    if(level.toLowerCase() === 'sprint') {
+      return 'Sprint';
+    } 
+    if(level.toLowerCase() === 'squad' || level.toLowerCase() === 'sqd') {
+      return 'Squad';
     }
   }
 
