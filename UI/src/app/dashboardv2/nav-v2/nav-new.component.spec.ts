@@ -128,7 +128,7 @@ describe('NavNewComponent', () => {
     const sharedSpy = jasmine.createSpyObj('SharedService', ['getSelectedType', 'setSelectedBoard', 'setScrumKanban', 'getSelectedTrends', 'setDashConfigData', 'selectedTrendsEvent', 'onTypeOrTabRefresh', 'setSelectedType', 'setCurrentUserDetails', 'currentUserDetailsSubject']);
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const helperSpy = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState']);
+    const helperSpy = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState', 'deepEqual']);
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],

@@ -24,6 +24,7 @@ export class AdditionalFilterComponent implements OnChanges {
   selectedTrends = [];
   previousSelectedTrends = [];
   selectedAdditionalFilterLevel = [];
+  squadLevel = {};
   @Output() onAdditionalFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   stateFilters: any;
@@ -81,16 +82,8 @@ export class AdditionalFilterComponent implements OnChanges {
           });
 
           let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release').map(x => x.hierarchyLevelName);
-          let correctLevelMappingPresent = true;
-          this.additionalFilterConfig.forEach((config) => {
-            if (!correctLevelMapping[config.defaultLevel.labelName]?.length) {
-              correctLevelMappingPresent = false;
-            }
-          });
-          if(!correctLevelMappingPresent) {
-            correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release').map(x => x.hierarchyLevelId);
-          }
-
+          
+          this.squadLevel = correctLevelMapping.filter(x => x.toLowerCase() !== 'sprint')[0];
           this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release').map(x => x.hierarchyLevelId);
           setTimeout(() => {
             this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
