@@ -216,9 +216,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				Object value = FieldMappingHelper.getFieldMappingData(fieldMapping, fieldMappingClass, field,
 						releaseNodeId, nodeSpecifFields.contains(field));
 				// If the threshold value is empty, populate it with the default value from kpi_master
-				value = populateDefaultKPIThreshold(kpi, field, projectLevelThresholdFields, value);
-				mappingResponse.setFieldName(field);
-				mappingResponse.setOriginalValue(value);
+				setDefaultKPIThresholdIfEmpty(kpi, field, projectLevelThresholdFields, value, mappingResponse);
 				List<ConfigurationHistoryChangeLog> changeLogs = FieldMappingHelper.getFieldMappingHistory(fieldMapping,
 						field, releaseNodeId, nodeSpecifFields.contains(field));
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
@@ -598,27 +596,28 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	/**
-	 * Populates the default KPI threshold value if the field is categorized under
-	 * project level threshold and the current value is null or not empty.
+	 * Sets the default KPI threshold value if the value is empty.
 	 *
 	 * @param kpi
-	 *            the KPI code
+	 *            The KPI code for which the threshold is being set.
 	 * @param field
-	 *            the field name
+	 *            The field name being checked.
 	 * @param projectLevelThresholdFields
-	 *            the list of project level threshold fields
+	 *            List of fields that are categorized under the project level
+	 *            threshold.
 	 * @param value
-	 *            the current value of the field
-	 * @return the populated threshold value, from kpi_master if empty
+	 *            The current value of the field.
+	 * @param mappingResponse
+	 *            The response object where the field name and value will be set.
 	 */
-	private Object populateDefaultKPIThreshold(KPICode kpi, String field, List<String> projectLevelThresholdFields,
-			Object value) {
+	private void setDefaultKPIThresholdIfEmpty(KPICode kpi, String field, List<String> projectLevelThresholdFields,
+			Object value, FieldMappingResponse mappingResponse) {
 		if (projectLevelThresholdFields.contains(field) && ObjectUtils.isEmpty(value)) {
 			List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
 			value = masterList.stream().filter(j -> j.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
 					.mapToDouble(j -> j.getThresholdValue() != null ? j.getThresholdValue() : 0.0).sum();
 		}
-		return value;
+		mappingResponse.setFieldName(field);
+		mappingResponse.setOriginalValue(value);
 	}
-
 }
