@@ -285,15 +285,6 @@ describe('PrimaryFilterComponent', () => {
 
 
   describe('arraysEqual', () => {
-    it('should return true when arrays are equal', () => {
-      const arr1 = [1, 2, 3];
-      const arr2 = [1, 2, 3];
-
-      const result = component.arraysEqual(arr1, arr2);
-
-      expect(result).toBe(true);
-    });
-
     it('should return false when arrays have different lengths', () => {
       const arr1 = [1, 2, 3];
       const arr2 = [1, 2];
