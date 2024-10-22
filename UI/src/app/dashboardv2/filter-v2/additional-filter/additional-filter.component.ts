@@ -180,9 +180,10 @@ export class AdditionalFilterComponent implements OnChanges {
     if (!isDeveloper) {
       if (!fromBackup) {
         let obj = {};
-        for (let i = 0; i <= index; i++) {
+        for (let i = 0; i <= Object.keys(e)?.length; i++) {
           if (e[i]) {
-            this.selectedAdditionalFilterLevel[i] = e && e[i] && e[i][0] ? e[i][0]['labelName'] : this.selectedAdditionalFilterLevel[i];
+            this.selectedAdditionalFilterLevel[i] = e && e[i] && e[i][0] ? e[i][0]['labelName'] : localStorage.getItem('selectedAdditionalFilterLevel_' + i);
+            localStorage.setItem('selectedAdditionalFilterLevel_' + i, this.selectedAdditionalFilterLevel[i]);
             obj[this.selectedAdditionalFilterLevel[i]] = e[i] ? e[i] : this.stateFilters[Object.keys(this.stateFilters)[i]];
             this.onAdditionalFilterChange.emit({ [this.selectedAdditionalFilterLevel[i]]: e[i] });
           }
