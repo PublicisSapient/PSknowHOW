@@ -883,7 +883,7 @@ export class HelperService {
     }
 
     deepEqual(obj1: any, obj2: any): boolean {
-        if (typeof obj1 === 'string' && obj1.toLowerCase() === obj2.toLowerCase()) {
+        if (typeof obj1 === 'string' && typeof obj2 === 'string' && obj1.toLowerCase() === obj2.toLowerCase()) {
           return true;
         }
     
