@@ -98,7 +98,7 @@ public class DefectCountByStatusServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi136");
 		kpiRequest.setLabel("PROJECT");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
 		sprintDetails = sprintDetailsDataFactory.getSprintDetails().get(0);
