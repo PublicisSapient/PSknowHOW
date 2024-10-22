@@ -210,7 +210,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setGlobalConfigData(globalConfig) {
-    this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+    this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     if (!this.configGlobalData) {
       this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     }
@@ -289,7 +290,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
       this.globalConfig = $event.dashConfigData;
-      this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
+      this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
       const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
       const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
       this.releaseEndDate = endDate;
@@ -297,9 +298,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.timeRemaining = this.calcBusinessDays(today, endDate);
       this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
       if (!this.configGlobalData?.length && $event.dashConfigData) {
-        this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+        this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         if (!this.configGlobalData) {
-          this.configGlobalData = $event.dashConfigData['others'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+          this.configGlobalData = $event.dashConfigData['others']?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         }
       }
 
@@ -949,7 +950,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
-    let developerBopardKpis = this.globalConfig[this.kanbanActivated ? 'kanban' : 'scrum']?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
+    let developerBopardKpis = this.globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
     if (this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis?.includes(kpiId)) {
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
       if (!trendValueList?.length) {
