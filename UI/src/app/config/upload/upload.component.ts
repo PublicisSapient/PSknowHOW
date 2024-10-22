@@ -496,6 +496,7 @@ export class UploadComponent implements OnInit {
       .subscribe(filterData => {
         if (filterData[0] === 'error') {
           this.resetProjectSelection();
+          this.loader = false;
           this.messageService.add({ severity: 'error', summary: 'Error in fetching filter data. Please try after some time.' });
           return;
         }
@@ -503,6 +504,7 @@ export class UploadComponent implements OnInit {
         this.filterData = filterData['data'];
 
         if (!this.filterData || this.filterData.length <= 0) {
+          this.loader = false;
           this.resetProjectSelection();
           return;
         }
@@ -513,6 +515,7 @@ export class UploadComponent implements OnInit {
         this.checkDefaultFilterSelection(defaultSelection);
 
         if (Object.keys(filterData).length === 0) {
+          this.loader = false;
           this.resetProjectSelection();
           this.messageService.add({ severity: 'error', summary: 'Projects not found.' });
           return;

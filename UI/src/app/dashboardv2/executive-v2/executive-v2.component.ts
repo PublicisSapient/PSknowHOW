@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -58,7 +58,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   bitBucketKpiRequest;
   maturityColorCycleTime = ['#f5f5f5', '#f5f5f5', '#f5f5f5'];
   tooltip;
-  selectedtype = 'Scrum';
+  selectedtype: string = '';
   configGlobalData;
   selectedPriorityFilter = {};
   selectedSonarFilter;
@@ -102,7 +102,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendsObj = {};
   selectedTab = '';
   showCommentIcon = false;
-  noProjects = false;
+  noProjects = {};
   sprintsOverlayVisible: boolean = false;
   kpiCommentsCountObj: object = {};
   kpiTableHeadingArr: Array<object> = [];
@@ -122,32 +122,23 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   globalConfig: any;
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
-  constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService, private route: ActivatedRoute, private excelService: ExcelService) {
+  constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
+     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
-      this.noFilterApplyData = false;
-      this.kpiLoader = new Set();
-      this.kpiStatusCodeArr = {};
-      this.immediateLoader = true;
-      this.processedKPI11Value = {};
-      this.selectedBranchFilter = 'Select';
-      this.serviceObject = {};
+      this.resetToDefaults();
       this.selectedtype = data.selectedType;
       this.kpiTrendObject = {}
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+      // this.noProjects = this.service.noProjectsObj;
     }));
 
     this.subscriptions.push(this.service.onTabSwitch.subscribe((data) => {
-      this.noFilterApplyData = false;
-      this.kpiLoader = new Set();
-      this.kpiStatusCodeArr = {};
-      this.immediateLoader = true;
-      this.processedKPI11Value = {};
-      this.selectedBranchFilter = 'Select';
-      this.serviceObject = {};
+      this.resetToDefaults();
       this.selectedTab = data.selectedBoard;
+      // this.noProjects = this.service.noProjectsObj;
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
@@ -162,6 +153,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
       this.noFilterApplyData = res;
+    }));
+
+    this.subscriptions.push(this.service.noProjectsObjObs.subscribe((res) => {
+      this.noProjects = res;
     }));
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
@@ -204,6 +199,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }));
   }
 
+  resetToDefaults() {
+    this.noFilterApplyData = false;
+    this.kpiLoader = new Set();
+    this.kpiStatusCodeArr = {};
+    this.immediateLoader = true;
+    this.processedKPI11Value = {};
+    this.selectedBranchFilter = 'Select';
+    this.serviceObject = {};
+  }
+
   setGlobalConfigData(globalConfig) {
     this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     if (!this.configGlobalData) {
@@ -240,11 +245,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
-      this.noProjects = res;
-      this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
-    }));
-
     /** Get recommendations flag */
     this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
       this.isRecommendationsEnabled = item;
@@ -277,11 +277,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   click apply and call kpi
    **/
   receiveSharedData($event) {
-    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false
+    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
+    this.selectedtype = $event.selectedType;
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
-      if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {
-        this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
+      if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype?.toLowerCase()]) {
+        this.hierarchyLevel = hierarchyData[this.selectedtype?.toLowerCase()];
       }
     }
     if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
@@ -358,7 +359,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               this.groupBitBucketKpi(kpiIdsForCurrentBoard)
             }
             this.immediateLoader = false;
-            this.createKpiTableHeads(this.selectedtype.toLowerCase());
+            this.createKpiTableHeads(this.selectedtype?.toLowerCase());
 
             let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
             if (projectLevel) {
@@ -378,7 +379,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setUpTabs() {
-    const tabsArray = new Set(this.configGlobalData.map(element => element.shown && element.isEnabled && element?.kpiDetail?.kpiSubCategory));
+    const tabsArray = new Set(this.configGlobalData?.map(element => element.shown && element.isEnabled && element?.kpiDetail?.kpiSubCategory));
     // if (this.selectedTab === 'release') {
     //   const tempArray = [...this.service.getDashConfigData()['scrum'], ...this.service.getDashConfigData()['others']];
     //   const tabTempSet = tempArray.filter(element => tabsArray.has(element.boardName));
@@ -1874,54 +1875,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       }
 
-      return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType);
+      return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.helperService.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType, this.selectedTab);
     }
     return false;
-  }
-
-  checkDataAtGranularLevel(data, chartType) {
-    if (this.selectedTab === "developer" && data?.length) {
-      return true;
-    }
-    if (!data || !data?.length) {
-      return false;
-    }
-    let dataCount = 0;
-    if (Array.isArray(data)) {
-      data?.forEach(item => {
-        if (Array.isArray(item.data) && item.data?.length) {
-          ++dataCount;
-        } else if (item.data && !isNaN(parseInt(item.data))) {
-          // dataCount += item?.data;
-          ++dataCount;
-        } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-          if (item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
-            if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
-              ++dataCount;
-            } else if (parseInt(item.value[0].data) > 0) {
-              ++dataCount;
-            }
-          } else if (this.checkIfArrayHasData(item.value[0])) {
-            if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
-              ++dataCount;
-            } else if (parseInt(item.value[0].value[0].data) > 0) {
-              ++dataCount;
-            }
-          } else if (item.value.length) {
-            ++dataCount;
-          }
-        } else if (item.dataGroup && item.dataGroup.length) {
-          ++dataCount;
-        }
-      });
-    } else if (data && Object.keys(data).length) {
-      dataCount = Object.keys(data).length;
-    }
-    return parseInt(dataCount + '') > 0;
-  }
-
-  checkIfArrayHasData(item) {
-    return (Array.isArray(item.value) && item.value.length > 0)
   }
 
   checkIfPartialDataPresent(kpi) {
@@ -1931,7 +1887,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       return this.checkPartialDataCondition(kpi, kpiData, filters);
     } else {
       if (kpi.kpiId === 'kpi171') {
-        return this.checkIfPartialDataForKpi171(kpiData, filters);
+        return this.checkIfPartialDataForKpi171(kpiData);
       }
       return false;
     }
@@ -1941,8 +1897,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (filters.length === 2) {
       let partialKpiData1 = kpiData.filter(x => x.filter1 === filters[0]);
       let partialKpiData2 = kpiData.filter(x => x.filter1 === filters[1]);
-      if ((this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType)) ||
-        (this.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType) && !this.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType))) {
+      if ((this.helperService.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType, this.selectedTab) && !this.helperService.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType, this.selectedTab)) ||
+        (this.helperService.checkDataAtGranularLevel(partialKpiData2, kpi.kpiDetail.chartType, this.selectedTab) && !this.helperService.checkDataAtGranularLevel(partialKpiData1, kpi.kpiDetail.chartType, this.selectedTab))) {
         return true;
       }
     } else {
@@ -1950,9 +1906,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-  checkIfPartialDataForKpi171(kpiData, filters) {
+  checkIfPartialDataForKpi171(kpiData) {
     kpiData = kpiData?.value;
-    filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
+    let filters = kpiData?.length ? kpiData.map((x) => x.filter1) : null;
     for (let i = 0; i < filters?.length; i++) {
       let partialKpiData = kpiData.filter(x => x.filter1 === filters[i])[0];
       if (partialKpiData && partialKpiData.data?.length) {

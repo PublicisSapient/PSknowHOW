@@ -128,7 +128,7 @@ describe('NavNewComponent', () => {
     const sharedSpy = jasmine.createSpyObj('SharedService', ['getSelectedType', 'setSelectedBoard', 'setScrumKanban', 'getSelectedTrends', 'setDashConfigData', 'selectedTrendsEvent', 'onTypeOrTabRefresh', 'setSelectedType', 'setCurrentUserDetails', 'currentUserDetailsSubject']);
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const helperSpy = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState']);
+    const helperSpy = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState', 'deepEqual']);
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -358,22 +358,6 @@ describe('NavNewComponent', () => {
       component.handleMenuTabFunctionality(mockObj);
 
       expect(component.helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
-    });
-  });
-
-  describe('deepEqual', () => {
-    it('should return true for equal objects', () => {
-      const obj1 = { a: 1, b: 2 };
-      const obj2 = { a: 1, b: 2 };
-
-      expect(component.deepEqual(obj1, obj2)).toBeTrue();
-    });
-
-    it('should return false for non-equal objects', () => {
-      const obj1 = { a: 1, b: 2 };
-      const obj2 = { a: 1, b: 3 };
-
-      expect(component.deepEqual(obj1, obj2)).toBeFalse();
     });
   });
 

@@ -804,7 +804,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
           if (aggregatedArr[0]?.data[idx]?.hasOwnProperty('value1') && aggregatedArr[0]?.data[idx]?.value1 != null) {
             aggregatedArr[0].data[idx]['value1'] += arr[i].data[j]['value1'];
           }
-          if (aggregatedArr[0]?.data[idx]?.hasOwnProperty('modalValues') && aggregatedArr[0]?.data[idx]?.modalValues != null) {
+          if (aggregatedArr[0]?.data[idx]?.modalValues != null) {
             aggregatedArr[0].data[idx]['modalValues'] = [...aggregatedArr[0]?.data[idx]['modalValues'], ...arr[i]?.data[j]['modalValues']];
           }
         }
