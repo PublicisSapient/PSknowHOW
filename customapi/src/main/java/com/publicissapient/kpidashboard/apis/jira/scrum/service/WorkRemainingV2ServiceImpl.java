@@ -163,14 +163,14 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 
 			// Creating map of modal Objects
 			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(allIssues);
-			Map<String, JiraIssueCustomHistory> issueHistoryMap = allIssueHistories.stream()
-					.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, history -> history));
 			allIssues.forEach(issue -> {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
 				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
 
-				JiraIssueCustomHistory issueCustomHistory = issueHistoryMap.getOrDefault(issue.getNumber(),
-						new JiraIssueCustomHistory());
+				JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
+						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
+								.equals(issue.getNumber()))
+						.findFirst().orElse(new JiraIssueCustomHistory());
 				String devCompletionDate = getDevCompletionDate(issueCustomHistory,
 						fieldMapping.getJiraDevDoneStatusKPI119());
 

@@ -168,14 +168,13 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 			List<String> waitStatusList = fetchBlockAndWaitStatus.get(1);
 
 			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(allIssues);
-			Map<String, JiraIssueCustomHistory> issueHistoryMap = allIssueHistory.stream()
-					.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, history -> history));
 			allIssues.forEach(issue -> {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
 				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
-
-				JiraIssueCustomHistory issueCustomHistory = issueHistoryMap.getOrDefault(issue.getNumber(),
-						new JiraIssueCustomHistory());
+				JiraIssueCustomHistory issueCustomHistory = allIssueHistory.stream()
+						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
+								.equals(issue.getNumber()))
+						.findFirst().orElse(new JiraIssueCustomHistory());
 				List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory, sprintDetail,
 						blockedStatusList, waitStatusList, flagIncluded);
 				data.setIssueBlockedTime(waitedTimeAndBlockedTime.get(1));
