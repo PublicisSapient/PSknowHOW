@@ -81,20 +81,22 @@ export class AdditionalFilterComponent implements OnChanges {
             }
           });
 
-          let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release').map(x => x.hierarchyLevelName);
-          
-          this.squadLevel = correctLevelMapping.filter(x => x.toLowerCase() !== 'sprint')[0];
+          let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release');
+
+          this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
           this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release').map(x => x.hierarchyLevelId);
           setTimeout(() => {
             this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
             if (this.stateFilters && Object.keys(this.stateFilters)) {
               Object.keys(this.stateFilters).forEach((key) => {
                 let correctIndex = 0;
-                this.additionalFilterConfig.forEach((config, index) => {
-                  if (correctLevelMapping[index] === key) {
-                    correctIndex = index;
+                for (let i = 0; i < this.additionalFilterConfig.length; i++) {
+                  let level = correctLevelMapping.filter(f => f.hierarchyLevelName.toLowerCase() === this.additionalFilterConfig[i].defaultLevel.labelName.toLowerCase())[0];
+                  if (level.hierarchyLevelId.toLowerCase() === key.toLowerCase()) {
+                    correctIndex = i;
+                    break;
                   }
-                });
+                }
                 if (this.stateFilters[key].length) {
                   this.selectedFilters[correctIndex] = this.stateFilters[key];
                 }

@@ -167,6 +167,7 @@ export class HeaderComponent implements OnInit {
 
   // logout is clicked  and removing auth token , username
   logout() {
+    this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
     this.helperService.logoutHttp();
   }
 

@@ -221,6 +221,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.additionalFilterConfig = {};
     this.boardData = {};
     this.projectList = null;
+    this.previousFilterEvent = null;
   }
 
   setSelectedDateType(label: string) {
@@ -547,7 +548,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      ((!this.objectsEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+    ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.objectsEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType))
+    {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -813,7 +815,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-    let additionalFilterSelected = this.filterApplyData['label'] === this.squadLevel[0].hierarchyLevelId || this.filterApplyData['label'] === this.squadLevel[0].hierarchyLevelName ? true : false;
+    let additionalFilterSelected;
+    if (this.squadLevel && this.squadLevel?.length) {
+      this.filterApplyData['label'] === this.squadLevel[0]?.hierarchyLevelId || this.filterApplyData['label'] === this.squadLevel[0]?.hierarchyLevelName ? true : false;
+    }
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
