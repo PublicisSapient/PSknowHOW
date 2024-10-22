@@ -192,8 +192,8 @@ public class ReleaseBurnUpServiceImplTest {
 	public void withNullStartEndDate() throws ApplicationException {
 		accountHierarchyDataList = accountHierarchyDataList.stream().filter(data -> {
 			data.getNode().stream().filter(node -> node.getGroupName().equalsIgnoreCase("release")).forEach(node -> {
-				node.getAccountHierarchy().setBeginDate(null);
-				node.getAccountHierarchy().setEndDate(null);
+				node.getProjectHierarchy().setBeginDate(null);
+				node.getProjectHierarchy().setEndDate(null);
 			});
 			return true;
 		}).collect(Collectors.toList());
@@ -216,9 +216,9 @@ public class ReleaseBurnUpServiceImplTest {
 	public void withJustStartDate() throws ApplicationException {
 		accountHierarchyDataList = accountHierarchyDataList.stream().filter(data -> {
 			data.getNode().stream().filter(node -> node.getGroupName().equalsIgnoreCase("release")).forEach(node -> {
-				node.getAccountHierarchy().setBeginDate("2023-05-25T15:53:00.0000000");
-				node.getAccountHierarchy().setEndDate(null);
-				node.getAccountHierarchy().setReleaseState("Released");
+				node.getProjectHierarchy().setBeginDate("2023-05-25T15:53:00.0000000");
+				node.getProjectHierarchy().setEndDate(null);
+				node.getProjectHierarchy().setReleaseState("Released");
 			});
 			return true;
 		}).collect(Collectors.toList());
@@ -256,9 +256,9 @@ public class ReleaseBurnUpServiceImplTest {
 	public void test_prediction_Data() throws ApplicationException {
 		accountHierarchyDataList = accountHierarchyDataList.stream().filter(data -> {
 			data.getNode().stream().filter(node -> node.getGroupName().equalsIgnoreCase("release")).forEach(node -> {
-				node.getAccountHierarchy().setBeginDate(null);
-				node.getAccountHierarchy().setEndDate(null);
-				node.getAccountHierarchy().setReleaseState("unreleased");
+				node.getProjectHierarchy().setBeginDate(null);
+				node.getProjectHierarchy().setEndDate(null);
+				node.getProjectHierarchy().setReleaseState("unreleased");
 			});
 			return true;
 		}).collect(Collectors.toList());
