@@ -138,6 +138,7 @@ public class CacheServiceImpl implements CacheService {
 	@Override
 	public void setIntoApplicationCache(String key, String value) {
 		Cache cache = cacheManager.getCache(CommonUtils.getCacheName(Constant.KPI_REQUEST_TRACKER_ID_KEY));
+		log.info("GS1 cache {}", cache);
 		if (null != cache) {
 			cache.put(key, value);
 		}

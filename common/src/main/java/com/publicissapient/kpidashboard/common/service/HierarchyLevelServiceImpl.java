@@ -33,9 +33,13 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 	public List<HierarchyLevel> getFullHierarchyLevels(boolean isKanban) {
 		List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
 		List<HierarchyLevel> topHierarchyLevels = getTopHierarchyLevels();
+		log.info("GS List of hierarchy {}", topHierarchyLevels);
 		HierarchyLevel projectHierarchyLevel = getProjectHierarchyLevel();
+		log.info("GS List of projectHierarchyLevel {}", projectHierarchyLevel);
 		HierarchyLevel sprintHierarchyLevel = getSprintHierarchyLevel();
+		log.info("GS List of sprintHierarchyLevel {}", sprintHierarchyLevel);
 		HierarchyLevel releaseHierarchyLevel = getReleaseHierarchyLevel();
+		log.info("GS List of releaseHierarchyLevel {}", releaseHierarchyLevel);
 		hierarchyLevels.addAll(topHierarchyLevels);
 		hierarchyLevels.add(projectHierarchyLevel);
 		if (!isKanban) {
@@ -44,6 +48,7 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 		hierarchyLevels.add(releaseHierarchyLevel);
 		List<AdditionalFilterCategory> additionalFilterCategories = filterCategoryLevelService
 				.getAdditionalFilterCategories();
+		log.info("GS additionalFilterCategories {}", additionalFilterCategories);
 		if (CollectionUtils.isNotEmpty(additionalFilterCategories)) {
 
 			for (AdditionalFilterCategory additionalFilterCategory : additionalFilterCategories) {
@@ -58,7 +63,7 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 				hierarchyLevels.add(bottomHierarchyLevel);
 			}
 		}
-
+		log.info("GS additionalFilterCategories {}", hierarchyLevels);
 		return hierarchyLevels;
 	}
 
@@ -83,11 +88,14 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 		hierarchyLevel.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 		hierarchyLevel.setHierarchyLevelName(CommonConstant.HIERARCHY_LEVEL_NAME_PROJECT);
 		if (CollectionUtils.isNotEmpty(topHierarchies)) {
+			log.info("GS topHierarchies", topHierarchies);
 			HierarchyLevel parent = topHierarchies.get(topHierarchies.size() - 1);
 			hierarchyLevel.setLevel(parent.getLevel() + 1);
 		} else {
+			log.info("GS topHierarchies", topHierarchies);
 			hierarchyLevel.setLevel(1);
 		}
+		log.info("GS hierarchyLevel", hierarchyLevel);
 		return hierarchyLevel;
 
 	}
@@ -98,11 +106,14 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 		hierarchyLevel.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 		hierarchyLevel.setHierarchyLevelName(CommonConstant.HIERARCHY_LEVEL_NAME_SPRINT);
 		if (CollectionUtils.isNotEmpty(topHierarchies)) {
+			log.info("GS topHierarchies {}", topHierarchies);
 			HierarchyLevel parent = getProjectHierarchyLevel();
 			hierarchyLevel.setLevel(parent.getLevel() + 1);
 		} else {
+			log.info("GS topHierarchies {}", topHierarchies);
 			hierarchyLevel.setLevel(2);
 		}
+		log.info("GS hierarchyLevel", hierarchyLevel);
 		return hierarchyLevel;
 
 	}
