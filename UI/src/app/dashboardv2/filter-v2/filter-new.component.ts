@@ -817,7 +817,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
     let additionalFilterSelected;
     if (this.squadLevel && this.squadLevel?.length) {
-      this.filterApplyData['label'] === this.squadLevel[0]?.hierarchyLevelId || this.filterApplyData['label'] === this.squadLevel[0]?.hierarchyLevelName ? true : false;
+      additionalFilterSelected = (this.filterApplyData['label'] === this.squadLevel[0]?.hierarchyLevelId || this.filterApplyData['label'] === this.squadLevel[0]?.hierarchyLevelName ? true : false)
     }
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
