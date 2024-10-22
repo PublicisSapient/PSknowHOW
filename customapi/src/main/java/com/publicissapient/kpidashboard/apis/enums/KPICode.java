@@ -544,7 +544,10 @@ public enum KPICode {
      * Work Remaining
      */
     WORK_REMAINING_V2("kpi189", KPISource.JIRA.name()),
-
+    /**
+     * Estimate vs Actual
+     */
+    ESTIMATE_VS_ACTUAL_V2("kpi190", KPISource.JIRA.name()),
 
 
 

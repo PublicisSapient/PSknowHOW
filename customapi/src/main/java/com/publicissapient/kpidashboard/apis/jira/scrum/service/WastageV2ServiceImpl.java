@@ -53,12 +53,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class WastageV2ServiceImpl extends JiraIterationKPIService {
 
-	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
-	private static final String SEARCH_BY_PRIORITY = "Filter by Priority";
+	private static final String FILTER_BY_ISSUE_TYPE = "Filter by issue type";
+	private static final String FILTER_BY_PRIORITY = "Filter by Priority";
 	private static final String ISSUES = "issues";
 	private static final String ISSUES_CUSTOM_HISTORY = "issues custom history";
 	private static final String SPRINT_DETAILS = "sprint details";
 	private static final String SINGLE = "Single";
+	private static final String SUM = "sum";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -198,8 +199,8 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, SEARCH_BY_ISSUE_TYPE, "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, SEARCH_BY_PRIORITY, "Priority", 2));
+		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(SINGLE, FILTER_BY_PRIORITY, "Priority", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;
@@ -232,11 +233,11 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 
 		KpiDataSummary summary = new KpiDataSummary();
 		summary.setName("Total wastage");
-		summary.setAggregation("sum");
+		summary.setAggregation(SUM);
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
-		dataGroup1.add(createKpiData("issueBlockedTime", "Blocked Time", 1, "sum", CommonConstant.DAY));
-		dataGroup1.add(createKpiData("issueWaitTime", "Waiting Time", 2, "sum", CommonConstant.DAY));
+		dataGroup1.add(createKpiData("issueBlockedTime", "Blocked Time", 1, SUM, CommonConstant.DAY));
+		dataGroup1.add(createKpiData("issueWaitTime", "Waiting Time", 2, SUM, CommonConstant.DAY));
 
 		dataGroup.setSummary(summary);
 		dataGroup.setDataGroup1(dataGroup1);

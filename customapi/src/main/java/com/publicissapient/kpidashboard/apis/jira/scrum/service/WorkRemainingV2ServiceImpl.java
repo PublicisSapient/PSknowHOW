@@ -58,8 +58,8 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
 	public static final String ISSUE_CUSTOM_HISTORY = "issues custom history";
-	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
-	private static final String SEARCH_BY_STATUS = "Filter by status";
+	private static final String FILTER_BY_ISSUE_TYPE = "Filter by issue type";
+	private static final String FILTER_BY_STATUS = "Filter by status";
 	private static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue count";
 	private static final String STORY_POINT = "Story point";
@@ -246,8 +246,8 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, SEARCH_BY_ISSUE_TYPE, "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, SEARCH_BY_STATUS, "Issue Status", 2));
+		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(SINGLE, FILTER_BY_STATUS, "Issue Status", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;
@@ -287,12 +287,12 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 			unit = CommonConstant.DAY;
 		}
 
-		dataGroup1.add(createKpiData("Value", STORY_POINT, 1, "sum", unit));
-		dataGroup1.add(createKpiData("", ISSUE_COUNT, 1, "count", ""));
+		dataGroup1.add(createKpiData("Value", STORY_POINT, 1, SUM, unit));
+		dataGroup1.add(createKpiData("", ISSUE_COUNT, 2, "count", ""));
 
 		List<KpiData> dataGroup2 = new ArrayList<>();
-		dataGroup2.add(createKpiData("Remaining Hours", REMAINING_WORK, 1, "sum", CommonConstant.DAY));
-		dataGroup2.add(createKpiData("Delay", WORK_STATUS, 2, "sum", CommonConstant.DAY));
+		dataGroup2.add(createKpiData("Remaining Hours", REMAINING_WORK, 1, SUM, CommonConstant.DAY));
+		dataGroup2.add(createKpiData("Delay", WORK_STATUS, 2, SUM, CommonConstant.DAY));
 
 		// For markerInfo
 		Map<String, String> markerInfo = new HashMap<>();
