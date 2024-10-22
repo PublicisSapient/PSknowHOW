@@ -7599,7 +7599,8 @@ describe('ExecutiveV2Component', () => {
         },
         "repoToolFlag": false
       },
-      dashConfigData: dashConfigData2
+      "dashConfigData": dashConfigData2,
+      "selectedType": 'scrum'
     });
 
     fixture.detectChanges();
@@ -17721,7 +17722,8 @@ describe('ExecutiveV2Component', () => {
         configDetails: {},
         loading: false,
         makeAPICall: true,
-        selectedTab: 'Tab1'
+        selectedTab: 'Tab1',
+        selectedType: 'scrum'
       });
 
       expect(component.groupJiraKpi).toHaveBeenCalled();
@@ -17759,7 +17761,8 @@ describe('ExecutiveV2Component', () => {
       configDetails: {},
       loading: false,
       makeAPICall: true,
-      selectedTab: 'Tab1'
+      selectedTab: 'Tab1',
+      selectedType: 'kanban'
     });
 
     expect(component.groupJiraKanbanKpi).toHaveBeenCalled();
@@ -17888,6 +17891,7 @@ describe('ExecutiveV2Component', () => {
       it('should set configGlobalData correctly when kanban is activated', () => {
         // Test description: Ensure that configGlobalData is set correctly when kanban is activated.
         component.kanbanActivated = true;
+        component.selectedtype = 'kanban';
         component.selectedTab = 'test-board';
 
         const globalConfig = {
@@ -17960,6 +17964,7 @@ describe('ExecutiveV2Component', () => {
       it('should filter updatedConfigGlobalData to only shown items', () => {
         // Test description: Ensure that updatedConfigGlobalData only includes items that are shown.
         component.kanbanActivated = true;
+        component.selectedtype = 'kanban';
         component.selectedTab = 'test-board';
 
         const globalConfig = {
