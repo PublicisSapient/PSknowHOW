@@ -216,10 +216,10 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 			filteredNode.setParent(parentNode);
 
 			filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getParent().getId(),
-					filteredNode.getParent().getName(), filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+					filteredNode.getParent().getName(), filteredNode.getProjectHierarchy().getBasicProjectConfigId()));
 			filteredNode.setSprintFilter(new SprintFilter(filteredNode.getId(), filteredNode.getName(),
-					filteredNode.getAccountHierarchy().getBeginDate(),
-					filteredNode.getAccountHierarchy().getEndDate()));
+					filteredNode.getProjectHierarchy().getBeginDate(),
+					filteredNode.getProjectHierarchy().getEndDate()));
 
 			return filteredNode;
 		}

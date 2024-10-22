@@ -101,7 +101,7 @@ public class IterationBurnupServiceImplTest {
 		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
 		sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		filterLevelMap = new LinkedHashMap<>();
 		filterLevelMap.put("PROJECT", Filters.PROJECT);
