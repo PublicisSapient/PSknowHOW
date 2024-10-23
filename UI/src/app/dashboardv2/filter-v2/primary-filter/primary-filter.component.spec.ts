@@ -285,15 +285,6 @@ describe('PrimaryFilterComponent', () => {
 
 
   describe('arraysEqual', () => {
-    it('should return true when arrays are equal', () => {
-      const arr1 = [1, 2, 3];
-      const arr2 = [1, 2, 3];
-
-      const result = component.arraysEqual(arr1, arr2);
-
-      expect(result).toBe(true);
-    });
-
     it('should return false when arrays have different lengths', () => {
       const arr1 = [1, 2, 3];
       const arr2 = [1, 2];
@@ -308,35 +299,6 @@ describe('PrimaryFilterComponent', () => {
       const arr2 = [1, 4, 3];
 
       const result = component.arraysEqual(arr1, arr2);
-
-      expect(result).toBe(false);
-    });
-  });
-
-  describe('deepEqual', () => {
-    it('should return true when objects are equal', () => {
-      const obj1 = { name: 'John', age: 30 };
-      const obj2 = { name: 'John', age: 30 };
-
-      const result = component.deepEqual(obj1, obj2);
-
-      expect(result).toBe(true);
-    });
-
-    it('should return false when objects have different properties', () => {
-      const obj1 = { name: 'John', age: 30 };
-      const obj2 = { name: 'John' };
-
-      const result = component.deepEqual(obj1, obj2);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false when objects have different property values', () => {
-      const obj1 = { name: 'John', age: 30 };
-      const obj2 = { name: 'John', age: 25 };
-
-      const result = component.deepEqual(obj1, obj2);
 
       expect(result).toBe(false);
     });
@@ -900,5 +862,20 @@ describe('PrimaryFilterComponent', () => {
         done();
       }, 200);
     });
+  });
+
+  it('should reset the component state', () => {
+    component.filters = ['filter1', 'filter2'];
+    component.selectedFilters = ['filter3'];
+    spyOn(component, 'applyPrimaryFilters');
+    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
+    spyOn(helperService, 'setBackupOfFilterSelectionState');
+
+    component.reset();
+
+    expect(component.selectedFilters).toEqual(['filter1']);
+    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
+    expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
+    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   });
 });

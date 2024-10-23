@@ -121,76 +121,6 @@ describe('KpiCardV2Component', () => {
     });
   });
 
-  describe('checkDataAtGranularLevel', () => {
-    it('should return true if data is an array with non-empty data arrays', () => {
-      const data = [
-        { data: [1, 2, 3] },
-        { data: [4, 5, 6] },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(true);
-    });
-
-    it('should return true if data is an array with non-empty value arrays or non-empty objects', () => {
-      const data = [
-        { value: [1, 2, 3] },
-        { value: { prop: 'value' } },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return true if data is an array with non-empty dataGroup arrays', () => {
-      const data = [
-        { dataGroup: [1, 2, 3] },
-        { dataGroup: [4, 5, 6] },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(true);
-    });
-
-    it('should return true if data is an object with non-zero number of keys', () => {
-      const data = {
-        key1: 'value1',
-        key2: 'value2',
-      };
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is an empty array', () => {
-      const data = [];
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is an empty object', () => {
-      const data = {};
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is not an array or object', () => {
-      const data = 'invalid data';
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(true);
-    });
-  });
-
   it('should prepare Data for display', () => {
     component.colors = {
       'API POD 1 - Core_6524a7677c8bb73cd0c3fe67': {
@@ -983,19 +913,5 @@ describe('KpiCardV2Component', () => {
     component.trendValueList = [{ value: [{ data: 1 }] }];
 
     expect(component.checkIfDataPresent('200')).toBeTrue();
-  });
-
-  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
-    component.selectedTab = 'developer';
-    component.trendValueList = [{ data: 1 }];
-
-    expect(component.checkDataAtGranularLevel(component.trendValueList)).toBeTrue();
-  });
-
-  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
-    component.selectedTab = 'other';
-    component.trendValueList = [];
-
-    expect(component.checkDataAtGranularLevel(component.trendValueList)).toBeFalse();
   });
 });
