@@ -452,7 +452,7 @@ public class KPIExcelUtility {
 
 				if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId())) {
-					excelData.setUnitCoverage(kpiSpecificDataList.get(i));
+					excelData.setUnitCoverage(kpiSpecificDataList.get(i) + " %");
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId())) {
 					excelData.setTechDebt(kpiSpecificDataList.get(i));
@@ -460,7 +460,7 @@ public class KPIExcelUtility {
 						|| kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS_KANBAN.getKpiId())) {
 					excelData.setSonarViolation(kpiSpecificDataList.get(i));
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
-					excelData.setCodeQuality(kpiSpecificDataList.get(i));
+					excelData.setCodeQuality(kpiSpecificDataList.get(i) + " unit");
 				}
 				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
 				kpiExcelData.add(excelData);
