@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -217,19 +218,19 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 
-	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, List<String> fieldMapping) {
+	public static String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, List<String> fieldMapping) {
 		String devCompleteDate = Constant.DASH;
 		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
+
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			devCompleteDate = filterStatusUpdationLog.stream()
 					.filter(jiraHistoryChangeLog -> fieldMapping.contains(jiraHistoryChangeLog.getChangedTo())
 							&& jiraHistoryChangeLog.getUpdatedOn() != null)
-					.findFirst()
-					.map(jiraHistoryChangeLog -> LocalDate
-							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
-									DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT))
-							.toString())
-					.orElse(devCompleteDate);
+					.map(jiraHistoryChangeLog -> LocalDate.parse(
+							jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
+							DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT)))
+					.max(Comparator.naturalOrder())
+					.map(LocalDate::toString).orElse(devCompleteDate);
 		}
 		return devCompleteDate;
 	}
