@@ -84,7 +84,6 @@ export class AdditionalFilterComponent implements OnChanges {
           let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release');
 
           this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
-          this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release').map(x => x.hierarchyLevelId);
           setTimeout(() => {
             this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
             if (this.stateFilters && Object.keys(this.stateFilters)) {
