@@ -1204,7 +1204,7 @@ public class KPIExcelUtility {
                 excelData.setBranch(repoToolValidationData.getBranchName());
                 excelData.setDeveloper(repoToolValidationData.getDeveloperName());
                 excelData.setDaysWeeks(repoToolValidationData.getDate());
-                excelData.setPRSccessRate(repoToolValidationData.getPRSuccessRate());
+                excelData.setPRSccessRate(roundingOff(repoToolValidationData.getPRSuccessRate()));
                 excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getKpiPRs()));
 				excelData.setClosedPRs(repoToolValidationData.getMrCount());
                 kpiExcelData.add(excelData);

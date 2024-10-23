@@ -291,13 +291,13 @@ public class FixathonFieldMappingStructure {
 	public void rollBackFieldDisplayOrderForKPI161(MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateOne(
 				new Document(FIELD_NAME, new Document("$in", Arrays.asList(JIRA_ISSUE_TYPE_NAMES_KPI_161))),
-				new Document("$set", new Document(SECTION_ORDER, 1)));
+				new Document(UNSET, new Document(SECTION_ORDER, 1)));
 		fieldMappingStructCollection.updateOne(
 				new Document(FIELD_NAME,
 						new Document("$in",
 								Arrays.asList(JIRA_STATUS_FOR_NOT_REFINED_KPI_161, JIRA_STATUS_FOR_REFINED_KPI_161,
 										JIRA_STATUS_FOR_IN_PROGRESS_KPI_161))),
-				new Document("$set", new Document(SECTION_ORDER, 2)));
+				new Document(UNSET, new Document(SECTION_ORDER, 2)));
 	}
 
 }
