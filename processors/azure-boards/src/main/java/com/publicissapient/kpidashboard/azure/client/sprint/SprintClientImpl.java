@@ -94,40 +94,49 @@ public class SprintClientImpl implements SprintClient {
 				// fetched and db sprint is active then issues bucket compare as per
 				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)) {
-					log.debug(
-							"DB Active Sprint State -> {} , dbCompletedIssues -> {} , dbNotCompletedIssues -> {} , dbAddedIssues -> {} , dbPuntedIssues -> {}",
-							fetchedSprintDetails.getSprintID(), getIssuesIdList(dbSprintDetails.getCompletedIssues()),
-							getIssuesIdList(dbSprintDetails.getNotCompletedIssues()), dbSprintDetails.getAddedIssues(),
-							getIssuesIdList(dbSprintDetails.getPuntedIssues()));
-					List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer,
-							projectConfig, fetchedSprintDetails);
+					if (projectConfig.getProjectToolConfig().getAzureRefreshActiveSprintReport()) {
+						// if azurerefreshSprintReport is active- then treat it just like the case
+						// when in db sprint is future and from server it is active.
+						overrideDBSprintReport(projectConfig, azureAdapter, azureServer, fetchedSprintDetails,
+								completedIssuesStatus, azureProcessorId, dbSprintDetails);
+						toBeSavedSprintDetails.add(fetchedSprintDetails);
+					} else {
+						log.debug(
+								"DB Active Sprint State -> {} , dbCompletedIssues -> {} , dbNotCompletedIssues -> {} , dbAddedIssues -> {} , dbPuntedIssues -> {}",
+								fetchedSprintDetails.getSprintID(),
+								getIssuesIdList(dbSprintDetails.getCompletedIssues()),
+								getIssuesIdList(dbSprintDetails.getNotCompletedIssues()),
+								dbSprintDetails.getAddedIssues(), getIssuesIdList(dbSprintDetails.getPuntedIssues()));
+						List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter,
+								azureServer, projectConfig, fetchedSprintDetails);
 
-					Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
-					Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
-					Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
-					Set<String> toBeSavedAddedIssues = new HashSet<>();
-					Set<SprintIssue> toBeSavedPuntedIssues = new HashSet<>();
+						Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
+						Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
+						Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
+						Set<String> toBeSavedAddedIssues = new HashSet<>();
+						Set<SprintIssue> toBeSavedPuntedIssues = new HashSet<>();
 
-					prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
-							toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
+						prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
+								toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
 
-					prepareAddedSprintIssues(dbSprintDetails, fetchedSprintWiseIssues, toBeSavedAddedIssues);
-					preparePuntedSprintIssues(dbSprintDetails, fetchedSprintWiseIssues, toBeSavedPuntedIssues);
+						prepareAddedSprintIssues(dbSprintDetails, fetchedSprintWiseIssues, toBeSavedAddedIssues);
+						preparePuntedSprintIssues(dbSprintDetails, fetchedSprintWiseIssues, toBeSavedPuntedIssues);
 
-					fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
-					fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
-					fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
-					fetchedSprintDetails.setAddedIssues(toBeSavedAddedIssues);
-					fetchedSprintDetails.setPuntedIssues(toBeSavedPuntedIssues);
+						fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
+						fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
+						fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
+						fetchedSprintDetails.setAddedIssues(toBeSavedAddedIssues);
+						fetchedSprintDetails.setPuntedIssues(toBeSavedPuntedIssues);
 
-					fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-					fetchedSprintDetails.setProcessorId(azureProcessorId);
-					fetchedSprintDetails.setId(dbSprintDetails.getId());
-					toBeSavedSprintDetails.add(fetchedSprintDetails);
-					log.debug(
-							"Active sprint Id -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
-							fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
-							getIssuesIdList(toBeSavedNotCompletedIssues));
+						fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+						fetchedSprintDetails.setProcessorId(azureProcessorId);
+						fetchedSprintDetails.setId(dbSprintDetails.getId());
+						toBeSavedSprintDetails.add(fetchedSprintDetails);
+						log.debug(
+								"Active sprint Id -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
+								fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
+								getIssuesIdList(toBeSavedNotCompletedIssues));
+					}
 				}
 
 				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
@@ -173,27 +182,9 @@ public class SprintClientImpl implements SprintClient {
 				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE)) {
 					// update all issues before sprint future sprint start
-					List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer,
-							projectConfig, fetchedSprintDetails);
-
-					Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
-					Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
-					Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
-					prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
-							toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
-
-					fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
-					fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
-					fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
-
-					fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-					fetchedSprintDetails.setProcessorId(azureProcessorId);
-					fetchedSprintDetails.setId(dbSprintDetails.getId());
+					overrideDBSprintReport(projectConfig, azureAdapter, azureServer, fetchedSprintDetails,
+							completedIssuesStatus, azureProcessorId, dbSprintDetails);
 					toBeSavedSprintDetails.add(fetchedSprintDetails);
-					log.debug(
-							"fetched sprint Id -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
-							fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
-							getIssuesIdList(toBeSavedNotCompletedIssues));
 				}
 			}
 		});
@@ -201,6 +192,32 @@ public class SprintClientImpl implements SprintClient {
 		sprintRepository.saveAll(toBeSavedSprintDetails);
 
 		iterationStatusUpdateSPIssuesShuffle(projectConfig, completedIssuesStatus);
+	}
+
+	private void overrideDBSprintReport(ProjectConfFieldMapping projectConfig, AzureAdapter azureAdapter,
+			AzureServer azureServer, SprintDetails fetchedSprintDetails, List<String> completedIssuesStatus,
+			ObjectId azureProcessorId, SprintDetails dbSprintDetails) {
+		List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer, projectConfig,
+				fetchedSprintDetails);
+
+		Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
+		Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
+		Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
+		prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
+				toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
+
+		fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
+		fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
+		fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
+
+		fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+		fetchedSprintDetails.setProcessorId(azureProcessorId);
+		fetchedSprintDetails.setId(dbSprintDetails.getId());
+
+		log.debug(
+				"refreshing sprint Id from the start -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
+				fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
+				getIssuesIdList(toBeSavedNotCompletedIssues));
 	}
 
 	/**
@@ -308,10 +325,11 @@ public class SprintClientImpl implements SprintClient {
 	 */
 	private void iterationStatusUpdateSPIssuesShuffle(ProjectConfFieldMapping projectConfig,
 			List<String> completedIssuesStatus) {
-		ProjectToolConfig projectToolConfig = projectToolConfigRepository
-				.findById(projectConfig.getAzureBoardToolConfigId().toString());
+		ProjectToolConfig projectToolConfig = projectConfig.getProjectToolConfig();
+		boolean sprintDetailsUpdate = false;
 		if (projectToolConfig.isAzureIterationStatusFieldUpdate()
 				&& CollectionUtils.isNotEmpty(completedIssuesStatus)) {
+			sprintDetailsUpdate = true;
 			List<SprintDetails> dbSprintDetailsList = sprintRepository
 					.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 			dbSprintDetailsList.stream().forEach(sprintDetails -> {
@@ -330,11 +348,16 @@ public class SprintClientImpl implements SprintClient {
 				}
 			});
 			sprintRepository.saveAll(dbSprintDetailsList);
-			projectToolConfig.setAzureIterationStatusFieldUpdate(false);
-			projectToolConfigRepository.save(projectToolConfig);
 			log.debug("sprint issues shuffle based on completedIssuesStatus field update -> ",
 					projectToolConfig.getBasicProjectConfigId());
 		}
+		if (Boolean.TRUE.equals(projectToolConfig.getAzureRefreshActiveSprintReport()) || sprintDetailsUpdate) {
+			projectToolConfig.setAzureIterationStatusFieldUpdate(false);
+			// reset activesprint check
+			projectToolConfig.setAzureRefreshActiveSprintReport(false);
+			projectToolConfigRepository.save(projectToolConfig);
+		}
+
 	}
 
 	/**
