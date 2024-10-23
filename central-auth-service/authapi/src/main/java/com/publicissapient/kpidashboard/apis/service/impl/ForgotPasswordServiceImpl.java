@@ -5,9 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -17,11 +14,21 @@ import com.publicissapient.kpidashboard.apis.constant.CommonConstant;
 import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
 import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.errors.*;
-import com.publicissapient.kpidashboard.apis.service.*;
+import com.publicissapient.kpidashboard.apis.errors.EmailNotFoundException;
+import com.publicissapient.kpidashboard.apis.errors.IdenticalPasswordException;
+import com.publicissapient.kpidashboard.apis.errors.PasswordContainsUsernameException;
+import com.publicissapient.kpidashboard.apis.errors.PasswordPatternException;
+import com.publicissapient.kpidashboard.apis.errors.WrongPasswordException;
+import com.publicissapient.kpidashboard.apis.service.ForgotPasswordService;
+import com.publicissapient.kpidashboard.apis.service.ForgotPasswordTokenService;
+import com.publicissapient.kpidashboard.apis.service.MessageService;
+import com.publicissapient.kpidashboard.apis.service.NotificationService;
+import com.publicissapient.kpidashboard.apis.service.UserService;
 import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
 import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @Service
@@ -77,11 +84,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		user.setPassword(newPassword);
 		User savedUser = userService.save(user);
 
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-				savedUser.getUsername(),
-				savedUser.getPassword(),
-				new ArrayList<>()
-		);
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(savedUser.getUsername(),
+				savedUser.getPassword(), new ArrayList<>());
 
 		token.setDetails(AuthType.STANDARD);
 
@@ -104,7 +108,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		return user.checkPassword(oldPassword);
 	}
 
-
 	@Override
 	public ServiceResponseDTO validateUserAndSendForgotPasswordEmail(String email) {
 		Optional<User> userOptional = userService.findByEmail(email);
@@ -116,12 +119,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 			notificationService.sendRecoverPasswordEmail(email, user.getUsername(), token);
 
-			return new ServiceResponseDTO(true, messageService.getMessage(
-					"success_forgot_password"), userService.getUserDTO(user));
+			return new ServiceResponseDTO(true, messageService.getMessage("reset_password_link_sent"),
+					userService.getUserDTO(user));
 		}
 
-		return new ServiceResponseDTO(false, messageService.getMessage(
-				"error_email_not_exist"), null);
+		return new ServiceResponseDTO(false, messageService.getMessage("error_email_not_exist"), null);
 	}
 
 	private String createForgetPasswordToken(User user) {

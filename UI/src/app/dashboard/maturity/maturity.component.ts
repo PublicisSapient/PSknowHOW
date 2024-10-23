@@ -151,6 +151,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.loader = false;
         this.showNoDataMsg = true;
         return;
+      } else {
+        this.noProjects = false;
       }
 
       if (this.selectedtype?.toLowerCase() === 'scrum') {

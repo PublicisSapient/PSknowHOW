@@ -33,6 +33,7 @@ public interface NotificationService {
 	void sendVerificationFailedMailUser(String username, String email);
 
 	void sendUserPreApprovalRequestEmailToAdmin(String username, String email);
+
 	/**
 	 *
 	 * @return String

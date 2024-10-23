@@ -20,30 +20,30 @@ package com.publicissapient.kpidashboard.apis.service.impl;
 
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import org.thymeleaf.context.Context;
-import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring6.SpringTemplateEngine;
-
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import com.publicissapient.kpidashboard.apis.config.AuthConfig;
 import com.publicissapient.kpidashboard.apis.config.ForgotPasswordConfig;
@@ -60,6 +60,10 @@ import com.publicissapient.kpidashboard.apis.repository.UserRoleRepository;
 import com.publicissapient.kpidashboard.apis.service.NotificationService;
 import com.publicissapient.kpidashboard.apis.service.dto.EmailEventDTO;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
@@ -94,16 +98,17 @@ public class NotificationServiceImpl implements NotificationService {
 	 *
 	 * @param roles
 	 * @return list of email addresses
-	 */ public List<String> getEmailAddressBasedOnRoles(List<String> roles) {
+	 */
+	public List<String> getEmailAddressBasedOnRoles(List<String> roles) {
 		Set<String> emailAddresses = new HashSet<>();
 		List<UserRole> superAdminUserRoleList = userRoleRepository.findByRoles(roles);
 
 		if (CollectionUtils.isNotEmpty(superAdminUserRoleList)) {
 			List<String> superAdminUserNameList = superAdminUserRoleList.stream().map(UserRole::getUsername)
-																		.collect(Collectors.toList());
+					.collect(Collectors.toList());
 			List<User> superAdminUsersList = userRepository.findByUsernameIn(superAdminUserNameList);
 			emailAddresses.addAll(superAdminUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmail()))
-													 .map(User::getEmail).collect(Collectors.toSet()));
+					.map(User::getEmail).collect(Collectors.toSet()));
 			if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
 				emailAddresses.addAll(superAdminUsersList.stream().map(User::getEmail).collect(Collectors.toSet()));
 
@@ -124,7 +129,7 @@ public class NotificationServiceImpl implements NotificationService {
 	 */
 	@Override
 	public void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
-									  String notKey) {
+			String notKey) {
 		if (authConfig.isNotificationSwitch()) {
 			Map<String, String> notificationSubjects = authConfig.getNotificationSubject();
 			if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
@@ -132,11 +137,10 @@ public class NotificationServiceImpl implements NotificationService {
 				log.info(NOTIFICATION_MESSAGE_SENT_TO_KAFKA_WITH_KEY, notKey);
 				String templateKey = authConfig.getMailTemplate().getOrDefault(notKey, "");
 				sendNotificationEvent(emailAddresses, customData, subject, notKey, authConfig.getKafkaMailTopic(),
-									  kafkaTemplate, templateKey, authConfig.isMailWithoutKafka()
-				);
+						kafkaTemplate, templateKey, authConfig.isMailWithoutKafka());
 			} else {
 				log.error("Notification Event not sent : No email address found "
-						  + "or Property - notificationSubject.accessRequest not set in property file ");
+						+ "or Property - notificationSubject.accessRequest not set in property file ");
 			}
 		} else {
 			log.info(
@@ -157,26 +161,23 @@ public class NotificationServiceImpl implements NotificationService {
 	 * @param isMailWithoutKafka
 	 */
 	private void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubject,
-									   String notKey, String topic, KafkaTemplate<String, Object> kafkaTemplate,
-									   String templateKey, boolean isMailWithoutKafka) {
+			String notKey, String topic, KafkaTemplate<String, Object> kafkaTemplate, String templateKey,
+			boolean isMailWithoutKafka) {
 
 		if (!isMailWithoutKafka) {
 			if (StringUtils.isNotBlank(notSubject)) {
 				GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
 				if (globalConfigs != null) {
-					EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null, null,
-																	notSubject, null, customData, globalConfigs.getEmailHost(),
-																	globalConfigs.getEmailPort()
-					);
+					EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null,
+							null, notSubject, null, customData, globalConfigs.getEmailHost(),
+							globalConfigs.getEmailPort());
 					notificationEventProducer.sendNotificationEvent(notKey, emailEventDTO, null, topic, kafkaTemplate);
 				} else {
 					log.error("Notification Event not sent : notification emailServer Details not found in db");
 				}
 			} else {
-				log.error(
-						"Notification Event not sent : notification subject for {} not found in properties file",
-						notSubject
-				);
+				log.error("Notification Event not sent : notification subject for {} not found in properties file",
+						notSubject);
 			}
 		} else {
 			sendEmailWithoutKafka(emailAddresses, customData, notSubject, templateKey);
@@ -194,20 +195,16 @@ public class NotificationServiceImpl implements NotificationService {
 	 */
 
 	private void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData,
-									   String notSubject, String templateKey) {
+			String notSubject, String templateKey) {
 		GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
 		if (StringUtils.isNotBlank(notSubject) && globalConfigs != null) {
-			EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null, null, notSubject,
-															null, additionalData, globalConfigs.getEmailHost(),
-															globalConfigs.getEmailPort()
-			);
+			EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null, null,
+					notSubject, null, additionalData, globalConfigs.getEmailHost(), globalConfigs.getEmailPort());
 			JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEventDTO);
 			MimeMessage message = javaMailSender.createMimeMessage();
 			try {
 				MimeMessageHelper helper = new MimeMessageHelper(message,
-																 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-																 StandardCharsets.UTF_8.name()
-				);
+						MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
 				Context context = new Context();
 				Map<String, String> customData = emailEventDTO.getCustomData();
 				if (MapUtils.isNotEmpty(customData)) {
@@ -298,20 +295,17 @@ public class NotificationServiceImpl implements NotificationService {
 
 		Map<String, String> customData = createCustomData(username, email, serverPath, superAdminEmailList.get(0));
 		sendEmailNotification(emailAddresses, customData, CommonConstant.APPROVAL_NOTIFICATION_KEY,
-							  CommonConstant.APPROVAL_SUCCESS_TEMPLATE_KEY
-		);
+				CommonConstant.APPROVAL_SUCCESS_TEMPLATE_KEY);
 	}
 
 	@Override
 	public void sendRecoverPasswordEmail(String email, String username, String forgotPasswordToken) {
 		try {
 			Map<String, String> customData = createCustomDataForgotPassword(username, forgotPasswordToken, getApiHost(),
-																			forgotPasswordConfig.getExpiryInterval()
-			);
+					forgotPasswordConfig.getExpiryInterval());
 
 			sendEmailNotification(Arrays.asList(email), customData, FORGOT_PASSWORD_NOTIFICATION_KEY,
-								  FORGOT_PASSWORD_TEMPLATE_KEY
-			);
+					FORGOT_PASSWORD_TEMPLATE_KEY);
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
@@ -323,12 +317,9 @@ public class NotificationServiceImpl implements NotificationService {
 		String serverPath = getServerPath();
 
 		Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath,
-																		  this.authConfig.getVerifyUserTokenExpiryDays(), token
-		);
-		sendEmailNotification(Arrays.asList(email), customData,
-											CommonConstant.USER_VERIFICATION_NOTIFICATION_KEY,
-											CommonConstant.USER_VERIFICATION_TEMPLATE_KEY
-		);
+				this.authConfig.getVerifyUserTokenExpiryDays(), token);
+		sendEmailNotification(Arrays.asList(email), customData, CommonConstant.USER_VERIFICATION_NOTIFICATION_KEY,
+				CommonConstant.USER_VERIFICATION_TEMPLATE_KEY);
 	}
 
 	/**
@@ -345,9 +336,8 @@ public class NotificationServiceImpl implements NotificationService {
 		if (userOptional.isPresent()) {
 			Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath, "", " ");
 			sendEmailNotification(Arrays.asList(email), customData,
-												CommonConstant.USER_VERIFICATION_FAILED_NOTIFICATION_KEY,
-												CommonConstant.USER_VERIFICATION_FAILED_TEMPLATE_KEY
-			);
+					CommonConstant.USER_VERIFICATION_FAILED_NOTIFICATION_KEY,
+					CommonConstant.USER_VERIFICATION_FAILED_TEMPLATE_KEY);
 			userRepository.deleteByUsername(userOptional.get().getUsername());
 		}
 	}
@@ -359,16 +349,12 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void sendUserPreApprovalRequestEmailToAdmin(String username, String email) {
-		List<String> emailAddresses = getEmailAddressBasedOnRoles(
-				Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
+		List<String> emailAddresses = getEmailAddressBasedOnRoles(Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
 		String serverPath = getServerPath();
 		Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath, "", "");
-		sendEmailNotification(emailAddresses, customData,
-											CommonConstant.PRE_APPROVAL_NOTIFICATION_SUBJECT_KEY,
-											CommonConstant.PRE_APPROVAL_NOTIFICATION_KEY
-		);
+		sendEmailNotification(emailAddresses, customData, CommonConstant.PRE_APPROVAL_NOTIFICATION_SUBJECT_KEY,
+				CommonConstant.PRE_APPROVAL_NOTIFICATION_KEY);
 	}
-
 
 	/**
 	 * * create custom data for email
@@ -391,13 +377,18 @@ public class NotificationServiceImpl implements NotificationService {
 	/**
 	 * * create custom data for email
 	 *
-	 * @param username   emailId
-	 * @param token      token
-	 * @param url        url
-	 * @param expiryTime expiryTime in Min
+	 * @param username
+	 *            emailId
+	 * @param token
+	 *            token
+	 * @param url
+	 *            url
+	 * @param expiryTime
+	 *            expiryTime in Min
 	 * @return Map<String, String>
 	 */
-	private Map<String, String> createCustomDataForgotPassword(String username, String token, String url, Integer expiryTime) {
+	private Map<String, String> createCustomDataForgotPassword(String username, String token, String url,
+			Integer expiryTime) {
 		Map<String, String> customData = new HashMap<>();
 		customData.put("token", token);
 		customData.put("user", username);
@@ -406,7 +397,6 @@ public class NotificationServiceImpl implements NotificationService {
 		customData.put("expiryTime", expiryTime.toString());
 		return customData;
 	}
-
 
 	/**
 	 * * create custom data for email
@@ -418,8 +408,8 @@ public class NotificationServiceImpl implements NotificationService {
 	 * @param token
 	 * @return
 	 */
-	private Map<String, String> createCustomDataVerificationUser(String username, String email, String url, String expiryTime,
-																 String token) {
+	private Map<String, String> createCustomDataVerificationUser(String username, String email, String url,
+			String expiryTime, String token) {
 		Map<String, String> customData = new HashMap<>();
 
 		customData.put(NotificationCustomDataEnum.USER_NAME.getValue(), username);
