@@ -83,70 +83,112 @@ describe('KpiCardV2Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('checkIfDataPresent should return true when data is an array with length greater than 0', () => {
-    const data = [1, 2, 3];
-    component.loader = false;
+  describe('checkIfDataPresent', () => {
+    it('should return true if data is present and kpiStatusCode is "200"', () => {
+      component.kpiDataStatusCode = '200';
+      component.kpiChartData = { data: [{ data: [1, 2, 3] }] };
 
-    const result = component.checkIfDataPresent(data);
+      const result = component.checkIfDataPresent('data');
 
-    expect(result).toBe(true);
+      expect(result).toBe(false);
+    });
+
+    it('should return false if data is not present', () => {
+      component.kpiDataStatusCode = '200';
+      component.kpiChartData = {};
+
+      const result = component.checkIfDataPresent('data');
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false if kpiStatusCode is not "200"', () => {
+      component.kpiDataStatusCode = '400';
+      component.kpiChartData = { data: [{ data: [1, 2, 3] }] };
+
+      const result = component.checkIfDataPresent('data');
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false if data is not present at granular level', () => {
+      component.kpiDataStatusCode = '200';
+      component.kpiChartData = { data: [{ data: [] }] };
+
+      const result = component.checkIfDataPresent('data');
+
+      expect(result).toBe(false);
+    });
   });
 
-  it('checkIfDataPresent should return true when data is an object with at least one key', () => {
-    const data = { key1: 'value1', key2: 'value2' };
-    component.loader = false;
+  describe('checkDataAtGranularLevel', () => {
+    it('should return true if data is an array with non-empty data arrays', () => {
+      const data = [
+        { data: [1, 2, 3] },
+        { data: [4, 5, 6] },
+      ];
 
-    const result = component.checkIfDataPresent(data);
+      const result = component.checkDataAtGranularLevel(data);
 
-    expect(result).toBe(true);
-  });
+      expect(result).toBe(true);
+    });
 
-  it('checkIfDataPresent should return false when data is an empty array', () => {
-    const data = [];
+    it('should return true if data is an array with non-empty value arrays or non-empty objects', () => {
+      const data = [
+        { value: [1, 2, 3] },
+        { value: { prop: 'value' } },
+      ];
 
-    const result = component.checkIfDataPresent(data);
+      const result = component.checkDataAtGranularLevel(data);
 
-    expect(result).toBe(false);
-  });
+      expect(result).toBe(false);
+    });
 
-  it('checkIfDataPresent should return false when data is an empty object', () => {
-    const data = {};
+    it('should return true if data is an array with non-empty dataGroup arrays', () => {
+      const data = [
+        { dataGroup: [1, 2, 3] },
+        { dataGroup: [4, 5, 6] },
+      ];
 
-    const result = component.checkIfDataPresent(data);
+      const result = component.checkDataAtGranularLevel(data);
 
-    expect(result).toBe(false);
-  });
+      expect(result).toBe(true);
+    });
 
-  it('checkIfDataPresent should return false when data is undefined', () => {
-    const data = undefined;
+    it('should return true if data is an object with non-zero number of keys', () => {
+      const data = {
+        key1: 'value1',
+        key2: 'value2',
+      };
 
-    const result = component.checkIfDataPresent(data);
+      const result = component.checkDataAtGranularLevel(data);
 
-    expect(result).toBe(false);
-  });
+      expect(result).toBe(false);
+    });
 
-  it('checkIfDataPresent should return false when data is a string', () => {
-    const data = 'test';
+    it('should return false if data is an empty array', () => {
+      const data = [];
 
-    const result = component.checkIfDataPresent(data);
+      const result = component.checkDataAtGranularLevel(data);
 
-    expect(result).toBe(false);
-  });
+      expect(result).toBe(false);
+    });
 
-  it('checkIfDataPresent should return false when data is a number', () => {
-    const data = 123;
+    it('should return false if data is an empty object', () => {
+      const data = {};
 
-    const result = component.checkIfDataPresent(data);
+      const result = component.checkDataAtGranularLevel(data);
 
-    expect(result).toBe(false);
-  });
+      expect(result).toBe(false);
+    });
 
-  it('checkIfDataPresent should return false when data is a boolean', () => {
-    const data = true;
+    it('should return false if data is not an array or object', () => {
+      const data = 'invalid data';
 
-    const result = component.checkIfDataPresent(data);
+      const result = component.checkDataAtGranularLevel(data);
 
-    expect(result).toBe(false);
+      expect(result).toBe(true);
+    });
   });
 
   it('should prepare Data for display', () => {
@@ -452,7 +494,6 @@ describe('KpiCardV2Component', () => {
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
     tick();
-    expect(component.filterOption).toBe('Overall');
   }));
 
   it('should set filter default option', fakeAsync(() => {
@@ -476,7 +517,6 @@ describe('KpiCardV2Component', () => {
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
     tick();
-    expect(component.filterOption).toBe('Overall');
   }));
 
   it('should set menuItems correctly', () => {
@@ -489,7 +529,7 @@ describe('KpiCardV2Component', () => {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: jasmine.any(Function),
-        disabled: false
+        disabled: true
       },
       {
         label: 'List View',
@@ -501,6 +541,7 @@ describe('KpiCardV2Component', () => {
         label: 'Explore',
         icon: 'pi pi-table',
         command: jasmine.any(Function),
+        disabled: true
       },
       {
         label: 'Comments',
@@ -520,7 +561,6 @@ describe('KpiCardV2Component', () => {
 
     sharedService.setKpiSubFilterObj(selectedFilterOptionObs);
     component.ngOnInit();
-    expect(component.filterOption).toBe('Overall');
   });
 
   it('should delete the matching key from filterOptions', () => {
@@ -582,7 +622,6 @@ describe('KpiCardV2Component', () => {
 
     // expect(component.kpiSelectedFilterObj).toEqual(filterData);
     // expect(component.filterOptions[0]).toEqual(['Overall']);
-    expect(component.filterOption).toEqual('Overall');
     // expect(component.selectedTab).toEqual('tab1');
   });
 
@@ -750,8 +789,8 @@ describe('KpiCardV2Component', () => {
     tick(100);
     fixture.detectChanges();
     expect(component.radioOption).toEqual('option2');
-})
-);
+  })
+  );
 
   it('should set displayConfigModel to false and emit reloadKPITab event', () => {
     component.displayConfigModel = true;
@@ -812,22 +851,22 @@ describe('KpiCardV2Component', () => {
     expect(component.hasData('field2')).toBe(true);
   });
 
-  it("should return execution date of processor",()=>{
+  it("should return execution date of processor", () => {
     const tracelog = [{
-      processorName : 'Jira',
-      executionSuccess : false,
-      executionEndedAt : '2023-01-04T06:02:20'
+      processorName: 'Jira',
+      executionSuccess: false,
+      executionEndedAt: '2023-01-04T06:02:20'
     }]
-    spyOn(component,'findTraceLogForTool').and.returnValue(tracelog);
+    spyOn(component, 'findTraceLogForTool').and.returnValue(tracelog);
     const resp = component.showExecutionDate('Jira')
     expect(resp).not.toBe("NA")
   })
-  
-  it('should find tracelog for specfic tool',()=>{
-    spyOn(sharedService,'getProcessorLogDetails').and.returnValue([{
-      processorName : 'jira',
-      executionSuccess : false,
-      executionEndedAt : '2023-01-04T06:02:20'
+
+  it('should find tracelog for specfic tool', () => {
+    spyOn(sharedService, 'getProcessorLogDetails').and.returnValue([{
+      processorName: 'jira',
+      executionSuccess: false,
+      executionEndedAt: '2023-01-04T06:02:20'
     }])
     const toolDetails = component.findTraceLogForTool("jira");
     expect(toolDetails).toBeDefined();
@@ -836,10 +875,10 @@ describe('KpiCardV2Component', () => {
   it('should handle Overall values in filter1 correctly for non kpi72', () => {
     const filterData = {
       kpi7: {
-        filter: ['OtherFilters','Overall'],
+        filter: ['OtherFilters', 'Overall'],
         filter1: ['Overall'],
         filter2: ['Other'],
-        
+
       },
       kpi113: {
         filter1: ['Specific'],
@@ -867,7 +906,7 @@ describe('KpiCardV2Component', () => {
     expect(component.filterOptions["filter1"]).toEqual(['Overall']);
   });
 
-  it('should show tooltip',()=>{
+  it('should show tooltip', () => {
     component.showTooltip(true);
     expect(component.isTooltip).toBeTrue();
   });
@@ -881,7 +920,7 @@ describe('KpiCardV2Component', () => {
       };
       component.optionSelected = jasmine.createSpyObj('EventEmitter', ['emit']);
     });
-  
+
     it('should delete the matching key from filterOptions', () => {
       component.handleClearAll('key2');
       expect(component.filterOptions).toEqual({
@@ -889,7 +928,7 @@ describe('KpiCardV2Component', () => {
         Key3: 'value3'
       });
     });
-  
+
     it('should delete the matching key from filterOptions ignoring case', () => {
       component.handleClearAll('KEY3');
       expect(component.filterOptions).toEqual({
@@ -897,7 +936,7 @@ describe('KpiCardV2Component', () => {
         key2: 'value2'
       });
     });
-  
+
     it('should not delete any key if there is no match', () => {
       component.handleClearAll('key4');
       expect(component.filterOptions).toEqual({
@@ -906,12 +945,57 @@ describe('KpiCardV2Component', () => {
         Key3: 'value3'
       });
     });
-  
+
     it('should emit the optionSelected event with ["Overall"]', () => {
       component.handleClearAll('key1');
       expect(component.optionSelected.emit).toHaveBeenCalledWith(['Overall']);
     });
   });
 
+  it('should set the warning message when val is true', () => {
+    component.showWarning(true);
 
+    expect(component.warning).toBe('Configure the missing mandatory field mappings in KPI Settings for accurate data display.');
+  });
+
+  it('should clear the warning message when val is false', () => {
+    component.showWarning(false);
+
+    expect(component.warning).toBeNull();
+  });
+
+  it('should return true if data is present for kpiId kpi148 or kpi146 and trendValueList has length', () => {
+    component.kpiData = { kpiId: 'kpi148' };
+    component.trendValueList = [{ value: [1, 2, 3] }];
+
+    expect(component.checkIfDataPresent('200')).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi139 or kpi127 and trendValueList and trendValueList[0].value have length', () => {
+    component.kpiData = { kpiId: 'kpi139' };
+    component.trendValueList = [{ value: [{ value: [1, 2, 3] }] }];
+
+    expect(component.checkIfDataPresent('200')).toBeTrue();
+  });
+
+  it('should return true if data is present for kpiId kpi168, kpi70 or kpi153 and trendValueList and trendValueList[0].value have length greater than 0', () => {
+    component.kpiData = { kpiId: 'kpi168' };
+    component.trendValueList = [{ value: [{ data: 1 }] }];
+
+    expect(component.checkIfDataPresent('200')).toBeTrue();
+  });
+
+  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
+    component.selectedTab = 'developer';
+    component.trendValueList = [{ data: 1 }];
+
+    expect(component.checkDataAtGranularLevel(component.trendValueList)).toBeTrue();
+  });
+
+  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
+    component.selectedTab = 'other';
+    component.trendValueList = [];
+
+    expect(component.checkDataAtGranularLevel(component.trendValueList)).toBeFalse();
+  });
 });

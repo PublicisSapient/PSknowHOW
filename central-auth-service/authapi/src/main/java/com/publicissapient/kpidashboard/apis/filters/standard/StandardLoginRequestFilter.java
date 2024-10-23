@@ -18,61 +18,35 @@
 
 package com.publicissapient.kpidashboard.apis.filters.standard;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.publicissapient.kpidashboard.apis.config.AuthProperties;
-import com.publicissapient.kpidashboard.apis.enums.AuthType;
-import com.publicissapient.kpidashboard.apis.filters.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.filters.standard.handlers.CustomAuthenticationSuccessHandler;
 
-/**
- * Provides Standard Login Request Filter .
- *
- * @author Hiren Babariya
- */
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
-	private AuthProperties authProperties;
-
-	/**
-	 * 
-	 * @param path
-	 * @param authManager
-	 * @param standardAuthenticationResultHandler
-	 */
-	public StandardLoginRequestFilter(String path, AuthenticationManager authManager,
-			AuthenticationResultHandler standardAuthenticationResultHandler,
-			CustomAuthenticationFailureHandler authenticationFailureHandler, AuthProperties authProperties) {
+	public StandardLoginRequestFilter(String path, AuthenticationManager authenticationManager,
+			CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
+			CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
 		super();
-		super.setAuthenticationManager(authManager);
-		setAuthenticationSuccessHandler(standardAuthenticationResultHandler);
-		setAuthenticationFailureHandler(authenticationFailureHandler);
+		super.setAuthenticationManager(authenticationManager);
+
+		setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
+
+		setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+
 		setFilterProcessesUrl(path);
-		this.authProperties = authProperties;
 	}
 
-	/**
-	 * Attempts Authentication
-	 * 
-	 * @param request
-	 * @param response
-	 * @return Authentication
-	 * @throws AuthenticationException
-	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
-
-		if (!authProperties.getAuthenticationProviders().contains(AuthType.STANDARD)) {
-			throw new AuthenticationServiceException("Standard login is disabled");
-		}
-
 		if (!request.getMethod().equals("POST")) {
 			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
 		}
@@ -85,16 +59,10 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 		}
 
 		if (password == null) {
-			password = StringUtils.EMPTY;
+			password = "";
 		}
 
-		username = username.trim();
-
-		StandardAuthenticationToken authRequest = new StandardAuthenticationToken(username, password);
-
-		authRequest.setDetails(AuthType.STANDARD);
-
-		return this.getAuthenticationManager().authenticate(authRequest);
+		return this.getAuthenticationManager().authenticate(new StandardAuthenticationToken(username.trim(), password));
 	}
 
 }

@@ -143,7 +143,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
     const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
-    if(this.updatedConfigGlobalData?.length > 0){
+    if (this.updatedConfigGlobalData?.length > 0) {
       this.updatedConfigGlobalData?.splice(0, 0, kpi3[0]);
     }
     if (kpi3Index >= 0) {
@@ -583,7 +583,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       if (preAggregatedValues.length > 0) {
         tempArr = preAggregatedValues;
       } else {
-        tempArr = trendValueList?.value ? trendValueList?.value : [];
+        tempArr = trendValueList?.value || [];
       }
 
       if (Array.isArray(filters[filter])) {
@@ -594,24 +594,27 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
 
     if (preAggregatedValues?.length > 1) {
-
-      if (kpiId === 'kpi171') {
-        //calculate number of days for lead time
-        let kpi3preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
-        kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
-          return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
-        });
-
-        /** I don't think these below three lines will execute since return statement will take out from this flow */
-        // kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
-
-        // kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
-        // this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
-      } else {
-        this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-      }
+      this.kpi171Check(kpiId, preAggregatedValues);
     } else {
       this.kpiChartData[kpiId] = [...preAggregatedValues];
+    }
+  }
+
+  kpi171Check(kpiId, preAggregatedValues) {
+    if (kpiId === 'kpi171') {
+      //calculate number of days for lead time
+      let kpi3preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
+      kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
+        return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
+      });
+
+      /** I don't think these below three lines will execute since return statement will take out from this flow */
+      // kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
+
+      // kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
+      // this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
+    } else {
+      this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
     }
   }
 
@@ -686,29 +689,39 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     /** When we have single dropdown */
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !selectedFilterBackup.hasOwnProperty('filter2')) {
-      for (const key in event) {
-        if (typeof event[key] === 'string') {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-        } else {
-          for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
-          }
-        }
-      }
+      this.handleSingleSelectKPIFilter(event, kpi);
       /** When we have multi dropdown */
-    } else if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !Array.isArray(selectedFilterBackup) && selectedFilterBackup.hasOwnProperty('filter2')) {
-      const selectedFilter = {};
-      for (const key in event) {
-        const updatedFilter = typeof event[key] === 'string' ? [event[key]] : [...event[key]];
-        selectedFilter[key] = updatedFilter;
-      }
-      this.kpiSelectedFilterObj[kpi?.kpiId] = { ...selectedFilterBackup, ...selectedFilter };
+    } else if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && 
+    !Array.isArray(selectedFilterBackup) && selectedFilterBackup.hasOwnProperty('filter2')) {
+      this.handleMultiSelectKPIFilter(event, kpi);
     } else {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
     this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'backlog', '');
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+  }
+
+  handleMultiSelectKPIFilter(event, kpi) {
+    const selectedFilterBackup = this.kpiSelectedFilterObj[kpi?.kpiId];
+    const selectedFilter = {};
+      for (const key in event) {
+        const updatedFilter = typeof event[key] === 'string' ? [event[key]] : [...event[key]];
+        selectedFilter[key] = updatedFilter;
+      }
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { ...selectedFilterBackup, ...selectedFilter };
+  }
+
+  handleSingleSelectKPIFilter(event, kpi) {
+    for (const key in event) {
+      if (typeof event[key] === 'string') {
+        this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+      } else {
+        for (let i = 0; i < event[key]?.length; i++) {
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
+        }
+      }
+    }
   }
 
   downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, chartType?) {
@@ -778,6 +791,10 @@ export class BacklogComponent implements OnInit, OnDestroy {
       modalValues: item?.hasOwnProperty('modalValues') ? [] : null
     }));
 
+    return this.createAggregatedArray(arr, aggregatedArr);
+  }
+
+  createAggregatedArray(arr, aggregatedArr) {
     for (let i = 0; i < arr?.length; i++) {
       for (let j = 0; j < arr[i]?.data?.length; j++) {
         let idx = aggregatedArr[0].data?.findIndex(x => x.label == arr[i].data[j]['label']);
@@ -787,7 +804,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
           if (aggregatedArr[0]?.data[idx]?.hasOwnProperty('value1') && aggregatedArr[0]?.data[idx]?.value1 != null) {
             aggregatedArr[0].data[idx]['value1'] += arr[i].data[j]['value1'];
           }
-          if (aggregatedArr[0]?.data[idx]?.hasOwnProperty('modalValues') && aggregatedArr[0]?.data[idx]?.modalValues != null) {
+          if (aggregatedArr[0]?.data[idx]?.modalValues != null) {
             aggregatedArr[0].data[idx]['modalValues'] = [...aggregatedArr[0]?.data[idx]['modalValues'], ...arr[i]?.data[j]['modalValues']];
           }
         }
@@ -795,6 +812,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
     return aggregatedArr;
   }
+  
   generateExcel() {
     const kpiData = {
       headerNames: [],

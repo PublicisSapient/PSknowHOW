@@ -409,6 +409,15 @@ public class KPIExcelData {
 	@JsonProperty("Rework Rate")
 	private String reworkRate;
 
+	@JsonProperty("Revert Rate")
+	private Double revertRate;
+
+	@JsonProperty("PR Success Rate")
+	private Double pRSccessRate;
+
+	@JsonProperty("PR Decline Rate")
+	private Double prDeclineRate;
+
 	@JsonProperty("To Do(Value/Percentage)")
 	private String toDo;
 
@@ -426,5 +435,31 @@ public class KPIExcelData {
 
 	@JsonProperty("Merge Request Url")
 	private Map<String, String> mergeRequestUrl;
+
+	@JsonProperty("Innovation Rate")
+	private String innovationRate;
+
+	@JsonProperty("Defect Rate")
+	private String defectRate;
+
+	@JsonProperty("Added Lines")
+	private Long addedLines;
+
+	@JsonProperty("Total Lines Changed")
+	private Long totalLineChanges;
+
+	@JsonProperty("Defect PR")
+	private Long defectPRs;
+
+	@JsonProperty("Revert PR")
+	private Long revertPrs;
+
+	@JsonProperty("Declined PR")
+	private Long declinedPRs;
+
+	@JsonProperty("Closed PR")
+	private Long closedPRs;
+
+
 
 }

@@ -34,34 +34,31 @@ export class AdditionalFilterComponent implements OnChanges {
     this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
       if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
         this.selectedFilters = [];
-
         this.selectedTrends = this.service.getSelectedTrends();
 
         if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
           this.filterData = [];
           this.previousSelectedTrends = [...this.selectedTrends];
+          // project changed, reset addtnl. filters
+          // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
         }
 
         Object.keys(data).forEach((f, index) => {
           if (this.filterData[index]) {
             if (this.selectedTab === 'developer') {
               data[f].forEach(element => {
+
                 if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                  const correctLevelMapping = {
-                    Sprint: 'sprint',
-                    Squad: 'sqd'
+                  if (this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
+                    this.filterData[index] = [];
                   }
-                  if (this.filterData[index]?.length && correctLevelMapping[this.additionalFilterConfig[index].defaultLevel.labelName] === this.filterData[index][0].labelName) {
-                    this.filterData[index].push(element);
-                  } else {
-                    this.filterData[index] = data[f];
-                  }
+                  this.filterData[index].push(element);
                 }
               });
 
               this.filterData.forEach((filterSet, index) => {
                 if (!data[Object.keys(data)[index]]) {
-                  delete this.filterData[index];
+                  this.filterData.splice(index, 1);
                 }
               });
 
@@ -82,33 +79,39 @@ export class AdditionalFilterComponent implements OnChanges {
             }
           });
 
-          this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
           const correctLevelMapping = {
             Sprint: 'sprint',
             Squad: 'sqd'
           }
-          if (this.stateFilters && Object.keys(this.stateFilters)) {
-            Object.keys(this.stateFilters).forEach((key, index) => {
-              let correctIndex = 0;
-              this.additionalFilterConfig.forEach((config, index) => {
-                if (correctLevelMapping[config.defaultLevel.labelName] === key) {
-                  correctIndex = index;
+          setTimeout(() => {
+            this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+            if (this.stateFilters && Object.keys(this.stateFilters)) {
+              Object.keys(this.stateFilters).forEach((key, index) => {
+                let correctIndex = 0;
+                this.additionalFilterConfig.forEach((config, index) => {
+                  if (correctLevelMapping[config.defaultLevel.labelName] === key) {
+                    correctIndex = index;
+                  }
+                });
+                if (this.stateFilters[key].length) {
+                  this.selectedFilters[correctIndex] = this.stateFilters[key];
                 }
               });
-              if (this.stateFilters[key].length) {
-                this.selectedFilters[correctIndex] = this.stateFilters[key];
-              }
-            });
-          }
-
-        }
-
-        // Apply the first/ Overall filter
-        if (this.selectedTab.toLowerCase() === 'developer') {
+            }
+          }, 100);
+        } else {
           this.applyDefaultFilter();
         }
-      } else {
-        this.filterData = [];
+      }
+      else {
+        if (this.selectedTab !== 'developer') {
+          this.filterData = [];
+        } else {
+          if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
+            this.filterData = [];
+            this.previousSelectedTrends = [...this.selectedTrends];
+          }
+        }
       }
     }));
   }
@@ -133,11 +136,10 @@ export class AdditionalFilterComponent implements OnChanges {
 
     this.filterData.forEach((filter, index) => {
       if (filter.map(f => f.nodeName).includes('Overall')) {
-        // filter.splice(this.filterData.map(f => f.nodeName).indexOf('Overall'), 1);
-        // filter.unshift({ nodeId: 'Overall', nodeName: 'Overall' });
+
         fakeEvent['value'] = 'Overall';
 
-        this.selectedFilters[index] = { nodeId: 'Overall', nodeName: 'Overall' };
+        this.selectedFilters[index] = filter[filter.findIndex(x => x.nodeName === 'Overall')];
       } else {
         if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
           fakeEvent['value'] = this.filterData[0][0].nodeId;
@@ -147,18 +149,24 @@ export class AdditionalFilterComponent implements OnChanges {
           this.selectedFilters = ['Overall'];
         }
       }
+      Promise.resolve().then(() => {
+        this.applyAdditionalFilter(fakeEvent, index + 1);
+      });
+
     });
 
-    Promise.resolve().then(() => {
-      this.applyAdditionalFilter(fakeEvent, 0 + 1);
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedTab']) {
+    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
       this.filterSet = new Set();
+      this.filterData = [];
       this.selectedFilters = [];
     }
+  }
+
+  compareObjects(obj1, obj2) {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
   }
 
   applyAdditionalFilter(e, index, multi = false, fromBackup = false) {
@@ -178,9 +186,9 @@ export class AdditionalFilterComponent implements OnChanges {
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
       } else {
         this.onAdditionalFilterChange.emit(e);
+        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
       }
     } else {
-      // this.appliedFilters[filterKey] = this.appliedFilters[filterKey] || [];
       this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
 
       const filterValue = this.appliedFilters[filterKey][0];
@@ -213,7 +221,7 @@ export class AdditionalFilterComponent implements OnChanges {
       );
 
       // Combine selected and unselected, with selected on top
-      if(!selected) return;
+      if (!selected) return;
       this.filterData[index] = [...selected, ...unselected];
     }
   }

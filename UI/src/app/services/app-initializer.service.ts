@@ -61,7 +61,7 @@ export class AppInitializerService {
             }
         },
         {
-            path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'backlog', component: !localStorage.getItem('newUI') ? BacklogComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Backlog"
             }
@@ -73,7 +73,7 @@ export class AppInitializerService {
             }
         },
         {
-            path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'dora', component: !localStorage.getItem('newUI') ? DoraComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Dora"
             }
@@ -144,6 +144,7 @@ export class AppInitializerService {
                         environment['SSO_LOGIN'] = env['SSO_LOGIN'] === 'true' ? true : false;
                         environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] === 'true' ? true : false;
                         environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
+                        environment['CENTRAL_API_URL'] = env['CENTRAL_API_URL'] || '';
                         environment['MAP_URL'] = env['MAP_URL'] || '';
                         environment['RETROS_URL'] = env['RETROS_URL'] || '';
                         environment['SPEED_SUITE'] = env['SPEED_SUITE'] === 'true' ? true : false;
@@ -169,34 +170,31 @@ export class AppInitializerService {
         })
     }
 
-    validateToken(location) {
-        return new Promise<void>((resolve, reject) => {
-            if (!environment['AUTHENTICATION_SERVICE']) {
-                this.router.resetConfig([...this.routes]);
-                this.router.navigate([location]);
-            } else {
+  validateToken(location) {
+    return new Promise<void>((resolve, reject) => {
+        if (!environment['AUTHENTICATION_SERVICE']) {
+            this.router.resetConfig([...this.routes]);
+            this.router.navigate([location]);
+        } else {
+            // Make API call or initialization logic here...
+            this.httpService.getUserDetailsForCentral().subscribe((response) => {
+                  if (response?.['success']) {
+                      this.sharedService.setCurrentUserDetails(response?.['data']);
+                      this.router.resetConfig([...this.routesAuth]);
+                      localStorage.setItem("user_name", response?.['data']?.user_name);
+                      localStorage.setItem("user_email", response?.['data']?.user_email);
+                      this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
+                  }
 
-                let obj = {
-                    'resource': environment.RESOURCE,
-                };
-                // Make API call or initialization logic here...
-                this.httpService.getUserValidation(obj).subscribe((response) => {
-                    if (response?.['success']) {
-                        this.sharedService.setCurrentUserDetails(response?.['data']);
-                        this.router.resetConfig([...this.routesAuth]);
-                        localStorage.setItem("user_name", response?.['data']?.user_name);
-                        localStorage.setItem("user_email", response?.['data']?.user_email);
-                        this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
-                    }
-                    if (location) {
-                        let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
-                        if (redirect_uri) {
-                            localStorage.removeItem('redirect_uri');
-                        }
-                        this.router.navigateByUrl(location);
-                    } else {
-                        this.router.navigate(['/dashboard/iteration']);
-                    }
+                  if (location) {
+                      let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
+                      if (redirect_uri) {
+                          localStorage.removeItem('redirect_uri');
+                      }
+                      this.router.navigateByUrl(location);
+                  } else {
+                      this.router.navigate(['/dashboard/iteration']);
+                  }
                 }, error => {
                     console.log(error);
                 });

@@ -1,57 +1,25 @@
-/*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
-
 package com.publicissapient.kpidashboard.apis.service;
 
-import com.publicissapient.kpidashboard.apis.entity.User;
-import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.common.model.ResetPasswordRequestDTO;
+import org.springframework.security.core.Authentication;
 
-/**
- * @author Hiren Babariya
- */
+import com.publicissapient.kpidashboard.apis.service.dto.ChangePasswordRequestDTO;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
+
 public interface ForgotPasswordService {
+
+	Authentication changePasswordAndReturnAuthentication(ChangePasswordRequestDTO requestDTO);
 
 	/**
 	 * Process forgotPassword request.
-	 * 
+	 *
+	 * <p>
+	 * processForgotPassword checks whether the email in the ForgotPasswordRequest
+	 * object exists in the database.If the email exists,creates a token for the
+	 * user account and sends an email with token and reset url info
 	 *
 	 * @param email
-	 * @param url
-	 * @return Authentication
+	 * @return authentication
 	 */
-	User processForgotPassword(String email, String url);
+	ServiceResponseDTO validateUserAndSendForgotPasswordEmail(String email);
 
-	/**
-	 * Validate Email Token sent to the user via email.
-	 * 
-	 * @param token
-	 * @return ResetPasswordTokenStatusEnum
-	 */
-	ResetPasswordTokenStatusEnum validateEmailToken(String token);
-
-	/**
-	 * Reset password after validating token
-	 * 
-	 * @param updatedPasswordRequest
-	 * @return Authentication
-	 * @throws ApplicationException
-	 */
-	User resetPassword(ResetPasswordRequestDTO updatedPasswordRequest) throws ApplicationException;
 }

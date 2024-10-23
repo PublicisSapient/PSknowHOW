@@ -17,14 +17,18 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.entity;
 
-import javax.persistence.Entity;
-
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * resource is which is our auth service is consume.
+ *
+ * @author Hiren Babariya
+ */
 @Builder
 @Getter
 @Setter

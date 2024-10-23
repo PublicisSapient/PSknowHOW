@@ -18,59 +18,31 @@
 
 package com.publicissapient.kpidashboard.apis.service;
 
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
-import com.publicissapient.kpidashboard.apis.entity.UserToken;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.enums.AuthType;
 
-/**
- * A Contract to add and get authentication.
- *
- * @author Hiren Babariya
- */
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+
 public interface TokenAuthenticationService {
 
-	/**
-	 * Add authentication.
-	 *
-	 * @param response
-	 *            the response
-	 * @param authentication
-	 *            the authentication
-	 */
-	String addAuthentication(HttpServletResponse response, Authentication authentication);
+	String createJWT(@NotNull String subject, AuthType authType, Collection<? extends GrantedAuthority> authorities);
 
-	/**
-	 * Gets authentication.
-	 *
-	 * @param request
-	 *            the request
-	 * @return the authentication
-	 */
-	Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response);
+	// will create the two cookies: authCookie & authCookie_EXPIRY
+	void addStandardCookies(String jwt, HttpServletResponse response);
 
-	String setUpdateAuthFlag(List<UserToken> userTokenDataList, Date tokenExpiration);
+	// will create the three cookies: authCookie & authCookie_EXPIRY &
+	// samlUsernameCookie
+	void addSamlCookies(String username, String jwt, HttpServletResponse response);
 
 	String getSubject(String token);
 
-	Object getClaim(String token, String claimKey);
+	Collection<GrantedAuthority> createAuthorities(List<String> roles);
 
-	void updateExpiryDate(String username, String expiryDate);
-
-	UserToken getLatestTokenByUser(String userName);
-
-	/**
-	 * generate And SaveToken for every client/resource system
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	ServiceResponse<?> generateAndSaveToken(String resource);
-
+	String extractUsernameFromAuthentication(Authentication authentication);
 }

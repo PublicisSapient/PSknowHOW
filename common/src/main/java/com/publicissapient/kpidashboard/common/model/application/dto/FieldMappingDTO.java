@@ -105,7 +105,7 @@ public class FieldMappingDTO extends FieldMappingHistory {
 
 	private String jiraDefectRejectionStatus;
 	private String jiraDefectRejectionStatusKPI152;
-	private String jiraDefectRejectionStatusKPI151;
+	private List<String> jiraDefectRejectionStatusKPI151;
 	private String jiraDefectRejectionStatusAVR;
 	private String jiraDefectRejectionStatusKPI28;
 	private String jiraDefectRejectionStatusKPI37;
@@ -465,6 +465,13 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private String thresholdValueKPI139;
 	private String thresholdValueKPI166;
 	private String thresholdValueKPI173;
+	private String thresholdValueKPI180;
+	private String thresholdValueKPI181;
+	private String thresholdValueKPI182;
+	private String thresholdValueKPI183;
+	private String thresholdValueKPI184;
+	private String thresholdValueKPI185;
+	private String thresholdValueKPI186;
 
 	private String jiraProductionIncidentIdentification;
 	private String jiraProdIncidentRaisedByCustomField;

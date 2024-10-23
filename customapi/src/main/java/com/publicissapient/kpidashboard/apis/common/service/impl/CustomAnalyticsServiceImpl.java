@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,6 +33,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
@@ -143,7 +143,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		UserInfo userinfoKnowHow = userInfoRepository.findByUsername(username);
 		httpServletResponse.setCharacterEncoding("UTF-8");
 		if (Objects.isNull(userinfoKnowHow)) {
-			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username);
+			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username , authToken);
 			UserInfo centralUserInfo = new UserInfo();
 			if (Objects.nonNull(centralUserInfoDTO)) {
 				setUserDetailsFromCentralAuth(username, centralUserInfoDTO, centralUserInfo);
@@ -194,6 +194,10 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		centralUserInfo.setLastName(centralUserInfoDTO.getLastName());
 		centralUserInfo.setDisplayName(centralUserInfoDTO.getDisplayName());
 		centralUserInfo.setCreatedOn((new Date()).toString());
+		// to create Super admin User info for first time user
+		if (userInfoRepository.count() == 0) {
+			centralUserInfo.setAuthorities(Collections.singletonList(Constant.ROLE_SUPERADMIN));
+		}
 		userInfoRepository.save(centralUserInfo);
 	}
 

@@ -28,10 +28,12 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,6 +119,11 @@ public class CodeCommitKanbanServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi65");
 		kpiRequest.setLabel("PROJECT");
+		String[] ids = { "5" };
+		kpiRequest.setIds(ids);
+		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
+		selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
+		kpiRequest.setSelectedMap(selectedMap);
 
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();

@@ -1407,7 +1407,7 @@
   {
     "fieldName": "jiraDefectRejectionStatusKPI151",
     "fieldLabel": "Status to identify rejected defects",
-    "fieldType": "text",
+    "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "fieldDisplayOrder": 2,
@@ -3584,7 +3584,7 @@
   },
   {
     "fieldName": "jiraStatusForRefinedKPI161",
-    "fieldLabel": "Status to identify In Refined issues",
+    "fieldLabel": "Status to identify In Ready For Dev",
     "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -3763,5 +3763,56 @@
       "definition": "All issue types that are used as/equivalent to Story."
     },
     "mandatory": true
+  },
+  {
+    "fieldName": "thresholdValueKPI180",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI182",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI181",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Project Level Threshold",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 6,
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName" : "thresholdValueKPI185",
+    "fieldLabel" : "Target KPI Value",
+    "fieldType" : "number",
+    "section" : "Project Level Threshold",
+    "tooltip" : {
+      "definition" : "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName" : "thresholdValueKPI186",
+    "fieldLabel" : "Target KPI Value",
+    "fieldType" : "number",
+    "section" : "Project Level Threshold",
+    "tooltip" : {
+      "definition" : "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
   }
 ]

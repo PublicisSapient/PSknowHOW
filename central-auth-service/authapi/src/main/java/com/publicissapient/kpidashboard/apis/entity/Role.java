@@ -17,19 +17,16 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
 @Builder
 @Getter
 @Setter
@@ -38,9 +35,13 @@ import lombok.Setter;
 @Entity(name = "role")
 public class Role extends BaseEntity {
 	private String name;
+
 	private String description;
+
 	private boolean rootUser;
+
 	private boolean defaultRole;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "resource_id")
 	private Resource resource;

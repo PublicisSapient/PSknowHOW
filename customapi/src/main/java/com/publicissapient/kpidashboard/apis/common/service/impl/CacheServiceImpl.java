@@ -72,6 +72,7 @@ public class CacheServiceImpl implements CacheService {
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
 	@Autowired
 	private AuthenticationService authNAuthService;
+	List<AccountHierarchyData> accountHierarchyDataList;
 
 	@Override
 	public void clearCache(String cacheName) {
@@ -92,14 +93,14 @@ public class CacheServiceImpl implements CacheService {
 	@Cacheable(CommonConstant.CACHE_ACCOUNT_HIERARCHY)
 	@Override
 	public Object cacheAccountHierarchyData() {
-		return accountHierarchyService.createHierarchyData();
-
+		accountHierarchyDataList=accountHierarchyService.createHierarchyData();
+		return accountHierarchyDataList;
 	}
 
 	@Cacheable(CommonConstant.CACHE_SPRINT_HIERARCHY)
 	@Override
 	public Object cacheSprintLevelData() {
-		return ((List<AccountHierarchyData>) cacheAccountHierarchyData()).stream()
+		return accountHierarchyDataList.stream()
 				.filter(data -> data.getNode().stream()
 						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
 								&& node.getAccountHierarchy().getSprintState() != null)).toList();
@@ -131,6 +132,14 @@ public class CacheServiceImpl implements CacheService {
 
 	}
 	
+	@Cacheable(CommonConstant.CACHE_BOARD_META_DATA_MAP)
+	@Override
+	public Object cacheBoardMetaDataMapData() {
+		log.info("updating BoardMetaData Cache");
+		configHelperService.loadBoardMetaData();
+		return configHelperService.getConfigMapData(CommonConstant.CACHE_BOARD_META_DATA_MAP);
+
+	}
 
 	@Cacheable(CommonConstant.CACHE_TOOL_CONFIG_MAP)
 	@Override

@@ -17,7 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,44 +24,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.publicissapient.kpidashboard.apis.service.MessageService;
 import com.publicissapient.kpidashboard.apis.service.RoleService;
-import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
-import com.publicissapient.kpidashboard.apis.util.CookieUtil;
-import com.publicissapient.kpidashboard.common.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.service.dto.ServiceResponseDTO;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
 
-/**
- * Controller for handling Role APIs
- *
- * @author hargupta15
- */
 @RestController
-@Slf4j
+@AllArgsConstructor
 @RequestMapping("/roles")
 @SuppressWarnings("java:S3740")
 public class RoleController {
-	@Autowired
-	private RoleService roleService;
-	@Autowired
-	private CookieUtil cookieUtil;
-	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
 
-	@Autowired
-	private MessageService messageService;
+	private final RoleService roleService;
 
-	/**
-	 * Fetch all roles data.
-	 *
-	 * @return the roles
-	 */
 	@GetMapping(value = "/{resourceName}")
-	public ResponseEntity<ServiceResponse> getAllRoles(@PathVariable String resourceName) {
-		log.info("Fetching all roles");
+	public ResponseEntity<ServiceResponseDTO> getAllRolesForByResourceName(@PathVariable String resourceName) {
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponse<>(true, "", roleService.getResourceAllRoles(resourceName)));
+				.body(new ServiceResponseDTO<>(true, "", roleService.getAllRolesByResourceName(resourceName)));
 	}
 
 }

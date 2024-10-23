@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -115,11 +116,12 @@ public class BitBucketServiceKanbanR {
 						kpiRequest.getIds());
 				return (List<KpiElement>) cachedData;
 			}
-
+			kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
+			kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
 			Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
 
 			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
+				responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredNode));
 			}
 
 			setIntoApplicationCache(kpiRequest, responseList, groupId, kanbanProjectKeyCache);
@@ -129,7 +131,7 @@ public class BitBucketServiceKanbanR {
 			log.error("[BITBUCKET KANBAN][{}]. Error while KPI calculation for data. No data found {} {}",
 					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), enfe);
 			throw enfe;
-		} catch (ApplicationException e) {
+		} catch (Exception e) {
 			log.error("[BITBUCKET KANBAN][{}]. Error while KPI calculation for data {} {}",
 					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
@@ -148,8 +150,10 @@ public class BitBucketServiceKanbanR {
 
 	/**
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 * @return
+	 *            filteredAccountDataList
+	 * @return array of string
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest,
 			List<AccountHierarchyDataKanban> filteredAccountDataList) {
@@ -158,8 +162,10 @@ public class BitBucketServiceKanbanR {
 
 	/**
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 * @return
+	 *            filteredAccountDataList
+	 * @return list of hierarchy
 	 */
 	private List<AccountHierarchyDataKanban> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyDataKanban> filteredAccountDataList) {
@@ -171,31 +177,45 @@ public class BitBucketServiceKanbanR {
 	}
 
 	/**
-	 * Calculates aggregate metrics
 	 *
 	 * @param kpiRequest
-	 * @param responseList
+	 *            kpiRequest
 	 * @param kpiElement
-	 * @param filteredNodeClone
-	 * @throws ApplicationException
+	 *            kpiElement
+	 * @param filteredNode
+	 *            filteredNode
+	 * @return KpiElement kpiElement
 	 */
-	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, Node filteredNode) throws ApplicationException {
+	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+			Node filteredNode) {
 
 		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
-
 		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+		try {
+			bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
+			long startTime = System.currentTimeMillis();
 
-		bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
+			Node filteredNodeClone = (Node) SerializationUtils.clone(filteredNode);
+			if (Objects.nonNull(filteredNodeClone)
+					&& kpiHelperService.isToolConfigured(kpi, kpiElement, filteredNodeClone)) {
+				kpiElement = bitBucketKPIService.getKpiData(kpiRequest, kpiElement, filteredNodeClone);
+				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+				kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, filteredNodeClone);
+			}
 
-		long startTime = System.currentTimeMillis();
-
-		Node filteredNodeClone = (Node) SerializationUtils.clone(filteredNode);
-		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, filteredNodeClone));
-
-		long processTime = System.currentTimeMillis() - startTime;
-		log.info("[BITBUCKET-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-				processTime);
+			long processTime = System.currentTimeMillis() - startTime;
+			log.info("[BITBUCKET-KANBAN-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+					processTime);
+		} catch (ApplicationException exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+			log.error("Kpi not found", exception);
+		} catch (Exception exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+			log.error("[BITBUCKET KANBAN][{}]. Error while KPI calculation for data {} {}",
+					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), exception);
+			return kpiElement;
+		}
+		return kpiElement;
 
 	}
 
@@ -203,9 +223,13 @@ public class BitBucketServiceKanbanR {
 	 * Sets cache
 	 *
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param responseList
+	 *            responseList
 	 * @param groupId
+	 *            groupId
 	 * @param kanbanProjectKeyCache
+	 *            kanbanProjectKeyCache
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] kanbanProjectKeyCache) {

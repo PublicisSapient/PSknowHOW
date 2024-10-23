@@ -111,7 +111,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'iteration') {
+      if (sharedobject?.filterData?.length) {
         this.allKpiArray = [];
         this.kpiChartData = {};
         this.kpiSelectedFilterObj = {};
@@ -243,10 +243,16 @@ export class IterationComponent implements OnInit, OnDestroy {
             if (this.selectedtype !== 'Kanban') {
               // we should only call kpi154 on the click of Daily Standup tab
               let kpiIdsForCurrentBoard;
-              if (this.activeIndex !== 2) {
-                kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi154');
-              } else {
-                kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
+              switch (this.activeIndex) {
+                case 2:
+                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
+                  break;
+                  case 1:
+                    kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
+                  break;
+                default:
+                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi125' && kpiId !== 'kpi154');
+                  break;
               }
               const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
               if (selectedSprint) {
@@ -321,7 +327,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     const groupIdSet = new Set();
     this.updatedConfigGlobalData.forEach((obj) => {
       // we should only call kpi154 on the click of Daily Standup tab, there is separate code for sending kpi154 request
-      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Iteration' && obj.kpiId !== 'kpi154') {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Iteration' && obj.kpiId !== 'kpi154' && obj.kpiId !== 'kpi125') {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
@@ -341,6 +347,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
+    console.log(this.loaderJiraArray)
     this.kpiLoader = true;
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
@@ -882,7 +889,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       excelData = this.modalDetails['tableValues'];
       columns = this.modalDetails['tableHeadings'];
     } else {
-      excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+      excelData = this.tableComponent?.filteredValue || this.modalDetails['tableValues'];
       columns = this.tableHeaders;
     }
 
@@ -943,6 +950,11 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   handleTabChange(e) {
     let index = e.index;
+    if (index === 1) {
+      let kpi125Data = this.configGlobalData?.filter(kpi => kpi.kpiId === 'kpi125')[0];
+      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi125'], kpi125Data['groupId'], 'Iteration');
+      this.postJiraKpi(this.kpiJira, 'jira');
+    }
     if (index === 2) {
       let kpi154Data = this.configGlobalData?.filter(kpi => kpi.kpiId === 'kpi154')[0];
       this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi154'], kpi154Data['groupId'], 'Iteration');

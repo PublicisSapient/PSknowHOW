@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -143,7 +144,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 					return (List<KpiElement>) cachedData;
 				}
 
-				Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
+				Node filteredNode = getFilteredNodes(filteredAccountDataList);
 				if (filteredNode != null) {
 					if (!CollectionUtils.isEmpty(origRequestedKpis)
 							&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
@@ -160,20 +161,15 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 
 					List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-					for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-						CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+						for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 							threadLocalSprintDetails.set(sprintDetails);
 							threadLocalJiraIssues.set(jiraIssueList);
 							threadLocalHistory.set(jiraIssueCustomHistoryList);
-
-							try {
-								calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
-							} catch (Exception e) {
-								log.error("Error while KPI calculation for data +" , e);
-							}
-						}, executorService);
-						futures.add(future);
-					}
+							responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredNode));
+						}
+					}, executorService);
+					futures.add(future);
 
 					CompletableFuture<Void>[] futureArray = futures.toArray(new CompletableFuture[0]);
 
@@ -206,7 +202,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		return responseList;
 	}
 
-	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+	private Node getFilteredNodes(List<AccountHierarchyData> filteredAccountDataList) {
 		Optional<Node> sprintNode = filteredAccountDataList.get(0).getNode().stream()
 				.filter(node -> node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
 				.findFirst();
@@ -234,14 +230,18 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
 				.cacheSprintLevelData();
 
+		// Get the selected values for filtering
 		List<String> selectedValue = kpiRequest.getSelectedMap().getOrDefault(groupName, Collections.emptyList());
-		List<String> orDefault = kpiRequest.getSelectedMap().getOrDefault(CommonConstant.SPRINT,
+		List<String> sprintSelectedValue = kpiRequest.getSelectedMap().getOrDefault(CommonConstant.SPRINT,
 				Collections.emptyList());
+
+		// Filter the data based on the groupName and sprint ID
 		return accountDataListAll.stream()
 				.filter(data -> data.getNode().stream().anyMatch(
 						d -> d.getGroupName().equalsIgnoreCase(groupName) && selectedValue.contains(d.getId())))
-				.filter(data -> data.getNode().stream().anyMatch(
-						d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT) && orDefault.contains(d.getId())))
+				.filter(data -> data.getNode().stream()
+						.anyMatch(d -> d.getGroupName().equalsIgnoreCase(CommonConstant.SPRINT)
+								&& sprintSelectedValue.contains(d.getId())))
 				.collect(Collectors.toList());
 	}
 
@@ -316,22 +316,37 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
 		return threadLocalHistory.get();
 	}
 
-	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
+	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+			Node filteredAccountNode) {
+		try {
+			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
 
-		JiraIterationKPIService jiraKPIService = null;
-		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-		jiraKPIService = (JiraIterationKPIService) JiraNonTrendKPIServiceFactory.getJiraKPIService(kpi.name());
-		long startTime = System.currentTimeMillis();
-		if (KPICode.THROUGHPUT.equals(kpi)) {
-			log.info("No need to fetch Throughput KPI data");
-		} else {
-			Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
-			responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
-
-			long processTime = System.currentTimeMillis() - startTime;
-			log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
+			JiraIterationKPIService jiraKPIService = (JiraIterationKPIService) JiraNonTrendKPIServiceFactory
+					.getJiraKPIService(kpi.name());
+			long startTime = System.currentTimeMillis();
+			if (KPICode.THROUGHPUT.equals(kpi)) {
+				log.info("No need to fetch Throughput KPI data");
+			} else {
+				Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
+				if (Objects.nonNull(nodeDataClone)
+						&& kpiHelperService.isToolConfigured(kpi, kpiElement, nodeDataClone)) {
+					kpiElement = jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone);
+					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+					kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, nodeDataClone);
+				}
+				long processTime = System.currentTimeMillis() - startTime;
+				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+						processTime);
+			}
+		} catch (ApplicationException exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+			log.error("Kpi not found", exception);
+		} catch (Exception exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), exception);
+			return kpiElement;
 		}
+		return kpiElement;
 	}
 
 	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {

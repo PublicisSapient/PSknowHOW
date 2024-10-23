@@ -447,6 +447,13 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI139;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI166;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI173;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI180;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI181;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI182;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI183;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI184;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI185;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI186;
 
 	// Production Incident Mapping
 	private List<ConfigurationHistoryChangeLog> historyjiraProductionIncidentIdentification;

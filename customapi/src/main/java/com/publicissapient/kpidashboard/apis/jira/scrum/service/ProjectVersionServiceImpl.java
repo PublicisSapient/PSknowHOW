@@ -160,8 +160,10 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 		Map<String, Double> dateCount = getLastNMonth(customApiConfig.getSprintCountForFilters());
 		List<ProjectVersion> projectVersionList = Lists.newArrayList();
 		List<String> dateList = Lists.newArrayList();
-
-		for (ProjectVersion pv : projectRelease.getListProjectVersion()) {
+		// Filter to include only released versions
+		List<ProjectVersion> releasedVersions = projectRelease.getListProjectVersion().stream()
+				.filter(ProjectVersion::isReleased).toList();
+		for (ProjectVersion pv : releasedVersions) {
 			if (pv.getReleaseDate() != null) {
 				String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear();
 				if (dateCount.keySet().contains(yearMonth)) {

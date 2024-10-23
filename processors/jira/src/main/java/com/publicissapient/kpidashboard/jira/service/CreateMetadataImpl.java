@@ -97,6 +97,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_FIELD_MAPPING_MAP);
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_BOARD_META_DATA_MAP);
+				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
@@ -460,9 +462,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI152).get(0)
 						: null);
 		fieldMapping.setJiraDefectRejectionStatusKPI151(
-				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI151))
-						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI151).get(0)
-						: null);
+				workflowMap.getOrDefault(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI151, new ArrayList<>()));
 		fieldMapping.setJiraDefectRejectionStatusKPI37(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI37))
 						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI37).get(0)

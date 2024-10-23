@@ -294,7 +294,7 @@ export class ToolMenuComponent implements OnInit {
             "releaseNodeId": null
           }
           this.httpService.getFieldMappingsWithHistory(jiraOrAzure[0].id, kpiID, obj).subscribe(mappings => {
-            if (mappings && mappings['success']) {
+            if (mappings?.success) {
               this.sharedService.setSelectedFieldMapping(mappings['data']);
               this.disableSwitch = true;
             } else {
@@ -334,19 +334,11 @@ export class ToolMenuComponent implements OnInit {
       updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
     };
     this.tools = this.tools.filter((tool) => tool.toolName !== 'Azure' && tool.toolName !== 'Jira');
-    if (isClicked) {
       if (event && event.value) {
         this.tools.unshift(azureType);
       } else {
         this.tools.unshift(jiraType);
       }
-    } else {
-      if (event && event.value) {
-        this.tools.unshift(azureType);
-      } else {
-        this.tools.unshift(jiraType);
-      }
-    }
 
   }
 
