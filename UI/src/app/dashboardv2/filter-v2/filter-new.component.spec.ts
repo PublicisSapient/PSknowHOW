@@ -1020,6 +1020,22 @@ describe('FilterNewComponent', () => {
                     kanban: true,
                     scrum: false,
                 });
+            });
+
+            it('should handle empty filter data gracefully for scrum', () => {
+                // Arrange
+                const filterApiData = { success: true, data: [] };
+                spyOn(httpService, 'getFilterData').and.returnValue(of(filterApiData) as any);
+                spyOn(sharedService, 'setNoProjectsForNewUI');
+                spyOn(sharedService, 'setNoProjects');
+                // Act
+                component.firstLoadFilterCheck(false);
+
+                // Assert
+                expect(sharedService.setNoProjectsForNewUI).toHaveBeenCalledWith({
+                    kanban: false,
+                    scrum: true,
+                });
                 expect(sharedService.setNoProjects).toHaveBeenCalledWith(true);
             });
 
@@ -1037,4 +1053,225 @@ describe('FilterNewComponent', () => {
             });
         });
     });
-});
+
+    describe('FilterNewComponent.setCategories() setCategories method', () => {
+        describe('Happy Path', () => {
+            it('should set categories correctly when data is available', () => {
+                // Arrange
+                const mockHierarchyData = [
+                    { hierarchyLevelId: 'project', hierarchyLevelName: 'Project' },
+                    { hierarchyLevelId: 'sprint', hierarchyLevelName: 'Sprint' },
+                ];
+                const mockFilterData = {
+                    scrum: {
+                        project: [{ nodeId: '1', nodeName: 'Project 1' }],
+                        sprint: [{ nodeId: '2', nodeName: 'Sprint 1', parentId: '1' }],
+                    },
+                };
+                localStorage.setItem(
+                    'completeHierarchyData',
+                    JSON.stringify({ scrum: mockHierarchyData }),
+                );
+                component.filterDataArr = mockFilterData;
+
+                // Act
+                component.setCategories();
+
+                // Assert
+                expect(component.filterDataArr['scrum']['Project']).toEqual([
+                    { nodeId: '1', nodeName: 'Project 1' },
+                ]);
+                expect(component.filterDataArr['scrum']['Sprint']).toEqual([
+                    { nodeId: '2', nodeName: 'Sprint 1', parentId: '1' },
+                ]);
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle empty hierarchy data gracefully', () => {
+                // Arrange
+                localStorage.setItem(
+                    'completeHierarchyData',
+                    JSON.stringify({ scrum: [] }),
+                );
+                component.filterDataArr = { scrum: {} };
+
+                // Act
+                component.setCategories();
+
+                // Assert
+                expect(component.filterDataArr['scrum']).toEqual({});
+            });
+        });
+    });
+
+    describe('FilterNewComponent.callBoardConfigAsPerStateFilters() callBoardConfigAsPerStateFilters method', () => {
+        describe('Happy Path', () => {
+            it('should call getBoardConfig with correct project ID when state filters are available', () => {
+                // Arrange
+                const mockStateFilters = {
+                    primary_level: [{ labelName: 'project', basicProjectConfigId: '123' }],
+                };
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(
+                    mockStateFilters as any,
+                );
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '123', basicProjectConfigId: '123' }],
+                    },
+                };
+
+                const getBoardConfigSpy = spyOn(component, 'getBoardConfig' as any);
+
+                // Act
+                component.callBoardConfigAsPerStateFilters();
+
+                // Assert
+                expect(getBoardConfigSpy).toHaveBeenCalledWith(['123']);
+            });
+
+            it('should call getBoardConfig with first project ID when no state filters are available', () => {
+                // Arrange
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(null);
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '123', basicProjectConfigId: '123' }],
+                    },
+                };
+
+                const getBoardConfigSpy = spyOn(component, 'getBoardConfig' as any);
+
+                // Act
+                component.callBoardConfigAsPerStateFilters();
+
+                // Assert
+                expect(getBoardConfigSpy).toHaveBeenCalledWith(['123']);
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle empty non-project statefilters gracefully', () => {
+                // Arrange
+                const mockStateFilters = {
+                    primary_level: [{ labelName: 'sprint', basicProjectConfigId: '123', parentId: '234' }],
+                };
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(mockStateFilters as any,);
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '234', basicProjectConfigId: '234' }],
+                    },
+                };
+
+                const getBoardConfigSpy = spyOn(component, 'getBoardConfig' as any);
+
+                // Act
+                component.callBoardConfigAsPerStateFilters();
+
+                // Assert
+                expect(getBoardConfigSpy).toHaveBeenCalledWith(['234']);
+            });
+
+            it('should handle missing selectedLevel filterDataArr gracefully', () => {
+                // Arrange
+                // Arrange
+                const mockStateFilters = null;
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(mockStateFilters as any,);
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '123', basicProjectConfigId: '123', nodeName: 'def' },
+                        { nodeId: '234', basicProjectConfigId: '234', nodeName: 'abc' }],
+                    },
+                };
+                component.selectedLevel = null;
+                const getBoardConfigSpy = spyOn(component, 'getBoardConfig' as any);
+
+                // Act
+                component.callBoardConfigAsPerStateFilters();
+
+                // Assert
+                expect(getBoardConfigSpy).toHaveBeenCalledWith(['234']);
+            });
+        });
+    });
+
+    describe('FilterNewComponent.getBoardConfig() getBoardConfig method', () => {
+        describe('Happy Path', () => {
+            it('should fetch board configuration successfully', async () => {
+                // Arrange
+                const projectList = ['project1', 'project2'];
+                const response = {
+                    success: true,
+                    data: {
+                        userBoardConfigDTO: {
+                            scrum: [],
+                            others: [],
+                            configDetails: {},
+                        },
+                    },
+                };
+                spyOn(httpService, 'getShowHideOnDashboardNewUI')
+                    .and.returnValue(response as any);
+
+                // Act
+                await component.getBoardConfig(projectList);
+
+                // Assert
+                expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
+                    basicProjectConfigIds: projectList,
+                });
+                expect(component.dashConfigData).toEqual(
+                    response.data.userBoardConfigDTO,
+                );
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle empty project list gracefully', async () => {
+                // Arrange
+                const projectList: string[] = [];
+                const response = {
+                    success: true,
+                    data: {
+                        userBoardConfigDTO: {
+                            scrum: [],
+                            others: [],
+                            configDetails: {},
+                        },
+                    },
+                };
+                spyOn(httpService, 'getShowHideOnDashboardNewUI')
+                    .and.returnValue(response as any);
+
+                // Act
+                await component.getBoardConfig(projectList);
+
+                // Assert
+                expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
+                    basicProjectConfigIds: [],
+                });
+                expect(component.dashConfigData).toEqual(
+                    response.data.userBoardConfigDTO,
+                );
+            });
+
+            it('should handle API failure gracefully', async () => {
+                // Arrange
+                const projectList = ['project1'];
+                spyOn(httpService, 'getShowHideOnDashboardNewUI')
+                    .and.returnValue(new Error('API Error') as never);
+                spyOn(messageService, 'add');
+                // Act
+                await component.getBoardConfig(projectList);
+
+                // Assert
+                expect(httpService.getShowHideOnDashboardNewUI).toHaveBeenCalledWith({
+                    basicProjectConfigIds: projectList,
+                });
+                expect(messageService.add).toHaveBeenCalledWith({
+                    severity: 'error',
+                    summary: 'API Error',
+                });
+            });
+        });
+    });
+})

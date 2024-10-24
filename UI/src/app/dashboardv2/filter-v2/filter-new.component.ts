@@ -323,9 +323,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             kanban: !this.kanbanProjectsAvailable,
             scrum: !this.scrumProjectsAvailable
           });
-          
+
           // specifically for Iteration board, to be removed when Iteration comes on ExecutiveV2
-          if(!this.scrumProjectsAvailable) {
+          if (!this.scrumProjectsAvailable) {
             this.service.setNoProjects(true);
           }
         }
@@ -362,32 +362,36 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterDataArr[this.selectedType] = dataCopy;
     if (this.filterDataArr[this.selectedType][this.selectedLevel]?.length) {
       if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
-        let stateFilters = this.helperService.getBackupOfFilterSelectionState();
-        if (stateFilters && stateFilters['primary_level']) {
-          let selectedProject;
-          if (stateFilters['primary_level'][0].labelName === 'project') {
-            selectedProject = stateFilters['primary_level'][0];
-          } else {
-            selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
-          }
-          this.getBoardConfig([selectedProject['basicProjectConfigId']]);
-        } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
-          let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
-          if (selectedProject) {
-            this.getBoardConfig([selectedProject['basicProjectConfigId']]);
-          }
-        }
-        else {
-          let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
-          if (selectedProject) {
-            this.getBoardConfig([selectedProject['basicProjectConfigId']]);
-          }
-        }
+        this.callBoardConfigAsPerStateFilters();
       } else {
         this.getBoardConfig([]);
       }
     } else {
       this.getBoardConfig([]);
+    }
+  }
+
+  callBoardConfigAsPerStateFilters() {
+    let stateFilters = this.helperService.getBackupOfFilterSelectionState();
+    if (stateFilters && stateFilters['primary_level']) {
+      let selectedProject;
+      if (stateFilters['primary_level'][0].labelName === 'project') {
+        selectedProject = stateFilters['primary_level'][0];
+      } else {
+        selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
+      }
+      this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+    } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
+      let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
+      if (selectedProject) {
+        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+      }
+    }
+    else {
+      let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType]['Project'])[0];
+      if (selectedProject) {
+        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+      }
     }
   }
 
