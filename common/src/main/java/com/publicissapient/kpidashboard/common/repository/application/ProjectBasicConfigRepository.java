@@ -54,6 +54,16 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	ProjectBasicConfig findByProjectName(String projectName);
 
 	/**
+	 * Returns ProjectBasicConfig from persistence store by projectNodeId
+	 *
+	 * @param projectNodeId
+	 *            ProjectName
+	 * @return {@link ProjectBasicConfig} object if exist
+	 */
+	ProjectBasicConfig findByProjectNodeId(String projectNodeId);
+
+
+	/**
 	 * Returns ProjectBasicConfig from persistence store by project name with
 	 * different id than provided
 	 *

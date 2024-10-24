@@ -37,11 +37,12 @@ import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
@@ -130,21 +131,6 @@ public final class JiraIssueClientUtil {
 			});
 		}
 		return changeLogList;
-	}
-
-	/**
-	 * Gets Account Hierarchy
-	 * 
-	 * @param accountHierarchyRepository
-	 *            accountHierarchyRepository
-	 * @return Pair of NodeId and path and Account Hierarchy Map
-	 */
-	public static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(
-			AccountHierarchyRepository accountHierarchyRepository) {
-		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
-		return accountHierarchyList.stream().collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p,
-				(existingValue, newValue) -> existingValue));
-
 	}
 
 	/**

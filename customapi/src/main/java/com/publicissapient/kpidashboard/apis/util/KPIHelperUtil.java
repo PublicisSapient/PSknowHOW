@@ -137,21 +137,21 @@ public final class KPIHelperUtil {
 		if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 			if (isAccountHierarchyData(node)) {
 				node.setProjectFilter(new ProjectFilter(node.getId(), node.getName(),
-						node.getAccountHierarchy().getBasicProjectConfigId()));
+						node.getProjectHierarchy().getBasicProjectConfigId()));
 			} else {
 				node.setProjectFilter(new ProjectFilter(node.getId(), node.getName(),
-						node.getAccountHierarchyKanban().getBasicProjectConfigId()));
+						node.getProjectHierarchy().getBasicProjectConfigId()));
 			}
 		} else if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
 			node.setProjectFilter(new ProjectFilter(node.getParent().getId(), node.getParent().getName(),
-					node.getAccountHierarchy().getBasicProjectConfigId()));
+					node.getProjectHierarchy().getBasicProjectConfigId()));
 			node.setSprintFilter(new SprintFilter(node.getId(), node.getName(),
-					node.getAccountHierarchy().getBeginDate(), node.getAccountHierarchy().getEndDate()));
+					node.getProjectHierarchy().getBeginDate(), node.getProjectHierarchy().getEndDate()));
 		} else if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
 			node.setProjectFilter(new ProjectFilter(node.getParent().getId(), node.getParent().getName(),
-					node.getAccountHierarchy().getBasicProjectConfigId()));
+					node.getProjectHierarchy().getBasicProjectConfigId()));
 			node.setReleaseFilter(new ReleaseFilter(node.getId(), node.getName(),
-					node.getAccountHierarchy().getBeginDate(), node.getAccountHierarchy().getEndDate()));
+					node.getProjectHierarchy().getBeginDate(), node.getProjectHierarchy().getEndDate()));
 		}
 	}
 
@@ -174,7 +174,7 @@ public final class KPIHelperUtil {
 
 			if (isAccountHierarchyData(node)) {
 				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
-						node.getGroupName(), node.getAccountHierarchy(), node.getProjectFilter(),
+						node.getGroupName(), node.getProjectHierarchy(), node.getProjectFilter(),
 						node.getSprintFilter(), node.getReleaseFilter());
 				leafNodeList.add(newNode);
 			} else if (isAccountHierarchyDataKanban(node)) {
@@ -218,7 +218,7 @@ public final class KPIHelperUtil {
 	 * @return
 	 */
 	private static boolean isAccountHierarchyData(Node node) {
-		return null != node.getAccountHierarchy();
+		return null != node.getProjectHierarchy();
 	}
 
 	/**
@@ -312,7 +312,7 @@ public final class KPIHelperUtil {
 
 			if (isAccountHierarchyData(node)) {
 				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
-						node.getGroupName(), node.getAccountHierarchy(), node.getProjectFilter(),
+						node.getGroupName(), node.getProjectHierarchy(), node.getProjectFilter(),
 						node.getSprintFilter());
 				projectNodeList.add(newNode);
 			} else if (isAccountHierarchyDataKanban(node)) {

@@ -444,7 +444,6 @@ public class UserBoardConfigServiceImplTest {
 	private AccessItem createAccessItem(String id, String name) {
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId(id);
-		accessItem.setItemName(name);
 		return accessItem;
 	}
 
