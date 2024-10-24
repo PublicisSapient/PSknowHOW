@@ -74,6 +74,7 @@ export class NavComponent implements OnInit {
 
     this.service.boardNamesListSubject.subscribe((data) => {
       this.boardNameArr = data;
+      console.log(this.boardNameArr);
     })
 
   }
@@ -95,7 +96,7 @@ export class NavComponent implements OnInit {
 
   // call when user is seleting tab
   selectTab(selectedTab) {
-    this.selectedTab = selectedTab;
+    this.selectedTab = this.boardNameArr.filter(board => board.link === selectedTab)[0].boardName;
     if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release' || selectedTab.toLowerCase() === 'dora') && this.selectedType.toLowerCase() !== 'scrum'){
       this.selectedType = 'Scrum';
     }

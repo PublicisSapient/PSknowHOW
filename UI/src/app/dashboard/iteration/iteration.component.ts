@@ -247,8 +247,8 @@ export class IterationComponent implements OnInit, OnDestroy {
                 case 2:
                   kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
                   break;
-                  case 1:
-                    kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
+                case 1:
+                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
                   break;
                 default:
                   kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi125' && kpiId !== 'kpi154');
@@ -280,7 +280,10 @@ export class IterationComponent implements OnInit, OnDestroy {
   checkForAssigneeDataAndSetupTabs() {
     this.httpService.getProjectListData().subscribe(async responseList => {
       let selectedProject = responseList[0].data.filter((project) => project.id === this.selectedProjectId)[0];
-      let showDSVorNot = selectedProject['saveAssigneeDetails'];
+      let showDSVorNot = false;
+      if (selectedProject) {
+        showDSVorNot = selectedProject['saveAssigneeDetails'];
+      }
       let showDailyStandup = await this.featureFlagService.isFeatureEnabled('DAILY_STANDUP');
       if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot) { // && showDailyStandup) {
         this.navigationTabs = [
