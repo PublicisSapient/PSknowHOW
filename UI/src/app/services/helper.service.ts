@@ -89,12 +89,12 @@ export class HelperService {
                 }
                 if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
                     if (obj.isEnabled && obj.shown) {
-                        if(!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                        if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
                             kpiRequestObject.kpiList.push(obj)
                         }
                     }
                 } else if (visibleKpis.includes(obj.kpiId)) {
-                    if(!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                    if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
                         kpiRequestObject.kpiList.push(obj)
                     }
                 }
@@ -792,25 +792,25 @@ export class HelperService {
         return kpiSelectedFilterObj;
     }
 
-    logoutHttp(){
-      this.httpService.logout().subscribe((responseData) => {
-        // if (responseData?.success) {
-          if(!environment['AUTHENTICATION_SERVICE']){
-          this.isKanban = false;
-          // Set blank selectedProject after logged out state
-          this.sharedService.setSelectedProject(null);
-          this.sharedService.setCurrentUserDetails({});
-          this.sharedService.setVisibleSideBar(false);
-          this.sharedService.setAddtionalFilterBackup({});
-          this.sharedService.setKpiSubFilterObj({});
-          localStorage.clear();
-          this.router.navigate(['./authentication/login']);
-          } else {
-              let redirect_uri = window.location.href;
-              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
-          }
-    //   }
-    })
+    logoutHttp() {
+        this.httpService.logout().subscribe((responseData) => {
+            // if (responseData?.success) {
+            if (!environment['AUTHENTICATION_SERVICE']) {
+                this.isKanban = false;
+                // Set blank selectedProject after logged out state
+                this.sharedService.setSelectedProject(null);
+                this.sharedService.setCurrentUserDetails({});
+                this.sharedService.setVisibleSideBar(false);
+                this.sharedService.setAddtionalFilterBackup({});
+                this.sharedService.setKpiSubFilterObj({});
+                localStorage.clear();
+                this.router.navigate(['./authentication/login']);
+            } else {
+                let redirect_uri = window.location.href;
+                window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+            }
+            //   }
+        })
     }
 
     getObjectKeys(obj) {
@@ -819,6 +819,96 @@ export class HelperService {
         } else {
             return [];
         }
+    }
+
+    checkDataAtGranularLevel(data, chartType, selectedTab) {
+        if (selectedTab === "developer" && data?.length) {
+            return true;
+        }
+        if (!data || !data?.length) {
+            return false;
+        }
+        let dataCount = 0;
+        if (Array.isArray(data)) {
+            data?.forEach(item => {
+                if (Array.isArray(item.data) && item.data?.length) {
+                    ++dataCount;
+                } else if (item.data && !isNaN(parseInt(item.data))) {
+                    // dataCount += item?.data;
+                    ++dataCount;
+                } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
+                    if (item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
+                        if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
+                            ++dataCount;
+                        } else if (this.checkAllValues(item.value, 'data', chartType)) {
+                            ++dataCount;
+                        }
+                    } else if (this.checkIfArrayHasData(item.value[0])) {
+                        if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
+                            ++dataCount;
+                        } else if (this.checkAllValues(item.value[0].value, 'data', chartType)) {
+                            ++dataCount;
+                        }
+                    } else if (item.value.length && chartType !== 'pieChart') {
+                        ++dataCount;
+                    }
+                } else if (item.dataGroup && item.dataGroup.length) {
+                    ++dataCount;
+                }
+            });
+        } else if (data && Object.keys(data).length) {
+            dataCount = Object.keys(data).length;
+        }
+        return parseInt(dataCount + '') > 0;
+    }
+
+    checkAllValues(arr, prop, chartType) {
+        let result = false;
+        for (let i = 0; i < arr.length; i++) {
+            if (!isNaN(parseInt(arr[i][prop]))) {
+                if (chartType === 'pieChart') {
+                    result = parseInt(arr[i][prop]) > 0;
+                    break;
+                } else {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    checkIfArrayHasData(item) {
+        return (Array.isArray(item.value) && item.value.length > 0)
+    }
+
+    deepEqual(obj1: any, obj2: any): boolean {
+        if (typeof obj1 === 'string' && typeof obj2 === 'string' && obj1.toLowerCase() === obj2.toLowerCase()) {
+            return true;
+        } 
+        
+        if (obj1 === obj2) {
+            return true;
+        }
+
+        if (obj1 === null || obj2 === null || typeof obj1 !== 'object' || typeof obj2 !== 'object') {
+            return false;
+        }
+
+        const keys1 = Object.keys(obj1);
+        const keys2 = Object.keys(obj2);
+
+        if (keys1.length !== keys2.length) {
+            return false;
+        }
+
+        for (const key of keys1) {
+            if (!keys2.includes(key) || !this.deepEqual(obj1[key], obj2[key])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     isDropdownElementSelected($event:any): boolean{
@@ -831,6 +921,5 @@ export class HelperService {
         }catch (ex){
             console.error(ex,'Not a Browser event');
         }
-       
     }
 }

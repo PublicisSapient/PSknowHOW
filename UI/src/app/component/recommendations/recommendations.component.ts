@@ -9,7 +9,7 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./recommendations.component.css']
 })
 export class RecommendationsComponent implements OnInit {
-  displayModal:boolean = false;
+  displayModal: boolean = false;
   modalDetails = {
     tableHeadings: [],
     tableValues: [],
@@ -23,16 +23,16 @@ export class RecommendationsComponent implements OnInit {
   @Input() filterData = {}
   @Input() kpiList = [];
   noRecommendations: boolean = false;
-  selectedSprint:object = {};
-  loading:boolean = false;
+  selectedSprint: object = {};
+  loading: boolean = false;
 
-  constructor(private httpService: HttpService,  private messageService: MessageService, private service: SharedService) {}
+  constructor(private httpService: HttpService, private messageService: MessageService, private service: SharedService) { }
 
   ngOnInit(): void {
-    
+
   }
 
-  handleClick(){
+  handleClick() {
     this.selectedSprint = this.service.getSprintForRnR();
     this.displayModal = true;
     this.filterData['kpiIdList'] = [...this.kpiList];
@@ -43,32 +43,32 @@ export class RecommendationsComponent implements OnInit {
     this.tabs = [];
     this.tabsContent = {};
     this.httpService.getRecommendations(this.filterData).subscribe((response: Array<object>) => {
-      if(response?.length > 0){
+      if (response?.length > 0) {
         response.forEach((recommendation) => {
-          if(this.selectedSprint['nodeId'] == recommendation['sprintId']){
-            if(recommendation?.['recommendations']?.length > 0){
+          if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {
+            if (recommendation?.['recommendations']?.length > 0) {
               this.recommendationsData = recommendation['recommendations'];
               this.recommendationsData.forEach((item) => {
-                let idx = this.maturities?.findIndex((x) =>x['value'] == item['maturity']);
-                if(idx == -1 && item['maturity']){
-                  this.maturities = [...this.maturities, {name: 'M'+item['maturity'], value:item['maturity']}]
-                }else{
+                let idx = this.maturities?.findIndex((x) => x['value'] == item['maturity']);
+                if (idx == -1 && item['maturity']) {
+                  this.maturities = [...this.maturities, { name: 'M' + item['maturity'], value: item['maturity'] }]
+                } else {
                   this.maturities = [...this.maturities]
                 }
                 this.tabs = !this.tabs.includes(item['recommendationType']) ? [...this.tabs, item['recommendationType']] : [...this.tabs];
                 this.tabsContent[item['recommendationType']] = [];
               });
-          
+
               this.recommendationsData.forEach((item) => {
                 this.tabsContent[item['recommendationType']] = [...this.tabsContent[item['recommendationType']], item]
               });
               this.noRecommendations = false;
-            }else{
+            } else {
               this.noRecommendations = true;
             }
           }
         })
-      }else{
+      } else {
         this.noRecommendations = true;
       }
       this.loading = false;

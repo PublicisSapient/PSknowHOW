@@ -4,12 +4,11 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import lombok.Data;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.Data;
 
 @Data
 @Configuration
@@ -18,18 +17,8 @@ import org.springframework.context.annotation.Configuration;
 public class AuthEndpointsProperties {
 	private static final String[] NO_ENDPOINTS = {};
 	private static final String[] NO_EXTERNAL_ENDPOINTS = {};
-	private static final String[] DEFAULT_PUBLIC_ENDPOINTS = {
-			"/api-docs",
-			"/img/**",
-			"/css/**",
-			"/js/**",
-			"/**.js**",
-			"/**.css**",
-			"/**.png**",
-			"/**.jpeg**",
-			"/**.jpg**",
-			"/**.ico**"
-	};
+	private static final String[] DEFAULT_PUBLIC_ENDPOINTS = { "/api-docs", "/img/**", "/css/**", "/js/**", "/**.js**",
+			"/**.css**", "/**.png**", "/**.jpeg**", "/**.jpg**", "/**.ico**" };
 
 	private String[] publicEndpoints;
 
@@ -38,10 +27,8 @@ public class AuthEndpointsProperties {
 	private String[] externalEndpoints;
 
 	public String[] getPublicEndpoints() {
-		return Stream.concat(
-				Arrays.stream(Optional.ofNullable(publicEndpoints).orElse(NO_ENDPOINTS)),
-				Arrays.stream(DEFAULT_PUBLIC_ENDPOINTS)
-		).toArray(String[]::new);
+		return Stream.concat(Arrays.stream(Optional.ofNullable(publicEndpoints).orElse(NO_ENDPOINTS)),
+				Arrays.stream(DEFAULT_PUBLIC_ENDPOINTS)).toArray(String[]::new);
 	}
 
 	public String[] getAuthenticatedEndpoints() {

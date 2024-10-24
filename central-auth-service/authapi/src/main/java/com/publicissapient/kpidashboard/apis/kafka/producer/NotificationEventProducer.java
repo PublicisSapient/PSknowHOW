@@ -23,22 +23,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.service.dto.EmailEventDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class is responsible to send message event to kafka topic
@@ -55,7 +53,7 @@ public class NotificationEventProducer {
 	private static final String FAILURE_MESSAGE = "Error Sending the mail message to topic and the exception is: ";
 
 	public void sendNotificationEvent(String key, EmailEventDTO email, Map<String, String> headerDetails, String topic,
-									  KafkaTemplate<String, Object> kafkaTemplate) {
+			KafkaTemplate<String, Object> kafkaTemplate) {
 		try {
 			LOGGER.info("Notification Switch is on. Sending message now.....");
 			ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);

@@ -4,10 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
-import lombok.AllArgsConstructor;
-
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +11,11 @@ import com.publicissapient.kpidashboard.apis.entity.User;
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 import com.publicissapient.kpidashboard.apis.service.SAMLAuthenticationService;
 import com.publicissapient.kpidashboard.apis.service.TokenAuthenticationService;
-import com.publicissapient.kpidashboard.apis.service.UserService;
 import com.publicissapient.kpidashboard.apis.service.UserRoleService;
+import com.publicissapient.kpidashboard.apis.service.UserService;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -40,13 +39,9 @@ public class SAMLAuthenticationServiceImpl implements SAMLAuthenticationService 
 		String username = extractUsernameFromEmail(userEmail);
 
 		if (Objects.nonNull(username)) {
-			String jwt = this.tokenAuthenticationService.createJWT(
-					username,
-					AuthType.SAML,
-					this.tokenAuthenticationService.createAuthorities(
-							this.userRoleService.getRolesNamesByUsername(username)
-					)
-			);
+			String jwt = this.tokenAuthenticationService.createJWT(username, AuthType.SAML,
+					this.tokenAuthenticationService
+							.createAuthorities(this.userRoleService.getRolesNamesByUsername(username)));
 
 			this.tokenAuthenticationService.addSamlCookies(username, jwt, response);
 
