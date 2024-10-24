@@ -103,7 +103,7 @@ public class JiraController {
 
 		List<KpiElement> responseList = jiraService.process(kpiRequest);
 		MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
-
+		log.info("GS1 Response List {}", responseList);
 		log.info("");
 		MDC.clear();
 		if (responseList.isEmpty()) {

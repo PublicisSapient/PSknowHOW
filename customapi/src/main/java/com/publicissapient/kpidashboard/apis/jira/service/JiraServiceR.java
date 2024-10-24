@@ -141,12 +141,15 @@ public class JiraServiceR {
 		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
 				.collect(Collectors.toList());
+		log.info("GS List of OrigRequestedKPIs");
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] projectKeyCache = null;
 		try {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
+			log.info("GS groupId {}", groupId);
 			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
 					false);
+			log.info("GS groupName {}", groupName);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
@@ -222,10 +225,12 @@ public class JiraServiceR {
 			fetchSprintDetails(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT));
 			String basicConfigId = filteredAccountDataList.get(0).getBasicProjectConfigId().toString();
 			List<String> sprintIssuesList = createIssuesList(basicConfigId);
+			log.info("GS sprintIssuesList {}", sprintIssuesList);
 			fetchJiraIssues(kpiRequest, basicConfigId, sprintIssuesList);
 			fetchJiraIssuesCustomHistory(basicConfigId);
 		} else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.RELEASE)) {
 			releaseList = getReleaseList(treeAggregatorDetail);
+			log.info("GS sprintIssuesList {}", releaseList);
 			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), releaseList,
 					CommonConstant.RELEASE);
 			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
@@ -309,6 +314,7 @@ public class JiraServiceR {
 			String[] projects) {
 		Integer sprintLevel = filterHelperService.getHierarchyIdLevelMap(false)
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
+		log.info("GS getProjectKey {}", sprintLevel);
 
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& sprintLevel >= kpiRequest.getLevel() && isLeadTimeDuration(kpiRequest.getKpiList())) {
@@ -347,6 +353,7 @@ public class JiraServiceR {
 		uniqueProjectMap.put(basicConfigId, mapOfFilter);
 		jiraIssueList = jiraIssueRepository.findIssueByNumberWithAdditionalFilter(new HashSet<>(sprintIssuesList),
 				uniqueProjectMap);
+		log.info("GS jiraIssueList {}", jiraIssueList);
 	}
 
 	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
@@ -403,6 +410,7 @@ public class JiraServiceR {
 
 	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
 		List<String> issueList = jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+		log.info("GS sprintIssuesList {}", issueList);
 		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
 				.findByStoryIDInAndBasicProjectConfigIdIn(issueList, Collections.singletonList(basicProjectConfigId));
 

@@ -168,6 +168,7 @@ public class UserAuthorizedProjectsService {
 	public String[] getProjectKey(List<AccountHierarchyData> filteredAccountDataList, KpiRequest kpiRequest) {
 
 		Set<String> projects = getProjectNodesForRequest(filteredAccountDataList);
+		log.info("GS getProjectKey {}", projects);
 		List<String> ids = Arrays.asList(kpiRequest.getIds());
 		List<String> keys = Stream.concat(projects.stream(), ids.stream()).collect(Collectors.toList());
 		if(kpiRequest.getSelectedMap().get(Constant.DATE) != null)
