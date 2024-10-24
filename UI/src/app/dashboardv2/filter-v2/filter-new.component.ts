@@ -323,6 +323,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             kanban: !this.kanbanProjectsAvailable,
             scrum: !this.scrumProjectsAvailable
           });
+          
+          // specifically for Iteration board, to be removed when Iteration comes on ExecutiveV2
+          if(!this.scrumProjectsAvailable) {
+            this.service.setNoProjects(true);
+          }
         }
       } else {
         // error
@@ -549,8 +554,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-    ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.objectsEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType))
-    {
+      ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.objectsEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -696,7 +700,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedTab?.toLowerCase() === 'backlog') {
-      this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+      this.filterApplyData['selectedMap']['sprint'] = [];
+      if (this.filterDataArr[this.selectedType]['Sprint']) {
+        this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+      }
     }
 
     if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release') {
