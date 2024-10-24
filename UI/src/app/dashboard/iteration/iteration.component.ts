@@ -280,7 +280,10 @@ export class IterationComponent implements OnInit, OnDestroy {
   checkForAssigneeDataAndSetupTabs() {
     this.httpService.getProjectListData().subscribe(async responseList => {
       let selectedProject = responseList[0].data.filter((project) => project.id === this.selectedProjectId)[0];
-      let showDSVorNot = selectedProject['saveAssigneeDetails'];
+      let showDSVorNot = false;
+      if (selectedProject) {
+        showDSVorNot = selectedProject['saveAssigneeDetails'];
+      }
       let showDailyStandup = await this.featureFlagService.isFeatureEnabled('DAILY_STANDUP');
       if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot) { // && showDailyStandup) {
         this.navigationTabs = [

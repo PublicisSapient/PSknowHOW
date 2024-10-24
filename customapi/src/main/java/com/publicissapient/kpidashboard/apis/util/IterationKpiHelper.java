@@ -128,15 +128,16 @@ public final class IterationKpiHelper {
 	public static String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, List<String> fieldMapping) {
 		String devCompleteDate = Constant.DASH;
 		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
+
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			devCompleteDate = filterStatusUpdationLog.stream()
 					.filter(jiraHistoryChangeLog -> fieldMapping.contains(jiraHistoryChangeLog.getChangedTo())
 							&& jiraHistoryChangeLog.getUpdatedOn() != null)
-					.findFirst()
 					.map(jiraHistoryChangeLog -> LocalDate
 							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
-									DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT))
-							.toString())
+									DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT)))
+					.max(Comparator.naturalOrder())
+					.map(LocalDate::toString)
 					.orElse(devCompleteDate);
 		}
 		return devCompleteDate;

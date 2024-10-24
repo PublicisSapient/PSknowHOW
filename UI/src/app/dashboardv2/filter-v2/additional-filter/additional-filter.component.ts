@@ -14,6 +14,7 @@ export class AdditionalFilterComponent implements OnChanges {
   @Input() selectedType: string = '';
   @Input() selectedTab: string = '';
   @Input() additionalFilterConfig = [];
+  @Input() additionalFilterLevelArr = [];
   subscriptions: any[] = [];
 
   filterSet: any;
@@ -23,6 +24,7 @@ export class AdditionalFilterComponent implements OnChanges {
   selectedTrends = [];
   previousSelectedTrends = [];
   selectedAdditionalFilterLevel = [];
+  squadLevel = {};
   @Output() onAdditionalFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   stateFilters: any;
@@ -79,20 +81,21 @@ export class AdditionalFilterComponent implements OnChanges {
             }
           });
 
-          const correctLevelMapping = {
-            Sprint: 'sprint',
-            Squad: 'sqd'
-          }
+          let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release');
+
+          this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
           setTimeout(() => {
             this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
             if (this.stateFilters && Object.keys(this.stateFilters)) {
-              Object.keys(this.stateFilters).forEach((key, index) => {
+              Object.keys(this.stateFilters).forEach((key) => {
                 let correctIndex = 0;
-                this.additionalFilterConfig.forEach((config, index) => {
-                  if (correctLevelMapping[config.defaultLevel.labelName] === key) {
-                    correctIndex = index;
+                for (let i = 0; i < this.additionalFilterConfig.length; i++) {
+                  let level = correctLevelMapping.filter(f => f.hierarchyLevelName.toLowerCase() === this.additionalFilterConfig[i].defaultLevel.labelName.toLowerCase())[0];
+                  if (level.hierarchyLevelId.toLowerCase() === key.toLowerCase()) {
+                    correctIndex = i;
+                    break;
                   }
-                });
+                }
                 if (this.stateFilters[key].length) {
                   this.selectedFilters[correctIndex] = this.stateFilters[key];
                 }
@@ -158,7 +161,7 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['additionalFilterConfig'] && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
+    if (changes['additionalFilterConfig'] && changes['additionalFilterConfig'].previousValue && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
       this.filterSet = new Set();
       this.filterData = [];
       this.selectedFilters = [];
@@ -166,7 +169,7 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   compareObjects(obj1, obj2) {
-    return JSON.stringify(obj1) === JSON.stringify(obj2);
+    return this.helperService.deepEqual(obj1, obj2);
   }
 
   applyAdditionalFilter(e, index, multi = false, fromBackup = false) {
@@ -176,9 +179,10 @@ export class AdditionalFilterComponent implements OnChanges {
     if (!isDeveloper) {
       if (!fromBackup) {
         let obj = {};
-        for (let i = 0; i <= index; i++) {
+        for (let i = 0; i <= Object.keys(e)?.length; i++) {
           if (e[i]) {
-            this.selectedAdditionalFilterLevel[i] = e && e[i] && e[i][0] ? e[i][0]['labelName'] : this.selectedAdditionalFilterLevel[i];
+            this.selectedAdditionalFilterLevel[i] = e && e[i] && e[i][0] ? e[i][0]['labelName'] : localStorage.getItem('selectedAdditionalFilterLevel_' + i);
+            localStorage.setItem('selectedAdditionalFilterLevel_' + i, this.selectedAdditionalFilterLevel[i]);
             obj[this.selectedAdditionalFilterLevel[i]] = e[i] ? e[i] : this.stateFilters[Object.keys(this.stateFilters)[i]];
             this.onAdditionalFilterChange.emit({ [this.selectedAdditionalFilterLevel[i]]: e[i] });
           }
