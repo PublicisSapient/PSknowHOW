@@ -193,11 +193,13 @@ export class PrimaryFilterComponent implements OnChanges {
             combinedEvent['primary_level'] = [...this.selectedFilters];
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit(combinedEvent);
-          } else {
+          } else if(this.selectedFilters?.length){
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit([...this.selectedFilters]);
             // project selection changed, reset addtnl. filters
             this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+          } else {
+            this.reset();
           }
           // this.defaultFilterCounter++;
         } else {
