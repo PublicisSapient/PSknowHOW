@@ -34,6 +34,16 @@ export class HeaderComponent implements OnInit {
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   userRole: string = '';
   noToolsConfigured: boolean;
+  //test code
+  pSLogoInfo= {
+    "imageUrl": "assets/img/PSKnowHowLogo.svg",
+    "altText": "psLogo"
+    }
+
+  platformLogoInfo = {
+       "imageUrl": "assets/img/Switchplatforms.svg",
+       "altText": "KnowHow"
+    }
 
   constructor(
     private httpService: HttpService,

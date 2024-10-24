@@ -85,6 +85,7 @@ import { SharedModuleModule } from './shared/shared-module.module';
 import { AppRoutingModule } from './shared/module/app-routing.module';
 import { InterceptorModule } from './core/interceptors/interceptor.module';
 import { NgPrimeModuleModule } from './shared/module/ng-Prime-module.module';
+import { PsCustomLibraryModule } from 'ps-custom-library';
 
 
 /******************************************************/
@@ -147,7 +148,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         FontAwesomeModule,
         DragDropModule,
         SharedModuleModule,
-        NgPrimeModuleModule
+        NgPrimeModuleModule,
+        PsCustomLibraryModule
     ],
     providers: [
         ExcelService,

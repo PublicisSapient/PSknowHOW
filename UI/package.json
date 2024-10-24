@@ -10,7 +10,8 @@
     "e2e": "ng e2e",
     "sonar": "sonar-scanner",
     "postinstall": "ngcc",
-    "prettier": "prettier --write src/**/*.{js,css}"
+    "prettier": "prettier --write src/**/*.{js,css}",
+    "ver":"ng serve --verbose"
   },
   "husky": {
     "hooks": {
@@ -57,10 +58,10 @@
     "file-saver": "^2.0.0-rc.3",
     "primeflex": "^2.0.0",
     "primeicons": "^6.0.1",
-    "primeng": "14.1.2",
+    "primeng": "^14.2.3",
+    "ps-custom-library": "file:../../Speed-suite/speed-suite-global-components/dist/ps-custom-library",
     "rxjs": "^6.6.3",
     "uuid": "^9.0.0",
-
     "zone.js": "^0.11.2"
   },
   "devDependencies": {
