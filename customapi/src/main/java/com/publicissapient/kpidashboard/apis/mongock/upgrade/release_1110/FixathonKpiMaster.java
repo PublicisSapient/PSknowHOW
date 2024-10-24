@@ -41,6 +41,7 @@ public class FixathonKpiMaster {
 	private static final String KPIINFO_DETAILS = "kpiInfo.details";
 	public static final String KPI_MASTER = "kpi_master";
 	public static final String KPI_129 = "kpi129";
+	public static final String KPI_127 = "kpi127";
 	public static final String UNSET = "$unset";
 	public static final String AGGREGATION_CRITERIA = "aggregationCriteria";
 	private final MongoTemplate mongoTemplate;
@@ -63,15 +64,16 @@ public class FixathonKpiMaster {
 		updateMaturityInfo("kpi5");
 		// renaming Iteration BurnUp y-axis
 		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Issue Count");
-		//Mean Time to Recover KPI, update aggregation criteria from sum to average
+		// Mean Time to Recover KPI, update aggregation criteria from sum to average
 		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "average");
-		//KPI Order Change for Backlog Health Dashboard
+		// KPI Order Change for Backlog Health Dashboard
 		changeKpiOrder("kpi161", 1, kpiMaster);
 		changeKpiOrder("kpi138", 2, kpiMaster);
-		changeKpiOrder("kpi127", 3, kpiMaster);
+		changeKpiOrder(KPI_127, 3, kpiMaster);
 		changeKpiOrder("kpi137", 4, kpiMaster);
 		changeKpiOrder(KPI_129, 5, kpiMaster);
 		changeKpiOrder("kpi139", 6, kpiMaster);
+		changeProductionDefectAgeingGraph(kpiMaster);
 	}
 
 	private void updateDuplicateInfo(MongoCollection<Document> kpiMaster) {
@@ -95,7 +97,6 @@ public class FixathonKpiMaster {
 
 	}
 
-
 	public void updateYAxisLabel(MongoCollection<Document> kpiMaster, List<String> kpiIds, String yAxisLabel) {
 		kpiMaster.updateMany(new Document(KPIID, new Document("$in", kpiIds)),
 				new Document("$set", new Document("yAxisLabel", yAxisLabel)));
@@ -104,6 +105,12 @@ public class FixathonKpiMaster {
 	public void changeKpiName(String kpiId, String kpiName, MongoCollection<Document> kpiMaster) {
 		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(kpiId))),
 				new Document("$set", new Document("kpiName", kpiName)));
+	}
+
+	public void changeProductionDefectAgeingGraph(MongoCollection<Document> kpiMaster) {
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(KPI_127))),
+				new Document("$set", new Document("chartType", "grouped_column_plus_line").append("isXaxisGroup", true)
+						.append("lineChart", false)));
 	}
 
 	public void changeKpiOrder(String kpiId, Integer defaultOrder, MongoCollection<Document> kpiMaster) {
@@ -127,7 +134,13 @@ public class FixathonKpiMaster {
 		mongoTemplate.getCollection(KPI_MASTER).updateOne(query, update);
 	}
 
-	private void updateAggregationCriteria(MongoCollection<Document> kpiMaster, List<String> kpiIds, String aggCriteria) {
+	public void unsetProductionDefectAgeingChart(MongoCollection<Document> kpiMaster) {
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList(KPI_127))), new Document(UNSET,
+				new Document("chartType", "line").append("isXaxisGroup", null).append("lineChart", null)));
+	}
+
+	private void updateAggregationCriteria(MongoCollection<Document> kpiMaster, List<String> kpiIds,
+			String aggCriteria) {
 		kpiMaster.updateMany(new Document(KPIID, new Document("$in", kpiIds)),
 				new Document("$set", new Document(AGGREGATION_CRITERIA, aggCriteria)));
 	}
@@ -137,14 +150,14 @@ public class FixathonKpiMaster {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
 		updateYAxisLabel(kpiMaster, Arrays.asList("kpi73", "kpi74"), "Count");
 		changeKpiName("kpi38", "Sonar Violations", kpiMaster);
-		changeKpiName("kpi64", "Sonar Violations", 	kpiMaster);
+		changeKpiName("kpi64", "Sonar Violations", kpiMaster);
 		changeKpiName("kpi124", "Estimation Hygiene", kpiMaster);
 		// rollback to Issue without Story link from Unlinked Work Items
 		changeKpiName(KPI_129, "Issues Without Story Link", kpiMaster);
-		//rollback Iteration BurnUp y-axis change
+		// rollback Iteration BurnUp y-axis change
 		updateYAxisLabel(kpiMaster, List.of("kpi125"), "Count");
 		updateMaturityInfoRollBack("kpi5");
-		//Mean Time to Recover KPI, rollback aggregation criteria from average to sum
+		// Mean Time to Recover KPI, rollback aggregation criteria from average to sum
 		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "sum");
 		changeKpiOrder("kpi161", 4, kpiMaster);
 		changeKpiOrder("kpi138", 1, kpiMaster);
@@ -152,6 +165,7 @@ public class FixathonKpiMaster {
 		changeKpiOrder("kpi137", 5, kpiMaster);
 		changeKpiOrder(KPI_129, 3, kpiMaster);
 		changeKpiOrder("kpi139", 6, kpiMaster);
+		unsetProductionDefectAgeingChart(kpiMaster);
 	}
 
 }
