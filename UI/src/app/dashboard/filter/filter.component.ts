@@ -298,7 +298,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           if (!selectedBoard) {
             selectedBoard = this.kpiListData['others']?.find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
           }
-          if (!selectedBoard.filters?.additionalFilters) {
+          if (!selectedBoard?.filters?.additionalFilters) {
             this.noAdditionalFilters = true;
           }
         }
