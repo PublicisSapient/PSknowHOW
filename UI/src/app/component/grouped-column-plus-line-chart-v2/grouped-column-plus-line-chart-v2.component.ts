@@ -265,15 +265,15 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
       let maxYValue = maxVal;
 
 
-      if (maxYValue > 0 && maxYValue <= 50) {
+      if (maxYValue > 0 && maxYValue <= 49) {
         maxYValue = 50;
-      } else if (maxYValue > 50 && maxYValue <= 100) {
+      } else if (maxYValue > 49 && maxYValue <= 99) {
         maxYValue = 100;
-      } else if (maxYValue > 100 && maxYValue <= 200) {
+      } else if (maxYValue > 99 && maxYValue <= 199) {
         maxYValue = 200;
-      } else if (maxYValue > 200 && maxYValue <= 500) {
+      } else if (maxYValue > 199 && maxYValue <= 499) {
         maxYValue = 500;
-      } else if (maxYValue > 500) {
+      } else if (maxYValue > 499) {
         maxYValue += divisor;
       }
 
@@ -432,9 +432,9 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
               h${-(x1.bandwidth())}Z`;
           } else {
             return `
-              M${x1(d.rate)},${Math.min(height - margin.top - y(d.value) - ry), y(0)} 
+              M${x1(d.rate)},${Math.min(height - margin.top - y(d.value) - ry), y(0)}
               a${rx},${ry - (height - margin.top - y(d.value) + rx)} 0 0 1 ${rx},${ry - (height - margin.top - y(d.value) + rx)}
-              
+
               v${height - margin.top - y(d.value) - rx}
               h${x1.bandwidth() - 2 * rx}
               v${-(height - margin.top - y(d.value)) + rx}

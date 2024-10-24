@@ -50,6 +50,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private String toggleLabelLeft;
 	private String toggleLabelRight;
 	private String section;
+	private String redirectUrl;
 	private Integer sectionOrder;
 	private boolean processorCommon;
 	private boolean mandatory;

@@ -64,7 +64,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
  *
  */
 @Component
-public class SonarViolationsKanbanServiceImpl
+public class CodeViolationsKanbanServiceImpl
 		extends SonarKPIService<Long, List<Object>, Map<String, List<SonarHistory>>> {
 	private static final String CRITICAL = "critical";
 	private static final String MAJOR = "major";
@@ -75,7 +75,7 @@ public class SonarViolationsKanbanServiceImpl
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.SONAR_VIOLATIONS_KANBAN.name();
+		return KPICode.CODE_VIOLATIONS_KANBAN.name();
 	}
 
 	/**
@@ -105,10 +105,10 @@ public class SonarViolationsKanbanServiceImpl
 		dateWiseLeafNodeValue(mapTmp, projectList, kpiElement, kpiRequest);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValueMap(treeAggregatorDetail.getRoot(), nodeWiseKPIValue, KPICode.SONAR_VIOLATIONS_KANBAN);
+		calculateAggregatedValueMap(treeAggregatorDetail.getRoot(), nodeWiseKPIValue, KPICode.CODE_VIOLATIONS_KANBAN);
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
-				KPICode.SONAR_VIOLATIONS_KANBAN);
+				KPICode.CODE_VIOLATIONS_KANBAN);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
 		trendValuesMap.forEach((key, datewiseDataCount) -> {
@@ -199,7 +199,7 @@ public class SonarViolationsKanbanServiceImpl
 				mapTmp.get(projectName).setValue(projectWiseDataMap);
 				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectName).getName(), projectList,
-							violations, versionDate, excelData, KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId());
+							violations, versionDate, excelData, KPICode.CODE_VIOLATIONS_KANBAN.getKpiId());
 				}
 			}
 		});
@@ -243,8 +243,8 @@ public class SonarViolationsKanbanServiceImpl
 			violations.add(sonarViolationsHowerMap.toString());
 		});
 		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),
-				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.SONAR_VIOLATIONS.getKpiId()),
+				calculateKpiValue(dateWiseViolationsList, KPICode.CODE_VIOLATIONS.getKpiId()),
+				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.CODE_VIOLATIONS.getKpiId()),
 				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
@@ -358,7 +358,7 @@ public class SonarViolationsKanbanServiceImpl
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI64(),KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI64(),KPICode.CODE_VIOLATIONS_KANBAN.getKpiId());
 	}
 
 }

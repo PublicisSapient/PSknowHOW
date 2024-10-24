@@ -65,7 +65,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EstimationHygieneServiceImplTest {
+public class IssueHygieneServiceImplTest {
 
 	@Mock
 	CacheService cacheService;
@@ -80,7 +80,7 @@ public class EstimationHygieneServiceImplTest {
 	private FieldMappingRepository fieldMappingRepository;
 
 	@InjectMocks
-	private EstimationHygieneServiceImpl estimationHygieneServiceImpl;
+	private IssueHygieneServiceImpl issueHygieneServiceImpl;
 
 	@Mock
 	private JiraIterationServiceR jiraService;
@@ -137,9 +137,9 @@ public class EstimationHygieneServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(estimationHygieneServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(issueHygieneServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = estimationHygieneServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = issueHygieneServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 
@@ -151,7 +151,7 @@ public class EstimationHygieneServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(estimationHygieneServiceImpl.getQualifierType(), equalTo("ESTIMATION_HYGIENE"));
+		assertThat(issueHygieneServiceImpl.getQualifierType(), equalTo("ISSUE_HYGIENE"));
 	}
 
 	@After

@@ -85,6 +85,7 @@ public final class JiraConstants {
 	public static final String PAGE_START = "pageStart";
 	public static final String BOARD_ID = "boardId";
 	public static final String NAME = "name";
+	public static final String EPIC_RESOLUTION_DATE = "resolutiondate";
 
 	static {
 		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

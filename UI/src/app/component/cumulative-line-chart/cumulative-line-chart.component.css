@@ -49,6 +49,8 @@
     justify-content: center;
     margin-bottom: 1rem;
     color: #437495;
+    width: max-content;
+    transform: translateX(-16px);
 }
 
 :host ::ng-deep.y-caption span{

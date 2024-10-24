@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -288,7 +287,6 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraIncludeBlockedStatus;
 	private List<ConfigurationHistoryChangeLog> historyjiraIncludeBlockedStatusKPI131;
 
-	@Builder.Default
 	private List<ConfigurationHistoryChangeLog> historyjiraDueDateField;
 	private List<ConfigurationHistoryChangeLog> historyjiraDueDateCustomField;
 	private List<ConfigurationHistoryChangeLog> historyjiraDevDueDateField;

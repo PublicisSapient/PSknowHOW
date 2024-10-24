@@ -985,7 +985,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiId
 	 * @return result
 	 */
-	public Long calculateKpiValueForLong(List<Long> valueList, String kpiId) {
+	public Long  calculateKpiValueForLong(List<Long> valueList, String kpiId) {
 		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				return AggregationUtils.percentilesLong(valueList, 90d);
@@ -999,6 +999,8 @@ public abstract class ToolsKPIService<R, S> {
 			return AggregationUtils.sumLong(valueList);
 		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			return AggregationUtils.averageLong(valueList);
+		} else if (Constant.DEVIATION.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+			return Math.abs(valueList.stream().mapToLong(Long::longValue).findFirst().getAsLong() - 100);
 		}
 		return AggregationUtils.percentilesLong(valueList, 90d);
 	}
