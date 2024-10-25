@@ -201,6 +201,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.additionalFilterLevelArr.push(this.hierarchies[this.selectedType][i]);
       }
     }
+    this.squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release');
   }
 
   setSelectedMapLevels() {
@@ -221,6 +222,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.additionalFilterConfig = {};
     this.boardData = {};
     this.projectList = null;
+    this.previousFilterEvent = null;
   }
 
   setSelectedDateType(label: string) {
@@ -321,6 +323,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             kanban: !this.kanbanProjectsAvailable,
             scrum: !this.scrumProjectsAvailable
           });
+          
+          // specifically for Iteration board, to be removed when Iteration comes on ExecutiveV2
+          if(!this.scrumProjectsAvailable) {
+            this.service.setNoProjects(true);
+          }
         }
       } else {
         // error
@@ -547,7 +554,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      ((!this.objectsEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+      ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.objectsEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -693,7 +700,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
 
     if (this.selectedTab?.toLowerCase() === 'backlog') {
-      this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+      this.filterApplyData['selectedMap']['sprint'] = [];
+      if (this.filterDataArr[this.selectedType]['Sprint']) {
+        this.filterApplyData['selectedMap']['sprint'].push(...this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+      }
     }
 
     if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release') {
@@ -813,7 +823,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
     this.filterApplyData['selectedMap'][this.filterApplyData['label']] = [...new Set(event.map((item) => item.nodeId))];
-    let additionalFilterSelected = this.filterApplyData['label'] === this.squadLevel[0].hierarchyLevelId || this.filterApplyData['label'] === this.squadLevel[0].hierarchyLevelName ? true : false;
+    let additionalFilterSelected;
+    if (this.squadLevel && this.squadLevel?.length) {
+      additionalFilterSelected = (this.filterApplyData['label'] === this.squadLevel[0]?.hierarchyLevelId || this.filterApplyData['label'] === this.squadLevel[0]?.hierarchyLevelName ? true : false)
+    }
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
@@ -885,9 +898,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
               let squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelId).includes(addtnlFilter.defaultLevel.labelName) ||
                 this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelName).includes(addtnlFilter.defaultLevel.labelName)
               if (squadLevel && !this.kanban) {
-                this.squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelId);
-                if (!this.squadLevel.includes(addtnlFilter.defaultLevel.labelName)) {
-                  this.squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelName);
+                this.squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release')
+                if (!this.squadLevel.map(x => x.hierarchyLevelId).includes(addtnlFilter.defaultLevel.labelName)) {
+                  this.squadLevel = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release');
                 }
                 parentId = filterItem.parentId.substring(filterItem.parentId.indexOf('_') + 1, filterItem.parentId.length)
               } else {

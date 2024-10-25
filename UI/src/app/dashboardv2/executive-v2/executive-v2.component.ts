@@ -58,7 +58,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   bitBucketKpiRequest;
   maturityColorCycleTime = ['#f5f5f5', '#f5f5f5', '#f5f5f5'];
   tooltip;
-  selectedtype: string = '';
+  selectedtype: string = 'scrum';
   configGlobalData;
   selectedPriorityFilter = {};
   selectedSonarFilter;
@@ -132,13 +132,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.selectedtype = data.selectedType;
       this.kpiTrendObject = {}
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
-      // this.noProjects = this.service.noProjectsObj;
+      this.noProjects = this.service.noProjectsObj;
     }));
 
     this.subscriptions.push(this.service.onTabSwitch.subscribe((data) => {
       this.resetToDefaults();
       this.selectedTab = data.selectedBoard;
-      // this.noProjects = this.service.noProjectsObj;
+      this.noProjects = this.service.noProjectsObj;
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
@@ -207,10 +207,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.processedKPI11Value = {};
     this.selectedBranchFilter = 'Select';
     this.serviceObject = {};
+    // this.selectedtype = 'scrum';
   }
 
   setGlobalConfigData(globalConfig) {
-    this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+    this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     if (!this.configGlobalData) {
       this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     }
@@ -289,7 +291,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
       this.globalConfig = $event.dashConfigData;
-      this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
+      this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
       const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
       const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
       this.releaseEndDate = endDate;
@@ -297,9 +299,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.timeRemaining = this.calcBusinessDays(today, endDate);
       this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
       if (!this.configGlobalData?.length && $event.dashConfigData) {
-        this.configGlobalData = $event.dashConfigData[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+        this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         if (!this.configGlobalData) {
-          this.configGlobalData = $event.dashConfigData['others'].filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+          this.configGlobalData = $event.dashConfigData['others']?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         }
       }
 
@@ -327,6 +329,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.service.setAddtionalFilterBackup({});
       this.service.setKpiSubFilterObj({});
 
+      if(this.configGlobalData?.length) {
+        // set up dynamic tabs
+        this.setUpTabs();
+      }
+
       if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
         this.noFilterApplyData = true;
       } else {
@@ -343,8 +350,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (this.configGlobalData?.length > 0) {
             this.processKpiConfigData();
             const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-            // set up dynamic tabs
-            this.setUpTabs();
+            
             if (this.service.getSelectedType().toLowerCase() === 'kanban') {
               this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
               this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
@@ -592,7 +598,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.zypherKpiData = this.helperService.createKpiWiseId(getData);
       this.fillKPIResponseCode(this.zypherKpiData);
       let calculatedObj;
-      if (this.selectedtype !== 'Kanban') {
+      if (this.selectedtype !== 'kanban') {
         calculatedObj = this.helperService.calculateTestExecutionData('kpi70', false, this.zypherKpiData);
       } else {
         calculatedObj = this.helperService.calculateTestExecutionData('kpi71', false, this.zypherKpiData);
@@ -949,7 +955,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
-    let developerBopardKpis = this.globalConfig[this.kanbanActivated ? 'kanban' : 'scrum']?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
+    let developerBopardKpis = this.globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
     if (this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis?.includes(kpiId)) {
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
       if (!trendValueList?.length) {
