@@ -1,20 +1,23 @@
-<lib-ps-header [pSLogoInfo]="pSLogoInfo" [platformLogoInfo]="platformLogoInfo" 
-[showHeaderComments]="true" [showHeaderUserDetails]="true" [showHeaderNotifications]="true">
-  <div comments >
-    <app-recent-comments></app-recent-comments>
-  </div>
-  <div notifications>
-    <div class="p-p-2 rounded p-mr-3 position-relative filter-btn" role="button"
-    (click)="notification.toggle($event)">
-    <img src="../../../assets/img/ico-notifications.svg" alt="Notification" />
-    <span *ngIf="notificationCount > 0" class="count noti-count">{{notificationCount}}</span>
-  </div>
-  <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
-  </div>
-  <div userDetails>
-  <lib-ps-user-profile-details [items]="userMenuItems" [userName]="userDetails['user_name']" [userBadgeName]="'SA'"></lib-ps-user-profile-details>
-  </div>
-</lib-ps-header>
+
+<div class="header">
+  <lib-ps-header [pSLogoInfo]="pSLogoInfo" [platformLogoInfo]="platformLogoInfo" [pSSwitchIcon]="'assets/img/Switchplatforms.svg'"
+  [showHeaderComments]="true" [showHeaderUserDetails]="true" [showElement]="true" [platformSwitchItems]="platformSwitchItems" [showHeaderNotifications]="true">
+    <div comments >
+      <app-recent-comments></app-recent-comments>
+    </div>
+    <div notifications>
+      <div class="p-p-2 rounded p-mr-3 position-relative filter-btn" role="button"
+      (click)="notification.toggle($event)">
+      <img src="../../../assets/img/ico-notifications.svg" alt="Notification" />
+      <span *ngIf="notificationCount > 0" class="count noti-count">{{notificationCount}}</span>
+    </div>
+    <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
+    </div>
+    <div userDetails>
+    <lib-ps-user-profile-details [items]="userMenuItems" [userName]="userDetails['user_name']" [userBadgeName]="'SA'"></lib-ps-user-profile-details>
+    </div>
+  </lib-ps-header>
+</div>
 <!-- <header class="">
   <nav class="p-d-flex p-align-center p-jc-between">
 

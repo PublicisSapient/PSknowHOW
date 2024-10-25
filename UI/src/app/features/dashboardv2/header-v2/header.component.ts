@@ -45,6 +45,12 @@ export class HeaderComponent implements OnInit {
        "altText": "KnowHow"
     }
 
+    platformSwitchItems = [
+      {label: "Assessments", event: 'assessments'},
+      {label: "Retros", event: 'retro'},
+      {label: "KnowHOW", event: 'knowHow'}
+    ]
+
   constructor(
     private httpService: HttpService,
     public sharedService: SharedService,
