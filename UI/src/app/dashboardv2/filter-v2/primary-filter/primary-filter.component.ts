@@ -45,7 +45,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedLevel'] && !this.deepEqual(changes['selectedLevel']?.currentValue, changes['selectedLevel'].previousValue)) {
+    if (changes['selectedLevel'] && !this.helperService.deepEqual(changes['selectedLevel']?.currentValue, changes['selectedLevel'].previousValue)) {
       this.applyDefaultFilters();
       return;
     } else if (changes['primaryFilterConfig'] && Object.keys(changes['primaryFilterConfig'].currentValue).length && !changes['primaryFilterConfig']?.firstChange) {
@@ -67,29 +67,36 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     this.populateFilters();
     setTimeout(() => {
       this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
-      if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']?.labelName.toLowerCase() ||
-        this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
-        if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']?.length) {
-          this.selectedFilters = [];
-          if (this.filters[0].labelName === this.stateFilters['primary_level'][0].labelName) {
-            if (this.primaryFilterConfig['type'] === 'multiSelect') {
-              this.stateFilters['primary_level'].forEach(element => {
-                this.selectedFilters.push(this.filters?.filter((project) => project.nodeId === element.nodeId)[0]);
-              });
+      if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']?.labelName) {
+        if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']?.labelName.toLowerCase() ||
+          this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
+          if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']?.length) {
+            this.selectedFilters = [];
+            if (this.filters[0].labelName === this.stateFilters['primary_level'][0].labelName) {
+              if (this.primaryFilterConfig['type'] === 'multiSelect') {
+                this.stateFilters['primary_level'].forEach(element => {
+                  this.selectedFilters.push(this.filters?.filter((project) => project.nodeId === element.nodeId)[0]);
+                });
+
+                // in case project in state filters has been deleted
+                if(!this.selectedFilters?.length || !this.selectedFilters[0]) {
+                  this.selectedFilters = [this.filters[0]];
+                  this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
+                }
+              } else {
+                this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0]];
+              }
+            } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName']?.toLowerCase()) &&
+              ['sprint', 'release'].includes(this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase())) {
+              // reset
+              this.reset();
+              return;
+            } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName']?.toLowerCase())) {
+              this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0]];
             } else {
-              this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0]];
-            }
-          } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName']?.toLowerCase()) &&
-            ['sprint', 'release'].includes(this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase())) {
-            // reset
-            this.reset();
-            return;
-          } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName']?.toLowerCase())) {
-            this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0]];
-          } else {
-            // reset
-            this.reset();
-            return;
+              // reset
+              this.reset();
+              return;
 
           }
         } else {
@@ -125,6 +132,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       // PROBLEM AREA END
       this.applyPrimaryFilters({});
       this.setProjectAndLevelBackupBasedOnSelectedLevel();
+    }
     }, 100);
   }
 
@@ -196,11 +204,13 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             combinedEvent['primary_level'] = [...this.selectedFilters];
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit(combinedEvent);
-          } else {
+          } else if(this.selectedFilters?.length){
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit([...this.selectedFilters]);
             // project selection changed, reset addtnl. filters
             this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+          } else {
+            this.reset();
           }
           // this.defaultFilterCounter++;
         } else {
@@ -259,32 +269,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
     }
 
     for (let i = 0; i < arr1.length; i++) {
-      if (!this.deepEqual(arr1[i], arr2[i])) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  deepEqual(obj1, obj2) {
-    if (obj1 === obj2) {
-      return true;
-    }
-
-    if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
-      return false;
-    }
-
-    const keys1 = Object.keys(obj1);
-    const keys2 = Object.keys(obj2);
-
-    if (keys1.length !== keys2.length) {
-      return false;
-    }
-
-    for (let key of keys1) {
-      if (!keys2.includes(key) || !this.deepEqual(obj1[key], obj2[key])) {
+      if (!this.helperService.deepEqual(arr1[i], arr2[i])) {
         return false;
       }
     }

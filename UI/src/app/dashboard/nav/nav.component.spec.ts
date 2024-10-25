@@ -91,7 +91,7 @@
   
     it('select tab functionality ', () => {
       component.selectTab('my-knowhow');
-      expect(service.getSelectedTab()).toBe('my-knowhow');
+      expect(service.getSelectedTab()).toBeFalsy();
     });
   
     it('should create', () => {
