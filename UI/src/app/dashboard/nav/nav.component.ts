@@ -74,7 +74,6 @@ export class NavComponent implements OnInit {
 
     this.service.boardNamesListSubject.subscribe((data) => {
       this.boardNameArr = data;
-      console.log(this.boardNameArr);
     })
 
   }
