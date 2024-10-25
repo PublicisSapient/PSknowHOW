@@ -21,10 +21,10 @@ package com.publicissapient.kpidashboard.apis.filters.standard;
 import java.util.Collection;
 import java.util.Objects;
 
-import lombok.Getter;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+
+import lombok.Getter;
 
 @Getter
 public class StandardAuthenticationToken extends AbstractAuthenticationToken {
@@ -46,7 +46,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	// TODO: not used?
 	@SuppressWarnings("PMD")
 	public StandardAuthenticationToken(Object principal, Object credentials,
-									   Collection<? extends GrantedAuthority> authorities) {
+			Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.principal = principal;
 		this.credentials = credentials;
@@ -81,7 +81,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	 * object to check StandardAuthenticationToken is equal
 	 *
 	 * @return true if invoked object's principal and credentials are matching,
-	 * false if they are not matching
+	 *         false if they are not matching
 	 */
 	@Override
 	public boolean equals(Object obj) {

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.service.AssigneeDetailsServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,8 +71,6 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class RevertRateServiceImplTest {
@@ -111,7 +110,7 @@ public class RevertRateServiceImplTest {
     @Mock
     private CommonService commonService;
     @Mock
-    private AssigneeDetailsRepository assigneeDetailsRepository;
+    private AssigneeDetailsServiceImpl assigneeDetailsRepository;
     @Mock
     private KpiHelperService kpiHelperService;
 

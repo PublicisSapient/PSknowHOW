@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.service.AssigneeDetailsServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -62,7 +63,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,7 +81,7 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 	private CustomApiConfig customApiConfig;
 
 	@Autowired
-	private AssigneeDetailsRepository assigneeDetailsRepository;
+	private AssigneeDetailsServiceImpl assigneeDetailsServiceImpl;
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
@@ -260,8 +260,8 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		AssigneeDetails assigneeDetails = assigneeDetailsRepository
-				.findByBasicProjectConfigId(leafNodeList.get(0).getId());
+		AssigneeDetails assigneeDetails = assigneeDetailsServiceImpl.findByBasicProjectConfigId(
+				leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString());
 		Set<Assignee> assignees = assigneeDetails != null ? assigneeDetails.getAssignee() : new HashSet<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(ASSIGNEE, assignees);
@@ -294,7 +294,8 @@ public class PRSuccessRateServiceImpl extends BitBucketKPIService<Double, List<O
 		overAllUsers.forEach(userEmail -> {
 			Optional<RepoToolUserDetails> repoToolUserDetails = repoToolUserDetailsList.stream()
 					.filter(user -> userEmail.equalsIgnoreCase(user.getEmail())).findFirst();
-			Optional<Assignee> assignee = assignees.stream().filter(assign -> assign.getEmail().contains(userEmail))
+			Optional<Assignee> assignee = assignees.stream().filter(
+					assign -> CollectionUtils.isNotEmpty(assign.getEmail()) && assign.getEmail().contains(userEmail))
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userPRSuccessRate = repoToolUserDetails.map(RepoToolUserDetails::getPercentage).orElse(0.0d);
