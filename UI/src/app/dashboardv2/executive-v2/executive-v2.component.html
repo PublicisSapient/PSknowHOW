@@ -131,7 +131,8 @@
                                                                     <ng-container *ngIf="checkIfDataPresent(kpi)">
                                                                         <app-grouped-column-plus-line-chart-v2
                                                                             [data]="kpiChartData[kpi?.kpiId]"
-                                                                            [lineChart]="true"
+                                                                            [lineChart]="kpi?.kpiDetail?.lineChart"
+                                                                            [isXaxisGroup]="kpi?.kpiDetail?.isXaxisGroup"
                                                                             [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                             [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                                                             [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"

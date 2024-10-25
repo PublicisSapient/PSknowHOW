@@ -35,7 +35,7 @@ import { SharedService } from 'src/app/services/shared.service';
 
 export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges {
   @Input() data: any;
-  @Input() lineChart: boolean;
+  @Input() lineChart: boolean = true; // Decide whether a line is needed in the bar+line chart
   @Input() thresholdValue: number;
   @Input() color: any;
   @Input() yCaption: string;
@@ -44,6 +44,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
   @Input() barLegend: string;
   @Input() lineLegend: string;
   @Input() selectedtype: string;
+  @Input() isXaxisGroup : boolean = false; // Decide whether the x-axis should be numeric or non-numeric
   elem: any;
   drillDownLevel: number;
   lastLevel: any;
@@ -163,14 +164,13 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
     d3.select(this.elem).select('#svgLegend').select('svg').remove();
     d3.select(this.elem).select('#legendIndicator').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
-    if (viewType === 'large' && selectedProjectCount === 1) {
+    if (this.isXaxisGroup === true && selectedProjectCount === 1) {
       data = data.map(details => {
         let finalResult = {};
         const XValue = details.value[0].sSprintName || details.value[0].date;
-        const projectName = '_' + this.service.getSelectedTrends()[0]?.nodeName;
-        const removeProject = XValue.includes(projectName) ? XValue.replace(projectName, '') : XValue;
-        finalResult = { ...details, sortName: removeProject, value: [{ ...details.value[0], sortSprint: removeProject }] }
-        sprintList.push(removeProject)
+        const sortValue = XValue;
+        finalResult = { ...details, sortName: sortValue, value: [{ ...details.value[0], sortSprint: sortValue }] }
+        sprintList.push(sortValue)
         return finalResult
       })
     }
@@ -188,7 +188,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
     const containerWidth = d3.select(this.elem).select('#chart').node().offsetWidth || window.innerWidth;
     // const resizeWidth = (containerWidth > (data.length * barWidth * 10) ? containerWidth : (data.length * barWidth * 10))
     const width = containerWidth - 40;
-    const height = (viewType === 'large' && selectedProjectCount === 1) ? 250 : 210;
+    const height = (this.isXaxisGroup === true && selectedProjectCount === 1) ? 250 : 210;
     this.height = height;
     const paddingFactor = 0;
 
@@ -202,10 +202,9 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
     try {
       const unFormatedData = JSON.parse(JSON.stringify(self.unmodifiedData));
       unFormatedData[0].value = unFormatedData[0].value.map(details => {
-        const XValue = details.date || details.sSprintName;
-        const projectName = '_' + this.service.getSelectedTrends()[0]?.nodeName;
-        const removeProject = XValue.includes(projectName) ? XValue.replace(projectName, '') : XValue;
-        return { ...details, sortSprint: removeProject };
+        const XValue = details.sSprintName || details.date;
+        const sortValue = XValue;
+        return { ...details, sortSprint: sortValue };
       })
       const newRawData = unFormatedData;
       let maxObjectNo = 0;
@@ -218,7 +217,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         }
       }
 
-      if (viewType === 'large' && selectedProjectCount === 1) {
+      if (this.isXaxisGroup === true && selectedProjectCount === 1) {
         xScale = d3.scaleBand()
           .rangeRound([0, width])
           .domain(sprintList)
@@ -232,7 +231,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
       const y = d3.scaleLinear().range([height - margin.top, 0]);
       let tempAxis;
-      if (viewType === 'large' && selectedProjectCount === 1) {
+      if (this.isXaxisGroup === true && selectedProjectCount === 1) {
         /** Temporary axis for wrapping text only */
         tempAxis = d3.scaleBand().rangeRound([0, width - margin.left]).domain(sprintList)
         x0.domain(sprintList).padding(0.5);
@@ -281,9 +280,9 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         maxYValue = 50;
       }
 
-      if (this.thresholdValue && this.thresholdValue !== 0 && isAllBelowFromThreshold && viewType === 'large' && selectedProjectCount === 1) {
-        maxYValue = this.thresholdValue + 5;
-      }
+      // if (this.thresholdValue && this.thresholdValue !== 0 && isAllBelowFromThreshold && this.isXaxisGroup === true && selectedProjectCount === 1) {
+      //   maxYValue = this.thresholdValue + 5;
+      // }
 
       y.domain([0, maxYValue]);
 
@@ -412,8 +411,49 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .data(data)
         .enter()
         .append('g')
-        .attr('class', 'g')
-        .attr('transform', (d) => 'translate(' + x0(d.categorie) + ',0)');
+        .attr('class', 'rounded-bar')
+        .attr('transform', (d) => this.isXaxisGroup === true ? 'translate(' + x0(d.sortName) + ',0)' : 'translate(' + x0(d.categorie) + ',0)')
+        
+      // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
+      if (this.lineChart === false) {
+        d3.selectAll('.rounded-bar').on('mouseover', function (event, d) {
+          if (d?.value[0]?.hoverValue) {
+
+            const circle = event.target;
+            const {
+              top: yPosition,
+              left: xPosition
+            } = circle.getBoundingClientRect();
+
+            div.transition()
+              .duration(200)
+              .style('display', 'block')
+              .style('opacity', .9);
+
+            let dataString = '';
+            let htmlString = '';
+
+            for (let key in d.value[0].hoverValue) {
+              dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
+
+            }
+
+            htmlString = '<div class=\'toolTip\'> ' + `${dataString}` + '</div>';
+            div.html(htmlString)
+              .style('left', xPosition + 20 + 'px')
+              .style('top', yPosition + 'px')
+              .style('position', 'fixed')
+              .style('align', 'left');
+          }
+        }).on('mouseout', function (e, d) {
+          div.transition()
+            .duration(500)
+            .style('display', 'none')
+            .style('opacity', 0);
+
+        });
+      }
+
 
       const rx = x1.bandwidth() / 2;
       const ry = x1.bandwidth() / 2;
@@ -510,7 +550,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .style('font-size', 10)
         .text(self.barLegend);
       // self.lineChart = false;
-      if (self.lineChart) {
+      if (self.lineChart !== false) {
         const lineOpacity = '1';
         const lineOpacityHover = '0.85';
         const otherLinesOpacityHover = '0.1';
@@ -537,7 +577,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
         const line = d3.line()
           .x((d, i) => {
-            const xValue = (viewType === 'large' && selectedProjectCount === 1) ? (d.date || d.sortSprint) : (i + 1);
+            const xValue = (this.isXaxisGroup === true && selectedProjectCount === 1) ? (d.date || d.sortSprint) : (i + 1);
             return x0(xValue);
           })
           .y(d => yScale(d.lineValue))
@@ -633,7 +673,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           })
           .append('circle')
           .attr('cx', (d, i) => {
-            const xValue = (viewType === 'large' && selectedProjectCount === 1) ? (d.date || d.sortSprint) : (i + 1);
+            const xValue = (this.isXaxisGroup === true && selectedProjectCount === 1) ? (d.date || d.sortSprint) : (i + 1);
             return x0(xValue);
           })
           .attr('cy', d => yScale(d.lineValue))
@@ -671,7 +711,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
             })
             .style('left', (d, i) => {
               let left = d.date || d.sortSprint;
-              if (viewType === 'large') {
+              if (this.isXaxisGroup === true) {
                 return x0(left) + x0.bandwidth() / 2 + 'px';
               } else {
                 return x0(i + 1) + x0.bandwidth() / 2 + 'px';
