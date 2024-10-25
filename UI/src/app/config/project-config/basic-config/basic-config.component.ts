@@ -18,12 +18,11 @@
 
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { MessageService, MenuItem } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
-import { MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 declare const require: any;
