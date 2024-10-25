@@ -15,7 +15,12 @@
  * limitations under the License.
  *
  ******************************************************************************/
- 
+ .nav-container {
+  height: calc(100% - 30px);
+  position: absolute;
+  bottom: 0;
+  background-color: #DEDEDE;
+ }
 
  .nav-wraper {
   text-align: center;
@@ -88,7 +93,7 @@
   /* width: 60%; */
   padding-left: 1.3rem;
   overflow-y: auto;
-  max-height: 340px;
+  max-height: 300px;
 }
 
 .navigation ul li.img-container {
