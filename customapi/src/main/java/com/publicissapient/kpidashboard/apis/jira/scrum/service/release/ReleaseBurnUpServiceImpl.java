@@ -115,6 +115,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	public static final String IS_XAXIS_GAP_REQUIRED = "isXaxisGapRequired";
 	public static final String CUSTOMISED_GROUP = "customisedGroup";
 	public static final String TOTAL_AVG_VELOCITY = "totalAvgVelocity";
+	public static final String AXIS_LABEL_COUNT = "Count";
+	public static final String AXIS_LABEL_SP = "SP";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -707,10 +709,12 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
 			kpiValueIssueCount.setFilter1(ISSUE_COUNT);
+			kpiValueIssueCount.setYAxisLabel(AXIS_LABEL_COUNT);
 			kpiValueIssueCount.setAdditionalInfo(additionalInfoIssueMap);
 			IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
 			kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
 			kpiValueSizeCount.setFilter1(STORY_POINT);
+			kpiValueSizeCount.setYAxisLabel(AXIS_LABEL_SP);
 			kpiValueSizeCount.setAdditionalInfo(additionalInfoSPMap);
 			iterationKpiValueList.add(kpiValueSizeCount);
 			iterationKpiValueList.add(kpiValueIssueCount);

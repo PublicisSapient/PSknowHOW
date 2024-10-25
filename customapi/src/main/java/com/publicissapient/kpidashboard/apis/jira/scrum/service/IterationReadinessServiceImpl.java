@@ -64,6 +64,8 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String READY_FOR_DEV = "Ready for Dev";
 	public static final String NOT_REFINED = "Not Refined";
+	public static final String AXIS_LABEL_COUNT = "Count";
+	public static final String AXIS_LABEL_SP = "SP";
 	@Autowired
 	private JiraBacklogServiceR jiraService;
 	@Autowired
@@ -203,10 +205,12 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 
 				IterationKpiValue issueCountIterationKpiValue = new IterationKpiValue();
 				issueCountIterationKpiValue.setFilter1(ISSUE_COUNT);
+				issueCountIterationKpiValue.setYAxisLabel(AXIS_LABEL_COUNT);
 				issueCountIterationKpiValue.setValue(issueCountDcList);
 
 				IterationKpiValue storyPointIterationKpiValue = new IterationKpiValue();
 				storyPointIterationKpiValue.setFilter1(STORY_POINT);
+				storyPointIterationKpiValue.setYAxisLabel(AXIS_LABEL_SP);
 				storyPointIterationKpiValue.setValue(storyPointDcList);
 
 				overAllIterationKpiValue.add(storyPointIterationKpiValue);
