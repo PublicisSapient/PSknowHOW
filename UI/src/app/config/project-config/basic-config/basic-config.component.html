@@ -101,7 +101,7 @@
                     <p-autoComplete id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
                       [style]="{'width':'500px'}" [suggestions]="field.filteredSuggestions"
                       (completeMethod)="search($event, field)" required="required" [dropdown]="true" field="name"
-                      [forceSelection]="isSpeedSuite === true ? false : true">
+                      [forceSelection]="isSpeedSuite === true ? true : false">
                       <ng-template let-country pTemplate="item">
                         <div class="country-item">
                           <div>{{country.name}}</div>
