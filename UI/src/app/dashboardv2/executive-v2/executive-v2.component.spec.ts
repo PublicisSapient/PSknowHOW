@@ -62,6 +62,7 @@ describe('ExecutiveV2Component', () => {
   let service: SharedService;
   let httpService: HttpService;
   let helperService: HelperService;
+  let excelService: ExcelService;
   let exportExcelComponent;
   const baseUrl = environment.baseUrl;  // Servers Env
   const fakeDoraKpis = require('../../../test/resource/fakeDoraKpis.json');
@@ -2472,7 +2473,7 @@ describe('ExecutiveV2Component', () => {
 
     httpService = TestBed.get(HttpService);
     helperService = TestBed.get(HelperService);
-
+    excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.get(HttpTestingController);
 
     // We set the expectations for the HttpClient mock
@@ -7598,7 +7599,8 @@ describe('ExecutiveV2Component', () => {
         },
         "repoToolFlag": false
       },
-      dashConfigData: dashConfigData2
+      "dashConfigData": dashConfigData2,
+      "selectedType": 'scrum'
     });
 
     fixture.detectChanges();
@@ -15844,76 +15846,6 @@ describe('ExecutiveV2Component', () => {
     });
   });
 
-  describe('checkDataAtGranularLevel', () => {
-    it('should return true if data is an array with non-empty data arrays', () => {
-      const data = [
-        { data: [1, 2, 3] },
-        { data: [4, 5, 6] },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data, 'line');
-
-      expect(result).toBe(true);
-    });
-
-    it('should return true if data is an array with non-empty value arrays or non-empty objects', () => {
-      const data = [
-        { value: [1, 2, 3] },
-        { value: { prop: 'value' } },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data, 'line');
-      expect(result).toBe(true);
-    });
-
-    it('should return true if data is an array with non-empty dataGroup arrays', () => {
-      const data = [
-        { dataGroup: [1, 2, 3] },
-        { dataGroup: [4, 5, 6] },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data, 'line');
-
-      expect(result).toBe(true);
-    });
-
-    it('should return true if data is an object with non-zero number of keys', () => {
-      const data = {
-        key1: 'value1',
-        key2: 'value2',
-      };
-
-      const result = component.checkDataAtGranularLevel(data, 'line');
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is an empty array', () => {
-      const data = [];
-
-      const result = component.checkDataAtGranularLevel(data, 'line');
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is an empty object', () => {
-      const data = {};
-
-      const result = component.checkDataAtGranularLevel(data, 'line');
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is not an array or object', () => {
-      const data = 'invalid data';
-
-      const result = component.checkDataAtGranularLevel(data, 'line');
-
-      expect(result).toBe(true);
-    });
-  });
-
-
   it('should getchartdata on backlog board for kpi when trendValueList is an object', () => {
     component.allKpiArray = [{
       kpiId: 'kpi124',
@@ -17502,10 +17434,39 @@ describe('ExecutiveV2Component', () => {
   describe('onTabSwitch', () => {
     it('should update the component properties', () => {
       const data = { selectedBoard: 'Speed' };
-
-      // spyOn(service, 'setSelectedBoard');
-
       service.onTabSwitch.next(data);
+
+      expect(component.noFilterApplyData).toBe(false);
+      expect(component.kpiLoader).toEqual(new Set());
+      expect(component.kpiStatusCodeArr).toEqual({});
+      expect(component.immediateLoader).toBe(true);
+      expect(component.processedKPI11Value).toEqual({});
+      expect(component.selectedBranchFilter).toBe('Select');
+      expect(component.serviceObject).toEqual({});
+      expect(component.kpiTrendObject).toEqual({});
+    });
+  });
+
+  describe('onScrumKanbanSwitch', () => {
+    it('should update the component properties', () => {
+      const data = { selectedType: 'scrum' };
+      service.onScrumKanbanSwitch.next(data);
+
+      expect(component.noFilterApplyData).toBe(false);
+      expect(component.kpiLoader).toEqual(new Set());
+      expect(component.kpiStatusCodeArr).toEqual({});
+      expect(component.immediateLoader).toBe(true);
+      expect(component.processedKPI11Value).toEqual({});
+      expect(component.selectedBranchFilter).toBe('Select');
+      expect(component.serviceObject).toEqual({});
+      expect(component.kpiTrendObject).toEqual({});
+      expect(component.kanbanActivated).toBe(false);
+    });
+  });
+
+  describe('resetToDefaults', () => {
+    it('should update the component properties', () => {
+      component.resetToDefaults();
 
       expect(component.noFilterApplyData).toBe(false);
       expect(component.kpiLoader).toEqual(new Set());
@@ -17761,7 +17722,8 @@ describe('ExecutiveV2Component', () => {
         configDetails: {},
         loading: false,
         makeAPICall: true,
-        selectedTab: 'Tab1'
+        selectedTab: 'Tab1',
+        selectedType: 'scrum'
       });
 
       expect(component.groupJiraKpi).toHaveBeenCalled();
@@ -17799,7 +17761,8 @@ describe('ExecutiveV2Component', () => {
       configDetails: {},
       loading: false,
       makeAPICall: true,
-      selectedTab: 'Tab1'
+      selectedTab: 'Tab1',
+      selectedType: 'kanban'
     });
 
     expect(component.groupJiraKanbanKpi).toHaveBeenCalled();
@@ -17840,34 +17803,6 @@ describe('ExecutiveV2Component', () => {
     component.kpiChartData = { kpi123: [{ value: [{ data: 1 }] }] };
 
     expect(component.checkIfDataPresent({ kpiId: 'kpi123', kpiDetail: { chartType: 'lineChart' } })).toBeTrue();
-  });
-
-
-
-  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
-    component.selectedTab = 'developer';
-    component.kpiChartData = [{ data: 1 }];
-
-    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeTrue();
-  });
-
-  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
-    component.selectedTab = 'other';
-    component.kpiChartData = [];
-
-    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeFalse();
-  });
-
-  it('should return true if item.value is an array with length greater than 0', () => {
-    const item = { value: [1, 2, 3] };
-
-    expect(component.checkIfArrayHasData(item)).toBeTrue();
-  });
-
-  it('should return false if item.value is not an array or has length 0', () => {
-    const item = { value: [] };
-
-    expect(component.checkIfArrayHasData(item)).toBeFalse();
   });
 
   it('should return true if data is present for kpiId kpi148 or kpi146 and kpiChartData has length', () => {
@@ -17937,78 +17872,145 @@ describe('ExecutiveV2Component', () => {
     expect(component.checkIfDataPresent({ kpiId: 'kpi171', kpiDetail: { chartType: 'lineChart' } })).toBeFalse();
   });
 
-  it('should return true if partial data is present for kpiId kpi139', () => {
-    component.allKpiArray = [{ trendValueList: [{ filter1: 'filter1' }, { filter1: 'filter2' }] }];
-    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(true);
-
-    expect(component.checkIfPartialDataPresent({ kpiId: 'kpi139', kpiDetail: { chartType: 'lineChart' } })).toBeFalse();
-  });
-
-  it('should return false if partial data is not present for kpiId kpi139', () => {
-    component.allKpiArray = [{ trendValueList: [{ filter1: 'filter1' }] }];
-    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(false);
-
-    expect(component.checkIfPartialDataPresent({ kpiId: 'kpi139', kpiDetail: { chartType: 'lineChart' } })).toBeFalse();
-  });
-
-  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
-    component.selectedTab = 'developer';
-    component.kpiChartData = [{ data: 1 }];
-
-    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeTrue();
-  });
-
-  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
-    component.selectedTab = 'user';
-    component.kpiChartData = [];
-
-    expect(component.checkDataAtGranularLevel(component.kpiChartData, 'lineChart')).toBeFalse();
-  });
-
-  it('should return true if array has data', () => {
-    const item = { value: [1, 2, 3] };
-
-    expect(component.checkIfArrayHasData(item)).toBeTrue();
-  });
-
-  it('should return false if array does not have data', () => {
-    const item = { value: [] };
-
-    expect(component.checkIfArrayHasData(item)).toBeFalse();
-  });
-
   it('should return true if partial data is present for kpiId kpi171', () => {
     const kpiData = { value: [{ filter1: 'filter1', data: [1, 2, 3] }, { filter1: 'filter2', data: [] }] };
     const filters = ['filter1', 'filter2'];
 
-    expect(component.checkIfPartialDataForKpi171(kpiData, filters)).toBeTrue();
+    expect(component.checkIfPartialDataForKpi171(kpiData)).toEqual(true);
   });
 
   it('should return false if partial data is not present for kpiId kpi171', () => {
     const kpiData = { value: [{ filter1: 'filter1', data: [] }, { filter1: 'filter2', data: [] }] };
     const filters = ['filter1', 'filter2'];
 
-    expect(component.checkIfPartialDataForKpi171(kpiData, filters)).toBeFalsy();
+    expect(component.checkIfPartialDataForKpi171(kpiData)).toBeFalsy();
   });
 
-  it('should return true if partial data condition is met', () => {
-    const kpi = { kpiDetail: { chartType: 'lineChart' } };
-    const kpiData = [{ filter1: 'filter1', data: [1, 2, 3] }, { filter1: 'filter2', data: [] }];
-    const filters = ['filter1', 'filter2'];
+  describe('ExecutiveV2Component.setGlobalConfigData() setGlobalConfigData method', () => {
+    describe('Happy Path', () => {
+      it('should set configGlobalData correctly when kanban is activated', () => {
+        // Test description: Ensure that configGlobalData is set correctly when kanban is activated.
+        component.kanbanActivated = true;
+        component.selectedtype = 'kanban';
+        component.selectedTab = 'test-board';
 
-    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(true);
+        const globalConfig = {
+          kanban: [
+            { boardSlug: 'test-board', boardName: 'test-board', kpis: ['kpi1', 'kpi2'] },
+            { boardSlug: 'other-board', boardName: 'other-board', kpis: ['kpi3'] },
+          ],
+          scrum: [],
+          others: [],
+        };
 
-    expect(component.checkPartialDataCondition(kpi, kpiData, filters)).toBeFalsy();
+        component.setGlobalConfigData(globalConfig as any);
+
+        expect(component.configGlobalData).toEqual(['kpi1', 'kpi2']);
+      });
+
+      it('should set configGlobalData correctly when scrum is activated', () => {
+        // Test description: Ensure that configGlobalData is set correctly when scrum is activated.
+        component.kanbanActivated = false;
+        component.selectedTab = 'test-board';
+
+        const globalConfig = {
+          kanban: [],
+          scrum: [
+            { boardSlug: 'test-board', boardName: 'test-board', kpis: ['kpi1', 'kpi2'] },
+            { boardSlug: 'other-board', boardName: 'other-board', kpis: ['kpi3'] },
+          ],
+          others: [],
+        };
+
+        component.setGlobalConfigData(globalConfig as any);
+
+        expect(component.configGlobalData).toEqual(['kpi1', 'kpi2']);
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should handle case where no matching board is found', () => {
+        // Test description: Ensure that configGlobalData is set to undefined when no matching board is found.
+        component.kanbanActivated = true;
+        component.selectedTab = 'non-existent-board';
+
+        const globalConfig = {
+          kanban: [{ boardSlug: 'test-board', boardName: 'test-board', kpis: ['kpi1', 'kpi2'] }],
+          scrum: [],
+          others: [],
+        };
+
+        component.setGlobalConfigData(globalConfig as any);
+
+        expect(component.configGlobalData).toBeUndefined();
+      });
+
+      it('should fallback to "others" when no kanban or scrum match is found', () => {
+        // Test description: Ensure that configGlobalData falls back to "others" when no kanban or scrum match is found.
+        component.kanbanActivated = true;
+        component.selectedTab = 'other-board';
+
+        const globalConfig = {
+          kanban: [],
+          scrum: [],
+          others: [{ boardSlug: 'other-board', boardName: 'other-board', kpis: ['kpi1', 'kpi2'] }],
+        };
+
+        component.setGlobalConfigData(globalConfig as any);
+
+        expect(component.configGlobalData).toEqual(['kpi1', 'kpi2']);
+      });
+
+      it('should filter updatedConfigGlobalData to only shown items', () => {
+        // Test description: Ensure that updatedConfigGlobalData only includes items that are shown.
+        component.kanbanActivated = true;
+        component.selectedtype = 'kanban';
+        component.selectedTab = 'test-board';
+
+        const globalConfig = {
+          kanban: [
+            {
+              boardSlug: 'test-board',
+              boardName: 'test-board',
+              kpis: [
+                { shown: true, name: 'kpi1' },
+                { shown: false, name: 'kpi2' },
+              ],
+            },
+          ],
+          scrum: [],
+          others: [],
+        };
+
+        component.setGlobalConfigData(globalConfig as any);
+
+        expect(component.updatedConfigGlobalData).toEqual([
+          { shown: true, name: 'kpi1' },
+        ]);
+      });
+    });
   });
 
-  it('should return false if partial data condition is not met', () => {
-    const kpi = { kpiDetail: { chartType: 'lineChart' } };
-    const kpiData = [{ filter1: 'filter1', data: [] }, { filter1: 'filter2', data: [] }];
-    const filters = ['filter1', 'filter2'];
 
-    component.checkDataAtGranularLevel = jasmine.createSpy('checkDataAtGranularLevel').and.returnValue(false);
+  it('should generate excel on click of export button', () => {
+    component.modalDetails = {
+      header: 'Work Remaining / Issue Count/Original Estimate',
+      tableHeadings: [
+        "Issue Id",
+        "Issue Description",
+        "Issue Status",
+      ],
+      tableValues: [{
+        'Issue Id': 'DTS-22685',
+        'Issue URL': 'http://testabc.com/jira/browse/DTS-22685',
+        'Issue Description': 'Iteration KPI | Popup window is not wide enough to read details  ',
+        'Issue Status': 'Open',
+      }],
+    };
 
-    expect(component.checkPartialDataCondition(kpi, kpiData, filters)).toBeFalsy();
+    const spyGenerateExcel = spyOn(excelService, 'generateExcel');
+    component.generateExcel();
+    expect(spyGenerateExcel).toHaveBeenCalled();
   });
 });
 
