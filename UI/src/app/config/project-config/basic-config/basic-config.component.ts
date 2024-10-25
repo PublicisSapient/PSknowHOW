@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, Output,EventEmitter} from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
@@ -25,6 +25,7 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 import { MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 declare const require: any;
 
 @Component({
@@ -55,9 +56,10 @@ export class BasicConfigComponent implements OnInit {
   breadcrumbs: Array<any>
   @Output() closeProjectSetupPopup = new EventEmitter();
   steps: MenuItem[] | undefined;
-  isProjectSetupPopup : boolean = false;
-  isProjectCOmpletionPopup : boolean = false;
+  isProjectSetupPopup: boolean = false;
+  isProjectCOmpletionPopup: boolean = false;
   allProjectList: any[];
+  isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -74,18 +76,18 @@ export class BasicConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.isProjectSetupPopup = true;
-    this.breadcrumbs = [{ label: 'MY PROJECTS',handleEvent : ()=>{this.closeProjectSetupPopup.emit()} },{ label: 'ADD NEW PROJECT'}];
+    this.breadcrumbs = [{ label: 'MY PROJECTS', handleEvent: () => { this.closeProjectSetupPopup.emit() } }, { label: 'ADD NEW PROJECT' }];
     this.steps = [
       {
-          label: 'Connect tools',
+        label: 'Connect tools',
       },
       {
-          label: 'Run processor',
+        label: 'Run processor',
       },
       {
-          label: 'Data ready on Dashboard',
+        label: 'Data ready on Dashboard',
       }
-  ];
+    ];
     this.getHierarchy();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
@@ -126,7 +128,7 @@ export class BasicConfigComponent implements OnInit {
       {
         level: this.formData.length,
         hierarchyLevelId: 'assigneeDetails',
-        label1:'Enable People performance KPIs',
+        label1: 'Enable People performance KPIs',
         label2: this.assigneeSwitchInfo,
         inputType: 'boolean',
         value: false,
@@ -138,7 +140,7 @@ export class BasicConfigComponent implements OnInit {
       {
         level: this.formData.length,
         hierarchyLevelId: 'developerKpiEnabled',
-        label1:'Enable Developers KPIs',
+        label1: 'Enable Developers KPIs',
         label2: this.developerKpiInfo,
         inputType: 'boolean',
         value: false,
@@ -194,7 +196,7 @@ export class BasicConfigComponent implements OnInit {
         },
         value: formValue[element.hierarchyLevelId].name ? formValue[element.hierarchyLevelId].name : formValue[element.hierarchyLevelId]
       });
-      gaObj['category'+ (index+1)] = element.hierarchyLevelName;
+      gaObj['category' + (index + 1)] = element.hierarchyLevelName;
     });
     this.blocked = true;
     this.http.addBasicConfig(submitData).subscribe(response => {
@@ -216,7 +218,7 @@ export class BasicConfigComponent implements OnInit {
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            this.sharedService.setCurrentUserDetails({authorities});
+            this.sharedService.setCurrentUserDetails({ authorities });
           }
         }
         this.form.reset();
@@ -244,8 +246,11 @@ export class BasicConfigComponent implements OnInit {
 
   stringValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const inputValue: string = control.value as string;
-    if ((typeof control.value === 'string' || control.value instanceof String) &&  control.value && control.value !== null && !/^[a-zA-Z0-9\s_-]+$/.test(inputValue)) {
-      return { stringValidator: true };
+    if ((typeof control.value === 'string' || control.value instanceof String) && control.value && control.value != null) {
+      // no blank spaces, and no value should start with " "
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9\s_-]*$/.test(inputValue)) {
+        return { stringValidator: true };
+      }
     }
     return null;
   }
@@ -255,9 +260,9 @@ export class BasicConfigComponent implements OnInit {
       formFieldData.forEach(element => {
         if (element.suggestions && element.suggestions.length) {
           element.suggestions = element.suggestions.map(suggestion => ({
-              name: suggestion,
-              code: suggestion
-            }));
+            name: suggestion,
+            code: suggestion
+          }));
         }
         element.value = '';
         element.required = true;
