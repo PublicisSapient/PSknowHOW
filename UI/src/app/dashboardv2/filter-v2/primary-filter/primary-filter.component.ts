@@ -37,7 +37,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedTrendsEventSubject.subscribe(data => {
-      if(JSON.stringify(data) !== JSON.stringify(this.backupData)) {
+      if (JSON.stringify(data) !== JSON.stringify(this.backupData)) {
         this.backupData = data;
         this.service.resetKpiFilterObj();
       }
@@ -79,7 +79,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
                 });
 
                 // in case project in state filters has been deleted
-                if(!this.selectedFilters?.length || !this.selectedFilters[0]) {
+                if (!this.selectedFilters?.length || !this.selectedFilters[0]) {
                   this.selectedFilters = [this.filters[0]];
                   this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
                 }
@@ -97,42 +97,41 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
               // reset
               this.reset();
               return;
-
-          }
-        } else {
-          if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
-            this.selectedFilters = [];
-            this.selectedFilters.push(this.stateFilters['parent_level']);
+            }
           } else {
-            if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName?.toLowerCase() ||
-              this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
-              // reset
+            if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
               this.selectedFilters = [];
-              this.selectedFilters.push(this.filters[0]);
-              this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
-              this.applyPrimaryFilters({});
-              this.service.resetKpiFilterObj();
-              this.setProjectAndLevelBackupBasedOnSelectedLevel();
-              return;
+              this.selectedFilters.push(this.stateFilters['parent_level']);
             } else {
-              this.service.setNoSprints(true);
-              this.onPrimaryFilterChange.emit([]);
-              return;
+              if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName?.toLowerCase() ||
+                this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
+                // reset
+                this.selectedFilters = [];
+                this.selectedFilters.push(this.filters[0]);
+                this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
+                this.applyPrimaryFilters({});
+                this.service.resetKpiFilterObj();
+                this.setProjectAndLevelBackupBasedOnSelectedLevel();
+                return;
+              } else {
+                this.service.setNoSprints(true);
+                this.onPrimaryFilterChange.emit([]);
+                return;
+              }
             }
           }
+        } else {
+          if (this.stateFilters['parent_level'] && Object.keys(this.stateFilters['parent_level'])?.length) {
+            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [this.stateFilters['parent_level']] });
+          }
+          this.service.setNoSprints(true);
+          this.onPrimaryFilterChange.emit([]);
+          return;
         }
-      } else {
-        if (this.stateFilters['parent_level'] && Object.keys(this.stateFilters['parent_level'])?.length) {
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [this.stateFilters['parent_level']] });
-        }
-        this.service.setNoSprints(true);
-        this.onPrimaryFilterChange.emit([]);
-        return;
+        // PROBLEM AREA END
+        this.applyPrimaryFilters({});
+        this.setProjectAndLevelBackupBasedOnSelectedLevel();
       }
-      // PROBLEM AREA END
-      this.applyPrimaryFilters({});
-      this.setProjectAndLevelBackupBasedOnSelectedLevel();
-    }
     }, 100);
   }
 
@@ -204,7 +203,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
             combinedEvent['primary_level'] = [...this.selectedFilters];
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit(combinedEvent);
-          } else if(this.selectedFilters?.length){
+          } else if (this.selectedFilters?.length) {
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit([...this.selectedFilters]);
             // project selection changed, reset addtnl. filters
