@@ -347,7 +347,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
-    console.log(this.loaderJiraArray)
     this.kpiLoader = true;
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
