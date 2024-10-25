@@ -8,7 +8,7 @@ import { HelperService } from 'src/app/services/helper.service';
   templateUrl: './primary-filter.component.html',
   styleUrls: ['./primary-filter.component.css']
 })
-export class PrimaryFilterComponent implements OnChanges {
+export class PrimaryFilterComponent implements OnChanges, OnInit {
   @Input() filterData = null;
   @Input() selectedLevel: any = '';
   @Input() primaryFilterConfig: {};
@@ -24,6 +24,7 @@ export class PrimaryFilterComponent implements OnChanges {
   defaultFilterCounter: number = 0;
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
+  backupData: any = null;
 
   constructor(private service: SharedService, public helperService: HelperService) {
     // This is required speecifically when filter is removed from removeFilter fn on filter-new
@@ -32,6 +33,15 @@ export class PrimaryFilterComponent implements OnChanges {
         this.selectedFilters = filters;
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.subscriptions.push(this.service.selectedTrendsEventSubject.subscribe(data => {
+      if(JSON.stringify(data) !== JSON.stringify(this.backupData)) {
+        this.backupData = data;
+        this.service.resetKpiFilterObj();
+      }
+    }))
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -57,7 +67,7 @@ export class PrimaryFilterComponent implements OnChanges {
     this.populateFilters();
     setTimeout(() => {
       this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
-      if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
+      if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']?.labelName.toLowerCase() ||
         this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
         if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']?.length) {
           this.selectedFilters = [];
@@ -69,12 +79,12 @@ export class PrimaryFilterComponent implements OnChanges {
             } else {
               this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0]];
             }
-          } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName'].toLowerCase()) &&
-            ['sprint', 'release'].includes(this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase())) {
+          } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName']?.toLowerCase()) &&
+            ['sprint', 'release'].includes(this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase())) {
             // reset
             this.reset();
             return;
-          } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName'].toLowerCase())) {
+          } else if (['sprint', 'release'].includes(this.stateFilters['primary_level'][0]['labelName']?.toLowerCase())) {
             this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].parentId)[0]];
           } else {
             // reset
@@ -94,6 +104,7 @@ export class PrimaryFilterComponent implements OnChanges {
               this.selectedFilters.push(this.filters[0]);
               this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
               this.applyPrimaryFilters({});
+              this.service.resetKpiFilterObj();
               this.setProjectAndLevelBackupBasedOnSelectedLevel();
               return;
             } else {
@@ -123,6 +134,7 @@ export class PrimaryFilterComponent implements OnChanges {
     this.selectedFilters.push(this.filters[0]);
     this.helperService.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
     this.applyPrimaryFilters({});
+    this.service.resetKpiFilterObj();
     this.setProjectAndLevelBackupBasedOnSelectedLevel();
   }
 
@@ -174,7 +186,6 @@ export class PrimaryFilterComponent implements OnChanges {
       if (!Array.isArray(this.selectedFilters)) {
         this.selectedFilters = [this.selectedFilters];
       }
-
       if (this.selectedFilters?.length && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
         this.service.setNoSprints(false);
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
@@ -195,6 +206,7 @@ export class PrimaryFilterComponent implements OnChanges {
         } else {
           this.service.setNoSprints(true);
           this.onPrimaryFilterChange.emit([]);
+
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null })
         }
 
