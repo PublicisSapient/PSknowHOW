@@ -35,6 +35,22 @@ export class HeaderComponent implements OnInit {
   userRole: string = '';
   noToolsConfigured: boolean;
 
+  pSLogoInfo= {
+    "imageUrl": "assets/img/PSKnowHowLogo.svg",
+    "altText": "psLogo"
+    }
+
+  platformLogoInfo = {
+       "imageUrl": "assets/img/Switchplatforms.svg",
+       "altText": "KnowHow"
+    }
+
+    platformSwitchItems = [
+      {label: "Assessments", event: 'assessments'},
+      {label: "Retros", event: 'retro'},
+      {label: "KnowHOW", event: 'knowHow'}
+    ]
+
   constructor(
     private httpService: HttpService,
     public sharedService: SharedService,

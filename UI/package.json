@@ -58,9 +58,9 @@
     "primeflex": "^2.0.0",
     "primeicons": "^6.0.1",
     "primeng": "14.1.2",
+    "ps-custom-library": "file:../../Speed-suite/speed-suite-global-components/dist/ps-custom-library",
     "rxjs": "^6.6.3",
     "uuid": "^9.0.0",
-
     "zone.js": "^0.11.2"
   },
   "devDependencies": {
