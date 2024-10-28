@@ -46,7 +46,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectRel
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,6 +61,8 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 	private HierarchyLevelService hierarchyLevelService;
 	@Autowired
 	private JiraCommonService jiraCommonService;
+	@Autowired
+	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
@@ -108,8 +109,12 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 
 	private void saveKanbanAccountHierarchy(KanbanAccountHierarchy projectData, ProjectConfFieldMapping projectConfig,
 			ProjectRelease projectRelease) {
-		Map<Pair<String, String>, KanbanAccountHierarchy> existingHierarchy = JiraIssueClientUtil
-				.getKanbanAccountHierarchy(kanbanAccountHierarchyRepo);
+		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo
+				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+		Map<Pair<String, String>, KanbanAccountHierarchy> existingHierarchy = accountHierarchyList.stream()
+				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p,
+						(existingValue, newValue) -> existingValue));
+
 		Set<KanbanAccountHierarchy> setToSave = new HashSet<>();
 		if (projectData != null) {
 			List<KanbanAccountHierarchy> hierarchyForRelease = createKanbanHierarchyForRelease(projectRelease,
@@ -131,6 +136,8 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 					}
 				});
 			}
+			projectHierarchySyncService.kanbanReleaseHierarchySync(projectConfig.getBasicProjectConfigId(),
+					hierarchyForRelease);
 		}
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			kanbanAccountHierarchyRepo.saveAll(setToSave);

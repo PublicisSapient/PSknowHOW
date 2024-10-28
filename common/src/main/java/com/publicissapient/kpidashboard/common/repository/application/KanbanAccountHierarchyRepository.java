@@ -162,4 +162,20 @@ public interface KanbanAccountHierarchyRepository extends MongoRepository<Kanban
 	 * @return list of hierarchies
 	 */
 	List<KanbanAccountHierarchy> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
+	/**
+	 * Deletes documents by basic project config ID and node ID not in the provided
+	 * list.
+	 *
+	 * @param basicProjectConfigId
+	 *            the basic project config ID
+	 * @param nodeIds
+	 *            the list of node IDs to exclude
+	 * @param labelName
+	 *            the label name
+	 */
+	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'labelName': ?2 }", delete = true)
+	void deleteByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> nodeIds,
+			String labelName);
+
 }

@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -40,6 +39,8 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import com.publicissapient.kpidashboard.jira.service.ProjectSprintIssuesService;
 import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
@@ -58,6 +59,9 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 
 	@Autowired
 	JiraClientService jiraClientService;
+
+	@Autowired
+	private ProjectSprintIssuesService projectSprintIssuesService;
 
 	@Override
 	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, ObjectId processorId)
@@ -78,6 +82,10 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 								+ projectConfig.getProjectName() + JiraConstants.COMBINE_IDS_SYMBOL
 								+ projectConfig.getBasicProjectConfigId());
 						sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+						// Add issues to the map
+						projectSprintIssuesService.addIssue(projectConfig.getBasicProjectConfigId(),
+								sprint.getSprintName(), issue.getKey());
+
 					}
 					sprintDetailsSet.addAll(sprints);
 				}

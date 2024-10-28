@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -45,6 +44,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import com.publicissapient.kpidashboard.jira.service.ProjectSprintIssuesService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SprintDataProcessorImplTest {
@@ -54,6 +55,8 @@ public class SprintDataProcessorImplTest {
 
     @Mock
     private JiraClientService jiraClientService;
+    @Mock
+    private ProjectSprintIssuesService projectSprintIssuesService;
 
     @InjectMocks
     private SprintDataProcessorImpl sprintDataProcessor;

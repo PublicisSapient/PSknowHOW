@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -209,4 +208,15 @@ public interface JiraIssueRepository
 
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
 	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);
+
+	/**
+	 * Finds distinct sprint IDs by the given basic project configuration ID.
+	 *
+	 * @param basicProjectConfigId
+	 *            the basic project configuration ID
+	 * @return a list of distinct sprint IDs
+	 */
+	@Query(value = "{ 'basicProjectConfigId': ?0 }", fields = "{ 'sprintID': 1 }")
+	List<String> findDistinctSprintIDByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
 }

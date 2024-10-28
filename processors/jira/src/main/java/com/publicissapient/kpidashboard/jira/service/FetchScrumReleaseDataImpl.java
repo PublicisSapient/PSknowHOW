@@ -49,7 +49,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,6 +66,8 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	private HierarchyLevelService hierarchyLevelService;
 	@Autowired
 	private JiraCommonService jiraCommonService;
+	@Autowired
+	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
@@ -106,13 +107,17 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 
 	private void saveScrumAccountHierarchy(AccountHierarchy projectData, ProjectConfFieldMapping projectConfig,
 			ProjectRelease projectRelease) {
-		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = JiraIssueClientUtil
-				.getAccountHierarchy(accountHierarchyRepository);
+		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository
+				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = accountHierarchyList.stream().collect(Collectors
+				.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p, (existingValue, newValue) -> existingValue));
 		Set<AccountHierarchy> setToSave = new HashSet<>();
 		if (projectData != null) {
 			List<AccountHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease,
 					projectConfig.getProjectBasicConfig(), projectData);
 			setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
+			projectHierarchySyncService.scrumReleaseHierarchySync(projectConfig.getBasicProjectConfigId(),
+					hierarchyForRelease);
 		}
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			log.info("Updated Hierarchies {}", setToSave.size());
