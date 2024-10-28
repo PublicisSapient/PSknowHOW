@@ -57,12 +57,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKPIService<Long, List<Object>> {
+public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long, List<Object>> {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String RANGE = "range";
 	private static final String RANGE_TICKET_LIST = "rangeTickets";
-	private static final String NIN = "nin";
+	private static final String IN = "in";
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -90,15 +90,9 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 		mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 				CommonUtils.convertToPatternList(defectList));
 
-		if (Optional.ofNullable(fieldMapping.getJiraDodKPI127()).isPresent()) {
+		if (Optional.ofNullable(fieldMapping.getJiraStatusToConsiderKPI127()).isPresent()) {
 			List<String> closedStatusList = new ArrayList<>();
-			closedStatusList.addAll(fieldMapping.getJiraDodKPI127());
-			if (Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI127()).isPresent()) {
-				closedStatusList.add(fieldMapping.getJiraLiveStatusKPI127());
-			}
-			if (Optional.ofNullable(fieldMapping.getJiraDefectDroppedStatusKPI127()).isPresent()) {
-				closedStatusList.addAll(fieldMapping.getJiraDefectDroppedStatusKPI127());
-			}
+			closedStatusList.addAll(fieldMapping.getJiraStatusToConsiderKPI127());
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(closedStatusList));
 		}
@@ -107,7 +101,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 		resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
-				uniqueProjectMap, startDate, endDate, RANGE, NIN, true));
+				uniqueProjectMap, startDate, endDate, RANGE, IN, true));
 
 		return resultListMap;
 	}
@@ -322,31 +316,6 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 		return dataCount;
 	}
 
-	/**
-	 * populate data for excel
-	 *
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param validationDataMap
-	 * @param projectWiseJiraIssueList
-	 */
-	public void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String projectName,
-			Map<String, ValidationData> validationDataMap, List<JiraIssue> projectWiseJiraIssueList) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setStoryKeyList(
-					projectWiseJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-			validationData.setDefectPriorityList(
-					projectWiseJiraIssueList.stream().map(JiraIssue::getPriority).collect(Collectors.toList()));
-			validationData.setStatus(
-					projectWiseJiraIssueList.stream().map(JiraIssue::getJiraStatus).collect(Collectors.toList()));
-			validationData.setDateList(projectWiseJiraIssueList.stream()
-					.map(issue -> KpiDataHelper.convertStringToDate(issue.getCreatedDate()).toString())
-					.collect(Collectors.toList()));
-			validationDataMap.put(projectName, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-		}
-	}
 
 	/**
 	 * As per x Axis range list puts months wise range map

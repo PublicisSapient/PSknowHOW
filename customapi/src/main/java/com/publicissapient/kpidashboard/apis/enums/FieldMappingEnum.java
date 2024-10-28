@@ -103,7 +103,7 @@ public enum FieldMappingEnum {
 					"thresholdValueKPI111", "jiraLabelsQAKPI111")),
 
 	KPI127("Production Defects Ageing", KPISource.JIRA.name(),
-			Arrays.asList("jiraDodKPI127", "jiraLiveStatusKPI127", "jiraDefectDroppedStatusKPI127","thresholdValueKPI127",
+			Arrays.asList("jiraStatusToConsiderKPI127","thresholdValueKPI127",
 					"productionDefectCustomField", "productionDefectValue",
 					"productionDefectComponentValue", "productionDefectIdentifier")),
 

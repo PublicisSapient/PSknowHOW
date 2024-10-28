@@ -70,6 +70,7 @@ public class FixathonKpiMaster {
 		changeKpiOrder("kpi137", 5, kpiMaster);
 		changeKpiOrder(KPI_129, 3, kpiMaster);
 		changeKpiOrder("kpi139", 6, kpiMaster);
+		unsetProductionDefectAgeingChart(kpiMaster);
 	}
 
 	private void updateMaturityInfo(String kpiId) {
@@ -142,6 +143,19 @@ public class FixathonKpiMaster {
 		changeKpiOrder("kpi137", 4, kpiMaster);
 		changeKpiOrder(KPI_129, 5, kpiMaster);
 		changeKpiOrder("kpi139", 6, kpiMaster);
+		changeProductionDefectAgeingGraph(kpiMaster);
+	}
+
+	public void unsetProductionDefectAgeingChart(MongoCollection<Document> kpiMaster) {
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList("kpi127"))),
+				new Document(UNSET, new Document("chartType", "line").append("isXaxisGroup", null)
+						.append("lineChart", null)));
+	}
+
+	public void changeProductionDefectAgeingGraph(MongoCollection<Document> kpiMaster) {
+		kpiMaster.updateMany(new Document(KPIID, new Document("$in", Arrays.asList("kpi127"))),
+				new Document("$set", new Document("chartType", "grouped_column_plus_line").append("isXaxisGroup", true)
+						.append("lineChart", false)));
 	}
 
 }
