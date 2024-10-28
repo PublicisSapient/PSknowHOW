@@ -1454,18 +1454,6 @@
     "mandatory": true
   },
   {
-    "fieldName": "jiraDodKPI127",
-    "fieldLabel": "Status to identify completed issues",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "fieldDisplayOrder": 8,
-    "sectionOrder": 4,
-    "tooltip": {
-      "definition": "All workflow statuses used to close issues of issue types in consideration"
-    }
-  },
-  {
     "fieldName": "jiraDodKPI37",
     "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
@@ -2921,16 +2909,6 @@
     }
   },
   {
-    "fieldName": "jiraLiveStatusKPI127",
-    "fieldLabel": "Status to identify live issues",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Status/es that identify that an issue is LIVE in Production."
-    }
-  },
-  {
     "fieldName": "jiraIncludeBlockedStatusKPI131",
     "fieldLabel": "Status to identify Blocked issues",
     "fieldType": "radiobutton",
@@ -3111,16 +3089,6 @@
       "definition": ""
     },
     "processorCommon": true
-  },
-  {
-    "fieldName": "jiraDefectDroppedStatusKPI127",
-    "fieldLabel": "Defect Dropped Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "All statuses with which defect is linked."
-    }
   },
   {
     "fieldName": "productionDefectIdentifier",
@@ -3813,5 +3781,18 @@
     "tooltip" : {
       "definition" : "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
+  },
+  {
+    "fieldName": "jiraStatusToConsiderKPI127",
+    "fieldLabel": "Statuses to be included",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
+    "tooltip": {
+      "definition": "workflow statuses to identify ageing production defects in the backlog."
+    },
+    "mandatory": true
   }
 ]

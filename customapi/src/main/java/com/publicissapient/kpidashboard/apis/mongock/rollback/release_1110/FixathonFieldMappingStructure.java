@@ -16,7 +16,9 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1110;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -43,7 +45,7 @@ public class FixathonFieldMappingStructure {
 	public static final String VALUE = "value";
 	private static final String FIELD_CATEGORY = "fieldCategory";
 	private static final String SECTION = "section";
-	private static final Object CHIPS = "chips";
+	private static final String CHIPS = "chips";
 	private static final String DELIVERED_STATUS = "jiraIterationCompletionStatusKPI138";
 	public static final String ISSUE_TYPES_TO_CONSIDER = "Issue types to consider";
 	public static final String JIRA_ISSUE_TYPE_NAMES_KPI_161 = "jiraIssueTypeNamesKPI161";
@@ -58,6 +60,7 @@ public class FixathonFieldMappingStructure {
 	public static final String FIELD_DISPLAY_ORDER = "fieldDisplayOrder";
 	public static final String SECTION_ORDER = "sectionOrder";
 	public static final String UNSET = "$unset";
+	private static final String AGEING_CONSIDERED_STATUS = "jiraStatusToConsiderKPI127";
 
 	private final MongoTemplate mongoTemplate;
 
@@ -75,7 +78,7 @@ public class FixathonFieldMappingStructure {
 		updateFieldMappingByFieldName(DELIVERED_STATUS, "Issue Delivered Status",
 				"Status from workflow on which issue is delivered. <br> Example: Closed<hr>",
 				fieldMappingStructCollection);
-		insertFieldMappingStructure(fieldMappingStructCollection);
+
 		// Rollback Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", ISSUE_TYPES_TO_CONSIDER, fieldMappingStructCollection);
 		updateFieldLabel("jiraDefectClosedStatusKPI137", "Status to identify Closed Bugs",
@@ -89,6 +92,22 @@ public class FixathonFieldMappingStructure {
 				"All issue types that should be included in Lead time calculation", fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraLiveStatusKPI3", "Live Status - Lead Time",
 				"Workflow status/es to identify that an issue is live in Production", fieldMappingStructCollection);
+
+		// insert to fieldmapping structure
+		List<Document> documents = new ArrayList<>();
+		documents.add(createFieldMappingStructure(DELIVERED_STATUS, "Custom Completion status/es", CHIPS,
+				"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"));
+		documents.add(createFieldMappingStructure("jiraDefectDroppedStatusKPI127", "Defect Dropped Status", CHIPS,
+				"All statuses with which defect is linked."));
+		Document jiraDodKPI127 = createFieldMappingStructure("jiraDodKPI127", "Status to identify completed issues",
+				CHIPS, "All workflow statuses used to close issues of issue types in consideration.");
+		jiraDodKPI127.append(FIELD_DISPLAY_ORDER, 8).append(SECTION_ORDER, 4);
+		documents.add(jiraDodKPI127);
+		documents.add(createFieldMappingStructure("jiraLiveStatusKPI127", "Status to identify live issues", "text",
+				"Status/es that identify that an issue is LIVE in Production."));
+		insertToFieldMappingStructure(fieldMappingStructCollection, documents);
+		deleteFieldMappingStr(fieldMappingStructCollection, Arrays.asList(AGEING_CONSIDERED_STATUS));
+
 		// rollback for cycle time kpi171
 		rollbackCycleTimeFieldMappingChanges(fieldMappingStructCollection);
 		rollBackFieldDisplayOrder(JIRA_ISSUE_TYPE_NAMES_KPI_161, 1, fieldMappingStructCollection);
@@ -125,8 +144,9 @@ public class FixathonFieldMappingStructure {
 				new Document("$set", new Document(FIELD_LABEL, fieldLabel)));
 	}
 
-	private void deleteFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.deleteMany(Filters.or(Filters.eq(FIELD_NAME, DELIVERED_STATUS)));
+	private void deleteFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection,
+			List<String> fieldsToDelete) {
+		fieldMappingStructCollection.deleteMany(Filters.or(Filters.in(FIELD_NAME, fieldsToDelete)));
 	}
 
 	public void rollbackAddRedirectUrlField(MongoCollection<Document> fieldMappingStructCollection) {
@@ -188,7 +208,14 @@ public class FixathonFieldMappingStructure {
 		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
 				.getCollection(FIELD_MAPPING_STRUCTURE);
 		updateFieldMappingStr(fieldMappingStructCollection);
-		deleteFieldMappingStr(fieldMappingStructCollection);
+		deleteFieldMappingStr(fieldMappingStructCollection,
+				List.of(DELIVERED_STATUS, "jiraDefectDroppedStatusKPI127", "jiraDodKPI127", "jiraLiveStatusKPI127"));
+		// production defect ageing
+		Document jiraStatusToConsiderKPI127 = createFieldMappingStructure(AGEING_CONSIDERED_STATUS,
+				"Statuses to be included", CHIPS,
+				"workflow statuses to identify ageing production defects in the backlog").append(FIELD_DISPLAY_ORDER, 8)
+				.append(SECTION_ORDER, 4).append("mandatory", true);
+		insertToFieldMappingStructure(fieldMappingStructCollection, Arrays.asList(jiraStatusToConsiderKPI127));
 		// Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider as Stories",
 				fieldMappingStructCollection);
@@ -298,6 +325,19 @@ public class FixathonFieldMappingStructure {
 								Arrays.asList(JIRA_STATUS_FOR_NOT_REFINED_KPI_161, JIRA_STATUS_FOR_REFINED_KPI_161,
 										JIRA_STATUS_FOR_IN_PROGRESS_KPI_161))),
 				new Document(UNSET, new Document(SECTION_ORDER, 2)));
+	}
+
+	private Document createFieldMappingStructure(String fieldName, String fieldLabel, String fieldType,
+			String tooltip) {
+
+		return new Document().append(FIELD_NAME, fieldName).append(FIELD_LABEL, fieldLabel)
+				.append(FIELD_TYPE, fieldType).append(FIELD_CATEGORY, "workflow")
+				.append(SECTION, "WorkFlow Status Mapping").append(TOOL_TIP, new Document(DEFINITION, tooltip));
+	}
+
+	private void insertToFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection,
+			List<Document> list) {
+		fieldMappingStructCollection.insertMany(list);
 	}
 
 }

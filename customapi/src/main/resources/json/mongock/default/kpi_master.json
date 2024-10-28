@@ -2764,7 +2764,9 @@
     "groupId" : 10 ,
     "thresholdValue" : "0" ,
     "kanban" : false ,
-    "chartType" : "line" ,
+    "chartType" : "grouped_column_plus_line",
+    "isXaxisGroup": true,
+    "lineChart": false,
     "kpiInfo" : {
       "definition" : "It groups all the open production defects based on their ageing in the backlog.",
       "details" : [
