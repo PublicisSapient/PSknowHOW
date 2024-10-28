@@ -22,13 +22,16 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.testng.AssertJUnit.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +43,7 @@ import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.test.MetaDataInstanceFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -47,6 +51,7 @@ import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.IterationData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -64,6 +69,8 @@ import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
+import com.publicissapient.kpidashboard.jira.service.ProjectHierarchySyncService;
+import com.publicissapient.kpidashboard.jira.service.ProjectSprintIssuesService;
 
 import io.atlassian.util.concurrent.Promise;
 
@@ -121,6 +128,12 @@ public class JobListenerScrumTest {
 	@Mock
 	SearchResult searchResult;
 
+	@Mock
+	private ProjectHierarchySyncService projectHierarchySyncService;
+
+	@Mock
+	private ProjectSprintIssuesService projectSprintIssuesService;
+
 	private JobExecution jobExecution;
 
 	private String projectId = "63bfa0d5b7617e260763ca21";
@@ -137,8 +150,8 @@ public class JobListenerScrumTest {
 	@Before
 	public void setUp() {
 		jobExecution = MetaDataInstanceFactory.createJobExecution();
-		when(jiraClientService.isContainRestClient(null)).thenReturn(true);
-		when(jiraClientService.getRestClientMap(null)).thenReturn(client);
+		when(jiraClientService.isContainRestClient(projectId)).thenReturn(true);
+		when(jiraClientService.getRestClientMap(projectId)).thenReturn(client);
 		when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
 		when(client.getCustomIssueClient()).thenReturn(customAsynchronousIssueRestClient);
 
@@ -149,17 +162,19 @@ public class JobListenerScrumTest {
 		projectConfigMap = IssueReaderUtil.createProjectConfigMap(projectConfigsList, connection, fieldMapping,
 				projectToolConfigs);
 
+		// Set the projectId field in jobListenerScrum
+		ReflectionTestUtils.setField(jobListenerScrum, "projectId", projectId);
 	}
 
 	@Test
 	public void testAfterJob_SuccessExecution_JqlUnMatchedData() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
+		when(fetchProjectConfiguration.fetchConfiguration(projectId)).thenReturn(projectConfigMap);
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
 				.thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
-		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "")).thenReturn(5L);
+		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(projectId, "")).thenReturn(5L);
 		when(searchResult.getTotal()).thenReturn(0);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
@@ -169,18 +184,18 @@ public class JobListenerScrumTest {
 		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
-		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
 	}
 
 	@Test
 	public void testAfterJob_SuccessExecution_JqlMatchedData() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
+		when(fetchProjectConfiguration.fetchConfiguration(projectId)).thenReturn(projectConfigMap);
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
 				.thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
-		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "")).thenReturn(5L);
+		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(projectId, "")).thenReturn(5L);
 		when(searchResult.getTotal()).thenReturn(5);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
@@ -190,14 +205,14 @@ public class JobListenerScrumTest {
 		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
-		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
 	}
 
 	@Test
 	public void testAfterJob_SuccessExecution_JqlNoResult() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfigMap);
+		when(fetchProjectConfiguration.fetchConfiguration(projectId)).thenReturn(projectConfigMap);
 		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
 				.thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(null);
@@ -209,7 +224,7 @@ public class JobListenerScrumTest {
 		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
-		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
 	}
 
 	@Test
@@ -219,7 +234,7 @@ public class JobListenerScrumTest {
 		when(customAsynchronousIssueRestClient.searchBoardIssue(anyString(), anyString(), Mockito.anyInt(),
 				Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
-		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "Epic")).thenReturn(5L);
+		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(projectId, "Epic")).thenReturn(5L);
 		when(searchResult.getTotal()).thenReturn(5);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBoardId("9");
@@ -230,7 +245,7 @@ public class JobListenerScrumTest {
 		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
-		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
 	}
 
 	@Test
@@ -249,7 +264,7 @@ public class JobListenerScrumTest {
 		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
-		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
 	}
 
 	@Test
@@ -259,7 +274,7 @@ public class JobListenerScrumTest {
 		when(customAsynchronousIssueRestClient.searchBoardIssue(anyString(), anyString(), Mockito.anyInt(),
 				Mockito.anyInt(), Mockito.anySet())).thenReturn(promisedRs);
 		when(promisedRs.claim()).thenReturn(searchResult);
-		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(null, "Epic")).thenReturn(5L);
+		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(projectId, "Epic")).thenReturn(5L);
 		when(searchResult.getTotal()).thenReturn(0);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBoardId("9");
@@ -270,7 +285,7 @@ public class JobListenerScrumTest {
 		jobExecution.setStatus(BatchStatus.STARTED);
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
-		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
 	}
 
 	@Test
@@ -282,8 +297,8 @@ public class JobListenerScrumTest {
 	public void testAfterJob_FailedExecution() throws Exception {
 		projectConfigMap.getJira().setBoardQuery("abc");
 		fieldMapping.setNotificationEnabler(true);
-		when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
-		when(projectBasicConfigRepository.findByStringId(null))
+		when(fieldMappingRepository.findByProjectConfigId(projectId)).thenReturn(fieldMapping);
+		when(projectBasicConfigRepository.findByStringId(projectId))
 				.thenReturn(Optional.ofNullable(projectConfigsList.get(0)));
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBoardId("9");
@@ -300,7 +315,7 @@ public class JobListenerScrumTest {
 		// Act
 		jobListenerScrum.afterJob(jobExecution);
 
-		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
 	}
 
 	@Test
@@ -308,7 +323,7 @@ public class JobListenerScrumTest {
 		// Act
 		jobListenerScrum.afterJob(null);
 
-		verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
 	}
 
     @Test
@@ -317,9 +332,9 @@ public class JobListenerScrumTest {
             ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
             processorExecutionTraceLog.setProgressStats(true);
             fieldMapping.setNotificationEnabler(true);
-            when(fieldMappingRepository.findByProjectConfigId(null)).thenReturn(fieldMapping);
+            when(fieldMappingRepository.findByProjectConfigId(projectId)).thenReturn(fieldMapping);
             ProjectBasicConfig projectBasicConfig= ProjectBasicConfig.builder().projectName("xyz").build();
-            when(projectBasicConfigRepository.findByStringId(null)).thenReturn(Optional.ofNullable(projectBasicConfig));
+            when(projectBasicConfigRepository.findByStringId(projectId)).thenReturn(Optional.ofNullable(projectBasicConfig));
             when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
                     .thenReturn(Collections.singletonList(processorExecutionTraceLog));
             when(jiraCommonService.getApiHost()).thenReturn("xyz");
@@ -332,7 +347,43 @@ public class JobListenerScrumTest {
             // Act
             jobListenerScrum.afterJob(jobExecution);
 
-            verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+            verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
     }
 
+	@Test
+	public void testAfterJob_SuccessExecution_WithOutlierSprintMap() throws Exception {
+		// Arrange
+		projectConfigMap.getJira().setBoardQuery("abc");
+		fieldMapping.setNotificationEnabler(true);
+		when(fetchProjectConfiguration.fetchConfiguration(projectId)).thenReturn(projectConfigMap);
+		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
+				.thenReturn(promisedRs);
+		when(promisedRs.claim()).thenReturn(searchResult);
+		when(jiraIssueRepository.countByBasicProjectConfigIdAndExcludeTypeName(projectId, "")).thenReturn(5L);
+		when(searchResult.getTotal()).thenReturn(5);
+
+		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+		processorExecutionTraceLog.setFirstRunDate(LocalDateTime.now().minusMonths(12).toString());
+		processorExecutionTraceLog.setProgressStats(true); // Ensure progressStats is true
+
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), any()))
+				.thenReturn(Collections.singletonList(processorExecutionTraceLog));
+
+		Map<String, List<String>> outlierSprintMap = Collections.singletonMap("sprint1",
+				Collections.singletonList("issue1"));
+		when(projectSprintIssuesService.findOutliersBelowLowerBound(new ObjectId(projectId)))
+				.thenReturn(outlierSprintMap);
+
+		// Simulate a successful job
+		jobExecution.setStatus(BatchStatus.COMPLETED);
+
+		// Act
+		jobListenerScrum.afterJob(jobExecution);
+
+		// Assert
+		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
+		List<IterationData> expected = Collections
+				.singletonList(new IterationData("sprint1", Collections.singletonList("issue1")));
+		assertEquals(expected, processorExecutionTraceLog.getAdditionalInfo());
+	}
 }

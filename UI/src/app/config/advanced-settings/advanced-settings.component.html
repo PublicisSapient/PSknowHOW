@@ -216,14 +216,13 @@
         </ng-template>
       </p-table>
     </section>
-
     <section *ngIf="findTraceLogForTool('Jira')?.additionalInfo?.length > 0">
-      <h3>additional Info:</h3>
+      <h3>Additional Info:</h3>
       <p-table [value]="findTraceLogForTool('Jira')?.additionalInfo" [tableStyle]="{ 'min-width': '40rem' }"
         [scrollable]="true" scrollHeight="200px">
         <ng-template pTemplate="header">
           <tr>
-            <th>Sprint Name</th>
+            <th>Sprint Name </th>
             <th>Issue tagged</th>
           </tr>
         </ng-template>
@@ -235,7 +234,6 @@
         </ng-template>
       </p-table>
     </section>
-
     <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']">
       <li class="tooltip-item p-d-flex p-pt-2">
         <div class="icon-container">

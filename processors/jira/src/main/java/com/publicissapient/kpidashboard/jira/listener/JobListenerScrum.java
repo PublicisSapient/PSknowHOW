@@ -25,11 +25,14 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -43,6 +46,7 @@ import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.IterationData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
@@ -57,6 +61,8 @@ import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
+import com.publicissapient.kpidashboard.jira.service.ProjectHierarchySyncService;
+import com.publicissapient.kpidashboard.jira.service.ProjectSprintIssuesService;
 
 import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -105,6 +111,12 @@ public class JobListenerScrum implements JobExecutionListener {
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 
+	@Autowired
+	private ProjectSprintIssuesService projectSprintIssuesService;
+
+	@Autowired
+	private ProjectHierarchySyncService projectHierarchySyncService;
+
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 		// in future we can use this method to do something before job execution starts
@@ -120,6 +132,13 @@ public class JobListenerScrum implements JobExecutionListener {
 	@Override
 	public void afterJob(JobExecution jobExecution) {
 		log.info("********in scrum JobExecution listener - finishing job *********");
+		// Sync the sprint hierarchy
+		projectHierarchySyncService.scrumSprintHierarchySync(new ObjectId(projectId));
+		log.debug("Sprint issue map of projectId : {} is : {}", projectId,
+				projectSprintIssuesService.getSprintIssueMapForProject(new ObjectId(projectId)));
+		Map<String, List<String>> outlierSprintMap = projectSprintIssuesService
+				.findOutliersBelowLowerBound(new ObjectId(projectId));
+		log.debug("Outlier sprints of projectId : {} is : {}", projectId, outlierSprintMap);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
@@ -138,10 +157,10 @@ public class JobListenerScrum implements JobExecutionListener {
 						break;
 					}
 				}
-				setExecutionInfoInTraceLog(false, stepFaliureException);
-				sendNotification(stepFaliureException);
+				setExecutionInfoInTraceLog(false, stepFaliureException, outlierSprintMap);
+				sendNotification(ExceptionUtils.getRootCauseMessage(stepFaliureException));
 			} else {
-				setExecutionInfoInTraceLog(true, null);
+				setExecutionInfoInTraceLog(true, null, outlierSprintMap);
 			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in scrum jobListener", e);
@@ -149,7 +168,8 @@ public class JobListenerScrum implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
-
+			// clearing project sprint issue map
+			projectSprintIssuesService.removeProject(new ObjectId(projectId));
 			log.info("removing client for basicProjectConfigId {}", projectId);
 			if (jiraClientService.isContainRestClient(projectId)) {
 				try {
@@ -163,14 +183,13 @@ public class JobListenerScrum implements JobExecutionListener {
 		}
 	}
 
-	private void sendNotification(Throwable stepFaliureException) throws UnknownHostException {
+	private void sendNotification(String notificationMessage) throws UnknownHostException {
 		FieldMapping fieldMapping = fieldMappingRepository.findByProjectConfigId(projectId);
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
-			handler.sendEmailToProjectAdminAndSuperAdmin(
-					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
-							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
-					ExceptionUtils.getRootCauseMessage(stepFaliureException), projectId);
+			handler.sendEmailToProjectAdminAndSuperAdmin(convertDateToCustomFormat(System.currentTimeMillis()) + " on "
+					+ jiraCommonService.getApiHost() + " for \"" + getProjectName(projectBasicConfig) + "\"",
+					notificationMessage, projectId);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}
@@ -180,7 +199,8 @@ public class JobListenerScrum implements JobExecutionListener {
 		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
 	}
 
-	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException) {
+	private void setExecutionInfoInTraceLog(boolean status, Throwable stepFailureException,
+			Map<String, List<String>> outlierSprintMap) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Collections.singletonList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
@@ -191,6 +211,11 @@ public class JobListenerScrum implements JobExecutionListener {
 				if (stepFailureException != null && processorExecutionTraceLog.isProgressStats()) {
 					processorExecutionTraceLog.setErrorMessage(generateLogMessage(stepFailureException));
 					processorExecutionTraceLog.setFailureLog(stepFailureException.getMessage());
+				}
+				if (MapUtils.isNotEmpty(outlierSprintMap) && processorExecutionTraceLog.isProgressStats()) {
+					processorExecutionTraceLog.setAdditionalInfo(outlierSprintMap.entrySet().stream()
+							.map(entry -> new IterationData(entry.getKey(), entry.getValue()))
+							.collect(Collectors.toList()));
 				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
