@@ -51,6 +51,7 @@ import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.IterationData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -381,7 +382,8 @@ public class JobListenerScrumTest {
 
 		// Assert
 		verify(ongoingExecutionsService).markExecutionAsCompleted(projectId);
-		assertEquals(outlierSprintMap, processorExecutionTraceLog.getAdditionalInfo());
+		List<IterationData> expected = Collections
+				.singletonList(new IterationData("sprint1", Collections.singletonList("issue1")));
+		assertEquals(expected, processorExecutionTraceLog.getAdditionalInfo());
 	}
-
 }

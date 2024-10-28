@@ -119,11 +119,6 @@ public class ProjectSprintIssuesServiceImpl implements ProjectSprintIssuesServic
 			if (entry.getValue().size() < lowerBound) {
 				outliers.put(entry.getKey(), entry.getValue());
 			}
-
-			// remove this code as per
-			if (entry.getValue().size() >= lowerBound) {
-				outliers.put(entry.getKey(), entry.getValue());
-			}
 		}
 
 		return outliers;
