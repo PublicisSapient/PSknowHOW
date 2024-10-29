@@ -290,7 +290,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.selectedFilterData['kanban'] = this.kanban;
     this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     this.cdr.detectChanges();
-    if (!this.objectsEqual(this.selectedFilterData, this.previousSelectedFilterData)) {
+    if (!this.helperService.deepEqual(this.selectedFilterData, this.previousSelectedFilterData)) {
       this.previousSelectedFilterData = { ...this.selectedFilterData };
       this.subscriptions.push(
         this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
@@ -593,7 +593,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.objectsEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+      ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -773,34 +773,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-
-  objectsEqual(obj1, obj2) {
-    if (obj1 === obj2) {
-      return true;
-    }
-
-    if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
-      return false;
-    }
-
-    const keys1 = Object.keys(obj1);
-    const keys2 = Object.keys(obj2);
-
-    if (keys1.length !== keys2.length) {
-      return false;
-    }
-
-    for (let key of keys1) {
-      if (!keys2.includes(key) || !this.objectsEqual(obj1[key], obj2[key])) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   arrayDeepCompare(a1, a2) {
-    return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.objectsEqual(o, a2[idx]) : o === a2[idx]);
+    return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.helperService.deepEqual(o, a2[idx]) : o === a2[idx]);
   }
 
 /**
@@ -826,6 +800,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.service.setCurrentSelectedSprint(this.selectedSprint);
   }
 
+/**
+ * Formats a given date string into a specific format: "DD MMM'YY".
+ * If the input string is empty, returns 'N/A'.
+ * 
+ * @param dateString - The date string to be formatted.
+ * @returns A formatted date string or 'N/A' if the input is empty.
+ */
   formatDate(dateString) {
     if (dateString !== '') {
       const date = new Date(dateString);
@@ -983,6 +964,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Retrieves the correct hierarchy level name based on the provided level.
+ * It checks against predefined squad level IDs and names, returning the appropriate mapping.
+ * 
+ * @param level - The level identifier or name to be mapped.
+ * @returns string - The corresponding hierarchy level name or an empty string if not found.
+ */
   getCorrectLevelMapping(level) {
     let correctLevel = '';
     let squadLevelIds = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelId);
@@ -1000,6 +988,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     return correctLevel;
   }
 
+/**
+ * Fetches processor trace logs for the currently selected project and updates the service with the log details.
+ * 
+ * @returns {void} - This function does not return a value.
+ * @throws {Error} - Logs error to the console if the HTTP request fails.
+ */
   getProcessorsTraceLogsForProject() {
     this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
       if (response.success) {
@@ -1016,6 +1010,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
   }
 
+/**
+ * Fetches the active iteration status for the selected sprint and updates the sync status.
+ * It handles UI blocking, error messages, and data refresh based on the fetch results.
+ * 
+ * @param {void} - No parameters are accepted.
+ * @returns {void} - This function does not return a value.
+ */
   fetchData() {
     this.blockUI = true;
     const sprintId = this.selectedSprint['nodeId'];

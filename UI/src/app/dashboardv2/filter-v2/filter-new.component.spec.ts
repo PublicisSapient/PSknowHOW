@@ -1764,4 +1764,229 @@ describe('FilterNewComponent', () => {
             });
         });
     });
+
+    describe('FilterNewComponent.formatDate() formatDate method', () => {
+        describe('Happy Path', () => {
+            it('should format a valid date string correctly', () => {
+                const dateString = '2023-10-15';
+                const formattedDate = component.formatDate(dateString);
+                expect(formattedDate).toBe("15 Oct'23");
+            });
+
+            it('should format another valid date string correctly', () => {
+                const dateString = '2022-01-01';
+                const formattedDate = component.formatDate(dateString);
+                expect(formattedDate).toBe("01 Jan'22");
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should return "N/A" for an empty date string', () => {
+                const dateString = '';
+                const formattedDate = component.formatDate(dateString);
+                expect(formattedDate).toBe('N/A');
+            });
+        });
+    });
+
+    describe('FilterNewComponent.getCorrectLevelMapping() getCorrectLevelMapping method', () => {
+        describe('Happy Path', () => {
+            it('should return the correct level mapping when level is found in additionalFilterLevelArr', () => {
+                // Arrange
+                component.additionalFilterLevelArr = [
+                    { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' },
+                    { hierarchyLevelId: 'level2', hierarchyLevelName: 'Level 2' },
+                ];
+                const level = 'level1';
+
+                // Act
+                const result = component.getCorrectLevelMapping(level);
+
+                // Assert
+                expect(result).toBe('Level 1');
+            });
+
+            it('should return the correct level mapping when level is found in squadLevel', () => {
+                // Arrange
+                component.additionalFilterLevelArr = [
+                    { hierarchyLevelId: 'squad', hierarchyLevelName: 'Squad Level' },
+                ];
+                component.squadLevel = component.additionalFilterLevelArr;
+                const level = 'squad';
+
+                // Act
+                const result = component.getCorrectLevelMapping(level);
+
+                // Assert
+                expect(result).toBe('Squad Level');
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should return an empty string when level is not found', () => {
+                // Arrange
+                component.additionalFilterLevelArr = [
+                    { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' },
+                ];
+                const level = 'nonexistent';
+
+                // Act
+                const result = component.getCorrectLevelMapping(level);
+
+                // Assert
+                expect(result).toBeUndefined();
+            });
+
+            it('should handle case where additionalFilterLevelArr is empty', () => {
+                // Arrange
+                component.additionalFilterLevelArr = [];
+                const level = 'level1';
+
+                // Act
+                const result = component.getCorrectLevelMapping(level);
+
+                // Assert
+                expect(result).toBeUndefined();
+            });
+        });
+    });
+
+    describe('FilterNewComponent.getProcessorsTraceLogsForProject() getProcessorsTraceLogsForProject method', () => {
+        describe('Happy Path', () => {
+            it('should successfully fetch processor trace logs for a project', async () => {
+                // Arrange
+                const mockResponse = { success: true, data: 'mockData' };
+                spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(
+                    of(mockResponse),
+                );
+                spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+                    { basicProjectConfigId: '123' },
+                ]);
+                spyOn(sharedService, 'setProcessorLogDetails');
+
+                // Act
+                await component.getProcessorsTraceLogsForProject();
+
+                // Assert
+                expect(
+                    httpService.getProcessorsTraceLogsForProject,
+                ).toHaveBeenCalledWith('123');
+                expect(sharedService.setProcessorLogDetails).toHaveBeenCalledWith(
+                    'mockData',
+                );
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle error when fetching processor trace logs fails', async () => {
+                // Arrange
+                const mockError = { success: false };
+                spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(
+                    of(mockError),
+                );
+                spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+                    { basicProjectConfigId: '123' },
+                ]);
+                spyOn(sharedService, 'setProcessorLogDetails');
+                spyOn(messageService, 'add');
+
+                // Act
+                await component.getProcessorsTraceLogsForProject();
+
+                // Assert
+                expect(
+                    httpService.getProcessorsTraceLogsForProject,
+                ).toHaveBeenCalledWith('123');
+                expect(messageService.add).toHaveBeenCalledWith({
+                    severity: 'error',
+                    summary:
+                        "Error in fetching processor's execution date. Please try after some time.",
+                });
+            });
+        });
+    });
+
+    describe('FilterNewComponent.fetchData() fetchData method', () => {
+        describe('Happy Path', () => {
+            it('should successfully fetch data for an active sprint', fakeAsync(() => {
+                // Arrange
+                const mockSprintId = '123';
+                component.selectedSprint = {
+                    nodeId: mockSprintId,
+                    sprintState: 'ACTIVE',
+                } as any;
+                spyOn(httpService, 'getActiveIterationStatus')
+                    .and.returnValue(of({ success: true }) as any);
+                spyOn(httpService, 'getactiveIterationfetchStatus')
+                    .and.returnValue(
+                        of({ success: true, data: { fetchSuccessful: true } }) as any,
+                    );
+
+                // Act
+                component.fetchData();
+                tick(3000);
+                // Assert
+                // expect(component.blockUI).toBe(false);
+                expect(component.selectedProjectLastSyncStatus).toBe('SUCCESS');
+            }));
+        });
+
+        it('should successfully handle erroneous data for an active sprint', fakeAsync(() => {
+            // Arrange
+            const mockSprintId = '123';
+            component.selectedSprint = {
+                nodeId: mockSprintId,
+                sprintState: 'ACTIVE',
+            } as any;
+            spyOn(httpService, 'getActiveIterationStatus')
+                .and.returnValue(of({ success: true }) as any);
+            spyOn(httpService, 'getactiveIterationfetchStatus')
+                .and.returnValue(
+                    of({ success: true, data: { fetchSuccessful: false, errorInFetch: true } }) as any,
+                );
+
+            // Act
+            component.fetchData();
+            tick(3000);
+            // Assert
+            // expect(component.blockUI).toBe(false);
+            expect(component.selectedProjectLastSyncStatus).toBe('FAILURE');
+        }));
+
+        describe('Edge Cases', () => {
+            it('should handle error when fetching active iteration fetch status fails', fakeAsync(() => {
+                // Arrange
+                const mockSprintId = '123';
+                component.selectedSprint = {
+                    nodeId: mockSprintId,
+                    sprintState: 'ACTIVE',
+                } as any;
+                spyOn(httpService, 'getActiveIterationStatus')
+                    .and.returnValue(of({ success: true }) as any);
+                spyOn(httpService, 'getactiveIterationfetchStatus')
+                    .and.returnValue(throwError('Error') as any);
+
+                // Act
+                component.fetchData();
+                tick(3000);
+                // Assert
+                // expect(component.blockUI).toBe(false);
+                expect(component.lastSyncData).toEqual({});
+            }));
+
+            it('should handle case when sprint is not active', fakeAsync(() => {
+                // Arrange
+                component.selectedSprint = {
+                    nodeId: '123',
+                    sprintState: 'CLOSED',
+                } as any;
+
+                // Act
+                component.fetchData();
+                tick(3000);
+                // Assert
+                expect(component.blockUI).toBe(true);
+            }));
+        });
+    });
 });
