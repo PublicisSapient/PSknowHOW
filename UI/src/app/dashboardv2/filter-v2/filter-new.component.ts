@@ -422,44 +422,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         (response) => {
           if (response.success === true) {
             let data = response.data.userBoardConfigDTO;
-            if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
-              const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
-              data[this.selectedType].forEach((board) => {
-                if (board?.filters) {
-                  if (levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0]) {
-                    board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
-                  }
-                  if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-                    board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
-                  }
-                  if (board.filters.parentFilter?.emittedLevel) {
-                    if (levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0]) {
-                      board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
-                    }
-                  }
-
-                  if (board.boardSlug !== 'developer' && board.boardSlug !== 'dora') {
-                    board.filters.additionalFilters?.forEach(element => {
-                      if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
-                        element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
-                      }
-                    });
-                  }
-                }
-              });
-
-              data['others'].forEach((board) => {
-                if (board?.filters) {
-                  board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.primaryFilter.defaultLevel.labelName)[0].hierarchyLevelName;
-                  if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-                    board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
-                  }
-                  if (board.filters.parentFilter?.emittedLevel) {
-                    board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
-                  }
-                }
-              });
-            }
+            data = this.setLevelNames(data);
             data['configDetails'] = response.data.configDetails;
             this.dashConfigData = data;
             this.service.setDashConfigData(data, false);
@@ -489,11 +452,75 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Updates the level names in the provided data based on the hierarchy details stored in localStorage.
+   * It modifies the label names of primary and parent filters for each board in the data structure.
+   * 
+   * @param {any} data - The data object containing boards with filters to be updated.
+   * @returns {any} - The updated data object with modified level names.
+   * @throws {Error} - Throws an error if localStorage data is not in the expected format.
+   */
+  setLevelNames(data) {
+    if (JSON.parse(localStorage.getItem('completeHierarchyData'))) {
+      const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
+      data[this.selectedType].forEach((board) => {
+        if (board?.filters) {
+          if (levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0]) {
+            board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
+          }
+          if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
+            board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+          }
+          if (board.filters.parentFilter?.emittedLevel) {
+            if (levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0]) {
+              board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+            }
+          }
+
+          if (board.boardSlug !== 'developer' && board.boardSlug !== 'dora') {
+            board.filters.additionalFilters?.forEach(element => {
+              if (levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0]) {
+                element.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === element.defaultLevel.labelName)[0].hierarchyLevelName;
+              }
+            });
+          }
+        }
+      });
+
+      data['others'].forEach((board) => {
+        if (board?.filters) {
+          board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.primaryFilter.defaultLevel.labelName)[0].hierarchyLevelName;
+          if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
+            board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+          }
+          if (board.filters.parentFilter?.emittedLevel) {
+            board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+          }
+        }
+      });
+    }
+
+    return data;
+  }
+
+  /**
+   * Handles changes to the parent filter by updating the primary filter configuration 
+   * and setting the selected level based on the event provided.
+   * 
+   * @param event - The new value for the selected level.
+   * @returns void
+   * @throws None
+   */
   handleParentFilterChange(event) {
     this.primaryFilterConfig = { ...this.selectedBoard.filters.primaryFilter };
     this.selectedLevel = event;
   }
 
+  /**
+   * Sets the color object based on the provided data array, mapping node IDs to their respective colors and names.
+   * @param {Array<{ nodeId: string, nodeName: string, labelName: string }>} data - An array of objects containing node information.
+   * @returns {void} - This function does not return a value.
+   */
   setColors(data) {
     let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
@@ -511,6 +538,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     return this.helperService.getObjectKeys(obj)
   }
 
+  /**
+   * Removes a filter identified by the given ID from the color object and updates the filter selection state.
+   * Called only on click of the "X" button in selected filters
+   * 
+   * @param {string} id - The ID of the filter to be removed.
+   * @returns {void}
+   */
   removeFilter(id) {
     let stateFilters = this.helperService.getBackupOfFilterSelectionState();
     if (Object.keys(this.colorObj).length > 1) {
@@ -528,8 +562,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         }
 
         delete stateFilters['additional_level'];
-
-        this.filterApplyData['selectedMap']['Project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
+        if (this.filterApplyData['selectedMap']) {
+          this.filterApplyData['selectedMap']['Project'] = stateFilters['primary_level'].map((proj) => proj.nodeId);
+        }
         this.service.setSelectedTrends(stateFilters['primary_level']);
 
         this.handlePrimaryFilterChange(stateFilters['primary_level']);
@@ -768,6 +803,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.objectsEqual(o, a2[idx]) : o === a2[idx]);
   }
 
+/**
+ * Sets the sprint details based on the provided event data, formatting start and end dates,
+ * and updating the selected sprint and additional data flags.
+ * 
+ * @param {any} event - The event data containing sprint or release information.
+ * @returns {void} - This function does not return a value.
+ */
   setSprintDetails(event) {
     const startDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintStartDate' : 'releaseStartDate',
       endDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintEndDate' : 'releaseEndDate';

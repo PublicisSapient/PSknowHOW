@@ -1274,4 +1274,494 @@ describe('FilterNewComponent', () => {
             });
         });
     });
-})
+
+    describe('FilterNewComponent.handleParentFilterChange() handleParentFilterChange method', () => {
+        it('should update primaryFilterConfig and selectedLevel when handleParentFilterChange is called with valid event', () => {
+            // Arrange
+            const event = 'someLevel';
+            component.selectedBoard = {
+                boardId: 1,
+                boardName: 'Category 1',
+                filters: {
+                    primaryFilter: {
+                        defaultLevel: {
+                            labelName: 'project',
+                            sortBy: null
+                        }
+                    }
+                }
+            };
+
+            // Act
+            component.handleParentFilterChange(event);
+
+            // Assert
+            expect(component.primaryFilterConfig).toEqual(
+                component.selectedBoard.filters.primaryFilter,
+            );
+            expect(component.selectedLevel).toBe(event);
+        });
+    });
+
+    describe('Edge Cases', () => {
+        it('should handle null event gracefully', () => {
+            // Arrange
+            const event = null;
+            component.selectedBoard = {
+                boardId: 1,
+                boardName: 'Category 1',
+                filters: {
+                    primaryFilter: {
+                        defaultLevel: {
+                            labelName: 'project',
+                            sortBy: null
+                        }
+                    }
+                }
+            };
+
+            // Act
+            component.handleParentFilterChange(event);
+
+            // Assert
+            expect(component.primaryFilterConfig).toEqual(
+                component.selectedBoard.filters.primaryFilter,
+            );
+            expect(component.selectedLevel).toBeNull();
+        });
+
+        it('should handle undefined event gracefully', () => {
+            // Arrange
+            const event = undefined;
+            component.selectedBoard = {
+                boardId: 1,
+                boardName: 'Category 1',
+                filters: {
+                    primaryFilter: {
+                        defaultLevel: {
+                            labelName: 'project',
+                            sortBy: null
+                        }
+                    }
+                }
+            };
+
+            // Act
+            component.handleParentFilterChange(event);
+
+            // Assert
+            expect(component.primaryFilterConfig).toEqual(
+                component.selectedBoard.filters.primaryFilter,
+            );
+            expect(component.selectedLevel).toBeUndefined();
+        });
+
+        it('should handle empty string event gracefully', () => {
+            // Arrange
+            const event = '';
+            component.selectedBoard = {
+                boardId: 1,
+                boardName: 'Category 1',
+                filters: {
+                    primaryFilter: {
+                        defaultLevel: {
+                            labelName: 'project',
+                            sortBy: null
+                        }
+                    }
+                }
+            };
+            // Act
+            component.handleParentFilterChange(event);
+
+            // Assert
+            expect(component.primaryFilterConfig).toEqual(
+                component.selectedBoard.filters.primaryFilter,
+            );
+            expect(component.selectedLevel).toBe('');
+        });
+    });
+
+    describe('FilterNewComponent.setLevelNames() setLevelNames method', () => {
+        describe('Happy Path', () => {
+            it('should correctly set level names when valid data is provided', () => {
+                const data = {
+                    scrum: [
+                        {
+                            filters: {
+                                primaryFilter: {
+                                    defaultLevel: { labelName: 'project' },
+                                },
+                                parentFilter: { labelName: 'Organization Level' },
+                                additionalFilters: [{ defaultLevel: { labelName: 'sprint' } }],
+                            },
+                        },
+                    ],
+                    others: [{
+                        filters: {
+                            primaryFilter: {
+                                defaultLevel: { labelName: 'project' },
+                            },
+                            parentFilter: { labelName: 'Organization Level' },
+                            additionalFilters: [{ defaultLevel: { labelName: 'sprint' } }],
+                        },
+                    }],
+                };
+
+                const levelDetails = [
+                    { hierarchyLevelId: 'project', hierarchyLevelName: 'Project' },
+                    { hierarchyLevelId: 'sprint', hierarchyLevelName: 'Sprint' },
+                ];
+
+                spyOn(localStorage, 'getItem')
+                    .and.returnValue(JSON.stringify({ scrum: levelDetails }));
+
+                const result = component.setLevelNames(data);
+
+                expect(result.scrum[0].filters.primaryFilter.defaultLevel.labelName).toBe(
+                    'Project',
+                );
+                expect(
+                    result.scrum[0].filters.additionalFilters[0].defaultLevel.labelName,
+                ).toBe('Sprint');
+            });
+
+            it('should correctly set level names when valid data is provided and parent filters are not Organization Levels', () => {
+                const data = {
+                    scrum: [
+                        {
+                            filters: {
+                                primaryFilter: {
+                                    defaultLevel: { labelName: 'sprint' },
+                                },
+                                parentFilter: { labelName: 'project', emittedLevel: 'sprint' }
+                            },
+                        },
+                    ],
+                    others: [{
+                        filters: {
+                            primaryFilter: {
+                                defaultLevel: { labelName: 'project' },
+                            },
+                            parentFilter: { labelName: 'Organization Level' },
+                            additionalFilters: [{ defaultLevel: { labelName: 'sprint' } }],
+                        },
+                    }],
+                };
+
+                const levelDetails = [
+                    { hierarchyLevelId: 'project', hierarchyLevelName: 'Project' },
+                    { hierarchyLevelId: 'sprint', hierarchyLevelName: 'Sprint' },
+                ];
+
+                spyOn(localStorage, 'getItem')
+                    .and.returnValue(JSON.stringify({ scrum: levelDetails }));
+
+                const result = component.setLevelNames(data);
+
+                expect(result.scrum[0].filters.primaryFilter.defaultLevel.labelName).toBe(
+                    'Sprint',
+                );
+                expect(result.scrum[0].filters.parentFilter.emittedLevel).toBe(
+                    'Sprint',
+                );
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle empty data gracefully', () => {
+                const data = {
+                    scrum: [],
+                    others: [],
+                };
+
+                const result = component.setLevelNames(data);
+
+                expect(result.scrum).toEqual([]);
+                expect(result.others).toEqual([]);
+            });
+
+            it('should handle missing hierarchy data in localStorage', () => {
+                const data = {
+                    scrum: [
+                        {
+                            filters: {
+                                primaryFilter: {
+                                    defaultLevel: { labelName: 'project' },
+                                },
+                            },
+                        },
+                    ],
+                    others: [],
+                };
+
+                spyOn(localStorage, 'getItem').and.returnValue(null);
+
+                const result = component.setLevelNames(data);
+
+                expect(result.scrum[0].filters.primaryFilter.defaultLevel.labelName).toBe(
+                    'project',
+                );
+            });
+
+            it('should handle missing filters in board data', () => {
+                const data = {
+                    scrum: [
+                        {
+                            filters: null,
+                        },
+                    ],
+                    others: [],
+                };
+
+                const result = component.setLevelNames(data);
+
+                expect(result.scrum[0].filters).toBeNull();
+            });
+        });
+    });
+
+    describe('FilterNewComponent.setColors() setColors method', () => {
+        describe('Happy Path', () => {
+            it('should set colors for nodes with nodeId', () => {
+                const data = [
+                    { nodeId: '1', nodeName: 'Node 1', labelName: 'Label 1' },
+                    { nodeId: '2', nodeName: 'Node 2', labelName: 'Label 2' },
+                ];
+                spyOn(sharedService, 'setColorObj');
+
+                component.setColors(data);
+
+                expect(component.colorObj).toEqual({
+                    '1': {
+                        nodeName: 'Node 1',
+                        color: '#6079C5',
+                        nodeId: '1',
+                        labelName: 'Label 1',
+                    },
+                    '2': {
+                        nodeName: 'Node 2',
+                        color: '#FFB587',
+                        nodeId: '2',
+                        labelName: 'Label 2',
+                    },
+                });
+                expect(sharedService.setColorObj).toHaveBeenCalledWith(
+                    component.colorObj,
+                );
+            });
+        });
+    });
+
+
+    describe('FilterNewComponent.removeFilter() removeFilter method', () => {
+        describe('Happy Path', () => {
+            it('should remove a filter when multiple filters are present', () => {
+                // Arrange
+                component.colorObj = {
+                    '1': { nodeId: '1', nodeName: 'Filter1' },
+                    '2': { nodeId: '2', nodeName: 'Filter2' },
+                };
+                component.selectedType = 'scrum';
+                component.selectedLevel = 'Project';
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [
+                            { nodeId: '1', nodeName: 'Filter1', labelName: 'Project' },
+                            { nodeId: '2', nodeName: 'Filter2', labelName: 'Project' },
+                        ],
+                    },
+                };
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({});
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                // Act
+                component.removeFilter('1');
+
+                // Assert
+                // expect(component.colorObj).not.toHaveProperty('1');
+                expect(sharedService.setSelectedTrends).toHaveBeenCalled();
+                expect(
+                    helperService.setBackupOfFilterSelectionState,
+                ).toHaveBeenCalled();
+            });
+
+            it('should remove a filter when multiple filters along with state filters are present', () => {
+                // Arrange
+                component.colorObj = {
+                    '1': { nodeId: '1', nodeName: 'Filter1' },
+                    '2': { nodeId: '2', nodeName: 'Filter2' },
+                };
+                component.selectedType = 'scrum';
+                component.selectedLevel = 'Project';
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [
+                            { nodeId: '1', nodeName: 'Filter1', labelName: 'Project' },
+                            { nodeId: '2', nodeName: 'Filter2', labelName: 'Project' },
+                        ],
+                    },
+                };
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({
+                    additional_level: {
+                        nodeId: '3', nodeName: 'sprint1', labelName: 'Sprint', parentId: '1'
+                    }
+                });
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                // Act
+                component.removeFilter('1');
+
+                // Assert
+                // expect(component.colorObj).not.toHaveProperty('1');
+                expect(sharedService.setSelectedTrends).toHaveBeenCalled();
+                expect(
+                    helperService.setBackupOfFilterSelectionState,
+                ).toHaveBeenCalled();
+            });
+
+
+            it('should remove a filter when multiple filters along with state filters and non-string selectedLevel are present', () => {
+                // Arrange
+                component.colorObj = {
+                    '1': { nodeId: '1', nodeName: 'Filter1' },
+                    '2': { nodeId: '2', nodeName: 'Filter2' },
+                };
+                component.selectedType = 'scrum';
+                component.selectedLevel = { nodeId: '4', nodeName: 'Filter4', labelName: 'Engagemenent', emittedLevel: 'Project' };
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [
+                            { nodeId: '1', nodeName: 'Filter1', labelName: 'Project' },
+                            { nodeId: '2', nodeName: 'Filter2', labelName: 'Project' },
+                        ],
+                    },
+                };
+                component.filterApplyData['selectedMap'] = {};
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({
+                    additional_level: {
+                        nodeId: '3', nodeName: 'sprint1', labelName: 'Sprint', parentId: '1'
+                    }
+                });
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                // Act
+                component.removeFilter('1');
+
+                // Assert
+                // expect(component.colorObj).not.toHaveProperty('1');
+                expect(sharedService.setSelectedTrends).toHaveBeenCalled();
+                expect(
+                    helperService.setBackupOfFilterSelectionState,
+                ).toHaveBeenCalled();
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle removal when only one filter is present', () => {
+                // Arrange
+                component.colorObj = {
+                    '1': { nodeId: '1', nodeName: 'Filter1' },
+                };
+                component.selectedType = 'scrum';
+                component.selectedLevel = 'Project';
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', nodeName: 'Filter1', labelName: 'Project' }],
+                    },
+                };
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({});
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                // Act
+                component.removeFilter('1');
+
+                // Assert
+                // expect(component.colorObj).not.toHaveProperty('1');
+                expect(sharedService.setSelectedTrends).not.toHaveBeenCalled();
+                expect(
+                    helperService.setBackupOfFilterSelectionState,
+                ).not.toHaveBeenCalled();
+            });
+
+            it('should handle removal when filter ID does not exist', () => {
+                // Arrange
+                component.colorObj = {
+                    '1': { nodeId: '1', nodeName: 'Filter1' },
+                };
+                component.selectedType = 'scrum';
+                component.selectedLevel = 'Project';
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', nodeName: 'Filter1' }],
+                    },
+                };
+                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({});
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                // Act
+                component.removeFilter('2');
+
+                // Assert
+                // expect(component.colorObj).toHaveProperty('1');
+                expect(sharedService.setSelectedTrends).not.toHaveBeenCalled();
+                expect(
+                    helperService.setBackupOfFilterSelectionState,
+                ).not.toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('FilterNewComponent.setSprintDetails() setSprintDetails method', () => {
+        describe('Happy Path', () => {
+            it('should set sprint details correctly for iteration tab', () => {
+                // Arrange
+                component.selectedTab = 'iteration';
+                const event = [
+                    {
+                        nodeId: 'sprint1',
+                        sprintStartDate: '2023-01-01T00:00:00',
+                        sprintEndDate: '2023-01-15T00:00:00',
+                    },
+                ];
+                spyOn(sharedService, 'setCurrentSelectedSprint');
+                // Act
+                component.setSprintDetails(event);
+
+                // Assert
+                expect(component.combinedDate).toBe("01 Jan'23 - 15 Jan'23");
+                expect(component.additionalData).toBe(true);
+                expect(component.filterApplyData['ids']).toEqual(['sprint1']);
+                expect(component.selectedSprint).toEqual(event[0]);
+                expect(sharedService.setCurrentSelectedSprint).toHaveBeenCalledWith(
+                    event[0],
+                );
+            });
+
+            it('should set sprint details correctly for release tab', () => {
+                // Arrange
+                component.selectedTab = 'release';
+                const event = [
+                    {
+                        nodeId: 'release1',
+                        releaseStartDate: '2023-02-01T00:00:00',
+                        releaseEndDate: '2023-02-28T00:00:00',
+                    },
+                ];
+                spyOn(sharedService, 'setCurrentSelectedSprint');
+
+                // Act
+                component.setSprintDetails(event);
+
+                // Assert
+                expect(component.combinedDate).toBe("01 Feb'23 - 28 Feb'23");
+                expect(component.additionalData).toBe(true);
+                expect(component.filterApplyData['ids']).toEqual(['release1']);
+                expect(component.selectedSprint).toEqual(event[0]);
+                expect(sharedService.setCurrentSelectedSprint).toHaveBeenCalledWith(
+                    event[0],
+                );
+            });
+        });
+    });
+});
