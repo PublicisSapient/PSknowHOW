@@ -48,8 +48,8 @@ import com.publicissapient.kpidashboard.apis.model.ReleaseFilter;
 import com.publicissapient.kpidashboard.apis.model.SprintFilter;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -83,7 +83,7 @@ public final class KPIHelperUtil {
 			aggregationTreeNodeList
 					.add(new Node(0, rootId, rootId, null, Filters.ROOT.name(), new KanbanAccountHierarchy()));
 		} else {
-			aggregationTreeNodeList.add(new Node(0, rootId, rootId, null, Filters.ROOT.name(), new AccountHierarchy()));
+			aggregationTreeNodeList.add(new Node(0, rootId, rootId, null, Filters.ROOT.name(), new ProjectHierarchy()));
 		}
 
 		aggregationTreeNodeList.stream().filter(node -> node.getGroupName().equalsIgnoreCase(firstLevel))
