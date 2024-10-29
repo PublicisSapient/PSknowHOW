@@ -16,7 +16,9 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1110;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -43,8 +45,9 @@ public class FixathonFieldMappingStructure {
 	public static final String VALUE = "value";
 	private static final String FIELD_CATEGORY = "fieldCategory";
 	private static final String SECTION = "section";
-	private static final Object CHIPS = "chips";
+	private static final String CHIPS = "chips";
 	private static final String DELIVERED_STATUS = "jiraIterationCompletionStatusKPI138";
+	private static final String AGEING_CONSIDERED_STATUS = "jiraStatusToConsiderKPI127";
 	public static final String ISSUE_TYPES_TO_CONSIDER = "Issue types to consider";
 	public static final String JIRA_ISSUE_TYPE_NAMES_KPI_161 = "jiraIssueTypeNamesKPI161";
 	public static final String JIRA_STATUS_FOR_NOT_REFINED_KPI_161 = "jiraStatusForNotRefinedKPI161";
@@ -70,7 +73,14 @@ public class FixathonFieldMappingStructure {
 		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
 				.getCollection(FIELD_MAPPING_STRUCTURE);
 		updateFieldMappingStr(fieldMappingStructCollection);
-		deleteFieldMappingStr(fieldMappingStructCollection);
+		deleteFieldMappingStr(fieldMappingStructCollection,
+				List.of(DELIVERED_STATUS, "jiraDefectDroppedStatusKPI127", "jiraDodKPI127", "jiraLiveStatusKPI127"));
+		// production defect ageing
+		Document jiraStatusToConsiderKPI127 = createFieldMappingStructure(AGEING_CONSIDERED_STATUS,
+				"Statuses to be included", CHIPS,
+				"workflow statuses to identify ageing production defects in the backlog").append(FIELD_DISPLAY_ORDER, 8)
+				.append(SECTION_ORDER, 4);
+		insertToFieldMappingStructure(fieldMappingStructCollection, Arrays.asList(jiraStatusToConsiderKPI127));
 		// Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider as Stories",
 				fieldMappingStructCollection);
@@ -92,6 +102,11 @@ public class FixathonFieldMappingStructure {
 		updateFieldDisplayOrder(JIRA_STATUS_FOR_REFINED_KPI_161, 2, fieldMappingStructCollection);
 		updateFieldDisplayOrder(JIRA_STATUS_FOR_IN_PROGRESS_KPI_161, 3, fieldMappingStructCollection);
 		updateFieldDisplayOrderForKPI161(fieldMappingStructCollection);
+	}
+
+	private void insertToFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection,
+			List<Document> list) {
+		fieldMappingStructCollection.insertMany(list);
 	}
 
 	public void updateFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
@@ -120,8 +135,9 @@ public class FixathonFieldMappingStructure {
 				new Document("$set", new Document(FIELD_LABEL, fieldLabel)));
 	}
 
-	private void deleteFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.deleteMany(Filters.or(Filters.eq(FIELD_NAME, DELIVERED_STATUS)));
+	private void deleteFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection,
+			List<String> fieldsToDelete) {
+		fieldMappingStructCollection.deleteMany(Filters.or(Filters.in(FIELD_NAME, fieldsToDelete)));
 	}
 
 	public void addRedirectUrlField(MongoCollection<Document> fieldMappingStructCollection) {
@@ -169,7 +185,22 @@ public class FixathonFieldMappingStructure {
 		updateFieldMappingByFieldName(DELIVERED_STATUS, "Issue Delivered Status",
 				"Status from workflow on which issue is delivered. <br> Example: Closed<hr>",
 				fieldMappingStructCollection);
-		insertFieldMappingStructure(fieldMappingStructCollection);
+
+		// insert to fieldmapping structure
+		List<Document> documents = new ArrayList<>();
+		documents.add(createFieldMappingStructure(DELIVERED_STATUS, "Custom Completion status/es", CHIPS,
+				"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"));
+		documents.add(createFieldMappingStructure("jiraDefectDroppedStatusKPI127", "Defect Dropped Status", CHIPS,
+				"All statuses with which defect is linked."));
+		Document jiraDodKPI127 = createFieldMappingStructure("jiraDodKPI127", "Status to identify completed issues",
+				CHIPS, "All workflow statuses used to close issues of issue types in consideration.");
+		jiraDodKPI127.append(FIELD_DISPLAY_ORDER, 8).append(SECTION_ORDER, 4).append("mandatory", true);
+		documents.add(jiraDodKPI127);
+		documents.add(createFieldMappingStructure("jiraLiveStatusKPI127", "Status to identify live issues", "text",
+				"Status/es that identify that an issue is LIVE in Production."));
+		insertToFieldMappingStructure(fieldMappingStructCollection, documents);
+		deleteFieldMappingStr(fieldMappingStructCollection, Arrays.asList(AGEING_CONSIDERED_STATUS));
+
 		// Rollback Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", ISSUE_TYPES_TO_CONSIDER, fieldMappingStructCollection);
 		updateFieldLabel("jiraDefectClosedStatusKPI137", "Status to identify Closed Bugs",
@@ -183,16 +214,6 @@ public class FixathonFieldMappingStructure {
 		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_REFINED_KPI_161, 2, fieldMappingStructCollection);
 		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_IN_PROGRESS_KPI_161, 3, fieldMappingStructCollection);
 		rollBackFieldDisplayOrderForKPI161(fieldMappingStructCollection);
-	}
-
-	public void insertFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection) {
-		Document jiraIterationCompletionStatusKPI138 = new Document().append(FIELD_NAME, DELIVERED_STATUS)
-				.append(FIELD_LABEL, "Custom Completion status/es").append(FIELD_TYPE, CHIPS)
-				.append(FIELD_CATEGORY, "workflow").append(SECTION, "WorkFlow Status Mapping")
-				.append(TOOL_TIP, new Document(DEFINITION,
-						"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"));
-
-		fieldMappingStructCollection.insertMany(Arrays.asList(jiraIterationCompletionStatusKPI138));
 	}
 
 	public void updateFieldLabel(String fieldName, String newLabelName,
@@ -211,12 +232,6 @@ public class FixathonFieldMappingStructure {
 			MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
 				new Document("$set", new Document(FIELD_DISPLAY_ORDER, newOrder)));
-	}
-
-	public void updateFieldDisplayOrder(String fieldName, Integer fieldDisplayOrder,
-			MongoCollection<Document> fieldMappingStructCollection) {
-		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
-				new Document("$set", new Document(FIELD_DISPLAY_ORDER, fieldDisplayOrder)));
 	}
 
 	public void updateFieldDisplayOrderForKPI161(MongoCollection<Document> fieldMappingStructCollection) {
@@ -289,6 +304,15 @@ public class FixathonFieldMappingStructure {
 		updateTooltipDefinition(JIRA_LIVE_STATUS_KPI_171,
 				"Status/es that identify that an issue is LIVE in Production'", fieldMappingStructCollection);
 		rollbackUpdateFieldDisplayOrder(JIRA_LIVE_STATUS_KPI_171, fieldMappingStructCollection);
+
+	}
+
+	private Document createFieldMappingStructure(String fieldName, String fieldLabel, String fieldType,
+			String tooltip) {
+
+		return new Document().append(FIELD_NAME, fieldName).append(FIELD_LABEL, fieldLabel)
+				.append(FIELD_TYPE, fieldType).append(FIELD_CATEGORY, "workflow")
+				.append(SECTION, "WorkFlow Status Mapping").append(TOOL_TIP, new Document(DEFINITION, tooltip));
 	}
 
 }
