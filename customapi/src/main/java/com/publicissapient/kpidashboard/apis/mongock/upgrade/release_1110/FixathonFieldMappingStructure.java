@@ -79,7 +79,7 @@ public class FixathonFieldMappingStructure {
 		Document jiraStatusToConsiderKPI127 = createFieldMappingStructure(AGEING_CONSIDERED_STATUS,
 				"Statuses to be included", CHIPS,
 				"workflow statuses to identify ageing production defects in the backlog").append(FIELD_DISPLAY_ORDER, 8)
-				.append(SECTION_ORDER, 4);
+				.append(SECTION_ORDER, 4).append("mandatory", true);
 		insertToFieldMappingStructure(fieldMappingStructCollection, Arrays.asList(jiraStatusToConsiderKPI127));
 		// Unlinked Work Items field mapping update
 		updateFieldLabel("jiraStoryIdentificationKPI129", "Issue types to consider as Stories",
@@ -194,7 +194,7 @@ public class FixathonFieldMappingStructure {
 				"All statuses with which defect is linked."));
 		Document jiraDodKPI127 = createFieldMappingStructure("jiraDodKPI127", "Status to identify completed issues",
 				CHIPS, "All workflow statuses used to close issues of issue types in consideration.");
-		jiraDodKPI127.append(FIELD_DISPLAY_ORDER, 8).append(SECTION_ORDER, 4).append("mandatory", true);
+		jiraDodKPI127.append(FIELD_DISPLAY_ORDER, 8).append(SECTION_ORDER, 4);
 		documents.add(jiraDodKPI127);
 		documents.add(createFieldMappingStructure("jiraLiveStatusKPI127", "Status to identify live issues", "text",
 				"Status/es that identify that an issue is LIVE in Production."));

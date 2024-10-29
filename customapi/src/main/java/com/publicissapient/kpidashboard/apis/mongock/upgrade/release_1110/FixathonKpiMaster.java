@@ -161,7 +161,7 @@ public class FixathonKpiMaster {
 		updateAggregationCriteria(kpiMaster, Arrays.asList("kpi166"), "sum");
 		changeKpiOrder("kpi161", 4, kpiMaster);
 		changeKpiOrder("kpi138", 1, kpiMaster);
-		changeKpiOrder("kpi127", 2, kpiMaster);
+		changeKpiOrder(KPI_127, 2, kpiMaster);
 		changeKpiOrder("kpi137", 5, kpiMaster);
 		changeKpiOrder(KPI_129, 3, kpiMaster);
 		changeKpiOrder("kpi139", 6, kpiMaster);
