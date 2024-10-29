@@ -147,6 +147,7 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
+import { KpiCardV3Component } from './component/kpi-card-v3/kpi-card-v3.component';
 
 
 /******************************************************/
@@ -236,7 +237,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         RecommendationsComponent,
         ChartWithFiltersComponent,
         KpiAdditionalFilterComponent,
-        StickyHeaderV2Component
+        StickyHeaderV2Component,
+        KpiCardV3Component
     ],
     imports: [
         DropdownModule,
