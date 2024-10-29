@@ -17,6 +17,12 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
+class MockMultiSelect {
+    overlayVisible: boolean = false;
+    close = () => { };
+    show = () => { };
+}
+
 describe('FilterNewComponent', () => {
     let fixture: ComponentFixture<FilterNewComponent>;
     let component: FilterNewComponent;
@@ -25,9 +31,10 @@ describe('FilterNewComponent', () => {
     let helperService;
     let featureFlagsService;
     let messageService;
-
+    let gaService;
+    let mockMultiSelect: MockMultiSelect;
     beforeEach(async () => {
-
+        mockMultiSelect = new MockMultiSelect() as any;
         await TestBed.configureTestingModule({
             declarations: [FilterNewComponent],
             imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule, HttpClientTestingModule],
@@ -45,6 +52,9 @@ describe('FilterNewComponent', () => {
         httpService = TestBed.inject(HttpService);
         featureFlagsService = TestBed.inject(FeatureFlagsService);
         messageService = TestBed.inject(MessageService);
+        gaService = TestBed.inject(GoogleAnalyticsService);
+
+        component.showHideDdn = mockMultiSelect as any;
         localStorage.setItem('completeHierarchyData', '{"kanban":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}],"scrum":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"sprint","hierarchyLevelName":"Sprint"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}]}')
         fixture.detectChanges();
     });
@@ -1987,6 +1997,449 @@ describe('FilterNewComponent', () => {
                 // Assert
                 expect(component.blockUI).toBe(true);
             }));
+        });
+    });
+
+    describe('FilterNewComponent.compileGAData() compileGAData method', () => {
+        describe('Happy Path', () => {
+            it('should compile GA data correctly for a valid selectedFilterArray', () => {
+                const selectedFilterArray = [
+                    {
+                        nodeId: '1',
+                        nodeName: 'Project A',
+                        labelName: 'project',
+                        path: ['1###2###3'],
+                    },
+                    {
+                        nodeId: '2',
+                        nodeName: 'Project B',
+                        labelName: 'project',
+                        path: ['2###3###4'],
+                    },
+                ];
+
+                component.filterApiData = [
+                    { nodeId: '1', nodeName: 'Category 1' },
+                    { nodeId: '2', nodeName: 'Category 2' },
+                    { nodeId: '3', nodeName: 'Category 3' },
+                    { nodeId: '4', nodeName: 'Category 4' },
+                ];
+                spyOn(gaService, 'setProjectData');
+                component.compileGAData(selectedFilterArray);
+
+                expect(gaService.setProjectData).toHaveBeenCalledWith([
+                    {
+                        id: '1',
+                        name: 'Project A',
+                        level: 'project',
+                        category1: 'Category 3',
+                        category2: 'Category 2',
+                        category3: 'Category 1',
+                    },
+                    {
+                        id: '2',
+                        name: 'Project B',
+                        level: 'project',
+                        category1: 'Category 4',
+                        category2: 'Category 3',
+                        category3: 'Category 2',
+                    },
+                ]);
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle empty selectedFilterArray gracefully', () => {
+                const selectedFilterArray = [];
+                spyOn(gaService, 'setProjectData');
+                component.compileGAData(selectedFilterArray);
+
+                expect(gaService.setProjectData).toHaveBeenCalledWith(
+                    [],
+                );
+            });
+
+            it('should handle selectedFilterArray with missing path gracefully', () => {
+                const selectedFilterArray = [
+                    { nodeId: '1', nodeName: 'Project A', labelName: 'project' },
+                ];
+                spyOn(gaService, 'setProjectData');
+                component.compileGAData(selectedFilterArray);
+
+                expect(gaService.setProjectData).toHaveBeenCalledWith([
+                    {
+                        id: '1',
+                        name: 'Project A',
+                        level: 'project',
+                    },
+                ]);
+            });
+
+            it('should handle selectedFilterArray with empty path gracefully', () => {
+                const selectedFilterArray = [
+                    { nodeId: '1', nodeName: 'Project A', labelName: 'project', path: [] },
+                ];
+                spyOn(gaService, 'setProjectData');
+                component.compileGAData(selectedFilterArray);
+
+                expect(gaService.setProjectData).toHaveBeenCalledWith([
+                    {
+                        id: '1',
+                        name: 'Project A',
+                        level: 'project',
+                    },
+                ]);
+            });
+        });
+    });
+
+    describe('FilterNewComponent.showHideKPIs() showHideKPIs method', () => {
+        describe('Happy Path', () => {
+            it('should successfully save KPI configuration', () => {
+                // Arrange
+                component.dashConfigData = {
+                    scrum: [{ boardSlug: 'iteration', kpis: [] }],
+                    others: [],
+                    configDetails: {},
+                } as any;
+                component.selectedType = 'scrum';
+                component.selectedTab = 'iteration';
+                component.masterData = { kpiList: [{ kpiId: 1, shown: true }] } as any;
+                spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(of({
+                    success: true
+                }));
+                spyOn(messageService, 'add');
+                spyOn(sharedService, 'setDashConfigData');
+
+                // Act
+                component.showHideKPIs();
+
+                // Assert
+                expect(httpService.submitShowHideOnDashboard).toHaveBeenCalled();
+                expect(messageService.add).toHaveBeenCalledWith({
+                    severity: 'success',
+                    summary: 'Successfully Saved',
+                    detail: '',
+                });
+                expect(sharedService.setDashConfigData).toHaveBeenCalledWith(
+                    component.dashConfigData,
+                );
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle error when saving KPI configuration fails', async () => {
+                // Arrange
+                component.dashConfigData = {
+                    scrum: [{ boardSlug: 'iteration', kpis: [] }],
+                    others: [],
+                    configDetails: {},
+                } as any;
+                component.selectedType = 'scrum';
+                component.selectedTab = 'iteration';
+                component.masterData = { kpiList: [{ kpiId: 1, shown: true }] } as any;
+                spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(of(
+                    new Error('Network Error'),
+                ));
+                spyOn(messageService, 'add');
+                // Act
+                await component.showHideKPIs();
+
+                // Assert
+                expect(httpService.submitShowHideOnDashboard).toHaveBeenCalled();
+                expect(messageService.add).toHaveBeenCalledWith({
+                    severity: 'error',
+                    summary: 'Error in Saving Configuraion',
+                });
+            });
+        });
+    });
+
+    describe('FilterNewComponent.showHideSelectAllApply() showHideSelectAllApply method', () => {
+        describe('Happy Path', () => {
+            it('should enable all KPIs when showHideSelectAll is true', () => {
+                // Arrange
+                component.showHideSelectAll = true;
+                component.masterData['kpiList'] = [
+                    { isEnabled: false },
+                    { isEnabled: false },
+                ] as any;
+
+                // Act
+                component.showHideSelectAllApply();
+
+                // Assert
+                expect(
+                    component.masterData['kpiList'].every((kpi) => kpi.isEnabled),
+                ).toBe(true);
+            });
+
+            it('should disable all KPIs when showHideSelectAll is false', () => {
+                // Arrange
+                component.showHideSelectAll = false;
+                component.masterData['kpiList'] = [
+                    { isEnabled: true },
+                    { isEnabled: true },
+                ] as any;
+
+                // Act
+                component.showHideSelectAllApply();
+
+                // Assert
+                expect(
+                    component.masterData['kpiList'].every((kpi) => !kpi.isEnabled),
+                ).toBe(true);
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle empty kpiList gracefully', () => {
+                // Arrange
+                component.showHideSelectAll = true;
+                component.masterData['kpiList'] = [] as any;
+
+                // Act
+                component.showHideSelectAllApply();
+
+                // Assert
+                expect(component.masterData['kpiList'].length).toBe(0);
+            });
+        });
+    });
+
+    describe('FilterNewComponent.showChartToggle() showChartToggle method', () => {
+        describe('Happy Path', () => {
+            it('should set showChart to the provided value and call setShowTableView', () => {
+                // Arrange
+                const expectedValue = 'table';
+                spyOn(sharedService, 'setShowTableView');
+                // Act
+                component.showChartToggle(expectedValue);
+
+                // Assert
+                expect(component.showChart).toBe(expectedValue);
+                expect(sharedService.setShowTableView).toHaveBeenCalledWith(
+                    expectedValue,
+                );
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle an empty string input gracefully', () => {
+                // Arrange
+                const expectedValue = '';
+                spyOn(sharedService, 'setShowTableView');
+                // Act
+                component.showChartToggle(expectedValue);
+
+                // Assert
+                expect(component.showChart).toBe(expectedValue);
+                expect(sharedService.setShowTableView).toHaveBeenCalledWith(
+                    expectedValue,
+                );
+            });
+
+            it('should handle a null input gracefully', () => {
+                // Arrange
+                const expectedValue = null;
+                spyOn(sharedService, 'setShowTableView');
+                // Act
+                component.showChartToggle(expectedValue);
+
+                // Assert
+                expect(component.showChart).toBe(expectedValue);
+                expect(sharedService.setShowTableView).toHaveBeenCalledWith(
+                    expectedValue,
+                );
+            });
+
+            it('should handle an undefined input gracefully', () => {
+                // Arrange
+                const expectedValue = undefined;
+                spyOn(sharedService, 'setShowTableView');
+                // Act
+                component.showChartToggle(expectedValue);
+
+                // Assert
+                expect(component.showChart).toBe(expectedValue);
+                expect(sharedService.setShowTableView).toHaveBeenCalledWith(
+                    expectedValue,
+                );
+            });
+        });
+    });
+
+    describe('FilterNewComponent.populateAdditionalFilters() populateAdditionalFilters method', () => {
+        describe('Happy Path', () => {
+            it('should populate additional filters correctly for a given project', () => {
+                // Arrange
+                const event = [{ nodeId: '2', labelName: 'project', parentId: '1' }];
+                component.filterDataArr = {
+                    scrum: {
+                        project: [{ nodeId: '2', labelName: 'project', parentId: '1' }],
+                        sprint: [{ nodeId: '3', labelName: 'sprint', parentId: '2' }],
+                    },
+                };
+                component.additionalFilterLevelArr = [
+                    { hierarchyLevelId: 'sprint', hierarchyLevelName: 'sprint' },
+                    { hierarchyLevelId: 'sqd', hierarchyLevelName: 'squad' },
+                ];
+                component.selectedType = 'scrum';
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'sprint' } },
+                ];
+
+                // Act
+                component.populateAdditionalFilters(event);
+
+                // Assert
+                expect(component.additionalFiltersArr['filter1']).toEqual([
+                    { nodeId: '3', labelName: 'sprint', parentId: '2' },
+                ]);
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle empty event array gracefully', () => {
+                // Arrange
+                const event = [];
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [],
+                        Sprint: [],
+                    },
+                };
+                component.selectedType = 'scrum';
+                component.kanban = false;
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'Sprint' } },
+                ];
+                component.additionalFilterLevelArr = [
+                    { hierarchyLevelId: 'sprint', hierarchyLevelName: 'sprint' },
+                    { hierarchyLevelId: 'sqd', hierarchyLevelName: 'squad' },
+                ];
+
+                // Act
+                component.populateAdditionalFilters(event);
+
+                // Assert
+                expect(component.additionalFiltersArr['filter1']).toBeFalsy();
+            });
+
+            it('should handle event array gracefully when kanban is true', () => {
+                // Arrange
+                const event = { nodeId: '2', labelName: 'project', parentId: '1' };
+                component.filterDataArr = {
+                    scrum: {
+                        Squad: [
+                            { nodeId: '4', labelName: 'sqd', parentId: '2' }
+                        ]
+                    },
+                };
+                component.selectedType = 'scrum';
+                component.kanban = false;
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'sqd' } },
+                ];
+                component.additionalFilterLevelArr = [
+                    { hierarchyLevelId: 'sqd', hierarchyLevelName: 'squad' },
+                ];
+
+                // Act
+                component.populateAdditionalFilters(event);
+
+                // Assert
+                expect(component.additionalFiltersArr['filter1']).toEqual([]);
+            });
+
+            it('should handle non-project events correctly', () => {
+                // Arrange
+                const event = [{ nodeId: '2', labelName: 'sprint', parentId: '1' }];
+                component.filterDataArr = {
+                    scrum: {
+                        project: [{ nodeId: '1', labelName: 'project', parentId: '0' }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }],
+                    },
+                };
+                component.additionalFilterLevelArr = [
+                    { hierarchyLevelId: 'sprint', hierarchyLevelName: 'sprint' },
+                    { hierarchyLevelId: 'sqd', hierarchyLevelName: 'squad' },
+                ];
+                component.selectedType = 'scrum';
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'Sprint' } },
+                ];
+
+                // Act
+                component.populateAdditionalFilters(event);
+
+                // Assert
+                expect(component.additionalFiltersArr['filter1']).toEqual([
+                    { nodeId: '2', labelName: 'sprint', parentId: '1' },
+                ]);
+            });
+        });
+    });
+
+    describe('FilterNewComponent.applyDateFilter() applyDateFilter method', () => {
+        describe('Happy Path', () => {
+            it('should apply date filter correctly when selectedDayType is set', () => {
+                // Arrange
+                component.selectedDayType = 'Weeks';
+                component.selectedDateValue = '5';
+                component.filterApplyData = { selectedMap: {} };
+                spyOn(sharedService,'setSelectedDateFilter');
+                spyOn(sharedService, 'select');
+                component.filterDataArr = {
+                    scrum: {
+                        level1: [{ level: 1, labelName: 'project', nodeId: '1', nodeName: 'Node 1', basicProjectConfigId: '321' }],
+                        level2: [{ level: 2, labelName: 'Project2', nodeId: '2', nodeName: 'Node 2', basicProjectConfigId: '421' }],
+                    },
+                };
+                component.selectedLevel = 'project';
+                // Act
+                component.applyDateFilter();
+
+                // Assert
+                expect(component.selectedDateFilter).toBe('5 Weeks');
+                expect(sharedService.setSelectedDateFilter).toHaveBeenCalledWith(
+                    'Weeks',
+                );
+                expect(component.filterApplyData['selectedMap']['date']).toEqual(['Weeks']);
+                expect(component.filterApplyData['ids']).toEqual(['5']);
+                expect(sharedService.select).toHaveBeenCalled();
+            });
+
+            it('should apply date filter correctly when selectedDayType is set and selected Level is not string', () => {
+                // Arrange
+                component.selectedDayType = 'Weeks';
+                component.selectedDateValue = '5';
+                component.filterApplyData = { selectedMap: {} };
+                spyOn(sharedService,'setSelectedDateFilter');
+                spyOn(sharedService, 'select');
+                component.filterDataArr = {
+                    scrum: {
+                        level1: [{ level: 1, labelName: 'project', nodeId: '1', nodeName: 'Node 1', basicProjectConfigId: '321' }],
+                        level2: [{ level: 2, labelName: 'Project2', nodeId: '2', nodeName: 'Node 2', basicProjectConfigId: '421' }],
+                    },
+                };
+                component.selectedLevel = {
+                    level: 3,
+                    labelName: 'engagement',
+                    emittedLevel: 'project'
+                };
+                // Act
+                component.applyDateFilter();
+
+                // Assert
+                expect(component.selectedDateFilter).toBe('5 Weeks');
+                expect(sharedService.setSelectedDateFilter).toHaveBeenCalledWith(
+                    'Weeks',
+                );
+                expect(component.filterApplyData['selectedMap']['date']).toEqual(['Weeks']);
+                expect(component.filterApplyData['ids']).toEqual(['5']);
+                expect(sharedService.select).toHaveBeenCalled();
+            });
         });
     });
 });

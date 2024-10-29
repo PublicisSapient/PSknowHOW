@@ -871,6 +871,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Applies the selected date filter to the service and updates the filterApplyData object.
+ * It handles the selection of date types and updates the relevant configurations based on the selected level.
+ * 
+ * @param {void} - This function does not take any parameters.
+ * @returns {void} - This function does not return a value.
+ */
   applyDateFilter() {
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.service.setSelectedDateFilter(this.selectedDayType);
@@ -900,6 +907,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.toggleDateDropdown = false;
   }
 
+/**
+ * Populates additional filters based on the provided event data.
+ * It processes the event to extract project IDs and updates the additionalFiltersArr accordingly.
+ * 
+ * @param {any} event - The event data, which can be a single object or an array of objects.
+ * @returns {void} - This function does not return a value.
+ */
   populateAdditionalFilters(event) {
     this.additionalFiltersArr = [];
     if (!Array.isArray(event)) {
@@ -1082,6 +1096,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Compiles Google Analytics data from the provided filter array, transforming it into a structured format.
+ * 
+ * @param selectedFilterArray - An object containing filter data, which may include 'additional_level' or 'primary_level'.
+ * @returns void - This function does not return a value.
+ * @throws None - This function does not throw exceptions.
+ */
   compileGAData(selectedFilterArray) {
     if (selectedFilterArray && selectedFilterArray['additional_level']) {
       selectedFilterArray = selectedFilterArray['additional_level'][Object.keys(selectedFilterArray['additional_level'])[0]];
@@ -1118,6 +1139,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.ga.setProjectData(gaArray);
   }
 
+/**
+ * Toggles the visibility of the dropdown menu. 
+ * If the overlay is visible, it closes the menu.
+ * 
+ * @param event - The event that triggered the toggle action.
+ * @returns void
+ * @throws None
+ */
   toggleShowHideMenu(event) {
     if (this.showHideDdn?.overlayVisible) {
       this.showHideDdn.close(event);
@@ -1126,6 +1155,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Toggles the visibility of KPIs based on the selected tab and type, 
+ * updates the dashboard configuration, and submits the changes to the server.
+ * 
+ * @param {void} - No parameters are accepted.
+ * @returns {void} - The function does not return a value.
+ * @throws {Error} - Throws an error if the HTTP request fails or if saving the configuration is unsuccessful.
+ */
   showHideKPIs() {
     const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
     this.assignUserNameForKpiData();
@@ -1184,6 +1221,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.dashConfigData['username'] = this.service.getCurrentUserDetails('user_name');
   }
 
+/**
+ * Toggles the 'isEnabled' property of each element in the 'kpiList' based on the 'showHideSelectAll' flag.
+ * @param {void} No parameters are accepted.
+ * @returns {void} This function does not return a value.
+ * @throws {none} This function does not throw any exceptions.
+ */
   showHideSelectAllApply() {
     this.masterData['kpiList'].forEach(element => {
       if (this.showHideSelectAll) {
@@ -1194,6 +1237,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
   }
 
+/**
+ * Toggles the visibility of the chart based on the provided value.
+ * Updates the service to reflect the current view state.
+ * 
+ * @param val - A boolean indicating whether to show the chart (true) or not (false).
+ * @returns void
+ * @throws None
+ */
   showChartToggle(val) {
     this.showChart = val;
     this.service.setShowTableView(this.showChart);
