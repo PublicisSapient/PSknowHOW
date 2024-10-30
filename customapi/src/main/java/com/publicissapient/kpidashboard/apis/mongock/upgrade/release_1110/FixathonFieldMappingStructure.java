@@ -89,7 +89,7 @@ public class FixathonFieldMappingStructure {
 		addRedirectUrlField(fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI151", "Status to identify rejected issues",
 				fieldMappingStructCollection);
-		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI155", "Status to identify rejected issues",
+		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI152", "Status to identify rejected issues",
 				fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraIssueTypeKPI3", ISSUE_TYPES_TO_CONSIDER,
 				"All issue types considered for Lead Time calculation.", fieldMappingStructCollection);

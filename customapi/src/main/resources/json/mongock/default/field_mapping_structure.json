@@ -1418,7 +1418,7 @@
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI152",
-    "fieldLabel": "Status to identify rejected defects",
+    "fieldLabel": "Status to identify rejected issues",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",

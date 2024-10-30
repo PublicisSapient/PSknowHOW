@@ -86,7 +86,7 @@ public class FixathonFieldMappingStructure {
 		rollbackAddRedirectUrlField(fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI151", "Status to identify rejected defects",
 				fieldMappingStructCollection);
-		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI155", "Ticket Rejected/Dropped Status",
+		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI152", "Status to identify rejected defects",
 				fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraIssueTypeKPI3", "Issue types to consider ‘Completed status’",
 				"All issue types that should be included in Lead time calculation", fieldMappingStructCollection);
