@@ -2763,4 +2763,86 @@ describe('FilterNewComponent', () => {
             });
         });
     });
+
+
+    describe('handlePrimaryFilterChange - Happy Path', () => {
+        it('should sort the event array when event is an array of objects based on nodeId', () => {
+
+            component.previousFilterEvent = [];
+            component.selectedTab = 'someTab';
+            component.selectedType = 'someType';
+            component.filterDataArr = { someType: { Sprint: [], Project: [] } };
+
+            const event = [{ nodeId: 2, labelName : 'project' }, { nodeId: 1, labelName : 'project' }];
+            component.handlePrimaryFilterChange(event);
+            expect(event[0].nodeId).toBe(1);
+            expect(event[1].nodeId).toBe(2);
+        });
+
+        it('should call getBoardConfig if event and previous parent nodes are not deeply equal', () => {
+            component.previousFilterEvent = [];
+            component.selectedTab = 'someTab';
+            component.selectedType = 'someType';
+            component.filterDataArr = { someType: { Sprint: [], Project: [] } };
+
+            const event = [{ labelName: 'project', nodeId: 1, basicProjectConfigId: 123 }];
+            component.previousFilterEvent = [{ labelName: 'release', nodeId: 2 }];
+            spyOn(component, 'arrayDeepCompare').and.returnValue(false);
+            spyOn(component, 'getBoardConfig');
+            spyOn(helperService, 'deepEqual').and.returnValue(false);
+
+            component.handlePrimaryFilterChange(event);
+            expect(component.getBoardConfig).toHaveBeenCalledWith([123], event);
+        });
+
+        it('should populate additional filters when additional_level exists', (done) => {
+
+            component.previousFilterEvent = [];
+            component.selectedTab = 'someTab';
+            component.selectedType = 'someType';
+            component.filterDataArr = { someType: { Sprint: [], Project: [] } };
+
+            const event = {
+                primary_level: 'somePrimaryLevel',
+                additional_level: { key1: ['value'] }
+            };
+            spyOn(component, 'populateAdditionalFilters');
+            spyOn(component, 'handleAdditionalChange');
+
+            component.handlePrimaryFilterChange(event);
+            setTimeout(() => {
+                expect(component.populateAdditionalFilters).toHaveBeenCalledWith('somePrimaryLevel');
+                expect(component.handleAdditionalChange).toHaveBeenCalledWith({ key1: ['value'] });
+                done();
+            }, 0);
+        });
+    });
+
+    describe('handlePrimaryFilterChange - Edge Cases', () => {
+        it('should handle event with labelName not matching default level', () => {
+            component.previousFilterEvent = [];
+            component.selectedTab = 'someTab';
+            component.selectedType = 'someType';
+            component.filterDataArr = { someType: { Sprint: [], Project: [] } };
+            spyOn(sharedService, 'setAdditionalFilters');
+            component.primaryFilterConfig = { defaultLevel: { labelName: 'release' } };
+            const event = [{ labelName: 'project', nodeId: 1 }];
+
+            component.handlePrimaryFilterChange(event);
+            expect(component.noSprint).toBe(true);
+            expect(sharedService.setAdditionalFilters).toHaveBeenCalledWith([]);
+        });
+
+        it('should handle missing additional_level and primary_level in event', () => {
+            component.previousFilterEvent = [];
+            component.selectedTab = 'someTab';
+            component.selectedType = 'someType';
+            component.filterDataArr = { someType: { Sprint: [], Project: [] } };
+
+            const event = { someOtherKey: 'value' };
+            spyOn(component, 'prepareKPICalls');
+            component.handlePrimaryFilterChange(event);
+            expect(component.prepareKPICalls).not.toHaveBeenCalled();
+        });
+    });
 });
