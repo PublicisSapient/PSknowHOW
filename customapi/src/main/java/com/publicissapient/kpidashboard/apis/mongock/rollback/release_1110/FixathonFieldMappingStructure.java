@@ -115,6 +115,7 @@ public class FixathonFieldMappingStructure {
 		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_REFINED_KPI_161, 2, fieldMappingStructCollection);
 		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_IN_PROGRESS_KPI_161, 3, fieldMappingStructCollection);
 		rollBackFieldDisplayOrderForKPI161(fieldMappingStructCollection);
+		updateMandatory("productionDefectIdentifier", true, fieldMappingStructCollection, UNSET);
 
 	}
 
@@ -238,6 +239,7 @@ public class FixathonFieldMappingStructure {
 		updateFieldDisplayOrder(JIRA_STATUS_FOR_REFINED_KPI_161, 2, fieldMappingStructCollection);
 		updateFieldDisplayOrder(JIRA_STATUS_FOR_IN_PROGRESS_KPI_161, 3, fieldMappingStructCollection);
 		updateFieldDisplayOrderForKPI161(fieldMappingStructCollection);
+		updateMandatory("productionDefectIdentifier", true, fieldMappingStructCollection, "$set");
 	}
 
 	public void insertFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection) {
@@ -338,6 +340,12 @@ public class FixathonFieldMappingStructure {
 	private void insertToFieldMappingStructure(MongoCollection<Document> fieldMappingStructCollection,
 			List<Document> list) {
 		fieldMappingStructCollection.insertMany(list);
+	}
+
+	public void updateMandatory(String fieldName, boolean isMandatory,
+								MongoCollection<Document> fieldMappingStructCollection, String update) {
+		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
+				new Document(update, new Document("mandatory", isMandatory)));
 	}
 
 }

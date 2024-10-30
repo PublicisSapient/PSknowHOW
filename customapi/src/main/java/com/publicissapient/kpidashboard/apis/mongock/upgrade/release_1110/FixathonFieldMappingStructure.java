@@ -173,6 +173,7 @@ public class FixathonFieldMappingStructure {
 		updateTooltipDefinition(JIRA_LIVE_STATUS_KPI_171,
 				"Workflow status/es to identify that an issue is live in Production", fieldMappingStructCollection);
 		updateFieldDisplayOrder(JIRA_LIVE_STATUS_KPI_171, 4, fieldMappingStructCollection);
+		updateMandatory("productionDefectIdentifier", true, fieldMappingStructCollection, "$set");
 	}
 
 	@RollbackExecution
@@ -214,6 +215,7 @@ public class FixathonFieldMappingStructure {
 		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_REFINED_KPI_161, 2, fieldMappingStructCollection);
 		rollBackFieldDisplayOrder(JIRA_STATUS_FOR_IN_PROGRESS_KPI_161, 3, fieldMappingStructCollection);
 		rollBackFieldDisplayOrderForKPI161(fieldMappingStructCollection);
+		updateMandatory("productionDefectIdentifier", true, fieldMappingStructCollection, UNSET);
 	}
 
 	public void updateFieldLabel(String fieldName, String newLabelName,
@@ -232,6 +234,12 @@ public class FixathonFieldMappingStructure {
 			MongoCollection<Document> fieldMappingStructCollection) {
 		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
 				new Document("$set", new Document(FIELD_DISPLAY_ORDER, newOrder)));
+	}
+
+	public void updateMandatory(String fieldName, boolean isMandatory,
+			MongoCollection<Document> fieldMappingStructCollection, String update) {
+		fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
+				new Document(update, new Document("mandatory", isMandatory)));
 	}
 
 	public void updateFieldDisplayOrderForKPI161(MongoCollection<Document> fieldMappingStructCollection) {

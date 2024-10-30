@@ -3149,7 +3149,8 @@
         }
       }
     ],
-    "processorCommon": true
+    "processorCommon": true,
+    "mandatory": true
   },
   {
     "fieldName": "ticketCountIssueType",
