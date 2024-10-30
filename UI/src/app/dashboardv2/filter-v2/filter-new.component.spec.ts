@@ -2388,7 +2388,7 @@ describe('FilterNewComponent', () => {
                 component.selectedDayType = 'Weeks';
                 component.selectedDateValue = '5';
                 component.filterApplyData = { selectedMap: {} };
-                spyOn(sharedService,'setSelectedDateFilter');
+                spyOn(sharedService, 'setSelectedDateFilter');
                 spyOn(sharedService, 'select');
                 component.filterDataArr = {
                     scrum: {
@@ -2415,7 +2415,7 @@ describe('FilterNewComponent', () => {
                 component.selectedDayType = 'Weeks';
                 component.selectedDateValue = '5';
                 component.filterApplyData = { selectedMap: {} };
-                spyOn(sharedService,'setSelectedDateFilter');
+                spyOn(sharedService, 'setSelectedDateFilter');
                 spyOn(sharedService, 'select');
                 component.filterDataArr = {
                     scrum: {
@@ -2439,6 +2439,327 @@ describe('FilterNewComponent', () => {
                 expect(component.filterApplyData['selectedMap']['date']).toEqual(['Weeks']);
                 expect(component.filterApplyData['ids']).toEqual(['5']);
                 expect(sharedService.select).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('FilterNewComponent.prepareKPICalls() prepareKPICalls method', () => {
+        describe('Happy Path', () => {
+            it('should prepare KPI calls with valid event data', () => {
+                // Arrange
+                const event = [{ nodeId: '1', labelName: 'Project', level: 1 }];
+                component.selectedType = 'scrum';
+                component.selectedTab = 'iteration';
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'sprint' } },
+                ];
+                component.masterData = { kpiList: [] };
+                component.boardData = { configDetails: {} };
+                component.dashConfigData = { scrum: [], others: [] };
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(sharedService, 'select');
+                // Act
+                component.prepareKPICalls(event);
+
+                // Assert
+                expect(sharedService.setSelectedTrends).toHaveBeenCalledWith(event);
+                expect(sharedService.select).toHaveBeenCalled();
+            });
+
+            it('should prepare KPI calls with valid event data for kanban', () => {
+                // Arrange
+                const event = [{ nodeId: '1', labelName: 'Project', level: 1 }];
+                component.selectedType = 'kanban';
+                component.kanban = true;
+                component.selectedTab = 'iteration';
+                component.filterDataArr = {
+                    kanban: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'sqd' } },
+                ];
+                component.masterData = { kpiList: [] };
+                component.boardData = { configDetails: {} };
+                component.dashConfigData = { scrum: [], others: [] };
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(sharedService, 'select');
+                // Act
+                component.prepareKPICalls(event);
+
+                // Assert
+                expect(sharedService.setSelectedTrends).toHaveBeenCalledWith(event);
+                expect(sharedService.select).toHaveBeenCalled();
+            });
+
+            it('should prepare KPI calls with valid event data when selected Level is an object', () => {
+                // Arrange
+                const event = [{ nodeId: '1', labelName: 'Project', level: 1 }];
+                component.selectedType = 'scrum';
+                component.selectedTab = 'iteration';
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }],
+                    },
+                };
+                component.selectedLevel = {
+                    nodeId: '4', nodeName: 'Filter4', labelName: 'Engagemenent', emittedLevel: 'Project'
+                    , fullNodeDetails: { nodeId: '1', labelName: 'Project', level: 1 }
+                };
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'sprint' } },
+                ];
+                component.masterData = { kpiList: [] };
+                component.boardData = { configDetails: {} };
+                component.dashConfigData = { scrum: [], others: [] };
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(sharedService, 'select');
+                // Act
+                component.prepareKPICalls(event);
+
+                // Assert
+                expect(sharedService.setSelectedTrends).toHaveBeenCalledWith({ nodeId: '1', labelName: 'Project', level: 1 });
+                expect(sharedService.select).toHaveBeenCalled();
+            });
+
+            it('should prepare KPI calls with sprint in event data', () => {
+                // Arrange
+                const event = [{ nodeId: '2', labelName: 'sprint', parentId: '1' }];
+                component.selectedType = 'scrum';
+                component.selectedTab = 'iteration';
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'sprint' } },
+                ];
+                component.masterData = { kpiList: [] };
+                component.boardData = { configDetails: {} };
+                component.dashConfigData = { scrum: [], others: [] };
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(sharedService, 'select');
+                // Act
+                component.prepareKPICalls(event);
+
+                // Assert
+                expect(sharedService.setSelectedTrends).toHaveBeenCalledWith(event);
+                expect(sharedService.select).toHaveBeenCalled();
+            });
+
+            it('should prepare KPI calls with valid event data when selected level is null', () => {
+                // Arrange
+                const event = [{ nodeId: '1', labelName: 'Project', level: 1 }];
+                component.selectedType = 'scrum';
+                component.selectedTab = 'developer';
+                component.selectedLevel = null;
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'sprint' } },
+                ];
+                component.masterData = { kpiList: [] };
+                component.boardData = { configDetails: {} };
+                component.dashConfigData = { scrum: [], others: [] };
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(sharedService, 'select');
+                // Act
+                component.prepareKPICalls(event);
+
+                // Assert
+                expect(sharedService.setSelectedTrends).toHaveBeenCalledWith(event);
+                expect(sharedService.select).toHaveBeenCalled();
+            });
+
+            it('should prepare KPI calls with valid event data when selected level is null and tab is backlog', () => {
+                // Arrange
+                const event = [{ nodeId: '1', labelName: 'Project', level: 1 }];
+                component.selectedType = 'scrum';
+                component.selectedTab = 'backlog';
+                component.selectedLevel = null;
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        Sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                component.additionalFilterConfig = [
+                    { defaultLevel: { labelName: 'sprint' } },
+                ];
+                component.masterData = { kpiList: [] };
+                component.boardData = { configDetails: {} };
+                component.dashConfigData = { scrum: [], others: [] };
+                spyOn(sharedService, 'setSelectedTrends');
+                spyOn(sharedService, 'select');
+                // Act
+                component.prepareKPICalls(event);
+
+                // Assert
+                expect(sharedService.setSelectedTrends).toHaveBeenCalledWith(event);
+                expect(sharedService.select).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('FilterNewComponent.handleAdditionalChange() handleAdditionalChange method', () => {
+        describe('Happy Path', () => {
+            it('should handle additional change correctly when event is valid', () => {
+                // Arrange
+                const event = {
+                    level1: [{ nodeId: '1', labelName: 'Level1', level: 5 }],
+                };
+                component.previousFilterEvent = { additional_level: {} };
+                component.filterApplyData = { selectedMap: {} };
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        Sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                // Act
+                component.handleAdditionalChange(event);
+
+                // Assert
+                expect(component.previousFilterEvent.additional_level['Level1']).toEqual(
+                    event.level1,
+                );
+                expect(component.filterApplyData['selectedMap']['Level1']).toEqual(['1']);
+            });
+
+            it('should handle additional change correctly when event is empty', () => {
+                // Arrange
+                const event = [];
+
+                component.previousFilterEvent = {
+                    primary_level: {
+                        level1: [{ nodeId: '1', labelName: 'Level1', level: 5 }],
+                    },
+                    additional_level: {}
+                };
+                component.filterApplyData = { selectedMap: {} };
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        Sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                // Act
+                component.handleAdditionalChange(event);
+
+                // Assert
+                expect(component.previousFilterEvent).toEqual(
+                    []
+                );
+                expect(component.filterApplyData['selectedMap']['Level1']).toBeFalsy();
+            });
+
+            it('should handle additional change correctly when event is valid and tab is backlog', () => {
+                // Arrange
+                const event = {
+                    level1: [{ nodeId: '1', labelName: 'Level1', level: 5 }],
+                };
+                component.previousFilterEvent = { additional_level: {} };
+                component.filterApplyData = { selectedMap: {} };
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                component.selectedTab = 'backlog';
+                // Act
+                component.handleAdditionalChange(event);
+
+                // Assert
+                expect(component.previousFilterEvent.additional_level['Level1']).toEqual(
+                    event.level1,
+                );
+                expect(component.filterApplyData['selectedMap']['Level1']).toEqual(['1']);
+            });
+
+            it('should handle additional change correctly when event is valid and selectedLevel is null', () => {
+                // Arrange
+                const event = {
+                    level1: [{ nodeId: '1', labelName: 'Level1', level: 5 }],
+                };
+                component.previousFilterEvent = { additional_level: {} };
+                component.filterApplyData = { selectedMap: {} };
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                component.selectedTab = 'backlog';
+                component.selectedLevel = null;
+                // Act
+                component.handleAdditionalChange(event);
+
+                // Assert
+                expect(component.previousFilterEvent.additional_level['Level1']).toEqual(
+                    event.level1,
+                );
+                expect(component.filterApplyData['selectedMap']['Level1']).toEqual(['1']);
+            });
+
+            it('should handle additional change correctly when event is valid and selectedLevel is object', () => {
+                // Arrange
+                const event = {
+                    level1: [{ nodeId: '1', labelName: 'Level1', level: 5 }],
+                };
+                component.previousFilterEvent = { additional_level: {} };
+                component.filterApplyData = { selectedMap: {} };
+                component.filterDataArr = {
+                    scrum: {
+                        Project: [{ nodeId: '1', labelName: 'Project', level: 1 }],
+                        sprint: [{ nodeId: '2', labelName: 'sprint', parentId: '1' }]
+                    },
+                };
+                component.selectedTab = 'backlog';
+                component.selectedLevel = { labelName: 'project', emittedLevel: 'sprint' };
+                // Act
+                component.handleAdditionalChange(event);
+
+                // Assert
+                expect(component.previousFilterEvent.additional_level['Level1']).toEqual(
+                    event.level1,
+                );
+                expect(component.filterApplyData['selectedMap']['Level1']).toEqual(['1']);
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should not update if event level is less than or equal to 4', () => {
+                // Arrange
+                const event = {
+                    level1: [{ nodeId: '1', labelName: 'Level1', level: 4 }],
+                };
+                component.previousFilterEvent = { additional_level: {} };
+                component.filterApplyData = { selectedMap: {} };
+
+                // Act
+                component.handleAdditionalChange(event);
+
+                // Assert
+                expect(component.previousFilterEvent.additional_level['Level1']).toEqual(
+                    event.level1,
+                );
+                expect(component.filterApplyData['selectedMap']['Level1']).toBeUndefined();
             });
         });
     });

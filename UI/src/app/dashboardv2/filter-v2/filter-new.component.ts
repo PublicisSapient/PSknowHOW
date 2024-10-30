@@ -573,6 +573,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Handles changes to the primary filter, updating the event data and managing additional filters.
+ * It processes the event based on its structure, updates the state, and triggers necessary service calls.
+ * 
+ * @param {Object | Array} event - The event object or array containing filter data.
+ * @returns {void}
+ */
   handlePrimaryFilterChange(event) {
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
@@ -585,7 +592,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         delete event['additional_level'];
         event = event['primary_level'];
       }
-    } else {
+    } else if(Array.isArray(event)){
       // sort the event array based on nodeId
       event.sort((a, b) => (a.nodeId > b.nodeId) ? 1 : ((b.nodeId > a.nodeId) ? -1 : 0))
     }
@@ -593,7 +600,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent)) || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+      ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent)) 
+      || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -632,6 +640,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.additionalData = false;
       this.previousFilterEvent = [];
     }
+    
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['Sprint'] && event && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['Sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed');
@@ -653,6 +662,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
 
+/**
+ * Prepares and applies KPI call data based on the selected project trends and filters.
+ * It updates various filter states and invokes service methods to set selected trends and data.
+ * 
+ * @param {any} event - The event data containing project information and filters.
+ * @returns {void}
+ */
   prepareKPICalls(event) {
     // set selected projects(trends)
     if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
@@ -819,6 +835,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Handles changes to additional filters based on the provided event.
+ * Updates the filter application data and manages the state of selected filters.
+ * 
+ * @param {Object} event - The event object containing filter changes.
+ * @returns {void}
+ */
   handleAdditionalChange(event) {
     let level = Object.keys(event)[0];
     event = event[level];
@@ -1108,10 +1131,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       selectedFilterArray = selectedFilterArray['additional_level'][Object.keys(selectedFilterArray['additional_level'])[0]];
     } else if (selectedFilterArray['primary_level']) {
       selectedFilterArray = selectedFilterArray['primary_level'];
-    } else if (!selectedFilterArray) {
+    } else if (!selectedFilterArray || !Array.isArray(selectedFilterArray)) {
       return;
     }
-    const gaArray = selectedFilterArray?.map((item) => {
+    const gaArray = selectedFilterArray.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
 
       let obj = {};
