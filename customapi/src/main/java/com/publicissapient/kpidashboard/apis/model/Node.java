@@ -41,8 +41,11 @@ public class Node implements Serializable {
 	private int level;
 	private String groupName;
 
+	//todo remove
 	private AccountHierarchy accountHierarchy; // NOSONAR
 	private ProjectHierarchy projectHierarchy;
+
+	//todo remove
 	private KanbanAccountHierarchy accountHierarchyKanban;
 
 	private ProjectFilter projectFilter;
@@ -54,6 +57,7 @@ public class Node implements Serializable {
 		this.children = new ArrayList<>();
 	}
 
+	//todo remove
 	/**
 	 * 
 	 * @param object
@@ -69,7 +73,7 @@ public class Node implements Serializable {
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 	}
 
