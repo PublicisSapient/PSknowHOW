@@ -60,7 +60,7 @@ public enum KPIExcelColumn {
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
 									"Resolution Time(In Days)")),
 
-	LEAD_TIME("kpi3", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Created Date", "Closed Date",
+	LEAD_TIME("kpi3", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Created Date", "Live Date",
 			"Lead Time (In Days)")),
 
 	LEAD_TIME_KANBAN("kpi53", Arrays.asList("Project Name", "Story ID", "Issue Description", "Open to Triage(In Days)",
