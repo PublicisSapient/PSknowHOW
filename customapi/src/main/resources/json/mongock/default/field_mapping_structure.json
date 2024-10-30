@@ -3268,7 +3268,7 @@
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI155",
-    "fieldLabel": "Status to identify rejected issues",
+    "fieldLabel": "Ticket Rejected/Dropped Status",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
