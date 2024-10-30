@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, Output,EventEmitter} from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
@@ -55,9 +55,10 @@ export class BasicConfigComponent implements OnInit {
   breadcrumbs: Array<any>
   @Output() closeProjectSetupPopup = new EventEmitter();
   steps: MenuItem[] | undefined;
-  isProjectSetupPopup : boolean = false;
-  isProjectCOmpletionPopup : boolean = false;
+  isProjectSetupPopup: boolean = false;
+  isProjectCOmpletionPopup: boolean = false;
   allProjectList: any[];
+  selectedItems: { [key: string]: any } = {};
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -74,18 +75,18 @@ export class BasicConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.isProjectSetupPopup = true;
-    this.breadcrumbs = [{ label: 'MY PROJECTS',handleEvent : ()=>{this.closeProjectSetupPopup.emit()} },{ label: 'ADD NEW PROJECT'}];
+    this.breadcrumbs = [{ label: 'MY PROJECTS', handleEvent: () => { this.closeProjectSetupPopup.emit() } }, { label: 'ADD NEW PROJECT' }];
     this.steps = [
       {
-          label: 'Connect tools',
+        label: 'Connect tools',
       },
       {
-          label: 'Run processor',
+        label: 'Run processor',
       },
       {
-          label: 'Data ready on Dashboard',
+        label: 'Data ready on Dashboard',
       }
-  ];
+    ];
     this.getHierarchy();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
@@ -101,32 +102,20 @@ export class BasicConfigComponent implements OnInit {
     const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
-    this.formData.unshift(
-      {
-        level: 0,
-        hierarchyLevelId: 'kanban',
-        hierarchyLevelName: 'Project Methodology',
-        inputType: 'switch',
-        value: false,
-        required: true
-      });
+    this.formData.unshift({
+      level: 0,
+      hierarchyLevelId: 'kanban',
+      hierarchyLevelName: 'Project Methodology',
+      inputType: 'switch',
+      value: false,
+      required: true
+    });
 
     this.formData.push(
       {
         level: this.formData.length,
-        hierarchyLevelId: 'projectName',
-        hierarchyLevelName: 'Project Name',
-        hierarchyLevelTooltip: 'Project Name',
-        inputType: 'text',
-        value: '',
-        required: true
-      }
-    );
-    this.formData.push(
-      {
-        level: this.formData.length,
         hierarchyLevelId: 'assigneeDetails',
-        label1:'Enable People performance KPIs',
+        label1: 'Enable People performance KPIs',
         label2: this.assigneeSwitchInfo,
         inputType: 'boolean',
         value: false,
@@ -138,7 +127,7 @@ export class BasicConfigComponent implements OnInit {
       {
         level: this.formData.length,
         hierarchyLevelId: 'developerKpiEnabled',
-        label1:'Enable Developers KPIs',
+        label1: 'Enable Developers KPIs',
         label2: this.developerKpiInfo,
         inputType: 'boolean',
         value: false,
@@ -159,14 +148,56 @@ export class BasicConfigComponent implements OnInit {
   search(event, field) {
     const filtered: any[] = [];
     const query = event.query;
-    for (let i = 0; i < field.suggestions.length; i++) {
-      const country = field.suggestions[i];
-      if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-        filtered.push(country);
+    const list = (field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list;
+    for (let i = 0; i < list.length; i++) {
+      const listItem = list[i];
+      if (listItem?.nodeDisplayName?.toLowerCase().indexOf(query?.toLowerCase()) == 0) {
+        filtered.push(listItem);
       }
     }
 
     field.filteredSuggestions = filtered;
+  }
+
+  onSelectOfDropdown(event: any, currentLevel: any) {
+    const selectedItem = event;
+    const selectedNodeId = selectedItem.nodeId;
+    const selectedParentId = selectedItem.parentId;
+    const currentIndex = this.formData.findIndex(level => level === currentLevel);
+
+    // Step 1: Filter current level based on selected item
+    // currentLevel.filteredSuggestions = currentLevel.list.filter(item => item.nodeId === selectedNodeId);
+
+    // Step 2: Filter items in levels below based on selected item’s nodeId
+    this.filterBelowLevels(selectedNodeId, currentIndex);
+
+    // Step 3: Filter items in levels above based on selected item's parentId
+    this.filterAboveLevels(selectedParentId, currentIndex);
+  }
+
+  filterAboveLevels(selectedParentId: any, currentIndex: number) {
+    let selectParentId = selectedParentId;
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      if (this.formData[i]?.list) {
+        this.formData[i].filteredSuggestions = this.formData[i]?.list.filter(item => item.nodeId === selectParentId);
+        selectParentId = this.formData[i]?.filteredSuggestions[0].parentId;
+      }
+    }
+
+    // Method to prepopulate if only one item exists in list
+    this.formData.forEach(level => {
+      if (level.filteredSuggestions && level.filteredSuggestions.length === 1) {
+        this.selectedItems[level.hierarchyLevelId] = level.filteredSuggestions[0];
+      }
+    });
+  }
+
+  filterBelowLevels(selectedNodeId: string, currentIndex: number) {
+    for (let i = currentIndex + 1; i < this.formData.length; i++) {
+      if (this.formData[i].list) {
+        this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => item.parentId === selectedNodeId);
+      }
+    }
   }
 
   onSubmit() {
@@ -194,7 +225,7 @@ export class BasicConfigComponent implements OnInit {
         },
         value: formValue[element.hierarchyLevelId].name ? formValue[element.hierarchyLevelId].name : formValue[element.hierarchyLevelId]
       });
-      gaObj['category'+ (index+1)] = element.hierarchyLevelName;
+      gaObj['category' + (index + 1)] = element.hierarchyLevelName;
     });
     this.blocked = true;
     this.http.addBasicConfig(submitData).subscribe(response => {
@@ -216,7 +247,7 @@ export class BasicConfigComponent implements OnInit {
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            this.sharedService.setCurrentUserDetails({authorities});
+            this.sharedService.setCurrentUserDetails({ authorities });
           }
         }
         this.form.reset();
@@ -244,26 +275,43 @@ export class BasicConfigComponent implements OnInit {
 
   stringValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const inputValue: string = control.value as string;
-    if ((typeof control.value === 'string' || control.value instanceof String) &&  control.value && control.value !== null && !/^[a-zA-Z0-9\s_-]+$/.test(inputValue)) {
+    if ((typeof control.value === 'string' || control.value instanceof String) && control.value && control.value !== null && !/^[a-zA-Z0-9\s_-]+$/.test(inputValue)) {
       return { stringValidator: true };
     }
     return null;
   }
 
   getHierarchy() {
-    this.http.getHierarchyLevels().subscribe(formFieldData => {
-      formFieldData.forEach(element => {
-        if (element.suggestions && element.suggestions.length) {
-          element.suggestions = element.suggestions.map(suggestion => ({
-              name: suggestion,
-              code: suggestion
-            }));
-        }
-        element.value = '';
-        element.required = true;
+    this.http.getOrganizationHierarchy().subscribe(formFieldData => {
+      const flatData = formFieldData?.data;
+      const hierarchyMap = {
+        bu: "Business Unit",
+        ver: "Vertical",
+        acc: "Account",
+        port: "Engagement",
+        project: "Project"
+      };
+
+      const transformedData = Object.entries(hierarchyMap).map(([hierarchyLevelId, hierarchyLevelIdName]) => {
+        return {
+          hierarchyLevelId,
+          hierarchyLevelIdName,
+          list: flatData
+            .filter(item => item.hierarchyLevelId === hierarchyLevelId)
+            .map(({ id, nodeId, nodeName, nodeDisplayName, hierarchyLevelId, parentId, createdDate, modifiedDate }) => ({
+              id,
+              nodeId,
+              nodeName,
+              nodeDisplayName,
+              hierarchyLevelId,
+              parentId,
+              createdDate,
+              ...(modifiedDate && { modifiedDate })
+            }))
+        };
       });
 
-      localStorage.setItem('hierarchyData', JSON.stringify(formFieldData));
+      localStorage.setItem('hierarchyData', JSON.stringify(transformedData, null, 2));
       this.getFields();
     });
   }

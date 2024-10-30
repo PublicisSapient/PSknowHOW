@@ -16,14 +16,20 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<p-toast [style]="{ marginTop: '80px' }"></p-toast>
 <div class="main p-pl-6 p-pr-6 p-pb-1">
   <div class="p-d-flex p-p-0 p-flex-column">
     <div class="nav-container">
       <nav>
         <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
           <ng-container *ngIf="!last">
-            <a [routerLink]="breadcrumb.url" (click)="breadcrumb?.handleEvent()" class="cursor-pointer blue-hover-link">{{ breadcrumb.label }}</a> &gt;
+            <a
+              [routerLink]="breadcrumb.url"
+              (click)="breadcrumb?.handleEvent()"
+              class="cursor-pointer blue-hover-link"
+              >{{ breadcrumb.label }}</a
+            >
+            &gt;
           </ng-container>
           <ng-container *ngIf="last">
             <span class="cursor-pointer">{{ breadcrumb.label }}</span>
@@ -36,15 +42,20 @@
         <div class="p-col-6 p-p-0">
           <div class="p-grid">
             <div class="p-col-12">
-              <div class="p-d-flex p-align-center p-jc-center position-relative p-pb-3">
-                <h5 class="card__primary__title__text p-mb-0">Set Project Details</h5>
+              <div
+                class="p-d-flex p-align-center p-jc-center position-relative p-pb-3"
+              >
+                <h5 class="card__primary__title__text p-mb-0">
+                  Set Project Details
+                </h5>
               </div>
               <p-messages severity="info">
                 <ng-template pTemplate>
                   <em class="pi pi-info-circle" style="font-size: 2rem"></em>
                   <div class="p-ml-2">
-                    In case you do not see the preferred selection for any level in the dropdowns,
-                    please contact your organization system admin.
+                    In case you do not see the preferred selection for any level
+                    in the dropdowns, please contact your organization system
+                    admin.
                   </div>
                 </ng-template>
               </p-messages>
@@ -52,20 +63,33 @@
           </div>
 
           <form (ngSubmit)="onSubmit()" [formGroup]="form">
-            <div class="p-mb-3 p-mt-3 p-pl-1 form-container" *ngFor="let field of formData">
+            <div
+              class="p-mb-3 p-mt-3 p-pl-1 form-container"
+              *ngFor="let field of formData"
+            >
               <div [ngSwitch]="field.inputType">
                 <div *ngSwitchCase="'switch'">
                   <div class="p-mb-3 p-mt-3 p-pl-1">
-                    <label for="{{ field.hierarchyLevelId }}" class="is-kanban-label">Select {{
-                      field.hierarchyLevelName
-                      }} :&nbsp;&nbsp;</label>
-                    <p-selectButton styleClass="p-d-inline" [options]="projectTypeOptions" optionLabel="name"
-                      optionValue="value" [multiple]="false" required id="{{ field.hierarchyLevelId }}"
-                      [formControlName]="field.hierarchyLevelId">
+                    <label
+                      for="{{ field.hierarchyLevelId }}"
+                      class="is-kanban-label"
+                      >Select
+                      {{ field.hierarchyLevelName }} :&nbsp;&nbsp;</label
+                    >
+                    <p-selectButton
+                      styleClass="p-d-inline"
+                      [options]="projectTypeOptions"
+                      optionLabel="name"
+                      optionValue="value"
+                      [multiple]="false"
+                      required
+                      id="{{ field.hierarchyLevelId }}"
+                      [formControlName]="field.hierarchyLevelId"
+                    >
                     </p-selectButton>
                   </div>
                 </div>
-                <div *ngSwitchCase="'text'">
+                <!-- <div *ngSwitchCase="'text'">
                   <div class="p-mb-3 p-mt-3">
                     <span class="p-float-label"
                           pTooltip='{{ field.hierarchyLevelTooltip }}'
@@ -79,76 +103,126 @@
                       *ngIf="form.controls[field.hierarchyLevelId].errors?.stringValidator">Special
                       Characters are not allowed.</span>
                   </div>
-                </div>
+                </div> -->
                 <div *ngSwitchCase="'boolean'" class="p-mb-3">
-                  <ng-container *ngIf="ifSuperUser === true || isProjectAdmin === true">
-                    <p-inputSwitch name="{{field.hierarchyLevelId}}" id="{{field.hierarchyLevelId}}"
-                      [formControlName]="field.hierarchyLevelId">
+                  <ng-container
+                    *ngIf="ifSuperUser === true || isProjectAdmin === true"
+                  >
+                    <p-inputSwitch
+                      name="{{ field.hierarchyLevelId }}"
+                      id="{{ field.hierarchyLevelId }}"
+                      [formControlName]="field.hierarchyLevelId"
+                    >
                     </p-inputSwitch>
-                    <label for="{{field.hierarchyLevelId}}">
-                      {{field.label1}}
+                    <label for="{{ field.hierarchyLevelId }}">
+                      {{ field.label1 }}
                     </label>
-                    <br>
-                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
-                      for="{{field.hierarchyLevelId}}"></span>
-                    <span for="{{field.hierarchyLevelId}}" style="font-size: small;color: #333;">
-                      {{field.label2}}
+                    <br />
+                    <span
+                      class="fa fa-info-circle kpi-info-icon"
+                      aria-hidden="true"
+                      for="{{ field.hierarchyLevelId }}"
+                    ></span>
+                    <span
+                      for="{{ field.hierarchyLevelId }}"
+                      style="font-size: small; color: #333"
+                    >
+                      {{ field.label2 }}
                     </span>
                   </ng-container>
                 </div>
                 <div *ngSwitchDefault>
                   <span class="p-float-label w-50 p-mr-3">
-                    <p-autoComplete id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
-                      [style]="{'width':'500px'}" [suggestions]="field.filteredSuggestions"
-                      (completeMethod)="search($event, field)" required="required" [dropdown]="true" field="name"
-                      [forceSelection]="ifSuperUser === true?false:true">
-                      <ng-template let-country pTemplate="item">
-                        <div class="country-item">
-                          <div>{{country.name}}</div>
+                    <p-autoComplete
+                      id="{{ field.hierarchyLevelId }}"
+                      [formControlName]="field.hierarchyLevelId"
+                      [style]="{ width: '500px' }"
+                      [suggestions]="(field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list"
+                      (completeMethod)="search($event, field)"
+                      required="required"
+                      [dropdown]="true"
+                      field="nodeDisplayName"
+                      [forceSelection]="ifSuperUser === true ? false : true"
+                      (onSelect)="onSelectOfDropdown($event, field)"
+                      [(ngModel)]="selectedItems[field.hierarchyLevelId]"
+                    >
+                      <ng-template let-listItem pTemplate="item">
+                        <div class="listItem-item">
+                          <div>{{ listItem.nodeDisplayName }}</div>
                         </div>
                       </ng-template>
                     </p-autoComplete>
-                    <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelName
-                      }}</label>
+                    <label for="{{ field.hierarchyLevelId }}">Select {{ field.hierarchyLevelIdName }}</label>
                   </span>
                 </div>
               </div>
             </div>
             <div class="p-text-right p-col-12">
-              <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back" icon="pi pi-angle-double-left" iconPos="left"
-                (click)="closeProjectSetupPopup.emit()"></button>
-              <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-              icon="pi pi-save" iconPos="left" label="Finalize" [disabled]="!form.valid"></button>
+              <button
+                pButton
+                pRipple
+                class="p-button-lg p-button-success p-button-raised p-mr-3"
+                label="Back"
+                icon="pi pi-angle-double-left"
+                iconPos="left"
+                (click)="closeProjectSetupPopup.emit()"
+              ></button>
+              <button
+                pButton
+                pRipple
+                type="submit"
+                class="p-button-lg p-button-success p-button-raised"
+                icon="pi pi-save"
+                iconPos="left"
+                label="Finalize"
+                [disabled]="!form.valid"
+              ></button>
             </div>
           </form>
-
         </div>
       </ng-container>
       <ng-container *ngIf="isProjectCOmpletionPopup">
         <div class="p-p-0">
           <div class="p-d-flex p-jc-center p-pb-3">
-            <h5 class="card__primary__title__text p-mb-0">Project “{{selectedProject?.['name']}}” successfully added.
-              Connect Tools to sync KPI’s.</h5>
+            <h5 class="card__primary__title__text p-mb-0">
+              Project “{{selectedProject?.['name']}}” successfully added.
+              Connect Tools to sync KPI’s.
+            </h5>
           </div>
           <div class="p-d-flex p-jc-center p-pb-3">
-            <label>Here is what to do next in order to sync data for this project:</label>
+            <label
+              >Here is what to do next in order to sync data for this
+              project:</label
+            >
           </div>
           <div class="p-pb-3">
             <p-steps [model]="steps" [readonly]="false"></p-steps>
           </div>
           <div class="p-d-flex p-jc-center p-pb-3">
-            <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]" [queryParams]="{tab: 1}" >Continue to Tool Connections</a></label>
+            <label
+              ><a
+                [routerLink]="[
+                  '/dashboard/Config/ConfigSettings/' + selectedProject?.id
+                ]"
+                [queryParams]="{ tab: 1 }"
+                >Continue to Tool Connections</a
+              ></label
+            >
           </div>
 
           <div class="p-d-flex p-jc-center p-pb-3">
-            <label><a routerLink="/dashboard/Config/ProjectList" (click)="closeProjectSetupPopup.emit()">Skip (continue to Projects dashboard)</a></label>
+            <label
+              ><a
+                routerLink="/dashboard/Config/ProjectList"
+                (click)="closeProjectSetupPopup.emit()"
+                >Skip (continue to Projects dashboard)</a
+              ></label
+            >
           </div>
         </div>
       </ng-container>
     </div>
-    <div>
-
-    </div>
+    <div></div>
     <!-- <div class="p-col-5 p-p-0 float-left w-40">
       <p-messages severity="info" [hidden]="!selectedProject">
         <ng-template pTemplate>

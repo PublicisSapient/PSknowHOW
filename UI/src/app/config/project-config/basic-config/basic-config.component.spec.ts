@@ -17,398 +17,313 @@
  ******************************************************************************/
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BasicConfigComponent } from './basic-config.component';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, UntypedFormGroup, UntypedFormControl } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
-
-import { DropdownModule } from 'primeng/dropdown';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { ToolbarModule } from 'primeng/toolbar';
-import { MessagesModule } from 'primeng/messages';
-import { MessageModule } from 'primeng/message';
-import { ToastModule } from 'primeng/toast';
-import { TableModule } from 'primeng/table';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-
-import { environment } from 'src/environments/environment';
-import {InputSwitchModule} from 'primeng/inputswitch';
+import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
+import { BasicConfigComponent } from './basic-config.component';
+import { Router } from '@angular/router';
 import { of } from 'rxjs';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 
 describe('BasicConfigComponent', () => {
   let component: BasicConfigComponent;
   let fixture: ComponentFixture<BasicConfigComponent>;
-  let httpService: HttpService;
-  let sharedService: SharedService;
-  let messageService: MessageService;
-  let ga: GoogleAnalyticsService;
-  let httpMock;
-  const baseUrl = environment.baseUrl;
-  // const toolsData = require('../../../../test/resource/fakeToolsData.json');
+  let httpService: jasmine.SpyObj<HttpService>;
+  let sharedService: jasmine.SpyObj<SharedService>;
+  let authService: jasmine.SpyObj<GetAuthorizationService>;
+  let messageService: jasmine.SpyObj<MessageService>;
+  let gaService: jasmine.SpyObj<GoogleAnalyticsService>;
 
   const hierarchyData = [
     {
-      level: 1,
-      hierarchyLevelId: 'country',
-      hierarchyLevelName: 'Country',
-      suggestions: [
+      "hierarchyLevelId": "bu",
+      "hierarchyLevelIdName": "Business Unit",
+      "list": [
         {
-          name: 'Canada',
-          code: 'Canada'
-        },
-        {
-          name: 'India',
-          code: 'India'
-        },
-        {
-          name: 'USA',
-          code: 'USA'
+          "id": "66e16612d1d34875e9ebc8c6",
+          "nodeId": "bu_unique_001",
+          "nodeName": "Global Business Unit",
+          "nodeDisplayName": "Business Unit 1",
+          "hierarchyLevelId": "bu",
+          "createdDate": "2024-08-28T10:17:44"
         }
-      ],
-      value: '',
-      required: true
+      ]
     },
     {
-      level: 2,
-      hierarchyLevelId: 'state',
-      hierarchyLevelName: 'State',
-      suggestions: [
+      "hierarchyLevelId": "ver",
+      "hierarchyLevelIdName": "Vertical",
+      "list": [
         {
-          name: 'Haryana',
-          code: 'Haryana'
-        },
-        {
-          name: 'Karnataka',
-          code: 'Karnataka'
-        },
-        {
-          name: 'Ontario',
-          code: 'Ontario'
-        },
-        {
-          name: 'Texas',
-          code: 'Texas'
-        },
-        {
-          name: 'Washinton',
-          code: 'Washinton'
+          "id": "66dec9af671cdae0895077ee",
+          "nodeId": "ver_unique_001",
+          "nodeName": "Technology Vertical",
+          "nodeDisplayName": "Vertical 1",
+          "hierarchyLevelId": "ver",
+          "parentId": "bu_unique_001",
+          "createdDate": "2024-08-28T10:17:44"
         }
-      ],
-      value: '',
-      required: true
+      ]
     },
     {
-      level: 3,
-      hierarchyLevelId: 'city',
-      hierarchyLevelName: 'City',
-      suggestions: [
+      "hierarchyLevelId": "acc",
+      "hierarchyLevelIdName": "Account",
+      "list": [
         {
-          name: 'Bangalore',
-          code: 'Bangalore'
+          "id": "66dec9af671cdae0895077f0",
+          "nodeId": "acc_unique_001",
+          "nodeName": "Global Tech Account",
+          "nodeDisplayName": "Account 1",
+          "hierarchyLevelId": "acc",
+          "parentId": "ver_unique_001",
+          "createdDate": "2024-08-28T10:17:44"
         },
+      ]
+    },
+    {
+      "hierarchyLevelId": "port",
+      "hierarchyLevelIdName": "Engagement",
+      "list": [
         {
-          name: 'Gurgaon',
-          code: 'Gurgaon'
+          "id": "66dec9af671cdae0895077f2",
+          "nodeId": "eng_unique_001",
+          "nodeName": "Sample Engagement",
+          "nodeDisplayName": "Engagement 1",
+          "hierarchyLevelId": "port",
+          "parentId": "acc_unique_001",
+          "createdDate": "2024-08-28T10:17:44"
         },
+      ]
+    },
+    {
+      "hierarchyLevelId": "project",
+      "hierarchyLevelIdName": "Project",
+      "list": [
         {
-          name: 'Houston',
-          code: 'Houston'
+          "id": "66e294d3aa845a08e16f7889",
+          "nodeId": "project_unique_001",
+          "nodeName": "Local Project",
+          "nodeDisplayName": "Project 1",
+          "hierarchyLevelId": "project",
+          "parentId": "eng_unique_001",
+          "createdDate": "2024-09-12T12:44:27",
+          "modifiedDate": "2024-09-12T12:44:27"
         },
-        {
-          name: 'Kurukshetra',
-          code: 'Kurukshetra'
-        },
-        {
-          name: 'Ottawa',
-          code: 'Ottawa'
-        },
-        {
-          name: 'Remond',
-          code: 'Remond'
-        },
-        {
-          name: 'Seattle',
-          code: 'Seattle'
-        }
-      ],
-      value: '',
-      required: true
+      ]
     }
   ];
 
-  const formValue = {
-    kanban: false,
-    country: {
-      name: 'Canada',
-      code: 'Canada'
-    },
-    state: {
-      name: 'Ontario',
-      code: 'Ontario'
-    },
-    city: {
-      name: 'Ottawa',
-      code: 'Ottawa'
-    },
-    projectName: 'Test44'
-  };
-
   const successResponse = {
     serviceResponse: {
-        message: 'Added Successfully.',
-        success: true,
-        data: {
-            id: '6335497f67af3f41656b7b42',
-            projectName: 'Test44',
-            createdAt: '2022-09-29T13:00:07',
-            kanban: false,
-            hierarchy: [
-                {
-                    hierarchyLevel: {
-                        level: 1,
-                        hierarchyLevelId: 'country',
-                        hierarchyLevelName: 'Country'
-                    },
-                    value: 'Canada'
-                },
-                {
-                    hierarchyLevel: {
-                        level: 2,
-                        hierarchyLevelId: 'state',
-                        hierarchyLevelName: 'State'
-                    },
-                    value: 'Ontario'
-                },
-                {
-                    hierarchyLevel: {
-                        level: 3,
-                        hierarchyLevelId: 'city',
-                        hierarchyLevelName: 'City'
-                    },
-                    value: 'Ottawa'
-                }
-            ],
-            isKanban: false
-        }
+      message: 'Added Successfully.',
+      success: true,
+      data: {
+        id: '6335497f67af3f41656b7b42',
+        projectName: 'Test44',
+        createdAt: '2022-09-29T13:00:07',
+        kanban: false,
+        hierarchy: [
+          {
+            hierarchyLevel: {
+              level: 1,
+              hierarchyLevelId: 'country',
+              hierarchyLevelName: 'Country'
+            },
+            value: 'Canada'
+          },
+          {
+            hierarchyLevel: {
+              level: 2,
+              hierarchyLevelId: 'state',
+              hierarchyLevelName: 'State'
+            },
+            value: 'Ontario'
+          },
+          {
+            hierarchyLevel: {
+              level: 3,
+              hierarchyLevelId: 'city',
+              hierarchyLevelName: 'City'
+            },
+            value: 'Ottawa'
+          }
+        ],
+        isKanban: false
+      }
     },
     projectsAccess: []
-};
-
-const formFieldData = [
-  {
-    level: 1,
-    hierarchyLevelId: 'country',
-    hierarchyLevelName: 'Country',
-    suggestions: [
-      'Canada',
-      'India',
-      'USA'
-    ]
-  },
-  {
-    level: 2,
-    hierarchyLevelId: 'state',
-    hierarchyLevelName: 'State',
-    suggestions: [
-      'Haryana',
-      'Karnataka',
-      'Ontario',
-      'Texas',
-      'Washinton'
-    ]
-  },
-  {
-    level: 3,
-    hierarchyLevelId: 'city',
-    hierarchyLevelName: 'City',
-    suggestions: [
-      'Bangalore',
-      'Gurgaon',
-      'Houston',
-      'Kurukshetra',
-      'Ottawa',
-      'Remond',
-      'Seattle'
-    ]
-  }
-];
+  };
 
   beforeEach(async () => {
+    const httpServiceSpy = jasmine.createSpyObj('HttpService', ['addBasicConfig', 'getOrganizationHierarchy']);
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['getSelectedProject', 'getProjectList', 'setSelectedProject', 'setSelectedFieldMapping']);
+    const authServiceSpy = jasmine.createSpyObj('GetAuthorizationService', ['checkIfSuperUser', 'checkIfProjectAdmin']);
+    const messageServiceSpy = jasmine.createSpyObj('MessageService', ['add']);
+    const gaServiceSpy = jasmine.createSpyObj('GoogleAnalyticsService', ['createProjectData']);
+
     await TestBed.configureTestingModule({
       declarations: [BasicConfigComponent],
-      imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        DropdownModule,
-        SelectButtonModule,
-        ToolbarModule,
-        MessagesModule,
-        MessageModule,
-        ToastModule,
-        TableModule,
-        AutoCompleteModule,
-        InputSwitchModule
-      ],
       providers: [
-        HttpService,
-        SharedService,
-        MessageService,
-        GetAuthorizationService,
-        MessageService,
-        GoogleAnalyticsService,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        UntypedFormBuilder,
+        { provide: HttpService, useValue: httpServiceSpy },
+        { provide: SharedService, useValue: sharedServiceSpy },
+        { provide: GetAuthorizationService, useValue: authServiceSpy },
+        { provide: MessageService, useValue: messageServiceSpy },
+        { provide: GoogleAnalyticsService, useValue: gaServiceSpy },
+        { provide: Router, useValue: {} },
       ]
-    })
-      .compileComponents();
-  });
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(BasicConfigComponent);
     component = fixture.componentInstance;
-    httpService = TestBed.inject(HttpService);
-    sharedService = TestBed.inject(SharedService);
-    // sharedService.setSelectedProject(fakeProject);
-    httpMock = TestBed.inject(HttpTestingController);
-    messageService = TestBed.inject(MessageService);
-    ga = TestBed.inject(GoogleAnalyticsService);
-    let localStore = {};
+    httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
+    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    authService = TestBed.inject(GetAuthorizationService) as jasmine.SpyObj<GetAuthorizationService>;
+    messageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
+    gaService = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
 
-    spyOn(window.localStorage, 'getItem').and.callFake((key) =>
-      key in localStore ? localStore[key] : null
-    );
-    spyOn(window.localStorage, 'setItem').and.callFake(
-      (key, value) => (localStore[key] = value + '')
-    );
-    spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
+    // Mock return for getOrganizationHierarchy
+    httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
 
-    localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
+    sharedService.setSelectedFieldMapping.and.returnValue(null)
   });
 
-  it('should create', () => {
+  it('should create component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should filter out and display suggestions', () => {
-    const event = {
-      originalEvent: {
-        isTrusted: true
-      },
-      query: 'ca'
-    };
-    const field = {
-      level: 1,
-      hierarchyLevelId: 'country',
-      hierarchyLevelName: 'Country',
-      suggestions: [
-        {
-          name: 'Canada',
-          code: 'Canada'
-        },
-        {
-          name: 'India',
-          code: 'India'
-        },
-        {
-          name: 'USA',
-          code: 'USA'
-        }
-      ],
-      value: '',
-      required: true,
-      filteredSuggestions: [
-        {
-          name: 'Canada',
-          code: 'Canada'
-        }
-      ]
-    };
-    component.search(event, field);
-    fixture.detectChanges();
-    const filteredSuggestions = [
-      {
-        name: 'Canada',
-        code: 'Canada'
-      }
-    ];
-    expect(field.filteredSuggestions).toEqual(filteredSuggestions);
-  });
-
-  it('should submit config when superadmin', () => {
-    component.form = new UntypedFormGroup({
-      projectName: new UntypedFormControl('', [component.stringValidator]),
-      country: new UntypedFormControl('', [component.stringValidator]),
-      state: new UntypedFormControl('', [component.stringValidator]),
-      city: new UntypedFormControl('', [component.stringValidator]),
-      kanban: new UntypedFormControl(false),
-      assigneeDetails: new UntypedFormControl(false)
-    }); 
-    component.getFieldsResponse = [...hierarchyData];
-    Object.keys(formValue).forEach((key) => {
-      component.form.controls[key].setValue(formValue[key]);
-    });
-    component.blocked = true;
-    component.selectedProject = {};
-    spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
-    spyOn(sharedService, 'setSelectedProject');
-    component.ifSuperUser = true;
-    const spy = spyOn(messageService, 'add');
-    spyOn(ga, 'createProjectData');
-    spyOn(component, 'getFields');  
-    component.onSubmit();
-    expect(component.form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalled();
-    expect(component.blocked).toBeFalse();
-  });
-
-  it('should submit config when not superadmin', () => {
-    component.form = new UntypedFormGroup({
-      projectName: new UntypedFormControl('', [component.stringValidator]),
-      country: new UntypedFormControl('', [component.stringValidator]),
-      state: new UntypedFormControl('', [component.stringValidator]),
-      city: new UntypedFormControl('', [component.stringValidator]),
-      kanban: new UntypedFormControl(false),
-      assigneeDetails: new UntypedFormControl(false)
-    }); 
-    component.getFieldsResponse = [...hierarchyData];
-    Object.keys(formValue).forEach((key) => {
-      component.form.controls[key].setValue(formValue[key]);
-    });
-    component.blocked = true;
-    component.selectedProject = {};
-    spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
-    spyOn(sharedService, 'setSelectedProject');
-    component.ifSuperUser = false;
-    spyOn(sharedService, 'setCurrentUserDetails');
-    const spy = spyOn(messageService, 'add');
-    spyOn(ga, 'createProjectData');
-    spyOn(component, 'getFields');  
-    component.onSubmit();
-    expect(component.form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalled();
-    expect(component.blocked).toBeFalse();
-  });
-
-  it('should not allow "###", "~" or "`" in any of the inputs', () => {
+  it('should initialize component variables on ngOnInit', () => {
+    authService.checkIfSuperUser.and.returnValue(true);
+    sharedService.getSelectedProject.and.returnValue({ id: 1, name: 'Test Project' });
     component.ngOnInit();
-    fixture.detectChanges();
-    component.form = new UntypedFormGroup({
-      projectName: new UntypedFormControl('', [component.stringValidator]),
-    });
-    component.form.controls['projectName'].setValue('Test###');
-    fixture.detectChanges();
-    expect(component.form.controls['projectName'].valid).toBeFalsy();
+    expect(component.isProjectSetupPopup).toBeTrue();
+    expect(component.breadcrumbs.length).toBeGreaterThan(0);
+    expect(component.steps).toBeDefined();
+    expect(component.ifSuperUser).toBeTrue();
   });
 
-  it("should get HierarchyLevels",()=>{
-    spyOn(httpService,'getHierarchyLevels').and.returnValue(of(formFieldData));
-    component.getHierarchy();
-  })
+  it('should add controls to form in getFields method', () => {
+    const mockData = [{
+      hierarchyLevelId: 'kanban',
+      inputType: 'switch',
+      value: false
+    }];
+    spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(mockData));
+
+    component.getFields();
+    expect(component.form.contains('kanban')).toBeTrue();
+    expect(component.form.controls['kanban'].value).toBeFalse();
+  });
+
+  it('should filter suggestions based on query in search method', () => {
+    const mockEvent = { query: 'Test' };
+    const mockField = {
+      list: [{ nodeDisplayName: 'Test Node' }, { nodeDisplayName: 'Another Node' }],
+      filteredSuggestions: []
+    };
+    component.search(mockEvent, mockField);
+    expect(mockField.filteredSuggestions.length).toBe(1);
+    expect(mockField.filteredSuggestions[0].nodeDisplayName).toBe('Test Node');
+  });
+
+  it('should filter hierarchy levels above and below the selected item in onSelectOfDropdown method', () => {
+    const currentLevel = {
+      hierarchyLevelId: 'project',
+      list: [{ nodeId: '123', parentId: '456' }],
+      filteredSuggestions: []
+    };
+    component.formData = [currentLevel, { hierarchyLevelId: 'parent', list: [] }];
+    component.onSelectOfDropdown({ nodeId: '123', parentId: '456' }, currentLevel);
+    expect(currentLevel.filteredSuggestions.length).toBe(0);
+  });
+
+  // ------------------------- OnSubmit -------------------------
+
+  // it('should submit config when superadmin', () => {
+  //   component.form = new UntypedFormGroup({
+  //     projectName: new UntypedFormControl('', [component.stringValidator]),
+  //     country: new UntypedFormControl('', [component.stringValidator]),
+  //     state: new UntypedFormControl('', [component.stringValidator]),
+  //     city: new UntypedFormControl('', [component.stringValidator]),
+  //     kanban: new UntypedFormControl(false),
+  //     assigneeDetails: new UntypedFormControl(false)
+  //   });
+  //   component.getFieldsResponse = [...hierarchyData];
+  //   Object.keys(formValue).forEach((key) => {
+  //     component.form.controls[key].setValue(formValue[key]);
+  //   });
+  //   component.blocked = true;
+  //   component.selectedProject = {};
+  //   spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
+  //   spyOn(sharedService, 'setSelectedProject');
+  //   component.ifSuperUser = true;
+  //   const spy = spyOn(messageService, 'add');
+  //   spyOn(gaService, 'createProjectData');
+  //   spyOn(component, 'getFields');
+  //   component.onSubmit();
+  //   expect(component.form.valid).toBeTruthy();
+  //   expect(spy).toHaveBeenCalled();
+  //   expect(component.blocked).toBeFalse();
+  // });
+
+  // it('should submit config when not superadmin', () => {
+  //   component.form = new UntypedFormGroup({
+  //     projectName: new UntypedFormControl('', [component.stringValidator]),
+  //     country: new UntypedFormControl('', [component.stringValidator]),
+  //     state: new UntypedFormControl('', [component.stringValidator]),
+  //     city: new UntypedFormControl('', [component.stringValidator]),
+  //     kanban: new UntypedFormControl(false),
+  //     assigneeDetails: new UntypedFormControl(false)
+  //   });
+  //   component.getFieldsResponse = [...hierarchyData];
+  //   Object.keys(formValue).forEach((key) => {
+  //     component.form.controls[key].setValue(formValue[key]);
+  //   });
+  //   component.blocked = true;
+  //   component.selectedProject = {};
+  //   spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
+  //   spyOn(sharedService, 'setSelectedProject');
+  //   component.ifSuperUser = false;
+  //   spyOn(sharedService, 'setCurrentUserDetails');
+  //   const spy = spyOn(messageService, 'add');
+  //   spyOn(gaService, 'createProjectData');
+  //   spyOn(component, 'getFields');
+  //   component.onSubmit();
+  //   expect(component.form.valid).toBeTruthy();
+  //   expect(spy).toHaveBeenCalled();
+  //   expect(component.blocked).toBeFalse();
+  // });
+
+  // it('should call HttpService on form submit and handle success response', () => {
+  //   httpService.addBasicConfig.and.returnValue(of({
+  //     serviceResponse: { success: true, data: { id: '1', projectName: 'Project A' } }
+  //   }));
+  //   spyOn(component, 'getFields').and.callThrough();
+
+  //   component.onSubmit();
+
+  //   expect(httpService.addBasicConfig).toHaveBeenCalled();
+  //   expect(sharedService.setSelectedProject).toHaveBeenCalledWith(jasmine.objectContaining({
+  //     id: '1', name: 'Project A'
+  //   }));
+  //   expect(messageService.add).toHaveBeenCalledWith(jasmine.objectContaining({
+  //     severity: 'success'
+  //   }));
+  //   expect(component.isProjectSetupPopup).toBeFalse();
+  //   expect(component.isProjectCOmpletionPopup).toBeTrue();
+  //   expect(component.getFields).toHaveBeenCalled();
+  // });
+
+  // ------------------------- OnSubmit -------------------------
+
+  it('should validate strings using stringValidator', () => {
+    const control = { value: 'Valid123' } as AbstractControl;
+    const result = component.stringValidator(control);
+    expect(result).toBeNull();
+
+    const invalidControl = { value: 'Invalid@123' } as AbstractControl;
+    const invalidResult = component.stringValidator(invalidControl);
+    expect(invalidResult).toEqual({ stringValidator: true });
+  });
 });

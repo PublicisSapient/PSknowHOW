@@ -176,6 +176,7 @@ export class HttpService {
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
   private getShowHideKpiNewUIUrl = this.baseUrl + '/api/user-board-config/getBoardConfig';
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
+  private organizationHierarchy = this.baseUrl + '/api/organizationHierarchy';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1165,5 +1166,9 @@ export class HttpService {
 
   getRecommendations(data){
     return this.http.post<object>(this.recommendationsUrl, data);
+  }
+
+  getOrganizationHierarchy() {
+    return this.http.get<any>(this.organizationHierarchy);
   }
 }
