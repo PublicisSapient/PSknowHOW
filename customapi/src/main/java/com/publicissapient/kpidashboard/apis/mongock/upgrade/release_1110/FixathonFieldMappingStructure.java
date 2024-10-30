@@ -111,12 +111,12 @@ public class FixathonFieldMappingStructure {
 
 	public void updateFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
 		// Update for jiraIssueDeliverdStatusKPI138
-		updateFieldMappingByFieldName("jiraIssueDeliverdStatusKPI138", "Status to identify DOR",
+		updateFieldMappingByFieldName("jiraIssueDeliverdStatusKPI138", "Status to identify DOD",
 				"Workflow statuses to identify when an issue is considered 'Delivered' based on the Definition of Done (DoD), used to measure average velocity. Please list all statuses that mark an issue as 'Delivered'.",
 				fieldMappingStructCollection);
 
 		// Update for readyForDevelopmentStatusKPI138
-		updateFieldMappingByFieldName("readyForDevelopmentStatusKPI138", "Status to identify DOD",
+		updateFieldMappingByFieldName("readyForDevelopmentStatusKPI138", "Status to identify DOR",
 				"Workflow status/es that identify that a backlog item is ready to be taken in a sprint based on Definition of Ready (DOR)",
 				fieldMappingStructCollection);
 	}

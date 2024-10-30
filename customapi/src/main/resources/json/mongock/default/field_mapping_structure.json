@@ -2724,7 +2724,7 @@
   },
   {
     "fieldName": "jiraIssueDeliverdStatusKPI138",
-    "fieldLabel": "Status to identify DOR",
+    "fieldLabel": "Status to identify DOD",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -3070,7 +3070,7 @@
   },
   {
     "fieldName": "readyForDevelopmentStatusKPI138",
-    "fieldLabel": "Status to identify DOD",
+    "fieldLabel": "Status to identify DOR",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
