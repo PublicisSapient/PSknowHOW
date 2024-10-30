@@ -88,8 +88,10 @@ public class FixathonFieldMappingStructure {
 				fieldMappingStructCollection);
 		addRedirectUrlField(fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI151", "Status to identify rejected issues",
+				"All workflow statuses used to reject issues.",
 				fieldMappingStructCollection);
-		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI155", "Status to identify rejected issues",
+		updateFieldMappingByFieldName("jiraDefectRejectionStatusKPI152", "Status to identify rejected issues",
+				"All workflow statuses used to reject issues.",
 				fieldMappingStructCollection);
 		updateFieldMappingByFieldName("jiraIssueTypeKPI3", ISSUE_TYPES_TO_CONSIDER,
 				"All issue types considered for Lead Time calculation.", fieldMappingStructCollection);
@@ -111,12 +113,12 @@ public class FixathonFieldMappingStructure {
 
 	public void updateFieldMappingStr(MongoCollection<Document> fieldMappingStructCollection) {
 		// Update for jiraIssueDeliverdStatusKPI138
-		updateFieldMappingByFieldName("jiraIssueDeliverdStatusKPI138", "Status to identify DOR",
+		updateFieldMappingByFieldName("jiraIssueDeliverdStatusKPI138", "Status to identify DOD",
 				"Workflow statuses to identify when an issue is considered 'Delivered' based on the Definition of Done (DoD), used to measure average velocity. Please list all statuses that mark an issue as 'Delivered'.",
 				fieldMappingStructCollection);
 
 		// Update for readyForDevelopmentStatusKPI138
-		updateFieldMappingByFieldName("readyForDevelopmentStatusKPI138", "Status to identify DOD",
+		updateFieldMappingByFieldName("readyForDevelopmentStatusKPI138", "Status to identify DOR",
 				"Workflow status/es that identify that a backlog item is ready to be taken in a sprint based on Definition of Ready (DOR)",
 				fieldMappingStructCollection);
 	}
