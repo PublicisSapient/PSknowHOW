@@ -748,7 +748,7 @@ public class KPIExcelUtility {
 			excelData.setIssueType(leadTimeData.getIssueType());
 			excelData.setCreatedDate(DateUtil.dateTimeConverter(leadTimeData.getIntakeDate().toString().split("T")[0],
 					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-			excelData.setCloseDate(DateUtil.dateTimeConverter(leadTimeData.getLiveDate().toString().split("T")[0],
+			excelData.setLiveDate(DateUtil.dateTimeConverter(leadTimeData.getLiveDate().toString().split("T")[0],
 					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 			excelData.setLeadTime(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getLeadTime())));
 			excelDataList.add(excelData);
