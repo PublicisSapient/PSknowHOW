@@ -64,8 +64,6 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String READY_FOR_DEV = "Ready for Dev";
 	public static final String NOT_REFINED = "Not Refined";
-	public static final String AXIS_LABEL_COUNT = "Count";
-	public static final String AXIS_LABEL_SP = "SP";
 	@Autowired
 	private JiraBacklogServiceR jiraService;
 	@Autowired
