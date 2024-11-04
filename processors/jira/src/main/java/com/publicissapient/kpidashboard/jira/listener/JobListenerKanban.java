@@ -166,7 +166,8 @@ public class JobListenerKanban implements JobExecutionListener {
 			handler.sendEmailToProjectAdminAndSuperAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
 							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
-					ExceptionUtils.getStackTrace(stepFaliureException), projectId);
+					ExceptionUtils.getStackTrace(stepFaliureException), projectId,
+					JiraConstants.ERROR_NOTIFICATION_SUBJECT_KEY, JiraConstants.ERROR_MAIL_TEMPLATE_KEY);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}

@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -158,7 +157,9 @@ public class JobListenerScrum implements JobExecutionListener {
 					}
 				}
 				setExecutionInfoInTraceLog(false, stepFaliureException, outlierSprintMap);
-				sendNotification(ExceptionUtils.getRootCauseMessage(stepFaliureException));
+				final String failureReasonMsg = generateLogMessage(stepFaliureException);
+				sendNotification(failureReasonMsg, JiraConstants.ERROR_NOTIFICATION_SUBJECT_KEY,
+						JiraConstants.ERROR_MAIL_TEMPLATE_KEY);
 			} else {
 				setExecutionInfoInTraceLog(true, null, outlierSprintMap);
 			}
@@ -183,13 +184,15 @@ public class JobListenerScrum implements JobExecutionListener {
 		}
 	}
 
-	private void sendNotification(String notificationMessage) throws UnknownHostException {
+	private void sendNotification(String notificationMessage, String notificationSubjectKey, String mailTemplateKey)
+			throws UnknownHostException {
 		FieldMapping fieldMapping = fieldMappingRepository.findByProjectConfigId(projectId);
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
-			handler.sendEmailToProjectAdminAndSuperAdmin(convertDateToCustomFormat(System.currentTimeMillis()) + " on "
-					+ jiraCommonService.getApiHost() + " for \"" + getProjectName(projectBasicConfig) + "\"",
-					notificationMessage, projectId);
+			handler.sendEmailToProjectAdminAndSuperAdmin(
+					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
+							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
+					notificationMessage, projectId, notificationSubjectKey, mailTemplateKey);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}
@@ -213,9 +216,22 @@ public class JobListenerScrum implements JobExecutionListener {
 					processorExecutionTraceLog.setFailureLog(stepFailureException.getMessage());
 				}
 				if (MapUtils.isNotEmpty(outlierSprintMap) && processorExecutionTraceLog.isProgressStats()) {
+					// saving outlier sprints details in trace log
 					processorExecutionTraceLog.setAdditionalInfo(outlierSprintMap.entrySet().stream()
 							.map(entry -> new IterationData(entry.getKey(), entry.getValue()))
 							.collect(Collectors.toList()));
+					// sending mail
+					String outlierSprintIssuesTable = projectSprintIssuesService
+							.printSprintIssuesTable(outlierSprintMap);
+					log.debug("Outlier sprint issue table send in mail for projectId: {} is : \n{}", projectId,
+							outlierSprintIssuesTable);
+					try {
+						sendNotification(outlierSprintIssuesTable, JiraConstants.OUTLIER_NOTIFICATION_SUBJECT_KEY,
+								JiraConstants.OUTLIER_MAIL_TEMPLATE_KEY);
+					} catch (UnknownHostException e) {
+						log.error("Exception occurred while sending outlier notification: ", e);
+					}
+
 				}
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);

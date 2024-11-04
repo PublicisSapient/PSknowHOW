@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.jira.service;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -137,6 +138,19 @@ public class ProjectSprintIssuesServiceImplTest {
 		Map<String, List<String>> outliers = projectSprintIssuesService.findOutliersBelowLowerBound(projectId);
 		assertNotNull(outliers);
 		assertTrue(outliers.isEmpty());
+	}
+
+	@Test
+	public void testPrintSprintIssuesTableSimple() {
+		Map<String, List<String>> sprintIssueMap = new HashMap<>();
+		sprintIssueMap.put("Sprint 1", List.of("ISSUE-1", "ISSUE-2"));
+		sprintIssueMap.put("Sprint 2", List.of("ISSUE-3"));
+
+		String actualOutput = projectSprintIssuesService.printSprintIssuesTable(sprintIssueMap);
+
+		assertNotNull(actualOutput);
+		assertTrue(actualOutput.contains("Sprint 1"));
+		assertTrue(actualOutput.contains("ISSUE-1"));
 	}
 
 }

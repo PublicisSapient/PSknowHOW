@@ -80,6 +80,41 @@ public class ProjectSprintIssuesServiceImpl implements ProjectSprintIssuesServic
 	}
 
 	/**
+	 * Prints a table of sprint issues.
+	 *
+	 * @param outlierSprintIssueMap
+	 *            the map containing sprint names and their corresponding issue keys
+	 * @return a formatted string representing the sprint issues table
+	 */
+	@Override
+	public String printSprintIssuesTable(Map<String, List<String>> outlierSprintIssueMap) {
+		// Determine the maximum width for each column
+		int maxSprintNameLength = "Sprint Name".length();
+		int maxIssueKeysLength = "Issue Keys".length();
+
+		for (Map.Entry<String, List<String>> entry : outlierSprintIssueMap.entrySet()) {
+			maxSprintNameLength = Math.max(maxSprintNameLength, entry.getKey().length());
+			String issueKeysString = entry.getValue().toString();
+			maxIssueKeysLength = Math.max(maxIssueKeysLength, issueKeysString.length());
+		}
+
+		StringBuilder sb = new StringBuilder();
+		String format = "| %-" + maxSprintNameLength + "s | %-" + maxIssueKeysLength + "s |";
+		String separator = "+-" + "-".repeat(maxSprintNameLength) + "-+-" + "-".repeat(maxIssueKeysLength) + "-+";
+
+		sb.append(separator).append("\n");
+		sb.append(String.format(format, "Sprint Name", "Issue Keys")).append("\n");
+		sb.append(separator).append("\n");
+
+		for (Map.Entry<String, List<String>> entry : outlierSprintIssueMap.entrySet()) {
+			sb.append(String.format(format, entry.getKey(), entry.getValue().toString())).append("\n");
+		}
+
+		sb.append(separator);
+		return sb.toString();
+	}
+
+	/**
 	 * Finds outliers below the lower bound in the sprint issue map for a given
 	 * project.
 	 *

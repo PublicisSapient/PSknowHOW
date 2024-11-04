@@ -58,6 +58,16 @@ public interface ProjectSprintIssuesService {
 	Map<String, List<String>> getSprintIssueMapForProject(ObjectId basicProjectConfigId);
 
 	/**
+	 * Prints a table of sprint issues.
+	 *
+	 * @param outlierSprintIssueMap
+	 *            outlier map where the key is the sprint name and the value is a
+	 *            list of issue keys
+	 * @return a string representation of the sprint issues table
+	 */
+	String printSprintIssuesTable(Map<String, List<String>> outlierSprintIssueMap);
+
+	/**
 	 * Finds outliers below the lower bound for a given project ID.
 	 *
 	 * @param basicProjectConfigId

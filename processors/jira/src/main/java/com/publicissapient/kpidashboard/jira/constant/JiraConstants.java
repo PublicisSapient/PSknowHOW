@@ -85,6 +85,10 @@ public final class JiraConstants {
 	public static final String PAGE_START = "pageStart";
 	public static final String BOARD_ID = "boardId";
 	public static final String NAME = "name";
+	public static final String ERROR_NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
+	public static final String OUTLIER_NOTIFICATION_SUBJECT_KEY = "outlierInJiraProcessor";
+	public static final String ERROR_MAIL_TEMPLATE_KEY = "Error_In_Jira_Processor";
+	public static final String OUTLIER_MAIL_TEMPLATE_KEY = "Outlier_In_Jira_Processor";
 
 	static {
 		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");
