@@ -267,4 +267,8 @@ export class PrimaryFilterComponent implements OnChanges {
 
   isString(val): boolean { return typeof val === 'string'; }
 
+  isFilterHidden(filterDataSet:any): boolean{
+    return (this.selectedTab.toLowerCase() === 'iteration' && filterDataSet.filter(x=>x.sprintState.toLowerCase()==='active').length) > 1?false:true;
+  }
+
 }
