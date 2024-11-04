@@ -548,6 +548,10 @@ public enum KPICode {
      * Estimate vs Actual
      */
     ESTIMATE_VS_ACTUAL_V2("kpi190", KPISource.JIRA.name()),
+    /**
+     * Defect Count By Status (Iteration)
+     */
+    DEFECT_COUNT_BY_ITERATION("kpi191", KPISource.JIRA.name()),
 
 
 

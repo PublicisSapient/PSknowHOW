@@ -157,7 +157,7 @@ public class EstimateVsActualV2ServiceImpl extends JiraIterationKPIService {
 			kpiElement.setModalHeads(KPIExcelColumn.ESTIMATE_VS_ACTUAL.getColumns());
 			kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 			kpiElement.setFilterGroup(createFilterGroup());
-			kpiElement.setDataGroup(createDataGroup(fieldMapping));
+			kpiElement.setDataGroup(createDataGroup());
 		}
 	}
 
@@ -198,10 +198,9 @@ public class EstimateVsActualV2ServiceImpl extends JiraIterationKPIService {
 	/**
 	 * Cretaes data group that tells what kind of data will be shown on chart.
 	 * 
-	 * @param fieldMapping
 	 * @return
 	 */
-	private KpiDataGroup createDataGroup(FieldMapping fieldMapping) {
+	private KpiDataGroup createDataGroup() {
 		KpiDataGroup dataGroup = new KpiDataGroup();
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
