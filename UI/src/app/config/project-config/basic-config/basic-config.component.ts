@@ -151,7 +151,7 @@ export class BasicConfigComponent implements OnInit {
     const list = (field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list;
     for (let i = 0; i < list.length; i++) {
       const listItem = list[i];
-      if (listItem?.nodeDisplayName?.toLowerCase().indexOf(query?.toLowerCase()) == 0) {
+      if (listItem?.nodeDisplayName?.toLowerCase().indexOf(query?.toLowerCase()) >= 0) {
         filtered.push(listItem);
       }
     }
@@ -201,6 +201,7 @@ export class BasicConfigComponent implements OnInit {
   }
 
   onSubmit() {
+    let newProjectParentId: string = '';
     const formValue = this.form.getRawValue();
     const submitData = {};
     submitData['projectName'] = formValue['projectName'];
@@ -217,17 +218,31 @@ export class BasicConfigComponent implements OnInit {
       user_email: this.sharedService.getCurrentUserDetails('user_email'),
     }
     this.getFieldsResponse.forEach((element, index) => {
+      if (element.hierarchyLevelId === 'project') {
+        if (typeof formValue[element.hierarchyLevelId] === 'string') {
+          const newProjectName = formValue[element.hierarchyLevelId].trim();
+          submitData['projectName'] = newProjectName;
+          submitData['projectDisplayName'] = newProjectName;
+          submitData['projectNodeId'] = null;
+        } else {
+          submitData['projectName'] = formValue[element.hierarchyLevelId].nodeName;
+          submitData['projectDisplayName'] = formValue[element.hierarchyLevelId].nodeDisplayName;
+          submitData['projectNodeId'] = formValue[element.hierarchyLevelId].nodeId;
+        }
+      }
       submitData['hierarchy'].push({
         hierarchyLevel: {
-          level: element.level,
-          hierarchyLevelId: element.hierarchyLevelId,
-          hierarchyLevelName: element.hierarchyLevelName
+          level: formValue[element.hierarchyLevelId].level,
+          hierarchyLevelId: formValue[element.hierarchyLevelId].hierarchyLevelId,
+          hierarchyLevelName: formValue[element.hierarchyLevelId].hierarchyLevelName
         },
-        value: formValue[element.hierarchyLevelId].name ? formValue[element.hierarchyLevelId].name : formValue[element.hierarchyLevelId]
+        orgHierarchyNodeId: formValue[element.hierarchyLevelId].nodeId,
+        value: formValue[element.hierarchyLevelId].nodeName
       });
-      gaObj['category' + (index + 1)] = element.hierarchyLevelName;
+      gaObj['category' + (index + 1)] = element.hierarchyLevelId;
     });
     this.blocked = true;
+    submitData['hierarchy'].pop();
     this.http.addBasicConfig(submitData).subscribe(response => {
       if (response && response.serviceResponse && response.serviceResponse.success) {
         this.selectedProject = {};
@@ -282,23 +297,32 @@ export class BasicConfigComponent implements OnInit {
   }
 
   getHierarchy() {
-    this.http.getOrganizationHierarchy().subscribe(formFieldData => {
-      const flatData = formFieldData?.data;
-      const hierarchyMap = {
+    const completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
+    const filteredHierarchyData = completeHierarchyData['scrum'].filter(item => item.id);
+    const hierarchyMap = filteredHierarchyData.reduce((acc, item) => {
+      acc[item.hierarchyLevelId] = item.hierarchyLevelName;
+      return acc;
+    }, {});
+    hierarchyMap['project'] = 'Project';
+    /* const hierarchyMap = {
         bu: "Business Unit",
         ver: "Vertical",
         acc: "Account",
         port: "Engagement",
         project: "Project"
-      };
+    }; */
+    this.http.getOrganizationHierarchy().subscribe(formFieldData => {
+      const flatData = formFieldData?.data;
 
-      const transformedData = Object.entries(hierarchyMap).map(([hierarchyLevelId, hierarchyLevelIdName]) => {
+      const transformedData = Object.entries(hierarchyMap).map(([hierarchyLevelId, hierarchyLevelIdName], index) => {
         return {
           hierarchyLevelId,
           hierarchyLevelIdName,
           list: flatData
             .filter(item => item.hierarchyLevelId === hierarchyLevelId)
             .map(({ id, nodeId, nodeName, nodeDisplayName, hierarchyLevelId, parentId, createdDate, modifiedDate }) => ({
+              level: index + 1,
+              hierarchyLevelName: hierarchyLevelIdName,
               id,
               nodeId,
               nodeName,
