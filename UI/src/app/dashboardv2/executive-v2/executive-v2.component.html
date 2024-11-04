@@ -68,7 +68,7 @@
                                                                     <ng-container *ngIf="checkIfDataPresent(kpi)">
                                                                         <app-groupstackchartv2 [legendType]="'normal'"
                                                                             [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
-                                                                            [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                                                            [yCaption]="checkYAxis(kpi)"
                                                                             [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                             [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                                                             [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -184,7 +184,7 @@
                                                                     *ngSwitchCase="'CumulativeMultilineChart'">
                                                                     <app-group-bar-chart
                                                                         [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] :kpi?.kpiDetail?.xaxisLabel"
-                                                                        [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                                                        [yCaption]="checkYAxis(kpi)"
                                                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                                                         [data]="kpiChartData[kpi?.kpiId]"
