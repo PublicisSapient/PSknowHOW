@@ -51,7 +51,6 @@ public class IterationKpiValue implements Serializable {
 	private List<String> additionalGroup;
 	private Map<String, String> markerInfo;
 	private transient Map<String, Object> additionalInfo;
-	private String yAxisLabel;
 
 	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data) {
 		this.filter1 = filter1;
