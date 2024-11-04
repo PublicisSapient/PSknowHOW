@@ -137,9 +137,9 @@ public class BitBucketServiceR {
 	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 
-		if (null != filteredNode.getAccountHierarchy()) {
+		if (null != filteredNode.getProjectHierarchy()) {
 			filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
-					filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+					filteredNode.getProjectHierarchy().getBasicProjectConfigId()));
 		}
 
 		return filteredNode;
