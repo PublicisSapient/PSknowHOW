@@ -85,8 +85,6 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 	private static final String RELEASE_PLANNED = "Release planned";
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String STORY_POINT = "Story Points";
-	public static final String AXIS_LABEL_COUNT = "Count";
-	public static final String AXIS_LABEL_SP = "SP";
 	private static final int DAYS_RANGE = 120;
 	private static final String LINE_GRAPH_TYPE = "line";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -194,13 +192,13 @@ public class ReleasePlanServiceImpl extends JiraReleaseKPIService {
 				IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 				kpiValueIssueCount.setDataGroup(issueCountDataGroup);
 				kpiValueIssueCount.setFilter1(ISSUE_COUNT);
-				kpiValueIssueCount.setYAxisLabel(AXIS_LABEL_COUNT);
+				kpiValueIssueCount.setYAxisLabel(CommonConstant.COUNT);
 				kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
 
 				IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
 				kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
 				kpiValueSizeCount.setFilter1(STORY_POINT);
-				kpiValueSizeCount.setYAxisLabel(AXIS_LABEL_SP);
+				kpiValueSizeCount.setYAxisLabel(CommonConstant.SP);
 				kpiValueSizeCount.setAdditionalInfo(additionalInfoMap);
 
 				iterationKpiValueList.add(kpiValueSizeCount);

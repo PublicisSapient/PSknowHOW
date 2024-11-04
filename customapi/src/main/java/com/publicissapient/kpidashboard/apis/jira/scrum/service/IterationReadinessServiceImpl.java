@@ -205,12 +205,12 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 
 				IterationKpiValue issueCountIterationKpiValue = new IterationKpiValue();
 				issueCountIterationKpiValue.setFilter1(ISSUE_COUNT);
-				issueCountIterationKpiValue.setYAxisLabel(AXIS_LABEL_COUNT);
+				issueCountIterationKpiValue.setYAxisLabel(CommonConstant.COUNT);
 				issueCountIterationKpiValue.setValue(issueCountDcList);
 
 				IterationKpiValue storyPointIterationKpiValue = new IterationKpiValue();
 				storyPointIterationKpiValue.setFilter1(STORY_POINT);
-				storyPointIterationKpiValue.setYAxisLabel(AXIS_LABEL_SP);
+				storyPointIterationKpiValue.setYAxisLabel(CommonConstant.SP);
 				storyPointIterationKpiValue.setValue(storyPointDcList);
 
 				overAllIterationKpiValue.add(storyPointIterationKpiValue);
