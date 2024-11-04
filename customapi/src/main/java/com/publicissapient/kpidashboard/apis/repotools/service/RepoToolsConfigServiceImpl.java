@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -279,8 +277,7 @@ public class RepoToolsConfigServiceImpl {
 				// delete only the repository
 				String deleteRepoUrl = customApiConfig.getRepoToolURL()
 						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
-								URLEncoder.encode(createProjectCode(basicProjectConfigId), StandardCharsets.UTF_8),
-								tool.getRepositoryName());
+								createProjectCode(basicProjectConfigId), tool.getRepositoryName());
 				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl, customApiConfig.getRepoToolAPIKey());
 			}
 		} else {
