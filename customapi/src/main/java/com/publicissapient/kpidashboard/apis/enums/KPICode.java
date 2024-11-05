@@ -552,7 +552,10 @@ public enum KPICode {
      * Defect Count By Status (Iteration)
      */
     DEFECT_COUNT_BY_ITERATION("kpi191", KPISource.JIRA.name()),
-
+    /**
+     * Closure Possible Today
+     */
+    CLOSURE_POSSIBLE_TODAY_V2("kpi192", KPISource.JIRA.name()),
 
 
 
