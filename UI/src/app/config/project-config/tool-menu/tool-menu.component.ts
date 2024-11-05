@@ -120,7 +120,7 @@ export class ToolMenuComponent implements OnInit {
         );
         let typeOfSelectedProject = this.selectedProject.type?.toLowerCase() || this.selectedProject.Type?.toLowerCase();
         //if (this.router.url === `/dashboard/Config/ConfigSettings/${this.selectedProject.id}?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings?type=${typeOfSelectedProject}&tab=2` || this.router.url === `/dashboard/Config/ConfigSettings`) {
-        if(this.router.url.includes('tab=2')){ 
+        if(this.router.url.includes('tab=2')){
         this.buttonText = 'Set Up';
           this.tools = [
             {
@@ -373,9 +373,11 @@ export class ToolMenuComponent implements OnInit {
       'tools': [...toolArr]
     }
     const hierarchyData = JSON.parse(localStorage.getItem('hierarchyData'));
-    hierarchyData?.forEach((item) => {
-      gaObj['category' + item?.level] = this.selectedProject[item?.hierarchyLevelName];
-    })
+    if(Array.isArray(hierarchyData)) {
+      hierarchyData?.forEach((item) => {
+        gaObj['category' + item?.level] = this.selectedProject[item?.hierarchyLevelName];
+      })
+    }
     this.ga.setProjectToolsData(gaObj);
   }
 

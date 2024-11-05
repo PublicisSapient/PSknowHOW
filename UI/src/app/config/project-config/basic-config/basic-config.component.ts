@@ -102,45 +102,45 @@ export class BasicConfigComponent implements OnInit {
     const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
-    this.formData.unshift({
-      level: 0,
-      hierarchyLevelId: 'kanban',
-      hierarchyLevelName: 'Project Methodology',
-      inputType: 'switch',
-      value: false,
-      required: true
-    });
 
-    this.formData.push(
-      {
-        level: this.formData.length,
-        hierarchyLevelId: 'assigneeDetails',
-        label1: 'Enable People performance KPIs',
-        label2: this.assigneeSwitchInfo,
-        inputType: 'boolean',
+    if (Array.isArray(this.formData)) {
+      this.formData?.unshift({
+        level: 0,
+        hierarchyLevelId: 'kanban',
+        hierarchyLevelName: 'Project Methodology',
+        inputType: 'switch',
         value: false,
-        required: false
-      }
-    );
-
-    this.formData.push(
-      {
-        level: this.formData.length,
-        hierarchyLevelId: 'developerKpiEnabled',
-        label1: 'Enable Developers KPIs',
-        label2: this.developerKpiInfo,
-        inputType: 'boolean',
-        value: false,
-        required: false
-      }
-    );
-
-    this.formData.forEach(control => {
-      this.form.addControl(
-        control.hierarchyLevelId,
-        this.formBuilder.control(control.value, [Validators.required, this.stringValidator])
+        required: true
+      });
+      this.formData?.push(
+        {
+          level: this.formData.length,
+          hierarchyLevelId: 'assigneeDetails',
+          label1: 'Enable People performance KPIs',
+          label2: this.assigneeSwitchInfo,
+          inputType: 'boolean',
+          value: false,
+          required: false
+        }
       );
-    });
+      this.formData?.push(
+        {
+          level: this.formData.length,
+          hierarchyLevelId: 'developerKpiEnabled',
+          label1: 'Enable Developers KPIs',
+          label2: this.developerKpiInfo,
+          inputType: 'boolean',
+          value: false,
+          required: false
+        }
+      );
+      this.formData?.forEach(control => {
+        this.form.addControl(
+          control.hierarchyLevelId,
+          this.formBuilder.control(control.value, [Validators.required, this.stringValidator])
+        );
+      });
+    }
     this.blocked = false;
 
   }
@@ -203,6 +203,7 @@ export class BasicConfigComponent implements OnInit {
   onSubmit() {
     let newProjectParentId: string = '';
     const formValue = this.form.getRawValue();
+    console.log(formValue);
     const submitData = {};
     submitData['projectName'] = formValue['projectName'];
     submitData['kanban'] = formValue['kanban'];
@@ -225,65 +226,116 @@ export class BasicConfigComponent implements OnInit {
           submitData['projectDisplayName'] = newProjectName;
           submitData['projectNodeId'] = null;
         } else {
-          submitData['projectName'] = formValue[element.hierarchyLevelId].nodeName;
-          submitData['projectDisplayName'] = formValue[element.hierarchyLevelId].nodeDisplayName;
-          submitData['projectNodeId'] = formValue[element.hierarchyLevelId].nodeId;
+          submitData['projectName'] = formValue[element.hierarchyLevelId]?.nodeName;
+          submitData['projectDisplayName'] = formValue[element.hierarchyLevelId]?.nodeDisplayName;
+          submitData['projectNodeId'] = formValue[element.hierarchyLevelId]?.nodeId;
         }
       }
       submitData['hierarchy'].push({
         hierarchyLevel: {
-          level: formValue[element.hierarchyLevelId].level,
-          hierarchyLevelId: formValue[element.hierarchyLevelId].hierarchyLevelId,
-          hierarchyLevelName: formValue[element.hierarchyLevelId].hierarchyLevelName
+          level: formValue[element.hierarchyLevelId]?.level,
+          hierarchyLevelId: formValue[element.hierarchyLevelId]?.hierarchyLevelId,
+          hierarchyLevelName: formValue[element.hierarchyLevelId]?.hierarchyLevelName
         },
-        orgHierarchyNodeId: formValue[element.hierarchyLevelId].nodeId,
-        value: formValue[element.hierarchyLevelId].nodeName
+        orgHierarchyNodeId: formValue[element.hierarchyLevelId]?.nodeId,
+        value: formValue[element.hierarchyLevelId]?.nodeName
       });
       gaObj['category' + (index + 1)] = element.hierarchyLevelId;
     });
     this.blocked = true;
     submitData['hierarchy'].pop();
-    this.http.addBasicConfig(submitData).subscribe(response => {
-      if (response && response.serviceResponse && response.serviceResponse.success) {
-        this.selectedProject = {};
-        this.selectedProject['id'] = response.serviceResponse.data['id'];
-        this.selectedProject['name'] = response.serviceResponse.data['projectName'];
-        this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
-        this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
-        this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
-        this.selectedProject['projectOnHold'] = response.serviceResponse.data['projectOnHold'];
-        response.serviceResponse.data['hierarchy'].forEach(element => {
-          this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
-        });
+    this.http.addBasicConfig(submitData).subscribe({
+      next: (response: any) => {
+        console.log(response)
+        if (response && response.serviceResponse && response.serviceResponse.success) {
+          this.selectedProject = {};
+          this.selectedProject['id'] = response.serviceResponse.data['id'];
+          this.selectedProject['name'] = response.serviceResponse.data['projectName'];
+          this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
+          this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
+          this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
+          this.selectedProject['projectOnHold'] = response.serviceResponse.data['projectOnHold'];
+          response.serviceResponse.data['hierarchy'].forEach(element => {
+            this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
+          });
 
-        this.sharedService.setSelectedProject(this.selectedProject);
-        this.allProjectList?.push(this.selectedProject);
-        this.sharedService.setProjectList(this.allProjectList);
-        if (!this.ifSuperUser) {
-          if (response['projectsAccess']) {
-            const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            this.sharedService.setCurrentUserDetails({ authorities });
+          this.sharedService.setSelectedProject(this.selectedProject);
+          this.allProjectList?.push(this.selectedProject);
+          this.sharedService.setProjectList(this.allProjectList);
+          if (!this.ifSuperUser) {
+            if (response['projectsAccess']) {
+              const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
+              this.sharedService.setCurrentUserDetails({ authorities });
+            }
           }
-        }
-        this.form.reset();
-        this.messenger.add({
-          severity: 'success',
-          summary: 'Basic config submitted!!',
-          detail: ''
-        });
-        this.isProjectSetupPopup = false;
-        this.isProjectCOmpletionPopup = true;
+          this.form.reset();
+          this.messenger.add({
+            severity: 'success',
+            summary: 'Basic config submitted!!',
+            detail: ''
+          });
+          this.isProjectSetupPopup = false;
+          this.isProjectCOmpletionPopup = true;
 
-        // Google Analytics
-        this.ga.createProjectData(gaObj);
-      } else {
+          // Google Analytics
+          this.ga.createProjectData(gaObj);
+        } else {
+          this.messenger.add({
+            severity: 'error',
+            summary: response.serviceResponse.message && response.serviceResponse.message.length ? response.serviceResponse.message : 'Some error occurred. Please try again later.'
+          });
+        }
+        this.blocked = false;
+        this.getFields();
+      },
+      error: (error) => {
         this.messenger.add({
           severity: 'error',
-          summary: response.serviceResponse.message && response.serviceResponse.message.length ? response.serviceResponse.message : 'Some error occurred. Please try again later.'
+          summary: 'Some error occurred. Please try again later.'
         });
+        this.blocked = false;
       }
-      this.blocked = false;
-      this.getFields();
+      // console.log(response)
+      // if (response && response.serviceResponse && response.serviceResponse.success) {
+      //   this.selectedProject = {};
+      //   this.selectedProject['id'] = response.serviceResponse.data['id'];
+      //   this.selectedProject['name'] = response.serviceResponse.data['projectName'];
+      //   this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
+      //   this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
+      //   this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
+      //   this.selectedProject['projectOnHold'] = response.serviceResponse.data['projectOnHold'];
+      //   response.serviceResponse.data['hierarchy'].forEach(element => {
+      //     this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
+      //   });
+
+      //   this.sharedService.setSelectedProject(this.selectedProject);
+      //   this.allProjectList?.push(this.selectedProject);
+      //   this.sharedService.setProjectList(this.allProjectList);
+      //   if (!this.ifSuperUser) {
+      //     if (response['projectsAccess']) {
+      //       const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
+      //       this.sharedService.setCurrentUserDetails({ authorities });
+      //     }
+      //   }
+      //   this.form.reset();
+      //   this.messenger.add({
+      //     severity: 'success',
+      //     summary: 'Basic config submitted!!',
+      //     detail: ''
+      //   });
+      //   this.isProjectSetupPopup = false;
+      //   this.isProjectCOmpletionPopup = true;
+
+      //   // Google Analytics
+      //   this.ga.createProjectData(gaObj);
+      // } else {
+      //   this.messenger.add({
+      //     severity: 'error',
+      //     summary: response.serviceResponse.message && response.serviceResponse.message.length ? response.serviceResponse.message : 'Some error occurred. Please try again later.'
+      //   });
+      // }
+      // this.blocked = false;
+      // this.getFields();
     });
   }
 
@@ -298,12 +350,14 @@ export class BasicConfigComponent implements OnInit {
 
   getHierarchy() {
     const completeHierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
-    const filteredHierarchyData = completeHierarchyData['scrum'].filter(item => item.id);
-    const hierarchyMap = filteredHierarchyData.reduce((acc, item) => {
+    const filteredHierarchyData = completeHierarchyData?.scrum.filter(item => item.id);
+    const hierarchyMap = filteredHierarchyData?.reduce((acc, item) => {
       acc[item.hierarchyLevelId] = item.hierarchyLevelName;
       return acc;
     }, {});
-    hierarchyMap['project'] = 'Project';
+    if(hierarchyMap) {
+      hierarchyMap['project'] = 'Project';
+    }
     /* const hierarchyMap = {
         bu: "Business Unit",
         ver: "Vertical",
@@ -311,13 +365,14 @@ export class BasicConfigComponent implements OnInit {
         port: "Engagement",
         project: "Project"
     }; */
-    this.http.getOrganizationHierarchy().subscribe(formFieldData => {
+    this.http.getOrganizationHierarchy()?.subscribe(formFieldData => {
       const flatData = formFieldData?.data;
 
-      const transformedData = Object.entries(hierarchyMap).map(([hierarchyLevelId, hierarchyLevelIdName], index) => {
+      const transformedData = typeof hierarchyMap === 'object' && Object.entries(hierarchyMap)?.map(([hierarchyLevelId, hierarchyLevelIdName], index) => {
         return {
           hierarchyLevelId,
           hierarchyLevelIdName,
+          level: index + 1,
           list: flatData
             .filter(item => item.hierarchyLevelId === hierarchyLevelId)
             .map(({ id, nodeId, nodeName, nodeDisplayName, hierarchyLevelId, parentId, createdDate, modifiedDate }) => ({

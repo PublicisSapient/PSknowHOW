@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
@@ -25,7 +25,7 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 import { BasicConfigComponent } from './basic-config.component';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('BasicConfigComponent', () => {
   let component: BasicConfigComponent;
@@ -47,7 +47,8 @@ describe('BasicConfigComponent', () => {
           "nodeName": "Global Business Unit",
           "nodeDisplayName": "Business Unit 1",
           "hierarchyLevelId": "bu",
-          "createdDate": "2024-08-28T10:17:44"
+          "createdDate": "2024-08-28T10:17:44",
+          "level": 1
         }
       ]
     },
@@ -62,7 +63,8 @@ describe('BasicConfigComponent', () => {
           "nodeDisplayName": "Vertical 1",
           "hierarchyLevelId": "ver",
           "parentId": "bu_unique_001",
-          "createdDate": "2024-08-28T10:17:44"
+          "createdDate": "2024-08-28T10:17:44",
+          "level": 2
         }
       ]
     },
@@ -77,7 +79,8 @@ describe('BasicConfigComponent', () => {
           "nodeDisplayName": "Account 1",
           "hierarchyLevelId": "acc",
           "parentId": "ver_unique_001",
-          "createdDate": "2024-08-28T10:17:44"
+          "createdDate": "2024-08-28T10:17:44",
+          "level": 3
         },
       ]
     },
@@ -92,7 +95,8 @@ describe('BasicConfigComponent', () => {
           "nodeDisplayName": "Engagement 1",
           "hierarchyLevelId": "port",
           "parentId": "acc_unique_001",
-          "createdDate": "2024-08-28T10:17:44"
+          "createdDate": "2024-08-28T10:17:44",
+          "level": 4
         },
       ]
     },
@@ -108,11 +112,62 @@ describe('BasicConfigComponent', () => {
           "hierarchyLevelId": "project",
           "parentId": "eng_unique_001",
           "createdDate": "2024-09-12T12:44:27",
-          "modifiedDate": "2024-09-12T12:44:27"
+          "modifiedDate": "2024-09-12T12:44:27",
+          "level": 5
         },
       ]
     }
   ];
+
+  const formValue = {
+    "kanban": false,
+    "bu": {
+      "level": 1,
+      "hierarchyLevelName": "BU",
+      "id": "66e16612d1d34875e9ebc8c6",
+      "nodeId": "bu_unique_001",
+      "nodeName": "Global Business Unit",
+      "nodeDisplayName": "Business Unit 1",
+      "hierarchyLevelId": "bu",
+      "createdDate": "2024-08-28T10:17:44"
+    },
+    "ver": {
+      "level": 2,
+      "hierarchyLevelName": "Vertical",
+      "id": "66e16612d1d34875e9ebc8c5",
+      "nodeId": "ver_unique_011",
+      "nodeName": "PS Internal",
+      "nodeDisplayName": "Vertical 11",
+      "hierarchyLevelId": "ver",
+      "parentId": "bu_unique_001",
+      "createdDate": "2024-08-28T10:17:44"
+    },
+    "acc": {
+      "level": 3,
+      "hierarchyLevelName": "Account",
+      "id": "66fbe5afdcf09bd8a21f1400",
+      "nodeId": "acc_unique_011",
+      "nodeName": "Global sfsf Account",
+      "nodeDisplayName": "Account 11",
+      "hierarchyLevelId": "acc",
+      "parentId": "ver_unique_011",
+      "createdDate": "2024-08-28T10:17:44"
+    },
+    "port": {
+      "level": 4,
+      "hierarchyLevelName": "Engagement",
+      "id": "66fbe5afdcf09bd8a21f13fc",
+      "nodeId": "eng_unique_011",
+      "nodeName": "Healthcare sds",
+      "nodeDisplayName": "Engagement 11",
+      "hierarchyLevelId": "port",
+      "parentId": "acc_unique_011",
+      "createdDate": "2024-08-28T10:17:44"
+    },
+    "project": "PSKnowHOW 1101",
+    "assigneeDetails": false,
+    "developerKpiEnabled": false
+  };
 
   const successResponse = {
     serviceResponse: {
@@ -157,7 +212,7 @@ describe('BasicConfigComponent', () => {
 
   beforeEach(async () => {
     const httpServiceSpy = jasmine.createSpyObj('HttpService', ['addBasicConfig', 'getOrganizationHierarchy']);
-    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['getSelectedProject', 'getProjectList', 'setSelectedProject', 'setSelectedFieldMapping']);
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['getSelectedProject', 'getProjectList', 'setSelectedProject', 'setSelectedFieldMapping', 'getCurrentUserDetails', 'setProjectList']);
     const authServiceSpy = jasmine.createSpyObj('GetAuthorizationService', ['checkIfSuperUser', 'checkIfProjectAdmin']);
     const messageServiceSpy = jasmine.createSpyObj('MessageService', ['add']);
     const gaServiceSpy = jasmine.createSpyObj('GoogleAnalyticsService', ['createProjectData']);
@@ -183,10 +238,25 @@ describe('BasicConfigComponent', () => {
     messageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
     gaService = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
 
+    component.form = new UntypedFormBuilder().group({
+      projectName: ['Test Project'],
+      kanban: [true],
+      assigneeDetails: [true],
+      developerKpiEnabled: [true]
+    });
+
+    component.getFieldsResponse = [
+      { hierarchyLevelId: 'bu', hierarchyLevelName: 'BU' },
+      { hierarchyLevelId: 'ver', hierarchyLevelName: 'Vertical' },
+      { hierarchyLevelId: 'project', hierarchyLevelName: 'Project' }
+    ];
+
     // Mock return for getOrganizationHierarchy
     httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
 
-    sharedService.setSelectedFieldMapping.and.returnValue(null)
+    sharedService.setSelectedFieldMapping.and.returnValue(null);
+    sharedService.getCurrentUserDetails.and.returnValue('test_user');
+    sharedService.setProjectList.and.returnValue(null);
   });
 
   it('should create component', () => {
@@ -213,7 +283,7 @@ describe('BasicConfigComponent', () => {
 
     component.getFields();
     expect(component.form.contains('kanban')).toBeTrue();
-    expect(component.form.controls['kanban'].value).toBeFalse();
+    expect(component.form.controls['kanban'].value).toBeTrue();
   });
 
   it('should filter suggestions based on query in search method', () => {
@@ -240,80 +310,156 @@ describe('BasicConfigComponent', () => {
 
   // ------------------------- OnSubmit -------------------------
 
-  // it('should submit config when superadmin', () => {
-  //   component.form = new UntypedFormGroup({
-  //     projectName: new UntypedFormControl('', [component.stringValidator]),
-  //     country: new UntypedFormControl('', [component.stringValidator]),
-  //     state: new UntypedFormControl('', [component.stringValidator]),
-  //     city: new UntypedFormControl('', [component.stringValidator]),
-  //     kanban: new UntypedFormControl(false),
-  //     assigneeDetails: new UntypedFormControl(false)
-  //   });
-  //   component.getFieldsResponse = [...hierarchyData];
-  //   Object.keys(formValue).forEach((key) => {
-  //     component.form.controls[key].setValue(formValue[key]);
-  //   });
-  //   component.blocked = true;
-  //   component.selectedProject = {};
-  //   spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
-  //   spyOn(sharedService, 'setSelectedProject');
-  //   component.ifSuperUser = true;
-  //   const spy = spyOn(messageService, 'add');
-  //   spyOn(gaService, 'createProjectData');
-  //   spyOn(component, 'getFields');
-  //   component.onSubmit();
-  //   expect(component.form.valid).toBeTruthy();
-  //   expect(spy).toHaveBeenCalled();
-  //   expect(component.blocked).toBeFalse();
-  // });
+  it('should submit form data successfully', fakeAsync(() => {
+    const mockResponse = {
+      serviceResponse: {
+        success: true,
+        data: {
+          id: '1',
+          projectName: 'Test Project',
+          kanban: true,
+          saveAssigneeDetails: true,
+          developerKpiEnabled: true,
+          hierarchy: [{ hierarchyLevel: { hierarchyLevelName: 'BU' }, value: 'Sample BU' }]
+        }
+      }
+    };
 
-  // it('should submit config when not superadmin', () => {
-  //   component.form = new UntypedFormGroup({
-  //     projectName: new UntypedFormControl('', [component.stringValidator]),
-  //     country: new UntypedFormControl('', [component.stringValidator]),
-  //     state: new UntypedFormControl('', [component.stringValidator]),
-  //     city: new UntypedFormControl('', [component.stringValidator]),
-  //     kanban: new UntypedFormControl(false),
-  //     assigneeDetails: new UntypedFormControl(false)
-  //   });
-  //   component.getFieldsResponse = [...hierarchyData];
-  //   Object.keys(formValue).forEach((key) => {
-  //     component.form.controls[key].setValue(formValue[key]);
-  //   });
-  //   component.blocked = true;
-  //   component.selectedProject = {};
-  //   spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
-  //   spyOn(sharedService, 'setSelectedProject');
-  //   component.ifSuperUser = false;
-  //   spyOn(sharedService, 'setCurrentUserDetails');
-  //   const spy = spyOn(messageService, 'add');
-  //   spyOn(gaService, 'createProjectData');
-  //   spyOn(component, 'getFields');
-  //   component.onSubmit();
-  //   expect(component.form.valid).toBeTruthy();
-  //   expect(spy).toHaveBeenCalled();
-  //   expect(component.blocked).toBeFalse();
-  // });
+    httpService.addBasicConfig.and.returnValue(of(mockResponse));
 
-  // it('should call HttpService on form submit and handle success response', () => {
-  //   httpService.addBasicConfig.and.returnValue(of({
-  //     serviceResponse: { success: true, data: { id: '1', projectName: 'Project A' } }
-  //   }));
-  //   spyOn(component, 'getFields').and.callThrough();
+    component.onSubmit();
+    tick();
 
-  //   component.onSubmit();
+    expect(component.selectedProject).toEqual(jasmine.objectContaining({
+      id: '1',
+      name: 'Test Project',
+      Type: 'Kanban',
+      saveAssigneeDetails: true,
+      developerKpiEnabled: true
+    }));
 
-  //   expect(httpService.addBasicConfig).toHaveBeenCalled();
-  //   expect(sharedService.setSelectedProject).toHaveBeenCalledWith(jasmine.objectContaining({
-  //     id: '1', name: 'Project A'
-  //   }));
-  //   expect(messageService.add).toHaveBeenCalledWith(jasmine.objectContaining({
-  //     severity: 'success'
-  //   }));
-  //   expect(component.isProjectSetupPopup).toBeFalse();
-  //   expect(component.isProjectCOmpletionPopup).toBeTrue();
-  //   expect(component.getFields).toHaveBeenCalled();
-  // });
+    expect(sharedService.setSelectedProject).toHaveBeenCalledWith(component.selectedProject);
+    expect(sharedService.setProjectList).toHaveBeenCalled();
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'Basic config submitted!!',
+      detail: ''
+    });
+    expect(gaService.createProjectData).toHaveBeenCalled();
+  }));
+
+  it('should handle form submission error', fakeAsync(() => {
+    const mockErrorResponse = {
+      serviceResponse: {
+        success: false,
+        message: 'Some error occurred'
+      }
+    };
+
+    httpService.addBasicConfig.and.returnValue(of(mockErrorResponse));
+
+    component.onSubmit();
+    tick();
+
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Some error occurred'
+    });
+    expect(component.blocked).toBe(false);
+  }));
+
+  it('should handle network error during form submission', fakeAsync(() => {
+    httpService.addBasicConfig.and.returnValue(throwError(() => new Error('Network error')));
+
+    component.onSubmit();
+    tick();
+
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Some error occurred. Please try again later.'
+    });
+    expect(component.blocked).toBe(false);
+  }));
+
+  it('should submit config when superadmin', () => {
+    const mockResponse = {
+      serviceResponse: {
+        success: true,
+        data: {
+          id: '1',
+          projectName: 'Test Project',
+          kanban: true,
+          saveAssigneeDetails: true,
+          developerKpiEnabled: true,
+          hierarchy: [{ hierarchyLevel: { hierarchyLevelName: 'BU' }, value: 'Sample BU' }]
+        }
+      }
+    };
+    component.form = new UntypedFormGroup({
+      bu: new UntypedFormControl('', [component.stringValidator]),
+      ver: new UntypedFormControl('', [component.stringValidator]),
+      acc: new UntypedFormControl('', [component.stringValidator]),
+      port: new UntypedFormControl('', [component.stringValidator]),
+      project: new UntypedFormControl('', [component.stringValidator]),
+      kanban: new UntypedFormControl(false),
+      assigneeDetails: new UntypedFormControl(false),
+      developerKpiEnabled: new UntypedFormControl(false)
+    });
+    component.getFieldsResponse = [...hierarchyData];
+    Object.keys(formValue).forEach((key) => {
+      component.form.controls[key].setValue(formValue[key]);
+    });
+    component.blocked = true;
+    component.selectedProject = {};
+
+    component.ifSuperUser = true;
+
+    httpService.addBasicConfig.and.returnValue(of(mockResponse));
+    component.onSubmit();
+    expect(component.form.valid).toBeTruthy();
+
+    expect(component.blocked).toBeFalse();
+  });
+
+  it('should submit config when not superadmin', () => {
+    const mockResponse = {
+      serviceResponse: {
+        success: true,
+        data: {
+          id: '1',
+          projectName: 'Test Project',
+          kanban: true,
+          saveAssigneeDetails: true,
+          developerKpiEnabled: true,
+          hierarchy: [{ hierarchyLevel: { hierarchyLevelName: 'BU' }, value: 'Sample BU' }]
+        }
+      }
+    };
+    component.form = new UntypedFormGroup({
+      bu: new UntypedFormControl('', [component.stringValidator]),
+      ver: new UntypedFormControl('', [component.stringValidator]),
+      acc: new UntypedFormControl('', [component.stringValidator]),
+      port: new UntypedFormControl('', [component.stringValidator]),
+      project: new UntypedFormControl('', [component.stringValidator]),
+      kanban: new UntypedFormControl(false),
+      assigneeDetails: new UntypedFormControl(false),
+      developerKpiEnabled: new UntypedFormControl(false)
+    });
+    component.getFieldsResponse = [...hierarchyData];
+    Object.keys(formValue).forEach((key) => {
+      component.form.controls[key].setValue(formValue[key]);
+    });
+    component.blocked = true;
+    component.selectedProject = {};
+
+    component.ifSuperUser = false;
+
+    httpService.addBasicConfig.and.returnValue(of(mockResponse));
+    component.onSubmit();
+    expect(component.form.valid).toBeTruthy();
+
+    expect(component.blocked).toBeFalse();
+  });
 
   // ------------------------- OnSubmit -------------------------
 
