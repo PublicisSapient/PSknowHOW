@@ -17,6 +17,7 @@
 
 package com.publicissapient.kpidashboard.jira.service;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +60,55 @@ public class ProjectHierarchySyncServiceImplTest {
 	@Before
 	public void setUp() {
 		// Initialize mocks before each test
+	}
+
+	@Test
+	public void scrumSprintHierarchySyncNoSprintsToDeleteFalseHit() {
+		ObjectId projectId = new ObjectId();
+		List<String> distinctSprintIDs = List.of("Sprint1", "Sprint2");
+		List<String> nonMatchingNodeIds = List.of();
+
+		when(jiraIssueRepository.findDistinctSprintIDByBasicProjectConfigId(projectId)).thenReturn(distinctSprintIDs);
+		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId, distinctSprintIDs,
+				CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)).thenReturn(nonMatchingNodeIds);
+
+		projectHierarchySyncServiceImpl.scrumSprintHierarchySync(projectId);
+
+		verify(sprintRepository, never()).deleteBySprintIDInAndBasicProjectConfigId(nonMatchingNodeIds, projectId);
+	}
+
+	@Test
+	public void scrumReleaseHierarchySyncDeletesNonMatchingReleasesFalseHit() {
+		ObjectId projectId = new ObjectId();
+		List<AccountHierarchy> fetchedReleasedHierarchy = List.of(AccountHierarchy.builder().nodeId("Release1").build(),
+				AccountHierarchy.builder().nodeId("Release2").build());
+		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
+		List<String> entriesToDelete = List.of("Release3");
+
+		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
+				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(entriesToDelete);
+
+		projectHierarchySyncServiceImpl.scrumReleaseHierarchySync(projectId, fetchedReleasedHierarchy);
+
+		verify(accountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
+				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+	}
+
+	@Test
+	public void KanbanReleaseHierarchySyncNoReleasesToDeleteFalseHit() {
+		ObjectId projectId = new ObjectId();
+		List<KanbanAccountHierarchy> fetchedReleasedHierarchy = List.of(KanbanAccountHierarchy.builder().nodeId("Release1").build(),
+				KanbanAccountHierarchy.builder().nodeId("Release2").build());
+		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
+		List<String> entriesToDelete = List.of();
+
+		when(kanbanAccountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
+				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(entriesToDelete);
+
+		projectHierarchySyncServiceImpl.kanbanReleaseHierarchySync(projectId, fetchedReleasedHierarchy);
+
+		verify(kanbanAccountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
+				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 	}
 
 	@Test

@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,13 +72,14 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 		List<String> nonMatchingNodeIds = accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(
 				basicProjectConfigId, distinctSprintIDs, CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 
-		log.info("Deleting sprint details with sprintID : {} for projectId {}", nonMatchingNodeIds,
-				basicProjectConfigId);
-		sprintRepository.deleteBySprintIDInAndBasicProjectConfigId(nonMatchingNodeIds, basicProjectConfigId);
+		if (CollectionUtils.isNotEmpty(nonMatchingNodeIds)) {
+			log.info("Deleting sprint details with sprintID : {} for projectId {}", nonMatchingNodeIds,
+					basicProjectConfigId);
+			sprintRepository.deleteBySprintIDInAndBasicProjectConfigId(nonMatchingNodeIds, basicProjectConfigId);
 
-		deleteNonMatchingEntries(basicProjectConfigId, nonMatchingNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
-				false);
-
+			deleteNonMatchingEntries(basicProjectConfigId, nonMatchingNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,
+					false);
+		}
 	}
 
 	/**
@@ -99,8 +101,10 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 		List<String> entriesToDelete = accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(
 				basicProjectConfigId, distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 
-		deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE,
-				false);
+		if (CollectionUtils.isNotEmpty(entriesToDelete)) {
+			deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE,
+					false);
+		}
 	}
 
 	/**
@@ -122,8 +126,10 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 		List<String> entriesToDelete = kanbanAccountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(
 				basicProjectConfigId, distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 
-		deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE,
-				true);
+		if (CollectionUtils.isNotEmpty(entriesToDelete)) {
+			deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE,
+					true);
+		}
 	}
 
 	/**
