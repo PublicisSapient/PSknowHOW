@@ -213,30 +213,32 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	List<AccountHierarchy> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
-	 * Finds distinct node IDs by label name and basic project config ID.
-	 *
-	 * @param labelName
-	 *            the label name
-	 * @param basicProjectConfigId
-	 *            the basic project config ID
-	 * @return a list of distinct node IDs
-	 */
-	@Query(value = "{ 'labelName': ?0, 'basicProjectConfigId': ?1 }", fields = "{ 'nodeId': 1 }")
-	List<String> findDistinctNodeIdsByLabelNameAndBasicProjectConfigId(String labelName, ObjectId basicProjectConfigId);
-
-	/**
-	 * Deletes documents by basic project config ID and node ID not in the provided
+	 * Finds node IDs by basic project config ID and node ID not in the provided
 	 * list.
 	 *
 	 * @param basicProjectConfigId
 	 *            the basic project config ID
 	 * @param nodeIds
 	 *            the list of node IDs to exclude
+	 * @param hierarchyLevelId
+	 *            the hierarchy level ID
+	 * @return the list of node IDs
+	 */
+	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'hierarchyLevelId': ?2 }", fields = "{ 'nodeId': 1 }")
+	List<String> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> nodeIds,
+			String hierarchyLevelId);
+
+	/**
+	 * Deletes documents by basic project config ID, node IDs, and label name.
+	 *
+	 * @param basicProjectConfigId
+	 *            the basic project config ID
+	 * @param nodeIds
+	 *            the list of node IDs
 	 * @param labelName
 	 *            the label name
 	 */
-	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'labelName': ?2 }", delete = true)
-	void deleteByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> nodeIds,
-			String labelName);
-
+	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $in: ?1 }, 'labelName': ?2 }", delete = true)
+	void deleteByBasicProjectConfigIdAndNodeIdIn(ObjectId basicProjectConfigId, List<String> nodeIds, String labelName);
+	
 }

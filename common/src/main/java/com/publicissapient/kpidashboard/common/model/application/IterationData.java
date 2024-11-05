@@ -23,6 +23,8 @@ import lombok.Data;
 
 /**
  * Represents data for a specific iteration.
+ *
+ * @author shunaray
  */
 @Data
 public class IterationData {

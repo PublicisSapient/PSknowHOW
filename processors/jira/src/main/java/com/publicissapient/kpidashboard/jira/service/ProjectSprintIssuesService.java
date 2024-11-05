@@ -24,6 +24,8 @@ import org.bson.types.ObjectId;
 
 /**
  * Service interface for tracking project sprint issues during processor run
+ *
+ * @author shunaray
  */
 public interface ProjectSprintIssuesService {
 

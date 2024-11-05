@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 /**
  * Service implementation for tracking project sprint issues during processor
  * run.
+ *
+ * @author shunary
  */
 @Service
 public class ProjectSprintIssuesServiceImpl implements ProjectSprintIssuesService {

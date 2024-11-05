@@ -164,18 +164,32 @@ public interface KanbanAccountHierarchyRepository extends MongoRepository<Kanban
 	List<KanbanAccountHierarchy> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
-	 * Deletes documents by basic project config ID and node ID not in the provided
+	 * Finds node IDs by basic project config ID and node ID not in the provided
 	 * list.
 	 *
 	 * @param basicProjectConfigId
 	 *            the basic project config ID
 	 * @param nodeIds
 	 *            the list of node IDs to exclude
+	 * @param hierarchyLevelId
+	 *            the hierarchy level ID
+	 * @return the list of node IDs
+	 */
+	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'hierarchyLevelId': ?2 }", fields = "{ 'nodeId': 1 }")
+	List<String> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> nodeIds,
+																 String hierarchyLevelId);
+
+	/**
+	 * Deletes documents by basic project config ID, node IDs, and label name.
+	 *
+	 * @param basicProjectConfigId
+	 *            the basic project config ID
+	 * @param nodeIds
+	 *            the list of node IDs
 	 * @param labelName
 	 *            the label name
 	 */
-	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'labelName': ?2 }", delete = true)
-	void deleteByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> nodeIds,
-			String labelName);
+	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $in: ?1 }, 'labelName': ?2 }", delete = true)
+	void deleteByBasicProjectConfigIdAndNodeIdIn(ObjectId basicProjectConfigId, List<String> nodeIds, String labelName);
 
 }

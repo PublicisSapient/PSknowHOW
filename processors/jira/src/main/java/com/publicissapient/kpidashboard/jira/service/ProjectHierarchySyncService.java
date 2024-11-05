@@ -26,6 +26,8 @@ import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHi
 
 /**
  * Service interface for synchronizing project hierarchies.
+ *
+ * @author shunary
  */
 public interface ProjectHierarchySyncService {
 	/**
