@@ -66,7 +66,6 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		DataCount trendValue = new DataCount();
 		projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
@@ -161,6 +160,7 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 		Set<IssueKpiModalValue> issueData = new HashSet<>();
 
 		if (CollectionUtils.isNotEmpty(initialIssues)) {
+			log.info("Iteration Commitment - Initial Commitment -> request id : {} jira Issues : {}", requestTrackerId, initialIssues.size());
 			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(initialIssues);
 			initialIssues.forEach(issue -> {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
@@ -170,6 +170,7 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 			issueData.addAll(new HashSet<>(issueKpiModalObject.values()));
 		}
 		if (CollectionUtils.isNotEmpty(addedIssues)) {
+			log.info("Iteration Commitment - Scope Added -> request id : {} jira Issues : {}", requestTrackerId, addedIssues.size());
 			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(addedIssues);
 			addedIssues.forEach(issue -> {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
@@ -179,6 +180,7 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 			issueData.addAll(new HashSet<>(issueKpiModalObject.values()));
 		}
 		if (CollectionUtils.isNotEmpty(puntedIssues)) {
+			log.info("Iteration Commitment - Scope Removed -> request id : {} jira Issues : {}", requestTrackerId, puntedIssues.size());
 			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(puntedIssues);
 			puntedIssues.forEach(issue -> {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
