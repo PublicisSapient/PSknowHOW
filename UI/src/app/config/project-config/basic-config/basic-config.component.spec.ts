@@ -251,6 +251,19 @@ describe('BasicConfigComponent', () => {
       { hierarchyLevelId: 'project', hierarchyLevelName: 'Project' }
     ];
 
+    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
+      if (key === 'completeHierarchyData') {
+        return JSON.stringify({
+          scrum: [
+            { id: '1', hierarchyLevelId: 'bu', hierarchyLevelName: 'Business Unit' },
+            { id: '2', hierarchyLevelId: 'ver', hierarchyLevelName: 'Vertical' }
+          ]
+        });
+      }
+      return null;
+    });
+    spyOn(localStorage, 'setItem');
+
     // Mock return for getOrganizationHierarchy
     httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
 
@@ -279,7 +292,7 @@ describe('BasicConfigComponent', () => {
       inputType: 'switch',
       value: false
     }];
-    spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(mockData));
+    (localStorage.getItem as jasmine.Spy).and.returnValue(JSON.stringify(mockData));
 
     component.getFields();
     expect(component.form.contains('kanban')).toBeTrue();
@@ -472,4 +485,95 @@ describe('BasicConfigComponent', () => {
     const invalidResult = component.stringValidator(invalidControl);
     expect(invalidResult).toEqual({ stringValidator: true });
   });
+
+  // ----------------------- getHierarchy ------------------------------
+
+  it('should parse and filter localStorage data and make an HTTP call', () => {
+    const mockFormFieldData = {
+      data: [
+        { id: '1', nodeId: 'node_1', nodeName: 'Node 1', nodeDisplayName: 'Node Display 1', hierarchyLevelId: 'bu' },
+        { id: '2', nodeId: 'node_2', nodeName: 'Node 2', nodeDisplayName: 'Node Display 2', hierarchyLevelId: 'ver' }
+      ]
+    };
+
+    httpService.getOrganizationHierarchy.and.returnValue(of(mockFormFieldData));
+    spyOn(component, 'getFields');
+
+    component.getHierarchy();
+
+    expect(httpService.getOrganizationHierarchy).toHaveBeenCalled();
+
+    const expectedHierarchyMap = {
+      bu: 'Business Unit',
+      ver: 'Vertical',
+      project: 'Project'
+    };
+    const expectedTransformedData = [
+      {
+        "hierarchyLevelId": "bu",
+        "hierarchyLevelIdName": "Business Unit",
+        "level": 1,
+        "list": [
+          {
+            "level": 1,
+            "hierarchyLevelName": "Business Unit",
+            "id": "1",
+            "nodeId": "node_1",
+            "nodeName": "Node 1",
+            "nodeDisplayName": "Node Display 1",
+            "hierarchyLevelId": "bu"
+          }
+        ]
+      },
+      {
+        "hierarchyLevelId": "ver",
+        "hierarchyLevelIdName": "Vertical",
+        "level": 2,
+        "list": [
+          {
+            "level": 2,
+            "hierarchyLevelName": "Vertical",
+            "id": "2",
+            "nodeId": "node_2",
+            "nodeName": "Node 2",
+            "nodeDisplayName": "Node Display 2",
+            "hierarchyLevelId": "ver"
+          }
+        ]
+      },
+      {
+        "hierarchyLevelId": "project",
+        "hierarchyLevelIdName": "Project",
+        "level": 3,
+        "list": []
+      }
+    ];
+
+    expect(localStorage.setItem).toHaveBeenCalledWith('hierarchyData', JSON.stringify(expectedTransformedData, null, 2));
+    expect(component.getFields).toHaveBeenCalled();
+  });
+
+  it('should handle empty localStorage data gracefully', () => {
+    (localStorage.getItem as jasmine.Spy).and.returnValue(null);
+    httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
+    spyOn(component, 'getFields');
+
+    component.getHierarchy();
+
+    expect(localStorage.getItem).toHaveBeenCalledWith('completeHierarchyData');
+    expect(httpService.getOrganizationHierarchy).toHaveBeenCalled();
+    expect(localStorage.setItem).toHaveBeenCalledWith('hierarchyData', JSON.stringify([], null, 2));
+    expect(component.getFields).toHaveBeenCalled();
+  });
+
+  it('should add "Project" to the hierarchy map when data exists', () => {
+    httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
+    component.getHierarchy();
+
+    // Retrieve arguments of the most recent call to setItem
+    const hierarchyMap = JSON.parse((localStorage.setItem as jasmine.Spy).calls.mostRecent().args[1]);
+    expect(hierarchyMap.some((item: any) => item.hierarchyLevelIdName === 'Project')).toBeTrue();
+  });
+
+  // ----------------------- getHierarchy ------------------------------
 });

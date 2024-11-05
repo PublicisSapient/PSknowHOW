@@ -295,47 +295,6 @@ export class BasicConfigComponent implements OnInit {
         });
         this.blocked = false;
       }
-      // console.log(response)
-      // if (response && response.serviceResponse && response.serviceResponse.success) {
-      //   this.selectedProject = {};
-      //   this.selectedProject['id'] = response.serviceResponse.data['id'];
-      //   this.selectedProject['name'] = response.serviceResponse.data['projectName'];
-      //   this.selectedProject['Type'] = response.serviceResponse.data['kanban'] ? 'Kanban' : 'Scrum';
-      //   this.selectedProject['saveAssigneeDetails'] = response.serviceResponse.data['saveAssigneeDetails'];
-      //   this.selectedProject['developerKpiEnabled'] = response.serviceResponse.data['developerKpiEnabled'];
-      //   this.selectedProject['projectOnHold'] = response.serviceResponse.data['projectOnHold'];
-      //   response.serviceResponse.data['hierarchy'].forEach(element => {
-      //     this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
-      //   });
-
-      //   this.sharedService.setSelectedProject(this.selectedProject);
-      //   this.allProjectList?.push(this.selectedProject);
-      //   this.sharedService.setProjectList(this.allProjectList);
-      //   if (!this.ifSuperUser) {
-      //     if (response['projectsAccess']) {
-      //       const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-      //       this.sharedService.setCurrentUserDetails({ authorities });
-      //     }
-      //   }
-      //   this.form.reset();
-      //   this.messenger.add({
-      //     severity: 'success',
-      //     summary: 'Basic config submitted!!',
-      //     detail: ''
-      //   });
-      //   this.isProjectSetupPopup = false;
-      //   this.isProjectCOmpletionPopup = true;
-
-      //   // Google Analytics
-      //   this.ga.createProjectData(gaObj);
-      // } else {
-      //   this.messenger.add({
-      //     severity: 'error',
-      //     summary: response.serviceResponse.message && response.serviceResponse.message.length ? response.serviceResponse.message : 'Some error occurred. Please try again later.'
-      //   });
-      // }
-      // this.blocked = false;
-      // this.getFields();
     });
   }
 
@@ -368,7 +327,7 @@ export class BasicConfigComponent implements OnInit {
     this.http.getOrganizationHierarchy()?.subscribe(formFieldData => {
       const flatData = formFieldData?.data;
 
-      const transformedData = typeof hierarchyMap === 'object' && Object.entries(hierarchyMap)?.map(([hierarchyLevelId, hierarchyLevelIdName], index) => {
+      const transformedData = typeof hierarchyMap === 'object' ? Object.entries(hierarchyMap)?.map(([hierarchyLevelId, hierarchyLevelIdName], index) => {
         return {
           hierarchyLevelId,
           hierarchyLevelIdName,
@@ -388,7 +347,7 @@ export class BasicConfigComponent implements OnInit {
               ...(modifiedDate && { modifiedDate })
             }))
         };
-      });
+      }) : [];
 
       localStorage.setItem('hierarchyData', JSON.stringify(transformedData, null, 2));
       this.getFields();
