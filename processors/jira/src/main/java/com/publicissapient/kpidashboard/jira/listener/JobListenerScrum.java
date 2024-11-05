@@ -223,8 +223,6 @@ public class JobListenerScrum implements JobExecutionListener {
 					// sending mail
 					String outlierSprintIssuesTable = projectSprintIssuesService
 							.printSprintIssuesTable(outlierSprintMap);
-					log.debug("Outlier sprint issue table send in mail for projectId: {} is : \n{}", projectId,
-							outlierSprintIssuesTable);
 					try {
 						sendNotification(outlierSprintIssuesTable, JiraConstants.OUTLIER_NOTIFICATION_SUBJECT_KEY,
 								JiraConstants.OUTLIER_MAIL_TEMPLATE_KEY);

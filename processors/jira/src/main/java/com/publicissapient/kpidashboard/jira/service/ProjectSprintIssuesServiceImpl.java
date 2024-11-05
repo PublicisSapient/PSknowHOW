@@ -90,30 +90,19 @@ public class ProjectSprintIssuesServiceImpl implements ProjectSprintIssuesServic
 	 */
 	@Override
 	public String printSprintIssuesTable(Map<String, List<String>> outlierSprintIssueMap) {
-		// Determine the maximum width for each column
-		int maxSprintNameLength = "Sprint Name".length();
-		int maxIssueKeysLength = "Issue Keys".length();
+		StringBuilder formattedString = new StringBuilder();
+		formattedString.append("<table border='1'>");
+		formattedString.append("<tr><th>Sprint Name</th><th>Issue Tagged</th></tr>");
 
 		for (Map.Entry<String, List<String>> entry : outlierSprintIssueMap.entrySet()) {
-			maxSprintNameLength = Math.max(maxSprintNameLength, entry.getKey().length());
-			String issueKeysString = entry.getValue().toString();
-			maxIssueKeysLength = Math.max(maxIssueKeysLength, issueKeysString.length());
+			formattedString.append("<tr>");
+			formattedString.append("<td>").append(entry.getKey()).append("</td>");
+			formattedString.append("<td>").append(String.join(", ", entry.getValue())).append("</td>");
+			formattedString.append("</tr>");
 		}
 
-		StringBuilder sb = new StringBuilder();
-		String format = "| %-" + maxSprintNameLength + "s | %-" + maxIssueKeysLength + "s |";
-		String separator = "+-" + "-".repeat(maxSprintNameLength) + "-+-" + "-".repeat(maxIssueKeysLength) + "-+";
-
-		sb.append(separator).append("\n");
-		sb.append(String.format(format, "Sprint Name", "Issue Keys")).append("\n");
-		sb.append(separator).append("\n");
-
-		for (Map.Entry<String, List<String>> entry : outlierSprintIssueMap.entrySet()) {
-			sb.append(String.format(format, entry.getKey(), entry.getValue().toString())).append("\n");
-		}
-
-		sb.append(separator);
-		return sb.toString();
+		formattedString.append("</table>");
+		return formattedString.toString();
 	}
 
 	/**
