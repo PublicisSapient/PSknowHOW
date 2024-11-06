@@ -14,9 +14,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -59,12 +59,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
 
 	private static final Integer SP_CONSTANT = 3;
 	private static final String DEV = "DeveloperKpi";
 	private static final String SPRINT_WISE_PREDICTABILITY = "predictability";
 	private static final String SPRINT_WISE_SPRINT_DETAILS = "sprintWiseSprintDetailMap";
+
+	private static final String HOVER_KEY_VELOCITY = "Velocity";
+	private static final String HOVER_KEY_AVERAGE_VELOCITY = "Average Velocity";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -255,8 +258,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	 * @return Double
 	 */
 	@Override
-	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseDefectMap) {
-		return (double) Math.round(100.0);
+	public Long calculateKPIMetrics(Map<String, Object> filterComponentIdWiseDefectMap) {
+		return Math.round(100.0);
 	}
 
 	/**
@@ -335,7 +338,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			});
 		}
 
-		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
+		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
+		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList , sprintWiseHowerMap);
 		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
@@ -355,9 +359,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				dataCount.setSSprintName(node.getSprintFilter().getName());
 				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-				dataCount.setValue(predictability.get(currentNodeIdentifier));
 				dataCount.setValue(Math.round(predictability.get(currentNodeIdentifier)));
-				dataCount.setHoverValue(new HashMap<>());
+				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 				mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
 				trendValueList.add(dataCount);
 			}
@@ -367,8 +370,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	}
 
 	@Override
-	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
-		return calculateKpiValueForDouble(valueList, kpiName);
+	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
+		return calculateKpiValueForLong(valueList, kpiName);
 	}
 
 	/**
@@ -377,7 +380,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	 * @param stories
 	 * @return resultMap
 	 */
-	public Map<Pair<String, String>, Double> prepareSprintPredictMap(List<SprintWiseStory> stories) {
+	public Map<Pair<String, String>, Double> prepareSprintPredictMap(List<SprintWiseStory> stories , Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap) {
 		Map<Pair<String, String>, Double> resultMap = new LinkedHashMap<>();
 		Map<String, List<SprintWiseStory>> projectWiseStories = stories.stream()
 				.collect(Collectors.groupingBy(SprintWiseStory::getBasicProjectConfigId, Collectors.toList()));
@@ -394,19 +397,35 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 					Double total = 0d;
 					Double avg = calculateAverage(storyList, varCount, count, total);
 					if (avg == 0) {
-						calculateFirstSprintPredictability(storyList, resultMap, count, projectKey);
+						calculateFirstSprintPredictability(storyList, resultMap, count, projectKey , sprintWiseHowerMap);
 					} else {
 						Double finalResult = (double) Math.round((storyList.get(count).getEffortSum() / avg) * 100);
 						resultMap.put(sprintKey, finalResult);
+						setHoverValue(sprintWiseHowerMap, sprintKey, storyList.get(count).getEffortSum(), avg);
 					}
 				} else {
-					calculateFirstSprintPredictability(storyList, resultMap, count, projectKey);
+					calculateFirstSprintPredictability(storyList, resultMap, count, projectKey , sprintWiseHowerMap);
 
 				}
 
 			}
 		});
 		return resultMap;
+	}
+
+	/**
+	 * set hover value
+	 * @param sprintWiseHowerMap
+	 * @param sprintKey
+	 * @param velocity
+	 * @param avgVelocity
+	 */
+	private void setHoverValue(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
+			Pair<String, String> sprintKey, Double velocity, Double avgVelocity) {
+		Map<String, Object> hoverValue = new HashMap<>();
+		hoverValue.put(HOVER_KEY_VELOCITY, velocity);
+		hoverValue.put(HOVER_KEY_AVERAGE_VELOCITY, roundingOff(avgVelocity));
+		sprintWiseHowerMap.put(sprintKey, hoverValue);
 	}
 
 	/**
@@ -443,12 +462,14 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	 * @param count
 	 */
 	private void calculateFirstSprintPredictability(List<SprintWiseStory> storyList,
-			Map<Pair<String, String>, Double> resultMap, int count, String projectKey) {
+			Map<Pair<String, String>, Double> resultMap, int count, String projectKey ,  Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap) {
 		if (storyList.get(count).getEffortSum() == 0) {
 			resultMap.put(Pair.of(projectKey, storyList.get(count).getSprint()), 0d);
+			setHoverValue(sprintWiseHowerMap, Pair.of(projectKey, storyList.get(count).getSprint()), 0d, 0d);
 		} else {
 			Double finalResult = 100d;
 			resultMap.put(Pair.of(projectKey, storyList.get(count).getSprint()), finalResult);
+			setHoverValue(sprintWiseHowerMap, Pair.of(projectKey, storyList.get(count).getSprint()), 100d, 100d);
 		}
 	}
 

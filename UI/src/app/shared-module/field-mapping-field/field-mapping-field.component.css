@@ -166,3 +166,9 @@ label.btn-import-label {
   border-color: #B00020;
   border-width: initial;
 }
+.link{
+  color : var(--color-secondary-blue);
+  cursor: pointer;
+  text-decoration: underline;
+
+}

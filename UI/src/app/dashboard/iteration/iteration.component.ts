@@ -280,7 +280,10 @@ export class IterationComponent implements OnInit, OnDestroy {
   checkForAssigneeDataAndSetupTabs() {
     this.httpService.getProjectListData().subscribe(async responseList => {
       let selectedProject = responseList[0].data.filter((project) => project.id === this.selectedProjectId)[0];
-      let showDSVorNot = selectedProject['saveAssigneeDetails'];
+      let showDSVorNot = false;
+      if (selectedProject) {
+        showDSVorNot = selectedProject['saveAssigneeDetails'];
+      }
       let showDailyStandup = await this.featureFlagService.isFeatureEnabled('DAILY_STANDUP');
       if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot) { // && showDailyStandup) {
         this.navigationTabs = [
@@ -832,16 +835,16 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   applyColumnFilter() {
-    this.saveKpiColumnsConfig(this.selectedColumns);
+    this.saveKpiColumnsConfig(this.selectedColumns,'APPLY');
   }
 
   saveTableColumnOrder() {
     if (this.tableComponent.columns.length > 0) {
-      this.saveKpiColumnsConfig(this.tableComponent.columns);
+      this.saveKpiColumnsConfig(this.tableComponent.columns,'SAVE');
     }
   }
 
-  saveKpiColumnsConfig(selectedColumns: any[]) {
+  saveKpiColumnsConfig(selectedColumns: any[],action:string) {
     const postData = {
       kpiId: '',
       basicProjectConfigId: '',
@@ -862,13 +865,18 @@ export class IterationComponent implements OnInit, OnDestroy {
     });
     postData['kpiColumnDetails'].sort((a, b) => a.order - b.order);
     this.tableHeaders = postData['kpiColumnDetails'].map(col => col.columnName);
-    this.httpService.postkpiColumnsConfig(postData).subscribe(response => {
-      if (response && response['success'] && response['data']) {
-        this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
-      } else {
-        this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
-      }
-    });
+    if(action === 'SAVE'){
+      this.httpService.postkpiColumnsConfig(postData).subscribe(response => {
+        if (response && response['success'] && response['data']) {
+          this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
+        }
+      });
+    }else{
+      this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations applied successfully!' });
+    }
+
   }
 
   generateTableColumnData() {
@@ -876,6 +884,15 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: colData, value: colData }));
       this.tableColumnForm[colName] = [];
     });
+    this.modalDetails['tableValues'].map(item =>{
+      Object.keys(item).forEach(key=>{
+        if(key.toLowerCase().includes('date') && item[key]=== '-'){
+          item[key] = '';
+        }
+      });
+      return item;
+    })
+
   }
 
   generateExcel(exportMode) {
@@ -962,18 +979,19 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
   }
 
-  customSort(event: SortEvent) {
-    const getSortValue = (data: any, field: string) => {
-      const value = (field in data) ? data[field].trim() : '-';
-      return (field.includes('Date') && value !== '-') ? new Date(value).toISOString().split('T')[0] : value;
-    };
+  // Removing this code as this is not giving expected result.
+  // customSort(event: SortEvent) {
+  //   const getSortValue = (data: any, field: string) => {
+  //     const value = (field in data) ? data[field].trim() : '-';
+  //     return (field.includes('Date') && value !== '-') ? new Date(value).toISOString().split('T')[0] : value;
+  //   };
 
-    event.data.sort((data1, data2) => {
-      const value1 = getSortValue(data1, event.field);
-      const value2 = getSortValue(data2, event.field);
-      const result = (value1 === '-' && value2 === '-') ? 0 : value1.localeCompare(value2);
-      return event.order * result;
-    });
-  }
+  //   event.data.sort((data1, data2) => {
+  //     const value1 = getSortValue(data1, event.field);
+  //     const value2 = getSortValue(data2, event.field);
+  //     const result = (value1 === '-' && value2 === '-') ? 0 : value1.localeCompare(value2);
+  //     return event.order * result;
+  //   });
+  // }
 
 }
