@@ -59,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class EstimationHygieneServiceImpl extends JiraIterationKPIService {
+public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
@@ -80,7 +80,7 @@ public class EstimationHygieneServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.ESTIMATION_HYGIENE.name();
+		return KPICode.ISSUE_HYGIENE.name();
 	}
 
 	@Override
