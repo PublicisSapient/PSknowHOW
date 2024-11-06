@@ -851,11 +851,12 @@ public class KPIExcelUtility {
 					setSquads(excelData, epic);
 					String month = Constant.EMPTY_STRING;
 					String epicEndDate = Constant.EMPTY_STRING;
-					if (epic.getEpicEndDate() != null) {
+					String dateToUse = epic.getEpicEndDate() != null ? epic.getEpicEndDate() : epic.getChangeDate();
+					if (dateToUse != null) {
 						DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 								.optionalStart().appendPattern(".")
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
-						LocalDateTime dateTime = LocalDateTime.parse(epic.getEpicEndDate(), formatter);
+						LocalDateTime dateTime = LocalDateTime.parse(dateToUse, formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
 						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_FORMAT));
 					}
