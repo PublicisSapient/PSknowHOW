@@ -64,7 +64,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Object>, Map<ObjectId, List<SonarDetails>>> {
+public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object>, Map<ObjectId, List<SonarDetails>>> {
 
 	private static final String CRITICAL = "critical";
 	private static final String MAJOR = "major";
@@ -103,10 +103,10 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 				treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT).size());
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValueMap(treeAggregatorDetail.getRoot(), nodeWiseKPIValue, KPICode.SONAR_VIOLATIONS);
+		calculateAggregatedValueMap(treeAggregatorDetail.getRoot(), nodeWiseKPIValue, KPICode.CODE_VIOLATIONS);
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
-				KPICode.SONAR_VIOLATIONS);
+				KPICode.CODE_VIOLATIONS);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
 		trendValuesMap.forEach((key, datewiseDataCount) -> {
@@ -157,7 +157,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 										.contains(KPISource.EXCEL.name().toLowerCase())) {
 									KPIExcelUtility.populateSonarKpisExcelData(
 											tempMap.get(projectNodeId).getProjectFilter().getName(), projectList,
-											violations, versionDate, excelData, KPICode.SONAR_VIOLATIONS.getKpiId());
+											violations, versionDate, excelData, KPICode.CODE_VIOLATIONS.getKpiId());
 								}
 							}
 						});
@@ -263,8 +263,8 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 			violations.add(sonarViolationsHowerMap.toString());
 		});
 		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),
-				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.SONAR_VIOLATIONS.getKpiId()),
+				calculateKpiValue(dateWiseViolationsList, KPICode.CODE_VIOLATIONS.getKpiId()),
+				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.CODE_VIOLATIONS.getKpiId()),
 				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
@@ -274,7 +274,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	 */
 	@Override
 	public String getQualifierType() {
-		return KPICode.SONAR_VIOLATIONS.name();
+		return KPICode.CODE_VIOLATIONS.name();
 	}
 
 	/**
@@ -320,7 +320,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI38(),KPICode.SONAR_VIOLATIONS.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI38(),KPICode.CODE_VIOLATIONS.getKpiId());
 	}
 
 }

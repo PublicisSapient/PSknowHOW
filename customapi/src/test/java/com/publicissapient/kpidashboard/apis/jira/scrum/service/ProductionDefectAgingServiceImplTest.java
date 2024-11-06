@@ -69,7 +69,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
-public class ProductionIssuesByPriorityAndAgingServiceImplTest {
+public class ProductionDefectAgingServiceImplTest {
 	private static final String P1 = "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent";
 	private static final String P2 = "p2, critical, P2 - Critical, 2, High";
 	private static final String P3 = "p3, P3 - Major, major, 3, Medium";
@@ -88,7 +88,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 	@Mock
 	KpiHelperService kpiHelperService;
 	@InjectMocks
-	ProductionIssuesByPriorityAndAgingServiceImpl productionIssuesByPriorityAndAgingService;
+	ProductionDefectAgingServiceImpl productionIssuesByPriorityAndAgingService;
 	@Mock
 	ProjectBasicConfigRepository projectConfigRepository;
 	@Mock

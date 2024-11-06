@@ -142,7 +142,7 @@
                       required="required"
                       [dropdown]="true"
                       field="nodeDisplayName"
-                      [forceSelection]="ifSuperUser === true ? false : true"
+                      [forceSelection]="isSpeedSuite === true ? true : false"
                       (onSelect)="onSelectOfDropdown($event, field)"
                       [(ngModel)]="selectedItems[field.hierarchyLevelId]"
                     >

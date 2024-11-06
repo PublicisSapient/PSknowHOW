@@ -18012,6 +18012,69 @@ describe('ExecutiveV2Component', () => {
     component.generateExcel();
     expect(spyGenerateExcel).toHaveBeenCalled();
   });
+
+  it('should return the yaxisLabel from trendData when conditions are met', () => {
+    component.allKpiArray = [
+      {
+        kpiId: 1,
+        trendValueList: [
+          {
+            filter: 'test-filter',
+            yaxisLabel: 'Expected Label'
+          }
+        ]
+      }
+    ];
+    component.kpiSelectedFilterObj = {
+      1: ['test-filter']
+    };
+
+    const result = component.checkYAxis({ kpiId: 1 });
+    expect(result).toBe('Expected Label');
+  });
+
+  it('should return the kpiDetail.yaxisLabel when trendData is not found', () => {
+    component.allKpiArray = [
+      {
+        kpiId: 2,
+        trendValueList: []
+      }
+    ];
+    component.kpiSelectedFilterObj = {
+      2: ['different-filter']
+    };
+
+    const result = component.checkYAxis({ kpiId: 2, kpiDetail: { yaxisLabel: 'Fallback Label' } });
+    expect(result).toBe('Fallback Label');
+  });
+
+  it('should return undefined if kpiDataResponce is not found', () => {
+    component.allKpiArray = [];
+    component.kpiSelectedFilterObj = {};
+
+    const result = component.checkYAxis({ kpiId: 3 });
+    expect(result).toBeUndefined();
+  });
+
+  it('should return the yaxisLabel when selectedFilterVal.filter1 is used', () => {
+    component.allKpiArray = [
+      {
+        kpiId: 4,
+        trendValueList: [
+          {
+            filter1: 'filter1-value',
+            yaxisLabel: 'Label from Filter1'
+          }
+        ]
+      }
+    ];
+    component.kpiSelectedFilterObj = {
+      4: { filter1: ['filter1-value'] }
+    };
+
+    const result = component.checkYAxis({ kpiId: 4 });
+    expect(result).toBe('Label from Filter1');
+  });
 });
 
 

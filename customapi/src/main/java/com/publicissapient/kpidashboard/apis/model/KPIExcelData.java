@@ -142,6 +142,9 @@ public class KPIExcelData {
 	@JsonProperty("Job Name")
 	private String jobName;
 
+	@JsonProperty("Pipeline Name")
+	private String pipelineName;
+
 	@JsonProperty("Unit Coverage")
 	private String unitCoverage;
 
@@ -274,8 +277,8 @@ public class KPIExcelData {
 	@JsonProperty("Created Date")
 	private String createdDate;
 
-	@JsonProperty("Closed Date")
-	private String closeDate;
+	@JsonProperty("Live Date")
+	private String liveDate;
 
 	@JsonProperty("Updated Date")
 	private String updatedDate;
@@ -367,7 +370,7 @@ public class KPIExcelData {
 	@JsonProperty("Merge Date")
 	private String mergeDate;
 
-	@JsonProperty("Release Date")
+	@JsonProperty("Change Release Date [B]")
 	private String releaseDate;
 
 	@JsonProperty("Merge Request Id")
@@ -460,6 +463,22 @@ public class KPIExcelData {
 	@JsonProperty("Closed PR")
 	private Long closedPRs;
 
+	@JsonProperty("PR Raised Time")
+	private String prRaisedTime;
 
+	@JsonProperty("PR Merged Time")
+	private String prMergedTime;
+
+	@JsonProperty("Lead Time (In Days) [B-A]")
+	private String leadTimeForChange;
+
+	@JsonProperty("Change Completion Date [A]")
+	private String changeCompletionDate;
+
+	@JsonProperty("Author")
+	private String author;
+
+	@JsonProperty( "PR Review Time")
+	private String prReviewTime;
 
 }

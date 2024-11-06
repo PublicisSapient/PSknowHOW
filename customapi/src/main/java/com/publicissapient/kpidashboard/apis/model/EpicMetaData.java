@@ -16,22 +16,20 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.repotools.model;
+package com.publicissapient.kpidashboard.apis.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-public class MergeRequests {
+@Getter
+public class EpicMetaData {
 
-    @JsonProperty("time_to_merge")
-    private long timeToMerge;
-    private String link;
-    @JsonProperty("created_at")
-    private String createdAt;
-    @JsonProperty("updated_at")
-    private String updatedAt;
-    @JsonProperty("pickup_time")
-    private Double firstReviewedAt;
+	private String name;
+	private String url;
+	private String createdDate;
 
+	public EpicMetaData(String name, String url, String createdDate) {
+		this.name = name;
+		this.url = url;
+		this.createdDate = createdDate;
+	}
 }
