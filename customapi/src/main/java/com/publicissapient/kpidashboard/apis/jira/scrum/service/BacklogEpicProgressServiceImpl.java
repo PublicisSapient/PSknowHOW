@@ -18,7 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.AbstractMap;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +37,11 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper;
@@ -74,6 +71,7 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 	private static final String DONE = "Done";
 	private static final String ALL_EPIC = "All Epics";
 	private static final String OPEN_EPIC = "Open Epics";
+	private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT);
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -118,7 +116,8 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 					&& jiraIssueReleaseStatus != null) {
 				Map<String, String> epicWiseIssueSize = createDataCountGroupMap(totalIssues, jiraIssueReleaseStatus,
 						epicIssues, fieldMapping, filterDataList);
-				populateExcelDataObject(requestTrackerId, excelData, epicWiseIssueSize, epicIssues,jiraIssueReleaseStatus,totalIssues);
+				populateExcelDataObject(requestTrackerId, excelData, epicWiseIssueSize, epicIssues,
+						jiraIssueReleaseStatus, totalIssues);
 				kpiElement.setSprint(leafNode.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_EPIC_PROGRESS.getColumns());
 				kpiElement.setExcelColumns(KPIExcelColumn.BACKLOG_EPIC_PROGRESS.getColumns());
@@ -142,7 +141,7 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 			// get Epics Linked to backlogStories stories
 			resultListMap.put(EPIC_LINKED,
 					jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(
-							totalJiraIssue.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
+							totalJiraIssue.stream().map(JiraIssue::getEpicLinked).toList(),
 							leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
 							NormalizedJira.ISSUE_TYPE.getValue()));
 			// get status category of the project
@@ -172,16 +171,15 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 		Map<String, List<JiraIssue>> epicWiseJiraIssues = jiraIssueList.stream()
 				.filter(jiraIssue -> jiraIssue.getEpicLinked() != null)
 				.collect(Collectors.groupingBy(JiraIssue::getEpicLinked));
-		Map<String, Map.Entry<String, String>> epicIssueMap = epicIssues.stream()
-				.collect(Collectors.toMap(JiraIssue::getNumber,
-						jiraIssue -> new AbstractMap.SimpleEntry<>(jiraIssue.getName(), jiraIssue.getUrl())));
+		Map<String, EpicMetaData> epicIssueMap = epicIssues.stream().collect(Collectors.toMap(JiraIssue::getNumber,
+				jiraIssue -> new EpicMetaData(jiraIssue.getName(), jiraIssue.getUrl(), jiraIssue.getCreatedDate())));
 		List<DataCount> dataCountList = new ArrayList<>();
 		List<DataCount> openDataCountList = new ArrayList<>();
 		Map<String, String> epicWiseSize = new HashMap<>();
 		epicWiseJiraIssues.forEach((epic, issues) -> {
 			if (epicIssueMap.containsKey(epic)) {
-				Map.Entry<String, String> epicNameUrl = epicIssueMap.get(epic);
-				DataCount statusWiseCountList = getStatusWiseCountList(issues, jiraIssueReleaseStatus, epicNameUrl,
+				EpicMetaData epicMetaData = epicIssueMap.get(epic);
+				DataCount statusWiseCountList = getStatusWiseCountList(issues, jiraIssueReleaseStatus, epicMetaData,
 						fieldMapping);
 				epicWiseSize.put(epic, String.valueOf(statusWiseCountList.getSize()));
 				dataCountList.add(statusWiseCountList);
@@ -221,11 +219,12 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 	 * @return DataCount
 	 */
 	DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList, JiraIssueReleaseStatus jiraIssueReleaseStatus,
-			Map.Entry<String, String> epic, FieldMapping fieldMapping) {
+			EpicMetaData epic, FieldMapping fieldMapping) {
 		DataCount issueCountDc = new DataCount();
 		List<DataCount> issueCountDcList = new ArrayList<>();
-		String name = epic.getKey();
-		String url = epic.getValue();
+		String name = epic.getName();
+		String url = epic.getUrl();
+		String createdDate = epic.getCreatedDate();
 		// filter by to do category
 		List<JiraIssue> toDoJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
 				jiraIssueReleaseStatus.getToDoList());
@@ -261,6 +260,7 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 		issueCountDc.setValue(issueCountDcList);
 		issueCountDc.setKpiGroup(name);
 		issueCountDc.setUrl(url);
+		issueCountDc.setCreatedDate(createdDate);
 		return issueCountDc;
 	}
 
@@ -291,21 +291,28 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 	}
 
 	/**
-	 * sort in reverse order on the basis of those epic whose to do and in progress
-	 * issues are more should appear first
+	 * sort in reverse order on the basis of created date of epics in reverse order
+	 * and then on the basis of those epics whose to do and in progress issues are
+	 * more should appear first
 	 * 
 	 * @param dataCountList
 	 */
 	void sorting(List<DataCount> dataCountList) {
 		if (CollectionUtils.isNotEmpty(dataCountList))
-			dataCountList.sort(Comparator.comparing(data -> ((List<DataCount>) data.getValue()).stream()
-					.filter(subfilter -> subfilter.getSubFilter().equalsIgnoreCase(TO_DO)
-							|| subfilter.getSubFilter().equalsIgnoreCase(IN_PROGRESS))
-					.mapToLong(a -> (long) a.getValue()).sum()));
+			dataCountList.sort(Comparator.comparing(
+					(DataCount dataCount) -> LocalDate.parse(dataCount.getCreatedDate().split("T")[0], dateFormatter))
+					.thenComparingLong(data ->
+					// Calculate the sum of values for specified subFilters
+					((List<DataCount>) data.getValue()).stream()
+							.filter(subfilter -> subfilter.getSubFilter().equalsIgnoreCase(TO_DO)
+									|| subfilter.getSubFilter().equalsIgnoreCase(IN_PROGRESS))
+							.mapToLong(a -> (long) a.getValue()).sum()));
+
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			Map<String, String> epicWiseIssueSize, Set<JiraIssue> epicIssues,JiraIssueReleaseStatus jiraIssueReleaseStatus, List<JiraIssue> totalIssues) {
+			Map<String, String> epicWiseIssueSize, Set<JiraIssue> epicIssues,
+			JiraIssueReleaseStatus jiraIssueReleaseStatus, List<JiraIssue> totalIssues) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& MapUtils.isNotEmpty(epicWiseIssueSize)) {
 			Map<String, List<JiraIssue>> epicWiseJiraIssues = totalIssues.stream()
@@ -313,7 +320,8 @@ public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Intege
 					.collect(Collectors.groupingBy(JiraIssue::getEpicLinked));
 			Map<String, JiraIssue> epicWiseJiraIssue = epicIssues.stream()
 					.collect(Collectors.toMap(JiraIssue::getNumber, jiraIssue -> jiraIssue));
-			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData,jiraIssueReleaseStatus,epicWiseJiraIssues);
+			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData,
+					jiraIssueReleaseStatus, epicWiseJiraIssues);
 		}
 	}
 

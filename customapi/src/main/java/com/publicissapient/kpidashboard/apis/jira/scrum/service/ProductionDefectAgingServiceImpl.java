@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -57,12 +58,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKPIService<Long, List<Object>> {
+public class ProductionDefectAgingServiceImpl extends JiraBacklogKPIService<Long, List<Object>> {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String RANGE = "range";
 	private static final String RANGE_TICKET_LIST = "rangeTickets";
-	private static final String NIN = "nin";
+	private static final String IN = "in";
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -81,33 +82,30 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
 		ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
-		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+
 		basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-		List<String> defectList = new ArrayList<>();
-		defectList.add(CommonConstant.BUG);
-		mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-				CommonUtils.convertToPatternList(defectList));
 
-		if (Optional.ofNullable(fieldMapping.getJiraDodKPI127()).isPresent()) {
+		if (Optional.ofNullable(fieldMapping.getJiraStatusToConsiderKPI127()).isPresent()) {
+			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			List<String> closedStatusList = new ArrayList<>();
-			closedStatusList.addAll(fieldMapping.getJiraDodKPI127());
-			if (Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI127()).isPresent()) {
-				closedStatusList.add(fieldMapping.getJiraLiveStatusKPI127());
-			}
-			if (Optional.ofNullable(fieldMapping.getJiraDefectDroppedStatusKPI127()).isPresent()) {
-				closedStatusList.addAll(fieldMapping.getJiraDefectDroppedStatusKPI127());
-			}
+			closedStatusList.addAll(fieldMapping.getJiraStatusToConsiderKPI127());
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(closedStatusList));
-		}
-		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
-				uniqueProjectMap, startDate, endDate, RANGE, NIN, true));
+			List<String> defectList = new ArrayList<>();
+			defectList.add(CommonConstant.BUG);
+			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(defectList));
+			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+
+			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+			resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
+					uniqueProjectMap, startDate, endDate, RANGE, IN, true));
+
+		}
 
 		return resultListMap;
 	}
@@ -177,7 +175,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 		// past all tickets and given range ticket data fetch from db
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
 
-		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(RANGE_TICKET_LIST);
+		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.getOrDefault(RANGE_TICKET_LIST,new ArrayList<JiraIssue>());
 		Map<String, List<JiraIssue>> projectWiseJiraIssue = jiraIssueList.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
 
@@ -192,36 +190,38 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 		kpiElement.setxAxisValues(xAxisRange);
 
 		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-		String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
-		String projectName = node.getProjectFilter().getName();
-		List<JiraIssue> projectWiseJiraIssueList = projectWiseJiraIssueMap.getOrDefault(projectNodeId,
-				new ArrayList<>());
 
-		if (CollectionUtils.isNotEmpty(projectWiseJiraIssueList)) {
+		if (MapUtils.isNotEmpty(projectWiseJiraIssueMap)) {
+			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
+			String projectName = node.getProjectFilter().getName();
+			List<JiraIssue> projectWiseJiraIssueList = projectWiseJiraIssueMap.getOrDefault(projectNodeId,
+					new ArrayList<>());
 
-			Set<String> priorityList = projectWiseJiraIssueList.stream()
-					.map(issue -> KPIHelperUtil.mappingPriority(issue.getPriority(), customApiConfig))
-					.collect(Collectors.toSet());
+			if (CollectionUtils.isNotEmpty(projectWiseJiraIssueList)) {
 
-			Map<String, List<JiraIssue>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
-			filterDataBasedOnXAxisRangeWise(xAxisRange, projectWiseJiraIssueList, rangeWiseJiraIssuesMap);
+				Set<String> priorityList = projectWiseJiraIssueList.stream()
+						.map(issue -> KPIHelperUtil.mappingPriority(issue.getPriority(), customApiConfig))
+						.collect(Collectors.toSet());
+
+				Map<String, List<JiraIssue>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
+				filterDataBasedOnXAxisRangeWise(xAxisRange, projectWiseJiraIssueList, rangeWiseJiraIssuesMap);
 
 				Map<String, Map<String, Long>> rangeWisePriorityCountMap = new LinkedHashMap<>();
 				rangeWiseJiraIssuesMap.forEach((range, issueList) -> {
-					Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(issueList,
-							customApiConfig);
+					Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(issueList, customApiConfig);
 					rangeWisePriorityCountMap.put(range, priorityCountMap);
 				});
 
-			rangeWisePriorityCountMap
-					.forEach((rangeMonth, priorityCountMap) -> populateProjectFilterWiseDataMap(priorityCountMap,
-							priorityList, trendValueMap, projectName, rangeMonth));
+				rangeWisePriorityCountMap
+						.forEach((rangeMonth, priorityCountMap) -> populateProjectFilterWiseDataMap(priorityCountMap,
+								priorityList, trendValueMap, projectName, rangeMonth));
 
-			// Populates data in Excel for validation for tickets created
-			// before
-			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-				KPIExcelUtility.populateProductionDefectAgingExcelData(projectName, projectWiseJiraIssueList,
-						excelData);
+				// Populates data in Excel for validation for tickets created
+				// before
+				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populateProductionDefectAgingExcelData(projectName, projectWiseJiraIssueList,
+							excelData);
+				}
 			}
 		}
 		mapTmp.get(node.getId()).setValue(trendValueMap);
@@ -320,32 +320,6 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 		dataCount.setSSprintName(date);
 		dataCount.setValue(value);
 		return dataCount;
-	}
-
-	/**
-	 * populate data for excel
-	 *
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param validationDataMap
-	 * @param projectWiseJiraIssueList
-	 */
-	public void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String projectName,
-			Map<String, ValidationData> validationDataMap, List<JiraIssue> projectWiseJiraIssueList) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setStoryKeyList(
-					projectWiseJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-			validationData.setDefectPriorityList(
-					projectWiseJiraIssueList.stream().map(JiraIssue::getPriority).collect(Collectors.toList()));
-			validationData.setStatus(
-					projectWiseJiraIssueList.stream().map(JiraIssue::getJiraStatus).collect(Collectors.toList()));
-			validationData.setDateList(projectWiseJiraIssueList.stream()
-					.map(issue -> KpiDataHelper.convertStringToDate(issue.getCreatedDate()).toString())
-					.collect(Collectors.toList()));
-			validationDataMap.put(projectName, validationData);
-			kpiElement.setMapOfSprintAndData(validationDataMap);
-		}
 	}
 
 	/**
