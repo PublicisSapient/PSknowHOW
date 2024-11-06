@@ -1992,7 +1992,7 @@ public class KPIExcelUtility {
 				leadTimeListCurrentTime.stream().forEach(leadTimeChangeData -> {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProjectName(projectName);
-					excelData.setDate(weekOrMonthName);
+					excelData.setWeeks(weekOrMonthName);
 					excelData.setChangeCompletionDate(leadTimeChangeData.getClosedDate());
 					if (CommonConstant.REPO.equals(leadTimeConfigRepoTool)) {
 						excelData.setMergeRequestId(leadTimeChangeData.getMergeID());
@@ -2001,7 +2001,7 @@ public class KPIExcelUtility {
 					Map<String, String> issueDetails = new HashMap<>();
 					issueDetails.put(leadTimeChangeData.getStoryID(), checkEmptyURL(leadTimeChangeData));
 					excelData.setStoryId(issueDetails);
-					excelData.setLeadTime(leadTimeChangeData.getLeadTimeInDays());
+					excelData.setLeadTimeForChange(leadTimeChangeData.getLeadTimeInDays());
 					excelData.setReleaseDate(leadTimeChangeData.getReleaseDate());
 					kpiExcelData.add(excelData);
 				});
@@ -2065,7 +2065,7 @@ public class KPIExcelUtility {
 					meanRecoverListCurrentTime) -> meanRecoverListCurrentTime.forEach(meanTimeRecoverData -> {
 						KPIExcelData excelData = new KPIExcelData();
 						excelData.setProjectName(projectName);
-						excelData.setDate(weekOrMonthName);
+						excelData.setWeeks(weekOrMonthName);
 						Map<String, String> issueDetails = new HashMap<>();
 						issueDetails.put(meanTimeRecoverData.getStoryID(),
 								StringUtils.isEmpty(meanTimeRecoverData.getUrl()) ? Constant.EMPTY_STRING
