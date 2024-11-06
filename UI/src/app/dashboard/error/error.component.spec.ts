@@ -16,33 +16,39 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, fakeAsync, inject, getTestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, inject, getTestBed, waitForAsync, tick } from '@angular/core/testing';
 import { ErrorComponent } from './error.component';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
+import { Router, RouterModule, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
+import { Subscription, timer } from 'rxjs';
+import { ExecutiveV2Component } from 'src/app/dashboardv2/executive-v2/executive-v2.component';
 
 
 describe('ErrorComponent', () => {
+  const routes: Routes = [
+    { path: 'dashboard', component: ExecutiveV2Component },
+  ];
+
   let component: ErrorComponent;
   let fixture: ComponentFixture<ErrorComponent>;
   let sharedService: SharedService;
-
+  let router: Router;
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ErrorComponent],
       imports: [
         FormsModule,
         CommonModule,
-        RouterTestingModule
+        RouterTestingModule.withRoutes(routes),
 
       ],
       providers: [HttpService, SharedService,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
       ]
     })
       .compileComponents();
@@ -55,6 +61,9 @@ describe('ErrorComponent', () => {
     component = fixture.componentInstance;
     sharedService = TestBed.get(SharedService);
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
 
   });
 
@@ -115,5 +124,114 @@ describe('ErrorComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
     expect(component.errorMsg).toEqual('Some error occurred');
+  });
+
+
+  describe('ErrorComponent.pollForAvailability() pollForAvailability method', () => {
+    describe('Happy Path', () => {
+
+      it('should initialize the timer and decrement timeLeft every second', fakeAsync(() => {
+        component.timeLeft = 10;
+
+        // Call the method with a route
+        component.pollForAvailability('/test-route');
+
+        // Simulate the passage of 1 second
+        tick(1000);
+        expect(component.timeLeft).toBe(9);
+
+        // Simulate another second
+        tick(1000);
+        expect(component.timeLeft).toBe(8);
+
+        // Clean up subscription
+        component.source.unsubscribe();
+      }));
+
+      it('should reset timeLeft to 60 when it reaches 0', fakeAsync(() => {
+        component.timeLeft = 1;
+
+        // Call the method
+        component.pollForAvailability('/test-route');
+
+        // Simulate 1 second to bring timeLeft to 0
+        tick(1000);
+        expect(component.timeLeft).toBe(0);
+
+        // Simulate another second, timeLeft should reset to 60
+        tick(1000);
+        expect(component.timeLeft).toBe(60);
+
+        // Clean up subscription
+        component.source.unsubscribe();
+      }));
+
+      it('should navigate after 60 seconds', fakeAsync(() => {
+        component.timeLeft = 60;
+        const redirectButtonRoute = 'dashboard';
+        spyOn(component.router, 'navigate');
+        // Call the method
+        component.pollForAvailability(redirectButtonRoute);
+
+        // Simulate 61 seconds
+        tick(61000);
+
+        // Ensure button text and navigation are triggered
+        expect(component.router.navigate).toHaveBeenCalledWith([redirectButtonRoute]);
+
+        // Clean up subscription
+        component.source.unsubscribe();
+      }));
+    });
+
+    describe('Edge Cases', () => {
+
+      it('should not reinitialize the timer if already subscribed', fakeAsync(() => {
+        component.source = new Subscription();
+        spyOn(component.router, 'navigate');
+        // Call the method
+        component.pollForAvailability('/test-route');
+
+        // Check that the timer is not reinitialized
+        expect(component.source.closed).toBe(false);
+
+        // Ensure that navigate is not called since timer wasn't reinitialized
+        tick(60000);
+        expect(component.router.navigate).not.toHaveBeenCalled();
+      }));
+
+      it('should handle case when timeLeft is initially zero', fakeAsync(() => {
+        component.timeLeft = 0;
+
+        // Call the method
+        component.pollForAvailability('/test-route');
+
+        // Simulate 1 second, expect timeLeft to reset to 60
+        tick(1000);
+        expect(component.timeLeft).toBe(60);
+
+        // Clean up subscription
+        component.source.unsubscribe();
+      }));
+
+      it('should not navigate if less than 60 seconds have passed', fakeAsync(() => {
+        component.timeLeft = 10;
+        const redirectButtonRoute = '/test-route';
+        spyOn(component.router, 'navigate');
+        // Call the method
+        component.pollForAvailability(redirectButtonRoute);
+
+        // Simulate 59 seconds
+        tick(59000);
+
+        // Ensure navigation has not occurred yet
+        expect(component.router.navigate).not.toHaveBeenCalled();
+
+        // Clean up subscription
+        component.source.unsubscribe();
+      }));
+
+    });
+
   });
 });

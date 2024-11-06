@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -2121,6 +2121,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               }
             }
           }
+          this.service.setSelectedKPIFilterValues(this.kpiSelectedFilterObj, kpi?.kpiId, event);
         } else if (this.selectedTab.toLowerCase() === 'developer') {
           if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
             this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
