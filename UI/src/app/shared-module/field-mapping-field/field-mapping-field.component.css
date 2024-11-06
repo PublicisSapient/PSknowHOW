@@ -162,8 +162,13 @@ label.btn-import-label {
   opacity: 0.6;
 } 
 
+:host ::ng-deep .ng-invalid > .p-chips > .p-inputtext, .p-inputtext.ng-invalid  {
+  border-color: #B00020;
+  border-width: initial;
+}
 .link{
   color : var(--color-secondary-blue);
   cursor: pointer;
   text-decoration: underline;
+
 }
