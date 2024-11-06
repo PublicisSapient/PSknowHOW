@@ -569,11 +569,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
         for (let i = 0; i < this.sonarKpiData['kpi17']?.trendValueList?.length; i++) {
           for (let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++) {
-            let obj = {
-              'filter': this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
-              ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
+            if(this.sonarKpiData['kpi17']?.trendValueList[i]?.filter === 'Average Coverage') {
+              let obj = {
+                'filter': this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
+                ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
+              }
+              overallObj['value'].push(obj);
             }
-            overallObj['value'].push(obj);
           }
         }
         this.sonarKpiData['kpi17']?.trendValueList.push(overallObj);

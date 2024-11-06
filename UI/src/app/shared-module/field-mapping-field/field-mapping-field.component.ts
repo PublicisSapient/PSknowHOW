@@ -17,6 +17,7 @@
  ******************************************************************************/
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-field-mapping-field',
@@ -31,6 +32,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   ]
 })
 export class FieldMappingFieldComponent implements ControlValueAccessor {
+
+  constructor(private router : Router){}
 
   @Input() fieldConfig;
   @Output() onSearch = new EventEmitter();
@@ -103,5 +106,9 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   }
   numericInputUpDown(event: any) {
     this.setValue();
+  }
+
+  navigate(url){
+    this.router.navigate([url]);
   }
 }

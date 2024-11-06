@@ -100,4 +100,8 @@ public class KpiMaster extends BasicModel {
 	private Boolean isRepoToolKpi;
 	private Map<Integer,String> yaxisOrder;
 	private Boolean isAggregationStacks;
+	//to show x axis as ranges and not sprint number
+	private Boolean isXaxisGroup;
+	//to implement bar graph by modifying bar-line graph
+	private Boolean lineChart;
 }
