@@ -18,13 +18,15 @@
 package com.publicissapient.kpidashboard.jira.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+
+import com.publicissapient.kpidashboard.jira.strategy.FindOutliersBelowLowerBoundStrategy;
+import com.publicissapient.kpidashboard.jira.strategy.OutlierContext;
 
 /**
  * Service implementation for tracking project sprint issues during processor
@@ -41,6 +43,7 @@ public class ProjectSprintIssuesServiceImpl implements ProjectSprintIssuesServic
 	 * value is a list of issue keys.
 	 */
 	private final Map<ObjectId, Map<String, List<String>>> projectSprintIssuesMap = new HashMap<>();
+	private final OutlierContext outlierContext = new OutlierContext();
 
 	/**
 	 * Adds an issue to the project sprint issues map.
@@ -115,53 +118,8 @@ public class ProjectSprintIssuesServiceImpl implements ProjectSprintIssuesServic
 	 */
 	@Override
 	public Map<String, List<String>> findOutliersBelowLowerBound(ObjectId basicProjectConfigId) {
-		Map<String, List<String>> sprintIssueMap = projectSprintIssuesMap.get(basicProjectConfigId);
-
-		if (sprintIssueMap == null) {
-			return Collections.emptyMap();
-		}
-
-		List<Integer> issueCounts = new ArrayList<>();
-		for (List<String> issues : sprintIssueMap.values()) {
-			issueCounts.add(issues.size());
-		}
-
-		if (issueCounts.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Collections.sort(issueCounts);
-		// Calculate Q1, Q3, and IQR
-		double q1 = calculatePercentile(issueCounts, 25);
-		double q3 = calculatePercentile(issueCounts, 75);
-		double iqr = q3 - q1;
-
-		// Determine the lower bound
-		double lowerBound = q1 - 1.5 * iqr;
-
-		// Find outliers below the lower bound and return sprint issue map
-		Map<String, List<String>> outliers = new HashMap<>();
-		for (Map.Entry<String, List<String>> entry : sprintIssueMap.entrySet()) {
-			if (entry.getValue().size() < lowerBound) {
-				outliers.put(entry.getKey(), entry.getValue());
-			}
-		}
-
-		return outliers;
-	}
-
-	/**
-	 * Calculates the percentile value from a sorted list of integers.
-	 *
-	 * @param sortedList
-	 *            the sorted list of integers
-	 * @param percentile
-	 *            the percentile to calculate
-	 * @return the calculated percentile value
-	 */
-	private double calculatePercentile(List<Integer> sortedList, double percentile) {
-		int index = (int) Math.ceil(percentile / 100.0 * sortedList.size()) - 1;
-		return sortedList.get(index);
+		outlierContext.setStrategy(new FindOutliersBelowLowerBoundStrategy());
+		return outlierContext.executeStrategy(basicProjectConfigId, projectSprintIssuesMap);
 	}
 
 }
