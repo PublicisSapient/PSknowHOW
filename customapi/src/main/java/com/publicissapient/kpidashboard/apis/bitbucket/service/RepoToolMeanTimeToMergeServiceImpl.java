@@ -46,6 +46,7 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -54,6 +55,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -247,6 +252,8 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			Long userAverageHrs = KpiHelperService.convertMilliSecondsToHours(userAverageSeconds*1000);
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
+			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
+					.optionalStart().optionalStart().appendPattern("X").optionalEnd().toFormatter();
 			if (repoToolUserDetails.isPresent() && repo != null) {
 				repoToolUserDetails.get().getMergeRequestList().forEach(mr -> {
 					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
@@ -258,6 +265,12 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 							KpiHelperService.convertMilliSecondsToHours(mr.getTimeToMerge()*1000.0));
 					repoToolValidationData.setMergeRequestUrl(mr.getLink());
 					repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+					LocalDateTime dateTime = LocalDateTime.parse(mr.getCreatedAt(), formatter);
+					repoToolValidationData.setPrRaisedTime(
+							dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_TIME_FORMAT)));
+					dateTime = LocalDateTime.parse(mr.getUpdatedAt(), formatter);
+					repoToolValidationData.setPrActivityTime(
+							dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_TIME_FORMAT)));
 					repoToolValidationDataList.add(repoToolValidationData);
 				});
 			}

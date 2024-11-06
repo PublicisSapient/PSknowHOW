@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.EpicMetaData;
 import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -53,7 +53,6 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -187,9 +186,9 @@ public class ReleaseEpicProgressServiceImplTest {
 
 	@Test
 	public void testGetStatusWiseCountListPositive() {
-		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
+		EpicMetaData epicMetaData = new EpicMetaData("EPIC", "url", "2024-06-04T13:24:14.2500000");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueArrayList,
-				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
+				jiraIssueReleaseStatusList.get(0), epicMetaData, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("45");
 		assertThat(dataCount.getSize()).isEqualTo("63.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
@@ -213,9 +212,9 @@ public class ReleaseEpicProgressServiceImplTest {
 	@Test
 	public void testGetStatusWiseCountListNegative() {
 		List<JiraIssue> jiraIssueList = null;
-		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
+		EpicMetaData epicMetaData = new EpicMetaData("EPIC", "url", "2024-06-04T13:24:14.2500000");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueList,
-				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
+				jiraIssueReleaseStatusList.get(0), epicMetaData, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("0");
 	}
 
@@ -306,6 +305,7 @@ public class ReleaseEpicProgressServiceImplTest {
 		fullDataCount1.setData("8");
 		fullDataCount1.setValue(statusWiseDataCount1);
 		fullDataCount1.setKpiGroup("epic1");
+		fullDataCount1.setCreatedDate("2024-06-04T13:24:14.2500000");
 		fullDataCount.add(fullDataCount1);
 
 		List<DataCount> statusWiseDataCount2 = new ArrayList<>();
@@ -319,6 +319,7 @@ public class ReleaseEpicProgressServiceImplTest {
 		fullDataCount2.setData("10");
 		fullDataCount2.setValue(statusWiseDataCount2);
 		fullDataCount2.setKpiGroup("epic2");
+		fullDataCount2.setCreatedDate("2024-06-04T13:24:14.2500000");
 		fullDataCount.add(fullDataCount2);
 		return fullDataCount;
 

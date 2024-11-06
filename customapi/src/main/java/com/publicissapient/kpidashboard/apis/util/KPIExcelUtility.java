@@ -452,15 +452,15 @@ public class KPIExcelUtility {
 
 				if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId())) {
-					excelData.setUnitCoverage(kpiSpecificDataList.get(i));
+					excelData.setUnitCoverage(kpiSpecificDataList.get(i) + " %");
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId())) {
 					excelData.setTechDebt(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())
-						|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId())) {
+				} else if (kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS.getKpiId())
+						|| kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS_KANBAN.getKpiId())) {
 					excelData.setSonarViolation(kpiSpecificDataList.get(i));
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
-					excelData.setCodeQuality(kpiSpecificDataList.get(i));
+					excelData.setCodeQuality(kpiSpecificDataList.get(i) + " unit");
 				}
 				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
 				kpiExcelData.add(excelData);
@@ -471,7 +471,7 @@ public class KPIExcelUtility {
 	private static void setSonarKpiWeekDayMonthColumn(String versionDate, KPIExcelData excelData, String kpiId) {
 		if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 				|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
-				|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())) {
+				|| kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS.getKpiId())) {
 			excelData.setWeeks(versionDate);
 		} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
 			excelData.setMonth(versionDate);
@@ -748,7 +748,7 @@ public class KPIExcelUtility {
 			excelData.setIssueType(leadTimeData.getIssueType());
 			excelData.setCreatedDate(DateUtil.dateTimeConverter(leadTimeData.getIntakeDate().toString().split("T")[0],
 					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-			excelData.setCloseDate(DateUtil.dateTimeConverter(leadTimeData.getLiveDate().toString().split("T")[0],
+			excelData.setLiveDate(DateUtil.dateTimeConverter(leadTimeData.getLiveDate().toString().split("T")[0],
 					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 			excelData.setLeadTime(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getLeadTime())));
 			excelDataList.add(excelData);
@@ -851,11 +851,12 @@ public class KPIExcelUtility {
 					setSquads(excelData, epic);
 					String month = Constant.EMPTY_STRING;
 					String epicEndDate = Constant.EMPTY_STRING;
-					if (epic.getChangeDate() != null) {
+					String dateToUse = epic.getEpicEndDate() != null ? epic.getEpicEndDate() : epic.getChangeDate();
+					if (dateToUse != null) {
 						DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 								.optionalStart().appendPattern(".")
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
-						LocalDateTime dateTime = LocalDateTime.parse(epic.getChangeDate(), formatter);
+						LocalDateTime dateTime = LocalDateTime.parse(dateToUse, formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
 						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_FORMAT));
 					}
@@ -937,13 +938,14 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateDeploymentFrequencyExcelData(String projectName,
-			DeploymentFrequencyInfo deploymentFrequencyInfo, List<KPIExcelData> kpiExcelData) {
+															DeploymentFrequencyInfo deploymentFrequencyInfo, List<KPIExcelData> kpiExcelData, Map<String,String> deploymentMapPipelineNameWise) {
 		if (deploymentFrequencyInfo != null) {
 			for (int i = 0; i < deploymentFrequencyInfo.getJobNameList().size(); i++) {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProjectName(projectName);
 				excelData.setDate(deploymentFrequencyInfo.getDeploymentDateList().get(i));
 				excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
+				excelData.setPipelineName(deploymentMapPipelineNameWise.get(deploymentFrequencyInfo.getJobNameList().get(i)));
 				excelData.setWeeks(deploymentFrequencyInfo.getMonthList().get(i));
 				excelData.setDeploymentEnvironment(deploymentFrequencyInfo.getEnvironmentList().get(i));
 				kpiExcelData.add(excelData);
@@ -1058,9 +1060,11 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
+				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
+				excelData.setPrMergedTime(repoToolValidationData.getPrActivityTime());
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
 				excelData.setMergeRequestUrl(mergeUrl);
@@ -1077,10 +1081,15 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getProjectName());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setPickupTime(String.format("%.2f", repoToolValidationData.getPickupTime()));
+				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
+				excelData.setPrReviewTime(repoToolValidationData.getPrActivityTime());
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				Map<String, String> mergeUrl = new HashMap<>();
+				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
+				excelData.setMergeRequestUrl(mergeUrl);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -1094,7 +1103,7 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setPrSize(String.valueOf(repoToolValidationData.getPrSize()));
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
@@ -1145,7 +1154,7 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
 				excelData.setDefectPRs(repoToolValidationData.getKpiPRs());
@@ -1180,7 +1189,7 @@ public class KPIExcelUtility {
                 excelData.setProject(repoToolValidationData.getProjectName());
                 excelData.setRepo(repoToolValidationData.getRepoUrl());
                 excelData.setBranch(repoToolValidationData.getBranchName());
-                excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+                excelData.setAuthor(repoToolValidationData.getDeveloperName());
                 excelData.setDaysWeeks(repoToolValidationData.getDate());
                 excelData.setRevertRate(roundingOff(repoToolValidationData.getRevertRate()));
                 excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
@@ -1199,7 +1208,7 @@ public class KPIExcelUtility {
                 excelData.setProject(repoToolValidationData.getProjectName());
                 excelData.setRepo(repoToolValidationData.getRepoUrl());
                 excelData.setBranch(repoToolValidationData.getBranchName());
-                excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+                excelData.setAuthor(repoToolValidationData.getDeveloperName());
                 excelData.setDaysWeeks(repoToolValidationData.getDate());
                 excelData.setPRSccessRate(roundingOff(repoToolValidationData.getPRSuccessRate()));
                 excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getKpiPRs()));
@@ -1219,7 +1228,7 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setPrDeclineRate(roundingOff(repoToolValidationData.getPrDeclineRate()));
 				excelData.setDeclinedPRs(repoToolValidationData.getKpiPRs());
@@ -1987,18 +1996,16 @@ public class KPIExcelUtility {
 				leadTimeListCurrentTime.stream().forEach(leadTimeChangeData -> {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProjectName(projectName);
-					excelData.setDate(weekOrMonthName);
+					excelData.setWeeks(weekOrMonthName);
+					excelData.setChangeCompletionDate(leadTimeChangeData.getClosedDate());
 					if (CommonConstant.REPO.equals(leadTimeConfigRepoTool)) {
-						excelData.setMergeDate(leadTimeChangeData.getClosedDate());
 						excelData.setMergeRequestId(leadTimeChangeData.getMergeID());
 						excelData.setBranch(leadTimeChangeData.getFromBranch());
-					} else {
-						excelData.setCompletionDate(leadTimeChangeData.getClosedDate());
 					}
 					Map<String, String> issueDetails = new HashMap<>();
 					issueDetails.put(leadTimeChangeData.getStoryID(), checkEmptyURL(leadTimeChangeData));
 					excelData.setStoryId(issueDetails);
-					excelData.setLeadTime(leadTimeChangeData.getLeadTimeInDays());
+					excelData.setLeadTimeForChange(leadTimeChangeData.getLeadTimeInDays());
 					excelData.setReleaseDate(leadTimeChangeData.getReleaseDate());
 					kpiExcelData.add(excelData);
 				});
@@ -2062,7 +2069,7 @@ public class KPIExcelUtility {
 					meanRecoverListCurrentTime) -> meanRecoverListCurrentTime.forEach(meanTimeRecoverData -> {
 						KPIExcelData excelData = new KPIExcelData();
 						excelData.setProjectName(projectName);
-						excelData.setDate(weekOrMonthName);
+						excelData.setWeeks(weekOrMonthName);
 						Map<String, String> issueDetails = new HashMap<>();
 						issueDetails.put(meanTimeRecoverData.getStoryID(),
 								StringUtils.isEmpty(meanTimeRecoverData.getUrl()) ? Constant.EMPTY_STRING

@@ -50,6 +50,7 @@ public final class Constant {
 	public static final String SUM = "sum";
 	public static final String AVERAGE = "average";
 
+	public static final String DEVIATION = "deviation";
 	public static final String BLOCKER_VIOLATIONS = "blocker_violations";
 	public static final String CRITICAL_VIOLATIONS = "critical_violations";
 	public static final String MAJOR_VIOLATIONS = "major_violations";

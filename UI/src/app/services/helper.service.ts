@@ -910,4 +910,16 @@ export class HelperService {
 
         return true;
     }
+
+    isDropdownElementSelected($event:any): boolean{
+        try{
+            if($event.originalEvent.type === 'click'){
+                return true;
+            }else{
+                return false;
+            }
+        }catch (ex){
+            console.error(ex,'Not a Browser event');
+        }
+    }
 }
