@@ -851,11 +851,12 @@ public class KPIExcelUtility {
 					setSquads(excelData, epic);
 					String month = Constant.EMPTY_STRING;
 					String epicEndDate = Constant.EMPTY_STRING;
-					if (epic.getEpicEndDate() != null) {
+					String dateToUse = epic.getEpicEndDate() != null ? epic.getEpicEndDate() : epic.getChangeDate();
+					if (dateToUse != null) {
 						DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 								.optionalStart().appendPattern(".")
 								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
-						LocalDateTime dateTime = LocalDateTime.parse(epic.getEpicEndDate(), formatter);
+						LocalDateTime dateTime = LocalDateTime.parse(dateToUse, formatter);
 						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
 						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_FORMAT));
 					}
@@ -1059,7 +1060,7 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setMeanTimetoMerge(repoToolValidationData.getMeanTimeToMerge().toString());
 				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
@@ -1080,10 +1081,15 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getProjectName());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setPickupTime(String.format("%.2f", repoToolValidationData.getPickupTime()));
+				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
+				excelData.setPrReviewTime(repoToolValidationData.getPrActivityTime());
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
+				Map<String, String> mergeUrl = new HashMap<>();
+				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
+				excelData.setMergeRequestUrl(mergeUrl);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -1097,7 +1103,7 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setPrSize(String.valueOf(repoToolValidationData.getPrSize()));
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
@@ -1148,7 +1154,7 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
 				excelData.setDefectPRs(repoToolValidationData.getKpiPRs());
@@ -1183,7 +1189,7 @@ public class KPIExcelUtility {
                 excelData.setProject(repoToolValidationData.getProjectName());
                 excelData.setRepo(repoToolValidationData.getRepoUrl());
                 excelData.setBranch(repoToolValidationData.getBranchName());
-                excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+                excelData.setAuthor(repoToolValidationData.getDeveloperName());
                 excelData.setDaysWeeks(repoToolValidationData.getDate());
                 excelData.setRevertRate(roundingOff(repoToolValidationData.getRevertRate()));
                 excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
@@ -1202,7 +1208,7 @@ public class KPIExcelUtility {
                 excelData.setProject(repoToolValidationData.getProjectName());
                 excelData.setRepo(repoToolValidationData.getRepoUrl());
                 excelData.setBranch(repoToolValidationData.getBranchName());
-                excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+                excelData.setAuthor(repoToolValidationData.getDeveloperName());
                 excelData.setDaysWeeks(repoToolValidationData.getDate());
                 excelData.setPRSccessRate(roundingOff(repoToolValidationData.getPRSuccessRate()));
                 excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getKpiPRs()));
@@ -1222,7 +1228,7 @@ public class KPIExcelUtility {
 				excelData.setProject(repoToolValidationData.getProjectName());
 				excelData.setRepo(repoToolValidationData.getRepoUrl());
 				excelData.setBranch(repoToolValidationData.getBranchName());
-				excelData.setDeveloper(repoToolValidationData.getDeveloperName());
+				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
 				excelData.setPrDeclineRate(roundingOff(repoToolValidationData.getPrDeclineRate()));
 				excelData.setDeclinedPRs(repoToolValidationData.getKpiPRs());

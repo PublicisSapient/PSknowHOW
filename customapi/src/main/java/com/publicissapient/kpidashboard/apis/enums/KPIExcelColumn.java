@@ -52,7 +52,7 @@ public enum KPIExcelColumn {
 
 	MEAN_TIME_TO_MERGE("kpi84", Arrays.asList("Project", "Repo", "Branch", "Merge Request Url", "Days/Weeks",
 			"PR Raised Time", "PR Merged Time", "Mean Time To Merge (In Hours)")), 
-	REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer",
+	REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Author",
 			"Merge Request Url", "PR Raised Time", "PR Merged Time",
 			"Mean Time To Merge (In Hours)")),
 	AVERAGE_RESOLUTION_TIME(
@@ -306,11 +306,11 @@ public enum KPIExcelColumn {
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
 			"Sprint Name", "Assignee", "Issue Status", "Testing Phase")),
 
-	PICKUP_TIME("kpi160",
-			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Pickup Time (In Hours)")),
+	PICKUP_TIME("kpi160", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Author", "Merge Request Url",
+			"PR Raised Time", "PR Review Time", "Pickup Time (In Hours)")),
 
 	PR_SIZE("kpi162",
-			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "No of Merge",
+			Arrays.asList("Project", "Repo", "Branch", "Author", "Days/Weeks", "No of Merge",
 					"PR Size (No. of lines)")),
 
 	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
@@ -330,13 +330,13 @@ public enum KPIExcelColumn {
 			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
 	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Rework Rate")),
 
-	REVERT_RATE("kpi180", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Revert PR",
+	REVERT_RATE("kpi180", Arrays.asList("Project", "Repo", "Branch", "Author", "Days/Weeks", "Revert PR",
 			"No of Merge", "Revert Rate")),
 
-	PR_SUCCESS_RATE("kpi182", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "No of Merge",
+	PR_SUCCESS_RATE("kpi182", Arrays.asList("Project", "Repo", "Branch", "Author", "Days/Weeks", "No of Merge",
 			"Closed PR", "PR Success Rate")),
 
-	PR_DECLINE_RATE("kpi181", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Declined PR",
+	PR_DECLINE_RATE("kpi181", Arrays.asList("Project", "Repo", "Branch", "Author", "Days/Weeks", "Declined PR",
 			"Closed PR", "PR Decline Rate")),
 
 	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status",
@@ -349,11 +349,10 @@ public enum KPIExcelColumn {
 
 	DEFECT_COUNT_BY_EXPORT("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
 			"Issue Status", "Root Cause", "Priority", "Testing Phase", "Assignee")),
-	INNOVATION_RATE("kpi185",
-			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Added Lines", "Total Lines Changed",
-					"Innovation Rate")), DEFECT_RATE("kpi186",
-							Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Defect PR",
-									"No of Merge", "Defect Rate"));
+	INNOVATION_RATE("kpi185", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Added Lines",
+			"Total Lines Changed", "Innovation Rate")), 
+	DEFECT_RATE("kpi186", Arrays.asList("Project", "Repo", "Branch", "Author", "Days/Weeks", "Defect PR", "No of Merge",
+			"Defect Rate"));
 
 	// @formatter:on
 
