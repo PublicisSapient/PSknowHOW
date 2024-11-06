@@ -79,63 +79,63 @@ public class ProjectSprintIssuesServiceImplTest {
 	}
 
 	@Test
-	public void findOutliersBelowLowerBoundReturnsEmptyMapForNullSprintIssueMap() {
+	public void belowLowerBoundOutlierReturnsEmptyMapForNullSprintIssueMap() {
 		ObjectId projectId = new ObjectId();
-		Map<String, List<String>> outliers = projectSprintIssuesService.findOutliersBelowLowerBound(projectId);
+		Map<String, List<String>> outliers = projectSprintIssuesService.belowLowerBoundOutlier(projectId);
 		assertNotNull(outliers);
 		assertTrue(outliers.isEmpty());
 	}
 
 	@Test
-	public void findOutliersBelowLowerBoundReturnsEmptyMapForEmptySprintIssueMap() {
+	public void belowLowerBoundOutlierReturnsEmptyMapForEmptySprintIssueMap() {
 		ObjectId projectId = new ObjectId();
 		projectSprintIssuesService.addIssue(projectId, "Sprint 1", "ISSUE-1");
 		projectSprintIssuesService.removeProject(projectId);
-		Map<String, List<String>> outliers = projectSprintIssuesService.findOutliersBelowLowerBound(projectId);
+		Map<String, List<String>> outliers = projectSprintIssuesService.belowLowerBoundOutlier(projectId);
 		assertNotNull(outliers);
 		assertTrue(outliers.isEmpty());
 	}
 
 	@Test
-	public void findOutliersBelowLowerBoundReturnsEmptyMapForSingleSprint() {
+	public void belowLowerBoundOutlierReturnsEmptyMapForSingleSprint() {
 		ObjectId projectId = new ObjectId();
 		projectSprintIssuesService.addIssue(projectId, "Sprint 1", "ISSUE-1");
-		Map<String, List<String>> outliers = projectSprintIssuesService.findOutliersBelowLowerBound(projectId);
+		Map<String, List<String>> outliers = projectSprintIssuesService.belowLowerBoundOutlier(projectId);
 		assertNotNull(outliers);
 		assertTrue(outliers.isEmpty());
 	}
 
 	@Test
-	public void findOutliersBelowLowerBoundReturnsEmptyMapForNoOutliers() {
+	public void findOutliersBelowLowerBoundReturnsEmptyMapForNoOutliersOutlier() {
 		ObjectId projectId = new ObjectId();
 		projectSprintIssuesService.addIssue(projectId, "Sprint 1", "ISSUE-1");
 		projectSprintIssuesService.addIssue(projectId, "Sprint 1", "ISSUE-2");
 		projectSprintIssuesService.addIssue(projectId, "Sprint 2", "ISSUE-3");
 		projectSprintIssuesService.addIssue(projectId, "Sprint 2", "ISSUE-4");
-		Map<String, List<String>> outliers = projectSprintIssuesService.findOutliersBelowLowerBound(projectId);
+		Map<String, List<String>> outliers = projectSprintIssuesService.belowLowerBoundOutlier(projectId);
 		assertNotNull(outliers);
 		assertTrue(outliers.isEmpty());
 	}
 
 	@Test
-	public void findOutliersBelowLowerBoundHandlesSprintsWithSameNumberOfIssues() {
+	public void belowLowerBoundOutlierHandlesSprintsWithSameNumberOfIssues() {
 		ObjectId projectId = new ObjectId();
 		projectSprintIssuesService.addIssue(projectId, "Sprint 1", "ISSUE-1");
 		projectSprintIssuesService.addIssue(projectId, "Sprint 2", "ISSUE-2");
-		Map<String, List<String>> outliers = projectSprintIssuesService.findOutliersBelowLowerBound(projectId);
+		Map<String, List<String>> outliers = projectSprintIssuesService.belowLowerBoundOutlier(projectId);
 		assertNotNull(outliers);
 		assertTrue(outliers.isEmpty());
 	}
 
 	@Test
-	public void findOutliersBelowLowerBoundReturnsEmptyMapForNoIssuesInSprints() {
+	public void belowLowerBoundOutlierReturnsEmptyMapForNoIssuesInSprints() {
 		ObjectId projectId = new ObjectId();
 		projectSprintIssuesService.addIssue(projectId, "Sprint 1", "ISSUE-1");
 		projectSprintIssuesService.removeProject(projectId);
 		projectSprintIssuesService.addIssue(projectId, "Sprint 1", "ISSUE-1");
 		projectSprintIssuesService.getSprintIssueMapForProject(projectId).get("Sprint 1").clear();
 
-		Map<String, List<String>> outliers = projectSprintIssuesService.findOutliersBelowLowerBound(projectId);
+		Map<String, List<String>> outliers = projectSprintIssuesService.belowLowerBoundOutlier(projectId);
 		assertNotNull(outliers);
 		assertTrue(outliers.isEmpty());
 	}

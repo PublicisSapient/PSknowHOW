@@ -77,5 +77,5 @@ public interface ProjectSprintIssuesService {
 	 * @return a map where the key is the sprint name and the value is a list of
 	 *         issue keys that are outliers
 	 */
-	Map<String, List<String>> findOutliersBelowLowerBound(ObjectId basicProjectConfigId);
+	Map<String, List<String>> belowLowerBoundOutlier(ObjectId basicProjectConfigId);
 }

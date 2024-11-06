@@ -34,17 +34,17 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 
 @RunWith(MockitoJUnitRunner.class)
-class FindOutliersBelowLowerBoundStrategyTest {
+class BelowLowerBoundOutlierTest {
 
     @Test
     void findOutliers() {
-        FindOutliersBelowLowerBoundStrategy findOutliersBelowLowerBoundStrategy = new FindOutliersBelowLowerBoundStrategy();
-        assertNotNull(findOutliersBelowLowerBoundStrategy);
+        BelowLowerBoundOutlier belowLowerBoundOutlier = new BelowLowerBoundOutlier();
+        assertNotNull(belowLowerBoundOutlier);
     }
 
     @Test
     void findOutliersWithValidData() {
-        FindOutliersBelowLowerBoundStrategy strategy = new FindOutliersBelowLowerBoundStrategy();
+        BelowLowerBoundOutlier strategy = new BelowLowerBoundOutlier();
         ObjectId projectId = new ObjectId();
         Map<ObjectId, Map<String, List<String>>> projectSprintIssuesMap = new HashMap<>();
         Map<String, List<String>> sprintIssues = new HashMap<>();
@@ -60,7 +60,7 @@ class FindOutliersBelowLowerBoundStrategyTest {
 
     @Test
     void findOutliersWithNoData() {
-        FindOutliersBelowLowerBoundStrategy strategy = new FindOutliersBelowLowerBoundStrategy();
+        BelowLowerBoundOutlier strategy = new BelowLowerBoundOutlier();
         ObjectId projectId = new ObjectId();
         Map<ObjectId, Map<String, List<String>>> projectSprintIssuesMap = new HashMap<>();
 
@@ -71,7 +71,7 @@ class FindOutliersBelowLowerBoundStrategyTest {
 
     @Test
     void findOutliersWithEmptySprintIssues() {
-        FindOutliersBelowLowerBoundStrategy strategy = new FindOutliersBelowLowerBoundStrategy();
+        BelowLowerBoundOutlier strategy = new BelowLowerBoundOutlier();
         ObjectId projectId = new ObjectId();
         Map<ObjectId, Map<String, List<String>>> projectSprintIssuesMap = new HashMap<>();
         projectSprintIssuesMap.put(projectId, Collections.emptyMap());
@@ -83,7 +83,7 @@ class FindOutliersBelowLowerBoundStrategyTest {
 
     @Test
     void findOutliersWithSingleSprint() {
-        FindOutliersBelowLowerBoundStrategy strategy = new FindOutliersBelowLowerBoundStrategy();
+        BelowLowerBoundOutlier strategy = new BelowLowerBoundOutlier();
         ObjectId projectId = new ObjectId();
         Map<ObjectId, Map<String, List<String>>> projectSprintIssuesMap = new HashMap<>();
         Map<String, List<String>> sprintIssues = new HashMap<>();

@@ -136,7 +136,7 @@ public class JobListenerScrum implements JobExecutionListener {
 		log.debug("Sprint issue map of projectId : {} is : {}", projectId,
 				projectSprintIssuesService.getSprintIssueMapForProject(new ObjectId(projectId)));
 		Map<String, List<String>> outlierSprintMap = projectSprintIssuesService
-				.findOutliersBelowLowerBound(new ObjectId(projectId));
+				.belowLowerBoundOutlier(new ObjectId(projectId));
 		log.debug("Outlier sprints of projectId : {} is : {}", projectId, outlierSprintMap);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);

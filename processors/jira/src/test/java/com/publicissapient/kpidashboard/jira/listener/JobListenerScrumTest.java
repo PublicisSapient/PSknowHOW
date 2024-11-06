@@ -371,7 +371,7 @@ public class JobListenerScrumTest {
 
 		Map<String, List<String>> outlierSprintMap = Collections.singletonMap("sprint1",
 				Collections.singletonList("issue1"));
-		when(projectSprintIssuesService.findOutliersBelowLowerBound(new ObjectId(projectId)))
+		when(projectSprintIssuesService.belowLowerBoundOutlier(new ObjectId(projectId)))
 				.thenReturn(outlierSprintMap);
 
 		// Simulate a successful job

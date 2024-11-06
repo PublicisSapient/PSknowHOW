@@ -31,7 +31,7 @@ import org.bson.types.ObjectId;
  * 
  * @author shunaray
  */
-public class FindOutliersBelowLowerBoundStrategy implements OutlierStrategy {
+public class BelowLowerBoundOutlier implements OutlierStrategy {
 
 	/**
 	 * Finds outliers below the lower bound for the given project configuration ID

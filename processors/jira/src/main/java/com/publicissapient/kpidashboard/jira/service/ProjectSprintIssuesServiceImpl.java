@@ -25,7 +25,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.jira.strategy.FindOutliersBelowLowerBoundStrategy;
+import com.publicissapient.kpidashboard.jira.strategy.BelowLowerBoundOutlier;
 import com.publicissapient.kpidashboard.jira.strategy.OutlierContext;
 
 /**
@@ -117,8 +117,8 @@ public class ProjectSprintIssuesServiceImpl implements ProjectSprintIssuesServic
 	 * @return a map of sprints with issue counts below the lower bound
 	 */
 	@Override
-	public Map<String, List<String>> findOutliersBelowLowerBound(ObjectId basicProjectConfigId) {
-		outlierContext.setStrategy(new FindOutliersBelowLowerBoundStrategy());
+	public Map<String, List<String>> belowLowerBoundOutlier(ObjectId basicProjectConfigId) {
+		outlierContext.setStrategy(new BelowLowerBoundOutlier());
 		return outlierContext.executeStrategy(basicProjectConfigId, projectSprintIssuesMap);
 	}
 
