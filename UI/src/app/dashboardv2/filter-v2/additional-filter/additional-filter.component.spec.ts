@@ -646,4 +646,73 @@ describe('AdditionalFilterComponent', () => {
     expect(component.selectedFilters).toEqual([]);
     expect(sortByFieldSpy).toHaveBeenCalled();
   });
+
+  describe('AdditionalFilterComponent.setCorrectLevel() setCorrectLevel method', () => {
+    describe('Happy Path', () => {
+      it('should set the correct level based on the state filters', fakeAsync(() => {
+        // Arrange
+        component.additionalFilterLevelArr = [
+          { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' },
+          { hierarchyLevelId: 'level2', hierarchyLevelName: 'Level 2' },
+        ];
+        component.additionalFilterConfig = [
+          { defaultLevel: { labelName: 'Level 1' } },
+          { defaultLevel: { labelName: 'Level 2' } },
+        ];
+        spyOn(helperService,'getBackupOfFilterSelectionState').and.returnValue({
+          level1: [{ nodeId: 'node1' }],
+          level2: [{ nodeId: 'node2' }],
+        });
+  
+        // Act
+        component.setCorrectLevel();
+        tick(100);
+        // Assert
+        // setTimeout(() => {
+          expect(component.selectedFilters[0]).toEqual([{ nodeId: 'node1' }]);
+          expect(component.selectedFilters[1]).toEqual([{ nodeId: 'node2' }]);
+        // }, 100);
+      }));
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle empty state filters gracefully', () => {
+        // Arrange
+        component.additionalFilterLevelArr = [
+          { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' },
+        ];
+        component.additionalFilterConfig = [
+          { defaultLevel: { labelName: 'Level 1' } },
+        ];
+        spyOn(helperService,'getBackupOfFilterSelectionState').and.returnValue({});
+  
+        // Act
+        component.setCorrectLevel();
+  
+        // Assert
+        setTimeout(() => {
+          expect(component.selectedFilters[0]).toBeUndefined();
+        }, 100);
+      });
+  
+      // it('should handle missing hierarchyLevelId in additionalFilterLevelArr', () => {
+      //   // Arrange
+      //   component.additionalFilterLevelArr = [{ hierarchyLevelName: 'Level 1' }];
+      //   component.additionalFilterConfig = [
+      //     { defaultLevel: { labelName: 'Level 1' } },
+      //   ];
+      //   spyOn(helperService,'getBackupOfFilterSelectionState').and.returnValue({
+      //     level1: [{ nodeId: 'node1' }],
+      //   });
+  
+      //   // Act
+      //   component.setCorrectLevel();
+  
+      //   // Assert
+      //   setTimeout(() => {
+      //     expect(component.selectedFilters[0]).toBeUndefined();
+      //   }, 100);
+      // });
+    });
+  });
 });

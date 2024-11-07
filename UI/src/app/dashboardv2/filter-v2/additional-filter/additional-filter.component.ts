@@ -81,27 +81,7 @@ export class AdditionalFilterComponent implements OnChanges {
             }
           });
 
-          let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release');
-
-          this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
-          setTimeout(() => {
-            this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
-            if (this.stateFilters && Object.keys(this.stateFilters)) {
-              Object.keys(this.stateFilters).forEach((key) => {
-                let correctIndex = 0;
-                for (let i = 0; i < this.additionalFilterConfig.length; i++) {
-                  let level = correctLevelMapping.filter(f => f.hierarchyLevelName.toLowerCase() === this.additionalFilterConfig[i].defaultLevel.labelName.toLowerCase())[0];
-                  if (level.hierarchyLevelId.toLowerCase() === key.toLowerCase()) {
-                    correctIndex = i;
-                    break;
-                  }
-                }
-                if (this.stateFilters[key].length) {
-                  this.selectedFilters[correctIndex] = this.stateFilters[key];
-                }
-              });
-            }
-          }, 100);
+          this.setCorrectLevel();
         } else {
           this.applyDefaultFilter();
         }
@@ -117,6 +97,36 @@ export class AdditionalFilterComponent implements OnChanges {
         }
       }
     }));
+  }
+
+/**
+ * Sets the correct level for filters based on the additional filter levels,
+ * excluding 'release' and 'sprint' levels, and restores the filter selection state
+ * after a brief delay.
+ * 
+ * @returns {void} - This function does not return a value.
+ */
+  setCorrectLevel() {
+    let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release');
+    this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
+    setTimeout(() => {
+      this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+      if (this.stateFilters && Object.keys(this.stateFilters)) {
+        Object.keys(this.stateFilters).forEach((key) => {
+          let correctIndex = 0;
+          for (let i = 0; i < this.additionalFilterConfig.length; i++) {
+            let level = correctLevelMapping.filter(f => f.hierarchyLevelName.toLowerCase() === this.additionalFilterConfig[i].defaultLevel.labelName.toLowerCase())[0];
+            if (level.hierarchyLevelId.toLowerCase() === key.toLowerCase()) {
+              correctIndex = i;
+              break;
+            }
+          }
+          if (this.stateFilters[key].length) {
+            this.selectedFilters[correctIndex] = this.stateFilters[key];
+          }
+        });
+      }
+    }, 100);
   }
 
 
