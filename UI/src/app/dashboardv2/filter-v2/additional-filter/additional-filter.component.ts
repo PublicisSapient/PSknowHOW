@@ -87,16 +87,28 @@ export class AdditionalFilterComponent implements OnChanges {
         }
       }
       else {
-        if (this.selectedTab !== 'developer') {
-          this.filterData = [];
-        } else {
-          if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
-            this.filterData = [];
-            this.previousSelectedTrends = [...this.selectedTrends];
-          }
-        }
+        this.resetFilterData();
       }
     }));
+  }
+
+
+/**
+ * Resets the filter data based on the currently selected tab and trends.
+ * If the selected tab is not 'developer', filterData is cleared; otherwise, 
+ * it checks if the selected trends have changed and resets filterData accordingly.
+ * 
+ * @returns {void} - No return value.
+ */
+  resetFilterData() {
+    if (this.selectedTab !== 'developer') {
+      this.filterData = [];
+    } else {
+      if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
+        this.filterData = [];
+        this.previousSelectedTrends = [...this.selectedTrends];
+      }
+    }
   }
 
 /**
@@ -246,6 +258,14 @@ export class AdditionalFilterComponent implements OnChanges {
     }
   }
 
+/**
+ * Handles the change event of a dropdown element. 
+ * If the selected element is valid, it applies an additional filter based on the event and index provided.
+ * 
+ * @param {any} $event - The event object from the dropdown change.
+ * @param {number} index - The index of the dropdown element being changed.
+ * @returns {void}
+ */
   onDropDownChange($event:any,index){
     if(this.helperService.isDropdownElementSelected($event)){
       this.applyAdditionalFilter($event, index)

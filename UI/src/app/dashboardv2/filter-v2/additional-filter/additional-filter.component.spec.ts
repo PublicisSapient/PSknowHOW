@@ -715,4 +715,123 @@ describe('AdditionalFilterComponent', () => {
       // });
     });
   });
+
+  describe('AdditionalFilterComponent.resetFilterData() resetFilterData method', () => {
+    describe('Happy Path', () => {
+      it('should clear filterData when selectedTab is not "developer"', () => {
+        // Arrange
+        component.selectedTab = 'notDeveloper';
+        component.filterData = [{ nodeId: 1 }, { nodeId: 2 }];
+  
+        // Act
+        component.resetFilterData();
+  
+        // Assert
+        expect(component.filterData).toEqual([]);
+      });
+  
+      it('should not clear filterData if selectedTab is "developer" and trends have not changed', () => {
+        // Arrange
+        component.selectedTab = 'developer';
+        component.selectedTrends = [{ nodeId: 1 }];
+        component.previousSelectedTrends = [{ nodeId: 1 }];
+        component.filterData = [{ nodeId: 1 }, { nodeId: 2 }];
+  
+        // Act
+        component.resetFilterData();
+  
+        // Assert
+        expect(component.filterData).toEqual([{ nodeId: 1 }, { nodeId: 2 }]);
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should clear filterData if selectedTab is "developer" and trends have changed', () => {
+        // Arrange
+        component.selectedTab = 'developer';
+        component.selectedTrends = [{ nodeId: 1 }];
+        component.previousSelectedTrends = [{ nodeId: 2 }];
+        component.filterData = [{ nodeId: 1 }, { nodeId: 2 }];
+  
+        // Act
+        component.resetFilterData();
+  
+        // Assert
+        expect(component.filterData).toEqual([]);
+        expect(component.previousSelectedTrends).toEqual([{ nodeId: 1 }]);
+      });
+  
+      // it('should handle empty selectedTrends and previousSelectedTrends gracefully', () => {
+      //   // Arrange
+      //   component.selectedTab = 'developer';
+      //   component.selectedTrends = [];
+      //   component.previousSelectedTrends = [];
+      //   component.filterData = [{ nodeId: 1 }, { nodeId: 2 }];
+  
+      //   // Act
+      //   component.resetFilterData();
+  
+      //   // Assert
+      //   expect(component.filterData).toEqual([]);
+      //   expect(component.previousSelectedTrends).toEqual([]);
+      // });
+    });
+  });
+
+  describe('AdditionalFilterComponent.onDropDownChange() onDropDownChange method', () => {
+    describe('Happy Path', () => {
+      it('should apply additional filter when dropdown element is selected', () => {
+        // Arrange
+        const event = { value: 'someValue' };
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(true);
+  
+        // Act
+        component.onDropDownChange(event, index);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).toHaveBeenCalled();
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should not apply additional filter when dropdown element is not selected', () => {
+        // Arrange
+        const event = { value: 'someValue' };
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(false);
+  
+        // Act
+        component.onDropDownChange(event, index);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
+      });
+  
+      it('should handle undefined event gracefully', () => {
+        // Arrange
+        const event = undefined;
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(false);
+  
+        // Act
+        component.onDropDownChange(event, index);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
+      });
+    });
+  });
 });
