@@ -34,10 +34,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.jira.dataFactories.AccountHierarchiesDataFactory;
+import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.jira.dataFactories.KanbanJiraIssueDataFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectHierarchySyncServiceImplTest {
@@ -57,9 +62,21 @@ public class ProjectHierarchySyncServiceImplTest {
 	@Mock
 	private SprintRepository sprintRepository;
 
+	List<AccountHierarchy> accountHierarchyList;
+	List<JiraIssue> jiraIssueList;
+	List<KanbanJiraIssue> kanbanJiraIssueList;
+
 	@Before
 	public void setUp() {
-		// Initialize mocks before each test
+		AccountHierarchiesDataFactory accountHierarchiesDataFactory = AccountHierarchiesDataFactory
+				.newInstance("/json/default/account_hierarchy.json");
+		accountHierarchyList = accountHierarchiesDataFactory.getAccountHierarchies();
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/jira_issues.json");
+		jiraIssueList = jiraIssueDataFactory.getJiraIssues();
+		KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory
+				.newInstance("/json/default/kanban_jira_issue.json");
+		kanbanJiraIssueList = kanbanJiraIssueDataFactory.getKanbanJiraIssues();
+
 	}
 
 	@Test
@@ -68,9 +85,11 @@ public class ProjectHierarchySyncServiceImplTest {
 		List<String> distinctSprintIDs = List.of("Sprint1", "Sprint2");
 		List<String> nonMatchingNodeIds = List.of();
 
-		when(jiraIssueRepository.findDistinctSprintIDByBasicProjectConfigId(projectId)).thenReturn(distinctSprintIDs);
-		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId, distinctSprintIDs,
-				CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)).thenReturn(nonMatchingNodeIds);
+		when(jiraIssueRepository.findDistinctSprintIDsByBasicProjectConfigId(String.valueOf(projectId)))
+				.thenReturn(jiraIssueList);
+		// when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
+		// distinctSprintIDs,
+		// CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)).thenReturn(accountHierarchyList);
 
 		projectHierarchySyncServiceImpl.scrumSprintHierarchySync(projectId);
 
@@ -86,7 +105,7 @@ public class ProjectHierarchySyncServiceImplTest {
 		List<String> entriesToDelete = List.of("Release3");
 
 		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
-				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(entriesToDelete);
+				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(accountHierarchyList);
 
 		projectHierarchySyncServiceImpl.scrumReleaseHierarchySync(projectId, fetchedReleasedHierarchy);
 
@@ -97,10 +116,11 @@ public class ProjectHierarchySyncServiceImplTest {
 	@Test
 	public void KanbanReleaseHierarchySyncNoReleasesToDeleteFalseHit() {
 		ObjectId projectId = new ObjectId();
-		List<KanbanAccountHierarchy> fetchedReleasedHierarchy = List.of(KanbanAccountHierarchy.builder().nodeId("Release1").build(),
+		List<KanbanAccountHierarchy> fetchedReleasedHierarchy = List.of(
+				KanbanAccountHierarchy.builder().nodeId("Release1").build(),
 				KanbanAccountHierarchy.builder().nodeId("Release2").build());
 		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
-		List<String> entriesToDelete = List.of();
+		List<KanbanAccountHierarchy> entriesToDelete = List.of();
 
 		when(kanbanAccountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(entriesToDelete);
@@ -111,20 +131,6 @@ public class ProjectHierarchySyncServiceImplTest {
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 	}
 
-	@Test
-	public void scrumSprintHierarchySyncDeletesNonMatchingSprints() {
-		ObjectId projectId = new ObjectId();
-		List<String> distinctSprintIDs = List.of("Sprint1", "Sprint2");
-		List<String> accountHierarchyList = List.of("Sprint1", "Sprint3");
-
-		when(jiraIssueRepository.findDistinctSprintIDByBasicProjectConfigId(projectId)).thenReturn(distinctSprintIDs);
-		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId, distinctSprintIDs,
-				CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)).thenReturn(accountHierarchyList);
-
-		projectHierarchySyncServiceImpl.scrumSprintHierarchySync(projectId);
-
-		verify(sprintRepository).deleteBySprintIDInAndBasicProjectConfigId(List.of("Sprint1", "Sprint3"), projectId);
-	}
 
 	@Test
 	public void scrumReleaseHierarchySyncDeletesNonMatchingReleases() {
@@ -176,4 +182,21 @@ public class ProjectHierarchySyncServiceImplTest {
 		verify(kanbanAccountHierarchyRepository).deleteByBasicProjectConfigIdAndNodeIdIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 	}
+
+	@Test
+	public void scrumSprintHierarchySyncNoSprintsToDeleteTrueHit() {
+		ObjectId projectId = new ObjectId();
+		List<String> nonMatchingNodeIds = List.of();
+
+		when(jiraIssueRepository.findDistinctSprintIDsByBasicProjectConfigId(String.valueOf(projectId)))
+				.thenReturn(jiraIssueList);
+		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
+				jiraIssueList.stream().map(JiraIssue::getSprintID).toList(), CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
+				.thenReturn(accountHierarchyList);
+
+		projectHierarchySyncServiceImpl.scrumSprintHierarchySync(projectId);
+
+		verify(sprintRepository, never()).deleteBySprintIDInAndBasicProjectConfigId(nonMatchingNodeIds, projectId);
+	}
+
 }

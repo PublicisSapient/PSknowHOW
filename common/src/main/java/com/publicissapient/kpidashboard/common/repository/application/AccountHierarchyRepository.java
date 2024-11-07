@@ -220,13 +220,13 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	 *            the basic project config ID
 	 * @param nodeIds
 	 *            the list of node IDs to exclude
-	 * @param hierarchyLevelId
+	 * @param labelName
 	 *            the hierarchy level ID
 	 * @return the list of node IDs
 	 */
-	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'hierarchyLevelId': ?2 }", fields = "{ 'nodeId': 1 }")
-	List<String> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> nodeIds,
-			String hierarchyLevelId);
+	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'labelName': ?2 }", fields = "{ 'nodeId': 1 }")
+	List<AccountHierarchy> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> nodeIds,
+			String labelName);
 
 	/**
 	 * Deletes documents by basic project config ID, node IDs, and label name.

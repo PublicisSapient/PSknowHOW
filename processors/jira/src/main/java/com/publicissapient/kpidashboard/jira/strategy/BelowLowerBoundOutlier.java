@@ -25,12 +25,15 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Strategy to find outliers below the lower bound in a given set of sprint
  * issues.
  * 
  * @author shunaray
  */
+@Slf4j
 public class BelowLowerBoundOutlier implements OutlierStrategy {
 
 	/**
@@ -62,18 +65,22 @@ public class BelowLowerBoundOutlier implements OutlierStrategy {
 		}
 
 		Collections.sort(issueCounts);
-		// Calculate Q1, Q3, and IQR
+		log.debug("Sorted issue counts: {}", issueCounts);
+
 		double q1 = calculatePercentile(issueCounts, 25);
 		double q3 = calculatePercentile(issueCounts, 75);
 		double iqr = q3 - q1;
+		log.debug("Calculated Q1: {}, Q3: {}, IQR: {}", q1, q3, iqr);
 
 		// Determine the lower bound
 		double lowerBound = q1 - 1.5 * iqr;
+		log.debug("Calculated lower bound: {}", lowerBound);
 
 		// Find outliers below the lower bound and return sprint issue map
 		Map<String, List<String>> outliers = new HashMap<>();
 		for (Map.Entry<String, List<String>> entry : sprintIssueMap.entrySet()) {
 			if (entry.getValue().size() < lowerBound) {
+				log.debug("Outlier detected: Sprint: {}, Issue Count: {}", entry.getKey(), entry.getValue().size());
 				outliers.put(entry.getKey(), entry.getValue());
 			}
 		}
