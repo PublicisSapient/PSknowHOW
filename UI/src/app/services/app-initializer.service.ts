@@ -34,10 +34,24 @@ export class AppInitializerService {
 
     constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
     }
-    commonRoutes: Routes = [
+    commonRoutes: Routes = localStorage.getItem('newUI') ? [
         { path: '', redirectTo: 'iteration', pathMatch: 'full' },
         {
-            path: 'my-knowhow', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+            data: {
+                feature: "Iteration"
+            }
+        },
+        {
+            path: 'kpi-maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+            data: {
+                feature: "Maturity"
+            }
+        }
+    ] : [
+        { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+        {
+            path: 'my-knowhow', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "My Dashboard"
             }
@@ -49,7 +63,7 @@ export class AppInitializerService {
             }
         },
         {
-            path: 'developer', component: !localStorage.getItem('newUI') ? DeveloperComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Developer"
             }
@@ -61,23 +75,24 @@ export class AppInitializerService {
             }
         },
         {
-            path: 'backlog', component: !localStorage.getItem('newUI') ? BacklogComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Backlog"
             }
         },
         {
-            path: 'release', component: !localStorage.getItem('newUI') ? MilestoneComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Release"
             }
         },
         {
-            path: 'dora', component: !localStorage.getItem('newUI') ? DoraComponent : ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
+            path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Dora"
             }
-        }];
+        }
+    ];
     routes: Routes = [
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
         {

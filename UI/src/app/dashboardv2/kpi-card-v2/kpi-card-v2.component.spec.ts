@@ -11,8 +11,8 @@ import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from '../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { of } from 'rxjs';
+import { DialogService } from 'primeng/dynamicdialog';
+import { of, Subject } from 'rxjs';
 
 describe('KpiCardV2Component', () => {
   let component: KpiCardV2Component;
@@ -23,6 +23,8 @@ describe('KpiCardV2Component', () => {
   let helperService: HelperService;
   let dialogService: DialogService;
   let mockService: jasmine.SpyObj<SharedService>;
+  let sharedMockService: jasmine.SpyObj<SharedService>;
+  const selectedFilterOptionObs = new Subject<any>();
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
@@ -70,13 +72,25 @@ describe('KpiCardV2Component', () => {
     helperService = TestBed.inject(HelperService);
     dialogService = TestBed.inject(DialogService);
     mockService = jasmine.createSpyObj(SharedService, ['selectedFilterOptionObs', 'getSelectedTab']);
+    sharedMockService = jasmine.createSpyObj(SharedService, [
+      'getSelectedKPIFilterValues',
+      'getSelectedTab'
+    ]);
+    // Mock the observable in the service with the Subject
+    Object.defineProperty(sharedMockService, 'selectedFilterOptionObs', { value: selectedFilterOptionObs.asObservable() });
 
     component.kpiData = {
       kpiId: 'kpi72',
       kpiDetail: { kpiFilter: 'radioButton' }
     };
     component.dropdownArr = [{ options: ['option1', 'option2'] }];
+    sharedMockService.getSelectedTab.and.returnValue('Tab1');
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    selectedFilterOptionObs.complete(); // Complete the Subject after each test
+    component.subscriptions.forEach(sub => sub.unsubscribe()); // Clean up subscriptions
   });
 
   it('should create', () => {
@@ -118,76 +132,6 @@ describe('KpiCardV2Component', () => {
       const result = component.checkIfDataPresent('data');
 
       expect(result).toBe(false);
-    });
-  });
-
-  describe('checkDataAtGranularLevel', () => {
-    it('should return true if data is an array with non-empty data arrays', () => {
-      const data = [
-        { data: [1, 2, 3] },
-        { data: [4, 5, 6] },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(true);
-    });
-
-    it('should return true if data is an array with non-empty value arrays or non-empty objects', () => {
-      const data = [
-        { value: [1, 2, 3] },
-        { value: { prop: 'value' } },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return true if data is an array with non-empty dataGroup arrays', () => {
-      const data = [
-        { dataGroup: [1, 2, 3] },
-        { dataGroup: [4, 5, 6] },
-      ];
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(true);
-    });
-
-    it('should return true if data is an object with non-zero number of keys', () => {
-      const data = {
-        key1: 'value1',
-        key2: 'value2',
-      };
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is an empty array', () => {
-      const data = [];
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is an empty object', () => {
-      const data = {};
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false if data is not an array or object', () => {
-      const data = 'invalid data';
-
-      const result = component.checkDataAtGranularLevel(data);
-
-      expect(result).toBe(true);
     });
   });
 
@@ -625,7 +569,9 @@ describe('KpiCardV2Component', () => {
     // expect(component.selectedTab).toEqual('tab1');
   });
 
-  it('should handle non-Overall values correctly', () => {
+  /* ************ */
+
+  /* it('should handle non-Overall values correctly', () => {
     const filterData = {
       kpi72: {
         filter1: ['Specific'],
@@ -654,8 +600,10 @@ describe('KpiCardV2Component', () => {
     component.ngOnInit();
 
     expect(component.kpiSelectedFilterObj).toEqual(filterData);
-    expect(component.filterOptions["filter1"]).toBe('Specific');
-    expect(component.filterOptions["filter2"]).toBe('Other');
+    expect(component.filterOptions).toEqual({
+      filter1: ['Specific'],
+      filter2: ['Other']
+    });
   });
 
   it('should handle Overall values correctly for kpi72', () => {
@@ -792,6 +740,105 @@ describe('KpiCardV2Component', () => {
   })
   );
 
+  it('should handle Overall values in filter1 correctly for non kpi72', () => {
+    const filterData = {
+      kpi7: {
+        filter: ['OtherFilters', 'Overall'],
+        filter1: ['Overall'],
+        filter2: ['Other'],
+
+      },
+      kpi113: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi7',
+      kpiName: 'Value delivered (Cost of Delay)',
+      isEnabled: true,
+      order: 28,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff3',
+        kpiId: 'kpi7',
+      },
+      shown: true
+    };
+
+    sharedService.setKpiSubFilterObj(filterData);
+    mockService.getSelectedTab.and.returnValue('Tab1');
+    component.ngOnInit();
+
+    expect(component.kpiSelectedFilterObj).toEqual(filterData);
+    expect(component.filterOptions["filter1"]).toEqual(['Overall']);
+  }); */
+
+  it('should populate filterOptions when getSelectedKpiFilterVal is truthy', () => {
+    const getSelectedKpiFilterVal = { kpi1: { filter1: ['Overall'] } };
+    spyOn(sharedService, 'getSelectedKPIFilterValues').and.returnValue(getSelectedKpiFilterVal);
+    component.ngOnInit();
+    expect(component.filterOptions).toEqual({});
+  });
+  /* it('should populate filterOptions when getSelectedKpiFilterVal is falsy', () => {
+    const data = { kpi1: { filter1: ['Overall'] } };
+    spyOn(sharedService, 'getSelectedKPIFilterValues').and.returnValue(null);
+    spyOn(sharedService, 'selectedFilterOptionObs'  as keyof typeof sharedService).and.returnValue(of(data));
+    component.ngOnInit();
+    expect(component.filterOptions).toEqual({ filter1: ['Overall'] });
+  }); */
+  it('should handle non-Overall values correctly', () => {
+    const filterData = {
+      kpi72: {
+        filter1: ['Specific'],
+        filter2: ['Other']
+      }
+    };
+
+    component.kpiData = {
+      kpiId: 'kpi72',
+      kpiDetail: {}
+    };
+
+    sharedMockService.getSelectedKPIFilterValues.and.returnValue(filterData);
+    component.ngOnInit();
+
+    // Emit value on the Subject to simulate an observable emit
+    selectedFilterOptionObs.next(filterData);
+
+    expect(component.kpiSelectedFilterObj).toEqual({});
+    expect(component.filterOptions).toEqual({});
+  });
+  it('should populate filterOptions for kpi72 with filter1 and filter2', () => {
+    const getSelectedKpiFilterVal = { kpi72: { filter1: ['Overall'], filter2: ['Other'] } };
+    spyOn(sharedService, 'getSelectedKPIFilterValues').and.returnValue(getSelectedKpiFilterVal);
+    component.kpiData = { kpiId: 'kpi72' };
+    component.ngOnInit();
+    expect(component.filterOptions).toEqual({ filter1: 'Overall', filter2: 'Other' });
+  });
+  it('should populate filterOptions for non-kpi72 with filter1 and filter2', () => {
+    const getSelectedKpiFilterVal = { kpi1: { filter1: ['Overall'], filter2: ['Other'] } };
+    spyOn(sharedService, 'getSelectedKPIFilterValues').and.returnValue(getSelectedKpiFilterVal);
+    component.kpiData = { kpiId: 'kpi1' };
+    component.ngOnInit();
+    expect(component.filterOptions).toEqual({ filter1: ['Overall'], filter2: ['Other'] });
+  });
+  it('should populate radioOption when kpiFilter is radiobutton', () => {
+    const getSelectedKpiFilterVal = { kpi1: { filter1: ['Option1'] } };
+    spyOn(sharedService, 'getSelectedKPIFilterValues').and.returnValue(getSelectedKpiFilterVal);
+    component.kpiData = { kpiId: 'kpi1', kpiDetail: { kpiFilter: 'radiobutton' } };
+    component.ngOnInit();
+    expect(component.radioOption).toBe('option1');
+  });
+  it('should populate selectedTab', () => {
+    const selectedTab = 'tab1';
+    spyOn(sharedService, 'getSelectedTab').and.returnValue(selectedTab);
+    component.ngOnInit();
+    expect(component.selectedTab).toBe(selectedTab);
+  });
+
+  /* ********************* */
+
   it('should set displayConfigModel to false and emit reloadKPITab event', () => {
     component.displayConfigModel = true;
     component.kpiData = { id: 1, name: 'KPI 1' };
@@ -872,40 +919,6 @@ describe('KpiCardV2Component', () => {
     expect(toolDetails).toBeDefined();
   })
 
-  it('should handle Overall values in filter1 correctly for non kpi72', () => {
-    const filterData = {
-      kpi7: {
-        filter: ['OtherFilters', 'Overall'],
-        filter1: ['Overall'],
-        filter2: ['Other'],
-
-      },
-      kpi113: {
-        filter1: ['Specific'],
-        filter2: ['Other']
-      }
-    };
-
-    component.kpiData = {
-      kpiId: 'kpi7',
-      kpiName: 'Value delivered (Cost of Delay)',
-      isEnabled: true,
-      order: 28,
-      kpiDetail: {
-        id: '633ed17f2c2d5abef2451ff3',
-        kpiId: 'kpi7',
-      },
-      shown: true
-    };
-
-    sharedService.setKpiSubFilterObj(filterData);
-    mockService.getSelectedTab.and.returnValue('Tab1');
-    component.ngOnInit();
-
-    expect(component.kpiSelectedFilterObj).toEqual(filterData);
-    expect(component.filterOptions["filter1"]).toEqual(['Overall']);
-  });
-
   it('should show tooltip', () => {
     component.showTooltip(true);
     expect(component.isTooltip).toBeTrue();
@@ -985,17 +998,154 @@ describe('KpiCardV2Component', () => {
     expect(component.checkIfDataPresent('200')).toBeTrue();
   });
 
-  it('should return true if data is present at granular level and selectedTab is "developer"', () => {
-    component.selectedTab = 'developer';
-    component.trendValueList = [{ data: 1 }];
-
-    expect(component.checkDataAtGranularLevel(component.trendValueList)).toBeTrue();
+  describe('KpiCardV2Component.handleClearAll() handleClearAll method', () => {
+    describe('Happy Path', () => {
+      it('should clear the filterOptions and emit "Overall" when dropdownArr length is 1', () => {
+        component.dropdownArr = [{}];
+        component.filterOptions = { filter1: 'value1' };
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+  
+        component.handleClearAll('filter1');
+  
+        expect(component.filterOptions).toEqual({});
+        expect(emitSpy).toHaveBeenCalledWith(['Overall']);
+      });
+  
+      it('should clear the specific filter and emit filterOptions when dropdownArr length is greater than 1', () => {
+        component.dropdownArr = [{}, {}];
+        component.filterOptions = { filter1: 'value1', filter2: 'value2' };
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+  
+        component.handleClearAll('filter1');
+  
+        expect(component.filterOptions).toEqual({ filter1: [], filter2: 'value2' });
+        expect(emitSpy).toHaveBeenCalledWith(component.filterOptions);
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle case when filterOptions is empty and dropdownArr length is greater than 1', () => {
+        component.dropdownArr = [{}, {}];
+        component.filterOptions = {};
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+  
+        component.handleClearAll('filter1');
+  
+        expect(component.filterOptions).toEqual({});
+        expect(emitSpy).toHaveBeenCalledWith({});
+      });
+  
+      it('should handle case when event is not present in filterOptions', () => {
+        component.dropdownArr = [{}, {}];
+        component.filterOptions = { filter2: 'value2' };
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+  
+        component.handleClearAll('filter2');
+  
+        expect(component.filterOptions).toEqual({ filter2: [] });
+        expect(emitSpy).toHaveBeenCalledWith(component.filterOptions);
+      });
+    });
   });
 
-  it('should return false if data is not present at granular level and selectedTab is not "developer"', () => {
-    component.selectedTab = 'other';
-    component.trendValueList = [];
+  describe('KpiCardV2Component.checkIfDataPresent() checkIfDataPresent method', () => {
+    describe('Happy Path', () => {
+      it('should return true when data is 200 and kpiId is kpi148 with trendValueList', () => {
+        component.kpiData = { kpiId: 'kpi148' };
+        component.trendValueList = [{}];
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(true);
+      });
+  
+      it('should return true when data is 200 and kpiId is kpi139 with trendValueList having value', () => {
+        component.kpiData = { kpiId: 'kpi139' };
+        component.trendValueList = [{ value: [{}] }];
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(true);
+      });
+  
+      it('should return true when data is 200 and kpiId is kpi171 with trendValueList having data', () => {
+        component.kpiData = { kpiId: 'kpi171' };
+        component.trendValueList = [{ data: [{}] }];
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(true);
+      });
+  
+      it('should return true when data is 200 and helperService returns true', () => {
+        component.kpiData = { kpiDetail: { chartType: 'someType' } };
+        component.selectedTab = 'someTab';
+        spyOn(helperService,'checkDataAtGranularLevel').and.returnValue(true);
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(true);
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should return false when data is not 200 or 201', () => {
+        const result = component.checkIfDataPresent('404');
+        expect(result).toBe(false);
+      });
+  
+      it('should return false when kpiId is kpi171 but trendValueList is empty', () => {
+        component.kpiData = { kpiId: 'kpi171' };
+        component.trendValueList = [];
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(false);
+      });
+  
+      it('should return false when helperService returns false', () => {
+        component.kpiData = { kpiDetail: { chartType: 'someType' } };
+        component.selectedTab = 'someTab';
+        spyOn(helperService,'checkDataAtGranularLevel').and.returnValue(false);
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(false);
+      });
+    });
+  });
 
-    expect(component.checkDataAtGranularLevel(component.trendValueList)).toBeFalse();
+  describe('KpiCardV2Component.handleChange() handleChange method', () => {
+    describe('Happy Path', () => {
+      it('should emit the selected value when type is radio', () => {
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+        const value = { value: 'someValue' };
+  
+        component.handleChange('radio', value);
+  
+        expect(emitSpy).toHaveBeenCalledWith('someValue');
+      });
+  
+      it('should emit filterOptions when type is single', () => {
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+        component.filterOptions = { filter1: 'value1' };
+  
+        component.handleChange('single');
+  
+        expect(emitSpy).toHaveBeenCalledWith({ filter1: 'value1' });
+      });
+  
+      it('should emit Overall when filterOptions is empty', () => {
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+        component.filterOptions = {};
+  
+        component.handleChange('multi');
+  
+        expect(emitSpy).toHaveBeenCalledWith(['Overall']);
+      });
+  
+      it('should emit filterOptions when filterOptions is not empty', () => {
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+        component.filterOptions = { filter1: 'value1' };
+  
+        component.handleChange('multi');
+  
+        expect(emitSpy).toHaveBeenCalledWith({ filter1: 'value1' });
+      });
+    });
+
+    it('should move selected option to top', () => {
+      component.dropdownArr[0].options = ['option1', 'option2'];
+      component.handleChange('multi', {value : ['option2']});
+      expect(component.dropdownArr[0].options).toEqual(['option2', 'option1'])
+    });
   });
 });

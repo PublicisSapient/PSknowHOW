@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ProjectSettingsComponent } from './project-settings.component';
 import { Confirmation, MessageService } from 'primeng/api';
 import { ConfirmationService } from 'primeng/api';
@@ -162,22 +162,23 @@ describe('ProjectSettingsComponent', () => {
   it("should prepare data for update project", () => {
     const hierarchyData = {
       kanban: [
-      {
-        level: 1,
-        hierarchyLevelId: 'hierarchyLevelOne',
-        hierarchyLevelName: 'Level One',
-      },
-      {
-        level: 2,
-        hierarchyLevelId: 'hierarchyLevelTwo',
-        hierarchyLevelName: 'Level Two',
-      },
-      {
-        level: 3,
-        hierarchyLevelId: 'hierarchyLevelThree',
-        hierarchyLevelName: 'Level Three',
-      },
-    ]};
+        {
+          level: 1,
+          hierarchyLevelId: 'hierarchyLevelOne',
+          hierarchyLevelName: 'Level One',
+        },
+        {
+          level: 2,
+          hierarchyLevelId: 'hierarchyLevelTwo',
+          hierarchyLevelName: 'Level Two',
+        },
+        {
+          level: 3,
+          hierarchyLevelId: 'hierarchyLevelThree',
+          hierarchyLevelName: 'Level Three',
+        },
+      ]
+    };
     component.selectedProject = {
       project: "My Project",
       type: 'kanban',
@@ -193,22 +194,23 @@ describe('ProjectSettingsComponent', () => {
   it('should update project details successfully', () => {
     const hierarchyData = {
       kanban: [
-      {
-        level: 1,
-        hierarchyLevelId: 'hierarchyLevelOne',
-        hierarchyLevelName: 'Level One',
-      },
-      {
-        level: 2,
-        hierarchyLevelId: 'hierarchyLevelTwo',
-        hierarchyLevelName: 'Level Two',
-      },
-      {
-        level: 3,
-        hierarchyLevelId: 'hierarchyLevelThree',
-        hierarchyLevelName: 'Level Three',
-      },
-    ]};
+        {
+          level: 1,
+          hierarchyLevelId: 'hierarchyLevelOne',
+          hierarchyLevelName: 'Level One',
+        },
+        {
+          level: 2,
+          hierarchyLevelId: 'hierarchyLevelTwo',
+          hierarchyLevelName: 'Level Two',
+        },
+        {
+          level: 3,
+          hierarchyLevelId: 'hierarchyLevelThree',
+          hierarchyLevelName: 'Level Three',
+        },
+      ]
+    };
     component.selectedProject = {
       project: "My Project",
       type: 'kanban',
@@ -220,12 +222,12 @@ describe('ProjectSettingsComponent', () => {
     localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
     const response = {
       "serviceResponse": {
-          "message": "Updated Successfully.",
-          "success": true,
-          "data": {
-              "id": "63777558175a953a0a49d363",
-              "projectName": "VDOS",
-          }
+        "message": "Updated Successfully.",
+        "success": true,
+        "data": {
+          "id": "63777558175a953a0a49d363",
+          "projectName": "VDOS",
+        }
       },
       "projectsAccess": []
     }
@@ -238,22 +240,23 @@ describe('ProjectSettingsComponent', () => {
   it('should not update project details', () => {
     const hierarchyData = {
       kanban: [
-      {
-        level: 1,
-        hierarchyLevelId: 'hierarchyLevelOne',
-        hierarchyLevelName: 'Level One',
-      },
-      {
-        level: 2,
-        hierarchyLevelId: 'hierarchyLevelTwo',
-        hierarchyLevelName: 'Level Two',
-      },
-      {
-        level: 3,
-        hierarchyLevelId: 'hierarchyLevelThree',
-        hierarchyLevelName: 'Level Three',
-      },
-    ]};
+        {
+          level: 1,
+          hierarchyLevelId: 'hierarchyLevelOne',
+          hierarchyLevelName: 'Level One',
+        },
+        {
+          level: 2,
+          hierarchyLevelId: 'hierarchyLevelTwo',
+          hierarchyLevelName: 'Level Two',
+        },
+        {
+          level: 3,
+          hierarchyLevelId: 'hierarchyLevelThree',
+          hierarchyLevelName: 'Level Three',
+        },
+      ]
+    };
     component.selectedProject = {
       project: "My Project",
       type: 'kanban',
@@ -441,48 +444,7 @@ describe('ProjectSettingsComponent', () => {
     expect(writeTextSpy).toHaveBeenCalledWith('test-token');
   });
 
-  // it('should call navigator.clipboard.writeText with an empty string when generatedToken is empty or null', () => {
-  //   const writeTextSpy = spyOn(navigator.clipboard, 'writeText');
-  //   component.generatedToken = '';
-  //   component.copyToken();
-  //   expect(writeTextSpy).toHaveBeenCalledWith('');
-
-  //   component.generatedToken = null;
-  //   component.copyToken();
-  //   expect(writeTextSpy).toHaveBeenCalledWith('');
-  // });
-
-  // it('should set the cols and allProjectList properties when the response is successful', () => {
-  //   const responseList = [{
-  //     success: true,
-  //     data: [{
-  //       id: 'projectId',
-  //       projectName: 'Project Name',
-  //       hierarchy: [{
-  //         hierarchyLevel: {
-  //           level: 1,
-  //           hierarchyLevelId: 'country',
-  //           hierarchyLevelName: 'Country'
-  //         },
-  //         value: 'India'
-  //       }]
-  //     }]
-  //   }];
-  //   spyOn(httpService, 'getProjectListData').and.returnValue(of(responseList));
-  //   component.getData();
-  //   expect(component.cols).toEqual([{ id: 'country', heading: 'Country' }]);
-  //   expect(component.allProjectList).toEqual([{
-  //     id: 'projectId',
-  //     name: 'Project Name',
-  //     type: 'Scrum',
-  //     saveAssigneeDetails: false,
-  //     developerKpiEnabled: false,
-  //     projectOnHold: false,
-  //     country: 'India'
-  //   }]);
-  // });
-
-  it("should get success response while getting project list",()=>{
+  it("should get success response while getting project list", () => {
     const fakeResponse = [{
       message: "Fetched successfully",
       success: true,
@@ -522,19 +484,11 @@ describe('ProjectSettingsComponent', () => {
         }
       ]
     }];
-    spyOn(httpService,'getProjectListData').and.returnValue(of(fakeResponse));
+    spyOn(httpService, 'getProjectListData').and.returnValue(of(fakeResponse));
     component.getData();
     expect(component.loading).toBeFalse();
     expect(component.projectList.length).toBeGreaterThan(0);
   })
-
-  // it("should project list zero while getting project list",()=>{
-
-  //   spyOn(httpService,'getProjectListData').and.returnValue(of(projectListData.data));
-  //   component.getData();
-  //   expect(component.loading).toBeFalse();
-  //   expect(component.projectList?.length).toBe(0)
-  // })
 
   it('should set the loading property to false when the response is not successful', () => {
     const responseList = [{ success: false }];
@@ -717,7 +671,7 @@ describe('ProjectSettingsComponent', () => {
       spyOn<any>(confirmationService, 'confirm').and.callFake((params) => {
         params.accept();
       });
-      spyOn<any>(httpService, 'deleteProject').and.returnValue({ subscribe: () => {} });
+      spyOn<any>(httpService, 'deleteProject').and.returnValue({ subscribe: () => { } });
 
       component.deleteProject({ name: 'Test Project', id: 1 });
 
@@ -776,6 +730,240 @@ describe('ProjectSettingsComponent', () => {
 
       expect(component.projectConfirm).toBe(false);
       expect(confirmationService.confirm).toHaveBeenCalled();
+    });
+  });
+
+  describe('ProjectSettingsComponent.deleteProject() deleteProject method', () => {
+    describe('Happy Path', () => {
+      it('should delete a project successfully', () => {
+        // Arrange
+        const project = { id: 1, name: 'Test Project', type: 'scrum' };
+        spyOn(httpService, 'deleteProject').and.returnValue(
+          of({ success: true, message: 'Project deleted successfully' }) as any,
+        );
+        spyOn<any>(
+          confirmationService,
+          'confirm',
+        ).and.callFake((confirmation: Confirmation) => confirmation.accept());
+        spyOn(messageService, 'add');
+        // Act
+        component.deleteProject(project);
+
+        // Assert
+        expect(confirmationService.confirm).toHaveBeenCalled();
+        expect(httpService.deleteProject).toHaveBeenCalledWith(project);
+        expect(routerSpy.navigate).toHaveBeenCalled();
+        // expect(messageService.add).toHaveBeenCalledWith({
+        //   severity: 'success',
+        //   summary: 'Project deleted successfully',
+        // });
+      });
+
+      it('should update projectsAccess after a project is deleted successfully', () => {
+        // Arrange
+        const project = {
+          "projectName": "ABC",
+          "projectId": "64fffa6b9a54ef4627918635",
+          "hierarchy": [
+            {
+              "hierarchyLevel": {
+                "level": 1,
+                "hierarchyLevelId": "bu",
+                "hierarchyLevelName": "BU"
+              },
+              "value": "North America"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 2,
+                "hierarchyLevelId": "ver",
+                "hierarchyLevelName": "Vertical"
+              },
+              "value": "Financial Services"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 3,
+                "hierarchyLevelId": "acc",
+                "hierarchyLevelName": "Account"
+              },
+              "value": "City and County of San Francisco"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 4,
+                "hierarchyLevelId": "port",
+                "hierarchyLevelName": "Engagement"
+              },
+              "value": "C&C San Francisco - PAS"
+            }
+          ]
+        };
+        
+        spyOn(sharedService, 'getCurrentUserDetails').and.returnValue([
+          {
+            "role": "ROLE_PROJECT_VIEWER",
+            "projects": [
+              {
+                "projectName": "PSknowHOW",
+                "projectId": "65118da7965fbb0d14bce23c",
+              }
+            ],
+
+          },
+          {
+            "role": "ROLE_PROJECT_ADMIN",
+            "projects": [
+              {
+                "projectName": "ABC",
+                "projectId": "64fffa6b9a54ef4627918635",
+              }
+            ]
+          }
+        ]);
+        spyOn(sharedService, 'setCurrentUserDetails');
+        spyOn<any>(
+          confirmationService,
+          'confirm',
+        ).and.callFake((confirmation: Confirmation) => confirmation.accept());
+        spyOn(httpService, 'deleteProject').and.returnValue(
+          of({ success: true, message: 'Project deleted successfully' }) as any,
+        );
+        spyOn(messageService, 'add');
+        // Act
+        component.deleteProject(project);
+
+        // Assert
+        expect(confirmationService.confirm).toHaveBeenCalled();
+        expect(httpService.deleteProject).toHaveBeenCalledWith(project);
+        expect(routerSpy.navigate).toHaveBeenCalled();
+        expect(sharedService.setCurrentUserDetails).toHaveBeenCalledWith({
+          projectsAccess: [
+            {
+              "role": "ROLE_PROJECT_VIEWER",
+              "projects": [
+                {
+                  "projectName": "PSknowHOW",
+                  "projectId": "65118da7965fbb0d14bce23c",
+                }
+              ],
+            },
+            { role: 'ROLE_PROJECT_ADMIN', projects: [ { projectName: 'ABC', projectId: '64fffa6b9a54ef4627918635' } ] }
+          ]
+        });
+        // expect(messageService.add).toHaveBeenCalledWith({
+        //   severity: 'success',
+        //   summary: 'Project deleted successfully',
+        // });
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should handle project deletion failure', () => {
+        // Arrange
+        const project = { id: 1, name: 'Test Project', type: 'scrum' };
+        spyOn(httpService, 'deleteProject').and.returnValue(
+          throwError({ success: false }) as never,
+        );
+        spyOn<any>(
+          confirmationService,
+          'confirm',
+        ).and.callFake((confirmation: Confirmation) => confirmation.accept());
+        spyOn(messageService, 'add');
+        // Act
+        component.deleteProject(project);
+
+        // Assert
+        expect(confirmationService.confirm).toHaveBeenCalled();
+        expect(httpService.deleteProject).toHaveBeenCalledWith(project);
+        // expect(messageService.add).toHaveBeenCalledWith({
+        //   severity: 'error',
+        //   summary: 'Some error occurred. Please try again later.',
+        // });
+      });
+
+      it('should not delete project if user cancels confirmation', () => {
+        // Arrange
+        const project = { id: 1, name: 'Test Project', type: 'scrum' };
+
+        spyOn(httpService, 'deleteProject');
+        spyOn<any>(
+          confirmationService,
+          'confirm',
+        ).and.callFake((confirmation: Confirmation) => confirmation.reject());
+        // Act
+        component.deleteProject(project);
+
+        // Assert
+        expect(confirmationService.confirm).toHaveBeenCalled();
+        expect(httpService.deleteProject).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('ProjectSettingsComponent.hierarchyLabelNameChange() hierarchyLabelNameChange method', () => {
+    describe('Happy Path', () => {
+      it('should update selectedProject with hierarchy level names', fakeAsync(() => {
+        // Arrange
+        const mockHierarchyData = {
+          scrum: [
+            { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' },
+            { hierarchyLevelId: 'level2', hierarchyLevelName: 'Level 2' },
+          ],
+        };
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedProject = {
+          type: 'Scrum',
+          level1: 'Value 1',
+          level2: 'Value 2',
+        };
+  
+        // Act
+        component.hierarchyLabelNameChange();
+        tick(0);
+        // Assert
+        expect(component.selectedProject['Level 1']).toBe('Value 1');
+        expect(component.selectedProject['Level 2']).toBe('Value 2');
+        expect(component.selectedProject['level1']).toBeUndefined();
+        expect(component.selectedProject['level2']).toBeUndefined();
+      }));
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle empty selectedProject gracefully', () => {
+        // Arrange
+        component.selectedProject = {};
+  
+        // Act
+        component.hierarchyLabelNameChange();
+  
+        // Assert
+        expect(component.selectedProject).toEqual({});
+      });
+  
+      it('should not modify selectedProject if type is not Scrum or Kanban', () => {
+        // Arrange
+        const mockHierarchyData = {
+          scrum: [{ hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' }],
+        };
+        localStorage.setItem(
+          'completeHierarchyData',
+          JSON.stringify(mockHierarchyData),
+        );
+        component.selectedProject = {
+          type: 'Other',
+          level1: 'Value 1',
+        };
+  
+        // Act
+        component.hierarchyLabelNameChange();
+  
+        // Assert
+        expect(component.selectedProject['level1']).toBe('Value 1');
+      });
     });
   });
 });

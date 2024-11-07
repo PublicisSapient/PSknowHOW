@@ -70,7 +70,7 @@ export class ParentFilterComponent implements OnChanges {
               this.handleSelectedLevelChange(true);
               return;
             }
-          } else {
+          } else if (this.filterLevels?.length) {
             this.selectedLevel = this.filterLevels[0];
             this.handleSelectedLevelChange(true);
             return;
@@ -94,6 +94,13 @@ export class ParentFilterComponent implements OnChanges {
     }
   }
 
+/**
+ * Handles the change of the selected level in the filter configuration.
+ * Emits the selected level and updates the backup of filter selection state based on whether the parent level has changed.
+ * 
+ * @param {boolean} parentLevelChanged - Indicates if the parent level has changed.
+ * @returns {void}
+ */
   handleSelectedLevelChange(parentLevelChanged = false) {
     if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
       this.onSelectedLevelChange.emit(this.selectedLevel?.nodeName);
@@ -103,13 +110,28 @@ export class ParentFilterComponent implements OnChanges {
         this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName });
       }
     } else {
-      let selectedNode = this.filterData[this['parentFilterConfig']['labelName']].filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
-      this.onSelectedLevelChange.emit({ nodeId: selectedNode[0]?.nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
-      if (parentLevelChanged) {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0], 'primary_level': null });
-      } else {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0] });
+      let selectedNode = this.filterData[this['parentFilterConfig']['labelName']]?.filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
+      if (selectedNode && selectedNode[0]) {
+        this.onSelectedLevelChange.emit({ nodeId: selectedNode[0]?.nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
+        if (parentLevelChanged) {
+          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0], 'primary_level': null });
+        } else {
+          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0] });
+        }
       }
+    }
+  }
+
+/**
+ * Handles the change event of a dropdown element.
+ * If a dropdown element is selected, it triggers the level change handling.
+ * 
+ * @param {any} $event - The event object from the dropdown change.
+ * @returns {void}
+ */
+  onDropdownChange($event:any){
+    if(this.helperService.isDropdownElementSelected($event)){
+      this.handleSelectedLevelChange(true)
     }
   }
 }

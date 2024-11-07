@@ -73,6 +73,8 @@ export class SharedService {
   noSprints = new BehaviorSubject<any>(false);
   noSprintsObs = this.noSprints.asObservable();
   noProjects = new BehaviorSubject<boolean>(false);
+  noProjectsObj = {};
+  noProjectsObjObs = new BehaviorSubject<any>({});
   noProjectsObs = this.noProjects.asObservable();
   showTableView = new BehaviorSubject<string>('chart');
   showTableViewObs = this.showTableView.asObservable();
@@ -120,6 +122,8 @@ export class SharedService {
   isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
 
   selectedMap = {};
+  kpiFilterObj: any = {};
+  isProjectChange: boolean = false;
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -281,7 +285,7 @@ export class SharedService {
   }
 
   // calls when user select different Tab (executive , quality etc)
-  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true, configDetails = null, loading = false, dashConfigData = null) {
+  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true, configDetails = null, loading = false, dashConfigData = null, selectedType = null) {
     this.sharedObject = {};
     this.sharedObject.masterData = masterData;
     this.sharedObject.filterData = filterData;
@@ -291,6 +295,7 @@ export class SharedService {
     this.sharedObject.makeAPICall = makeAPICall;
     this.sharedObject.loading = loading;
     this.sharedObject.dashConfigData = dashConfigData;
+    this.sharedObject.selectedType = selectedType;
     if (configDetails) {
       this.sharedObject.configDetails = configDetails;
     }
@@ -361,6 +366,12 @@ export class SharedService {
   setNoProjects(value) {
     this.noProjects.next(value);
   }
+
+  setNoProjectsForNewUI(valueObj) {
+    this.noProjectsObj = valueObj;
+    this.noProjectsObjObs.next(this.noProjectsObj);
+  }
+
   setClickedItem(event) {
     this.clickedItem.next(event);
   }
@@ -554,6 +565,19 @@ export class SharedService {
 
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
+  }
+
+  setSelectedKPIFilterValues(kpiFilterObj, kpiId, selectedKpiFilter) {
+    kpiFilterObj[kpiId] = selectedKpiFilter;
+    this.kpiFilterObj = kpiFilterObj;
+  }
+
+  getSelectedKPIFilterValues() {
+    return this.kpiFilterObj;
+  }
+
+  resetKpiFilterObj() {
+    this.kpiFilterObj = null;
   }
 }
 

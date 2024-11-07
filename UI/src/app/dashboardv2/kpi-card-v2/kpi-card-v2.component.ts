@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
@@ -79,11 +80,19 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   warning = '';
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService) { }
+    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService,
+    private helperService: HelperService) { }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
+    const getSelectedKpiFilterVal = this.service.getSelectedKPIFilterValues();
+    let x = {};
+    this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((data) => {
       this.filterOptions = {};
+      if(getSelectedKpiFilterVal) {
+        x = getSelectedKpiFilterVal;
+      } else {
+        x = data;
+      }
       if (Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
@@ -202,8 +211,16 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
   }
 
+/**
+ * Handles changes in dropdown selections, moving selected options to the top,
+ * emitting the selected option, and triggering a Google Analytics event.
+ * 
+ * @param {string} type - The type of selection (e.g., 'radio', 'single').
+ * @param {object|null} value - The selected value(s), can be an object or null.
+ * @param {number} filterIndex - The index of the dropdown in the array.
+ * @returns {void}
+ */
   handleChange(type, value = null, filterIndex = 0) {
-
     // moving selected option to top
     if (value && value.value && Array.isArray(value.value)) {
       value.value.forEach(selectedItem => {
@@ -363,13 +380,20 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.ga.setKpiData(gaObj);
   }
 
+/**
+ * Checks if data is present based on the provided status code and KPI ID.
+ * Evaluates the trend value list and specific conditions to determine presence.
+ * 
+ * @param {string} data - The status code to check (e.g., '200', '201').
+ * @returns {boolean} - Returns true if data is present, otherwise false.
+ */
   checkIfDataPresent(data) {
-    if((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
+    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
       if (this.trendValueList?.length) {
         return true;
       }
     }
-    if((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')) {
+    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')) {
       if (this.trendValueList?.length && this.trendValueList[0].value?.length) {
         return true;
       }
@@ -388,43 +412,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     }
 
-    return (data === '200' || data === '201') && this.checkDataAtGranularLevel(this.trendValueList);
-  }
-
-  checkDataAtGranularLevel(data) {
-    if (this.selectedTab === "developer" && data?.length) {
-      return true;
-    }
-    if (!data || !data?.length) {
-      return false;
-    }
-    let dataCount = 0;
-    if (Array.isArray(data)) {
-      data?.forEach(item => {
-        if (Array.isArray(item.data) && item.data?.length) {
-          ++dataCount;
-        } else if (item.data && !isNaN(parseInt(item.data))) {
-          // dataCount += item?.data;
-          ++dataCount;
-        } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-          if (this.checkIfArrayHasData(item) && item.value[0].data && !isNaN(parseInt(item.value[0].data))) {
-
-            ++dataCount;
-          } else if (this.checkIfArrayHasData(item) && this.checkIfArrayHasData(item.value) && this.checkIfArrayHasData(item.value[0].value)) {
-            ++dataCount;
-          }
-        } else if (item.dataGroup && item.dataGroup.length) {
-          ++dataCount;
-        }
-      });
-    } else if (data && Object.keys(data).length) {
-      dataCount = Object.keys(data).length;
-    }
-    return parseInt(dataCount + '') > 0;
-  }
-
-  checkIfArrayHasData(item) {
-    return (Array.isArray(item.value) && item.value.length)
+    return (data === '200' || data === '201') && this.helperService.checkDataAtGranularLevel(this.trendValueList, this.kpiData.kpiDetail.chartType, this.selectedTab);
   }
 
   getColorCssClasses(index) {
