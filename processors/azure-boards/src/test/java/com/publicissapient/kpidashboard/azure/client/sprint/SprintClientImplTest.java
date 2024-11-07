@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,6 +113,7 @@ public class SprintClientImplTest {
 		projectConfig.setAzureBoardToolConfigId(new ObjectId("61e4f7852747353d4405c762"));
 		projectToolConfig.setApiVersion("5.1");
 		projectToolConfig.setAzureIterationStatusFieldUpdate(true);
+		projectToolConfig.setUpdatedAt(LocalDateTime.now().toString());
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		List<String> jiraIterationCompletionStatusCustomField = new ArrayList<>();
@@ -146,7 +149,7 @@ public class SprintClientImplTest {
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
-		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer(), new HashMap<>());
 	}
 
 	@Test
@@ -170,7 +173,7 @@ public class SprintClientImplTest {
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
-		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer(), new HashMap<>());
 	}
 
 	@Test
@@ -192,7 +195,7 @@ public class SprintClientImplTest {
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
-		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer(), new HashMap<>());
 	}
 
 	private AzureServer prepareAzureServer() {

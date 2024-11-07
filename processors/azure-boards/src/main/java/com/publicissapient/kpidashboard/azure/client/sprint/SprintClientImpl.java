@@ -1,8 +1,11 @@
 package com.publicissapient.kpidashboard.azure.client.sprint;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,10 +61,12 @@ public class SprintClientImpl implements SprintClient {
 	 * @param sprintDetailsSet
 	 * @param azureAdapter
 	 * @param azureServer
+	 * @param projectWiseReportToggle
 	 */
 	@Override
 	public void prepareSprintReport(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			AzureAdapter azureAdapter, AzureServer azureServer) throws Exception {
+			AzureAdapter azureAdapter, AzureServer azureServer,
+			Map<ObjectId, Map<String, LocalDateTime>> projectWiseReportToggle) throws Exception {
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 		List<String> completedIssuesStatus = fieldMapping.getJiraIterationCompletionStatusCustomField();
 		ObjectId azureProcessorId = azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE).getId();
@@ -75,7 +80,7 @@ public class SprintClientImpl implements SprintClient {
 						fetchedSprintDetails.getState());
 				List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer,
 						projectConfig, fetchedSprintDetails);
-				Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
+				Set<SprintIssue> toBeSavedCompletedIssues = new java.util.HashSet<>();
 				Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
 				Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
 				prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
@@ -99,6 +104,12 @@ public class SprintClientImpl implements SprintClient {
 						// when in db sprint is future and from server it is active.
 						overrideDBSprintReport(projectConfig, azureAdapter, azureServer, fetchedSprintDetails,
 								completedIssuesStatus, azureProcessorId, dbSprintDetails);
+
+						Map<String, LocalDateTime> sprintWiseMap = projectWiseReportToggle
+								.computeIfAbsent(projectConfig.getBasicProjectConfigId(), k -> new HashMap<>());
+						sprintWiseMap.put(fetchedSprintDetails.getOriginalSprintId(),
+								LocalDateTime.parse(projectConfig.getProjectToolConfig().getUpdatedAt()));
+
 						toBeSavedSprintDetails.add(fetchedSprintDetails);
 					} else {
 						log.debug(
