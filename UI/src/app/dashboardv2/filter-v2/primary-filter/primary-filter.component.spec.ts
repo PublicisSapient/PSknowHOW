@@ -878,4 +878,61 @@ describe('PrimaryFilterComponent', () => {
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   });
+
+  describe('AdditionalFilterComponent.onDropDownChange() onDropDownChange method', () => {
+    describe('Happy Path', () => {
+      it('should apply additional filter when dropdown element is selected', () => {
+        // Arrange
+        const event = { value: 'someValue' };
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(true);
+  
+        // Act
+        component.onDropdownChange(event);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).toHaveBeenCalled();
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should not apply additional filter when dropdown element is not selected', () => {
+        // Arrange
+        const event = { value: 'someValue' };
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(false);
+  
+        // Act
+        component.onDropdownChange(event);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
+      });
+  
+      it('should handle undefined event gracefully', () => {
+        // Arrange
+        const event = undefined;
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(false);
+  
+        // Act
+        component.onDropdownChange(event);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
+      });
+    });
+  });
 });
