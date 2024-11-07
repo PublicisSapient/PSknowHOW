@@ -475,4 +475,10 @@ public class KPIExcelData {
 	@JsonProperty("Change Completion Date [A]")
 	private String changeCompletionDate;
 
+	@JsonProperty("Author")
+	private String author;
+
+	@JsonProperty( "PR Review Time")
+	private String prReviewTime;
+
 }

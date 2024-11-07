@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -49,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -60,6 +62,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
@@ -81,7 +84,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String HISTORY = "history";
 	public static final String UPDATED_AT = "updatedAt";
 	public static final String UPDATED_BY = "updatedBy";
-	public static final String DOUBLE = "java.lang.Double";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -203,6 +205,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		List<String> fields = fieldMappingEnum.getFields();
 		String releaseNodeId = requestData.getReleaseNodeId();
 		List<String> nodeSpecifFields = getNodeSpecificFields();
+		List<String> projectLevelThresholdFields = getProjectLevelThresholdFields();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(projectToolConfig.getBasicProjectConfigId());
 		List<FieldMappingResponse> fieldMappingResponses = new ArrayList<>();
@@ -212,8 +215,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				FieldMappingResponse mappingResponse = new FieldMappingResponse();
 				Object value = FieldMappingHelper.getFieldMappingData(fieldMapping, fieldMappingClass, field,
 						releaseNodeId, nodeSpecifFields.contains(field));
-				mappingResponse.setFieldName(field);
-				mappingResponse.setOriginalValue(value);
+				// If the threshold value is empty, populate it with the default value from kpi_master
+				setDefaultKPIThresholdIfEmpty(kpi, field, projectLevelThresholdFields, value, mappingResponse);
 				List<ConfigurationHistoryChangeLog> changeLogs = FieldMappingHelper.getFieldMappingHistory(fieldMapping,
 						field, releaseNodeId, nodeSpecifFields.contains(field));
 				if (CollectionUtils.isNotEmpty(changeLogs)) {
@@ -578,4 +581,43 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 	}
 
+	/**
+	 * Retrieves a list of field names that are categorized under the project level
+	 * threshold.
+	 *
+	 * @return a list of field names that belong to the project level threshold
+	 *         section.
+	 */
+	private List<String> getProjectLevelThresholdFields() {
+		return ((List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure()).stream()
+				.filter(structure -> structure.getSection() != null
+						&& structure.getSection().equalsIgnoreCase(Constant.PROJECT_LEVEL_THRESHOLD))
+				.map(BaseFieldMappingStructure::getFieldName).toList();
+	}
+
+	/**
+	 * Sets the default KPI threshold value if the value is empty.
+	 *
+	 * @param kpi
+	 *            The KPI code for which the threshold is being set.
+	 * @param field
+	 *            The field name being checked.
+	 * @param projectLevelThresholdFields
+	 *            List of fields that are categorized under the project level
+	 *            threshold.
+	 * @param value
+	 *            The current value of the field.
+	 * @param mappingResponse
+	 *            The response object where the field name and value will be set.
+	 */
+	private void setDefaultKPIThresholdIfEmpty(KPICode kpi, String field, List<String> projectLevelThresholdFields,
+			Object value, FieldMappingResponse mappingResponse) {
+		if (projectLevelThresholdFields.contains(field) && ObjectUtils.isEmpty(value)) {
+			List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
+			value = masterList.stream().filter(j -> j.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
+					.mapToDouble(j -> j.getThresholdValue() != null ? j.getThresholdValue() : 0.0).sum();
+		}
+		mappingResponse.setFieldName(field);
+		mappingResponse.setOriginalValue(value);
+	}
 }

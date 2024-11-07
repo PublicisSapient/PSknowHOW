@@ -2387,7 +2387,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
             break;
           default:
-            this.postJiraKpi(currentKPIGroup, 'jira');
+           const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
+            this.groupJiraKpi(kpiIdsForCurrentBoard);
 
         }
       }
@@ -2453,5 +2454,21 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     iDateDiff -= iAdjust; // take into account both days on weekend
     return (iDateDiff + 1); // add 1 because dates are inclusive
+  }
+
+  checkYAxis(kpi) {
+    const kpiDataResponce = this.allKpiArray?.find(de => de.kpiId === kpi.kpiId);
+    const selectedFilterVal = this.kpiSelectedFilterObj[kpi?.kpiId];
+    if (kpiDataResponce && kpiDataResponce?.trendValueList) {
+      const trendData = kpiDataResponce.trendValueList?.find(data => {
+        const kpiFIlter = (data.filter || data.filter1) ;
+        const selectedFilter = selectedFilterVal.filter1 ? selectedFilterVal.filter1[0] : selectedFilterVal[0];
+        return kpiFIlter === selectedFilter;
+      })
+      if (trendData && Object.keys(trendData).length > 1 && trendData?.yaxisLabel) {
+        return trendData.yaxisLabel
+      }
+    }
+    return kpi?.kpiDetail?.yaxisLabel;
   }
 }
