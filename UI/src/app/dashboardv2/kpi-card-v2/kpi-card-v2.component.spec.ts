@@ -997,4 +997,54 @@ describe('KpiCardV2Component', () => {
 
     expect(component.checkIfDataPresent('200')).toBeTrue();
   });
+
+  describe('KpiCardV2Component.handleClearAll() handleClearAll method', () => {
+    describe('Happy Path', () => {
+      it('should clear the filterOptions and emit "Overall" when dropdownArr length is 1', () => {
+        component.dropdownArr = [{}];
+        component.filterOptions = { filter1: 'value1' };
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+  
+        component.handleClearAll('filter1');
+  
+        expect(component.filterOptions).toEqual({});
+        expect(emitSpy).toHaveBeenCalledWith(['Overall']);
+      });
+  
+      it('should clear the specific filter and emit filterOptions when dropdownArr length is greater than 1', () => {
+        component.dropdownArr = [{}, {}];
+        component.filterOptions = { filter1: 'value1', filter2: 'value2' };
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+  
+        component.handleClearAll('filter1');
+  
+        expect(component.filterOptions).toEqual({ filter1: [], filter2: 'value2' });
+        expect(emitSpy).toHaveBeenCalledWith(component.filterOptions);
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle case when filterOptions is empty and dropdownArr length is greater than 1', () => {
+        component.dropdownArr = [{}, {}];
+        component.filterOptions = {};
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+  
+        component.handleClearAll('filter1');
+  
+        expect(component.filterOptions).toEqual({});
+        expect(emitSpy).toHaveBeenCalledWith({});
+      });
+  
+      it('should handle case when event is not present in filterOptions', () => {
+        component.dropdownArr = [{}, {}];
+        component.filterOptions = { filter2: 'value2' };
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+  
+        component.handleClearAll('filter2');
+  
+        expect(component.filterOptions).toEqual({ filter2: [] });
+        expect(emitSpy).toHaveBeenCalledWith(component.filterOptions);
+      });
+    });
+  });
 });
