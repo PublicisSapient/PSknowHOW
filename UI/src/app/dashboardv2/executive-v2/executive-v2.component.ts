@@ -2457,6 +2457,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return (iDateDiff + 1); // add 1 because dates are inclusive
   }
 
+/**
+ * Checks the Y-axis label for a given KPI based on its trend data and selected filters.
+ * @param {Object} kpi - The KPI object containing kpiId and other details.
+ * @returns {string | undefined} - The Y-axis label if found; otherwise, the default Y-axis label from kpiDetail.
+ */
   checkYAxis(kpi) {
     const kpiDataResponce = this.allKpiArray?.find(de => de.kpiId === kpi.kpiId);
     const selectedFilterVal = this.kpiSelectedFilterObj[kpi?.kpiId];
