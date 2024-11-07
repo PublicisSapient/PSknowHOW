@@ -34,4 +34,6 @@ public class KpiData {
 	private String aggregation;
 	private String unit;
 	private boolean showAsLegend;
+	private String key1;
+	private String value1;
 }

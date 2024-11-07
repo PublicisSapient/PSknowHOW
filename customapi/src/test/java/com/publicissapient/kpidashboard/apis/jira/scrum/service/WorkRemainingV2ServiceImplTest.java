@@ -160,7 +160,7 @@ public class WorkRemainingV2ServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(workRemainingServiceImpl.getQualifierType(), equalTo("WORK_REMAINING_V2"));
+		assertThat(workRemainingServiceImpl.getQualifierType(), equalTo("WORK_REMAINING"));
 	}
 
 	@After

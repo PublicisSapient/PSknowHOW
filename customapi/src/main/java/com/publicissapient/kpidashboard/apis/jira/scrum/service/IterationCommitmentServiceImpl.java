@@ -89,7 +89,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.ITERATION_COMMITMENT.name();
+		return "";
 	}
 
 	@Override

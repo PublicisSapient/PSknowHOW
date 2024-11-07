@@ -152,7 +152,7 @@ public class EstimateVsActualServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(estimateActualServiceImpl.getQualifierType(), equalTo("ESTIMATE_VS_ACTUAL"));
+		assertThat(estimateActualServiceImpl.getQualifierType(), equalTo(""));
 	}
 
 	@After

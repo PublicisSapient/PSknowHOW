@@ -180,7 +180,7 @@ public class WastageV2ServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(wastageServiceImpl.getQualifierType(), equalTo("WASTAGE_V2"));
+		assertThat(wastageServiceImpl.getQualifierType(), equalTo("WASTAGE"));
 	}
 
 	@After

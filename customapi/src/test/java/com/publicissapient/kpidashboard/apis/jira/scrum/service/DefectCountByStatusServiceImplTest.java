@@ -89,7 +89,7 @@ public class DefectCountByStatusServiceImplTest {
 	@Test
 	public void testGetQualifierType() {
 		assertThat(defectCountByStatusService.getQualifierType(),
-				equalTo(KPICode.DEFECT_COUNT_BY_STATUS_PIE_CHART.name()));
+				equalTo(""));
 	}
 
 	@Before

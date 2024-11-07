@@ -532,30 +532,6 @@ public enum KPICode {
      * Defect Rate (Developer)
      */
     DEFECT_RATE("kpi186", KPISource.BITBUCKET.name()),
-    /**
-     * Iteration Committment V2
-     */
-    ITERATION_COMMITMENT_V2("kpi187", KPISource.JIRA.name()),
-    /**
-     * Wastage
-     */
-    WASTAGE_V2("kpi188", KPISource.JIRA.name()),
-    /**
-     * Work Remaining
-     */
-    WORK_REMAINING_V2("kpi189", KPISource.JIRA.name()),
-    /**
-     * Estimate vs Actual
-     */
-    ESTIMATE_VS_ACTUAL_V2("kpi190", KPISource.JIRA.name()),
-    /**
-     * Defect Count By Status (Iteration)
-     */
-    DEFECT_COUNT_BY_ITERATION("kpi191", KPISource.JIRA.name()),
-    /**
-     * Closure Possible Today
-     */
-    CLOSURE_POSSIBLE_TODAY_V2("kpi192", KPISource.JIRA.name()),
 
 
 

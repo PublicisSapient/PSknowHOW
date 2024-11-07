@@ -80,7 +80,7 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.ESTIMATE_VS_ACTUAL.name();
+		return "";
 	}
 
 	@Override

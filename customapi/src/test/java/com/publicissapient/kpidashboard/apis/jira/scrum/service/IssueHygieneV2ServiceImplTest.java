@@ -57,7 +57,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IterationCommitmentV2ServiceImplTest {
+public class IssueHygieneV2ServiceImplTest {
 
 	@Mock
 	CacheService cacheService;
@@ -65,9 +65,10 @@ public class IterationCommitmentV2ServiceImplTest {
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
 	private ConfigHelperService configHelperService;
-
+	@Mock
+	private ProjectBasicConfigRepository projectConfigRepository;
 	@InjectMocks
-	private IterationCommitmentV2ServiceImpl iterationCommitmentServiceImpl;
+	private IssueHygieneV2ServiceImpl issueHygieneServiceImpl;
 
 	@Mock
 	private JiraIterationServiceR jiraService;
@@ -82,7 +83,7 @@ public class IterationCommitmentV2ServiceImplTest {
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-		kpiRequest = kpiRequestFactory.findKpiRequest("kpi120");
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi119");
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -91,7 +92,7 @@ public class IterationCommitmentV2ServiceImplTest {
 
 		setMockProjectConfig();
 		setMockFieldMapping();
-		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(1);
+		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
 
 		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
@@ -118,18 +119,15 @@ public class IterationCommitmentV2ServiceImplTest {
 	public void testGetKpiDataProject() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
-
-		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(iterationCommitmentServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(issueHygieneServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0),
+			KpiElement kpiElement = issueHygieneServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement.getIssueData());
 
@@ -141,7 +139,7 @@ public class IterationCommitmentV2ServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(iterationCommitmentServiceImpl.getQualifierType(), equalTo("ITERATION_COMMITMENT"));
+		assertThat(issueHygieneServiceImpl.getQualifierType(), equalTo("ISSUE_HYGIENE"));
 	}
 
 	@After

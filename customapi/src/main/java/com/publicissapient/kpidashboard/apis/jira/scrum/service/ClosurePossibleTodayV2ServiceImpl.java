@@ -75,7 +75,7 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.CLOSURE_POSSIBLE_TODAY_V2.name();
+		return KPICode.CLOSURE_POSSIBLE_TODAY.name();
 	}
 
 	@Override
@@ -151,11 +151,12 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 						.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
 					KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
 					IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
+					data.setValue(0.0);
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 						data.setValue(issue.getStoryPoints());
-					} else {
-						data.setEstimateTime(issue.getOriginalEstimateMinutes());
+					} else if (null != issue.getOriginalEstimateMinutes()) {
+						data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
 					}
 					issueData.add(data);
 				}
@@ -211,15 +212,21 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 	private KpiDataGroup createDataGroup(FieldMapping fieldMapping) {
 		KpiDataGroup dataGroup = new KpiDataGroup();
 
-		List<KpiData> dataGroup1 = new ArrayList<>();
-		dataGroup1.add(createKpiData("", ISSUE_COUNT, 1, "count", ""));
+		String unit;
+		String displayName;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			dataGroup1.add(createKpiData("Value", CommonConstant.STORY_POINT, 2, "sum", CommonConstant.SP));
+			unit = CommonConstant.SP;
+			displayName = CommonConstant.STORY_POINT;
 		} else {
-			dataGroup1.add(
-					createKpiData("estimateTime", CommonConstant.ORIGINAL_ESTIMATE, 2, "sum", CommonConstant.HOURS));
+			unit = CommonConstant.HOURS;
+			displayName = CommonConstant.ORIGINAL_ESTIMATE;
 		}
+
+		List<KpiData> dataGroup1 = new ArrayList<>();
+		dataGroup1.add(createKpiData("", ISSUE_COUNT, 1, "count", ""));
+		dataGroup1.add(createKpiData("Value", displayName, 2, "sum", unit));
+
 		dataGroup.setDataGroup1(dataGroup1);
 		return dataGroup;
 	}

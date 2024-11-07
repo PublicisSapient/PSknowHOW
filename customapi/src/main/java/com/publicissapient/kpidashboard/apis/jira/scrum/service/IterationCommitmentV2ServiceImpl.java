@@ -72,7 +72,7 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.ITERATION_COMMITMENT_V2.name();
+		return KPICode.ITERATION_COMMITMENT.name();
 	}
 
 	@Override
@@ -271,15 +271,18 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
 		String unit;
+		String displayName;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			unit = CommonConstant.SP;
+			displayName = CommonConstant.STORY_POINT;
 		} else {
 			unit = CommonConstant.DAY;
+			displayName = CommonConstant.ORIGINAL_ESTIMATE;
 		}
 
 		dataGroup1.add(createKpiData("", "Issues", 1, "count", ""));
-		dataGroup1.add(createKpiData("Value", "Story Point", 2, "sum", unit));
+		dataGroup1.add(createKpiData("Value", displayName, 2, "sum", unit));
 
 		dataGroup.setSummary(summary);
 		dataGroup.setDataGroup1(dataGroup1);

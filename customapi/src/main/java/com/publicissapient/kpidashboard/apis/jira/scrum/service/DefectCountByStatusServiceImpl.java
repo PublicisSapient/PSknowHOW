@@ -189,7 +189,7 @@ public class DefectCountByStatusServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_STATUS_PIE_CHART.name();
+		return "";
 	}
 
 	@Override

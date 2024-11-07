@@ -151,7 +151,7 @@ public class IssueHygieneServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(issueHygieneServiceImpl.getQualifierType(), equalTo("ISSUE_HYGIENE"));
+		assertThat(issueHygieneServiceImpl.getQualifierType(), equalTo(""));
 	}
 
 	@After

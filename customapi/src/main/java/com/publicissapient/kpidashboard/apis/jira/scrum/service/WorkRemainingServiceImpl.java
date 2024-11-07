@@ -100,7 +100,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.WORK_REMAINING.name();
+		return "";
 	}
 
 	@Override

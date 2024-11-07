@@ -198,7 +198,7 @@ public enum KPIExcelColumn {
 	ITERATION_COMMITMENT("kpi120", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type",
 			"Size(story point/hours)", "Priority", "Due Date", "Original Estimate", "Remaining Estimate", "Assignee")),
 
-	ESTIMATE_HYGINE("kpi124", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Assignee")),
+	ISSUE_HYGINE("kpi124", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Assignee")),
 
 	ITERATION_STATUS("kpi130", Arrays.asList("Issue Id", "Issue Type", "Priority", "Issue Description", "Issue Status",
 			"Due Date", "Remaining Hours", "Delay")),

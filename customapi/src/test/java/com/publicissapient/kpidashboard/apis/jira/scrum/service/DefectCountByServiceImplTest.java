@@ -77,7 +77,7 @@ public class DefectCountByServiceImplTest {
 	@Test
 	public void testGetQualifierType() {
 		assertThat(defectCountByService.getQualifierType(),
-				equalTo(KPICode.DEFECT_COUNT_BY_ITERATION.name()));
+				equalTo(KPICode.DEFECT_COUNT_BY_STATUS_PIE_CHART.name()));
 	}
 
 	@Before

@@ -18,26 +18,27 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.*;
+import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -54,20 +55,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
+public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
-	public static final String ISSUE_CUSTOM_HISTORY = "issues custom history";
 	private static final String FILTER_BY_ISSUE_TYPE = "Filter by issue type";
-	private static final String FILTER_BY_STATUS = "Filter by status";
+	private static final String FILTER_BY_PRIORITY = "Filter by priority";
 	private static final String ISSUES = "issues";
-	private static final String ISSUE_COUNT = "Issue count";
-	private static final String STORY_POINT = "Story point";
-	private static final String REMAINING_WORK = "Remaining Work";
-	private static final String WORK_STATUS = "Work Status";
+	private static final String ISSUE_AT_RISK = "Issue at Risk";
+	private static final String SPRINT_STATE_ACTIVE = "ACTIVE";
 	private static final String SPRINT_DETAILS = "sprint details";
 	private static final String SINGLE = "Single";
-	private static final String SUM = "sum";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -79,13 +76,13 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
 		DataCount trendValue = new DataCount();
-		projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.WORK_REMAINING.name();
+		return KPICode.ISSUE_LIKELY_TO_SPILL.name();
 	}
 
 	@Override
@@ -93,7 +90,8 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		if (null != leafNode) {
-			log.info("Work Remaining -> Requested sprint : {}", leafNode.getName());
+			log.info("Issue Likely to Spill -> Requested sprint : {}", leafNode.getName());
+
 			SprintDetails sprintDetails;
 			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
 			if (null != dbSprintDetail) {
@@ -105,24 +103,21 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
-						fieldMapping.getJiraIterationIssuetypeKPI119(),
-						fieldMapping.getJiraIterationCompletionStatusKPI119(),
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI123(),
+						fieldMapping.getJiraIterationCompletionStatusKPI123(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> notCompletedJiraIssueList = getFilteredJiraIssue(notCompletedIssues,
+					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(notCompletedIssues,
 							totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getNotCompletedIssues(), notCompletedJiraIssueList);
-					List<JiraIssueCustomHistory> issueHistoryList = getFilteredJiraIssueHistory(
-							notCompletedJiraIssueList.stream().map(JiraIssue::getNumber).toList(), totalHistoryList);
+									sprintDetails.getNotCompletedIssues(), filteredJiraIssue);
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 					resultListMap.put(SPRINT_DETAILS, sprintDetails);
-					resultListMap.put(ISSUE_CUSTOM_HISTORY, issueHistoryList);
 				}
 			}
 		}
@@ -134,108 +129,76 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 	 * sprint level.
 	 *
 	 * @param sprintLeafNode
-	 *            sprintLeafNode
+	 * @param trendValue
 	 * @param kpiElement
-	 *            kpiElement
 	 * @param kpiRequest
-	 *            kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, DataCount trendValue, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
-
-		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter()
-				.getBasicProjectConfigId();
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);
-		List<JiraIssueCustomHistory> allIssueHistories = (List<JiraIssueCustomHistory>) resultMap
-				.get(ISSUE_CUSTOM_HISTORY);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			log.info("Work Remaining -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
-
-			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper
-					.calculatePotentialDelay(sprintDetails, allIssues, fieldMapping.getJiraStatusForInProgressKPI119());
-			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper.checkMaxDelayAssigneeWise(
-					iterationPotentialDelayList, fieldMapping.getJiraStatusForInProgressKPI119());
-
+			log.info("Issue Likely To Spill -> request id : {} total jira Issues : {}", requestTrackerId,
+					allIssues.size());
 			// Creating map of modal Objects
 			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(allIssues);
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(Objects.requireNonNull(sprintLeafNode).getProjectFilter().getBasicProjectConfigId());
+
+			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
+					allIssues, fieldMapping);
+			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream()
+					.collect(Collectors.toMap(IterationPotentialDelay::getIssueId, Function.identity(), (e1, e2) -> e2,
+							LinkedHashMap::new));
+			String sprintState = sprintDetails.getState();
+			LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
+					DateUtil.TIME_FORMAT_WITH_SEC);
 			allIssues.forEach(issue -> {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
 				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
+				data.setCategory(new ArrayList<>());
+				if (SPRINT_STATE_ACTIVE.equals(sprintState)) {
+					if (isIssueAtRisk(issue, issueWiseDelay, sprintEndDate)
+							|| (issue.getDueDate() != null)
+							&& DateUtil.stringToLocalDate(issue.getDueDate(),
+							DateUtil.TIME_FORMAT_WITH_SEC).isAfter(sprintEndDate)) {
+						data.getCategory().add(ISSUE_AT_RISK);
+					}
+				} else {
+					data.getCategory().add(ISSUE_AT_RISK);
+				}
 
-				JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
-						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
-								.equals(issue.getNumber()))
-						.findFirst().orElse(new JiraIssueCustomHistory());
-				String devCompletionDate = getDevCompletionDate(issueCustomHistory,
-						fieldMapping.getJiraDevDoneStatusKPI119());
+				data.setValue(0.0);
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					data.setValue(issue.getStoryPoints());
+				} else if (null != issue.getOriginalEstimateMinutes()) {
+					data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
+				}
 
-				IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(issue.getNumber());
-				setKpiSpecificData(sprintDetails, data, iterationPotentialDelay, issue, devCompletionDate,
-						fieldMapping);
+				if (issueWiseDelay.containsKey(issue.getNumber())) {
+					IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(issue.getNumber());
+					data.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+					data.setPredictedCompletionDate(
+							DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 
+				} else {
+					data.setPotentialDelay("-");
+					data.setPredictedCompletionDate("-");
+				}
 			});
 
+
 			kpiElement.setSprint(sprintLeafNode.getName());
-			kpiElement.setModalHeads(KPIExcelColumn.WORK_REMAINING.getColumns());
+			kpiElement.setModalHeads(KPIExcelColumn.ISSUES_LIKELY_TO_SPILL.getColumns());
 			kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 			kpiElement.setFilterGroup(createFilterGroup());
 			kpiElement.setDataGroup(createDataGroup(fieldMapping));
 		}
-	}
-
-	private int getDelayInMinutes(int delay) {
-		return delay * 60 * 8;
-	}
-
-	private void setKpiSpecificData(SprintDetails sprintDetails, IssueKpiModalValue jiraIssueModalObject,
-			IterationPotentialDelay iterationPotentialDelay, JiraIssue jiraIssue, String devCompletionDate,
-			FieldMapping fieldMapping) {
-		jiraIssueModalObject.setDevCompletionDate(
-				DateUtil.dateTimeConverter(devCompletionDate, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-		String markerValue = Constant.BLANK;
-		if (null != iterationPotentialDelay && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
-			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
-			final LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
-					DateUtil.TIME_FORMAT_WITH_SEC);
-			final LocalDate predictCompletionDate = LocalDate
-					.parse(iterationPotentialDelay.getPredictedCompletedDate());
-			if (!sprintEndDate.isBefore(predictCompletionDate)) {
-				if (ChronoUnit.DAYS.between(predictCompletionDate, sprintEndDate) < 2) {
-					markerValue = Constant.AMBER;
-				}
-			} else {
-				markerValue = Constant.RED;
-			}
-			jiraIssueModalObject.setPredictedCompletionDate(
-					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-
-		} else {
-			jiraIssueModalObject.setPotentialOverallDelay("-");
-			jiraIssueModalObject.setPredictedCompletionDate("-");
-		}
-
-		int delay = 0;
-		if (null != iterationPotentialDelay && iterationPotentialDelay.isMaxMarker()) {
-			delay = getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
-		}
-
-		jiraIssueModalObject.setValue(0.0);
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			if (null != jiraIssue.getStoryPoints()) {
-				jiraIssueModalObject.setValue(jiraIssue.getStoryPoints());
-			}
-		} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-			jiraIssueModalObject.setValue(Double.valueOf(jiraIssue.getOriginalEstimateMinutes()));
-		}
-		jiraIssueModalObject.setDelay(delay);
-		jiraIssueModalObject.setMarker(markerValue);
 	}
 
 	/**
@@ -247,7 +210,7 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
 		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, FILTER_BY_STATUS, "Issue Status", 2));
+		filterList.add(createFilter(SINGLE, FILTER_BY_PRIORITY, "Priority", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;
@@ -272,42 +235,35 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Cretaes data group that tells what kind of data will be shown on chart.
+	 *
 	 * @param fieldMapping
 	 * @return
 	 */
 	private KpiDataGroup createDataGroup(FieldMapping fieldMapping) {
 		KpiDataGroup dataGroup = new KpiDataGroup();
 
-		List<KpiData> dataGroup1 = new ArrayList<>();
 		String unit;
+		String displayName;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			unit = CommonConstant.SP;
+			displayName = CommonConstant.STORY_POINT;
 		} else {
-			unit = CommonConstant.DAY;
+			unit = CommonConstant.HOURS;
+			displayName = CommonConstant.ORIGINAL_ESTIMATE;
 		}
 
-		dataGroup1.add(createKpiData("Value", STORY_POINT, 1, SUM, unit));
-		dataGroup1.add(createKpiData("", ISSUE_COUNT, 2, "count", ""));
-
-		List<KpiData> dataGroup2 = new ArrayList<>();
-		dataGroup2.add(createKpiData("Remaining Hours", REMAINING_WORK, 1, SUM, CommonConstant.DAY));
-		dataGroup2.add(createKpiData("Delay", WORK_STATUS, 2, SUM, CommonConstant.DAY));
-
-		// For markerInfo
-		Map<String, String> markerInfo = new HashMap<>();
-		markerInfo.put(Constant.AMBER, "Issue finishing in the last two days of the iteration are marked in AMBER");
-		markerInfo.put(Constant.RED, "Issues finishing post issue due date are marked in RED");
+		List<KpiData> dataGroup1 = new ArrayList<>();
+		dataGroup1.add(createKpiData("", ISSUE_AT_RISK, 1, "count", "", "Category", ISSUE_AT_RISK));
+		dataGroup1.add(createKpiData("Value", displayName, 2, "sum", unit, null, null));
 
 		dataGroup.setDataGroup1(dataGroup1);
-		dataGroup.setDataGroup2(dataGroup2);
-		dataGroup.setMarkerInfo(markerInfo);
-		dataGroup.setMetaDataColumns(Arrays.asList("marker"));
 		return dataGroup;
 	}
 
 	/**
 	 * Creates kpi data object.
+	 *
 	 * @param key
 	 * @param name
 	 * @param order
@@ -315,7 +271,7 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 	 * @param unit
 	 * @return
 	 */
-	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit) {
+	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit, String key1, String value1) {
 		KpiData data = new KpiData();
 		data.setKey(key);
 		data.setName(name);
@@ -323,6 +279,47 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 		data.setAggregation(aggregation);
 		data.setUnit(unit);
 		data.setShowAsLegend(false);
+		data.setKey1(key1);
+		data.setValue1(value1);
 		return data;
 	}
+
+	private List<IterationPotentialDelay> calculatePotentialDelay(SprintDetails sprintDetails,
+			List<JiraIssue> allIssues, FieldMapping fieldMapping) {
+		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
+		Map<String, List<JiraIssue>> assigneeWiseJiraIssue = allIssues.stream()
+				.filter(jiraIssue -> jiraIssue.getAssigneeId() != null)
+				.collect(Collectors.groupingBy(JiraIssue::getAssigneeId));
+
+		if (MapUtils.isNotEmpty(assigneeWiseJiraIssue)) {
+			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
+				List<JiraIssue> inProgressIssues = new ArrayList<>();
+				List<JiraIssue> openIssues = new ArrayList<>();
+				CalculatePCDHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI123(), jiraIssues,
+						inProgressIssues, openIssues);
+				iterationPotentialDelayList
+						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
+			});
+		}
+
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI123())) {
+			List<JiraIssue> inProgressIssues = allIssues.stream()
+					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
+							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
+							&& (fieldMapping.getJiraStatusForInProgressKPI123().contains(jiraIssue.getStatus())))
+					.collect(Collectors.toList());
+
+			List<JiraIssue> openIssues = new ArrayList<>();
+			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
+		}
+		return iterationPotentialDelayList;
+
+	}
+
+	private boolean isIssueAtRisk(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay,
+			LocalDate sprintEndDate) {
+		return issueWiseDelay.containsKey(jiraIssue.getNumber()) && LocalDate
+				.parse(issueWiseDelay.get(jiraIssue.getNumber()).getPredictedCompletedDate()).isAfter(sprintEndDate);
+	}
+
 }
