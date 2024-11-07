@@ -1047,4 +1047,105 @@ describe('KpiCardV2Component', () => {
       });
     });
   });
+
+  describe('KpiCardV2Component.checkIfDataPresent() checkIfDataPresent method', () => {
+    describe('Happy Path', () => {
+      it('should return true when data is 200 and kpiId is kpi148 with trendValueList', () => {
+        component.kpiData = { kpiId: 'kpi148' };
+        component.trendValueList = [{}];
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(true);
+      });
+  
+      it('should return true when data is 200 and kpiId is kpi139 with trendValueList having value', () => {
+        component.kpiData = { kpiId: 'kpi139' };
+        component.trendValueList = [{ value: [{}] }];
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(true);
+      });
+  
+      it('should return true when data is 200 and kpiId is kpi171 with trendValueList having data', () => {
+        component.kpiData = { kpiId: 'kpi171' };
+        component.trendValueList = [{ data: [{}] }];
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(true);
+      });
+  
+      it('should return true when data is 200 and helperService returns true', () => {
+        component.kpiData = { kpiDetail: { chartType: 'someType' } };
+        component.selectedTab = 'someTab';
+        spyOn(helperService,'checkDataAtGranularLevel').and.returnValue(true);
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(true);
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should return false when data is not 200 or 201', () => {
+        const result = component.checkIfDataPresent('404');
+        expect(result).toBe(false);
+      });
+  
+      it('should return false when kpiId is kpi171 but trendValueList is empty', () => {
+        component.kpiData = { kpiId: 'kpi171' };
+        component.trendValueList = [];
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(false);
+      });
+  
+      it('should return false when helperService returns false', () => {
+        component.kpiData = { kpiDetail: { chartType: 'someType' } };
+        component.selectedTab = 'someTab';
+        spyOn(helperService,'checkDataAtGranularLevel').and.returnValue(false);
+        const result = component.checkIfDataPresent('200');
+        expect(result).toBe(false);
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.handleChange() handleChange method', () => {
+    describe('Happy Path', () => {
+      it('should emit the selected value when type is radio', () => {
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+        const value = { value: 'someValue' };
+  
+        component.handleChange('radio', value);
+  
+        expect(emitSpy).toHaveBeenCalledWith('someValue');
+      });
+  
+      it('should emit filterOptions when type is single', () => {
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+        component.filterOptions = { filter1: 'value1' };
+  
+        component.handleChange('single');
+  
+        expect(emitSpy).toHaveBeenCalledWith({ filter1: 'value1' });
+      });
+  
+      it('should emit Overall when filterOptions is empty', () => {
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+        component.filterOptions = {};
+  
+        component.handleChange('multi');
+  
+        expect(emitSpy).toHaveBeenCalledWith(['Overall']);
+      });
+  
+      it('should emit filterOptions when filterOptions is not empty', () => {
+        const emitSpy = spyOn(component.optionSelected, 'emit');
+        component.filterOptions = { filter1: 'value1' };
+  
+        component.handleChange('multi');
+  
+        expect(emitSpy).toHaveBeenCalledWith({ filter1: 'value1' });
+      });
+    });
+
+    it('should move selected option to top', () => {
+      component.dropdownArr[0].options = ['option1', 'option2'];
+      component.handleChange('multi', {value : ['option2']});
+      expect(component.dropdownArr[0].options).toEqual(['option2', 'option1'])
+    });
+  });
 });
