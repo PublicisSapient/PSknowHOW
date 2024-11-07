@@ -247,8 +247,8 @@ export class IterationComponent implements OnInit, OnDestroy {
                 case 2:
                   kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
                   break;
-                  case 1:
-                    kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
+                case 1:
+                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
                   break;
                 default:
                   kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi125' && kpiId !== 'kpi154');

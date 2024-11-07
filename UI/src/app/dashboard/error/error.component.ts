@@ -100,7 +100,5 @@ export class ErrorComponent implements OnInit, OnDestroy {
       }
       );
     }
-
   }
 }
-

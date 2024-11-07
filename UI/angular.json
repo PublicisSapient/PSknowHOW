@@ -162,8 +162,16 @@
               "src/app/utils/*",
               "src/app/services/*",
               "src/app/component/**/*",
-              "src/app/config/engg-maturity-config/*",
-              "src/app/config/shared/dynamic-form-builder/atoms/*"
+              "src/app/dashboard/backlog/*",
+              "src/app/dashboard/developer/*",
+              "src/app/dashboard/dora/*",
+              "src/app/dashboard/executive/*",
+              "src/app/dashboard/filter/*",
+              "src/app/dashboard/kpi-card/*",
+              "src/app/dashboard/maturity/*",
+              "src/app/dashboard/milestone/*",
+              "src/app/dashboard/nav/*",
+              "src/app/dashboard/trend-indicator/*"
             ],
             "styles": [
               "src/styles.css"
