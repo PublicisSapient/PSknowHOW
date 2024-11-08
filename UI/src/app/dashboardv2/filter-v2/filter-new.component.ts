@@ -573,13 +573,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-/**
- * Handles changes to the primary filter, updating the event data and managing additional filters.
- * It processes the event based on its structure, updates the state, and triggers necessary service calls.
- * 
- * @param {Object | Array} event - The event object or array containing filter data.
- * @returns {void}
- */
+  /**
+   * Handles changes to the primary filter, updating the event data and managing additional filters.
+   * It processes the event based on its structure, updates the state, and triggers necessary service calls.
+   * 
+   * @param {Object | Array} event - The event object or array containing filter data.
+   * @returns {void}
+   */
   handlePrimaryFilterChange(event) {
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
@@ -592,7 +592,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         delete event['additional_level'];
         event = event['primary_level'];
       }
-    } else if(Array.isArray(event)){
+    } else if (Array.isArray(event)) {
       // sort the event array based on nodeId
       event.sort((a, b) => (a.nodeId > b.nodeId) ? 1 : ((b.nodeId > a.nodeId) ? -1 : 0))
     }
@@ -600,8 +600,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     // CAUTION
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
-      ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent)) 
-      || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+      ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent))
+        || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
@@ -640,7 +640,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.additionalData = false;
       this.previousFilterEvent = [];
     }
-    
+
     if (this.filterDataArr && this.filterDataArr?.[this.selectedType] && this.filterDataArr[this.selectedType]?.['Sprint'] && event && event[0]?.labelName === 'project') {
       const allSprints = this.filterDataArr[this.selectedType]['Sprint'];
       const currentProjectSprints = allSprints.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed');
@@ -662,13 +662,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
 
-/**
- * Prepares and applies KPI call data based on the selected project trends and filters.
- * It updates various filter states and invokes service methods to set selected trends and data.
- * 
- * @param {any} event - The event data containing project information and filters.
- * @returns {void}
- */
+  /**
+   * Prepares and applies KPI call data based on the selected project trends and filters.
+   * It updates various filter states and invokes service methods to set selected trends and data.
+   * 
+   * @param {any} event - The event data containing project information and filters.
+   * @returns {void}
+   */
   prepareKPICalls(event) {
     // set selected projects(trends)
     if (typeof this.selectedLevel === 'string' || this.selectedLevel === null) {
@@ -681,8 +681,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.additionalFiltersArr = [];
       if (event && event[0] && event[0]?.labelName?.toLowerCase() === 'project') {
         this.populateAdditionalFilters(event);
-      } else if (event && event[0]) {
+      } else if (event && event[0] && event.map((e) => e.parentId)[0]) {
         this.populateAdditionalFilters(event.map((e) => e.parentId));
+      } else {
+        this.additionalFiltersArr = [];
+        this.service.setAdditionalFilters(this.additionalFiltersArr);
       }
     } else {
       this.additionalFiltersArr = [];
@@ -793,13 +796,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.helperService.deepEqual(o, a2[idx]) : o === a2[idx]);
   }
 
-/**
- * Sets the sprint details based on the provided event data, formatting start and end dates,
- * and updating the selected sprint and additional data flags.
- * 
- * @param {any} event - The event data containing sprint or release information.
- * @returns {void} - This function does not return a value.
- */
+  /**
+   * Sets the sprint details based on the provided event data, formatting start and end dates,
+   * and updating the selected sprint and additional data flags.
+   * 
+   * @param {any} event - The event data containing sprint or release information.
+   * @returns {void} - This function does not return a value.
+   */
   setSprintDetails(event) {
     const startDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintStartDate' : 'releaseStartDate',
       endDatePropName = this.selectedTab?.toLowerCase() === 'iteration' ? 'sprintEndDate' : 'releaseEndDate';
@@ -816,13 +819,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.service.setCurrentSelectedSprint(this.selectedSprint);
   }
 
-/**
- * Formats a given date string into a specific format: "DD MMM'YY".
- * If the input string is empty, returns 'N/A'.
- * 
- * @param dateString - The date string to be formatted.
- * @returns A formatted date string or 'N/A' if the input is empty.
- */
+  /**
+   * Formats a given date string into a specific format: "DD MMM'YY".
+   * If the input string is empty, returns 'N/A'.
+   * 
+   * @param dateString - The date string to be formatted.
+   * @returns A formatted date string or 'N/A' if the input is empty.
+   */
   formatDate(dateString) {
     if (dateString !== '') {
       const date = new Date(dateString);
@@ -835,13 +838,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-/**
- * Handles changes to additional filters based on the provided event.
- * Updates the filter application data and manages the state of selected filters.
- * 
- * @param {Object} event - The event object containing filter changes.
- * @returns {void}
- */
+  /**
+   * Handles changes to additional filters based on the provided event.
+   * Updates the filter application data and manages the state of selected filters.
+   * 
+   * @param {Object} event - The event object containing filter changes.
+   * @returns {void}
+   */
   handleAdditionalChange(event) {
     let level = Object.keys(event)[0];
     event = event[level];
@@ -894,13 +897,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-/**
- * Applies the selected date filter to the service and updates the filterApplyData object.
- * It handles the selection of date types and updates the relevant configurations based on the selected level.
- * 
- * @param {void} - This function does not take any parameters.
- * @returns {void} - This function does not return a value.
- */
+  /**
+   * Applies the selected date filter to the service and updates the filterApplyData object.
+   * It handles the selection of date types and updates the relevant configurations based on the selected level.
+   * 
+   * @param {void} - This function does not take any parameters.
+   * @returns {void} - This function does not return a value.
+   */
   applyDateFilter() {
     this.selectedDateFilter = `${this.selectedDateValue} ${this.selectedDayType}`;
     this.service.setSelectedDateFilter(this.selectedDayType);
@@ -930,13 +933,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.toggleDateDropdown = false;
   }
 
-/**
- * Populates additional filters based on the provided event data.
- * It processes the event to extract project IDs and updates the additionalFiltersArr accordingly.
- * 
- * @param {any} event - The event data, which can be a single object or an array of objects.
- * @returns {void} - This function does not return a value.
- */
+  /**
+   * Populates additional filters based on the provided event data.
+   * It processes the event to extract project IDs and updates the additionalFiltersArr accordingly.
+   * 
+   * @param {any} event - The event data, which can be a single object or an array of objects.
+   * @returns {void} - This function does not return a value.
+   */
   populateAdditionalFilters(event) {
     this.additionalFiltersArr = [];
     if (!Array.isArray(event)) {
@@ -1001,13 +1004,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-/**
- * Retrieves the correct hierarchy level name based on the provided level.
- * It checks against predefined squad level IDs and names, returning the appropriate mapping.
- * 
- * @param level - The level identifier or name to be mapped.
- * @returns string - The corresponding hierarchy level name or an empty string if not found.
- */
+  /**
+   * Retrieves the correct hierarchy level name based on the provided level.
+   * It checks against predefined squad level IDs and names, returning the appropriate mapping.
+   * 
+   * @param level - The level identifier or name to be mapped.
+   * @returns string - The corresponding hierarchy level name or an empty string if not found.
+   */
   getCorrectLevelMapping(level) {
     let correctLevel = '';
     let squadLevelIds = this.additionalFilterLevelArr.filter(x => x.hierarchyLevelId !== 'sprint' && x.hierarchyLevelId !== 'release').map(x => x.hierarchyLevelId);
@@ -1025,12 +1028,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     return correctLevel;
   }
 
-/**
- * Fetches processor trace logs for the currently selected project and updates the service with the log details.
- * 
- * @returns {void} - This function does not return a value.
- * @throws {Error} - Logs error to the console if the HTTP request fails.
- */
+  /**
+   * Fetches processor trace logs for the currently selected project and updates the service with the log details.
+   * 
+   * @returns {void} - This function does not return a value.
+   * @throws {Error} - Logs error to the console if the HTTP request fails.
+   */
   getProcessorsTraceLogsForProject() {
     this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
       if (response.success) {
@@ -1047,13 +1050,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
   }
 
-/**
- * Fetches the active iteration status for the selected sprint and updates the sync status.
- * It handles UI blocking, error messages, and data refresh based on the fetch results.
- * 
- * @param {void} - No parameters are accepted.
- * @returns {void} - This function does not return a value.
- */
+  /**
+   * Fetches the active iteration status for the selected sprint and updates the sync status.
+   * It handles UI blocking, error messages, and data refresh based on the fetch results.
+   * 
+   * @param {void} - No parameters are accepted.
+   * @returns {void} - This function does not return a value.
+   */
   fetchData() {
     this.blockUI = true;
     const sprintId = this.selectedSprint['nodeId'];
@@ -1119,13 +1122,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-/**
- * Compiles Google Analytics data from the provided filter array, transforming it into a structured format.
- * 
- * @param selectedFilterArray - An object containing filter data, which may include 'additional_level' or 'primary_level'.
- * @returns void - This function does not return a value.
- * @throws None - This function does not throw exceptions.
- */
+  /**
+   * Compiles Google Analytics data from the provided filter array, transforming it into a structured format.
+   * 
+   * @param selectedFilterArray - An object containing filter data, which may include 'additional_level' or 'primary_level'.
+   * @returns void - This function does not return a value.
+   * @throws None - This function does not throw exceptions.
+   */
   compileGAData(selectedFilterArray) {
     if (selectedFilterArray && selectedFilterArray['additional_level']) {
       selectedFilterArray = selectedFilterArray['additional_level'][Object.keys(selectedFilterArray['additional_level'])[0]];
@@ -1162,14 +1165,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.ga.setProjectData(gaArray);
   }
 
-/**
- * Toggles the visibility of the dropdown menu. 
- * If the overlay is visible, it closes the menu.
- * 
- * @param event - The event that triggered the toggle action.
- * @returns void
- * @throws None
- */
+  /**
+   * Toggles the visibility of the dropdown menu. 
+   * If the overlay is visible, it closes the menu.
+   * 
+   * @param event - The event that triggered the toggle action.
+   * @returns void
+   * @throws None
+   */
   toggleShowHideMenu(event) {
     if (this.showHideDdn?.overlayVisible) {
       this.showHideDdn.close(event);
@@ -1178,14 +1181,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-/**
- * Toggles the visibility of KPIs based on the selected tab and type, 
- * updates the dashboard configuration, and submits the changes to the server.
- * 
- * @param {void} - No parameters are accepted.
- * @returns {void} - The function does not return a value.
- * @throws {Error} - Throws an error if the HTTP request fails or if saving the configuration is unsuccessful.
- */
+  /**
+   * Toggles the visibility of KPIs based on the selected tab and type, 
+   * updates the dashboard configuration, and submits the changes to the server.
+   * 
+   * @param {void} - No parameters are accepted.
+   * @returns {void} - The function does not return a value.
+   * @throws {Error} - Throws an error if the HTTP request fails or if saving the configuration is unsuccessful.
+   */
   showHideKPIs() {
     const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
     this.assignUserNameForKpiData();
@@ -1244,12 +1247,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.dashConfigData['username'] = this.service.getCurrentUserDetails('user_name');
   }
 
-/**
- * Toggles the 'isEnabled' property of each element in the 'kpiList' based on the 'showHideSelectAll' flag.
- * @param {void} No parameters are accepted.
- * @returns {void} This function does not return a value.
- * @throws {none} This function does not throw any exceptions.
- */
+  /**
+   * Toggles the 'isEnabled' property of each element in the 'kpiList' based on the 'showHideSelectAll' flag.
+   * @param {void} No parameters are accepted.
+   * @returns {void} This function does not return a value.
+   * @throws {none} This function does not throw any exceptions.
+   */
   showHideSelectAllApply() {
     this.masterData['kpiList'].forEach(element => {
       if (this.showHideSelectAll) {
@@ -1260,14 +1263,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     });
   }
 
-/**
- * Toggles the visibility of the chart based on the provided value.
- * Updates the service to reflect the current view state.
- * 
- * @param val - A boolean indicating whether to show the chart (true) or not (false).
- * @returns void
- * @throws None
- */
+  /**
+   * Toggles the visibility of the chart based on the provided value.
+   * Updates the service to reflect the current view state.
+   * 
+   * @param val - A boolean indicating whether to show the chart (true) or not (false).
+   * @returns void
+   * @throws None
+   */
   showChartToggle(val) {
     this.showChart = val;
     this.service.setShowTableView(this.showChart);
