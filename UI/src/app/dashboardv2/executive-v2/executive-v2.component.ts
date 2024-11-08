@@ -2121,7 +2121,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               }
             }
           }
-          // this.service.setSelectedKPIFilterValues(this.kpiSelectedFilterObj, kpi?.kpiId, event);
+          this.service.setSelectedKPIFilterValues(this.kpiSelectedFilterObj, kpi?.kpiId, event);
         } else if (this.selectedTab.toLowerCase() === 'developer') {
           if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
             this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
@@ -2137,7 +2137,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria, true);
       this.kpiSelectedFilterObj['action'] = 'update';
       this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-      this.service.setSelectedKPIFilterValues(this.kpiSelectedFilterObj, kpi?.kpiId, event);
     }
 
   }
