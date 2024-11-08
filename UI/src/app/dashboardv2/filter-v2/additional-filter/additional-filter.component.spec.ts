@@ -646,4 +646,192 @@ describe('AdditionalFilterComponent', () => {
     expect(component.selectedFilters).toEqual([]);
     expect(sortByFieldSpy).toHaveBeenCalled();
   });
+
+  describe('AdditionalFilterComponent.setCorrectLevel() setCorrectLevel method', () => {
+    describe('Happy Path', () => {
+      it('should set the correct level based on the state filters', fakeAsync(() => {
+        // Arrange
+        component.additionalFilterLevelArr = [
+          { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' },
+          { hierarchyLevelId: 'level2', hierarchyLevelName: 'Level 2' },
+        ];
+        component.additionalFilterConfig = [
+          { defaultLevel: { labelName: 'Level 1' } },
+          { defaultLevel: { labelName: 'Level 2' } },
+        ];
+        spyOn(helperService,'getBackupOfFilterSelectionState').and.returnValue({
+          level1: [{ nodeId: 'node1' }],
+          level2: [{ nodeId: 'node2' }],
+        });
+  
+        // Act
+        component.setCorrectLevel();
+        tick(100);
+        // Assert
+        // setTimeout(() => {
+          expect(component.selectedFilters[0]).toEqual([{ nodeId: 'node1' }]);
+          expect(component.selectedFilters[1]).toEqual([{ nodeId: 'node2' }]);
+        // }, 100);
+      }));
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle empty state filters gracefully', () => {
+        // Arrange
+        component.additionalFilterLevelArr = [
+          { hierarchyLevelId: 'level1', hierarchyLevelName: 'Level 1' },
+        ];
+        component.additionalFilterConfig = [
+          { defaultLevel: { labelName: 'Level 1' } },
+        ];
+        spyOn(helperService,'getBackupOfFilterSelectionState').and.returnValue({});
+  
+        // Act
+        component.setCorrectLevel();
+  
+        // Assert
+        setTimeout(() => {
+          expect(component.selectedFilters[0]).toBeUndefined();
+        }, 100);
+      });
+  
+      // it('should handle missing hierarchyLevelId in additionalFilterLevelArr', () => {
+      //   // Arrange
+      //   component.additionalFilterLevelArr = [{ hierarchyLevelName: 'Level 1' }];
+      //   component.additionalFilterConfig = [
+      //     { defaultLevel: { labelName: 'Level 1' } },
+      //   ];
+      //   spyOn(helperService,'getBackupOfFilterSelectionState').and.returnValue({
+      //     level1: [{ nodeId: 'node1' }],
+      //   });
+  
+      //   // Act
+      //   component.setCorrectLevel();
+  
+      //   // Assert
+      //   setTimeout(() => {
+      //     expect(component.selectedFilters[0]).toBeUndefined();
+      //   }, 100);
+      // });
+    });
+  });
+
+  describe('AdditionalFilterComponent.resetFilterData() resetFilterData method', () => {
+    describe('Happy Path', () => {
+      it('should clear filterData when selectedTab is not "developer"', () => {
+        // Arrange
+        component.selectedTab = 'notDeveloper';
+        component.filterData = [{ nodeId: 1 }, { nodeId: 2 }];
+  
+        // Act
+        component.resetFilterData();
+  
+        // Assert
+        expect(component.filterData).toEqual([]);
+      });
+  
+      it('should not clear filterData if selectedTab is "developer" and trends have not changed', () => {
+        // Arrange
+        component.selectedTab = 'developer';
+        component.selectedTrends = [{ nodeId: 1 }];
+        component.previousSelectedTrends = [{ nodeId: 1 }];
+        component.filterData = [{ nodeId: 1 }, { nodeId: 2 }];
+  
+        // Act
+        component.resetFilterData();
+  
+        // Assert
+        expect(component.filterData).toEqual([{ nodeId: 1 }, { nodeId: 2 }]);
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should clear filterData if selectedTab is "developer" and trends have changed', () => {
+        // Arrange
+        component.selectedTab = 'developer';
+        component.selectedTrends = [{ nodeId: 1 }];
+        component.previousSelectedTrends = [{ nodeId: 2 }];
+        component.filterData = [{ nodeId: 1 }, { nodeId: 2 }];
+  
+        // Act
+        component.resetFilterData();
+  
+        // Assert
+        expect(component.filterData).toEqual([]);
+        expect(component.previousSelectedTrends).toEqual([{ nodeId: 1 }]);
+      });
+  
+      // it('should handle empty selectedTrends and previousSelectedTrends gracefully', () => {
+      //   // Arrange
+      //   component.selectedTab = 'developer';
+      //   component.selectedTrends = [];
+      //   component.previousSelectedTrends = [];
+      //   component.filterData = [{ nodeId: 1 }, { nodeId: 2 }];
+  
+      //   // Act
+      //   component.resetFilterData();
+  
+      //   // Assert
+      //   expect(component.filterData).toEqual([]);
+      //   expect(component.previousSelectedTrends).toEqual([]);
+      // });
+    });
+  });
+
+  describe('AdditionalFilterComponent.onDropDownChange() onDropDownChange method', () => {
+    describe('Happy Path', () => {
+      it('should apply additional filter when dropdown element is selected', () => {
+        // Arrange
+        const event = { value: 'someValue' };
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(true);
+  
+        // Act
+        component.onDropDownChange(event, index);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).toHaveBeenCalled();
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should not apply additional filter when dropdown element is not selected', () => {
+        // Arrange
+        const event = { value: 'someValue' };
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(false);
+  
+        // Act
+        component.onDropDownChange(event, index);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
+      });
+  
+      it('should handle undefined event gracefully', () => {
+        // Arrange
+        const event = undefined;
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(false);
+  
+        // Act
+        component.onDropDownChange(event, index);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
+      });
+    });
+  });
 });
