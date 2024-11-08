@@ -19,7 +19,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
-import { SelectButtonModule } from 'primeng/selectbutton';
 import { HttpService } from '../../../services/http.service';
 import { TestConnectionService } from '../../../services/test-connection.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';

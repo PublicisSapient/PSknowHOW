@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ChangeDetectorRef, Component, OnInit, SecurityContext, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, SecurityContext } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
