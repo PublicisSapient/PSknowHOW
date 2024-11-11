@@ -1,0 +1,316 @@
+properties([
+    parameters([
+      [$class: 'ChoiceParameter', 
+        choiceType: 'PT_RADIO',
+        description: 'Select BUILD to yes to compile code, build package, run Unit test, use Sonarqube for code quality and build docker image ',
+        filterLength: 1,
+        filterable: false,
+        name: 'BUILD',
+          script: [$class: 'GroovyScript',
+              fallbackScript: [
+                  classpath: [], 
+                  sandbox: true, 
+                  script: 'return ["ERROR Showing Deplyent type"]'
+              ],
+              script: [
+                classpath: [], 
+                sandbox: true, 
+                script: "return['yes:selected','no']"
+              ]
+          ]
+      ],     
+    [$class: 'CascadeChoiceParameter', 
+      choiceType: 'PT_RADIO', 
+      description: 'Select PUSH_REGISTRY to yes to push docker image to registry',
+      name: 'PUSH_REGISTRY', 
+      referencedParameters: 'BUILD', 
+      script: 
+        [$class: 'GroovyScript',
+        
+        script: [
+                classpath: [], 
+                sandbox: false, 
+                script:'''
+                if (BUILD.equals("yes")){ 
+                  return['yes:selected','no']
+                  }
+                '''                            
+            ] 
+          ]
+        ],
+        [$class: 'CascadeChoiceParameter', 
+            choiceType: 'PT_RADIO', 
+            description: 'Do you want to Deploy ?',
+            name: 'DEPLOY', 
+            referencedParameters: 'BUILD, PUSH_REGISTRY', 
+                script: 
+                    [$class: 'GroovyScript',
+                    
+                        script: [
+                                classpath: [], 
+                                sandbox: false, 
+                                script:'''
+                                if (BUILD.equals("yes") && PUSH_REGISTRY.equals("yes")){ 
+                                return['yes:selected','no']
+                                }	 												
+                                '''                            
+                            ] 
+                    ]
+        ],
+        [$class: 'CascadeChoiceParameter',
+            name: 'MONGOCK_START_VERSION',
+            description: 'Enter the Mongock start version',
+            referencedParameters: 'BUILD, PUSH_REGISTRY, DEPLOY',
+            choiceType: 'PT_SINGLE_SELECT',
+            script: [$class: 'GroovyScript',
+                script: [
+                    classpath: [],
+                    sandbox: false,
+                    script: '''
+                    if (BUILD.equals("yes") && DEPLOY.equals("yes") && PUSH_REGISTRY.equals("yes")) {
+                        return [ "10.0.0", "10.1.0", "10.2.0", "10.3.0", "11.0.0", "11.1.0", "0.0.0"]
+                    }
+                    '''
+                ]
+            ]
+        ],
+        [$class: 'CascadeChoiceParameter',
+            name: 'MONGOCK_END_VERSION',
+            description: 'Enter the Mongock end version',
+            referencedParameters: 'BUILD, DEPLOY, PUSH_REGISTRY',
+            choiceType: 'PT_SINGLE_SELECT',
+            script: [$class: 'GroovyScript',
+                script: [
+                    classpath: [],
+                    sandbox: false,
+                    script: '''
+                    if (BUILD.equals("yes") && DEPLOY.equals("yes") && PUSH_REGISTRY.equals("yes")) {
+                        return [ "10.1.0", "10.2.0", "10.3.0", "11.0.0", "11.1.0", "0.0.0"]
+                    }
+                    '''
+                ]
+            ]
+        ]
+    ])
+])
+pipeline {
+  agent {
+    label 'mavenjavanode'
+  }
+  options {
+    ansiColor('xterm')
+    timeout(time: 60, unit: 'MINUTES')
+  }
+  environment {
+    az_container_registry = "speedtools.azurecr.io"
+    ARGOCD_APP_NAME = 'knh-customapi'   // Name of the application to sync
+  }
+  
+  stages {
+
+    stage('Determine Branch') {
+        steps {
+            script {
+                // Output the job name for debugging
+                echo "Job name: ${env.JOB_NAME}"
+                
+                // Determine the branch name based on the job name
+                if (env.JOB_NAME == 'KNH_API_STAGE')  {
+                    env.BRANCH_NAME = 'master'
+                    env.ENV = 'stage'   // Name of the argocd application to sync
+                } else if (env.JOB_NAME == 'KNH_API_PROD') {
+                    env.BRANCH_NAME = 'master'
+                    env.ENV = 'prod'   // Name of the argocd application to sync
+                } else if (env.JOB_NAME == 'KNH_API_QA') {
+                    env.BRANCH_NAME = 'qa-master'
+                    env.ENV = 'qa'   // Name of the argocd application to sync
+                } else if (env.JOB_NAME == 'MAP_API_TEST'){
+                    env.BRANCH_NAME = 'develop'
+                    env.ENV = 'dev'   // Name of the argocd application to sync
+                } else {
+                    env.BRANCH_NAME = 'develop'
+                }
+                
+                // Output the determined branch name for debugging
+                echo "Determined branch name after setting: ${env.BRANCH_NAME}"
+            }
+        }
+    }
+
+    stage('Initialize Default Parameters') {
+      steps {
+          script {
+              env.BUILD = env.BUILD ?: 'yes' 
+              env.SKIP_UNIT_TEST = env.SKIP_UNIT_TEST ?: 'no'
+              env.PUSH_REGISTRY = env.PUSH_REGISTRY ?: 'yes'
+              env.DEPLOY = env.DEPLOY ?: 'yes'
+          }
+      }
+  }
+
+    stage('Checkout') {
+        when {
+            expression { env.BUILD == 'yes' }
+        }
+        steps {
+            script {
+                // Echo the branch name before checkout
+                echo "Branch name used for checkout: ${env.BRANCH_NAME}"
+                
+                // Perform checkout
+                checkout([
+                    $class: 'GitSCM',
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/PublicisSapient/PSknowHOW.git',
+                        credentialsId: 'githubcred'
+                    ]],
+                    branches: [[name: "*/${env.BRANCH_NAME}"]],
+                    doGenerateSubmoduleConfigurations: false,
+                    submoduleCfg: [],
+                    extensions: []
+                ])
+            }
+        }
+    }
+
+    stage('Building CUSTOMAPI') {
+      when{
+        expression { env.BUILD == 'yes' }
+      }
+      steps {
+        container('mavenjava17') {
+          sh "mvn clean install -Ddockerfile.skip=true -Pcustomapi -X"
+        }
+      }
+    }
+
+    stage('CodeAnalysis'){
+      when{
+        expression { env.BUILD == 'yes' }
+      }
+      steps{
+        container('mavenjava17') {
+          withSonarQubeEnv( 'pssonar') {
+            sh """
+            mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=${env.BRANCH_NAME} -f customapi/pom.xml -e -X
+            """
+          }
+        }
+      }
+    }
+    stage('Check Quality gates'){
+      when{
+        expression { env.BUILD == 'yes' }
+      }
+      steps{
+        container('mavenjava17'){
+          script {
+            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'SonarQubeCredentilas', passwordVariable: 'sonartoken', usernameVariable: 'sonarurl']])
+            {
+              sh """
+                chmod +x SonarDelay.sh
+                ./SonarDelay.sh $WORKSPACE/customapi/target/sonar/report-task.txt $sonartoken $sonarurl
+                """
+            }
+          }
+        }
+      }
+    }
+
+    stage('Build and Push Docker Image') {
+      when{
+        expression { env.PUSH_REGISTRY == 'yes' }
+      }
+      steps {
+        container('kaniko'){
+          sh """
+          /kaniko/executor \
+            --dockerfile=customapi/Dockerfile \
+            --context=dir://customapi \
+            --destination=${env.az_container_registry}/knowhow-customapi:${ENV}-${BUILD_NUMBER} \
+            --build-arg JAR_FILE=target/customapi-exec.jar
+          """
+        }
+      }
+    }
+    
+    stage('Deploying CustomAPI') {
+      when {
+        expression { env.DEPLOY == 'yes' }
+      }
+      steps {
+        container('mavenjava17'){
+          withCredentials([
+            gitUsernamePassword(credentialsId: 'bitbucket_repo_cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD'),
+            usernamePassword(credentialsId: 'argocd_creds', usernameVariable: 'ARGOCD_USERNAME', passwordVariable: 'ARGOCD_PASSWORD')
+          ]) {
+            script {
+              // Define the repository URL and credentials
+              def credentialsId = 'bitbucket_repo_cred'
+
+              // Checkout the repository with the 'master' branch
+              checkout([$class: 'GitSCM', 
+                      branches: [[name: '*/master']], 
+                      userRemoteConfigs: [[url: 'https://tools.publicis.sapient.com/bitbucket/scm/sts/build-configurations.git', 
+                                          credentialsId: credentialsId]]
+                      ])
+
+                      sh """
+                      git config --global user.name  "${GIT_USERNAME}"
+                      git config --global user.email "${GIT_USERNAME}"
+                      git config --global --add safe.directory $WORKSPACE
+                      git checkout master
+                      git pull origin master
+                      """
+
+
+                      // Define the path to the YAML file
+                      def yamlFilePath = "KnowHOW-Deploy/knowhow-customapi/values-${ENV}.yaml"
+
+                      // Read the value-${ENV}.yaml file
+                      def yaml = readYaml file: yamlFilePath
+
+                      // Update the tag with the current build number
+                      yaml.image.tag = "${ENV}-${BUILD_NUMBER}"
+                      yaml.mongock.startversion = "${MONGOCK_START_VERSION}"
+                      yaml.mongock.endversion = "${MONGOCK_END_VERSION}"
+
+              // Convert the updated YAML data back to a string
+              def updatedYaml = writeYaml returnText: true, data: yaml
+
+              // Write the updated YAML string to the file
+              writeFile file: yamlFilePath, text: updatedYaml     
+
+              // Add and commit the changes
+              sh "git add ${yamlFilePath}"
+              sh 'git commit -m "Update image tag to build number ${BUILD_NUMBER}"'
+              sh 'git pull origin master'
+
+              // Push the changes to the 'master' branch
+              sh "git push -u origin master"
+
+              // Login to ARGOCD 
+              sh "argocd login argocd-server --username ${ARGOCD_USERNAME} --password ${ARGOCD_PASSWORD} --plaintext"
+
+              // Sync the application
+              def syncResult = sh(script: 'argocd app sync ${ARGOCD_APP_NAME}-${ENV}', returnStatus: true)
+              if (syncResult != 0) {
+                error("ArgoCD sync failed")
+              }
+              def waitResult = sh(script: 'argocd app wait ${ARGOCD_APP_NAME}-${ENV} --health --timeout 300', returnStatus: true)
+              if (waitResult != 0) {
+                  error("ArgoCD application is not healthy")
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+   
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}
