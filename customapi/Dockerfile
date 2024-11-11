@@ -44,4 +44,4 @@ USER $USER:$GID
 CMD ["sh", "start_combined_collector.sh"]
 #
 ##
-##
+###
