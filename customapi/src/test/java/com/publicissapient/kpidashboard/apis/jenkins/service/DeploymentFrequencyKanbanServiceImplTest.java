@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -122,6 +123,7 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		projectToolConfigMap.put("Bamboo", projectToolConfigList);
 
 		toolProjectMap.put(new ObjectId("6335363749794a18e8a4479b"), projectToolConfigMap);
@@ -129,6 +131,14 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		setTreadValuesDataCount();
 
 		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
+
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		ProjectBasicConfig p1 = new ProjectBasicConfig();
+		p1.setId(new ObjectId("6335368249794a18e8a4479f"));
+		p1.setProjectName("Test");
+		p1.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 
 	}
 
@@ -220,7 +230,7 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList , false);
 
 		when(deploymentRepository.findDeploymentList(any(), any(), any(), any())).thenReturn(deploymentList);
 		String startDate = "2022-06-03T06:39:40.000";

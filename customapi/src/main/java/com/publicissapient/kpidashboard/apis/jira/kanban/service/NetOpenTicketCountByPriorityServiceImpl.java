@@ -362,7 +362,7 @@ public class NetOpenTicketCountByPriorityServiceImpl
 			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
-			String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
+			String dateProjectKey = node.getProjectHierarchy().getNodeDisplayName();
 			String date = getRange(
 					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
 					kpiRequest);

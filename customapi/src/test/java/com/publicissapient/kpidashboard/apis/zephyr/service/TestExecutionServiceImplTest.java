@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,6 +80,11 @@ public class TestExecutionServiceImplTest {
 	TestExecutionRepository testExecutionRepository;
 	private List<TestExecution> testExecutionList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+
+	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -97,6 +104,20 @@ public class TestExecutionServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("testExecutionPercentage", "average");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
+
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();

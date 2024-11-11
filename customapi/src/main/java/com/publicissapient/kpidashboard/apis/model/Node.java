@@ -105,33 +105,14 @@ public class Node implements Serializable {
 		this.releaseFilter = releaseFilter;
 	}
 
-	/**
-	 * 
-	 * @param object
-	 * @param childId
-	 * @param parentId
-	 * @param groupName
-	 * @param accountHierarchyKanban
-	 */
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			KanbanAccountHierarchy accountHierarchyKanban) {
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchyKanban = accountHierarchyKanban;
-		this.children = new ArrayList<>();
-	}
-
-	public Node(Object object, String childId, String name, String parentId, String groupName,
-			KanbanAccountHierarchy accountHierarchyKanban, ProjectFilter projectFilter) {
-		this.value = object;
-		this.id = childId;
-		this.name = name;
-		this.parentId = parentId;
-		this.groupName = groupName;
-		this.accountHierarchyKanban = accountHierarchyKanban;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 	}

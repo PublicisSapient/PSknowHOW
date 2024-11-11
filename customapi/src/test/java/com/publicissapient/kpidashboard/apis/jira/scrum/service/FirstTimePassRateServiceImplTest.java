@@ -46,6 +46,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -116,11 +117,25 @@ public class FirstTimePassRateServiceImplTest {
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi82");
 		kpiRequest.setLabel("PROJECT");
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		/// set aggregation criteria kpi wise
 		kpiWiseAggregation.put(KPICode.FIRST_TIME_PASS_RATE.getKpiId(), "average");
@@ -138,11 +153,6 @@ public class FirstTimePassRateServiceImplTest {
 		filterLevelMap = new LinkedHashMap<>();
 		filterLevelMap.put("PROJECT", Filters.PROJECT);
 		filterLevelMap.put("SPRINT", Filters.SPRINT);
-
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-		projectConfig.setProjectName("Scrum Project");
-		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");

@@ -108,6 +108,14 @@ public class CostOfDelayKanbanServiceImplTest {
 		kanbanJiraIssueDataList.stream().forEach(f -> f.setChangeDate(LocalDateTime.now().minusDays(2).toString()));
 		jiraKanbanIssueRepository.saveAll(kanbanJiraIssueDataList);
 		kpiWiseAggregation.put("cost_Of_Delay", "sum");
+
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		ProjectBasicConfig p1 = new ProjectBasicConfig();
+		p1.setId(new ObjectId("6335368249794a18e8a4479f"));
+		p1.setProjectName("Test");
+		p1.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 	}
 
 	@After

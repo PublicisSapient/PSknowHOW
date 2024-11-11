@@ -827,7 +827,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.filterApplyData['ids'].push(this.filterForm?.get('date')?.value);
       this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
     }
-    this.compileGAData();
+    //this.compileGAData();
   }
 
   /** This method is using as a helper of createFilterApplyData() */

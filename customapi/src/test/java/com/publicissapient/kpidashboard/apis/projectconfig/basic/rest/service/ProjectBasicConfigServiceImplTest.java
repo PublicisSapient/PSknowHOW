@@ -532,6 +532,7 @@ public class ProjectBasicConfigServiceImplTest {
 		ProjectBasicConfig p1 = new ProjectBasicConfig();
 		p1.setId(basicProjectConfigId);
 		p1.setProjectName("Test");
+		p1.setProjectNodeId("Test Project_6335368249794a18e8a4479f");
 
 		Optional<ProjectBasicConfig> p1Opt = Optional.of(p1);
 		AccessRequest accessRequestsData = createAccessRequestData();

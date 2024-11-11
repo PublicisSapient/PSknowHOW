@@ -143,7 +143,7 @@ public class BitBucketServiceKanbanR {
 	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyDataKanban> filteredAccountDataList) {
 		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 		filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
-				filteredNode.getAccountHierarchyKanban().getBasicProjectConfigId()));
+				filteredNode.getProjectHierarchy().getBasicProjectConfigId()));
 
 		return filteredNode;
 	}

@@ -118,6 +118,8 @@ public class AutomationPercentageServiceImplTest {
 	private KpiElement kpiElement;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	List<TestExecution> testExecutionList;
 
 	@Before
@@ -137,6 +139,18 @@ public class AutomationPercentageServiceImplTest {
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfig -> {
+			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
 		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
