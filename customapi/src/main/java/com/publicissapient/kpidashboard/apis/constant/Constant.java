@@ -150,6 +150,7 @@ public final class Constant {
 	public static final String RELIABILITY_REMEDIATION = "reliability_remediation_effort";
 	public static final String DUPLICATED_LINES = "duplicated_lines";
 	public static final String N_CLOC = "ncloc";
+	public static final String PROJECT_LEVEL_THRESHOLD = "Project Level Threshold";
 	private Constant() {
 	}
 

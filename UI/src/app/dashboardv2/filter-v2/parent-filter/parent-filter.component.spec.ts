@@ -7,7 +7,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { GetAuthService } from '../../../services/getauth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from '../../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -19,7 +19,7 @@ describe('ParentFilterComponent', () => {
   let httpService: HttpService
   let sharedService: SharedService;
   let helperService: HelperService;
-
+  let mockEventEmitter: EventEmitter<any>;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ParentFilterComponent],
@@ -373,5 +373,160 @@ describe('ParentFilterComponent', () => {
     expect(component.fillAdditionalFilterLevels).not.toHaveBeenCalled();
     expect(component.helperService.getBackupOfFilterSelectionState).not.toHaveBeenCalled();
     expect(component.handleSelectedLevelChange).not.toHaveBeenCalled();
+  });
+
+  describe('ParentFilterComponent.onDropdownChange() onDropdownChange method', () => {
+    describe('Happy Path', () => {
+      it('should handle dropdown change when an element is selected', () => {
+        // Arrange
+        component.selectedLevel = { nodeName: 'someValue' };
+        const eventMock = { value: 'someValue' };
+        spyOn(helperService,'isDropdownElementSelected').and.returnValue(true);
+        spyOn(helperService, 'setBackupOfFilterSelectionState');
+        // Act
+        component.onDropdownChange(eventMock);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          eventMock,
+        );
+        expect(
+          helperService.setBackupOfFilterSelectionState,
+        ).toHaveBeenCalled();
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should not handle dropdown change when no element is selected', () => {
+        // Arrange
+        const eventMock = { value: null };
+        spyOn(helperService,'isDropdownElementSelected').and.returnValue(false);
+        spyOn(helperService, 'setBackupOfFilterSelectionState');
+        // Act
+        component.onDropdownChange(eventMock);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          eventMock,
+        );
+        expect(
+          helperService.setBackupOfFilterSelectionState,
+        ).not.toHaveBeenCalled();
+      });
+  
+      it('should handle dropdown change with undefined event', () => {
+        // Arrange
+        const eventMock = undefined;
+        spyOn(helperService,'isDropdownElementSelected').and.returnValue(false);
+        spyOn(helperService, 'setBackupOfFilterSelectionState');
+        // Act
+        component.onDropdownChange(eventMock);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          eventMock,
+        );
+        expect(
+          helperService.setBackupOfFilterSelectionState,
+        ).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('ParentFilterComponent.handleSelectedLevelChange() handleSelectedLevelChange method', () => {
+    beforeEach(() => {
+      mockEventEmitter = new EventEmitter<any>();
+      component.onSelectedLevelChange = mockEventEmitter;
+      spyOn(helperService, 'setBackupOfFilterSelectionState');
+    });
+    describe('Happy Path', () => {
+      it('should emit selected level nodeName when labelName is Organization Level', () => {
+        // Arrange
+        component.parentFilterConfig = { labelName: 'Organization Level' } as any;
+        component.selectedLevel = { nodeName: 'Level1' } as any;
+        spyOn(mockEventEmitter, 'emit');
+        // Act
+        component.handleSelectedLevelChange();
+  
+        // Assert
+        expect(mockEventEmitter.emit).toHaveBeenCalledWith('Level1');
+        expect(
+          helperService.setBackupOfFilterSelectionState,
+        ).toHaveBeenCalledWith({ parent_level: 'Level1' });
+      });
+  
+      it('should emit selected node details when labelName is not Organization Level', () => {
+        // Arrange
+        component.parentFilterConfig = { labelName: 'Some Level' } as any;
+        component.selectedLevel = { nodeId: 'node1' } as any;
+        component.filterData = {
+          'Some Level': [{ nodeId: 'node1', nodeName: 'Node1' }],
+        } as any;
+        spyOn(mockEventEmitter, 'emit');
+        // Act
+        component.handleSelectedLevelChange();
+  
+        // Assert
+        expect(mockEventEmitter.emit).toHaveBeenCalledWith({
+          nodeId: 'node1',
+          nodeType: 'Some Level',
+          emittedLevel: undefined,
+          fullNodeDetails: [{ nodeId: 'node1', nodeName: 'Node1' }],
+        });
+        expect(
+          helperService.setBackupOfFilterSelectionState,
+        ).toHaveBeenCalledWith({
+          parent_level: { nodeId: 'node1', nodeName: 'Node1' },
+        });
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should handle parentLevelChanged flag correctly for Organization Level', () => {
+        // Arrange
+        component.parentFilterConfig = { labelName: 'Organization Level' } as any;
+        component.selectedLevel = { nodeName: 'Level1' } as any;
+  
+        // Act
+        component.handleSelectedLevelChange(true);
+  
+        // Assert
+        expect(
+          helperService.setBackupOfFilterSelectionState,
+        ).toHaveBeenCalledWith({ parent_level: 'Level1', primary_level: null });
+      });
+  
+      it('should handle parentLevelChanged flag correctly for non-Organization Level', () => {
+        // Arrange
+        component.parentFilterConfig = { labelName: 'Some Level' } as any;
+        component.selectedLevel = { nodeId: 'node1' } as any;
+        component.filterData = {
+          'Some Level': [{ nodeId: 'node1', nodeName: 'Node1' }],
+        } as any;
+  
+        // Act
+        component.handleSelectedLevelChange(true);
+  
+        // Assert
+        expect(
+          helperService.setBackupOfFilterSelectionState,
+        ).toHaveBeenCalledWith({
+          parent_level: { nodeId: 'node1', nodeName: 'Node1' },
+          primary_level: null,
+        });
+      });
+  
+      it('should not emit if selectedLevel is undefined', () => {
+        // Arrange
+        component.parentFilterConfig = { labelName: 'Some Level' } as any;
+        component.selectedLevel = undefined;
+        spyOn(mockEventEmitter, 'emit');
+        // Act
+        component.handleSelectedLevelChange();
+  
+        // Assert
+        expect(mockEventEmitter.emit).not.toHaveBeenCalled();
+      });
+    });
   });
 });

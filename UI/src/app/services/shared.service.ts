@@ -122,8 +122,6 @@ export class SharedService {
   isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
 
   selectedMap = {};
-  kpiFilterObj: any = {};
-  isProjectChange: boolean = false;
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -565,19 +563,6 @@ export class SharedService {
 
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
-  }
-
-  setSelectedKPIFilterValues(kpiFilterObj, kpiId, selectedKpiFilter) {
-    kpiFilterObj[kpiId] = selectedKpiFilter;
-    this.kpiFilterObj = kpiFilterObj;
-  }
-
-  getSelectedKPIFilterValues() {
-    return this.kpiFilterObj;
-  }
-
-  resetKpiFilterObj() {
-    this.kpiFilterObj = null;
   }
 }
 

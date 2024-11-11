@@ -63,6 +63,12 @@ export class ToolMenuComponent implements OnInit {
     private ga: GoogleAnalyticsService) {
   }
 
+/**
+ * Initializes the component by retrieving the selected project, configuring project type options,
+ * and processing hierarchy level details. It also navigates to the project list if no project is selected.
+ * 
+ * @returns {void} - No return value.
+ */
   ngOnInit() {
     this.selectedProject = this.sharedService.getSelectedProject();
     // this.sharedService.currentUserDetailsObs.subscribe(details => {

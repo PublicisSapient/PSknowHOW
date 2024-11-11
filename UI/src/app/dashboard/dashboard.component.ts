@@ -21,8 +21,6 @@ import {
   OnInit,
   ChangeDetectorRef,
   AfterContentInit,
-  HostListener,
-  Output,
   Renderer2,
   ViewChild,
 } from '@angular/core';

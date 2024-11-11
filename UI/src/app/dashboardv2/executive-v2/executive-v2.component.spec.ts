@@ -18075,6 +18075,84 @@ describe('ExecutiveV2Component', () => {
     const result = component.checkYAxis({ kpiId: 4 });
     expect(result).toBe('Label from Filter1');
   });
+
+  describe('ExecutiveV2Component.checkYAxis() checkYAxis method', () => {
+    describe('Happy Path', () => {
+      it('should return the yaxisLabel from trendData when all conditions are met', () => {
+        // Arrange
+        const kpi = { kpiId: 1, kpiDetail: { yaxisLabel: 'Default Label' } };
+        component.allKpiArray = [
+          {
+            kpiId: 1,
+            trendValueList: [{ filter: 'filter1', yaxisLabel: 'Trend Label' }],
+          },
+        ];
+        component.kpiSelectedFilterObj = { 1: { filter1: ['filter1'] } };
+  
+        // Act
+        const result = component.checkYAxis(kpi);
+  
+        // Assert
+        expect(result).toBe('Trend Label');
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should return the default yaxisLabel when no trendData is found', () => {
+        // Arrange
+        const kpi = { kpiId: 1, kpiDetail: { yaxisLabel: 'Default Label' } };
+        component.allKpiArray = [
+          {
+            kpiId: 1,
+            trendValueList: [],
+          },
+        ];
+        component.kpiSelectedFilterObj = { 1: { filter1: ['filter1'] } };
+  
+        // Act
+        const result = component.checkYAxis(kpi);
+  
+        // Assert
+        expect(result).toBe('Default Label');
+      });
+  
+      it('should return the default yaxisLabel when kpiDataResponce is undefined', () => {
+        // Arrange
+        const kpi = { kpiId: 2, kpiDetail: { yaxisLabel: 'Default Label' } };
+        component.allKpiArray = [
+          {
+            kpiId: 1,
+            trendValueList: [{ filter: 'filter1', yaxisLabel: 'Trend Label' }],
+          },
+        ];
+        component.kpiSelectedFilterObj = { 2: { filter1: ['filter1'] } };
+  
+        // Act
+        const result = component.checkYAxis(kpi);
+  
+        // Assert
+        expect(result).toBe('Default Label');
+      });
+  
+      it('should handle missing filter1 gracefully', () => {
+        // Arrange
+        const kpi = { kpiId: 1, kpiDetail: { yaxisLabel: 'Default Label' } };
+        component.allKpiArray = [
+          {
+            kpiId: 1,
+            trendValueList: [{ filter: 'filter1', yaxisLabel: 'Trend Label' }],
+          },
+        ];
+        component.kpiSelectedFilterObj = { 1: ['filter1'] };
+  
+        // Act
+        const result = component.checkYAxis(kpi);
+  
+        // Assert
+        expect(result).toBe('Trend Label');
+      });
+    });
+  });
 });
 
 
