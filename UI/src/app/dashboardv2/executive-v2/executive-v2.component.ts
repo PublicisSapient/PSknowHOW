@@ -2352,7 +2352,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, [event?.kpiDetail?.kpiId], event.kpiDetail?.groupId, this.selectedTab);
     this.kpiLoader.add(event?.kpiDetail?.kpiId);
-    console.log(this.kpiSelectedFilterObj[event?.kpiDetail?.kpiId]);
     if (currentKPIGroup?.kpiList?.length > 0) {
       const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
       if (this.service.getSelectedType().toLowerCase() === 'kanban') {
