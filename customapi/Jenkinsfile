@@ -126,7 +126,7 @@ pipeline {
                     env.ENV = 'qa'   // Name of the argocd application to sync
                 } else if (env.JOB_NAME == 'KNH-API-TEST'){
                     env.BRANCH_NAME = 'develop'
-                    env.ENV = 'dev'   // Name of the argocd application to sync
+                    env.ENV = 'test-dev'   // Name of the argocd application to sync
                 } else {
                     env.BRANCH_NAME = 'develop'
                 }
@@ -169,13 +169,18 @@ pipeline {
                     submoduleCfg: [],
                     extensions: []
                 ])
+                env.CHANGE_IN_API = sh(script: "git diff --name-only HEAD~1 | grep -q '^customapi/' && echo 'true' || echo 'false'", returnStdout: true).trim()
+                echo "Changes in API: ${env.CHANGE_IN_API}"
             }
         }
     }
 
     stage('Building CUSTOMAPI') {
-      when{
-        expression { env.BUILD == 'yes' }
+      when {
+        allOf {
+          expression { env.BUILD == 'yes' }
+          expression { env.CHANGE_IN_API == 'true' || currentBuild.getBuildCauses('UserIdCause').size() > 0 }
+        }
       }
       steps {
         container('mavenjava17') {
@@ -185,8 +190,11 @@ pipeline {
     }
 
     stage('CodeAnalysis'){
-      when{
-        expression { env.BUILD == 'yes' }
+      when {
+        allOf {
+          expression { env.BUILD == 'yes' }
+          expression { env.CHANGE_IN_API == 'true' || currentBuild.getBuildCauses('UserIdCause').size() > 0 }
+        }
       }
       steps{
         container('mavenjava17') {
@@ -199,8 +207,11 @@ pipeline {
       }
     }
     stage('Check Quality gates'){
-      when{
-        expression { env.BUILD == 'yes' }
+      when {
+        allOf {
+          expression { env.BUILD == 'yes' }
+          expression { env.CHANGE_IN_API == 'true' || currentBuild.getBuildCauses('UserIdCause').size() > 0 }
+        }
       }
       steps{
         container('mavenjava17'){
@@ -218,9 +229,12 @@ pipeline {
     }
 
     stage('Build and Push Docker Image') {
-      when{
-        expression { env.PUSH_REGISTRY == 'yes' }
-      }
+        when {
+            allOf {
+            expression { env.BUILD == 'yes' && env.PUSH_REGISTRY == 'yes'}
+            expression { env.CHANGE_IN_API == 'true' || currentBuild.getBuildCauses('UserIdCause').size() > 0 }
+            }
+        }
       steps {
         container('kaniko'){
           sh """
