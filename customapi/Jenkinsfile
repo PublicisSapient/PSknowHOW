@@ -124,7 +124,7 @@ pipeline {
                 } else if (env.JOB_NAME == 'KNH_API_QA') {
                     env.BRANCH_NAME = 'qa-master'
                     env.ENV = 'qa'   // Name of the argocd application to sync
-                } else if (env.JOB_NAME == 'MAP_API_TEST'){
+                } else if (env.JOB_NAME == 'KNH-API-TEST'){
                     env.BRANCH_NAME = 'develop'
                     env.ENV = 'dev'   // Name of the argocd application to sync
                 } else {
