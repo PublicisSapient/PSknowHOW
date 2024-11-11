@@ -42,7 +42,8 @@ export class HeaderComponent implements OnInit {
 
   platformLogoInfo = {
        "imageUrl": "assets/img/Switchplatforms.svg",
-       "altText": "KnowHow"
+       "altText": "KnowHow",
+       "width":25
     }
 
     platformSwitchItems = [
@@ -194,5 +195,14 @@ export class HeaderComponent implements OnInit {
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.router.navigate([`/dashboard/my-knowhow`]);
     }
+  }
+
+  emitSwitchPlatformapplicationClick(e){
+    console.log('e',e)
+  }
+
+  emitLogoClick(e){
+    console.log('e',e);
+    this.navigateToMyKnowHOW()
   }
 }
