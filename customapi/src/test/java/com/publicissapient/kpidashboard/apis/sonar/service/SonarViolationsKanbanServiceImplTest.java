@@ -89,7 +89,7 @@ public class SonarViolationsKanbanServiceImplTest {
 	@Mock
 	private ConfigHelperService configHelperService;
 	@InjectMocks
-	private SonarViolationsKanbanServiceImpl svServiceImpl;
+	private CodeViolationsKanbanServiceImpl svServiceImpl;
 	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
@@ -290,7 +290,7 @@ public class SonarViolationsKanbanServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(KPICode.SONAR_VIOLATIONS_KANBAN.name(), equalTo(svServiceImpl.getQualifierType()));
+		assertThat(KPICode.CODE_VIOLATIONS_KANBAN.name(), equalTo(svServiceImpl.getQualifierType()));
 	}
 
 	@Test
@@ -309,7 +309,7 @@ public class SonarViolationsKanbanServiceImplTest {
 
 	@Test
 	public void testCalculateAggregatedValue() {
-		assertNotNull(svServiceImpl.calculateAggregatedValue(null, new HashMap<>(), KPICode.SONAR_VIOLATIONS_KANBAN));
+		assertNotNull(svServiceImpl.calculateAggregatedValue(null, new HashMap<>(), KPICode.CODE_VIOLATIONS_KANBAN));
 	}
 
 }

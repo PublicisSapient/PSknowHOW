@@ -349,6 +349,7 @@ public final class CommonConstant {
 	public static final String MANDATORY_FIELD_MAPPING= "201";
 	public static final String TOOL_NOT_CONFIGURED= "202";
 	public static final String KPI_COMBINED_SORCE= "kpi_combined_source";
+	public static final String COUNT = "Count";
 
 
 

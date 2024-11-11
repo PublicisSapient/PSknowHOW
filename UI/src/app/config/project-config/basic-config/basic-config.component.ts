@@ -18,13 +18,13 @@
 
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { MessageService, MenuItem } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
-import { MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 declare const require: any;
 
 @Component({
@@ -59,6 +59,7 @@ export class BasicConfigComponent implements OnInit {
   isProjectCOmpletionPopup: boolean = false;
   allProjectList: any[];
   selectedItems: { [key: string]: any } = {};
+  isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -301,8 +302,11 @@ export class BasicConfigComponent implements OnInit {
 
   stringValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const inputValue: string = control.value as string;
-    if ((typeof control.value === 'string' || control.value instanceof String) && control.value && control.value !== null && !/^[a-zA-Z0-9\s_-]+$/.test(inputValue)) {
-      return { stringValidator: true };
+    if ((typeof control.value === 'string' || control.value instanceof String) && control.value && control.value != null) {
+      // no blank spaces, and no value should start with " "
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9\s_-]*$/.test(inputValue)) {
+        return { stringValidator: true };
+      }
     }
     return null;
   }

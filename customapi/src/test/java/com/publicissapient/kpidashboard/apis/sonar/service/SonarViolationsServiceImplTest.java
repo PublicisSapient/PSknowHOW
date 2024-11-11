@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -48,12 +46,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SonarHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -83,7 +83,7 @@ public class SonarViolationsServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@InjectMocks
-	SonarViolationsServiceImpl svServiceImpl;
+	CodeViolationsServiceImpl svServiceImpl;
 	@Mock
 	SonarHistoryRepository sonarHistoryRepository;
 	@Mock
@@ -188,7 +188,7 @@ public class SonarViolationsServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		try {
 			KpiElement kpiElement = svServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -217,10 +217,10 @@ public class SonarViolationsServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		// set aggregation criteria kpi wise
-		kpiWiseAggregation.put(KPICode.SONAR_VIOLATIONS.name(), "percentile");
+		kpiWiseAggregation.put(KPICode.CODE_VIOLATIONS.name(), "percentile");
 		try {
 			KpiElement kpiElement = svServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -248,10 +248,10 @@ public class SonarViolationsServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		// set aggregation criteria kpi wise
-		kpiWiseAggregation.put(KPICode.SONAR_VIOLATIONS.name(), "median");
+		kpiWiseAggregation.put(KPICode.CODE_VIOLATIONS.name(), "median");
 
 		try {
 			KpiElement kpiElement = svServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -280,10 +280,10 @@ public class SonarViolationsServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		// set aggregation criteria kpi wise
-		kpiWiseAggregation.put(KPICode.SONAR_VIOLATIONS.name(), "average");
+		kpiWiseAggregation.put(KPICode.CODE_VIOLATIONS.name(), "average");
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 
 		try {
@@ -313,10 +313,10 @@ public class SonarViolationsServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		// set aggregation criteria kpi wise
-		kpiWiseAggregation.put(KPICode.SONAR_VIOLATIONS.name(), "sum");
+		kpiWiseAggregation.put(KPICode.CODE_VIOLATIONS.name(), "sum");
 
 		try {
 			KpiElement kpiElement = svServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -347,10 +347,10 @@ public class SonarViolationsServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		// set aggregation criteria kpi wise
-		kpiWiseAggregation.put(KPICode.SONAR_VIOLATIONS.name(), "percentile");
+		kpiWiseAggregation.put(KPICode.CODE_VIOLATIONS.name(), "percentile");
 
 		try {
 			KpiElement kpiElement = svServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -373,7 +373,7 @@ public class SonarViolationsServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		try {
 			KpiElement kpiElement = svServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -391,7 +391,7 @@ public class SonarViolationsServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(svServiceImpl.getQualifierType(), equalTo("SONAR_VIOLATIONS"));
+		assertThat(svServiceImpl.getQualifierType(), equalTo("CODE_VIOLATIONS"));
 	}
 
 	@Test

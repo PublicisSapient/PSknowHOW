@@ -405,6 +405,15 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 		jiraIssue.setOwnersIsDeleted(Collections.<String>emptyList());
 
+		if (CommonConstant.EPIC.equalsIgnoreCase(jiraIssue.getTypeName())) {
+			IssueField resolutionField = issue.getField(JiraConstants.EPIC_RESOLUTION_DATE);
+			if (resolutionField != null && resolutionField.getValue() != null) {
+				String resolutionDate = resolutionField.getValue().toString();
+				jiraIssue.setEpicEndDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(resolutionDate)));
+			}
+
+		}
+
 		// Created Date
 		jiraIssue.setCreatedDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(createdDate)));
 

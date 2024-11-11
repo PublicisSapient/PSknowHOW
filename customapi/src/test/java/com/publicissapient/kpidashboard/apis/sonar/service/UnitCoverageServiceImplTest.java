@@ -188,7 +188,7 @@ public class UnitCoverageServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		try {
 			KpiElement kpiElement = ucServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -215,7 +215,7 @@ public class UnitCoverageServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 
 		try {
@@ -243,7 +243,7 @@ public class UnitCoverageServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		try {
 			KpiElement kpiElement = ucServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -270,7 +270,7 @@ public class UnitCoverageServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		try {
 			KpiElement kpiElement = ucServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -300,7 +300,7 @@ public class UnitCoverageServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
 				.thenReturn(kpiRequestTrackerId);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		try {
 			KpiElement kpiElement = ucServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -322,7 +322,7 @@ public class UnitCoverageServiceImplTest {
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
+		maturityRangeMap.put(KPICode.CODE_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		try {
 			KpiElement kpiElement = ucServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

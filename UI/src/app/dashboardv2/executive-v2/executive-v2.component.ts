@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -465,7 +465,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     });
 
-    // sending requests after grouping the the KPIs according to group Id   
+    // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');
@@ -569,11 +569,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
         for (let i = 0; i < this.sonarKpiData['kpi17']?.trendValueList?.length; i++) {
           for (let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++) {
-            let obj = {
-              'filter': this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
-              ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
+            if(this.sonarKpiData['kpi17']?.trendValueList[i]?.filter === 'Average Coverage') {
+              let obj = {
+                'filter': this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
+                ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
+              }
+              overallObj['value'].push(obj);
             }
-            overallObj['value'].push(obj);
           }
         }
         this.sonarKpiData['kpi17']?.trendValueList.push(overallObj);
@@ -1695,7 +1697,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       });
 
-      // sending requests after grouping the the KPIs according to group Id   
+      // sending requests after grouping the the KPIs according to group Id
       groupIdSet.forEach((groupId) => {
         if (groupId) {
           this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpi171Payload, groupId, 'backlog');
@@ -2119,6 +2121,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               }
             }
           }
+          this.service.setSelectedKPIFilterValues(this.kpiSelectedFilterObj, kpi?.kpiId, event);
         } else if (this.selectedTab.toLowerCase() === 'developer') {
           if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
             this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
@@ -2450,5 +2453,21 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     iDateDiff -= iAdjust; // take into account both days on weekend
     return (iDateDiff + 1); // add 1 because dates are inclusive
+  }
+
+  checkYAxis(kpi) {
+    const kpiDataResponce = this.allKpiArray?.find(de => de.kpiId === kpi.kpiId);
+    const selectedFilterVal = this.kpiSelectedFilterObj[kpi?.kpiId];
+    if (kpiDataResponce && kpiDataResponce?.trendValueList) {
+      const trendData = kpiDataResponce.trendValueList?.find(data => {
+        const kpiFIlter = (data.filter || data.filter1) ;
+        const selectedFilter = selectedFilterVal.filter1 ? selectedFilterVal.filter1[0] : selectedFilterVal[0];
+        return kpiFIlter === selectedFilter;
+      })
+      if (trendData && Object.keys(trendData).length > 1 && trendData?.yaxisLabel) {
+        return trendData.yaxisLabel
+      }
+    }
+    return kpi?.kpiDetail?.yaxisLabel;
   }
 }

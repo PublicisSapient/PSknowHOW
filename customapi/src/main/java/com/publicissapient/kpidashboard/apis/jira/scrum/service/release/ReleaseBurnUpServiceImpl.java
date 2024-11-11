@@ -707,10 +707,12 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
 			kpiValueIssueCount.setFilter1(ISSUE_COUNT);
+			kpiValueIssueCount.setYAxisLabel(CommonConstant.COUNT);
 			kpiValueIssueCount.setAdditionalInfo(additionalInfoIssueMap);
 			IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
 			kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
 			kpiValueSizeCount.setFilter1(STORY_POINT);
+			kpiValueSizeCount.setYAxisLabel(CommonConstant.SP);
 			kpiValueSizeCount.setAdditionalInfo(additionalInfoSPMap);
 			iterationKpiValueList.add(kpiValueSizeCount);
 			iterationKpiValueList.add(kpiValueIssueCount);
