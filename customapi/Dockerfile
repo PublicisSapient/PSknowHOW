@@ -42,6 +42,3 @@ USER $USER:$GID
 
 # Specify the command to run your application
 CMD ["sh", "start_combined_collector.sh"]
-#
-##
-###
