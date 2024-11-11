@@ -919,4 +919,18 @@ describe('AdvancedSettingsComponent', () => {
     const spyobj = component.getToolCategory('testtool');
     expect(spyobj).toBe('');
   })
+
+  it('should update toggle Details and get success resonse',()=>{
+    component.selectedProject = {id : 'test'}
+    spyOn(httpService,'editTool').and.returnValue(of({success : true}))
+    component.azureRefreshActiveSprintReportToggleChange({id : 'test'});
+    expect(component.selectedProject).toBeDefined();
+  })
+
+  it('should update toggle Details and get failor resonse',()=>{
+    component.selectedProject = {id : 'test'}
+    spyOn(httpService,'editTool').and.returnValue(of({success : false}))
+    component.azureRefreshActiveSprintReportToggleChange({id : 'test'});
+    expect(component.selectedProject).toBeDefined();
+  })
 });

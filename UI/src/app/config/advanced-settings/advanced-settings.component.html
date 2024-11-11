@@ -128,6 +128,11 @@
                       Reached the API rate limit. Repo scanning will automatically resume after {{getSCMToolTimeDetails(processor.toolName)}}
                     </p-overlayPanel>
                   </div>
+                  <div class="p-ml-2" *ngIf="processor.toolName === 'Azure'">
+                    <p-inputSwitch tooltipPosition="top"
+                    [pTooltip]="azureSnapshotToggleTooltip" name="azureRefreshActiveSprintReport" id="azureRefreshActiveSprintReport" [(ngModel)]="processor.azureRefreshActiveSprintReport" (onChange)="azureRefreshActiveSprintReportToggleChange(processor)">
+                  </p-inputSwitch>
+                  </div>
                 </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
