@@ -149,7 +149,10 @@ pipeline {
 
     stage('Checkout') {
         when {
-            expression { env.BUILD == 'yes' }
+            allOf {
+                expression { env.BUILD == 'yes' }
+                expression { env.CHANGE_IN_API == 'true' || currentBuild.getBuildCauses('UserIdCause').size() > 0 }
+            }
         }
         steps {
             script {
