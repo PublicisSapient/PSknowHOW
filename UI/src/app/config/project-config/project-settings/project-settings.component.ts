@@ -281,6 +281,14 @@ export class ProjectSettingsComponent implements OnInit {
     });
   }
 
+/**
+ * Deletes a specified project after user confirmation.
+ * It updates the project access list and navigates to the configuration settings of the first user project.
+ * 
+ * @param {Project} project - The project object to be deleted.
+ * @returns {void}
+ * @throws {HttpErrorResponse} If the deletion request fails.
+ */
   deleteProject(project) {
     this.isDeleteClicked = true;
     this.projectConfirm = true;
@@ -291,7 +299,7 @@ export class ProjectSettingsComponent implements OnInit {
       accept: () => {
         this.httpService.deleteProject(project).subscribe(response => {
           this.projectDeletionStatus(response);
-          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase(), tab: 0 } });
+          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { 'type': this.selectedProject?.type?.toLowerCase(), tab: 0 } });
           this.selectedProject = this.userProjects[0];
           let arr = this.sharedService.getCurrentUserDetails('projectsAccess');
           if (arr?.length) {

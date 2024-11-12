@@ -569,11 +569,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
         for (let i = 0; i < this.sonarKpiData['kpi17']?.trendValueList?.length; i++) {
           for (let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++) {
-            let obj = {
-              'filter': this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
-              ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
+            if(this.sonarKpiData['kpi17']?.trendValueList[i]?.filter === 'Average Coverage') {
+              let obj = {
+                'filter': this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
+                ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
+              }
+              overallObj['value'].push(obj);
             }
-            overallObj['value'].push(obj);
           }
         }
         this.sonarKpiData['kpi17']?.trendValueList.push(overallObj);
@@ -2385,7 +2387,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             break;
           default:
             this.postJiraKpi(currentKPIGroup, 'jira');
-
         }
       }
     }
@@ -2450,5 +2451,26 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     iDateDiff -= iAdjust; // take into account both days on weekend
     return (iDateDiff + 1); // add 1 because dates are inclusive
+  }
+
+/**
+ * Checks the Y-axis label for a given KPI based on its trend data and selected filters.
+ * @param {Object} kpi - The KPI object containing kpiId and other details.
+ * @returns {string | undefined} - The Y-axis label if found; otherwise, the default Y-axis label from kpiDetail.
+ */
+  checkYAxis(kpi) {
+    const kpiDataResponce = this.allKpiArray?.find(de => de.kpiId === kpi.kpiId);
+    const selectedFilterVal = this.kpiSelectedFilterObj[kpi?.kpiId];
+    if (kpiDataResponce && kpiDataResponce?.trendValueList) {
+      const trendData = kpiDataResponce.trendValueList?.find(data => {
+        const kpiFIlter = (data.filter || data.filter1) ;
+        const selectedFilter = selectedFilterVal.filter1 ? selectedFilterVal.filter1[0] : selectedFilterVal[0];
+        return kpiFIlter === selectedFilter;
+      })
+      if (trendData && Object.keys(trendData).length > 1 && trendData?.yaxisLabel) {
+        return trendData.yaxisLabel
+      }
+    }
+    return kpi?.kpiDetail?.yaxisLabel;
   }
 }

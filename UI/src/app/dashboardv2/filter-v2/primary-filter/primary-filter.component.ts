@@ -267,4 +267,10 @@ export class PrimaryFilterComponent implements OnChanges {
 
   isString(val): boolean { return typeof val === 'string'; }
 
+  onDropdownChange($event:any){
+    if(this.helperService.isDropdownElementSelected($event)){
+      this.applyPrimaryFilters($event)
+    }
+  }
+
 }

@@ -293,16 +293,28 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			Long mrCount = repoToolUserDetails.map(RepoToolUserDetails::getMrCount).orElse(0L);
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
-			if(repoToolUserDetails.isPresent() && repo != null) {
-				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
-				repoToolValidationData.setProjectName(projectName);
-				repoToolValidationData.setBranchName(repo.getBranch());
-				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
-				repoToolValidationData.setDeveloperName(developerName);
-				repoToolValidationData.setDate(date);
-				repoToolValidationData.setCommitCount(commitCount);
-				repoToolValidationData.setMrCount(mrCount);
-				repoToolValidationDataList.add(repoToolValidationData);
+			if (repoToolUserDetails.isPresent() && repo != null) {
+				Optional<RepoToolValidationData> existingData = repoToolValidationDataList.stream()
+						.filter(data -> data.getBranchName().equals(repo.getBranch())
+								&& data.getDeveloperName().equals(developerName)
+								&& data.getRepoUrl().equals(repo.getRepositoryName()) && data.getDate().equals(date))
+						.findFirst();
+
+				if (existingData.isPresent()) {
+					RepoToolValidationData repoToolValidationData = existingData.get();
+					repoToolValidationData.setCommitCount(repoToolValidationData.getCommitCount() + commitCount);
+					repoToolValidationData.setMrCount(repoToolValidationData.getMrCount() + mrCount);
+				} else {
+					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+					repoToolValidationData.setProjectName(projectName);
+					repoToolValidationData.setBranchName(repo.getBranch());
+					repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+					repoToolValidationData.setDeveloperName(developerName);
+					repoToolValidationData.setDate(date);
+					repoToolValidationData.setCommitCount(commitCount);
+					repoToolValidationData.setMrCount(mrCount);
+					repoToolValidationDataList.add(repoToolValidationData);
+				}
 			}
 			setDataCount(projectName, date, userKpiGroup, commitCount, mrCount, dateUserWiseAverage);
 		});
@@ -333,7 +345,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			commitValue = ((Number) updatedDataCount.getValue()).longValue() + commitValue;
 			mrCount = ((Number) updatedDataCount.getLineValue()).longValue() + mrCount;
 			updatedDataCount.setValue(commitValue);
-			updatedDataCount.setLineValue(((Number) updatedDataCount.getLineValue()).longValue() + mrCount);
+			updatedDataCount.setLineValue(mrCount);
 			Map<String, Object> hoverValues = new HashMap<>();
 			hoverValues.put(NO_CHECKIN, commitValue);
 			hoverValues.put(NO_MERGE, mrCount);

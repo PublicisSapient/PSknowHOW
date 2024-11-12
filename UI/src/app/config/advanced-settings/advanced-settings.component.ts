@@ -80,7 +80,6 @@ export class AdvancedSettingsComponent implements OnInit {
 
 
     this.selectedView = 'processor_state';
-    // this.getProcessorData();
     this.getProjects();
   }
 
@@ -88,25 +87,11 @@ export class AdvancedSettingsComponent implements OnInit {
   switchView(event) {
     if (event.item.label === 'Processor State') {
       this.selectedView = 'processor_state';
-      // this.getProcessorData();
       this.getProjects();
     }
   }
 
 
-  // used to fetch the processors
-  // getProcessorData() {
-  //   this.dataLoading = true;
-  //   this.httpService.getProcessorData()
-  //     .subscribe(processorData => {
-  //       this.dataLoading = false;
-  //       if (processorData[0] !== 'error' && !processorData.error) {
-  //         this.processorData = processorData;
-  //       } else {
-  //         this.messageService.add({ severity: 'error', summary: 'Error in fetching Processor data. Please try after some time.' });
-  //       }
-  //     });
-  // }
 
   // used to fetch projects
   getProjects() {
@@ -261,17 +246,7 @@ export class AdvancedSettingsComponent implements OnInit {
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
         if (!response.error && response.success) {
-          this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
-          if (runProcessorInput['processor'].toLowerCase() === 'jira') {
-            this.jiraStatusContinuePulling = true;
-            this.getProcessorCompletionSteps(runProcessorInput)
-          }
-          else {
-            const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
-            if (pDetails) {
-              pDetails['executionOngoing'] = false;
-            }
-          }
+          this.updateflagsAfterTracelogSuccess(runProcessorInput);
         } else if (runProcessorInput['processor'].toLowerCase() === 'jira') {
           this.messageService.add({ severity: 'error', summary: response.data });
         } else {
@@ -283,6 +258,20 @@ export class AdvancedSettingsComponent implements OnInit {
         }
       });
   }
+
+    updateflagsAfterTracelogSuccess(runProcessorInput){
+      this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
+      if (runProcessorInput['processor'].toLowerCase() === 'jira') {
+        this.jiraStatusContinuePulling = true;
+        this.getProcessorCompletionSteps(runProcessorInput)
+      }
+      else {
+        const pDetails = this.findTraceLogForTool(runProcessorInput['processor'])
+        if (pDetails) {
+          pDetails['executionOngoing'] = false;
+        }
+      }
+     }
 
 
   shouldDisableRunProcessor() {
