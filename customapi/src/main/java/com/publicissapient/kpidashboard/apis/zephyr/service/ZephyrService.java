@@ -309,8 +309,9 @@ public class ZephyrService {
 				List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
 						.get(CommonConstant.PROJECT.toLowerCase());
 
-				if (!projectNodes.isEmpty() && (projectNodes.size() > 1
-						|| kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
+				if (!projectNodes.isEmpty()
+						&& (projectNodes.size() > 1 || kpiHelperService.isZephyrRequiredToolConfigured(kpi, kpiElement,
+								projectNodes.get(0).getProjectFilter().getBasicProjectConfigId()))) {
 					kpiElement = zephyrKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
 					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
 					if (projectNodes.size() == 1) {

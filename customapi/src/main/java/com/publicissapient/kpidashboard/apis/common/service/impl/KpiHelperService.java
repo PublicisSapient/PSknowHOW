@@ -37,11 +37,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -59,6 +58,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -171,7 +171,7 @@ public class KpiHelperService { // NOPMD
 			filtersMap.put(Constant.RESOLUTION_TYPE_FOR_REJECTION, resolutionTypeForRejection);
 		}
 		if (StringUtils.isNotEmpty(jiraDefectRejectionStatus)) {
-			filtersMap.put(Constant.DEFECT_REJECTION_STATUS, Arrays.asList(jiraDefectRejectionStatus));
+			filtersMap.put(Constant.DEFECT_REJECTION_STATUS, List.of(jiraDefectRejectionStatus));
 		}
 		droppedDefects.put(basicProjectConfigId.toString(), filtersMap);
 	}
@@ -229,8 +229,10 @@ public class KpiHelperService { // NOPMD
 			List<String> priorities = projectWisePriority.getOrDefault(projectId, Collections.emptyList());
 			Set<String> rcas = projectWiseRCA.getOrDefault(projectId, Collections.emptySet());
 
-			if ((priorities.isEmpty() || (StringUtils.isNotEmpty(jiraIssue.getPriority()) && !priorities.contains(jiraIssue.getPriority().toLowerCase()))) && (rcas.isEmpty()
-					|| rcas.stream().anyMatch(rca -> jiraIssue.getRootCauseList().contains(rca.toLowerCase())))) {
+			if ((priorities.isEmpty() || (StringUtils.isNotEmpty(jiraIssue.getPriority())
+					&& !priorities.contains(jiraIssue.getPriority().toLowerCase())))
+					&& (rcas.isEmpty() || rcas.stream()
+							.anyMatch(rca -> jiraIssue.getRootCauseList().contains(rca.toLowerCase())))) {
 				remainingDefects.add(jiraIssue);
 			}
 		}
@@ -251,7 +253,6 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 *
 	 * @param projectWisePriority
 	 * @param configPriority
 	 * @param leaf
@@ -443,7 +444,7 @@ public class KpiHelperService { // NOPMD
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 		mapOfFiltersWithStoryIds.put(JiraFeature.DEFECT_STORY_ID.getFieldValueInFeature(), dodStoryIdList);
 		mapOfFiltersWithStoryIds.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-				Arrays.asList(NormalizedJira.DEFECT_TYPE.getValue()));
+				Collections.singletonList(NormalizedJira.DEFECT_TYPE.getValue()));
 
 		// Fetch Defects linked with story ID's
 		List<JiraIssue> defectDataList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
@@ -530,8 +531,8 @@ public class KpiHelperService { // NOPMD
 		List<String> dodStoryIdList = storyDataList.stream().map(JiraIssueCustomHistory::getStoryID)
 				.collect(Collectors.toList());
 
-		issuesBySprintAndType = issuesBySprintAndType.stream().filter(feature -> dodStoryIdList.contains(feature.getNumber()))
-				.collect(Collectors.toList());
+		issuesBySprintAndType = issuesBySprintAndType.stream()
+				.filter(feature -> dodStoryIdList.contains(feature.getNumber())).collect(Collectors.toList());
 
 		sprintWiseStoryList.forEach(story -> {
 			List<String> storyNumberList = story.getStoryList().stream().filter(dodStoryIdList::contains)
@@ -544,7 +545,7 @@ public class KpiHelperService { // NOPMD
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 		mapOfFiltersWithStoryIds.put(JiraFeature.DEFECT_STORY_ID.getFieldValueInFeature(), dodStoryIdList);
 		mapOfFiltersWithStoryIds.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-				Arrays.asList(NormalizedJira.DEFECT_TYPE.getValue()));
+				Collections.singletonList(NormalizedJira.DEFECT_TYPE.getValue()));
 
 		// Fetch Defects linked with story ID's
 		List<JiraIssue> defectDataList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
@@ -681,8 +682,8 @@ public class KpiHelperService { // NOPMD
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
-						fieldMapping.getJiraIterationIssuetypeKPI138(),
-						fieldMapping.getJiraIssueDeliverdStatusKPI138(), null);
+						fieldMapping.getJiraIterationIssuetypeKPI138(), fieldMapping.getJiraIssueDeliverdStatusKPI138(),
+						null);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -736,7 +737,8 @@ public class KpiHelperService { // NOPMD
 		Map<String, Object> resultListMap = new HashMap<>();
 
 		/** additional filter **/
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, CommonConstant.QA, flterHelperService);
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, CommonConstant.QA,
+				flterHelperService);
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -1012,7 +1014,6 @@ public class KpiHelperService { // NOPMD
 	 * current status of that ticket is not close the list will not contain those
 	 * tickets which were closed before the filtered range
 	 *
-	 *
 	 * @param resultListMap
 	 * @param startDate
 	 * @return
@@ -1057,7 +1058,6 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 *
 	 * @param startDate
 	 * @param nonClosedTicketsList
 	 * @param issueCustomHistory
@@ -1995,9 +1995,11 @@ public class KpiHelperService { // NOPMD
 	/**
 	 * Populates a list of SCM (Source Control Management) tools repositories.
 	 *
-	 * @param mapOfListOfTools a map where the key is a string representing the SCM tool type
-	 *                         (e.g., "Bitbucket", "AzureRepository", "GitLab", "GitHub")
-	 *                         and the value is a list of Tool objects associated with that SCM tool type.
+	 * @param mapOfListOfTools
+	 *            a map where the key is a string representing the SCM tool type
+	 *            (e.g., "Bitbucket", "AzureRepository", "GitLab", "GitHub") and the
+	 *            value is a list of Tool objects associated with that SCM tool
+	 *            type.
 	 * @return a list of Tool objects representing the SCM tool repositories.
 	 */
 	public List<Tool> populateSCMToolsRepoList(Map<String, List<Tool>> mapOfListOfTools) {
@@ -2014,7 +2016,6 @@ public class KpiHelperService { // NOPMD
 		}
 		return reposList;
 	}
-
 
 	public boolean isToolConfigured(KPICode kpi, KpiElement kpiElement, Node nodeDataClone) {
 		ObjectId basicProjectConfigId = nodeDataClone.getProjectFilter().getBasicProjectConfigId();
@@ -2037,16 +2038,18 @@ public class KpiHelperService { // NOPMD
 	private boolean isMandatoryFieldSet(KPICode kpi, ObjectId basicProjectConfigId) {
 		try {
 			List<String> fieldMappingName = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase()).getFields();
-			List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
+			List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService
+					.loadFieldMappingStructure();
 			List<String> mandatoryFieldMappingName = fieldMappingStructureList.stream()
-					.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory() && fieldMappingName.contains(fieldMappingStructure.getFieldName()))
+					.filter(fieldMappingStructure -> fieldMappingStructure.isMandatory()
+							&& fieldMappingName.contains(fieldMappingStructure.getFieldName()))
 					.map(FieldMappingStructure::getFieldName).toList();
 
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(basicProjectConfigId);
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			for (String fieldName : mandatoryFieldMappingName) {
-				if (checkNullValues(fieldName, fieldMapping)) return false;
+				if (checkNullValues(fieldName, fieldMapping))
+					return false;
 			}
 		} catch (IllegalArgumentException exception) {
 			log.warn(kpi.getKpiId() + " No fieldMapping Found");
@@ -2083,6 +2086,50 @@ public class KpiHelperService { // NOPMD
 
 		return Arrays.stream(toolWiseKpiSource.get(kpi.getKpiId().toUpperCase()).split("/"))
 				.anyMatch(configuredTools::contains);
+	}
+
+	/**
+	 * checking the tool configuration for Zephyr KPIs, as testing kpis works on 2
+	 * processor run and JIRA/AZURE is mandatory and in sprint and regression kpis
+	 * have upload data option to have data on the kpis, while test execution kpi do
+	 * not rely on the execution of any testing tool processor run
+	 * 
+	 * @param kpi
+	 * @param kpiElement
+	 * @param basicProjectConfigId
+	 * @return
+	 */
+	public boolean isZephyrRequiredToolConfigured(KPICode kpi, KpiElement kpiElement, ObjectId basicProjectConfigId) {
+		Set<String> configuredTools = configHelperService.getProjectToolConfigMap()
+				.getOrDefault(basicProjectConfigId, Collections.emptyMap()).keySet().stream().map(String::toUpperCase)
+				.collect(Collectors.toSet());
+
+		kpiElement.setResponseCode(CommonConstant.TOOL_NOT_CONFIGURED);
+		if (configuredTools.contains("JIRA") || configuredTools.contains("AZURE")) {
+			if (kpi.equals(KPICode.INSPRINT_AUTOMATION_COVERAGE) || kpi.equals(KPICode.REGRESSION_AUTOMATION_COVERAGE)
+					|| kpi.equals(KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE)) {
+				return checkUpload(kpi, basicProjectConfigId) || testToolCheck(configuredTools);
+			} else {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean testToolCheck(Set<String> configureTools) {
+		return Stream.of("ZEPHYR", "ZYPHER", "JIRATEST").anyMatch(configureTools::contains);
+	}
+
+	private boolean checkUpload(KPICode kpiCode, ObjectId projectBasicConfigId) {
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(projectBasicConfigId);
+		if (kpiCode.equals(KPICode.INSPRINT_AUTOMATION_COVERAGE)) {
+			return fieldMapping.isUploadDataKPI16();
+		} else if (kpiCode.equals(KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE)) {
+			return false;
+		} else {
+			return fieldMapping.isUploadDataKPI42();
+		}
+
 	}
 
 }
