@@ -146,7 +146,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   processKpiConfigData() {
-    if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE'){
+    if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE' && false){
       this.navigationTabs =  [
         {'label':'Iteration Review', 'count': 0,width : 'half',kpis : [],fullWidthKpis : []},
         {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
