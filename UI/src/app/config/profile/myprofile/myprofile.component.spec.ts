@@ -956,6 +956,11 @@ describe('MyprofileComponent', () => {
           { id: 'projectName', name: 'Projects' },
         ]);
       });
+
+      it('should set noAccess to true when user is neither SuperAdmin nor has project access', () => {
+        component.ngOnInit();
+        expect(component.noAccess).toBe(true);
+      });
     });
   });
 });
