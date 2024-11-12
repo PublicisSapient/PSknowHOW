@@ -140,8 +140,7 @@ pipeline {
     stage('Initialize Default Parameters') {
       steps {
           script {
-              env.BUILD = env.BUILD ?: 'yes' 
-              env.SKIP_UNIT_TEST = env.SKIP_UNIT_TEST ?: 'no'
+              env.BUILD = env.BUILD ?: 'yes'
               env.PUSH_REGISTRY = env.PUSH_REGISTRY ?: 'yes'
               env.DEPLOY = env.DEPLOY ?: 'yes'
           }
@@ -249,9 +248,12 @@ pipeline {
     }
     
     stage('Deploying CustomAPI') {
-      when {
-        expression { env.DEPLOY == 'yes' }
-      }
+        when {
+            allOf {
+            expression { env.BUILD == 'yes' && env.PUSH_REGISTRY == 'yes' && env.DEPLOY == 'yes'}
+            expression { env.CHANGE_IN_API == 'true' || currentBuild.getBuildCauses('UserIdCause').size() > 0 }
+            }
+        }
       steps {
         container('mavenjava17'){
           withCredentials([
