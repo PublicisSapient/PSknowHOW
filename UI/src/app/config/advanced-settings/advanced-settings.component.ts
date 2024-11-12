@@ -437,7 +437,7 @@ export class AdvancedSettingsComponent implements OnInit {
     this.httpService.editTool(this.selectedProject['id'],details['id'],details)
     .subscribe(response => {
       if (response['success']) {
-        this.messageService.add({ severity: 'success', summary: 'Toggle updated successfully' });
+        this.messageService.add({ severity: 'success', summary: 'Configuration updated successfully' });
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s data. Please try after some time.' });
       }
