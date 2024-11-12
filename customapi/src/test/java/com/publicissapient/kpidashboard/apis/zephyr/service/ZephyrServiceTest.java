@@ -150,7 +150,7 @@ public class ZephyrServiceTest {
 	@Test
 	public void sonarViolationsTestProcessPass() throws Exception {
 
-		when(kpiHelperService.isZephyrRequiredToolConfigured(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
@@ -178,7 +178,7 @@ public class ZephyrServiceTest {
 
 	@Test
 	public void sonarViolationsTestProcessThrowApplication() throws Exception {
-		when(kpiHelperService.isZephyrRequiredToolConfigured(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");
@@ -198,7 +198,7 @@ public class ZephyrServiceTest {
 
 	@Test
 	public void sonarViolationsTestProcessThrowNullPointer() throws Exception {
-		when(kpiHelperService.isZephyrRequiredToolConfigured(any(), any(), any())).thenReturn(true);
+		when(kpiHelperService.isRequiredTestToolConfigured(any(), any(), any())).thenReturn(true);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
 		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
 				.thenReturn("project");

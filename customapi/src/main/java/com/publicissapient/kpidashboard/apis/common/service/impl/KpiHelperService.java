@@ -2099,15 +2099,18 @@ public class KpiHelperService { // NOPMD
 	 * @param basicProjectConfigId
 	 * @return
 	 */
-	public boolean isZephyrRequiredToolConfigured(KPICode kpi, KpiElement kpiElement, ObjectId basicProjectConfigId) {
+	public boolean isRequiredTestToolConfigured(KPICode kpi, KpiElement kpiElement, ObjectId basicProjectConfigId) {
 		Set<String> configuredTools = configHelperService.getProjectToolConfigMap()
 				.getOrDefault(basicProjectConfigId, Collections.emptyMap()).keySet().stream().map(String::toUpperCase)
 				.collect(Collectors.toSet());
 
+		Set<KPICode> kpisTestToolRequired = Set.of(KPICode.INSPRINT_AUTOMATION_COVERAGE,
+				KPICode.REGRESSION_AUTOMATION_COVERAGE, KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE);
+
+		// setting tool not configured as by default message and overriding it later
 		kpiElement.setResponseCode(CommonConstant.TOOL_NOT_CONFIGURED);
 		if (configuredTools.contains("JIRA") || configuredTools.contains("AZURE")) {
-			if (kpi.equals(KPICode.INSPRINT_AUTOMATION_COVERAGE) || kpi.equals(KPICode.REGRESSION_AUTOMATION_COVERAGE)
-					|| kpi.equals(KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE)) {
+			if (kpisTestToolRequired.contains(kpi)) {
 				return checkUpload(kpi, basicProjectConfigId) || testToolCheck(configuredTools);
 			} else {
 				return true;
