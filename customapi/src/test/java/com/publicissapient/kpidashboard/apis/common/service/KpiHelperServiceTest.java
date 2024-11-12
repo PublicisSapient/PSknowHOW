@@ -608,7 +608,6 @@ public class KpiHelperServiceTest {
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
 		when(fieldMapping.isUploadDataKPI16()).thenReturn(true);
-		when(fieldMapping.isUploadDataKPI42()).thenReturn(false);
 
 		KpiElement kpiElement = new KpiElement();
 		assertTrue(kpiHelperService.isZephyrRequiredToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement, projectId));
@@ -624,7 +623,6 @@ public class KpiHelperServiceTest {
 		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
-		when(fieldMapping.isUploadDataKPI16()).thenReturn(true);
 		when(fieldMapping.isUploadDataKPI42()).thenReturn(true);
 
 		KpiElement kpiElement = new KpiElement();
@@ -635,7 +633,6 @@ public class KpiHelperServiceTest {
 	public  void testIsZephyrRequiredToolConfigured_JiraNotConfigured() {
 		// Mock data
 		when(configHelperService.getProjectToolConfigMap()).thenReturn(new HashMap<>());
-		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of());
 
 		KpiElement kpiElement = new KpiElement();
 		assertFalse(kpiHelperService.isZephyrRequiredToolConfigured(KPICode.REGRESSION_AUTOMATION_COVERAGE, kpiElement,  new ObjectId("6335363749794a18e8a4479c")));
@@ -663,8 +660,6 @@ public class KpiHelperServiceTest {
 		stringListMap.put("JIRA", Arrays.asList());
 		projectConfigMap.put(projectId, stringListMap);
 		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
-		FieldMapping fieldMapping = mock(FieldMapping.class);
-		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
 		KpiElement kpiElement = new KpiElement();
 		assertTrue(kpiHelperService.isZephyrRequiredToolConfigured(KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE, kpiElement, projectId));
 	}
