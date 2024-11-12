@@ -815,13 +815,6 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  // called when user switches between Default and Additional filters
-  selectFilterType(type, event) {
-    this.filterType = type;
-    $('.ui-menuitem-link.ui-corner-all').removeClass('selected');
-    $(event.originalEvent.target).closest('a').addClass('selected');
-  }
-
   checkDefaultFilterSelection(flag) {
     if (flag) {
       this.trendLineValueList = [...this.projectListArr];

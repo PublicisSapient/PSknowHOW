@@ -2386,9 +2386,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
             break;
           default:
-           const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-            this.groupJiraKpi(kpiIdsForCurrentBoard);
-
+            this.postJiraKpi(currentKPIGroup, 'jira');
         }
       }
     }
