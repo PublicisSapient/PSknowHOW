@@ -641,6 +641,94 @@ describe('MyprofileComponent', () => {
       required: true
     }
   ];
+  const mockProjectsAccess = [
+    {
+      "role": "ROLE_PROJECT_VIEWER",
+      "projects": [
+        {
+          "projectName": "PSknowHOW",
+          "projectId": "65118da7965fbb0d14bce23c",
+          "hierarchy": [
+            {
+              "hierarchyLevel": {
+                "level": 1,
+                "hierarchyLevelId": "bu",
+                "hierarchyLevelName": "BU"
+              },
+              "value": "Internal"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 2,
+                "hierarchyLevelId": "ver",
+                "hierarchyLevelName": "Vertical"
+              },
+              "value": "PS Internal"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 3,
+                "hierarchyLevelId": "acc",
+                "hierarchyLevelName": "Account"
+              },
+              "value": "Methods and Tools"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 4,
+                "hierarchyLevelId": "port",
+                "hierarchyLevelName": "Engagement"
+              },
+              "value": "DTS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "ROLE_PROJECT_ADMIN",
+      "projects": [
+        {
+          "projectName": "ABC",
+          "projectId": "66d7da7258ffc53913fb840c",
+          "hierarchy": [
+            {
+              "hierarchyLevel": {
+                "level": 1,
+                "hierarchyLevelId": "bu",
+                "hierarchyLevelName": "BU"
+              },
+              "value": "EU"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 2,
+                "hierarchyLevelId": "ver",
+                "hierarchyLevelName": "Vertical"
+              },
+              "value": "Consumer Products"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 3,
+                "hierarchyLevelId": "acc",
+                "hierarchyLevelName": "Account"
+              },
+              "value": "ABC A/S"
+            },
+            {
+              "hierarchyLevel": {
+                "level": 4,
+                "hierarchyLevelId": "port",
+                "hierarchyLevelName": "Engagement"
+              },
+              "value": "ABC"
+            }
+          ]
+        }
+      ]
+    }
+  ];
 
 
   beforeEach(waitForAsync(() => {
@@ -790,94 +878,6 @@ describe('MyprofileComponent', () => {
       });
 
       it('should group projects and call getTableHeadings fn when there are projects in projectsAccess', () => {
-        let mockProjectsAccess = [
-          {
-            "role": "ROLE_PROJECT_VIEWER",
-            "projects": [
-              {
-                "projectName": "PSknowHOW",
-                "projectId": "65118da7965fbb0d14bce23c",
-                "hierarchy": [
-                  {
-                    "hierarchyLevel": {
-                      "level": 1,
-                      "hierarchyLevelId": "bu",
-                      "hierarchyLevelName": "BU"
-                    },
-                    "value": "Internal"
-                  },
-                  {
-                    "hierarchyLevel": {
-                      "level": 2,
-                      "hierarchyLevelId": "ver",
-                      "hierarchyLevelName": "Vertical"
-                    },
-                    "value": "PS Internal"
-                  },
-                  {
-                    "hierarchyLevel": {
-                      "level": 3,
-                      "hierarchyLevelId": "acc",
-                      "hierarchyLevelName": "Account"
-                    },
-                    "value": "Methods and Tools"
-                  },
-                  {
-                    "hierarchyLevel": {
-                      "level": 4,
-                      "hierarchyLevelId": "port",
-                      "hierarchyLevelName": "Engagement"
-                    },
-                    "value": "DTS"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "role": "ROLE_PROJECT_ADMIN",
-            "projects": [
-              {
-                "projectName": "ABC",
-                "projectId": "66d7da7258ffc53913fb840c",
-                "hierarchy": [
-                  {
-                    "hierarchyLevel": {
-                      "level": 1,
-                      "hierarchyLevelId": "bu",
-                      "hierarchyLevelName": "BU"
-                    },
-                    "value": "EU"
-                  },
-                  {
-                    "hierarchyLevel": {
-                      "level": 2,
-                      "hierarchyLevelId": "ver",
-                      "hierarchyLevelName": "Vertical"
-                    },
-                    "value": "Consumer Products"
-                  },
-                  {
-                    "hierarchyLevel": {
-                      "level": 3,
-                      "hierarchyLevelId": "acc",
-                      "hierarchyLevelName": "Account"
-                    },
-                    "value": "ABC A/S"
-                  },
-                  {
-                    "hierarchyLevel": {
-                      "level": 4,
-                      "hierarchyLevelId": "port",
-                      "hierarchyLevelName": "Engagement"
-                    },
-                    "value": "ABC"
-                  }
-                ]
-              }
-            ]
-          }
-        ];
         spyOn(component, 'groupProjects');
         spyOn(component, 'getTableHeadings');
         spyOn(shared, 'getCurrentUserDetails').and.returnValue(mockProjectsAccess);
@@ -957,9 +957,13 @@ describe('MyprofileComponent', () => {
         ]);
       });
 
-      it('should set noAccess to true when user is neither SuperAdmin nor has project access', () => {
+      it('should set noAccess to false when user is  SuperAdmin and has project access', () => {
+        
+        spyOn(authService, 'checkIfSuperUser').and.returnValue(true as any);
+        spyOn(shared, 'getCurrentUserDetails').and.returnValue(mockProjectsAccess);
         component.ngOnInit();
-        expect(component.noAccess).toBe(true);
+
+        expect(component.noAccess).toBe(false);
       });
     });
   });
