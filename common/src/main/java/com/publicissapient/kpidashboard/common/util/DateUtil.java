@@ -20,13 +20,20 @@ package com.publicissapient.kpidashboard.common.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.stream.Stream;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
@@ -219,7 +226,7 @@ public class DateUtil {
 	 *             if either targetDate or endDate is null
 	 */
 	public static boolean equalAndBeforeTime(LocalDate targetDate, LocalDate endDate) {
-		return targetDate.isEqual(endDate) || targetDate.isBefore(endDate) ;
+		return targetDate.isEqual(endDate) || targetDate.isBefore(endDate);
 	}
 
 	public static String convertMillisToDateTime(long milliSeconds) {
@@ -385,9 +392,9 @@ public class DateUtil {
 
 	/**
 	 * @param startTime
-	 * 					start time
+	 *            start time
 	 * @param endTime
-	 * 					end time
+	 *            end time
 	 * @return long - time difference in milliseconds
 	 */
 	public static long calculateDuration(String startTime, String endTime) {
@@ -399,7 +406,7 @@ public class DateUtil {
 
 	/**
 	 * @param date
-	 * 				String format of date
+	 *            String format of date
 	 * @return String - formatted Date
 	 */
 	public static String formatDate(String date) {

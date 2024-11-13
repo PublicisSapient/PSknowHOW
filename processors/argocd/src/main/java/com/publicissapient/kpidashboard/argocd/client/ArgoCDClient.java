@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.argocd.client;
 
 import java.net.URI;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -33,15 +32,12 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.argocd.dto.Application;
 import com.publicissapient.kpidashboard.argocd.dto.ApplicationsList;
-import com.publicissapient.kpidashboard.argocd.dto.TokenDTO;
-import com.publicissapient.kpidashboard.argocd.dto.UserCredentialsDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_PARAM;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHORIZATION_HEADER;
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHTOKEN_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.BEARER;
 
 /**
@@ -58,9 +54,9 @@ public class ArgoCDClient {
 	 * Get the list of Applications associated to the account
 	 * 
 	 * @param baseUrl
-	 * 				ArgoCD base url
+	 *            ArgoCD base url
 	 * @param accessToken
-	 * 				user access token
+	 *            user access token
 	 * @return ApplicationList
 	 */
 	public ApplicationsList getApplications(String baseUrl, String accessToken) {
@@ -83,11 +79,11 @@ public class ArgoCDClient {
 	 * Get the Application details by name for the account
 	 * 
 	 * @param baseUrl
-	 * 				ArgoCD base url
+	 *            ArgoCD base url
 	 * @param applicationName
-	 * 				name of ArgoCD Application
+	 *            name of ArgoCD Application
 	 * @param accessToken
-	 * 				user access token
+	 *            user access token
 	 * @return Application
 	 */
 	public Application getApplicationByName(String baseUrl, String applicationName, String accessToken) {
