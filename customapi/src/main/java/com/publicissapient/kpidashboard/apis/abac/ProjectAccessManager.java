@@ -856,14 +856,14 @@ public class ProjectAccessManager {
 	}
 
 	private List<ProjectBasicConfig> findByIdIn(Set<String> projectBasicConfigNodeIds) {
-		return projectBasicConfigService.getAllProjectBasicConfigs().stream()
+		return projectBasicConfigService.getAllProjectBasicConfigs(Boolean.TRUE).stream()
 				.filter(project -> projectBasicConfigNodeIds.contains(project.getProjectNodeId()))
 				.collect(Collectors.toList());
 	}
 
 	private List<ProjectBasicConfig> filterProjectsByHierarchyLevelAndValue(String hierarchyLevelId, List<String> orgHierarchyNodeIds) {
 
-		return projectBasicConfigService.getAllProjectBasicConfigs().stream()
+		return projectBasicConfigService.getAllProjectBasicConfigs(Boolean.TRUE).stream()
 				.filter(project -> project.getHierarchy().stream()
 						.anyMatch(hierarchy ->
 								hierarchy.getHierarchyLevel().getHierarchyLevelId().equals(hierarchyLevelId)

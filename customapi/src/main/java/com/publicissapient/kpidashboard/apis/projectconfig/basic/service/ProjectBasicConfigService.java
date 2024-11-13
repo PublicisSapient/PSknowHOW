@@ -73,7 +73,7 @@ public interface ProjectBasicConfigService {
 	 * 
 	 * @return {@code List<ProjectBasicConfig>} : empty list incase no data found
 	 */
-	List<ProjectBasicConfig> getAllProjectsBasicConfigs();
+	List<ProjectBasicConfig> getFilteredProjectsBasicConfigs(boolean includeAll);
 
 	/**
 	 * Service to fetch the list of all project basic configuration in the
@@ -81,7 +81,7 @@ public interface ProjectBasicConfigService {
 	 * 
 	 * @return {@code List<ProjectBasicConfig>} : empty list in case no data found
 	 */
-	List<ProjectBasicConfig> getAllProjectBasicConfigs();
+	List<ProjectBasicConfig> getAllProjectBasicConfigs(boolean includeAll);
 
 	/**
 	 * Delete basic project congig

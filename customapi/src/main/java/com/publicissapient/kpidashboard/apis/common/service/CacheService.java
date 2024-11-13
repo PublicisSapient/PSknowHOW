@@ -108,4 +108,8 @@ public interface CacheService {
 	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
 
 	Object updateCacheProjectConfigMapData();
+
+	Object cacheAllProjectConfigMapData();
+
+	Object updateAllCacheProjectConfigMapData();
 }

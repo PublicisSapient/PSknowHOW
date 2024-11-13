@@ -98,7 +98,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
@@ -430,7 +429,7 @@ public class ProjectBasicConfigServiceImplTest {
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
 		mapOfProjectDetails.put(UUID.randomUUID().toString(), new ProjectBasicConfig());
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
-		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigs();
+		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getFilteredProjectsBasicConfigs(Boolean.FALSE);
 		assertThat("response list size: ", list.size(), equalTo(1));
 
 	}
@@ -503,7 +502,7 @@ public class ProjectBasicConfigServiceImplTest {
 		Mockito.when(tokenAuthenticationService.getUserProjects()).thenReturn(userProjIds);
 		Set<ObjectId> projIdSet = new HashSet<>();
 		projIdSet.add(projectId);
-		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigs();
+		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getFilteredProjectsBasicConfigs(Boolean.FALSE);
 		assertThat("response list size: ", list.size(), equalTo(0));
 	}
 
@@ -634,7 +633,7 @@ public class ProjectBasicConfigServiceImplTest {
 	 * Test getAllProjectsBasicConfigsDTOWithoutPermissionTest method
 	 */
 	@Test
-	public void getAllProjectsBasicConfigsDTOWithoutPermissionTest() {
+	public void getFilteredProjectsBasicConfigsDTOWithoutPermissionTest() {
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
 		mapOfProjectDetails.put(basicConfig.getId().toHexString(), basicConfig);
 		mapOfProjectDetails.put(diffbasicConfig.getId().toHexString(), diffbasicConfig);

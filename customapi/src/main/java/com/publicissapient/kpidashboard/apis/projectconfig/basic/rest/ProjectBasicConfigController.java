@@ -114,7 +114,7 @@ public class ProjectBasicConfigController {
 			}
 
 		} else {
-			returnObj = projectBasicConfigService.getAllProjectsBasicConfigs();
+			returnObj = projectBasicConfigService.getFilteredProjectsBasicConfigs(Boolean.TRUE);
 
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, message, returnObj));
