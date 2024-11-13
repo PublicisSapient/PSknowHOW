@@ -329,21 +329,21 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<ObjectId, List<Node>> releaseNodeProjectWise = accountHierarchyDataList.stream()
 				.flatMap(accountHierarchyData -> accountHierarchyData.getNode().stream())
-				.filter(accountHierarchyNode -> accountHierarchyNode.getAccountHierarchy().getLabelName()
+				.filter(accountHierarchyNode -> accountHierarchyNode.getProjectHierarchy().getHierarchyLevelId()
 						.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)
-						&& Objects.nonNull(accountHierarchyNode.getAccountHierarchy().getReleaseState())
-						&& accountHierarchyNode.getAccountHierarchy().getReleaseState()
+						&& Objects.nonNull(accountHierarchyNode.getProjectHierarchy().getReleaseState())
+						&& accountHierarchyNode.getProjectHierarchy().getReleaseState()
 								.equalsIgnoreCase(CommonConstant.RELEASED))
 				.collect(Collectors
-						.groupingBy(releaseNode -> releaseNode.getAccountHierarchy().getBasicProjectConfigId()));
+						.groupingBy(releaseNode -> releaseNode.getProjectHierarchy().getBasicProjectConfigId()));
 
 		releaseNodeProjectWise.forEach((basicProjectConfigId, projectNodes) -> {
 			List<String> sortedReleaseList = new ArrayList<>();
-			projectNodes.stream().filter(node -> Objects.nonNull(node.getAccountHierarchy().getEndDate()))
+			projectNodes.stream().filter(node -> Objects.nonNull(node.getProjectHierarchy().getEndDate()))
 
-					.sorted(Comparator.comparing(node -> node.getAccountHierarchy().getEndDate()))
+					.sorted(Comparator.comparing(node -> node.getProjectHierarchy().getEndDate()))
 					.limit(customApiConfig.getJiraXaxisMonthCount())
-					.forEach(node -> sortedReleaseList.add(node.getAccountHierarchy().getNodeName().split("_")[0]));
+					.forEach(node -> sortedReleaseList.add(node.getProjectHierarchy().getNodeName().split("_")[0]));
 
 			sortedReleaseListProjectWise.put(basicProjectConfigId.toString(), sortedReleaseList);
 		});
