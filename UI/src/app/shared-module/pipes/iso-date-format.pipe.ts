@@ -5,12 +5,28 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class IsoDateFormatPipe implements PipeTransform {
 
-  transform(value: Date | string, format: string = 'yyyy-MM-dd'): string {
-    const date = new Date(value);
+  transform(value: Date | string): string {
+    if(!value){
+      return 'Invalid Date input';
+    }
+
+    let date=new Date();
+
+    if(typeof value === 'string'){
+      date = new Date(value);
+    } else if(value instanceof Date){
+      date = value;
+    } else{
+      return 'Invalid date input'
+    }
+
     if(isNaN(date.getTime())){
       return 'Invalid Date';
     }
-    return date.toISOString().split('T')[0];
+    const year = date.getUTCFullYear()
+    const month = String(date.getUTCMonth()+1).padStart(2,'0');
+    const day = String(date.getUTCDate()).padStart(2,'0');
+    return `${year}-${month}-${day}`;
   }
 
 }

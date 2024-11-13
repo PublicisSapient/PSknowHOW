@@ -37,11 +37,18 @@ describe('IsoDateFormatPipe', () => {
 
 	it('should return Invalid Date for an empty string', () => {
 		const result = pipe.transform('');
-		expect(result).toBe('Invalid Date');
+		expect(result).toBe('Invalid Date input');
 	});
 
 	it('should return Invalid Date for an invalid date string', () => {
 		const result = pipe.transform('invalid-date-string');
 		expect(result).toBe('Invalid Date');
 	});
+
+	it('should return Invalid Date input for null value', () => {
+		const result = pipe.transform(null);
+		expect(result).toBe('Invalid Date input');
+	});
+
+	
 });
