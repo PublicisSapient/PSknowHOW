@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.argocd.client;
 
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_PARAM;
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHTOKEN_ENDPOINT;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +39,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -49,7 +47,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.argocd.dto.Application;
 import com.publicissapient.kpidashboard.argocd.dto.ApplicationsList;
-import com.publicissapient.kpidashboard.argocd.dto.TokenDTO;
 
 @ExtendWith(SpringExtension.class)
 class ArgoCDClientTest {
@@ -67,7 +64,8 @@ class ArgoCDClientTest {
 	@Test
 	void testGetApplications() throws JsonMappingException, JsonProcessingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		ApplicationsList applications = mapper.readValue(getStringFromJson("applications.json"), ApplicationsList.class);
+		ApplicationsList applications = mapper.readValue(getStringFromJson("applications.json"),
+				ApplicationsList.class);
 		when(restTemplate.exchange(
 				Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "?" + APPLICATIONS_PARAM)),
 				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<ApplicationsList>>any()))
