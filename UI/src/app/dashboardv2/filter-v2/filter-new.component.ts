@@ -692,8 +692,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     if (event.length === 1) {
       this.additionalData = true;
-      this.getProcessorsTraceLogsForProject();
+      this.getProcessorsTraceLogsForProject().then(result => {
+        if (result) {
+          this.sendDataToDashboard(event);
+        }
+      }).catch(error => {
+        console.error("Error:", error);
+        this.sendDataToDashboard(event);
+      });
+    } else {
+      this.sendDataToDashboard(event);
     }
+  }
+
+  sendDataToDashboard(event) {
     this.previousFilterEvent = event;
     this.previousSelectedTab = this.selectedTab;
     this.previousSelectedType = this.selectedType;
@@ -1035,18 +1047,23 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @throws {Error} - Logs error to the console if the HTTP request fails.
    */
   getProcessorsTraceLogsForProject() {
-    this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
-      if (response.success) {
-        this.service.setProcessorLogDetails(response.data);
-      } else {
-        this.messageService.add({
-          severity: 'error',
-          summary:
-            "Error in fetching processor's execution date. Please try after some time.",
-        });
-      }
-    }, error => {
-      console.log(error);
+    return new Promise((resolve, reject) => {
+      this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
+        if (response.success) {
+          this.service.setProcessorLogDetails(response.data);
+          resolve(true);
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary:
+              "Error in fetching processor's execution date. Please try after some time.",
+          });
+          reject("Operation failed.");
+        }
+      }, error => {
+        console.log(error);
+        reject("Operation failed.");
+      });
     });
   }
 
