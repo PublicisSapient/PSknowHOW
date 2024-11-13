@@ -290,13 +290,13 @@ export class AdvancedSettingsComponent implements OnInit {
      }
 
 
-  shouldDisableRunProcessor() {
+  shouldDisableRunProcessor(processorName) {
 
     if (this.getAuthorizationService.checkIfSuperUser()) {
       return false;
     }
 
-    if (this.getAuthorizationService.checkIfProjectAdmin()) {
+    if (this.getAuthorizationService.checkIfProjectAdmin() && processorName?.toLowerCase() !== 'azure') {
       return false;
     }
 

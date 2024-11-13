@@ -144,7 +144,7 @@
                   (click)="runProcessor(processor.toolName)"></button>
                 <div class="action-btns p-ml-3"
                   [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.toolName)?.length > 0 && findTraceLogForTool(processor?.toolName)) || findTraceLogForTool(processor?.toolName)?.isDeleteDisable}"
-                  *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt"
+                  *ngIf="!shouldDisableRunProcessor(processor?.toolName)"><i class="far fa-trash-alt"
                     (click)="deleteProcessorData(processor)"></i></div>
               </td>
             </tr>

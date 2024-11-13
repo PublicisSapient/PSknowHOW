@@ -508,13 +508,13 @@ describe('AdvancedSettingsComponent', () => {
   it('should disable processor when user is not Super admin', () => {
     const getAuthorizationService = TestBed.inject(GetAuthorizationService);
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);
-    expect(component.shouldDisableRunProcessor()).toBe(false);
+    expect(component.shouldDisableRunProcessor('jira')).toBe(false);
   });
 
   it('should disable processor when user is not Project admin', () => {
     const getAuthorizationService = TestBed.inject(GetAuthorizationService);
     spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true);
-    expect(component.shouldDisableRunProcessor()).toBe(false);
+    expect(component.shouldDisableRunProcessor('jira')).toBe(false);
   });
 
   it('should enable processor when user is Project admin/Super Admin', () => {
@@ -523,7 +523,7 @@ describe('AdvancedSettingsComponent', () => {
       false,
     );
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(false);
-    expect(component.shouldDisableRunProcessor()).toBe(true);
+    expect(component.shouldDisableRunProcessor('jira')).toBe(true);
   });
 
   it('should delete tool when trying to delete for any project', () => {
