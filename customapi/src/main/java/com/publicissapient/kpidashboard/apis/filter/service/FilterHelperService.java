@@ -118,9 +118,7 @@ public class FilterHelperService {
 
 	/**
 	 * filter data based on sprint state
-	 * 
-	 * @param sprintStateRequestList
-	 *            sprintStateList
+	 *
 	 * @param hierarchyDataAll
 	 *            hierarchyDataAll
 	 * @return List<AccountHierarchyData>
@@ -292,11 +290,6 @@ public class FilterHelperService {
 
 	/**
 	 * clean filter data
-	 * 
-	 * @param basicProjectConfigId
-	 *            id
-	 * @param isKanban
-	 *            kanban or scrum
 	 */
 	public void cleanFilterData(ProjectBasicConfigDTO basicConfig) {
 		ObjectId basicProjectConfigId = basicConfig.getId();
@@ -581,8 +574,10 @@ public class FilterHelperService {
 
 	public Map<String, HierarchyLevel> getHierarchyLevelMap(boolean isKanban) {
 		if (isKanban) {
+			log.info("GS For Kanban");
 			return cacheService.getFullKanbanHierarchyLevelMap();
 		} else {
+			log.info("GS For Scrum");
 			return cacheService.getFullHierarchyLevelMap();
 		}
 	}
@@ -590,18 +585,23 @@ public class FilterHelperService {
 	public String getHierarachyLevelId(int level, String label, boolean isKanban) {
 		String hierarchyId = CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
 		Map<String, HierarchyLevel> map = getHierarchyLevelMap(isKanban);
+		log.info("GS Hierarachy LevelId method");
 		if (MapUtils.isNotEmpty(map)) {
 			if (StringUtils.isNotEmpty(label)) {
+				log.info("GS label");
 				hierarchyId = map.values().stream().filter(hlevel -> (hlevel.getLevel() == level)
 						&& (StringUtils.isNotEmpty(label) && hlevel.getHierarchyLevelId().equalsIgnoreCase(label)))
 						.map(HierarchyLevel::getHierarchyLevelId).findFirst()
 						.orElse(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+				log.info("hierarchyId {}", hierarchyId);
 			} else {
 				hierarchyId = map.values().stream().filter(hlevel -> (hlevel.getLevel() == level))
 						.map(HierarchyLevel::getHierarchyLevelId).findFirst()
 						.orElse(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+				log.info("hierarchyId {}", hierarchyId);
 			}
 		}
+		log.info("hierarchyId {}", hierarchyId);
 		return hierarchyId;
 	}
 
