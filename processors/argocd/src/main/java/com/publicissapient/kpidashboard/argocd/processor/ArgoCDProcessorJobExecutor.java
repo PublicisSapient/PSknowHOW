@@ -355,7 +355,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				deployment.setProjectToolConfigId(argoCDJob.getId());
 				deployment.setProcessorId(processorId);
 				deployment.setJobId(argoCDJob.getDeploymentProjectId());
-				deployment.setJobName(argoCDJob.getDeploymentProjectName());
+				deployment.setJobName(argoCDJob.getJobName());
 				deployment.setEnvId(history.getRevision());
 				deployment.setEnvName(application.getMetadata().getName());
 				deployment.setDeploymentStatus(DeploymentStatus.SUCCESS);
