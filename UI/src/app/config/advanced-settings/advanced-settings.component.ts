@@ -51,7 +51,7 @@ export class AdvancedSettingsComponent implements OnInit {
   dataMismatchObj: object = {};
   pid: string;
   configuredToolList: any;
-  azureSnapshotToggleTooltip = "Click to capture the initial scope of your active sprint after sprint planning. Subsequent changes will be tracked as scope changes. Applies to active sprints only."; 
+  azureSnapshotToggleTooltip = 'Enable and click on "Run Now" to capture the initial scope of your active sprint after sprint planning. Subsequent changes will be tracked as scope changes. Applies to active sprints only.'; 
 
   constructor(
     private httpService: HttpService,

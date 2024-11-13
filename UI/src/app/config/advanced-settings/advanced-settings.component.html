@@ -124,24 +124,32 @@
                       Reached the API rate limit. Repo scanning will automatically resume after {{getSCMToolTimeDetails(processor.toolName)}}
                     </p-overlayPanel>
                   </div>
-                  <div class="p-ml-2" *ngIf="processor.toolName === 'Azure'">
-                    <p-inputSwitch tooltipPosition="top"
-                    [pTooltip]="azureSnapshotToggleTooltip" name="azureRefreshActiveSprintReport" id="azureRefreshActiveSprintReport" [(ngModel)]="processor.azureRefreshActiveSprintReport" (onChange)="azureRefreshActiveSprintReportToggleChange(processor)">
-                  </p-inputSwitch>
-                  </div>
+                  
                 </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
-               <button pButton pRipple label="Run Now"
-                  icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
-                  [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
-                  (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
-                  class="p-button-sm p-button-success p-button-raised"
-                  (click)="runProcessor(processor.toolName)"></button>
-                <div class="action-btns p-ml-3"
-                  [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.toolName)?.length > 0 && findTraceLogForTool(processor?.toolName)) || findTraceLogForTool(processor?.toolName)?.isDeleteDisable}"
-                  *ngIf="!shouldDisableRunProcessor(processor?.toolName)"><i class="far fa-trash-alt"
-                    (click)="deleteProcessorData(processor)"></i></div>
+                <div>
+                  <div *ngIf="processor.toolName === 'Azure'" class="p-mb-2">
+                    <p-inputSwitch tooltipPosition="top" [pTooltip]="azureSnapshotToggleTooltip" name="azureRefreshActiveSprintReport"
+                      id="azureRefreshActiveSprintReport" [(ngModel)]="processor.azureRefreshActiveSprintReport"
+                      (onChange)="azureRefreshActiveSprintReportToggleChange(processor)">
+                    </p-inputSwitch>
+                    <label>
+                      Refresh Snapshot
+                    </label>
+                  </div>
+                  <div style="display: flex;">
+                    <button pButton pRipple label="Run Now"
+                      icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
+                      [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
+                                  (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
+                      class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.toolName)"></button>
+                    <div class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue"
+                      [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.toolName)?.length > 0 && findTraceLogForTool(processor?.toolName)) || findTraceLogForTool(processor?.toolName)?.isDeleteDisable}"
+                      *ngIf="!shouldDisableRunProcessor(processor?.toolName)"><i class="far fa-trash-alt"
+                        (click)="deleteProcessorData(processor)"></i></div>
+                  </div>
+                </div>
               </td>
             </tr>
           </ng-template>
