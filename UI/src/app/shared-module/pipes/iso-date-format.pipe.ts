@@ -14,10 +14,9 @@ export class IsoDateFormatPipe implements PipeTransform {
 
     if(typeof value === 'string'){
       date = new Date(value);
-    } else if(value instanceof Date){
+    } 
+    if(value instanceof Date){
       date = value;
-    } else{
-      return 'Invalid date input'
     }
 
     if(isNaN(date.getTime())){
