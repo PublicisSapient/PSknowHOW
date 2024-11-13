@@ -53,3 +53,4 @@ USER $USER:$GID
 
 # Entrypoint command
 ENTRYPOINT ["/etc/init.d/start_nginx.sh"]
+#
