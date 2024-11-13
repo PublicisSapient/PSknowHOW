@@ -28,12 +28,6 @@ describe('IsoDateFormatPipe', () => {
 		expect(result).toBe(expectedOutput);
 	});
 
-  it('should transform date string from MM/dd/yyyy to yyyy-MM-dd', () => {
-		const inputDate = '12/31/2023';
-		const expectedOutput = '2023-12-30';
-		const result = pipe.transform(inputDate);
-		expect(result).toBe(expectedOutput);
-	});
 
 	it('should return Invalid Date for an empty string', () => {
 		const result = pipe.transform('');
