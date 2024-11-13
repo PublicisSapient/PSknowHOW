@@ -153,4 +153,11 @@ describe('HeaderComponent', () => {
     component.logout();
     expect(helperService.logoutHttp).toHaveBeenCalled();
   });
+
+  it('should call getNotification when passEventToNav emits an event', () => {
+		const getNotificationSpy = spyOn(component, 'getNotification');
+		component.ngOnInit();
+		sharedService.passEventToNav.subscribe();
+		expect(getNotificationSpy).toHaveBeenCalled();
+	});
 });
