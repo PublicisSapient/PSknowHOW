@@ -84,15 +84,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     private helperService: HelperService) { }
 
   ngOnInit(): void {
-    const getSelectedKpiFilterVal = this.service.getSelectedKPIFilterValues();
-    let x = {};
-    this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((data) => {
+    this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
       this.filterOptions = {};
-      if(getSelectedKpiFilterVal) {
-        x = getSelectedKpiFilterVal;
-      } else {
-        x = data;
-      }
       if (Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
@@ -221,6 +214,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
  * @returns {void}
  */
   handleChange(type, value = null, filterIndex = 0) {
+
     // moving selected option to top
     if (value && value.value && Array.isArray(value.value)) {
       value.value.forEach(selectedItem => {

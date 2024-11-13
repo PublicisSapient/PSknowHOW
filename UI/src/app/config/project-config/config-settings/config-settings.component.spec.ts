@@ -23,107 +23,141 @@ import { ConfigSettingsComponent } from './config-settings.component';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { APP_CONFIG } from 'src/app/services/app.config';
 
 describe('ConfigSettingsComponent', () => {
   let component: ConfigSettingsComponent;
   let fixture: ComponentFixture<ConfigSettingsComponent>;
-  let mockSharedService: jasmine.SpyObj<SharedService>;
-  let mockHttpService: jasmine.SpyObj<HttpService>;
-  let mockRouter: jasmine.SpyObj<Router>;
-  let mockActivatedRoute;
+  let sharedService: SharedService;
+  let router: Router;
+  let activatedRoute: ActivatedRoute;
+
+  const mockAppConfig = { apiEndpoint: 'http://mock-api.com' }; // Mock configuration
 
   beforeEach(async () => {
-    // Set up spies for services
-    mockSharedService = jasmine.createSpyObj('SharedService', ['getSelectedProject']);
-    mockHttpService = jasmine.createSpyObj('HttpService', ['']);
-    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
-
-    // ActivatedRoute with mock query parameters
-    mockActivatedRoute = {
-      queryParams: of({
-        toolName: 'TestTool',
-        tab: '2'
-      })
-    };
-
     await TestBed.configureTestingModule({
       declarations: [ConfigSettingsComponent],
-      imports: [RouterTestingModule], // Importing the RouterTestingModule to test navigation
+      imports: [RouterTestingModule, HttpClientTestingModule], // Added HttpClientTestingModule here
       providers: [
-        { provide: SharedService, useValue: mockSharedService },
-        { provide: HttpService, useValue: mockHttpService },
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParams: of({ toolName: 'Jira', tab: '2' }),
+          },
+        },
+        SharedService,
+        HttpService,
+        { provide: APP_CONFIG, useValue: mockAppConfig }, // Provide mock config
       ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ConfigSettingsComponent);
     component = fixture.componentInstance;
-
-    // Mocking return values
-    mockSharedService.getSelectedProject.and.returnValue({ type: 'Project' });
-
-    fixture.detectChanges(); // Run ngOnInit
+    sharedService = TestBed.inject(SharedService);
+    router = TestBed.inject(Router);
+    activatedRoute = TestBed.inject(ActivatedRoute);
+    spyOn(sharedService, 'getSelectedProject').and.returnValue({ type: 'Agile', id: 1 });
+    fixture.detectChanges();
   });
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize configOptions correctly', () => {
-    expect(component.configOptions.length).toBe(3);
-    expect(component.configOptions[0].tab).toBe('Project Settings');
-    expect(component.configOptions[1].tab).toBe('Available Connections');
-    expect(component.configOptions[2].tab).toBe('Project Configuration');
-  });
-
-  it('should set selectedToolName from queryParams', () => {
-    expect(component.selectedToolName).toBe('TestTool');
-  });
-
-  it('should set selectedTab based on queryParams (tab value 2)', () => {
+  it('should initialize configOptions and default selectedTab', () => {
+    expect(component.configOptions).toEqual([
+      { tab: 'Project Settings', tabValue: 'projectSettings' },
+      { tab: 'Available Connections', tabValue: 'availableConnections' },
+      { tab: 'Project Configuration', tabValue: 'projectConfig' },
+    ]);
     expect(component.selectedTab).toBe('projectConfig');
   });
 
-  it('should get selectedProject on ngOnInit', () => {
-    expect(component.selectedProject).toEqual({ type: 'Project' });
-    expect(mockSharedService.getSelectedProject).toHaveBeenCalled();
+  it('should set selectedTab to "availableConnections" when tab is 1', () => {
+    // Modify queryParams to simulate tab = 1
+    activatedRoute.queryParams = of({ toolName: 'Jira', tab: '1' });
+    fixture = TestBed.createComponent(ConfigSettingsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.selectedTab).toBe('availableConnections');
   });
 
-  it('should navigate on onTabChange - projectConfig case', () => {
+  it('should set selectedTab to "projectConfig" when tab is 2', () => {
+    // Modify queryParams to simulate tab = 2
+    activatedRoute.queryParams = of({ toolName: 'Jira', tab: '2' });
+    fixture = TestBed.createComponent(ConfigSettingsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.selectedTab).toBe('projectConfig');
+  });
+
+  it('should set selectedTab to "projectSettings" when tab is not 1 or 2 (default case)', () => {
+    // Modify queryParams to simulate a value other than 1 or 2
+    activatedRoute.queryParams = of({ toolName: 'Jira', tab: '3' });
+    fixture = TestBed.createComponent(ConfigSettingsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.selectedTab).toBe('projectSettings');
+  });
+
+  it('should update selectedTab based on queryParams', () => {
+    expect(component.selectedToolName).toBe('Jira');
+    expect(component.tab).toBe(2);
+    expect(component.selectedTab).toBe('projectConfig');
+  });
+
+  it('should call getSelectedProject on ngOnInit and assign it to selectedProject', () => {
+    component.ngOnInit();
+    expect(sharedService.getSelectedProject).toHaveBeenCalled();
+    expect(component.selectedProject).toEqual({ type: 'Agile', id: 1 });
+  });
+
+  it('should navigate with correct queryParams on onTabChange for projectConfig tab', () => {
     component.selectedTab = 'projectConfig';
-    component.selectedProject = { type: 'Project' };
+    const navigateSpy = spyOn(router, 'navigate');
 
     component.onTabChange();
 
-    expect(mockRouter.navigate).toHaveBeenCalledWith(
+    expect(navigateSpy).toHaveBeenCalledWith(
       ['.'],
-      { queryParams: { type: 'project', tab: 2 }, relativeTo: mockActivatedRoute }
+      {
+        queryParams: { type: 'agile', tab: 2 },
+        relativeTo: activatedRoute,
+      }
     );
   });
 
-  it('should navigate on onTabChange - availableConnections case', () => {
+  it('should navigate with correct queryParams on onTabChange for availableConnections tab', () => {
     component.selectedTab = 'availableConnections';
+    const navigateSpy = spyOn(router, 'navigate');
+
     component.onTabChange();
 
-    expect(mockRouter.navigate).toHaveBeenCalledWith(
+    expect(navigateSpy).toHaveBeenCalledWith(
       ['.'],
-      { queryParams: { tab: 1 }, relativeTo: mockActivatedRoute }
+      {
+        queryParams: { tab: 1 },
+        relativeTo: activatedRoute,
+      }
     );
   });
 
-  it('should navigate on onTabChange - default case (projectSettings)', () => {
+  it('should navigate with correct queryParams on onTabChange for projectSettings tab', () => {
     component.selectedTab = 'projectSettings';
-    component.selectedProject = { type: 'Project' };
+    const navigateSpy = spyOn(router, 'navigate');
 
     component.onTabChange();
 
-    expect(mockRouter.navigate).toHaveBeenCalledWith(
+    expect(navigateSpy).toHaveBeenCalledWith(
       ['.'],
-      { queryParams: { type: 'project', tab: 0 }, relativeTo: mockActivatedRoute }
+      {
+        queryParams: { type: 'agile', tab: 0 },
+        relativeTo: activatedRoute,
+      }
     );
   });
 });
-
