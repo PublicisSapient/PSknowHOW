@@ -200,19 +200,6 @@ class ArgoCDProcessorJobExecutorTest {
 		verifyNoMoreInteractions(argoCDClient);
 	}
 
-	//	@Test
-//	void collectTwoJobsWithExceptionFromArgoCD() {
-//		ArgoCDProcessor processor = new ArgoCDProcessor();
-//		processor.setId(new ObjectId("6597633d916863f2b4779145"));
-//		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
-//		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
-//				.thenReturn(listProcessorToolConnection);
-//		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
-//				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any())).thenThrow(RestClientException.class);
-//		when(restClient.exchange(ArgumentMatchers.any(String.class), Mockito.eq(HttpMethod.GET),
-//				Mockito.any(HttpEntity.class), Mockito.<Class<String>>any())).thenThrow(RestClientException.class);
-//		assertFalse(jobExecutor.execute(processor));
-//	}
 	@Test
 	void executeWithValidProjectsAndJobs() {
 		ArgoCDProcessor processor = new ArgoCDProcessor();

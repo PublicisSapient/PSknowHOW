@@ -38,6 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -63,7 +64,6 @@ import com.publicissapient.kpidashboard.argocd.dto.History;
 import com.publicissapient.kpidashboard.argocd.dto.UserCredentialsDTO;
 import com.publicissapient.kpidashboard.argocd.model.ArgoCDProcessor;
 import com.publicissapient.kpidashboard.argocd.repository.ArgoCDProcessorRepository;
-import com.publicissapient.kpidashboard.argocd.utils.ArgoCDUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -359,10 +359,10 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				deployment.setEnvId(history.getRevision());
 				deployment.setEnvName(application.getMetadata().getName());
 				deployment.setDeploymentStatus(DeploymentStatus.SUCCESS);
-				deployment.setStartTime(ArgoCDUtils.formatDate(history.getDeployStartedAt()));
-				deployment.setEndTime(ArgoCDUtils.formatDate(history.getDeployedAt()));
+				deployment.setStartTime(DateUtil.formatDate(history.getDeployStartedAt()));
+				deployment.setEndTime(DateUtil.formatDate(history.getDeployedAt()));
 				deployment.setDuration(
-						ArgoCDUtils.calculateDuration(history.getDeployStartedAt(), history.getDeployedAt()));
+						DateUtil.calculateDuration(history.getDeployStartedAt(), history.getDeployedAt()));
 				deployment.setNumber(history.getId());
 				deployments.put(Pair.of(deployment.getEnvName(), deployment.getNumber()), deployment);
 			}

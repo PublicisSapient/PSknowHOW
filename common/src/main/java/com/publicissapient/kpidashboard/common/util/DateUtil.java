@@ -20,13 +20,7 @@ package com.publicissapient.kpidashboard.common.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -389,4 +383,28 @@ public class DateUtil {
 				.count();
 	}
 
+	/**
+	 * @param startTime
+	 * 					start time
+	 * @param endTime
+	 * 					end time
+	 * @return long - time difference in milliseconds
+	 */
+	public static long calculateDuration(String startTime, String endTime) {
+		Instant startInstant = Instant.parse(startTime);
+		Instant endInstant = Instant.parse(endTime);
+		Duration duration = Duration.between(startInstant, endInstant);
+		return duration.toMillis();
+	}
+
+	/**
+	 * @param date
+	 * 				String format of date
+	 * @return String - formatted Date
+	 */
+	public static String formatDate(String date) {
+		Instant dateTime = Instant.parse(date);
+		return dateTime.atZone(ZoneId.systemDefault()).toLocalDateTime()
+				.format(DateTimeFormatter.ofPattern(TIME_FORMAT));
+	}
 }
