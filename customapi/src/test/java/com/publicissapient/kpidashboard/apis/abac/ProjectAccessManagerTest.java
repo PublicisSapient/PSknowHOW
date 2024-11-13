@@ -400,7 +400,7 @@ public class ProjectAccessManagerTest {
 	public void testHasProjectEditPermission_getProjectAccessesWithRole() {
 		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
-		when(projectBasicConfigService.getAllProjectBasicConfigs())
+		when(projectBasicConfigService.getAllProjectBasicConfigs(ArgumentMatchers.anyBoolean()))
 				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
 		assertFalse(projectAccessManager.hasProjectEditPermission(new ObjectId("61e4f7852747353d4405c765"),
 				userInfoObj(Constant.ROLE_PROJECT_ADMIN).getUsername()));

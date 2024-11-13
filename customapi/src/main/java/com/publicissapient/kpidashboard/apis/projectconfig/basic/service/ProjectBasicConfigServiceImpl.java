@@ -280,6 +280,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				ProjectBasicConfig savedConfig = savedConfigOpt.get();
 				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
+				//AP: Temporary workaround till UI passes the new field
+				if(StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
+					basicConfig.setProjectNodeId(savedConfigOpt.get().getProjectNodeId());
+				}
+				if(StringUtils.isEmpty(projectBasicConfigDTO.getProjectDisplayName())) {
+					basicConfig.setProjectDisplayName(savedConfigOpt.get().getProjectDisplayName());
+				}
+				//AP: Temporary workaround end
 				if (isAssigneeUpdated(basicConfig, savedConfig)) {
 					List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
 							.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
@@ -299,6 +307,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 						assigneeDetailsRepository.delete(assigneeDetails);
 					}
 				}
+				basicConfig.setCreatedBy(savedConfig.getCreatedBy());
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
@@ -348,6 +357,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		}
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_BASIC_TREE);
 	}
 
@@ -384,16 +394,23 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	@Override
-	public List<ProjectBasicConfig> getAllProjectsBasicConfigs() {
+	public List<ProjectBasicConfig> getFilteredProjectsBasicConfigs(boolean includeAll) {
 		List<ProjectBasicConfig> list = new ArrayList<>();
 		if (userAuthorizedProjectsService.ifSuperAdminUser()) {
-			list.addAll(getAllProjectBasicConfigs());
+			list.addAll(getAllProjectBasicConfigs(includeAll));
 		} else {
 			Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
 			if (Optional.ofNullable(basicProjectConfigIds).isPresent()) {
 
-				Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
-						.cacheProjectConfigMapData();
+				Map<String, ProjectBasicConfig> basicConfigMap = null;
+
+				if(includeAll) {
+					basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+							.cacheAllProjectConfigMapData();
+				} else {
+					basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+							.cacheProjectConfigMapData();
+				}
 
 				List<ProjectBasicConfig> projectList = Optional.ofNullable(basicConfigMap)
 						.filter(MapUtils::isNotEmpty)
@@ -411,10 +428,17 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ProjectBasicConfig> getAllProjectBasicConfigs() {
+	public List<ProjectBasicConfig> getAllProjectBasicConfigs(boolean includeAll) {
 
-		Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
-				.cacheProjectConfigMapData();
+		Map<String, ProjectBasicConfig> basicConfigMap = null;
+
+		if(includeAll) {
+			basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+					.cacheAllProjectConfigMapData();
+		} else {
+			basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+					.cacheProjectConfigMapData();
+		}
 
 		return Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
 				.map(map -> new ArrayList<>(map.values())).orElseGet(ArrayList::new);
@@ -602,7 +626,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private Set<ProjectBasicConfigNode> getBasicConfigNodes() {
-		List<ProjectBasicConfig> projectBasicConfigs = getAllProjectBasicConfigs();
+		List<ProjectBasicConfig> projectBasicConfigs = getAllProjectBasicConfigs(Boolean.FALSE);
 		Set<ProjectBasicConfigNode> projectBasicConfigNodes = new LinkedHashSet<>();
 		if (CollectionUtils.isNotEmpty(projectBasicConfigs)) {
 

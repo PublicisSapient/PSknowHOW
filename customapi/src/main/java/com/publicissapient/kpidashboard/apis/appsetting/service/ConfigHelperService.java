@@ -387,5 +387,6 @@ public class ConfigHelperService {
 	public void updateCacheProjectBasicConfig(ProjectBasicConfig projectBasicConfig) {
 		projectConfigMap.put(projectBasicConfig.getId().toString(), projectBasicConfig);
 		cacheService.updateCacheProjectConfigMapData();
+		cacheService.updateAllCacheProjectConfigMapData();
 	}
 }
