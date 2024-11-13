@@ -105,30 +105,4 @@ public class ArgoCDClient {
 			throw ex;
 		}
 	}
-
-	/**
-	 * Create a new JWT for authentication
-	 * 
-	 * @param baseUrl
-	 * 				ArgoCD base url
-	 * @param userCredentialsDTO
-	 * 				UserCredentialsDTO
-	 * @return String - user access token
-	 */
-	public String getAuthToken(String baseUrl, UserCredentialsDTO userCredentialsDTO) {
-		String url = baseUrl + AUTHTOKEN_ENDPOINT;
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		try {
-			ResponseEntity<TokenDTO> response = restTemplate.exchange(URI.create(url), HttpMethod.POST,
-					new HttpEntity<>(userCredentialsDTO, requestHeaders), TokenDTO.class);
-			return Optional.ofNullable(response.getBody())
-		            .map(TokenDTO::getToken)
-		            .orElseThrow(() -> new RestClientException("Unable to fetch token for the user"));
-		} catch (RestClientException ex) {
-			log.error("ArgoCDClient :: getAuthToken Exception occured :: {}", ex.getMessage());
-			throw ex;
-		}
-	}
-
 }

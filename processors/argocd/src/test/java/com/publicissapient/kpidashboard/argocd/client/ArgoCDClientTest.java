@@ -103,23 +103,7 @@ class ArgoCDClientTest {
 		Assertions.assertThrows(RestClientException.class,
 				() -> argoCDClient.getApplicationByName(ARGOCD_URL, "application2", ACCESS_TOKEN));
 	}
-	
-	@Test
-	void testGetAccessTokenWithNoBody() {
-		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
-				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any()))
-				.thenReturn(new ResponseEntity<TokenDTO>(HttpStatus.OK));
-		Assertions.assertThrows(RestClientException.class, () -> argoCDClient.getAuthToken(ARGOCD_URL, null));
-	}
 
-	@Test
-	void testGetAccessTokenWithException() {
-		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
-				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any()))
-				.thenThrow(HttpClientErrorException.class);
-		Assertions.assertThrows(RestClientException.class, () -> argoCDClient.getAuthToken(ARGOCD_URL, null));
-	}
-	
 	private String getStringFromJson(String fileName) throws IOException {
 		String filePath = "src/test/resources/" + fileName;
 		return new String(Files.readAllBytes(Paths.get(filePath)));

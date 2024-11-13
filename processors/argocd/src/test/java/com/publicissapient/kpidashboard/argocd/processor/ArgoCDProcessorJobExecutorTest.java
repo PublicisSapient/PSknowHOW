@@ -21,15 +21,15 @@ package com.publicissapient.kpidashboard.argocd.processor;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_PARAM;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHTOKEN_ENDPOINT;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -200,18 +200,44 @@ class ArgoCDProcessorJobExecutorTest {
 		verifyNoMoreInteractions(argoCDClient);
 	}
 
+	//	@Test
+//	void collectTwoJobsWithExceptionFromArgoCD() {
+//		ArgoCDProcessor processor = new ArgoCDProcessor();
+//		processor.setId(new ObjectId("6597633d916863f2b4779145"));
+//		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
+//		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
+//				.thenReturn(listProcessorToolConnection);
+//		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
+//				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any())).thenThrow(RestClientException.class);
+//		when(restClient.exchange(ArgumentMatchers.any(String.class), Mockito.eq(HttpMethod.GET),
+//				Mockito.any(HttpEntity.class), Mockito.<Class<String>>any())).thenThrow(RestClientException.class);
+//		assertFalse(jobExecutor.execute(processor));
+//	}
 	@Test
-	void collectTwoJobsWithExceptionFromArgoCD() {
+	void executeWithValidProjectsAndJobs() {
 		ArgoCDProcessor processor = new ArgoCDProcessor();
 		processor.setId(new ObjectId("6597633d916863f2b4779145"));
 		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
 				.thenReturn(listProcessorToolConnection);
+		TokenDTO accessToken = new TokenDTO();
+		accessToken.setToken("token");
 		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
-				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any())).thenThrow(RestClientException.class);
+				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any()))
+				.thenReturn(new ResponseEntity<TokenDTO>(accessToken, HttpStatus.OK));
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "?" + APPLICATIONS_PARAM)),
+				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<ApplicationsList>>any()))
+				.thenReturn(new ResponseEntity<ApplicationsList>(applicationsList, HttpStatus.OK));
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "/" + APP1)),
+				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<Application>>any()))
+				.thenReturn(new ResponseEntity<Application>(application, HttpStatus.OK));
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "/" + APP2)),
+				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<Application>>any()))
+				.thenReturn(new ResponseEntity<Application>(application2, HttpStatus.OK));
 		when(restClient.exchange(ArgumentMatchers.any(String.class), Mockito.eq(HttpMethod.GET),
-				Mockito.any(HttpEntity.class), Mockito.<Class<String>>any())).thenThrow(RestClientException.class);
-		assertFalse(jobExecutor.execute(processor));
+				Mockito.any(HttpEntity.class), Mockito.<Class<String>>any()))
+				.thenReturn(new ResponseEntity<String>("Success", HttpStatus.OK));
+		assertTrue(jobExecutor.execute(processor));
 	}
 
 	@Test
@@ -241,4 +267,92 @@ class ArgoCDProcessorJobExecutorTest {
 		assertTrue(jobExecutor.execute(processor));
 	}
 
+	@Test
+	void executeWithNoProjects() {
+		ArgoCDProcessor processor = new ArgoCDProcessor();
+		processor.setId(new ObjectId("6597633d916863f2b4779145"));
+		when(projectBasicConfigRepository.findAll()).thenReturn(new ArrayList<>());
+		assertTrue(jobExecutor.execute(processor));
+	}
+
+	@Test
+	void executeWithNoJobs() {
+		ArgoCDProcessor processor = new ArgoCDProcessor();
+		processor.setId(new ObjectId("6597633d916863f2b4779145"));
+		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+		assertTrue(jobExecutor.execute(processor));
+	}
+
+
+	@Test
+	void testExecuteWithRestClientException() {
+		ArgoCDProcessor processor = new ArgoCDProcessor();
+		processor.setId(new ObjectId("6597633d916863f2b4779145"));
+		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
+				.thenReturn(listProcessorToolConnection);
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
+				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any()))
+				.thenReturn(new ResponseEntity<>(new TokenDTO(), HttpStatus.OK));
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "?" + APPLICATIONS_PARAM)),
+				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<ApplicationsList>>any()))
+				.thenThrow(new RestClientException("Test Exception"));
+
+		assertFalse(jobExecutor.execute(processor));
+	}
+	@Test
+	void testSaveRevisionsInDbAndGetCount_NewDeployments() {
+		Application application = new Application();
+		application.setStatus(new Status());
+		History history = new History();
+		history.setId("1");
+		history.setDeployStartedAt("2023-11-05T10:23:45Z");
+		history.setDeployedAt("2023-11-13T11:59:25Z");
+		application.getStatus().setHistory(List.of(history));
+		application.setMetadata(new ApplicationMetadata());
+		application.getMetadata().setName("app1");
+
+		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
+		argoCDJob.setId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setDeploymentProjectId("deploymentProjectId");
+		argoCDJob.setDeploymentProjectName("deploymentProjectName");
+
+		List<Deployment> existingEntries = new ArrayList<>();
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob, new ObjectId("6597633d916863f2b4779145"));
+
+		assertEquals(1, count);
+		verify(deploymentRepository, times(1)).save(any(Deployment.class));
+	}
+
+	@Test
+	void testSaveRevisionsInDbAndGetCount_ExistingDeployments() {
+		Application application = new Application();
+		application.setStatus(new Status());
+		History history = new History();
+		history.setId("1");
+		history.setDeployStartedAt("2023-11-05T10:23:45Z");
+		history.setDeployedAt("2023-11-13T11:59:25Z");
+		application.getStatus().setHistory(List.of(history));
+		application.setMetadata(new ApplicationMetadata());
+		application.getMetadata().setName("app1");
+
+		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
+		argoCDJob.setId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setDeploymentProjectId("deploymentProjectId");
+		argoCDJob.setDeploymentProjectName("deploymentProjectName");
+
+		Deployment existingDeployment = new Deployment();
+		existingDeployment.setEnvName("app1");
+		existingDeployment.setNumber("1");
+		List<Deployment> existingEntries = List.of(existingDeployment);
+
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob, new ObjectId("6597633d916863f2b4779145"));
+
+		assertEquals(0, count);
+		verify(deploymentRepository, times(0)).save(any(Deployment.class));
+	}
 }

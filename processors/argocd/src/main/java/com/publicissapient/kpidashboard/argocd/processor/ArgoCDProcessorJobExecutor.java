@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -168,12 +169,12 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 		udId.add(processor.getId());
 		List<Deployment> deploymentJobs = deploymentRepository.findByProcessorIdIn(udId);
 
-		int count = 0;
+		AtomicInteger count = new AtomicInteger();
 		for (ProjectBasicConfig proBasicConfig : projectConfigList) {
 			log.info("Fetching basic data for project : {}", proBasicConfig.getProjectName());
 			List<ProcessorToolConnection> argoCDJobList = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.ARGOCD, proBasicConfig.getId());
-			count = argoCDJobList.size();
+			count.set(argoCDJobList.size());
 			for (ProcessorToolConnection argoCDJob : argoCDJobList) {
 				String baseUrl = argoCDJob.getUrl();
 				UserCredentialsDTO cred = new UserCredentialsDTO(argoCDJob.getUsername(),
@@ -184,15 +185,15 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				try {
 					processorToolConnectionService.validateConnectionFlag(argoCDJob);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-					String accessToken = argoCDClient.getAuthToken(baseUrl, cred);
-					ApplicationsList listOfApplications = argoCDClient.getApplications(baseUrl, accessToken);
-					if (null != listOfApplications && null != listOfApplications.getItems()) {
-						for (Application applicationitem : listOfApplications.getItems()) {
-							Application application = argoCDClient.getApplicationByName(baseUrl,
-									applicationitem.getMetadata().getName(), accessToken);
-							count += saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob,
-									processor.getId());
-						}
+					ApplicationsList listOfApplications = argoCDClient.getApplications(baseUrl, cred.getPassword());
+					if (listOfApplications != null && listOfApplications.getItems() != null) {
+						listOfApplications.getItems().stream()
+								.filter(applicationitem -> applicationitem.getMetadata().getName().equalsIgnoreCase(argoCDJob.getJobName()))
+								.forEach(applicationitem -> {
+									Application application = argoCDClient.getApplicationByName(baseUrl,
+											applicationitem.getMetadata().getName(), cred.getPassword());
+									count.addAndGet(saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob, processor.getId()));
+								});
 					}
 					log.info("Finished ArgoCD Job started at :: {}", startTime);
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
@@ -209,8 +210,8 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				}
 			}
 		}
-		MDC.put(TOTAL_UPDATED_COUNT, String.valueOf(count));
-		if (count > 0) {
+		MDC.put(TOTAL_UPDATED_COUNT, String.valueOf(count.get()));
+		if (count.get() > 0) {
 			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JENKINS_KPI_CACHE);
 		}
 		long endTime = System.currentTimeMillis();
@@ -229,7 +230,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * @param exception
 	 *            exception
 	 */
-	private void isClientException(ProcessorToolConnection argoCDJob, RestClientException exception) {
+    void isClientException(ProcessorToolConnection argoCDJob, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 			String errMsg = ClientErrorMessageEnum
@@ -315,8 +316,8 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 *            processor Id
 	 * @return int
 	 */
-	private int saveRevisionsInDbAndGetCount(Application application, List<Deployment> exisitingEntries,
-			ProcessorToolConnection argoCDJob, ObjectId processorId) {
+    int saveRevisionsInDbAndGetCount(Application application, List<Deployment> exisitingEntries,
+                                     ProcessorToolConnection argoCDJob, ObjectId processorId) {
 		Map<Pair<String, String>, Deployment> deployments = mapRevisionsToDeployment(application, argoCDJob,
 				processorId);
 		Map<Pair<String, String>, Deployment> exisitingDeployments = exisitingEntries.stream().collect(Collectors.toMap(
