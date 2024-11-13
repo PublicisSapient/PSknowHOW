@@ -60,8 +60,8 @@ import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
+import com.publicissapient.kpidashboard.jira.service.OutlierSprintChecker;
 import com.publicissapient.kpidashboard.jira.service.ProjectHierarchySyncService;
-import com.publicissapient.kpidashboard.jira.service.ProjectSprintIssuesService;
 
 import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -111,10 +111,10 @@ public class JobListenerScrum implements JobExecutionListener {
 	FetchProjectConfiguration fetchProjectConfiguration;
 
 	@Autowired
-	private ProjectSprintIssuesService projectSprintIssuesService;
+	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Autowired
-	private ProjectHierarchySyncService projectHierarchySyncService;
+	private OutlierSprintChecker outlierSprintChecker;
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
@@ -133,11 +133,7 @@ public class JobListenerScrum implements JobExecutionListener {
 		log.info("********in scrum JobExecution listener - finishing job *********");
 		// Sync the sprint hierarchy
 		projectHierarchySyncService.scrumSprintHierarchySync(new ObjectId(projectId));
-		log.debug("Sprint issue map of projectId : {} is : {}", projectId,
-				projectSprintIssuesService.getSprintIssueMapForProject(new ObjectId(projectId)));
-		Map<String, List<String>> outlierSprintMap = projectSprintIssuesService
-				.belowLowerBoundOutlier(new ObjectId(projectId));
-		log.debug("Outlier sprints of projectId : {} is : {}", projectId, outlierSprintMap);
+		Map<String, List<String>> projOutlierSprintMap = outlierSprintChecker.findOutlierSprint(new ObjectId(projectId));
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
@@ -156,12 +152,12 @@ public class JobListenerScrum implements JobExecutionListener {
 						break;
 					}
 				}
-				setExecutionInfoInTraceLog(false, stepFaliureException, outlierSprintMap);
+				setExecutionInfoInTraceLog(false, stepFaliureException, projOutlierSprintMap);
 				final String failureReasonMsg = generateLogMessage(stepFaliureException);
 				sendNotification(failureReasonMsg, JiraConstants.ERROR_NOTIFICATION_SUBJECT_KEY,
 						JiraConstants.ERROR_MAIL_TEMPLATE_KEY);
 			} else {
-				setExecutionInfoInTraceLog(true, null, outlierSprintMap);
+				setExecutionInfoInTraceLog(true, null, projOutlierSprintMap);
 			}
 		} catch (Exception e) {
 			log.error("An Exception has occured in scrum jobListener", e);
@@ -169,8 +165,6 @@ public class JobListenerScrum implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
-			// clearing project sprint issue map
-			projectSprintIssuesService.removeProject(new ObjectId(projectId));
 			log.info("removing client for basicProjectConfigId {}", projectId);
 			if (jiraClientService.isContainRestClient(projectId)) {
 				try {
@@ -221,7 +215,7 @@ public class JobListenerScrum implements JobExecutionListener {
 							.map(entry -> new IterationData(entry.getKey(), entry.getValue()))
 							.collect(Collectors.toList()));
 					// sending mail
-					String outlierSprintIssuesTable = projectSprintIssuesService
+					String outlierSprintIssuesTable = outlierSprintChecker
 							.printSprintIssuesTable(outlierSprintMap);
 					try {
 						sendNotification(outlierSprintIssuesTable, JiraConstants.OUTLIER_NOTIFICATION_SUBJECT_KEY,

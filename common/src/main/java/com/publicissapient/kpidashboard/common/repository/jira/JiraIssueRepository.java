@@ -218,4 +218,16 @@ public interface JiraIssueRepository
 	 */
 	@Query(value = "{ 'basicProjectConfigId': ?0 }", fields = "{ 'sprintID': 1 } , '_id':0}")
 	List<JiraIssue> findDistinctSprintIDsByBasicProjectConfigId(String basicProjectConfigId);
+
+	/**
+	 * Finds Jira issues by sprint IDs and basic project configuration ID.
+	 *
+	 * @param sprintIDs
+	 *            the sprint IDs
+	 * @param basicProjectConfigId
+	 *            the basic project configuration ID
+	 * @return a list of Jira issues
+	 */
+	@Query(value = "{ 'sprintID': { $in: ?0 }, 'basicProjectConfigId': ?1 }", fields = "{ 'sprintID': 1, 'number': 1, '_id': 0 }")
+	List<JiraIssue> findBySprintIDInAndBasicProjectConfigId(Set<String> sprintIDs, String basicProjectConfigId);
 }

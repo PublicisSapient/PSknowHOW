@@ -15,31 +15,30 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.jira.strategy;
+package com.publicissapient.kpidashboard.jira.service;
 
 import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-/**
- * Interface for defining the strategy to find outliers in project sprint
- * issues.
- * 
- * @author shunaray
- */
-public interface OutlierStrategy {
-
+public interface OutlierSprintChecker {
 	/**
-	 * Finds outliers in the given project sprint issues map.
+	 * Finds overlapping sprints.
 	 *
 	 * @param basicProjectConfigId
 	 *            the ID of the basic project configuration
-	 * @param projectSprintIssuesMap
-	 *            a map of project sprint issues
-	 * @return a map of outliers found
+	 * @return a map of overlapping sprints
 	 */
-	Map<String, List<String>> findOutliers(ObjectId basicProjectConfigId,
-			Map<ObjectId, Map<String, List<String>>> projectSprintIssuesMap);
+	Map<String, List<String>> findOutlierSprint(ObjectId basicProjectConfigId);
 
+	/**
+	 * Prints a table of sprint issues for outlier sprint email
+	 *
+	 * @param outlierSprintIssueMap
+	 *            outlier map where the key is the sprint name and the value is a
+	 *            list of issue keys
+	 * @return a string representation of the sprint issues table
+	 */
+	String printSprintIssuesTable(Map<String, List<String>> outlierSprintIssueMap);
 }
