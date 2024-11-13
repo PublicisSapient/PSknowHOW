@@ -609,7 +609,7 @@
               </td>
               <ng-template #elseBlock>
                 <ng-container *ngIf="item.toLowerCase().includes('date'); else defaultcolumn">
-                  <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">{{x[item] | date: 'yyyy-MM-dd'}}</td>
+                  <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">{{x[item] | isoDateFormat}}</td>
                 </ng-container>
                 <ng-template #defaultcolumn>
                   <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width" *ngIf="x[item];">{{x[item]}}</td>
