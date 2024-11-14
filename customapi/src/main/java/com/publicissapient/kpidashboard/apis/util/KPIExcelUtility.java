@@ -1092,6 +1092,7 @@ public class KPIExcelUtility {
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
 				excelData.setMergeRequestUrl(mergeUrl);
+				excelData.setPrStatus(repoToolValidationData.getPrStatus());
 				kpiExcelData.add(excelData);
 			});
 		}
