@@ -1865,7 +1865,12 @@ describe('FilterNewComponent', () => {
         describe('Happy Path', () => {
             it('should successfully fetch processor trace logs for a project', async () => {
                 // Arrange
-                const mockResponse = { success: true, data: 'mockData' };
+                const log = [
+                    {
+                        processorName : 'azure'
+                    }
+                ]
+                const mockResponse = { success: true, data: log };
                 spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(
                     of(mockResponse),
                 );
@@ -1882,7 +1887,7 @@ describe('FilterNewComponent', () => {
                     httpService.getProcessorsTraceLogsForProject,
                 ).toHaveBeenCalledWith('123');
                 expect(sharedService.setProcessorLogDetails).toHaveBeenCalledWith(
-                    'mockData',
+                    log,
                 );
             });
         });

@@ -68,6 +68,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   noSprint: boolean = false;
   projectList = null;
   blockUI: boolean = false;
+  isAzureProect : boolean = false;
 
   kanbanProjectsAvailable: boolean = true;
   scrumProjectsAvailable: boolean = true;
@@ -1037,6 +1038,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   getProcessorsTraceLogsForProject() {
     this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
       if (response.success) {
+        this.isAzureProect = response.data.find(de=>de.processorName.toLowerCase() === 'azure') ? true : false;
         this.service.setProcessorLogDetails(response.data);
       } else {
         this.messageService.add({

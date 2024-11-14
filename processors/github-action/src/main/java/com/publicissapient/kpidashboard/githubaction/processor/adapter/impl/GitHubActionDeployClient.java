@@ -162,23 +162,26 @@ public class GitHubActionDeployClient implements GitHubActionClient {
 				deployment.setEndTime(DateUtil.dateTimeConverter(endDate, DATETIME_FORMAT, TIME_FORMAT));
 				deployment.setDuration(updatedDate - createdDate);
 			}
-
-			if (checkDeploymentConditionsNotNull(deployment)) {
-				if (result.containsKey(deployment)) {
-					Set<Deployment> deploymentSet = result.get(deployment);
-					deploymentSet.add(deployment);
-				} else {
-					Set<Deployment> deploymentSet = new HashSet<>();
-					deploymentSet.add(deployment);
-					result.put(deployment, deploymentSet);
-				}
-			}
+			checkUpdateInDeploymentStatus(result, deployment);
 			try {
 				if (includeDelay)
 					Thread.sleep(750);
 			} catch (InterruptedException e) {
 				log.warn("Interrupted!", e);
 				Thread.currentThread().interrupt();
+			}
+		}
+	}
+
+	private void checkUpdateInDeploymentStatus(Map<Deployment, Set<Deployment>> result, Deployment deployment) {
+		if (checkDeploymentConditionsNotNull(deployment)) {
+			if (result.containsKey(deployment)) {
+				Set<Deployment> deploymentSet = result.get(deployment);
+				deploymentSet.add(deployment);
+			} else {
+				Set<Deployment> deploymentSet = new HashSet<>();
+				deploymentSet.add(deployment);
+				result.put(deployment, deploymentSet);
 			}
 		}
 	}
