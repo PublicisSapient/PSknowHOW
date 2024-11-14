@@ -32,7 +32,7 @@ import io.mongock.api.annotations.RollbackExecution;
  * @author shi6
  */
 @ChangeUnit(id = "remove_mandatory", order = "11104", author = "shi6", systemVersion = "11.1.0")
-public class RemoveMandatory {
+public class RemoveMandatoryUpgrade {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
 	public static final String FIELD_NAME = "fieldName";
@@ -41,7 +41,7 @@ public class RemoveMandatory {
 
 	private final MongoTemplate mongoTemplate;
 
-	public RemoveMandatory(MongoTemplate mongoTemplate) {
+	public RemoveMandatoryUpgrade(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
@@ -59,13 +59,8 @@ public class RemoveMandatory {
 	private void updateMandatoryFields(boolean isMandatory) {
 		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
 				.getCollection(FIELD_MAPPING_STRUCTURE);
-		updateMandatory(FIELD_NAME_LIST, isMandatory, fieldMappingStructCollection, "$set");
-	}
-
-	private void updateMandatory(List<String> fieldNameList, boolean isMandatory,
-			MongoCollection<Document> fieldMappingStructCollection, String update) {
-		Document updateDocument = new Document(update, new Document("mandatory", isMandatory));
-		for (String fieldName : fieldNameList) {
+		Document updateDocument = new Document("$set", new Document("mandatory", isMandatory));
+		for (String fieldName : FIELD_NAME_LIST) {
 			fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName), updateDocument);
 		}
 	}
