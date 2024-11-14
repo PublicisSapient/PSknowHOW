@@ -568,24 +568,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       // creating Sonar filter and finding unique keys from all the sonar kpis
       this.sonarFilterData = this.helperService.createSonarFilter(this.sonarKpiData, this.selectedtype);
       /** writing hack for unit test coverage kpi */
-      if (this.sonarKpiData['kpi17']?.trendValueList?.length > 0) {
-        let overallObj = {
-          'filter': 'Overall',
-          'value': []
-        }
-        for (let i = 0; i < this.sonarKpiData['kpi17']?.trendValueList?.length; i++) {
-          for (let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++) {
-            if (this.sonarKpiData['kpi17']?.trendValueList[i]?.filter === 'Average Coverage') {
-              let obj = {
-                'filter': this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
-                ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
-              }
-              overallObj['value'].push(obj);
-            }
-          }
-        }
-        this.sonarKpiData['kpi17']?.trendValueList.push(overallObj);
-      }
+      this.formatKPI17Data();
       this.createAllKpiArray(this.sonarKpiData);
       this.removeLoaderFromKPIs(this.sonarKpiData);
     } else {
@@ -594,6 +577,27 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.kpiLoader.delete(element.kpiId);
       });
       this.handleKPIError(postData);
+    }
+  }
+
+  formatKPI17Data() {
+    if (this.sonarKpiData['kpi17']?.trendValueList?.length > 0) {
+      let overallObj = {
+        'filter': 'Overall',
+        'value': []
+      }
+      for (let i = 0; i < this.sonarKpiData['kpi17']?.trendValueList?.length; i++) {
+        for (let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++) {
+          if (this.sonarKpiData['kpi17']?.trendValueList[i]?.filter === 'Average Coverage') {
+            let obj = {
+              'filter': this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
+              ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
+            }
+            overallObj['value'].push(obj);
+          }
+        }
+      }
+      this.sonarKpiData['kpi17']?.trendValueList.push(overallObj);
     }
   }
 
