@@ -330,8 +330,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.service.setNoProjects(true);
           }
         }
-      } else {
-        // error
       }
     });
   }
