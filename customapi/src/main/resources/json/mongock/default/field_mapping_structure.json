@@ -406,8 +406,7 @@
     "fieldCategory": "Issue_Type",
     "tooltip": {
       "definition": "Issue types used to create child sub-tasks"
-    },
-    "mandatory": true
+    }
   },
   {
     "fieldName": "jiraSubTaskDefectType",
@@ -419,8 +418,7 @@
     "sectionOrder": 2,
     "tooltip": {
       "definition": "Issue type used to create sub-task defects for tracking release defects"
-    },
-    "mandatory": true
+    }
   },
   {
     "fieldName": "jiraIssueEpicType",
