@@ -35,12 +35,9 @@ import io.mongock.api.annotations.RollbackExecution;
 public class RemoveMandatory {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
-	public static final String FIELD_LABEL = "fieldLabel";
-	public static final String FIELD_TYPE = "fieldType";
 	public static final String FIELD_NAME = "fieldName";
-	public static final String TOOL_TIP = "tooltip";
-	public static final String DEFINITION = "definition";
-	public static final String VALUE = "value";
+	private static final List<String> FIELD_NAME_LIST = Arrays.asList("jiraSubTaskIdentification",
+			"jiraSubTaskDefectType");
 
 	private final MongoTemplate mongoTemplate;
 
@@ -50,26 +47,26 @@ public class RemoveMandatory {
 
 	@Execution
 	public void execution() {
-		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
-				.getCollection(FIELD_MAPPING_STRUCTURE);
-		List<String> fieldNameList = Arrays.asList("jiraSubTaskIdentification", "jiraSubTaskDefectType");
-		updateMandatory(fieldNameList, true, fieldMappingStructCollection, "$set");
+		updateMandatoryFields(true);
 
 	}
 
 	@RollbackExecution
 	public void rollBack() {
-		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
-				.getCollection(FIELD_MAPPING_STRUCTURE);
-		List<String> fieldNameList = Arrays.asList("jiraSubTaskIdentification", "jiraSubTaskDefectType");
-		updateMandatory(fieldNameList, false, fieldMappingStructCollection, "$set");
+		updateMandatoryFields(false);
 	}
 
-	public void updateMandatory(List<String> fieldNameList, boolean isMandatory,
+	private void updateMandatoryFields(boolean isMandatory) {
+		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
+				.getCollection(FIELD_MAPPING_STRUCTURE);
+		updateMandatory(FIELD_NAME_LIST, isMandatory, fieldMappingStructCollection, "$set");
+	}
+
+	private void updateMandatory(List<String> fieldNameList, boolean isMandatory,
 			MongoCollection<Document> fieldMappingStructCollection, String update) {
+		Document updateDocument = new Document(update, new Document("mandatory", isMandatory));
 		for (String fieldName : fieldNameList) {
-			fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName),
-					new Document(update, new Document("mandatory", isMandatory)));
+			fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName), updateDocument);
 		}
 	}
 
