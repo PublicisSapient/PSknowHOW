@@ -133,7 +133,8 @@ public class JobListenerScrum implements JobExecutionListener {
 		log.info("********in scrum JobExecution listener - finishing job *********");
 		// Sync the sprint hierarchy
 		projectHierarchySyncService.scrumSprintHierarchySync(new ObjectId(projectId));
-		Map<String, List<String>> projOutlierSprintMap = outlierSprintChecker.findOutlierSprint(new ObjectId(projectId));
+		Map<String, List<String>> projOutlierSprintMap = outlierSprintChecker
+				.findOutlierSprint(new ObjectId(projectId));
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,

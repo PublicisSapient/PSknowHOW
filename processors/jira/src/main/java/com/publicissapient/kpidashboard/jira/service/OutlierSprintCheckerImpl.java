@@ -58,19 +58,23 @@ public class OutlierSprintCheckerImpl implements OutlierSprintChecker {
 	@Override
 	public Map<String, List<String>> findOutlierSprint(ObjectId basicProjectConfigId) {
 
-		List<SprintDetails> sprints = sprintDetailsRepository
+		List<SprintDetails> projectSprints = sprintDetailsRepository
 				.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);
 
-		if (sprints.isEmpty()) {
+		if (projectSprints.isEmpty()) {
 			return Collections.emptyMap();
 		}
 
 		List<SprintDetails> overlappingSprints = new ArrayList<>();
 
-		// Check for overlapping sprints
-		for (int i = 0; i < sprints.size() - 1; i++) {
-			SprintDetails currentSprint = sprints.get(i);
-			SprintDetails nextSprint = sprints.get(i + 1);
+		// Check for overlapping projectSprints
+		for (int i = 0; i < projectSprints.size() - 1; i++) {
+			SprintDetails currentSprint = projectSprints.get(i);
+			SprintDetails nextSprint = projectSprints.get(i + 1);
+
+			if (currentSprint.getEndDate() == null || nextSprint.getStartDate() == null) {
+				continue; // Skip comparison if either date is null
+			}
 
 			LocalDateTime currentEndDate = DateUtil.stringToLocalDateTime(currentSprint.getEndDate(),
 					DateUtil.TIME_FORMAT_WITH_SEC);
