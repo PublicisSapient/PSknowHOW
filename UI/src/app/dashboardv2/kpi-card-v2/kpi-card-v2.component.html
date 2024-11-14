@@ -11,9 +11,8 @@
             [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
         </span>
       </div>
-      <span class="warning-icon"
-        *ngIf="kpiDataStatusCode === '201'"
-        (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
+      <span class="warning-icon" *ngIf="kpiDataStatusCode === '201'" (mouseover)="showWarning(true)"
+        (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
         <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
           src="../../../assets/img/Warning.svg" />
         <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
@@ -34,14 +33,14 @@
   </div>
 
   <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" *ngIf="kpiData.kpiDetail.chartType !== 'stacked-area'"
-    [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }" class="kpi-filter p-pr-5 p-pl-5"
-    #kpiFilterContainer>
+    [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }"
+    class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
     <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
       <ng-container *ngFor="let filter of dropdownArr;let k = index">
         <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"
           [(ngModel)]="filterOptions['filter'+(k+1)]" [autoDisplayFirst]="true"
-          [style]="{'margin-left': '5px', 'height': '32px'}"
-          (onChange)="handleChange('single',k)" [virtualScroll]="true" [virtualScrollItemSize]="30"
+          [style]="{'margin-left': '5px', 'height': '32px'}" (onChange)="handleChange('single',k)"
+          [virtualScroll]="true" [virtualScrollItemSize]="30"
           [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"></p-dropdown>
       </ng-container>
     </div>
@@ -60,11 +59,10 @@
 
         <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
           inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
-          [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected"
-          (onChange)="handleChange('multi', $event, k)" (onClear)="handleClearAll('filter'+(k+1))"
-          [filter]="false" [showHeader]="false" [showClear]="true"
-          [style]="{'height': '32px', 'margin-left': '5px'}"
-          defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+          [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
+          (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
+          [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
+          [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
         </p-multiSelect>
       </ng-container>
     </div>
@@ -88,10 +86,18 @@
         </div>
         <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
           <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run processor.</h4>
+          <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run
+            processor.</h4>
           <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
             administrator.</h4>
           <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
+          <div *ngSwitchCase="'500'" class="p-text-center">
+            <span>
+              <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
+              <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded  p-mt-3"
+              (click)="reloadKPI()"></button>
+            </span>
+          </div>
         </div>
       </div>
       <div class="min-ht"
@@ -101,10 +107,19 @@
         </div>
         <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
           <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run processor.</h4>
+          <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run
+            processor.</h4>
           <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
             administrator.</h4>
           <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
+          <div *ngSwitchCase="'500'" class="p-text-center">
+            <span>
+              <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
+              <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-mt-3"
+              (click)="reloadKPI()"></button>
+            </span>
+
+          </div>
         </div>
       </div>
       <div class="min-ht" *ngIf="!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected">
@@ -115,7 +130,8 @@
       <div class="loading-img"></div>
     </div>
   </div>
-  <div class="kpi-card-footer p-pr-5 p-pl-5" [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
+  <div class="kpi-card-footer p-pr-5 p-pl-5"
+    [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
     <app-trend-indicator-v2 *ngIf="checkIfDataPresent(kpiDataStatusCode)" [trendData]="trendData"
       [colorObj]="trendBoxColorObj">
     </app-trend-indicator-v2>

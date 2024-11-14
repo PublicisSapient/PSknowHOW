@@ -553,7 +553,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   handleKPIError(data) {
-
+    data.kpiList.forEach(element => {
+      this.kpiStatusCodeArr[element.kpiId] = '500';
+    });
   }
 
   // calls after receiving response from sonar
@@ -591,7 +593,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       postData.kpiList.forEach(element => {
         this.kpiLoader.delete(element.kpiId);
       });
-
+      this.handleKPIError(postData);
     }
   }
 
@@ -619,6 +621,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       postData.kpiList.forEach(element => {
         this.kpiLoader.delete(element.kpiId);
       });
+      this.handleKPIError(postData);
     }
   }
 
@@ -630,7 +633,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.sonarKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         this.afterSonarKpiResponseReceived(getData, postData);
-      },(error) => {
+      }, (error) => {
         // Handle error
         this.handleKPIError(postData);
       });
@@ -643,7 +646,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.sonarKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
         this.afterSonarKpiResponseReceived(getData, postData);
-      },(error) => {
+      }, (error) => {
         // Handle error
         this.handleKPIError(postData);
       });
@@ -671,8 +674,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           postData.kpiList.forEach(element => {
             this.kpiLoader.delete(element.kpiId);
           });
+          this.handleKPIError(postData);
         }
-      },(error) => {
+      }, (error) => {
         // Handle error
         this.handleKPIError(postData);
       });
@@ -704,8 +708,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           postData.kpiList.forEach(element => {
             this.kpiLoader.delete(element.kpiId);
           });
+          this.handleKPIError(postData);
         }
-      },(error) => {
+      }, (error) => {
         // Handle error
         this.handleKPIError(postData);
       });
@@ -716,7 +721,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.zypherKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         this.afterZypherKpiResponseReceived(getData, postData);
-      },(error) => {
+      }, (error) => {
         // Handle error
         this.handleKPIError(postData);
       });
@@ -732,7 +737,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.zypherKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
         this.afterZypherKpiResponseReceived(getData, postData);
-      },(error) => {
+      }, (error) => {
         // Handle error
         this.handleKPIError(postData);
       });
@@ -770,13 +775,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             postData.kpiList.forEach(element => {
               this.kpiLoader.delete(element.kpiId);
             });
+            this.handleKPIError(postData);
           }
 
         },
-        (error) => {
-          // Handle error
-          this.handleKPIError(postData);
-        });
+          (error) => {
+            // Handle error
+            this.handleKPIError(postData);
+          });
       return;
     } else if (this.selectedTab === 'release') {
       this.postJiraKPIForRelease(postData, source);
@@ -1882,8 +1888,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   checkIfZeroData(kpi) {
     if (this.checkIfDataPresent(kpi)) {
-      console.log(kpi.kpiId);
-      console.log(this.kpiChartData[kpi.kpiId]);
       if (this.service.getSelectedTrends()?.length === 1) {
         let data = this.kpiChartData[kpi.kpiId];
         let dataValue = 0;
@@ -1897,7 +1901,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         // Refinement Rejection Rate and Production Defects Ageing
         if (kpi.kpiId === 'kpi139' || kpi.kpiId === 'kpi127') {
           if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length) {
-            if (Array.isArray(data[0].value)) {
+            if (Array.isArray(data[0].value) && data[0].value.length) {
               data[0].value.forEach(element => {
                 dataValue += parseInt(element.data);
               });
@@ -1908,11 +1912,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         // Sonar Code Quality, unknown KPI , PI Predicatability
         if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
           if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
-            if (Array.isArray(data[0].value)) {
+            if (Array.isArray(data[0].value) && data[0].value) {
               data[0].value.forEach(element => {
-                element.dataValue.forEach(subElem => {
-                  dataValue += subElem.value;
-                });
+                if (Array.isArray(element.dataValue) && element.dataValue.length) {
+                  element.dataValue.forEach(subElem => {
+                    dataValue += subElem.value;
+                  });
+                }
               });
             }
           }
@@ -1931,7 +1937,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           data[0].value.forEach(element => {
             dataValue += element.value;
           });
-        } 
+        }
 
         if (dataValue > 0) {
           return true;

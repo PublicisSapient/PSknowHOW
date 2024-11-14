@@ -693,9 +693,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (event.length === 1) {
       this.additionalData = true;
       this.getProcessorsTraceLogsForProject().then(result => {
-        if (result) {
-          this.sendDataToDashboard(event);
-        }
+        this.sendDataToDashboard(event);
       }).catch(error => {
         console.error("Error:", error);
         this.sendDataToDashboard(event);
