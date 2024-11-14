@@ -554,6 +554,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   handleKPIError(data) {
     data.kpiList.forEach(element => {
+      this.kpiLoader.delete(element.kpiId);
       this.kpiStatusCodeArr[element.kpiId] = '500';
     });
   }
@@ -573,9 +574,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.removeLoaderFromKPIs(this.sonarKpiData);
     } else {
       this.sonarKpiData = getData;
-      postData.kpiList.forEach(element => {
-        this.kpiLoader.delete(element.kpiId);
-      });
       this.handleKPIError(postData);
     }
   }
@@ -622,9 +620,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.removeLoaderFromKPIs(this.zypherKpiData);
     } else {
       this.zypherKpiData = getData;
-      postData.kpiList.forEach(element => {
-        this.kpiLoader.delete(element.kpiId);
-      });
       this.handleKPIError(postData);
     }
   }
@@ -675,9 +670,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
           this.fillKPIResponseCode(getData);
         } else {
-          postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element.kpiId);
-          });
           this.handleKPIError(postData);
         }
       }, (error) => {
@@ -709,9 +701,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
           this.fillKPIResponseCode(getData);
         } else {
-          postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element.kpiId);
-          });
           this.handleKPIError(postData);
         }
       }, (error) => {
@@ -776,9 +765,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
           } else {
             this.jiraKpiData = getData;
-            postData.kpiList.forEach(element => {
-              this.kpiLoader.delete(element.kpiId);
-            });
             this.handleKPIError(postData);
           }
 
@@ -1890,6 +1876,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
+/**
+ * Checks if the KPI data is zero or not based on various conditions and KPI IDs.
+ * @param {Object} kpi - The KPI object containing details and ID to evaluate.
+ * @returns {boolean} - Returns true if data is present and greater than zero, otherwise false.
+ */
   checkIfZeroData(kpi) {
     if (this.checkIfDataPresent(kpi)) {
       if (this.service.getSelectedTrends()?.length === 1) {
@@ -1961,6 +1952,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Determines if the execution of a specified processor was successful based on its trace log.
+ * @param processorName - The name of the processor to check, case insensitive.
+ * @returns A boolean indicating whether the execution was successful.
+ * @throws No exceptions are thrown by this function.
+ */
   showExecutionDate(processorName) {
     const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
     if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
@@ -1970,6 +1967,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Retrieves the trace log for a specified processor by its name.
+ * @param processorName - The name of the processor, which may include a path.
+ * @returns The log details of the processor if found, otherwise undefined.
+ */
   findTraceLogForTool(processorName) {
     const sourceArray = (processorName.includes('/')) ? processorName.split('/') : [processorName];
     return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
