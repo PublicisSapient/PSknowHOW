@@ -704,6 +704,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
+/**
+ * Sends the filter data to the dashboard based on the provided event.
+ * Updates various filter states and applies the necessary data transformations.
+ * 
+ * @param {Array} event - An array of event objects containing filter criteria.
+ * @returns {void}
+ */
   sendDataToDashboard(event) {
     this.previousFilterEvent = event;
     this.previousSelectedTab = this.selectedTab;
