@@ -189,7 +189,6 @@ public interface KanbanAccountHierarchyRepository extends MongoRepository<Kanban
 	 * @param labelName
 	 *            the label name
 	 */
-	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $in: ?1 }, 'labelName': ?2 }", delete = true)
 	void deleteByBasicProjectConfigIdAndNodeIdIn(ObjectId basicProjectConfigId, List<String> nodeIds, String labelName);
 
 }
