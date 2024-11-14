@@ -691,26 +691,29 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.additionalFiltersArr = [];
     }
-    if (event.length === 1) {
-      this.additionalData = true;
-      this.getProcessorsTraceLogsForProject().then(result => {
+    if ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent))) {
+      this.previousFilterEvent = event;
+      if (event.length === 1) {
+        this.additionalData = true;
+        this.getProcessorsTraceLogsForProject().then(result => {
+          this.sendDataToDashboard(event);
+        }).catch(error => {
+          console.error("Error:", error);
+          this.sendDataToDashboard(event);
+        });
+      } else {
         this.sendDataToDashboard(event);
-      }).catch(error => {
-        console.error("Error:", error);
-        this.sendDataToDashboard(event);
-      });
-    } else {
-      this.sendDataToDashboard(event);
+      }
     }
   }
 
-/**
- * Sends the filter data to the dashboard based on the provided event.
- * Updates various filter states and applies the necessary data transformations.
- * 
- * @param {Array} event - An array of event objects containing filter criteria.
- * @returns {void}
- */
+  /**
+   * Sends the filter data to the dashboard based on the provided event.
+   * Updates various filter states and applies the necessary data transformations.
+   * 
+   * @param {Array} event - An array of event objects containing filter criteria.
+   * @returns {void}
+   */
   sendDataToDashboard(event) {
     this.previousFilterEvent = event;
     this.previousSelectedTab = this.selectedTab;
