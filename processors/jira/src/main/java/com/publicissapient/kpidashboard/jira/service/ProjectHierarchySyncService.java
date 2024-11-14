@@ -36,7 +36,7 @@ public interface ProjectHierarchySyncService {
 	 * @param basicProjectConfigId
 	 *            the ID of the basic project configuration
 	 */
-	void scrumSprintHierarchySync(ObjectId basicProjectConfigId);
+	void syncScrumSprintHierarchy(ObjectId basicProjectConfigId);
 
 	/**
 	 * Synchronizes the hierarchy for Scrum releases.

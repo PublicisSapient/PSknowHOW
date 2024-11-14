@@ -65,7 +65,7 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 *            the ID of the basic project configuration
 	 */
 	@Override
-	public void scrumSprintHierarchySync(ObjectId basicProjectConfigId) {
+	public void syncScrumSprintHierarchy(ObjectId basicProjectConfigId) {
 		List<String> distinctSprintIDs = jiraIssueRepository
 				.findDistinctSprintIDsByBasicProjectConfigId(String.valueOf(basicProjectConfigId)).stream()
 				.map(JiraIssue::getSprintID).toList();

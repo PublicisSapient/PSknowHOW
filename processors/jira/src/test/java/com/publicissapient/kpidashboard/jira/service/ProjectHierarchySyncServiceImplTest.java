@@ -80,7 +80,7 @@ public class ProjectHierarchySyncServiceImplTest {
 	}
 
 	@Test
-	public void scrumSprintHierarchySyncNoSprintsToDeleteFalseHit() {
+	public void syncScrumSprintHierarchyNoSprintsToDeleteFalseHit() {
 		ObjectId projectId = new ObjectId();
 		List<String> distinctSprintIDs = List.of("Sprint1", "Sprint2");
 		List<String> nonMatchingNodeIds = List.of();
@@ -91,7 +91,7 @@ public class ProjectHierarchySyncServiceImplTest {
 		// distinctSprintIDs,
 		// CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)).thenReturn(accountHierarchyList);
 
-		projectHierarchySyncServiceImpl.scrumSprintHierarchySync(projectId);
+		projectHierarchySyncServiceImpl.syncScrumSprintHierarchy(projectId);
 
 		verify(sprintRepository, never()).deleteBySprintIDInAndBasicProjectConfigId(nonMatchingNodeIds, projectId);
 	}
@@ -184,7 +184,7 @@ public class ProjectHierarchySyncServiceImplTest {
 	}
 
 	@Test
-	public void scrumSprintHierarchySyncNoSprintsToDeleteTrueHit() {
+	public void syncScrumSprintHierarchyNoSprintsToDeleteTrueHit() {
 		ObjectId projectId = new ObjectId();
 		List<String> nonMatchingNodeIds = List.of();
 
@@ -194,7 +194,7 @@ public class ProjectHierarchySyncServiceImplTest {
 				jiraIssueList.stream().map(JiraIssue::getSprintID).toList(), CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
 				.thenReturn(accountHierarchyList);
 
-		projectHierarchySyncServiceImpl.scrumSprintHierarchySync(projectId);
+		projectHierarchySyncServiceImpl.syncScrumSprintHierarchy(projectId);
 
 		verify(sprintRepository, never()).deleteBySprintIDInAndBasicProjectConfigId(nonMatchingNodeIds, projectId);
 	}
