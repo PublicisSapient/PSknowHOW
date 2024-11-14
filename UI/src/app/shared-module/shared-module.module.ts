@@ -47,6 +47,7 @@ import { FeatureFlagDirective } from './custom-directives/feature-flag.directive
 import { ConditionalInputComponent } from './conditional-input/conditional-input.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
 
 @NgModule({
   imports: [
@@ -83,7 +84,8 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     FieldMappingFormComponent,
     FeatureFlagDirective,
     CarouselModule,
-    ConditionalInputComponent
+    ConditionalInputComponent,
+    IsoDateFormatPipe
   ],
   declarations: [
     ProjectFilterComponent,
@@ -95,7 +97,8 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     FieldMappingFieldComponent,
     AdditionalFilterFieldComponent,
     FeatureFlagDirective,
-    ConditionalInputComponent
+    ConditionalInputComponent,
+    IsoDateFormatPipe
   ],
   providers: [ConfirmationService]
 })
