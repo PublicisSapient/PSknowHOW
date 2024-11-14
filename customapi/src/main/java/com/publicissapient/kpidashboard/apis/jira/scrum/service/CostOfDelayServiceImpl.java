@@ -57,7 +57,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -72,6 +71,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 
 	private static final String COD_DATA = "costOfDelayData";
 	private static final String COD_DATA_HISTORY = "costOfDelayDataHistory";
+	private static final String FIELD_MAPPING = "fieldMapping";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -133,6 +133,8 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+		Map<String, List<String>> closedStatusMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(leafNodeList)) {
 
 			leafNodeList.forEach(leaf -> {
@@ -140,7 +142,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 				Map<String, Object> mapOfFilters = new LinkedHashMap<>();
 				ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 				basicProjectConfigIds.add(leaf.getProjectFilter().getBasicProjectConfigId().toString());
-				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+				FieldMapping fieldMapping = fieldMappingMap.get(basicProjectConfigId);
                 List<String> jiraCloseStatuses = new ArrayList<>();
 				if(CollectionUtils.isNotEmpty(fieldMapping.getClosedIssueStatusToConsiderKpi113())) {
 					jiraCloseStatuses.addAll(fieldMapping.getClosedIssueStatusToConsiderKpi113());
@@ -149,6 +151,8 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 				if(CollectionUtils.isNotEmpty(fieldMapping.getIssueTypesToConsiderKpi113())) {
 					jiraIssueType.addAll(fieldMapping.getIssueTypesToConsiderKpi113());
 				}
+				closedStatusMap.put(basicProjectConfigId.toString(),
+						jiraCloseStatuses.stream().map(String::toLowerCase).toList());
 				mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),jiraIssueType);
 				mapOfFilters.put(JiraFeature.STATUS.getFieldValueInFeature(), jiraCloseStatuses);
 				mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
@@ -163,6 +167,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 						codList.stream().map(JiraIssue::getNumber).toList(), new ArrayList<>(uniqueProjectMap.keySet()));
 		resultListMap.put(COD_DATA, codList);
 		resultListMap.put(COD_DATA_HISTORY, codHistory);
+		resultListMap.put(FIELD_MAPPING, closedStatusMap);
 		return resultListMap;
 	}
 
@@ -183,57 +188,63 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	 * @param kpiRequest
 	 *            KpiRequest
 	 */
-	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest) {
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, null, null, kpiRequest);
+		List<KPIExcelData> excelData = new ArrayList<>();
+
+		projectLeafNodeList.forEach(
+				node -> setProjectNodeValue(mapTmp, node, resultMap, trendValueList, requestTrackerId, excelData));
+		kpiElement.setExcelData(excelData);
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.COST_OF_DELAY.getColumns(projectLeafNodeList, cacheService, flterHelperService));
+	}
+
+	/**
+	 * Sets the KPI value for a project node.
+	 *
+	 * @param mapTmp
+	 *            a map containing the KPI values for each node
+	 * @param node
+	 *            the project node
+	 * @param resultMap
+	 *            a map containing the fetched KPI data
+	 * @param trendValueList
+	 *            a list containing the data to show on the KPI
+	 * @param requestTrackerId
+	 *            the request tracker ID
+	 * @param excelData
+	 *            a list containing the data to be shown in the Excel sheet
+	 */
+	@SuppressWarnings("unchecked")
+	private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, Map<String, Object> resultMap,
+			List<DataCount> trendValueList, String requestTrackerId, List<KPIExcelData> excelData) {
+		Map<String, Double> lastNMonthMap = getLastNMonth(customApiConfig.getJiraXaxisMonthCount());
+		String projectName = node.getProjectFilter().getName();
+		List<JiraIssue> epicList = new ArrayList<>();
+		Map<String, Map<String, Integer>> howerMap = new HashMap<>();
 		Map<String, List<JiraIssue>> filterWiseDataMap = createProjectWiseGrouping(
 				(List<JiraIssue>) resultMap.get(COD_DATA), JiraIssue::getBasicProjectConfigId);
 		Map<String, List<JiraIssueCustomHistory>> filterWiseHistoryDataMap = createProjectWiseGrouping(
 				(List<JiraIssueCustomHistory>) resultMap.get(COD_DATA_HISTORY),
 				JiraIssueCustomHistory::getBasicProjectConfigId);
-		List<KPIExcelData> excelData = new ArrayList<>();
-
-		projectLeafNodeList.forEach(node -> {
-			String currentProjectId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssue> delayDetail = filterWiseDataMap.get(currentProjectId);
-			List<JiraIssueCustomHistory> delayDetailHistory = filterWiseHistoryDataMap.get(currentProjectId);
-			if (CollectionUtils.isNotEmpty(delayDetail)) {
-				setProjectNodeValue(mapTmp, node, delayDetail, delayDetailHistory, trendValueList, requestTrackerId,
-						excelData);
-			}
-
-		});
-		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.COST_OF_DELAY.getColumns(projectLeafNodeList,cacheService,flterHelperService));
-	}
-
-	/**
-	 * Sets the project node value by calculating the cost of delay for each Jira issue.
-	 *
-	 * @param mapTmp a map of node IDs to nodes
-	 * @param node the current node being processed
-	 * @param jiraIssues a list of Jira issues related to the node
-	 * @param trendValueList a list to store the trend values for the KPI
-	 * @param requestTrackerId the ID of the request tracker
-	 * @param excelData a list to store the data for the Excel report
-	 */
-	private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, List<JiraIssue> jiraIssues,
-			List<JiraIssueCustomHistory> jiraIssueCustomHistories, List<DataCount> trendValueList,
-			String requestTrackerId, List<KPIExcelData> excelData) {
-		Map<String, Double> lastNMonthMap = getLastNMonth(customApiConfig.getJiraXaxisMonthCount());
-		String projectName = node.getProjectFilter().getName();
-		List<JiraIssue> epicList = new ArrayList<>();
-		Map<String, Map<String, Integer>> howerMap = new HashMap<>();
-
+		Map<String, List<String>> fieldMappingMap = (Map<String, List<String>>) resultMap.get(FIELD_MAPPING);
+		List<JiraIssue> jiraIssues = filterWiseDataMap
+				.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = filterWiseHistoryDataMap
+				.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+		List<String> closedStatues = fieldMappingMap.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+		if (CollectionUtils.isEmpty(jiraIssues) || CollectionUtils.isEmpty(jiraIssueCustomHistories)) {
+			return;
+		}
 		for (JiraIssue js : jiraIssues) {
 			String number = js.getNumber();
 			Optional<String> epicEndDateOpt = jiraIssueCustomHistories.stream()
 					.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(number)).findFirst()
 					.flatMap(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStatusUpdationLog().stream()
-							.filter(jiraHistoryChangeLog -> jiraHistoryChangeLog.getChangedTo()
-									.equals(NormalizedJira.STATUS.getValue()))
+							.filter(jiraHistoryChangeLog -> closedStatues
+									.contains(jiraHistoryChangeLog.getChangedTo().toLowerCase()))
 							.findFirst().map(jiraHistoryChangeLog -> jiraHistoryChangeLog.getUpdatedOn().toString()));
 			String epicEndDate = epicEndDateOpt.orElse(null);
 			js.setEpicEndDate(epicEndDate);
