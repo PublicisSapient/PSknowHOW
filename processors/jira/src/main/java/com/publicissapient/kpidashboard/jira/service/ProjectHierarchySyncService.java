@@ -46,7 +46,7 @@ public interface ProjectHierarchySyncService {
 	 * @param fetchedReleasedHierarchy
 	 *            the list of fetched release hierarchies
 	 */
-	void scrumReleaseHierarchySync(ObjectId basicProjectConfigId, List<AccountHierarchy> fetchedReleasedHierarchy);
+	void syncScrumReleaseHierarchy(ObjectId basicProjectConfigId, List<AccountHierarchy> fetchedReleasedHierarchy);
 
 	/**
 	 * Synchronizes the hierarchy for Kanban releases.
@@ -56,8 +56,8 @@ public interface ProjectHierarchySyncService {
 	 * @param fetchedReleasedHierarchy
 	 *            the list of fetched release hierarchies
 	 */
-	void kanbanReleaseHierarchySync(ObjectId basicProjectConfigId,
-			List<KanbanAccountHierarchy> fetchedReleasedHierarchy);
+	void syncKanbanReleaseHierarchy(ObjectId basicProjectConfigId,
+									List<KanbanAccountHierarchy> fetchedReleasedHierarchy);
 
 	/**
 	 * Deletes entries that do not match the given criteria.

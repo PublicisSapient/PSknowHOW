@@ -136,7 +136,7 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 					}
 				});
 			}
-			projectHierarchySyncService.kanbanReleaseHierarchySync(projectConfig.getBasicProjectConfigId(),
+			projectHierarchySyncService.syncKanbanReleaseHierarchy(projectConfig.getBasicProjectConfigId(),
 					hierarchyForRelease);
 		}
 		if (CollectionUtils.isNotEmpty(setToSave)) {

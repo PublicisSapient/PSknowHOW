@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-public interface OutlierSprintChecker {
+public interface OutlierSprintStrategy {
 	/**
 	 * Finds overlapping sprints.
 	 *
@@ -30,7 +30,7 @@ public interface OutlierSprintChecker {
 	 *            the ID of the basic project configuration
 	 * @return a map of overlapping sprints
 	 */
-	Map<String, List<String>> findOutlierSprint(ObjectId basicProjectConfigId);
+	Map<String, List<String>> execute(ObjectId basicProjectConfigId);
 
 	/**
 	 * Prints a table of sprint issues for outlier sprint email

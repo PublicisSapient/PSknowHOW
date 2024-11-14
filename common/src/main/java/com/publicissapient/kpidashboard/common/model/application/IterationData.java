@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -27,21 +28,8 @@ import lombok.Data;
  * @author shunaray
  */
 @Data
+@AllArgsConstructor
 public class IterationData {
 	private String iterationName;
 	private List<String> issuesTagged;
-
-	/**
-	 * Constructs an IterationData object with the specified iteration name and
-	 * issues tagged.
-	 *
-	 * @param iterationName
-	 *            the name of the iteration
-	 * @param issuesTagged
-	 *            the list of issues tagged in the iteration
-	 */
-	public IterationData(String iterationName, List<String> issuesTagged) {
-		this.iterationName = iterationName;
-		this.issuesTagged = issuesTagged;
-	}
 }

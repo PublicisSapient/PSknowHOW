@@ -97,8 +97,8 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 *            the list of fetched release hierarchy
 	 */
 	@Override
-	public void scrumReleaseHierarchySync(ObjectId basicProjectConfigId,
-			List<AccountHierarchy> fetchedReleasedHierarchy) {
+	public void syncScrumReleaseHierarchy(ObjectId basicProjectConfigId,
+										  List<AccountHierarchy> fetchedReleasedHierarchy) {
 		List<String> distinctReleaseNodeIds = fetchedReleasedHierarchy.stream().map(AccountHierarchy::getNodeId)
 				.distinct().toList();
 
@@ -124,8 +124,8 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 *            the list of fetched release hierarchy
 	 */
 	@Override
-	public void kanbanReleaseHierarchySync(ObjectId basicProjectConfigId,
-			List<KanbanAccountHierarchy> fetchedReleasedHierarchy) {
+	public void syncKanbanReleaseHierarchy(ObjectId basicProjectConfigId,
+										   List<KanbanAccountHierarchy> fetchedReleasedHierarchy) {
 		List<String> distinctReleaseNodeIds = fetchedReleasedHierarchy.stream().map(KanbanAccountHierarchy::getNodeId)
 				.distinct().toList();
 

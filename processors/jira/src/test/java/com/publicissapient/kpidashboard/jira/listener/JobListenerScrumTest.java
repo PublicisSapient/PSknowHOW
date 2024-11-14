@@ -69,7 +69,7 @@ import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
-import com.publicissapient.kpidashboard.jira.service.OutlierSprintChecker;
+import com.publicissapient.kpidashboard.jira.service.OutlierSprintStrategy;
 import com.publicissapient.kpidashboard.jira.service.ProjectHierarchySyncService;
 
 import io.atlassian.util.concurrent.Promise;
@@ -132,7 +132,7 @@ public class JobListenerScrumTest {
 	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Mock
-	private OutlierSprintChecker outlierSprintChecker;
+	private OutlierSprintStrategy outlierSprintStrategy;
 
 	private JobExecution jobExecution;
 
@@ -371,7 +371,7 @@ public class JobListenerScrumTest {
 
 		Map<String, List<String>> outlierSprintMap = Collections.singletonMap("sprint1",
 				Collections.singletonList("issue1"));
-		when(outlierSprintChecker.findOutlierSprint(new ObjectId(projectId)))
+		when(outlierSprintStrategy.execute(new ObjectId(projectId)))
 				.thenReturn(outlierSprintMap);
 
 		// Simulate a successful job

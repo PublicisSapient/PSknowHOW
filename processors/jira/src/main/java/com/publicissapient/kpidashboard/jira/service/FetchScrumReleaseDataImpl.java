@@ -116,7 +116,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 			List<AccountHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease,
 					projectConfig.getProjectBasicConfig(), projectData);
 			setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
-			projectHierarchySyncService.scrumReleaseHierarchySync(projectConfig.getBasicProjectConfigId(),
+			projectHierarchySyncService.syncScrumReleaseHierarchy(projectConfig.getBasicProjectConfigId(),
 					hierarchyForRelease);
 		}
 		if (CollectionUtils.isNotEmpty(setToSave)) {

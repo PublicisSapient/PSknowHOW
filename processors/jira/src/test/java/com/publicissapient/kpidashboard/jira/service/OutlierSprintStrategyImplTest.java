@@ -42,7 +42,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OutlierSprintCheckerImplTest {
+public class OutlierSprintStrategyImplTest {
 
 	@Mock
 	private SprintRepository sprintDetailsRepository;
@@ -51,7 +51,7 @@ public class OutlierSprintCheckerImplTest {
 	private JiraIssueRepository jiraIssueRepository;
 
 	@InjectMocks
-	private OutlierSprintCheckerImpl outlierSprintChecker;
+	private OutlierSprintStrategyImpl outlierSprintChecker;
 
 	private ObjectId basicProjectConfigId;
 
@@ -61,11 +61,11 @@ public class OutlierSprintCheckerImplTest {
 	}
 
 	@Test
-	public void findOutlierSprint_noOverlappingSprints_returnsEmptyMap() {
+	public void execute_noOverlappingSprints_returnsEmptyMap() {
 		when(sprintDetailsRepository.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId))
 				.thenReturn(Collections.emptyList());
 
-		Map<String, List<String>> result = outlierSprintChecker.findOutlierSprint(basicProjectConfigId);
+		Map<String, List<String>> result = outlierSprintChecker.execute(basicProjectConfigId);
 
 		assertTrue(result.isEmpty());
 	}
@@ -87,13 +87,13 @@ public class OutlierSprintCheckerImplTest {
 		issue.setSprintID("sprint2");
 		issue.setNumber("ISSUE-1");
 
-		Map<String, List<String>> result = outlierSprintChecker.findOutlierSprint(basicProjectConfigId);
+		Map<String, List<String>> result = outlierSprintChecker.execute(basicProjectConfigId);
 
 		assertTrue(result.isEmpty());
 	}
 
 	@Test
-	public void findOutlierSprint_withOverlappingSprints_logsOutlierSprint() {
+	public void execute() {
 		SprintDetails sprint1 = new SprintDetails();
 		sprint1.setSprintID("sprint1");
 		sprint1.setEndDate("2023-01-01T10:00:00.000Z");
@@ -105,14 +105,14 @@ public class OutlierSprintCheckerImplTest {
 		when(sprintDetailsRepository.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId))
 				.thenReturn(Arrays.asList(sprint1, sprint2));
 
-		outlierSprintChecker.findOutlierSprint(basicProjectConfigId);
+		outlierSprintChecker.execute(basicProjectConfigId);
 
 		verify(sprintDetailsRepository).findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);
 
 	}
 
 	@Test
-	public void findOutlierSprint_withNullDates_skipsComparison() {
+	public void execute_withNullDates_skipsComparison() {
 		SprintDetails sprint1 = new SprintDetails();
 		sprint1.setSprintID("sprint1");
 		sprint1.setEndDate(null); // End date is null
@@ -132,14 +132,14 @@ public class OutlierSprintCheckerImplTest {
 		when(sprintDetailsRepository.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId))
 				.thenReturn(Arrays.asList(sprint1, sprint2, sprint3, sprint4));
 
-		Map<String, List<String>> result = outlierSprintChecker.findOutlierSprint(basicProjectConfigId);
+		Map<String, List<String>> result = outlierSprintChecker.execute(basicProjectConfigId);
 
 		assertTrue(result.isEmpty());
 		verify(sprintDetailsRepository).findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);
 	}
 
 	@Test
-	public void findOutlierSprint_withNonNullDates_performsComparison() {
+	public void execute_withNonNullDates_performsComparison() {
 		SprintDetails sprint1 = new SprintDetails();
 		sprint1.setSprintID("sprint1");
 		sprint1.setEndDate("2023-01-01T10:00:00.000Z");
@@ -151,14 +151,14 @@ public class OutlierSprintCheckerImplTest {
 		when(sprintDetailsRepository.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId))
 				.thenReturn(Arrays.asList(sprint1, sprint2));
 
-		Map<String, List<String>> result = outlierSprintChecker.findOutlierSprint(basicProjectConfigId);
+		Map<String, List<String>> result = outlierSprintChecker.execute(basicProjectConfigId);
 
 		assertTrue(result.isEmpty());
 		verify(sprintDetailsRepository).findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);
 	}
 
 	@Test
-	public void findOutlierSprint_withNullEndDate_skipsComparison() {
+	public void execute_withNullEndDate_skipsComparison() {
 		SprintDetails sprint1 = new SprintDetails();
 		sprint1.setSprintID("sprint1");
 		sprint1.setEndDate(null); // End date is null
@@ -170,14 +170,14 @@ public class OutlierSprintCheckerImplTest {
 		when(sprintDetailsRepository.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId))
 				.thenReturn(Arrays.asList(sprint1, sprint2));
 
-		Map<String, List<String>> result = outlierSprintChecker.findOutlierSprint(basicProjectConfigId);
+		Map<String, List<String>> result = outlierSprintChecker.execute(basicProjectConfigId);
 
 		assertTrue(result.isEmpty());
 		verify(sprintDetailsRepository).findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);
 	}
 
 	@Test
-	public void findOutlierSprint_withNullStartDate_skipsComparison() {
+	public void execute_withNullStartDate_skipsComparison() {
 		SprintDetails sprint1 = new SprintDetails();
 		sprint1.setSprintID("sprint1");
 		sprint1.setEndDate("2023-01-01T10:00:00.000Z");
@@ -189,14 +189,14 @@ public class OutlierSprintCheckerImplTest {
 		when(sprintDetailsRepository.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId))
 				.thenReturn(Arrays.asList(sprint1, sprint2));
 
-		Map<String, List<String>> result = outlierSprintChecker.findOutlierSprint(basicProjectConfigId);
+		Map<String, List<String>> result = outlierSprintChecker.execute(basicProjectConfigId);
 
 		assertTrue(result.isEmpty());
 		verify(sprintDetailsRepository).findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);
 	}
 
 	@Test
-	public void findOutlierSprint_withBothNullDates_skipsComparison() {
+	public void execute_withBothNullDates_skipsComparison() {
 		SprintDetails sprint1 = new SprintDetails();
 		sprint1.setSprintID("sprint1");
 		sprint1.setEndDate(null); // End date is null
@@ -208,7 +208,7 @@ public class OutlierSprintCheckerImplTest {
 		when(sprintDetailsRepository.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId))
 				.thenReturn(Arrays.asList(sprint1, sprint2));
 
-		Map<String, List<String>> result = outlierSprintChecker.findOutlierSprint(basicProjectConfigId);
+		Map<String, List<String>> result = outlierSprintChecker.execute(basicProjectConfigId);
 
 		assertTrue(result.isEmpty());
 		verify(sprintDetailsRepository).findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);

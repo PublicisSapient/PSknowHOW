@@ -97,7 +97,7 @@ public class ProjectHierarchySyncServiceImplTest {
 	}
 
 	@Test
-	public void scrumReleaseHierarchySyncDeletesNonMatchingReleasesFalseHit() {
+	public void syncScrumReleaseHierarchyDeletesNonMatchingReleasesFalseHit() {
 		ObjectId projectId = new ObjectId();
 		List<AccountHierarchy> fetchedReleasedHierarchy = List.of(AccountHierarchy.builder().nodeId("Release1").build(),
 				AccountHierarchy.builder().nodeId("Release2").build());
@@ -107,14 +107,14 @@ public class ProjectHierarchySyncServiceImplTest {
 		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(accountHierarchyList);
 
-		projectHierarchySyncServiceImpl.scrumReleaseHierarchySync(projectId, fetchedReleasedHierarchy);
+		projectHierarchySyncServiceImpl.syncScrumReleaseHierarchy(projectId, fetchedReleasedHierarchy);
 
 		verify(accountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 	}
 
 	@Test
-	public void KanbanReleaseHierarchySyncNoReleasesToDeleteFalseHit() {
+	public void syncKanbanReleaseHierarchyNoReleasesToDeleteFalseHit() {
 		ObjectId projectId = new ObjectId();
 		List<KanbanAccountHierarchy> fetchedReleasedHierarchy = List.of(
 				KanbanAccountHierarchy.builder().nodeId("Release1").build(),
@@ -125,7 +125,7 @@ public class ProjectHierarchySyncServiceImplTest {
 		when(kanbanAccountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(entriesToDelete);
 
-		projectHierarchySyncServiceImpl.kanbanReleaseHierarchySync(projectId, fetchedReleasedHierarchy);
+		projectHierarchySyncServiceImpl.syncKanbanReleaseHierarchy(projectId, fetchedReleasedHierarchy);
 
 		verify(kanbanAccountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
@@ -133,27 +133,27 @@ public class ProjectHierarchySyncServiceImplTest {
 
 
 	@Test
-	public void scrumReleaseHierarchySyncDeletesNonMatchingReleases() {
+	public void syncScrumReleaseHierarchyDeletesNonMatchingReleases() {
 		ObjectId projectId = new ObjectId();
 		List<AccountHierarchy> fetchedReleasedHierarchy = List.of(AccountHierarchy.builder().nodeId("Release1").build(),
 				AccountHierarchy.builder().nodeId("Release2").build());
 		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
 
-		projectHierarchySyncServiceImpl.scrumReleaseHierarchySync(projectId, fetchedReleasedHierarchy);
+		projectHierarchySyncServiceImpl.syncScrumReleaseHierarchy(projectId, fetchedReleasedHierarchy);
 
 		verify(accountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 	}
 
 	@Test
-	public void kanbanReleaseHierarchySyncDeletesNonMatchingReleases() {
+	public void syncKanbanReleaseHierarchyDeletesNonMatchingReleases() {
 		ObjectId projectId = new ObjectId();
 
 		List<KanbanAccountHierarchy> fetchedReleasedHierarchy = List.of(
 				KanbanAccountHierarchy.builder().nodeId("Release1").build(),
 				KanbanAccountHierarchy.builder().nodeId("Release2").build());
 		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
-		projectHierarchySyncServiceImpl.kanbanReleaseHierarchySync(projectId, fetchedReleasedHierarchy);
+		projectHierarchySyncServiceImpl.syncKanbanReleaseHierarchy(projectId, fetchedReleasedHierarchy);
 
 		verify(kanbanAccountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);

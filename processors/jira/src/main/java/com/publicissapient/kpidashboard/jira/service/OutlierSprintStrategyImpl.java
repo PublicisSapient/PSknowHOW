@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class OutlierSprintCheckerImpl implements OutlierSprintChecker {
+public class OutlierSprintStrategyImpl implements OutlierSprintStrategy {
 
 	@Autowired
 	private SprintRepository sprintDetailsRepository;
@@ -56,7 +56,7 @@ public class OutlierSprintCheckerImpl implements OutlierSprintChecker {
 	 * @return a map of SprintDetails to a list of issue numbers
 	 */
 	@Override
-	public Map<String, List<String>> findOutlierSprint(ObjectId basicProjectConfigId) {
+	public Map<String, List<String>> execute(ObjectId basicProjectConfigId) {
 
 		List<SprintDetails> projectSprints = sprintDetailsRepository
 				.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);

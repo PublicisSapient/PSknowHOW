@@ -60,7 +60,7 @@ import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
-import com.publicissapient.kpidashboard.jira.service.OutlierSprintChecker;
+import com.publicissapient.kpidashboard.jira.service.OutlierSprintStrategy;
 import com.publicissapient.kpidashboard.jira.service.ProjectHierarchySyncService;
 
 import io.atlassian.util.concurrent.Promise;
@@ -114,7 +114,7 @@ public class JobListenerScrum implements JobExecutionListener {
 	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Autowired
-	private OutlierSprintChecker outlierSprintChecker;
+	private OutlierSprintStrategy outlierSprintStrategy;
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
@@ -133,8 +133,8 @@ public class JobListenerScrum implements JobExecutionListener {
 		log.info("********in scrum JobExecution listener - finishing job *********");
 		// Sync the sprint hierarchy
 		projectHierarchySyncService.scrumSprintHierarchySync(new ObjectId(projectId));
-		Map<String, List<String>> projOutlierSprintMap = outlierSprintChecker
-				.findOutlierSprint(new ObjectId(projectId));
+		Map<String, List<String>> projOutlierSprintMap = outlierSprintStrategy
+				.execute(new ObjectId(projectId));
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
@@ -216,7 +216,7 @@ public class JobListenerScrum implements JobExecutionListener {
 							.map(entry -> new IterationData(entry.getKey(), entry.getValue()))
 							.collect(Collectors.toList()));
 					// sending mail
-					String outlierSprintIssuesTable = outlierSprintChecker
+					String outlierSprintIssuesTable = outlierSprintStrategy
 							.printSprintIssuesTable(outlierSprintMap);
 					try {
 						sendNotification(outlierSprintIssuesTable, JiraConstants.OUTLIER_NOTIFICATION_SUBJECT_KEY,
