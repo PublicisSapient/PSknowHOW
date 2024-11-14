@@ -1083,9 +1083,11 @@ public class KPIExcelUtility {
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
-				excelData.setPickupTime(String.format("%.2f", repoToolValidationData.getPickupTime()));
+				if(repoToolValidationData.getPickupTime() != null) {
+					excelData.setPickupTime(String.format("%.2f", repoToolValidationData.getPickupTime()));
+					excelData.setPrReviewTime(repoToolValidationData.getPrActivityTime());
+				}
 				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
-				excelData.setPrReviewTime(repoToolValidationData.getPrActivityTime());
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
