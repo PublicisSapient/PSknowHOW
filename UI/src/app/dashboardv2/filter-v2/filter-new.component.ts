@@ -601,9 +601,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
       ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent))
         || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
+
+        //event different than before
+        this.previousFilterEvent = event;
+
         if (event[0].labelName.toLowerCase() === 'project') {
           // new project selected => make boardConfig call
           this.getBoardConfig(event.map(x => x.basicProjectConfigId), event);
@@ -689,19 +694,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.additionalFiltersArr = [];
     }
-    if ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent))) {
-      this.previousFilterEvent = event;
-      if (event.length === 1) {
-        this.additionalData = true;
-        this.getProcessorsTraceLogsForProject().then(result => {
-          this.sendDataToDashboard(event);
-        }).catch(error => {
-          console.error("Error:", error);
-          this.sendDataToDashboard(event);
-        });
-      } else {
+    if (event.length === 1) {
+      this.additionalData = true;
+      this.getProcessorsTraceLogsForProject().then(result => {
         this.sendDataToDashboard(event);
-      }
+      }).catch(error => {
+        console.error("Error:", error);
+        this.sendDataToDashboard(event);
+      });
+    } else {
+      this.sendDataToDashboard(event);
     }
   }
 
