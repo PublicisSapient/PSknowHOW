@@ -156,7 +156,7 @@ public class CostOfDelayServiceImplTest {
 
 		Map<String, Object> dataList = costOfDelayServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
-		assertThat("Total Release : ", dataList.size(), equalTo(2));
+		assertThat("Total Release : ", dataList.size(), equalTo(3));
 	}
 
 	@Test

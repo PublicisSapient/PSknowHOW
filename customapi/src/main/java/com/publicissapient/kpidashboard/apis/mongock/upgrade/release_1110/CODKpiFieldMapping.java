@@ -28,7 +28,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.Arrays;
 import java.util.Collections;
 
-@ChangeUnit(id = "cod_kpi_field_mapping", order = "11104", author = "kunkambl", systemVersion = "11.1.0")
+@ChangeUnit(id = "cod_kpi_field_mapping", order = "11105", author = "kunkambl", systemVersion = "11.1.0")
 public class CODKpiFieldMapping {
 
 	public static final String FIELD_NAME = "fieldName";
