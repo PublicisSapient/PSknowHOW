@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { HelperService } from 'src/app/services/helper.service';
 import { DropdownFilterOptions } from 'primeng/dropdown';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-parent-filter',
@@ -19,7 +20,7 @@ export class ParentFilterComponent implements OnChanges {
   additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
   filterValue: string = '';
-  constructor(public helperService: HelperService) { }
+  constructor(public helperService: HelperService, public sharedService: SharedService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['parentFilterConfig']) {
@@ -94,13 +95,13 @@ export class ParentFilterComponent implements OnChanges {
     }
   }
 
-/**
- * Handles the change of the selected level in the filter configuration.
- * Emits the selected level and updates the backup of filter selection state based on whether the parent level has changed.
- * 
- * @param {boolean} parentLevelChanged - Indicates if the parent level has changed.
- * @returns {void}
- */
+  /**
+   * Handles the change of the selected level in the filter configuration.
+   * Emits the selected level and updates the backup of filter selection state based on whether the parent level has changed.
+   *
+   * @param {boolean} parentLevelChanged - Indicates if the parent level has changed.
+   * @returns {void}
+   */
   handleSelectedLevelChange(parentLevelChanged = false) {
     if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
       this.onSelectedLevelChange.emit(this.selectedLevel?.nodeName);
@@ -122,15 +123,15 @@ export class ParentFilterComponent implements OnChanges {
     }
   }
 
-/**
- * Handles the change event of a dropdown element.
- * If a dropdown element is selected, it triggers the level change handling.
- * 
- * @param {any} $event - The event object from the dropdown change.
- * @returns {void}
- */
-  onDropdownChange($event:any){
-    if(this.helperService.isDropdownElementSelected($event)){
+  /**
+   * Handles the change event of a dropdown element.
+   * If a dropdown element is selected, it triggers the level change handling.
+   *
+   * @param {any} $event - The event object from the dropdown change.
+   * @returns {void}
+   */
+  onDropdownChange($event: any) {
+    if (this.helperService.isDropdownElementSelected($event)) {
       this.handleSelectedLevelChange(true)
     }
   }

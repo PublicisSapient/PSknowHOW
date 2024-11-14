@@ -102,10 +102,10 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   draw() {
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
-    const sprintList = this.data[0].value.map(details => details.sSprintName);
+    const sprintList = this.data[0]?.value.map(details => details.sSprintName);
     const dataCategory = this.data.map(d => d.data);
-    const lineTypes = this.data[0].value[0].dataValue.map(lineData => lineData.lineType);
-    const lineDetails = this.data[0].value[0].dataValue.map(lineData => lineData.name);
+    const lineTypes = this.data[0]?.value[0].dataValue.map(lineData => lineData.lineType);
+    const lineDetails = this.data[0]?.value[0].dataValue.map(lineData => lineData.name);
     const formattedData = this.transformData(this.data, lineTypes);
 
     // this is used for removing svg already made when value is updated
@@ -139,7 +139,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     const kpiId = this.kpiId;
     const showUnit = this.unit;
     const containerWidth = d3.select(this.elem).select('#graphContainer').node().offsetWidth || window.innerWidth;
-    const resizeWidth = (containerWidth > (data[0].value.length * 20 * 8) ? containerWidth : (data[0].value.length * 20 * 8))
+    const resizeWidth = (containerWidth > (data[0]?.value.length * 20 * 8) ? containerWidth : (data[0]?.value.length * 20 * 8))
     width = data.length <= 5 ? containerWidth - 70 : resizeWidth;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
@@ -200,7 +200,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
         .rangeRound([0, width - margin])
         .padding(0)
         .domain(
-          data[maxObjectNo].value.map(function (d, i) {
+          data[maxObjectNo]?.value.map(function (d, i) {
             return i + 1;
           }),
         );
@@ -398,33 +398,33 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .style('stroke', '#dedede')
       .style('fill', 'none')
       .attr('class', 'gridline');
-    
-      const xAxisGrid = d3.axisBottom(xScale).tickSize(-(height - 60)).tickFormat('').ticks(5);
-      svgX.append('g')
-        .attr('class', 'y-axis-grid')
-        .call(xAxisGrid)
-        .attr('transform', `translate(${0}, ${height - 60})`);
+
+    const xAxisGrid = d3.axisBottom(xScale).tickSize(-(height - 60)).tickFormat('').ticks(5);
+    svgX.append('g')
+      .attr('class', 'y-axis-grid')
+      .call(xAxisGrid)
+      .attr('transform', `translate(${0}, ${height - 60})`);
 
 
-      d3.select(this.elem).select('.y-axis-grid')
-        .selectAll('line')
-        .style('stroke', '#EAEDF0')
-        .style('fill', 'none');
+    d3.select(this.elem).select('.y-axis-grid')
+      .selectAll('line')
+      .style('stroke', '#EAEDF0')
+      .style('fill', 'none');
 
-      d3.select(this.elem).select('#horizontalSVG')
-        .select('.x-axis')
-        .selectAll('.tick line')
-        .style('display', 'none');
+    d3.select(this.elem).select('#horizontalSVG')
+      .select('.x-axis')
+      .selectAll('.tick line')
+      .style('display', 'none');
 
-        d3.select(this.elem).select('#verticalSVG')
-        .select('.y.axis')
-        .selectAll('.tick line')
-        .style('display', 'none');
+    d3.select(this.elem).select('#verticalSVG')
+      .select('.y.axis')
+      .selectAll('.tick line')
+      .style('display', 'none');
 
-      d3.select(this.elem).select('#horizontalSVG')
-        .select('.x-axis')
-        .select('.domain')
-        .style('display', 'none');
+    d3.select(this.elem).select('#horizontalSVG')
+      .select('.x-axis')
+      .select('.domain')
+      .style('display', 'none');
 
 
     /* Add line into SVG acoording to data */

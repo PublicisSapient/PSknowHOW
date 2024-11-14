@@ -47,7 +47,7 @@ export class GroupBarChartComponent implements OnChanges {
       this.xCaption = this.service.getSelectedDateFilter();
     } else {
       const duration = this.data[0]?.dataGroup[0]?.duration;
-      this.xCaption = duration.charAt(0).toUpperCase() + duration.slice(1).toLowerCase();
+      this.xCaption = duration?.charAt(0).toUpperCase() + duration?.slice(1).toLowerCase();
     }
     // only run when property "data" changed
     if (changes['data']) {
@@ -499,7 +499,7 @@ export class GroupBarChartComponent implements OnChanges {
 
   formatData(data) {
     const resultData = {};
-    data.forEach((d) => {
+    data?.forEach((d) => {
       const date = d.filter;
       let graphData = {};
       d.value.forEach(groupD => {
@@ -530,7 +530,7 @@ export class GroupBarChartComponent implements OnChanges {
 
     });
     const resultDataList = Object.values(resultData);
-    if (this.xCaption.toLowerCase() === 'weeks' || this.xCaption.toLowerCase() === 'days' || this.xCaption.toLowerCase() === 'months') {
+    if (String(this.xCaption).toLowerCase() === 'weeks' || String(this.xCaption).toLowerCase() === 'days' || String(this.xCaption).toLowerCase() === 'months') {
       return this.formatDateOnXAxis(resultDataList);
     } else {
       return resultDataList;
@@ -540,7 +540,7 @@ export class GroupBarChartComponent implements OnChanges {
   formatDateOnXAxis(data) {
     const days = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
     return data.map((d, i) => {
-      if (this.xCaption.toLowerCase() === 'weeks') {
+      if (String(this.xCaption).toLowerCase() === 'weeks') {
         d['group'] = d['group'].replace(" ", '');
         const dateArray = d['group'].split('to');
         const date1 = new Date(dateArray[0]);
@@ -563,7 +563,7 @@ export class GroupBarChartComponent implements OnChanges {
         }
         d['group'] = formatedWeek
         return d;
-      } else if (this.xCaption.toLowerCase() === 'days') {
+      } else if (String(this.xCaption).toLowerCase() === 'days') {
         const date = new Date(d['group']);
         const currentDate = new Date();
         const formatedDate = `${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;

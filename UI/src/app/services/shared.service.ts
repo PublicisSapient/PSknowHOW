@@ -122,6 +122,8 @@ export class SharedService {
   isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
 
   selectedMap = {};
+  kpiSelectedFilterObj: object = {};
+  filterChange: boolean = false;
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -564,6 +566,50 @@ export class SharedService {
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
   }
+
+  setSelectedKPIFilterValues(kpiSelectedFilterObj) {
+    const tempObj = kpiSelectedFilterObj;
+    // console.log('data from exec.v2 ', tempObj)
+    Object.keys(tempObj).forEach((key) => {
+      // console.log('key ', tempObj[key])
+      // this.kpiSelectedFilterObj[key] = kpiSelectedFilterObj[key];
+      this.kpiSelectedFilterObj = { ...this.kpiSelectedFilterObj, [key]: tempObj[key] };
+    })
+    // this.kpiSelectedFilterObj = { ...kpiSelectedFilterObj };
+    // console.log('setSelectedKPIFilterValues ', this.kpiSelectedFilterObj);
+  }
+
+//   setSelectedKPIFilterValues(kpiSelectedFilterObj) {
+//     const tempObj = kpiSelectedFilterObj;
+//     console.log('data from exec.v2', tempObj);
+
+//     Object.keys(tempObj).forEach((key) => {
+//       let value = tempObj[key];
+
+//       // Check if the value is an array
+//       if (Array.isArray(value)) {
+//         if (value.length >= 1) {
+//           // If only one item in the array, use 'filter1' as key
+//           value = { 'filter1': value };
+//         }
+//       }
+
+//       // Spread the updated key-value pair into the kpiSelectedFilterObj
+//       this.kpiSelectedFilterObj = { ...this.kpiSelectedFilterObj, [key]: value };
+//     });
+
+//     console.log('setSelectedKPIFilterValues', this.kpiSelectedFilterObj);
+// }
+
+  getSelectedKPIFilterValues() {
+    // console.log('getSelectedKPIFilterValues ', this.kpiSelectedFilterObj);
+    return this.kpiSelectedFilterObj;
+  }
+
+  resetKpiFilterObj() {
+    this.kpiSelectedFilterObj = {};
+  }
+
 }
 
 

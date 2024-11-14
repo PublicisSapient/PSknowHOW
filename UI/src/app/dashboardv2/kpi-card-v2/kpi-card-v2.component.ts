@@ -78,6 +78,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() immediateLoader: boolean = true;
   @Input() partialData: boolean = false;
   warning = '';
+  firstLoad: boolean = true;
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService,
@@ -85,6 +86,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
+      // console.log('x', x);
       this.filterOptions = {};
       if (Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
@@ -121,16 +123,28 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
         if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {
           if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
+            // console.log('radioOption 124', this.kpiSelectedFilterObj, this.kpiData?.kpiId)
             this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            // console.log('radioOption 126', this.radioOption)
           }
         }
       }
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
+
+      // console.log('kpiDetail -> ', this.kpiData?.kpiDetail)
+      // console.log('this.dropdownArr -> ', this.dropdownArr)
+
+      /** assign 1st value to radio button by default */
+      // const selectedRadioOpt = this.service.getSelectedKPIFilterValues()[this.kpiData?.kpiId];
+      // if (x[this.kpiData?.kpiId] && !Object.keys(x[this.kpiData?.kpiId])?.length && Object.keys(selectedRadioOpt).length) {
+      //   this.radioOption = selectedRadioOpt;
+      // } else if (x[this.kpiData?.kpiId] && !Object.keys(x[this.kpiData?.kpiId])?.length && !selectedRadioOpt) {
+      //   this.radioOption = this.dropdownArr[0]?.options[0];
+      // } else {
+      //   this.radioOption = x[this.kpiData?.kpiId];
+      // }
+
     }));
-    /** assign 1st value to radio button by default */
-    if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
-      this.radioOption = this.dropdownArr[0]?.options[0];
-    }
   }
 
   initializeMenu() {
@@ -176,6 +190,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
       || this.checkIfViewer || !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
+
+    if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && changes['dropdownArr'] && changes['dropdownArr'].currentValue?.length) {
+      console.log('changes ', changes, changes['dropdownArr'].currentValue)
+      const selectedRadioOpt = this.service.getSelectedKPIFilterValues()[this.kpiData?.kpiId];
+      console.log('selectedRadioOpt ', selectedRadioOpt)
+      // this.radioOption = selectedRadioOpt[0];
+      if (!selectedRadioOpt?.length && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
+        this.radioOption = this.dropdownArr[0]?.options[0];
+        // console.log('radioOption 135', this.radioOption)
+      }
+      // this.firstLoad = false;
+    }
   }
 
   openCommentModal = () => {
@@ -204,15 +230,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
   }
 
-/**
- * Handles changes in dropdown selections, moving selected options to the top,
- * emitting the selected option, and triggering a Google Analytics event.
- * 
- * @param {string} type - The type of selection (e.g., 'radio', 'single').
- * @param {object|null} value - The selected value(s), can be an object or null.
- * @param {number} filterIndex - The index of the dropdown in the array.
- * @returns {void}
- */
+  /**
+   * Handles changes in dropdown selections, moving selected options to the top,
+   * emitting the selected option, and triggering a Google Analytics event.
+   *
+   * @param {string} type - The type of selection (e.g., 'radio', 'single').
+   * @param {object|null} value - The selected value(s), can be an object or null.
+   * @param {number} filterIndex - The index of the dropdown in the array.
+   * @returns {void}
+   */
   handleChange(type, value = null, filterIndex = 0) {
 
     // moving selected option to top
@@ -374,13 +400,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.ga.setKpiData(gaObj);
   }
 
-/**
- * Checks if data is present based on the provided status code and KPI ID.
- * Evaluates the trend value list and specific conditions to determine presence.
- * 
- * @param {string} data - The status code to check (e.g., '200', '201').
- * @returns {boolean} - Returns true if data is present, otherwise false.
- */
+  /**
+   * Checks if data is present based on the provided status code and KPI ID.
+   * Evaluates the trend value list and specific conditions to determine presence.
+   *
+   * @param {string} data - The status code to check (e.g., '200', '201').
+   * @returns {boolean} - Returns true if data is present, otherwise false.
+   */
   checkIfDataPresent(data) {
     if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
       if (this.trendValueList?.length) {

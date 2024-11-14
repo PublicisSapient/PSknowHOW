@@ -49,7 +49,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
 
 
-  constructor(private viewContainerRef: ViewContainerRef) {}
+  constructor(private viewContainerRef: ViewContainerRef) { }
 
   createColors(): void {
     this.colors = d3
@@ -82,7 +82,6 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     this.pieChartValuesArray = [];
     const pie = d3.pie<any>().value((d: any) => Number(d.value));
     const pieChartValues = this.data[0]?.value[0]?.value;
-
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
         ['title']: property,
@@ -111,7 +110,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     this.createColors();
     const colors = this.colors;
 
-    const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value; });
+    const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value.data; });
     const toPercent = d3.format("0.1%");
     // Build the pie chart
     svg
@@ -151,7 +150,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       tbody.append('tr')
         .style('border-bottom', '1px solid #dedede')
         .style('padding-top', '2px')
-        .html(`<td class="p-p-1 font-small"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td class="p-p-1 font-small">${x?.value}</td><td class="p-p-1 font-small p-text-right">${toPercent(x?.value / totalCount)}</td>`)
+        .html(`<td class="p-p-1 font-small"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td class="p-p-1 font-small">${x?.value?.data}</td><td class="p-p-1 font-small p-text-right">${toPercent(x?.value?.data / totalCount)}</td>`)
     })
 
 
