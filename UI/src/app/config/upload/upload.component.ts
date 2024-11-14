@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ChangeDetectorRef, Component, OnInit, SecurityContext, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, SecurityContext } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
@@ -813,13 +813,6 @@ export class UploadComponent implements OnInit {
     if (this.selectedView === 'upload_tep') {
       this.enableDisableTestExecutionSubmitButton();
     }
-  }
-
-  // called when user switches between Default and Additional filters
-  selectFilterType(type, event) {
-    this.filterType = type;
-    $('.ui-menuitem-link.ui-corner-all').removeClass('selected');
-    $(event.originalEvent.target).closest('a').addClass('selected');
   }
 
   checkDefaultFilterSelection(flag) {

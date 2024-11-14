@@ -247,8 +247,8 @@ export class IterationComponent implements OnInit, OnDestroy {
                 case 2:
                   kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
                   break;
-                  case 1:
-                    kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
+                case 1:
+                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
                   break;
                 default:
                   kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi125' && kpiId !== 'kpi154');
@@ -350,7 +350,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
-    console.log(this.loaderJiraArray)
     this.kpiLoader = true;
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
@@ -884,13 +883,12 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: colData, value: colData }));
       this.tableColumnForm[colName] = [];
     });
-    this.modalDetails['tableValues'].map(item =>{
+    this.modalDetails['tableValues'].forEach(item =>{
       Object.keys(item).forEach(key=>{
         if(key.toLowerCase().includes('date') && item[key]=== '-'){
           item[key] = '';
         }
       });
-      return item;
     })
 
   }

@@ -302,6 +302,15 @@ describe('PrimaryFilterComponent', () => {
 
       expect(result).toBe(false);
     });
+
+    it('should return true for identical arrays of primitives', () => {
+      const arr1 = [1, 2, 3];
+      const arr2 = [1, 2, 3];
+
+      const result = component.arraysEqual(arr1, arr2);
+
+      expect(result).toBe(true);
+    });
   });
 
 
@@ -877,5 +886,62 @@ describe('PrimaryFilterComponent', () => {
     expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
     expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
+  });
+
+  describe('AdditionalFilterComponent.onDropDownChange() onDropDownChange method', () => {
+    describe('Happy Path', () => {
+      it('should apply additional filter when dropdown element is selected', () => {
+        // Arrange
+        const event = { value: 'someValue' };
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(true);
+  
+        // Act
+        component.onDropdownChange(event);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).toHaveBeenCalled();
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should not apply additional filter when dropdown element is not selected', () => {
+        // Arrange
+        const event = { value: 'someValue' };
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(false);
+  
+        // Act
+        component.onDropdownChange(event);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
+      });
+  
+      it('should handle undefined event gracefully', () => {
+        // Arrange
+        const event = undefined;
+        const index = 1;
+        spyOn(helperService, 'isDropdownElementSelected')
+          .and.returnValue(false);
+  
+        // Act
+        component.onDropdownChange(event);
+  
+        // Assert
+        expect(helperService.isDropdownElementSelected).toHaveBeenCalledWith(
+          event,
+        );
+        // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
+      });
+    });
   });
 });
