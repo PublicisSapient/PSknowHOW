@@ -802,11 +802,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.createAllKpiArrayForBacklog(this.jiraKpiData);
           this.removeLoaderFromKPIs(localVariable);
         } else {
-          this.jiraKpiData = getData;
-          postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element.kpiId);
-          });
+          this.handleKPIError(postData);
         }
+      }, (error) => {
+        // Handle error
+        this.handleKPIError(postData);
       });
   }
 
@@ -847,11 +847,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.createAllKpiArray(localVariable);
 
         } else {
-          this.jiraKpiData = getData;
-          postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element?.kpiId);
-          });
+          this.handleKPIError(postData);
         }
+      }, (error) => {
+        // Handle error
+        this.handleKPIError(postData);
       });
   }
 
@@ -870,12 +870,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.createAllKpiArray(this.bitBucketKpiData);
           this.removeLoaderFromKPIs(this.bitBucketKpiData);
 
-        } else {
-          this.bitBucketKpiData = getData;
-          postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element.kpiId);
-          });
+        }  else {
+          this.handleKPIError(postData);
         }
+      }, (error) => {
+        // Handle error
+        this.handleKPIError(postData);
       });
   }
 
@@ -893,11 +893,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.createAllKpiArray(this.bitBucketKpiData);
           this.removeLoaderFromKPIs(this.bitBucketKpiData);
         } else {
-          this.bitBucketKpiData = getData;
-          postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element.kpiId);
-          });
+          this.handleKPIError(postData);
         }
+      }, (error) => {
+        // Handle error
+        this.handleKPIError(postData);
       });
   }
 
@@ -925,11 +925,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.createAllKpiArray(localVariable);
           this.removeLoaderFromKPIs(localVariable);
         } else {
-          this.jiraKpiData = getData;
-          postData.kpiList.forEach(element => {
-            this.kpiLoader.delete(element.kpiId);
-          });
+          this.handleKPIError(postData);
         }
+      }, (error) => {
+        // Handle error
+        this.handleKPIError(postData);
       });
   }
 
