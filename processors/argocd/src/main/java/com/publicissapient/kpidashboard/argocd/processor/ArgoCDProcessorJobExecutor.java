@@ -185,6 +185,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				try {
 					processorToolConnectionService.validateConnectionFlag(argoCDJob);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
+					// Fetching the list of applications using Bearer token for authentication as Basic Auth is not supported
 					ApplicationsList listOfApplications = argoCDClient.getApplications(baseUrl, cred.getPassword());
 					if (listOfApplications != null && listOfApplications.getItems() != null) {
 						listOfApplications.getItems().stream()
