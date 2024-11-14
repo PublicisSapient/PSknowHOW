@@ -68,7 +68,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   noSprint: boolean = false;
   projectList = null;
   blockUI: boolean = false;
-  isAzureProect: boolean = false;
+  isAzureProect : boolean = false;
 
   kanbanProjectsAvailable: boolean = true;
   scrumProjectsAvailable: boolean = true;
@@ -693,25 +693,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     if (event.length === 1) {
       this.additionalData = true;
-      this.getProcessorsTraceLogsForProject().then(result => {
-        this.sendDataToDashboard(event);
-      }).catch(error => {
-        console.error("Error:", error);
-        this.sendDataToDashboard(event);
-      });
-    } else {
-      this.sendDataToDashboard(event);
+      this.getProcessorsTraceLogsForProject();
     }
-  }
-
-/**
- * Sends the filter data to the dashboard based on the provided event.
- * Updates various filter states and applies the necessary data transformations.
- * 
- * @param {Array} event - An array of event objects containing filter criteria.
- * @returns {void}
- */
-  sendDataToDashboard(event) {
     this.previousFilterEvent = event;
     this.previousSelectedTab = this.selectedTab;
     this.previousSelectedType = this.selectedType;
@@ -1053,24 +1036,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @throws {Error} - Logs error to the console if the HTTP request fails.
    */
   getProcessorsTraceLogsForProject() {
-    return new Promise((resolve, reject) => {
-      this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
-        if (response.success) {
-          this.isAzureProect = response.data.find(de => de.processorName.toLowerCase() === 'azure') ? true : false;
-          this.service.setProcessorLogDetails(response.data);
-          resolve(true);
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary:
-              "Error in fetching processor's execution date. Please try after some time.",
-          });
-          reject("Operation failed.");
-        }
-      }, error => {
-        console.log(error);
-        reject("Operation failed.");
-      });
+    this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
+      if (response.success) {
+        this.isAzureProect = response.data.find(de=>de.processorName.toLowerCase() === 'azure') ? true : false;
+        this.service.setProcessorLogDetails(response.data);
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary:
+            "Error in fetching processor's execution date. Please try after some time.",
+        });
+      }
+    }, error => {
+      console.log(error);
     });
   }
 
