@@ -18315,7 +18315,7 @@ describe('ExecutiveV2Component', () => {
         const result = component.checkIfZeroData(kpi as any);
   
         // Assert
-        expect(result).toBe(false);
+        expect(result).toBe(true);
       });
     });
   

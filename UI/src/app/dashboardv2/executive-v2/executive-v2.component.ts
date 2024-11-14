@@ -1893,6 +1893,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             return true;
           }
         }
+
+        // Cycle Time
+        if (kpi.kpiId === 'kpi171') {
+          if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
         // Refinement Rejection Rate and Production Defects Ageing
         if (kpi.kpiId === 'kpi139' || kpi.kpiId === 'kpi127') {
           if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length) {
@@ -1905,7 +1915,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
 
         // Sonar Code Quality, unknown KPI , PI Predicatability
-        if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
+        else if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
           if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
             if (Array.isArray(data[0].value) && data[0].value) {
               data[0].value.forEach(element => {
@@ -1919,16 +1929,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         }
 
-        // Cycle Time
-        if (kpi.kpiId === 'kpi171') {
-          if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-
-        if (Array.isArray(data[0].value)) {
+        else if (Array.isArray(data[0].value)) {
           data[0].value.forEach(element => {
             dataValue += element.value;
           });
