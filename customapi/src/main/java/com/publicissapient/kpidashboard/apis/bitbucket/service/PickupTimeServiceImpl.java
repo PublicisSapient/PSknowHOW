@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -298,13 +299,17 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userHours = repoToolUserDetails.map(RepoToolUserDetails::getHours).orElse(0.0d);
 			long userMrCount = repoToolUserDetails.map(repoToolUserDetails1 -> {
-				List<MergeRequests> mergeRequestsPT = repoToolUserDetails1.getMergeRequestList();
-				return mergeRequestsPT != null ? mergeRequestsPT.size() : 0;
+				List<MergeRequests> mergeRequestsPT = Optional.ofNullable(repoToolUserDetails1.getMergeRequestList())
+						.orElse(new ArrayList<>()).stream()
+						.filter(mergeRequests -> mergeRequests.getUpdatedAt() != null).toList();
+				return mergeRequestsPT.size();
 			}).orElse(0);
+
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-					.optionalStart().optionalStart().appendPattern("X").optionalEnd().toFormatter();
+					.optionalStart().appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
+					.optionalEnd().appendPattern("'Z'").toFormatter();
 			if (repoToolUserDetails.isPresent() && repo != null) {
 				repoToolUserDetails.get().getMergeRequestList().forEach(mr -> {
 					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
@@ -314,13 +319,17 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					repoToolValidationData.setMergeRequestUrl(mr.getLink());
 					repoToolValidationData.setDeveloperName(developerName);
 					repoToolValidationData.setDate(date);
+					repoToolValidationData.setPrStatus(mr.getMrState());
 					LocalDateTime dateTime = LocalDateTime.parse(mr.getCreatedAt(), formatter);
 					repoToolValidationData.setPrRaisedTime(
 							dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_TIME_FORMAT)));
-					dateTime = LocalDateTime.parse(mr.getUpdatedAt(), formatter);
-					repoToolValidationData.setPrActivityTime(
-							dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_TIME_FORMAT)));
-					repoToolValidationData.setPickupTime(mr.getFirstReviewedAt());
+					if (mr.getUpdatedAt() != null) {
+						dateTime = LocalDateTime.parse(mr.getUpdatedAt(), formatter);
+						repoToolValidationData.setPrActivityTime(
+								dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_TIME_FORMAT)));
+						repoToolValidationData.setPickupTime(mr.getFirstReviewedAt());
+					}
+
 					repoToolValidationDataList.add(repoToolValidationData);
 				});
 			}
