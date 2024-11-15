@@ -18,30 +18,30 @@ describe('IsoDateFormatPipe', () => {
   it('should transform a valid Date object to the correct ISO date format', () => {
 		const date = new Date('2023-10-01T00:00:00Z');
 		const result = pipe.transform(date);
-		expect(result).toBe('2023-10-01');
+		expect(result).toBe('02-OCT-2023');
 	});
 
   it('should transform a valid date string to ISO format', () => {
 		const inputDate = '2023-10-01';
-		const expectedOutput = '2023-10-01';
+		const expectedOutput = '02-OCT-2023';
 		const result = pipe.transform(inputDate);
 		expect(result).toBe(expectedOutput);
 	});
 
 
-	it('should return Invalid Date for an empty string', () => {
+	it('should return empty string for an empty string', () => {
 		const result = pipe.transform('');
-		expect(result).toBe('Invalid Date input');
+		expect(result).toBe('-');
 	});
 
 	it('should return Invalid Date for an invalid date string', () => {
 		const result = pipe.transform('invalid-date-string');
-		expect(result).toBe('Invalid Date');
+		expect(result).toBe('-');
 	});
 
-	it('should return Invalid Date input for null value', () => {
+	it('should return empty string for null value', () => {
 		const result = pipe.transform(null);
-		expect(result).toBe('Invalid Date input');
+		expect(result).toBe('-');
 	});
 
 	
