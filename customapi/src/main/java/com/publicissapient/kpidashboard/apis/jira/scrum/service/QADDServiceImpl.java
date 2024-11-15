@@ -204,7 +204,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 					List<String> totalStoryIdList = sprintWiseStoryMAP.get(currentNodeIdentifier);
 					Set<JiraIssue> sprintWiseDefectList = sprintWiseDefectListMap.get(currentNodeIdentifier);
 					KPIExcelUtility.populateDefectDensityExcelData(node.getSprintFilter().getName(), totalStoryIdList,
-							new ArrayList<>(sprintWiseDefectList), excelData, allStoryMap, fieldMapping);
+							new ArrayList<>(sprintWiseDefectList), excelData, allStoryMap, fieldMapping, customApiConfig);
 				}
 			} else {
 				qaddForCurrentLeaf = 0.0d;

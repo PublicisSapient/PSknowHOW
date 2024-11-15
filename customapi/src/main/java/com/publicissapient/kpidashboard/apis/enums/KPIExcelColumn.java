@@ -43,8 +43,10 @@ public enum KPIExcelColumn {
 
 	CODE_BUILD_TIME("kpi8",
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
-					"Weeks")), ISSUE_COUNT("kpi40",
-			Arrays.asList("Sprint Name", "Story ID", "Issue Description")),
+					"Weeks")),
+	ISSUE_COUNT("kpi40",
+			Arrays.asList("Squad", "Sprint Name", "Issue ID", "Issue Description", "Issue Type", "Priority",
+					"Story Points", "Original Time Estimate (in hours)", "Time Spent (in hours)")),
 	CODE_COMMIT("kpi11", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "No Of Commit",
 			"No of Merge")),
 	REPO_TOOL_CODE_COMMIT("kpi157",
@@ -67,35 +69,41 @@ public enum KPIExcelColumn {
 			"Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 
 	SPRINT_VELOCITY("kpi39",
-			Arrays.asList("Sprint Name", "Story ID",  "Issue Description", "Squad",
-					"Size(story point/hours)")), SPRINT_PREDICTABILITY(
-							"kpi5",
-							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",
-									"Size(story point/hours)")), SPRINT_CAPACITY_UTILIZATION(
-											"kpi46",
-											Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",
-													"Original Time Estimate (in hours)",
-													"Total Time Spent (in hours)")), COMMITMENT_RELIABILITY("kpi72",
-															Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Status","Issue Type", "Scope" ,
-																	"Size(story point/hours)")),
+			Arrays.asList("Sprint Name", "Issue ID", "Issue Description", "Squad", "Issue Type", "Priority", "Story Points",
+					"Original Time Estimate (in hours)", "Time Spent (in hours)")),
+	SPRINT_PREDICTABILITY("kpi5",
+			Arrays.asList("Sprint Name", "Issue ID", "Issue Description", "Squad", "Issue Type", "Priority", "Story Points",
+					"Original Time Estimate (in hours)", "Time Spent (in hours)")),
+	SPRINT_CAPACITY_UTILIZATION("kpi46",
+			Arrays.asList("Sprint Name", "Issue ID", "Issue Description", "Squad", "Issue Type", "Priority", "Story Points",
+					"Original Time Estimate (in hours)", "Time Spent (in hours)")),
+	COMMITMENT_RELIABILITY("kpi72",
+						   Arrays.asList("Sprint Name", "Issue ID", "Issue Description", "Issue Status", "Scope",
+								   "Squad", "Issue Type", "Priority", "Story Points",
+								   "Original Time Estimate (in hours)", "Time Spent (in hours)")),
 
-	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad", "Linked Defects")),
+	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID",
+			"Story Description", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
-	FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad", "First Time Pass")),
+	FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID",
+						  "Story Description","First Time Pass", "Squad", "Time Spent (in hours)")),
 
-	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",  "Linked Defects to Story",
-			"Size(story point/hours)")),
+	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID",
+			"Story Description", "Size(story point/hours)", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
-	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Escaped defect identifier")),
+	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Escaped defect identifier", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
 	DEFECT_REMOVAL_EFFICIENCY("kpi34",
-			Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Defect Removed")),
+							  Arrays.asList("Sprint Name", "Defect ID", "Defect Description",
+									  "Squad", "Root Cause","Defect Priority","Defect Removed", "Defect Status", "Time Spent (in hours)")),
 
-	DEFECT_REJECTION_RATE("kpi37", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Defect Rejected")),
+	DEFECT_REJECTION_RATE("kpi37", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Squad", "Defect Rejected")),
 
-	DEFECT_COUNT_BY_PRIORITY("kpi28", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Priority")),
+	DEFECT_COUNT_BY_PRIORITY("kpi28", Arrays.asList("Sprint Name", "Defect ID", "Defect Description",
+			"Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
-	DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Root Cause")),
+	DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Defect Description",
+			"Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
 	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", Arrays.asList("Defect ID", "Issue Description", "Squad", "Issue Status",
 			"Issue Type", "Size(story point/hours)", "Root Cause", "Priority", "Assignee", "Created during Iteration")),
@@ -103,8 +111,8 @@ public enum KPIExcelColumn {
 	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", Arrays.asList("Defect ID", "Issue Description", "Squad", "Issue Status",
 			"Issue Type", "Size(story point/hours)", "Root Cause", "Priority", "Assignee", "Created during Iteration")),
 
-	CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Issue Description", "Squad",
-			"Defect added after Sprint Start", "Resolved Status")),
+	CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Defect Description", "Squad",
+			"Root Cause", "Defect Priority", "Time Spent (in hours)", "Defect Status","Defect added after Sprint Start", "Resolved Status")),
 
 	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", Arrays.asList("Defect ID", "Issue Description", "Squad", "Issue Status",
 			"Issue Type", "Size(story point/hours)", "Root Cause", "Priority", "Assignee", "Created during Iteration")),
@@ -295,7 +303,10 @@ public enum KPIExcelColumn {
 	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
 			"Issue Status", "Sprint Name", "Priority","Created Date","Updated Date", "Assignee")),
 	//DTS-26123 end
-	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Squad", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
+	SCOPE_CHURN("kpi164",
+			Arrays.asList("Sprint Name", "Issue ID", "Issue Description", "Issue Status", "Scope Change Date",
+					"Scope Change (Added/Removed)", "Squad", "Issue Type", "Priority", "Story Points",
+					"Original Time Estimate (in hours)", "Time Spent (in hours)")),
 
 	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Weeks", "Story ID", "Lead Time (In Days) [B-A]",
 			"Change Completion Date [A]", "Change Release Date [B]")),

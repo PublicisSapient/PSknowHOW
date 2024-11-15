@@ -408,7 +408,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					.forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
 
 			KPIExcelUtility.populateDefectSeepageRateExcelData(node.getSprintFilter().getName(), totalBugList,
-					subCategoryWiseUatBugList, excelData);
+					subCategoryWiseUatBugList, excelData, customApiConfig);
 		}
 	}
 
