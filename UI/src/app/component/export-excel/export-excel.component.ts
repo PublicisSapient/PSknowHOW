@@ -177,7 +177,7 @@ export class ExportExcelComponent implements OnInit {
             }
             return { name: colData.text, value: colData.text }
           } else {
-            return { name: !colData?'-':colData, value: !colData?'-':colData }
+            return { name: colData, value: colData }
           }
         });
         this.tableColumnForm[colName] = [];
