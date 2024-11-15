@@ -880,7 +880,7 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   generateTableColumnData() {
     this.modalDetails['tableHeadings'].forEach(colName => {
-      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: colData, value: colData }));
+      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: !colData?'-':colData, value: !colData?'-':colData }));
       this.tableColumnForm[colName] = [];
     });
   }
