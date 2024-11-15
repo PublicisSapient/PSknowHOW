@@ -68,7 +68,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   noSprint: boolean = false;
   projectList = null;
   blockUI: boolean = false;
-  isAzureProect: boolean = false;
+  isAzureProect : boolean = false;
 
   kanbanProjectsAvailable: boolean = true;
   scrumProjectsAvailable: boolean = true;

@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<ng-container *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
+  <ng-container *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
     <div *ngIf="!noKpis; else noKpiTemplate">
         <ng-container *ngIf="!noFilterApplyData; else noFilterApplyDataTemplate">
             <div id="message"></div>

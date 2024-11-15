@@ -481,4 +481,7 @@ public class KPIExcelData {
 	@JsonProperty( "PR Review Time")
 	private String prReviewTime;
 
+	@JsonProperty("PR Status")
+	private String prStatus;
+
 }
