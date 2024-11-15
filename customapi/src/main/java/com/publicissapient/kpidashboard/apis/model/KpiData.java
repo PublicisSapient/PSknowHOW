@@ -30,6 +30,7 @@ import lombok.*;
 public class KpiData {
 	private String key;
 	private String name;
+	private Double kpiValue;
 	private Integer order;
 	private String aggregation;
 	private String unit;
