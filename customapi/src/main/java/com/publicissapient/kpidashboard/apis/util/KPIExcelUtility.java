@@ -851,14 +851,12 @@ public class KPIExcelUtility {
 					setSquads(excelData, epic);
 					String month = Constant.EMPTY_STRING;
 					String epicEndDate = Constant.EMPTY_STRING;
-					String dateToUse = epic.getEpicEndDate() != null ? epic.getEpicEndDate() : epic.getChangeDate();
+					String dateToUse = epic.getEpicEndDate();
 					if (dateToUse != null) {
-						DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-								.optionalStart().appendPattern(".")
-								.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd().toFormatter();
-						LocalDateTime dateTime = LocalDateTime.parse(dateToUse, formatter);
-						month = dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
-						epicEndDate = dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_FORMAT));
+						DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.DATE_FORMAT).toFormatter();
+						LocalDate dateValue = LocalDate.parse(dateToUse.split("T")[0], formatter);
+						month = dateValue.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
+						epicEndDate = dateValue.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_FORMAT));
 					}
 					excelData.setMonth(month);
 					excelData.setEpicEndDate(epicEndDate);
@@ -1083,13 +1081,16 @@ public class KPIExcelUtility {
 				excelData.setBranch(repoToolValidationData.getBranchName());
 				excelData.setAuthor(repoToolValidationData.getDeveloperName());
 				excelData.setDaysWeeks(repoToolValidationData.getDate());
-				excelData.setPickupTime(String.format("%.2f", repoToolValidationData.getPickupTime()));
+				if(repoToolValidationData.getPickupTime() != null) {
+					excelData.setPickupTime(String.format("%.2f", repoToolValidationData.getPickupTime()));
+					excelData.setPrReviewTime(repoToolValidationData.getPrActivityTime());
+				}
 				excelData.setPrRaisedTime(repoToolValidationData.getPrRaisedTime());
-				excelData.setPrReviewTime(repoToolValidationData.getPrActivityTime());
 				excelData.setNumberOfMerge(String.valueOf(repoToolValidationData.getMrCount()));
 				Map<String, String> mergeUrl = new HashMap<>();
 				mergeUrl.put(repoToolValidationData.getMergeRequestUrl(), repoToolValidationData.getMergeRequestUrl());
 				excelData.setMergeRequestUrl(mergeUrl);
+				excelData.setPrStatus(repoToolValidationData.getPrStatus());
 				kpiExcelData.add(excelData);
 			});
 		}

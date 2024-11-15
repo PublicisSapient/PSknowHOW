@@ -507,6 +507,9 @@ public class FieldMappingDTO extends FieldMappingHistory {
 	private List<String> jiraIssueTypeExcludeKPI75;
 	//production defect ageing status to consider
 	private List<String> jiraStatusToConsiderKPI127;
+
+	private List<String> issueTypesToConsiderKpi113;
+	private List<String> closedIssueStatusToConsiderKpi113;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

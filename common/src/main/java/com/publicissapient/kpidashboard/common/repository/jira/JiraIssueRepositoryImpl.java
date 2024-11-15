@@ -898,7 +898,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Query query = new Query(criteriaProjectLevelAdded);
 		if (!projectCriteriaList.isEmpty()) {
 			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded,
 					criteriaAggregatedAtProjectLevel);
 			query = new Query(updatedCriteria);
