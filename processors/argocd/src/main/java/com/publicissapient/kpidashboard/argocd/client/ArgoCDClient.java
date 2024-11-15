@@ -70,7 +70,7 @@ public class ArgoCDClient {
 			log.debug("ArgoCDClient :: getApplications response :: {}", response.getBody());
 			return response.getBody();
 		} catch (RestClientException ex) {
-			log.error("ArgoCDClient :: getApplications Exception occured :: {}", ex.getMessage());
+			log.error("ArgoCDClient :: getApplications Exception occurred :: {}", ex.getMessage());
 			throw ex;
 		}
 	}

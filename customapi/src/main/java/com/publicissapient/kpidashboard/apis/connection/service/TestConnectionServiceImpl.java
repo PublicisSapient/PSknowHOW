@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.argocd.model.UserCredentialsDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -35,8 +34,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -48,7 +47,6 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 import lombok.extern.slf4j.Slf4j;
@@ -247,7 +245,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else if (toolName.equalsIgnoreCase(Constant.TOOL_ARGOCD)) {
 			isValid = testConnectionForArgoCD(apiUrl, connection.getUsername(), password);
-			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();} else {
+			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+		} else {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
@@ -258,7 +257,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 		return statusCode;
 	}
-
 
 	private boolean testConnectionForGitHub(String apiUrl, String username, String password) {
 
@@ -277,20 +275,18 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	}
 
-	private boolean testConnectionForArgoCD(String apiUrl, String username, String password) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-		HttpEntity<?> requestEntity = new HttpEntity<>(new UserCredentialsDTO(username, password), headers);
+	private boolean testConnectionForArgoCD(String apiUrl, String username, String accessToken) {
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.add("Authorization", "Bearer " + accessToken);
 		try {
-			ResponseEntity<String> result = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity,
-					String.class);
-			return result.getStatusCode().is2xxSuccessful();
-		} catch (HttpClientErrorException e) {
-			log.error(INVALID_MSG);
-			return e.getStatusCode().is5xxServerError();
+			ResponseEntity<String> response = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET,
+					new HttpEntity<>(requestHeaders), String.class);
+			log.debug("ArgoCDClient :: getApplications response :: {}", response.getBody());
+			return response.getStatusCode().is2xxSuccessful();
+		} catch (RestClientException ex) {
+			log.error("ArgoCDClient :: getApplications Exception occurred :: {}", ex.getMessage());
+			throw ex;
 		}
-
 	}
 
 	private boolean testConnectionForTools(String apiUrl, String accessToken) {
