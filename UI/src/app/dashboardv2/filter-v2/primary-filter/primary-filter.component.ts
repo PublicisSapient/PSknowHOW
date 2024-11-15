@@ -285,7 +285,7 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   setDropdownWithMoreActiveOption(selectedLevel){
-    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x=>x.sprintState.toLowerCase() ==='active');
+    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x=>x.sprintState?.toLowerCase() ==='active');
     if(moreThanOneActiveOption.length>1){
       return moreThanOneActiveOption;
     }else{
