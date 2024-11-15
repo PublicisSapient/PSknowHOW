@@ -330,8 +330,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.service.setNoProjects(true);
           }
         }
-      } else {
-        // error
       }
     });
   }
@@ -603,9 +601,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
       ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent))
         || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
+
+        //event different than before
+        this.previousFilterEvent = event;
+
         if (event[0].labelName.toLowerCase() === 'project') {
           // new project selected => make boardConfig call
           this.getBoardConfig(event.map(x => x.basicProjectConfigId), event);
@@ -691,10 +694,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.additionalFiltersArr = [];
     }
-    if (event.length === 1) {
-      this.additionalData = true;
-      this.getProcessorsTraceLogsForProject();
+    if (event.length === 1 && this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
+      this.getProcessorsTraceLogsForProject().then(result => {
+        this.sendDataToDashboard(event);
+      }).catch(error => {
+        console.error("Error:", error);
+        this.sendDataToDashboard(event);
+      });
+    } else {
+      this.sendDataToDashboard(event);
     }
+  }
+
+  /**
+   * Sends the filter data to the dashboard based on the provided event.
+   * Updates various filter states and applies the necessary data transformations.
+   * 
+   * @param {Array} event - An array of event objects containing filter criteria.
+   * @returns {void}
+   */
+  sendDataToDashboard(event) {
     this.previousFilterEvent = event;
     this.previousSelectedTab = this.selectedTab;
     this.previousSelectedType = this.selectedType;
@@ -1036,19 +1055,24 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @throws {Error} - Logs error to the console if the HTTP request fails.
    */
   getProcessorsTraceLogsForProject() {
-    this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
-      if (response.success) {
-        this.isAzureProect = response.data.find(de=>de.processorName.toLowerCase() === 'azure') ? true : false;
-        this.service.setProcessorLogDetails(response.data);
-      } else {
-        this.messageService.add({
-          severity: 'error',
-          summary:
-            "Error in fetching processor's execution date. Please try after some time.",
-        });
-      }
-    }, error => {
-      console.log(error);
+    return new Promise((resolve, reject) => {
+      this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
+        if (response.success) {
+          this.isAzureProect = response.data.find(de => de.processorName.toLowerCase() === 'azure') ? true : false;
+          this.service.setProcessorLogDetails(response.data);
+          resolve(true);
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary:
+              "Error in fetching processor's execution date. Please try after some time.",
+          });
+          reject("Operation failed.");
+        }
+      }, error => {
+        console.log(error);
+        reject("Operation failed.");
+      });
     });
   }
 
