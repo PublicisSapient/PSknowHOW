@@ -274,7 +274,14 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   isFilterHidden(filterDataSet:any): boolean{
-    return (this.selectedTab?.toLowerCase() === 'iteration' && filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length) > 1?false:true;
+    if(this.selectedTab?.toLowerCase() === 'iteration' ){
+      if(filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length){
+        return true;
+      }
+      return false;
+    }else{
+      return false;
+    }
   }
 
   setDropdownWithMoreActiveOption(selectedLevel){
