@@ -3793,5 +3793,36 @@
       "definition": "workflow statuses to identify ageing production defects in the backlog."
     },
     "mandatory": true
+  },
+  {
+    "fieldName" : "issueTypesToConsiderKpi113",
+    "fieldLabel" : "Issue types to consider",
+    "fieldType" : "chips",
+    "fieldCategory" : "Issue_Type",
+    "section" : "Issue Types Mapping",
+    "processorCommon" : false,
+    "tooltip" : {
+      "definition" : "All issue types used for epics or features"
+    },
+    "fieldDisplayOrder" : 1,
+    "sectionOrder" : 1,
+    "mandatory" : true,
+    "nodeSpecific" : false
+  },
+  {
+    "fieldName": "closedIssueStatusToConsiderKpi113",
+    "fieldLabel": "Status to identify completed issues",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All workflow statuses to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 1,
+    "mandatory": true,
+    "nodeSpecific": false
   }
+
 ]

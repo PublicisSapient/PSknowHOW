@@ -40,7 +40,7 @@ public class ArgoCDProcessorApplication {
 	 * Main thread from where ArgoCDProcessorApplication starts.
 	 * 
 	 * @param args
-	 * 			the command line argument
+	 *            the command line argument
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(ArgoCDProcessorApplication.class, args);

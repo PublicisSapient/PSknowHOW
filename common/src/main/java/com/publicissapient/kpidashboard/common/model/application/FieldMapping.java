@@ -508,6 +508,9 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraIssueTypeExcludeKPI124;
 	private List<String> jiraIssueTypeExcludeKPI75;
 
+	private List<String> issueTypesToConsiderKpi113;
+	private List<String> closedIssueStatusToConsiderKpi113;
+
 	//production defect ageing status to consider
 	private List<String> jiraStatusToConsiderKPI127;
 	/**

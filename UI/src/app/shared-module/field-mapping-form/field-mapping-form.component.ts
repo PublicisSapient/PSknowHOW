@@ -154,7 +154,7 @@ private setting = {
         case 'text':
           return new FormControl('',config.mandatory ? Validators.required : []);
         case 'radiobutton':
-          return new FormControl('');
+          return new FormControl('',config.mandatory ? Validators.required : []);
         case 'toggle':
           return new FormControl(false);
         case 'number':
