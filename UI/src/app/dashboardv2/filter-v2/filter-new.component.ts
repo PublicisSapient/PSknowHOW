@@ -695,7 +695,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.additionalFiltersArr = [];
     }
     if (event.length === 1) {
-      this.additionalData = true;
+      // this.additionalData = true;
       this.getProcessorsTraceLogsForProject().then(result => {
         this.sendDataToDashboard(event);
       }).catch(error => {
