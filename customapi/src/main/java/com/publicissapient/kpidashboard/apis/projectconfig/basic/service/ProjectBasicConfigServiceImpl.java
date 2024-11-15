@@ -199,6 +199,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			if (accessRoleOfParent == null) {
 
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
+				//TODO:Clone call cloning service
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
@@ -209,6 +210,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
+				//TODO:Clone call cloning service
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);

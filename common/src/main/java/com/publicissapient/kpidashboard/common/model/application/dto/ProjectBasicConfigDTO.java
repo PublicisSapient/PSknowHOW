@@ -61,6 +61,8 @@ public class ProjectBasicConfigDTO {
 	private boolean developerKpiEnabled;
 	private boolean projectOnHold;
 
+	private ObjectId clonedFrom;
+
 	/**
 	 * @return isKanban value
 	 */
