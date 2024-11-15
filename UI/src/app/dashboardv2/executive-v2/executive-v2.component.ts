@@ -870,7 +870,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.createAllKpiArray(this.bitBucketKpiData);
           this.removeLoaderFromKPIs(this.bitBucketKpiData);
 
-        }  else {
+        } else {
           this.handleKPIError(postData);
         }
       }, (error) => {
@@ -1876,13 +1876,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
-/**
- * Checks if the KPI data is zero or not based on various conditions and KPI IDs.
- * @param {Object} kpi - The KPI object containing details and ID to evaluate.
- * @returns {boolean} - Returns true if data is present and greater than zero, otherwise false.
- */
+  /**
+   * Checks if the KPI data is zero or not based on various conditions and KPI IDs.
+   * @param {Object} kpi - The KPI object containing details and ID to evaluate.
+   * @returns {boolean} - Returns true if data is present and greater than zero, otherwise false.
+   */
   checkIfZeroData(kpi) {
-    if (this.checkIfDataPresent(kpi)) {
+    if (this.checkIfDataPresent(kpi) && this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
       if (this.service.getSelectedTrends()?.length === 1) {
         let data = this.kpiChartData[kpi.kpiId];
         let dataValue = 0;
@@ -1914,12 +1914,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         }
 
-        // Sonar Code Quality, unknown KPI , PI Predicatability
+        // Sonar Code Quality, Test Execution and Pass Percentage KPI , PI Predicatability
         else if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
           if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
             if (Array.isArray(data[0].value) && data[0].value) {
               data[0].value.forEach(element => {
-                if (Array.isArray(element.dataValue) && element.dataValue.length) {
+                if (kpi.kpiId === 'kpi70') {
+                  dataValue += element.value;
+                } else if (Array.isArray(element.dataValue) && element.dataValue.length) {
                   element.dataValue.forEach(subElem => {
                     dataValue += subElem.value;
                   });
@@ -1950,15 +1952,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         return true;
       }
       return false;
+    } else {
+      return this.checkIfDataPresent(kpi);
     }
   }
 
-/**
- * Determines if the execution of a specified processor was successful based on its trace log.
- * @param processorName - The name of the processor to check, case insensitive.
- * @returns A boolean indicating whether the execution was successful.
- * @throws No exceptions are thrown by this function.
- */
+  /**
+   * Determines if the execution of a specified processor was successful based on its trace log.
+   * @param processorName - The name of the processor to check, case insensitive.
+   * @returns A boolean indicating whether the execution was successful.
+   * @throws No exceptions are thrown by this function.
+   */
   showExecutionDate(processorName) {
     const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
     if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
@@ -1968,11 +1972,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
   }
 
-/**
- * Retrieves the trace log for a specified processor by its name.
- * @param processorName - The name of the processor, which may include a path.
- * @returns The log details of the processor if found, otherwise undefined.
- */
+  /**
+   * Retrieves the trace log for a specified processor by its name.
+   * @param processorName - The name of the processor, which may include a path.
+   * @returns The log details of the processor if found, otherwise undefined.
+   */
   findTraceLogForTool(processorName) {
     const sourceArray = (processorName.includes('/')) ? processorName.split('/') : [processorName];
     return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
