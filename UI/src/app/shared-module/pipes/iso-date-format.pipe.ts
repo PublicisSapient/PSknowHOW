@@ -7,7 +7,7 @@ export class IsoDateFormatPipe implements PipeTransform {
 
   transform(value: Date | string): string {
     if(!value){
-      return 'Invalid Date input';
+      return '-';
     }
 
     let date=new Date();
@@ -20,12 +20,13 @@ export class IsoDateFormatPipe implements PipeTransform {
     }
 
     if(isNaN(date.getTime())){
-      return 'Invalid Date';
+      return '-';
     }
-    const year = date.getUTCFullYear()
-    const month = String(date.getUTCMonth()+1).padStart(2,'0');
-    const day = String(date.getUTCDate()).padStart(2,'0');
-    return `${year}-${month}-${day}`;
+    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const year = date.getUTCFullYear();
+    const month = monthNames[date.getUTCMonth()];
+    const day = String(date.getUTCDate()+1).padStart(2,'0');
+    return `${day}-${month}-${year}`;
   }
 
 }

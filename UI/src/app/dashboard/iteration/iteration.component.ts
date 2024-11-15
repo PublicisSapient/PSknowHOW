@@ -883,14 +883,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: colData, value: colData }));
       this.tableColumnForm[colName] = [];
     });
-    this.modalDetails['tableValues'].forEach(item =>{
-      Object.keys(item).forEach(key=>{
-        if(key.toLowerCase().includes('date') && item[key]=== '-'){
-          item[key] = '';
-        }
-      });
-    })
-
   }
 
   generateExcel(exportMode) {

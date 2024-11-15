@@ -15,7 +15,7 @@
   <div class="dialog-body p-mb-4">
     <p-table #table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage"
       [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
-      [scrollable]="true" scrollHeight="65vh" (sortFunction)="customSort($event)" [customSort]="true">
+      [scrollable]="true" scrollHeight="65vh" >
       <ng-template pTemplate="header">
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
