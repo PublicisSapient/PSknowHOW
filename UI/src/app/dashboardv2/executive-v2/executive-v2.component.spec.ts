@@ -18345,7 +18345,7 @@ describe('ExecutiveV2Component', () => {
         component.kpiChartData = { kpi139: [{ value: [{ data: '0' }] }] };
         spyOn(component, 'checkIfDataPresent' as any).and.returnValue(true);
         spyOn(component, 'showExecutionDate' as any).and.returnValue(false);
-        spyOn(service, 'getSelectedTrends').and.returnValue([{}]);
+        spyOn(service, 'getSelectedTrends').and.returnValue([{nodeId: '123', labelName: 'project'}]);
   
         // Act
         component.checkIfZeroData(kpi as any);
