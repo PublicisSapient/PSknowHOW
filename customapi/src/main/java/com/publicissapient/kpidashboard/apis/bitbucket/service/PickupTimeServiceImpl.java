@@ -307,7 +307,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
-			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 					.optionalStart().appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
 					.optionalEnd().appendPattern("'Z'").toFormatter();
 			if (repoToolUserDetails.isPresent() && repo != null) {
