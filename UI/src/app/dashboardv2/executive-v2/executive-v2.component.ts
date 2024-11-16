@@ -122,6 +122,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   globalConfig: any;
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
+  selectedTrend: any = [];
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
     const selectedTab = window.location.hash.substring(1);
@@ -197,6 +198,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
       this.showChart = view;
     }));
+
+    this.subscriptions.push(this.service.selectedTrendsEventSubject.subscribe(trend => {
+      if(!this.arrayDeepCompare(trend, this.selectedTrend)) {
+      this.selectedTrend = trend;
+      this.kpiSelectedFilterObj = {};
+      this.service.setKpiSubFilterObj(null);
+      }
+    }));
+  }
+
+  arrayDeepCompare(a1, a2) {
+    return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.helperService.deepEqual(o, a2[idx]) : o === a2[idx]);
   }
 
   resetToDefaults() {
@@ -313,8 +326,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.allKpiArray = [];
       this.kpiChartData = {};
       this.chartColorList = {};
-      this.kpiSelectedFilterObj = {};
-      this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
       this.kpiDropdowns = {};
       this.kpiTrendsObj = {};
       this.kpiTableDataObj = {};

@@ -358,7 +358,9 @@ export class SharedService {
   }
 
   setKpiSubFilterObj(value: any) {
-    if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
+    if(!value) {
+      this.selectedKPIFilterObj = {};
+    } else if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
       Object.keys(value).forEach((key) => {
         this.selectedKPIFilterObj[key] = value[key];
       });
