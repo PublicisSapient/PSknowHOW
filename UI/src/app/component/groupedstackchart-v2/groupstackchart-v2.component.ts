@@ -50,7 +50,7 @@ export class GroupstackchartComponentv2 implements OnChanges {
   dataPoints = 2;
   dataLength = 0;
   @Input() activeTab?: number = 0;
-  @Input() isAggregationStacks // to determine wheather need to aggrigate stacks 
+  @Input() isAggregationStacks // to determine wheather need to aggrigate stacks
   isDrilledDown = false;
   shouldClickable = true;
   elemObserver = new ResizeObserver(() => { this.draw(this.transformedData) });
@@ -429,7 +429,7 @@ export class GroupstackchartComponentv2 implements OnChanges {
       let obj = {};
       element?.value?.forEach(val => {
         obj['drillDown' + '_' + val['subFilter']] = [];
-        obj[val['subFilter']] = this.filter['filter1'][0] === 'Story Points' ? val['size'] : val['value'];
+        obj[val['subFilter']] = (this.filter['filter1'] && this.filter['filter1'][0] === 'Story Points') ? val['size'] : val['value'];
         obj['drillDown' + '_' + val['subFilter']].push(...val['drillDown'] ? val['drillDown'] : []);
       });
       element.value = obj;

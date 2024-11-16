@@ -144,6 +144,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       //   this.radioOption = x[this.kpiData?.kpiId];
       // }
 
+      if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
+        // console.log('changes ', changes, changes['dropdownArr'].currentValue)
+        const selectedRadioOpt = this.service.getSelectedKPIFilterValues()[this.kpiData?.kpiId];
+        // console.log('selectedRadioOpt oninit ', selectedRadioOpt)
+        // this.radioOption = selectedRadioOpt[0];
+        if (!selectedRadioOpt?.length && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
+          this.radioOption = this.dropdownArr[0]?.options[0];
+          // console.log('radioOption 135', this.radioOption)
+        }
+        // this.firstLoad = false;
+      }
+
     }));
   }
 
@@ -192,9 +204,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.initializeMenu();
 
     if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && changes['dropdownArr'] && changes['dropdownArr'].currentValue?.length) {
-      console.log('changes ', changes, changes['dropdownArr'].currentValue)
+      // console.log('changes ', changes, changes['dropdownArr'].currentValue)
       const selectedRadioOpt = this.service.getSelectedKPIFilterValues()[this.kpiData?.kpiId];
-      console.log('selectedRadioOpt ', selectedRadioOpt)
+      // console.log('selectedRadioOpt ', selectedRadioOpt)
       // this.radioOption = selectedRadioOpt[0];
       if (!selectedRadioOpt?.length && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
         this.radioOption = this.dropdownArr[0]?.options[0];

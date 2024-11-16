@@ -64,6 +64,7 @@ export class HorizontalPercentBarChartv2Component implements OnChanges {
         const elem = this.elem;
         self.selectedNode = selectedNode;
         let isLong: boolean = false;
+        console.log('data ', data);
         data?.forEach(x => {
           if (x.kpiGroup?.length > 15) {
             isLong = true;
@@ -94,9 +95,9 @@ export class HorizontalPercentBarChartv2Component implements OnChanges {
           .attr("transform", `translate(${margin.left},${margin.top})`);
 
 
-        // let subgroups = Object.keys(data[0]['value']);
+        let subgroups = Object.keys(data[0]['value']);
         const groups = this.isDrilledDown ? [data.kpiGroup] : data.map(d => d.kpiGroup);
-        let subgroups = [];
+        // let subgroups = [];
         if (!this.isDrilledDown) {
           data[0]['value']?.forEach((element) => {
             subgroups.push(element['subFilter']);
@@ -173,6 +174,7 @@ export class HorizontalPercentBarChartv2Component implements OnChanges {
         // Normalize the data -> sum of each group must be 100!
         if (!self.isDrilledDown) {
           data?.forEach((d) => {
+            console.log('d ', d);
             let tot = 0;
             for (const i in subgroups) {
               const name = subgroups[i];
