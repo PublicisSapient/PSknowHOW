@@ -580,6 +580,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(URL);
 		query.fields().include(NAME);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(SPRINT_NAME);
+		query.fields().include(LOGGED_WORK_MINUTES);
 
 		return operations.find(query, JiraIssue.class);
 	}
@@ -830,6 +832,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(CONFIG_ID);
 		query.fields().include(ADDITIONAL_FILTER);
 		query.fields().include(STORY_POINTS);
+		query.fields().include(SPRINT_NAME);
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}

@@ -1480,6 +1480,18 @@ public class KpiHelperService { // NOPMD
 
 	}
 
+	public static Map<String, List<JiraIssue>> mapDefectsToJiraIssues(Set<JiraIssue> defects) {
+		Map<String, List<JiraIssue>> defectToJiraIssueMap = new HashMap<>();
+
+		for (JiraIssue jiraIssue : defects) {
+			for (String storyID : jiraIssue.getDefectStoryID()) {
+				defectToJiraIssueMap.computeIfAbsent(storyID, k -> new ArrayList<>()).add(jiraIssue);
+			}
+		}
+
+		return defectToJiraIssueMap;
+	}
+
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
 			List<JiraIssueCustomHistory> storiesHistory, List<String> statusForDevelopemnt,
 			List<String> jiraStatusForQa, List<String> jiraFtprRejectStatus) {

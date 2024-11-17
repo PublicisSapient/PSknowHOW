@@ -85,8 +85,8 @@ public enum KPIExcelColumn {
 	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID",
 			"Story Description", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
-	FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID",
-						  "Story Description","First Time Pass", "Squad", "Time Spent (in hours)")),
+	FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID", "Story Description","First Time Pass",
+			"Defect ID", "Defect Description", "Squad", "Root Cause", "Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
 	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID",
 			"Story Description", "Size(story point/hours)", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
