@@ -213,7 +213,6 @@ public class SprintCapacityServiceImplTest {
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		FieldMapping fieldMapping = mock(FieldMapping.class);
-		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
 		try {
 			KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

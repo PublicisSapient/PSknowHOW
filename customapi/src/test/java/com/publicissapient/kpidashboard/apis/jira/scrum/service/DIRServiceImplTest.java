@@ -172,7 +172,7 @@ public class DIRServiceImplTest {
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		FieldMapping fieldMapping = mock(FieldMapping.class);
-		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		//when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
 		try {
 			KpiElement kpiElement = dirServiceImpl.getKpiData(this.kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

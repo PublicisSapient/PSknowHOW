@@ -83,6 +83,7 @@ public class DSRServiceImplTest {
 	List<JiraIssue> uatBugList = new ArrayList<>();
 	List<JiraIssue> totalBugList = new ArrayList<>();
 	List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
+	Map<String, List<String>> priority = new HashMap<>();
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@Mock
@@ -150,9 +151,8 @@ public class DSRServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		kpiWiseAggregation.put("defectSeepageRate", "percentile");
-		Map<String, List<String>> priority = new HashMap<>();
 		priority.put("P3", Arrays.asList("P3 - Major"));
-		when(customApiSetting.getPriority()).thenReturn(priority);
+
 	}
 
 	@After
@@ -188,6 +188,7 @@ public class DSRServiceImplTest {
 			v1.setIncludeRCAForKPI35(Arrays.asList("code issue"));
 			v1.setDefectPriorityKPI35(Arrays.asList("P3"));
 		});
+		when(customApiConfig.getPriority()).thenReturn(priority);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = dsrServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
