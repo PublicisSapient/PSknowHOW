@@ -17,13 +17,41 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
   <div class="dashboard-config-block p-p-3">
     <p-toast position="top-right"></p-toast>
-    <button (click)="save()" class="save-kpi p-p-2"><img src="../../../assets/img/save_icon.svg" alt="save" class="save-icon"/>Save</button>
+    <div class="p-d-flex drp-btn-section fnt-size-16">
+        <div>
+            <div class="d-flex align-items-center">
+                <span>
+                    Select Project
+                </span>
+                <span class="p-mr-3 p-ml-3">
+                    <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
+                        styleClass="drp" panelStyleClass="drp-pnl" [filter]="true" filterBy="name"
+                        [showClear]="false" (onChange)="updateProjectSelection($event)" [disabled]="noProjectsForSelectedCategory">
+                        <ng-template pTemplate="selectedItem">
+                            <div class="fnt-size-16" *ngIf="selectedProject">
+                                <div>{{selectedProject.name}}</div>
+                            </div>
+                        </ng-template>
+                        <ng-template let-userProject pTemplate="item">
+                            <div>
+                                <div>{{userProject.name}}</div>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                </span>
+    
+            </div>
+        </div>
+        <div>
+            <button (click)="save()" [disabled]="noProjectsForSelectedCategory" class="save-kpi save-icon fnt-size-16"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
+        </div>
+    </div>
     <p-tabView (onChange)="handleTabChange($event)" class="dashboard-config-tabs">
         <p-tabPanel *ngFor='let item of tabHeaders' header="{{item}}" headerStyleClass="tab-{{item}}">
-            <form [formGroup]="kpiForm" autocomplete="off" *ngIf="item === selectedTab">
+            <form [formGroup]="kpiForm" autocomplete="off" *ngIf="(item === selectedTab) && (this.userProjects.length > 0)">
                 <div *ngFor="let boardData of tabListContent[item]; let i=index" class="kpi-category-header-block">
                     <div class="kpi-category-header p-mb-3"
-                        *ngIf="((boardData?.boardName && boardData?.boardName?.toLowerCase() != 'dora' && boardData?.kpis.length > 0) 
+                        *ngIf="((boardData?.boardName && boardData?.kpis.length > 0) 
                         && ((item.toLowerCase() === 'scrum' && i==0 && tabListContent[item].length < 3) || (item.toLowerCase() === 'kanban' && i==0 && tabListContent[item].length < 2) || (i==0 && item.toLowerCase() === 'others') || i!==0))">
                         <div class="p-grid board-name-block p-py-2 p-d-flex p-jc-between">
                             <div class="p-xl-6 p-md-12 p-pl-3 p-pr-3 p-text-left board-name">
@@ -45,6 +73,9 @@
                     </div>
                 </div>
             </form>
+            <div class="p-d-flex p-align-center p-justify-center no-sprint-msg" *ngIf="noProjectsForSelectedCategory">
+                <h2 class="msg">Projects are not available for {{selectedTab}} category</h2>
+              </div>
         </p-tabPanel>
     </p-tabView>
     <app-page-loader *ngIf="loader"></app-page-loader>

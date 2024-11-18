@@ -31,6 +31,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumnInfo;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.KpiInfo;
+import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
 import com.publicissapient.kpidashboard.common.model.application.TotalDefectAgingResponse;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 
@@ -76,9 +77,19 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient Object testCaseExecution;
 	private transient Object testExecutionPass;
 	private transient List<DataCountGroup> trendValueKpiFilterList;
-
-	private String maturityValue;
+//  maturity value for overall filter
+	private String overAllMaturityValue;
 	private List<String> maturityRange;
+
+	public List<MaturityLevel> getMaturityLevel() {
+		return maturityLevel;
+	}
+
+	public void setMaturityLevel(List<MaturityLevel> maturityLevel) {
+		this.maturityLevel = maturityLevel;
+	}
+
+	private List<MaturityLevel> maturityLevel;
 
 	private List<String> xAxisValues;
 
@@ -110,8 +121,21 @@ public class KpiElement implements Serializable { // NOPMD
 	// For Excel column Info
 	private List<KPIExcelColumnInfo> excelColumnInfo;
 	private transient Object filterDuration;
-    private transient Set<IterationKpiModalValue> issueData;
+	// used by second screen of DSV for sending all data
+	private transient Set<IssueKpiModalValue> issueData;
+	// used by first scrren of DSV for filtering
 	private transient List<Filter> filterData;
+	// used by second screen of DSV for filtering on status
+	private transient List<Filter> standUpStatusFilter;
+	// used by CycleTime
+	private Boolean isAggregationStacks;
+//	maturity key for overall filter
+	private String overallMaturity;
+
+	//for consolidated one kpi for all Pie charts where grouping happens on some key
+	private transient FilterGroup filterGroup;
+
+	private String responseCode;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -200,22 +224,22 @@ public class KpiElement implements Serializable { // NOPMD
 	}
 
 	/**
-	 * Gets maturity value.
+	 * Gets overall maturity value.
 	 *
 	 * @return the maturity value
 	 */
-	public String getMaturityValue() {
-		return maturityValue;
+	public String getOverallMaturityValue() {
+		return overAllMaturityValue;
 	}
 
 	/**
 	 * Sets maturity value.
 	 *
-	 * @param maturityValue
+	 * @param overAllMaturityValue
 	 *            the maturity value
 	 */
-	public void setMaturityValue(String maturityValue) {
-		this.maturityValue = maturityValue;
+	public void setOverAllMaturityValue(String overAllMaturityValue) {
+		this.overAllMaturityValue = overAllMaturityValue;
 	}
 
 	/**
@@ -834,19 +858,70 @@ public class KpiElement implements Serializable { // NOPMD
 		this.filterDuration = filterDuration;
 	}
 
-	public Set<IterationKpiModalValue> getIssueData() {
+	public Set<IssueKpiModalValue> getIssueData() {
 		return issueData;
 	}
 
-	public void setIssueData(Set<IterationKpiModalValue> issueData) {
+	public void setIssueData(Set<IssueKpiModalValue> issueData) {
 		this.issueData = issueData;
 	}
 
+	public List<Filter> getFilterData() {
+		return filterData;
+	}
 
-	public List<Filter> getFilterData() { return filterData; }
+	public void setFilterData(List<Filter> filterData) {
+		this.filterData = filterData;
+	}
 
-	public void setFilterData(List<Filter> filterData) { this.filterData = filterData; }
+	public List<Filter> getStandUpStatusFilter() {
+		return standUpStatusFilter;
+	}
 
+	public void setStandUpStatusFilter(List<Filter> standUpStatusFilter) {
+		this.standUpStatusFilter = standUpStatusFilter;
+	}
 
+	public Boolean getAggregationStacks() {
+		return isAggregationStacks;
+	}
+	/**
+	 * Gets maturity.
+	 *
+	 * @return the maturity
+	 */
+	public String getOverallMaturity() {
+		return overallMaturity;
+	}
+
+	/**
+	 * Sets maturity.
+	 *
+	 * @param overallMaturity
+	 *            the maturity value
+	 */
+	public void setOverallMaturity(String overallMaturity) {
+		this.overallMaturity = overallMaturity;
+	}
+
+	public void setAggregationStacks(Boolean aggregationStacks) {
+		isAggregationStacks = aggregationStacks;
+	}
+
+	public FilterGroup getFilterGroup() {
+		return filterGroup;
+	}
+
+	public void setFilterGroup(FilterGroup filterGroup) {
+		this.filterGroup = filterGroup;
+	}
+
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
+	}
+
+	public String getResponseCode() {
+		return responseCode;
+	}
 
 }

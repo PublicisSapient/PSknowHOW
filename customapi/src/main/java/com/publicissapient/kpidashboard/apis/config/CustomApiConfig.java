@@ -44,8 +44,6 @@ public class CustomApiConfig {// NOPMD
 	private String aesEncryptionKey;
 	// Number of sprints available on trend charts
 	private int sprintCountForFilters;
-	// Toggle captcha property
-	private boolean captchaRequired;
 	// default image name
 	private String applicationDefaultLogo;
 
@@ -126,6 +124,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${testconnection.gitlabApi}")
 	private String gitlabTestConnection;
 
+	@Value("${testconnection.argoCDApi}")
+	private String argoCDTestConnection;
+
 	@Value("${priority.P1}")
 	private String priorityP1;
 
@@ -156,10 +157,6 @@ public class CustomApiConfig {// NOPMD
 	private String feedbackEmailSubject;
 	@Value("${approval.categories.emailSubject}")
 	private String approvalEmailSubject;
-
-	@Value("${issueCount.story.categories}")
-	private List<String> issueCountStoryCategories;
-
 	@Value("${certhostpath}")
 	private String hostPath;
 
@@ -202,6 +199,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;
 
+	@Value("${sendGridEnabled}")
+	private boolean sendGridEnabled;
+
 	@Value(("${backlog.sprint.count}"))
 	private int sprintCountForBackLogStrength;
 
@@ -222,7 +222,16 @@ public class CustomApiConfig {// NOPMD
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
 	private String repoToolAPIKey;
 	private String repoToolURL;
-	private Boolean isRepoToolEnable;
+
+	public String getRepoToolUpdateConnectionUrl() {
+		return repoToolUpdateConnectionUrl;
+	}
+
+	public void setRepoToolUpdateConnectionUrl(String repoToolUpdateConnectionUrl) {
+		this.repoToolUpdateConnectionUrl = repoToolUpdateConnectionUrl;
+	}
+
+	private String repoToolUpdateConnectionUrl;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
 	private String repoToolDeleteRepoUrl;
@@ -232,6 +241,127 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolPRSizeUrl;
 	private String repoToolPickupTimeUrl;
 	private String repoToolMeanTimeToMergeUrl;
+	private String repoToolPRDeclineRateUrl;
+	private List<String> flowEfficiencyXAxisRange;
+	private List<String> leadTimeRange;
+	private List<String> cycleTimeRange;
+	private List<Character> aesKeyValue;
+	private int sprintCountForKpiCalculation;
+	private String rnrRecommendationApiKey;
+	private String rnrRecommendationUrl;
+
+	public String getRnrRecommendationUrl() {
+		return rnrRecommendationUrl;
+	}
+
+	public void setRnrRecommendationUrl(String rnrRecommendationUrl) {
+		this.rnrRecommendationUrl = rnrRecommendationUrl;
+	}
+
+	public String getRnrRecommendationApiKey() {
+		return rnrRecommendationApiKey;
+	}
+
+	public void setRnrRecommendationApiKey(String rnrRecommendationApiKey) {
+		this.rnrRecommendationApiKey = rnrRecommendationApiKey;
+	}
+
+	public List<Character> getAesKeyValue() {
+		return aesKeyValue;
+	}
+
+	public void setAesKeyValue(List<Character> aesKeyValue) {
+		this.aesKeyValue = aesKeyValue;
+	}
+
+	@Value("${exposed_api_key}")
+	private String xApiKey;
+	private String repoToolReworkRateUrl;
+	private String repoToolRevertRateUrl;
+	private String repoToolPRSuccessRateUrl;
+
+	@Value("${max-age-seconds}")
+	private long maxAgeInSeconds;
+	@Value("${include-subdomains}")
+	private boolean includeSubDomains;
+
+	@Value("${zephyrCloudBaseUrl}")
+	private String zephyrCloudBaseUrl;
+	private String innovationRateUrl;
+	private String repoToolMembersUrl;
+	private String defectRateUrl;
+
+	public String getDefectRateUrl() {
+		return defectRateUrl;
+	}
+
+	public void setDefectRateUrl(String defectRateUrl) {
+		this.defectRateUrl = defectRateUrl;
+	}
+
+	public String getInnovationRateUrl() {
+		return innovationRateUrl;
+	}
+
+	public void setInnovationRateUrl(String innovationRateUrl) {
+		this.innovationRateUrl = innovationRateUrl;
+	}
+
+	public String getRepoToolMembersUrl() {
+		return repoToolMembersUrl;
+	}
+
+	public void setRepoToolMembersUrl(String repoToolMembersUrl) {
+		this.repoToolMembersUrl = repoToolMembersUrl;
+	}
+
+	public String getRepoToolReworkRateUrl() {
+		return repoToolReworkRateUrl;
+	}
+
+	public void setRepoToolReworkRateUrl(String repoToolReworkRateUrl) {
+		this.repoToolReworkRateUrl = repoToolReworkRateUrl;
+	}
+
+	public String getRepoToolRevertRateUrl() {
+		return repoToolRevertRateUrl;
+	}
+
+	public void setRepoToolRevertRateUrl(String repoToolRevertRateUrl) {
+		this.repoToolRevertRateUrl = repoToolRevertRateUrl;
+	}
+
+	public String getxApiKey() {
+		return xApiKey;
+	}
+
+	public void setxApiKey(String xApiKey) {
+		this.xApiKey = xApiKey;
+	}
+
+	public List<String> getCycleTimeRange() {
+		return cycleTimeRange;
+	}
+
+	public void setCycleTimeRange(List<String> cycleTimeRange) {
+		this.cycleTimeRange = cycleTimeRange;
+	}
+
+	public List<String> getLeadTimeRange() {
+		return leadTimeRange;
+	}
+
+	public void setLeadTimeRange(List<String> leadTimeRange) {
+		this.leadTimeRange = leadTimeRange;
+	}
+
+	public void setFlowEfficiencyXAxisRange(List<String> flowEfficiencyXAxisRange) {
+		this.flowEfficiencyXAxisRange = flowEfficiencyXAxisRange;
+	}
+
+	public List<String> getFlowEfficiencyXAxisRange() {
+		return flowEfficiencyXAxisRange;
+	}
 
 	public void setRepoToolAPIKey(String repoToolAPIKey) {
 		this.repoToolAPIKey = repoToolAPIKey;
@@ -305,15 +435,6 @@ public class CustomApiConfig {// NOPMD
 		return repoToolDeleteRepoUrl;
 	}
 
-
-	public Boolean getIsRepoToolEnable() {
-		return isRepoToolEnable;
-	}
-
-	public void setIsRepoToolEnable(Boolean isRepoToolEnable) {
-		this.isRepoToolEnable = isRepoToolEnable;
-	}
-
 	public Boolean getIsGitlabFieldEnable() {
 		return isGitlabFieldEnable;
 	}
@@ -329,6 +450,8 @@ public class CustomApiConfig {// NOPMD
 	public String getRepoToolURL() {
 		return repoToolURL;
 	}
+
+	private Integer sonarMonthCount;
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;
@@ -490,25 +613,6 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public void setSprintCountForFilters(int sprintCountForFilters) {
 		this.sprintCountForFilters = sprintCountForFilters;
-	}
-
-	/**
-	 * get captchaRequired
-	 *
-	 * @return the captchaRequired
-	 */
-	public boolean isCaptchaRequired() {
-		return captchaRequired;
-	}
-
-	/**
-	 * set captchaRequired
-	 *
-	 * @param captchaRequired
-	 *            the captchaRequired to set
-	 */
-	public void setCaptchaRequired(boolean captchaRequired) {
-		this.captchaRequired = captchaRequired;
 	}
 
 	/**
@@ -762,14 +866,6 @@ public class CustomApiConfig {// NOPMD
 		this.corsFilterValidOrigin = corsFilterValidOrigin;
 	}
 
-	public List<String> getIssueCountStoryCategories() {
-		return issueCountStoryCategories;
-	}
-
-	public void setIssueCountStoryCategories(List<String> issueCountStoryCategories) {
-		this.issueCountStoryCategories = issueCountStoryCategories;
-	}
-
 	/**
 	 * get maxPendingRequestsPerUsername
 	 *
@@ -845,6 +941,15 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public String getBitbucketTestConnection() {
 		return bitbucketTestConnection;
+	}
+
+	/**
+	 * ArgoCD Test Connection API path
+	 *
+	 * @return
+	 */
+	public String getArgoCDTestConnection() {
+		return argoCDTestConnection;
 	}
 
 	/**
@@ -1083,6 +1188,14 @@ public class CustomApiConfig {// NOPMD
 		this.mailWithoutKafka = mailWithoutKafka;
 	}
 
+	public boolean isSendGridEnabled() {
+		return sendGridEnabled;
+	}
+
+	public void setSendGridEnabled(boolean sendGridEnabled) {
+		this.sendGridEnabled = sendGridEnabled;
+	}
+
 	public String getHostPath() {
 		return hostPath;
 	}
@@ -1143,4 +1256,60 @@ public class CustomApiConfig {// NOPMD
 	public void setFlowKpiMonthCount(int flowKpiMonthCount) {
 		this.flowKpiMonthCount = flowKpiMonthCount;
 	}
+
+	public Integer getSonarMonthCount() {
+		return sonarMonthCount;
+	}
+
+	public void setSonarMonthCount(Integer sonarMonthCount) {
+		this.sonarMonthCount = sonarMonthCount;
+	}
+
+	public int getSprintCountForKpiCalculation() {
+		return sprintCountForKpiCalculation;
+	}
+
+	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
+		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
+	}
+
+	public long getMaxAgeInSeconds() {
+		return maxAgeInSeconds;
+	}
+
+	public void setMaxAgeInSeconds(long maxAgeInSeconds) {
+		this.maxAgeInSeconds = maxAgeInSeconds;
+	}
+
+	public boolean isIncludeSubDomains() {
+		return includeSubDomains;
+	}
+
+	public void setIncludeSubDomains(boolean includeSubDomains) {
+		this.includeSubDomains = includeSubDomains;
+	}
+
+	public String getZephyrCloudBaseUrl() {
+		return zephyrCloudBaseUrl;
+	}
+
+	public void setZephyrCloudBaseUrl(String zephyrCloudBaseUrl) {
+		this.zephyrCloudBaseUrl = zephyrCloudBaseUrl;
+	}
+
+	public void setRepoToolPRSuccessRateUrl(String repoToolPRSuccessRateUrl) {
+		this.repoToolPRSuccessRateUrl = repoToolPRSuccessRateUrl;
+	}
+
+	public String getRepoToolPRSuccessRateUrl() {
+		return repoToolPRSuccessRateUrl;
+	}
+
+    public String getRepoToolPRDeclineRateUrl() {
+        return repoToolPRDeclineRateUrl;
+    }
+
+    public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
+        this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
+    }
 }

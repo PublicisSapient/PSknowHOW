@@ -23,8 +23,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.junit.Test;
@@ -86,6 +87,26 @@ public class CustomAnalyticsServiceImplTest {
 		when(authenticationRepository.findByUsername(Mockito.anyString())).thenReturn(authentication);
 		when(projectAccessManager.getProjectAccessesWithRole(Mockito.anyString())).thenReturn(listRoleWiseProjects);
 		JSONObject json = customAnalyticsServiceImpl.addAnalyticsData(resp, "test");
+		assertEquals("test", json.get("user_name"));
+		assertEquals(json.get("authorities"), user.getAuthorities());
+
+	}
+	@Test
+	public void testAddAnalyticsDataForCentralAuth() {
+		HttpServletResponse resp = Mockito.mock(HttpServletResponse.class);
+		user = new UserInfo();
+		user.setUsername("user");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_VIEWER"));
+		user.setId(new ObjectId("6373796960277453212bc610"));
+		authentication = new Authentication();
+		authentication.setEmail("email");
+		roleWiseProjects = new RoleWiseProjects();
+
+		when(userInfoRepository.findByUsername(Mockito.anyString())).thenReturn(user);
+		when(authenticationRepository.findByUsername(Mockito.anyString())).thenReturn(authentication);
+		when(projectAccessManager.getProjectAccessesWithRole(Mockito.anyString())).thenReturn(listRoleWiseProjects);
+		Map<String, Object> json = customAnalyticsServiceImpl.addAnalyticsDataAndSaveCentralUser(resp, "test" ,"token");
 		assertEquals("test", json.get("user_name"));
 		assertEquals(json.get("authorities"), user.getAuthorities());
 

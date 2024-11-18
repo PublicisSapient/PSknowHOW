@@ -1,9 +1,29 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.bamboo.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -13,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -29,6 +50,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
@@ -50,6 +72,8 @@ public class BambooServiceImplTest {
 	@InjectMocks
 	private BambooToolConfigServiceImpl bambooToolConfigService;
 
+	@Mock
+	private ConnectionService connectionService;
 	private Optional<Connection> testConnectionOpt;
 	private Connection connection;
 	private String connectionId;
@@ -93,6 +117,23 @@ public class BambooServiceImplTest {
 	}
 
 	@Test
+	public void getDeploymentProjectListTestException() {
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt);
+		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("decryptPassword");
+
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(header);
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		doNothing().when(connectionService).updateBreakingConnection(eq(connection), anyString());
+		bambooToolConfigService.getDeploymentProjectList(connectionId);
+	}
+
+	@Test
 	public void getBambooBranchesNameAndKeysSuccess() throws IOException, ParseException {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
@@ -117,6 +158,22 @@ public class BambooServiceImplTest {
 	}
 
 	@Test
+	public void getBambooBranchesNameAndKeysException() {
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt);
+		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("decryptPassword");
+
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(header);
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		doNothing().when(connectionService).updateBreakingConnection(eq(connection), anyString());
+		bambooToolConfigService.getBambooBranchesNameAndKeys(connectionId, "COOP-CC");
+	}
+	@Test
 	public void getProjectsAndPlanKeyListSuccess() throws IOException, ParseException {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
@@ -138,6 +195,22 @@ public class BambooServiceImplTest {
 						new ResponseEntity<>(getServerResponseFromJson("bambooPlanListJson.json"), HttpStatus.OK));
 		when(restAPIUtils.getJsonArrayFromJSONObj(any(), anyString())).thenReturn(jsonArray);
 		Assert.assertEquals(1, bambooToolConfigService.getProjectsAndPlanKeyList(connectionId).size());
+	}
+
+	@Test
+	public void getProjectsAndPlanKeyListException() {
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt);
+		when(restAPIUtils.decryptPassword(connection.getPassword())).thenReturn("decryptPassword");
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		when(restAPIUtils.getHeaders("tst-ll-SystemAdmin", "decryptPassword")).thenReturn(header);
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
+				.thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+		doNothing().when(connectionService).updateBreakingConnection(eq(connection), anyString());
+		bambooToolConfigService.getProjectsAndPlanKeyList(connectionId);
 	}
 
 	private String createJsonObject(String projectName, String projectId) {

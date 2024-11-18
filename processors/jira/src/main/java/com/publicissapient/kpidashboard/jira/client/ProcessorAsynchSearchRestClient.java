@@ -23,6 +23,7 @@ import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.NAMES;
 import static com.atlassian.jira.rest.client.api.IssueRestClient.Expandos.SCHEMA;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -101,7 +102,7 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 	@Override
 	public Promise<SearchResult> searchJql(@Nullable String jql, @Nullable Integer maxResults,
 			@Nullable Integer startAt, @Nullable Set<String> fields) {
-		final Iterable<String> expandosValues = Iterables.transform(ImmutableList.of(SCHEMA, NAMES, CHANGELOG),
+		final Iterable<String> expandosValues = Iterables.transform(java.util.List.of(SCHEMA, NAMES, CHANGELOG),
 				EXPANDO_TO_PARAM);
 		final String notNullJql = StringUtils.defaultString(jql);
 		if (notNullJql.length() > JiraConstants.MAX_JQL_LENGTH_FOR_HTTP_GET) {
@@ -177,6 +178,9 @@ public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestCli
 					.putOpt(JiraConstants.START_AT_ATTRIBUTE, startAt)
 					.putOpt(JiraConstants.MAX_RESULTS_ATTRIBUTE, maxResults);
 
+			if (fields != null) {
+				postEntity.put(JiraConstants.FIELDS_ATTRIBUTE, List.of("*all","-attachment","-worklog","-comment","-votes","-watches")); // putOpt doesn't work with collections
+			}
 		} catch (JSONException e) {
 			throw new RestClientException(e);
 		}

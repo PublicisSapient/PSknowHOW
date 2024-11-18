@@ -28,26 +28,30 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
+import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
+import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -66,9 +70,12 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
@@ -77,6 +84,8 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRep
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -87,7 +96,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserInfoServiceImpl implements UserInfoService {
 
-	HttpServletRequest contextreq;
+	public static final String ERROR_MESSAGE_CONSUMING_REST_API = "Failed while consuming rest service in userInfoServiceImpl. Status code: ";
+	public static final String ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL = "Error while consuming rest service in userInfoServiceImpl";
+	public static final String ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL = "Error while Auth Service API call , Api Key token is invalid : {}";
 	@Autowired
 	TokenAuthenticationService tokenAuthenticationService;
 	@Autowired
@@ -121,6 +132,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Autowired
 	private UserTokenReopository userTokenReopository;
 
+	final ModelMapper modelMapper = new ModelMapper();
+
 	@Override
 	public Collection<GrantedAuthority> getAuthorities(String username) {
 		UserInfo userInfo = userInfoRepository.findByUsername(username);
@@ -147,7 +160,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public Collection<UserInfo> getUsers() {
 		List<UserInfo> userInfoList = userInfoRepository.findAll();
-		List<String> userNames = userInfoList.stream().map(UserInfo::getUsername).collect(Collectors.toList());
+		List<String> userNames = userInfoList.stream().map(UserInfo::getUsername).toList();
 
 		List<Authentication> authentications = authenticationRepository.findByUsernameIn(userNames);
 
@@ -160,7 +173,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 			Authentication auth = authMap.get(userInfo.getUsername());
 			if (auth != null) {
-				userInfo.setEmailAddress(auth.getEmail());
+				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 				if (!auth.isApproved()) {
 					nonApprovedUserList.add(userInfo);
 				}
@@ -232,101 +245,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/**
-	 * Checks validity of userId when creating a dashboard remotely via api
-	 *
-	 * @param userId
-	 * @param authType
-	 * @return true if valid user
-	 */
-	@Override
-	public boolean isUserValid(String userId, AuthType authType) {
-		if (this.userInfoRepository.findByUsernameAndAuthType(userId, authType) == null) {
-			if (authType == AuthType.LDAP) {
-				try {
-					return searchLdapUser(userId);
-				} catch (NamingException ne) {
-					log.error("Failed to query ldap for: {}", userId, ne);
-					return false;
-				}
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * Search Ldap user.
-	 *
-	 * @param searchId
-	 * @return <code>true</code> if user exists.
-	 * @throws NamingException
-	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
-	private boolean searchLdapUser(String searchId) throws NamingException {
-		boolean searchResult = false;
-
-		Properties props = new Properties();
-		props.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		props.put("java.naming.security.protocol", "ssl");
-		props.put(Context.SECURITY_AUTHENTICATION, "simple");
-
-		try {
-			if (StringUtils.isBlank(this.authProperties.getAdUrl())) {
-				props.put(Context.PROVIDER_URL, this.authProperties.getLdapServerUrl());
-				props.put(Context.SECURITY_PRINCIPAL, StringUtils.replace(this.authProperties.getLdapUserDnPattern(),
-						"{0}", this.authProperties.getLdapBindUser()));
-			} else {
-				props.put(Context.PROVIDER_URL, this.authProperties.getAdUrl());
-				props.put(Context.SECURITY_PRINCIPAL,
-						this.authProperties.getLdapBindUser() + "@" + this.authProperties.getAdDomain());
-			}
-			props.put(Context.SECURITY_CREDENTIALS, this.authProperties.getLdapBindPass());
-		} catch (Exception e) {
-			log.error("Failed to retrieve properties for InitialDirContext", e);
-			return false;
-		}
-
-		InitialDirContext context = new InitialDirContext(props);
-
-		try {
-			SearchControls ctrls = new SearchControls();
-			ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
-			String searchBase = "";
-			String searchFilter = "";
-			if (StringUtils.isBlank(this.authProperties.getAdUrl())) {
-				searchBase = this.authProperties.getLdapUserDnPattern().substring(
-						this.authProperties.getLdapUserDnPattern().indexOf(',') + 1,
-						this.authProperties.getLdapUserDnPattern().length());
-				searchFilter = "(&(objectClass=user)(sAMAccountName=" + searchId + "))";
-			} else {
-				searchBase = this.authProperties.getAdRootDn();
-				searchFilter = "(&(objectClass=user)(userPrincipalName=" + searchId + "@"
-						+ this.authProperties.getAdDomain() + "))";
-			}
-
-			NamingEnumeration<SearchResult> results = context.search(searchBase, searchFilter, ctrls);
-
-			if (!results.hasMore()) {
-				return searchResult;
-			}
-
-			SearchResult result = results.next();
-
-			Attribute memberOf = result.getAttributes().get("memberOf");
-			if (memberOf != null) {
-				searchResult = true;
-			}
-		} finally {
-			context.close();
-		}
-
-		return searchResult;
-	}
-
-	/**
 	 * update userInfo collection
 	 *
 	 * @param username
@@ -353,7 +271,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (existingUserInfo == null && StringUtils.isNotEmpty(userInfo.getUsername()) && null != userInfo.getAuthType()
 				&& userInfo.getAuthType().equals(AuthType.SSO)) {
 			UserInfo defaultUserInfo = createDefaultUserInfo(userInfo.getUsername(), AuthType.SSO,
-					userInfo.getEmailAddress());
+					userInfo.getEmailAddress().toLowerCase());
 			existingUserInfo = save(defaultUserInfo);
 		}
 		return existingUserInfo;
@@ -382,7 +300,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/**
-	 * Return userinfo along with email in case of ldap or standardlogin
+	 * Return userinfo along with email in case of standardlogin
 	 *
 	 * @param username
 	 *            username
@@ -421,7 +339,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/*
-	to create Super admin User info for first time user
+	 * to create Super admin User info for first time user
 	 */
 	public UserInfo createSuperAdminUserInfo(String username, String email) {
 		UserInfo userInfo = new UserInfo();
@@ -437,7 +355,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (AuthType.STANDARD == userInfo.getAuthType()) {
 			Authentication auth = authenticationRepository.findByUsername(userInfo.getUsername());
 			if (auth != null) {
-				userInfo.setEmailAddress(auth.getEmail());
+				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 			}
 		}
 	}
@@ -449,12 +367,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 *            username
 	 */
 	@Override
-	public ServiceResponse deleteUser(String username) {
+	public ServiceResponse deleteUser(String username, boolean centralAuthService) {
 		try {
 			userInfoRepository.deleteByUsername(username);
 			authenticationService.delete(username);
 			userTokenDeletionService.invalidateSession(username);
 			userBoardConfigService.deleteUser(username);
+			if (centralAuthService) {
+				deleteFromCentralAuthUser(username);
+			}
 			cleanAllCache();
 		} catch (Exception exception) {
 			log.error("Error in Repository :  {} " + exception);
@@ -483,7 +404,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		UserInfoDTO userInfoDTO = null;
 		if (null != userInfo) {
 			userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername()).authType(userInfo.getAuthType())
-					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress())
+					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress().toLowerCase())
 					.projectsAccess(userInfo.getProjectsAccess()).build();
 		}
 		return userInfoDTO;
@@ -512,10 +433,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userDetailsResponseDTO.setUserName(username);
 			userDetailsResponseDTO.setUserEmail(email);
 			userDetailsResponseDTO.setAuthorities(userinfo.getAuthorities());
-
+			userDetailsResponseDTO.setAuthType(userinfo.getAuthType().toString());
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
 			userDetailsResponseDTO.setProjectsAccess(projectAccessesWithRole);
+			userDetailsResponseDTO.setNotificationEmail(userinfo.getNotificationEmail());
 		}
 		return userDetailsResponseDTO;
 
@@ -532,4 +454,216 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 		return userInfo;
 	}
+
+	// -- auth-N-auth starts here -------------
+
+	/**
+	 * get user details from Central auth
+	 * 
+	 * @param username
+	 * @return
+	 */
+
+	@Override
+	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String authCookieToken) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(authCookieToken);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getFetchUserDetailsEndPoint(), "");
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse apikey token.", e);
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return null;
+		}
+	}
+
+	@Override
+	public boolean getCentralAuthUserDeleteUserToken(String token) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
+		uriBuilder.path(authProperties.getUserLogoutEndPoint());
+		uriBuilder.path(token);
+		String fetchUserUrl = uriBuilder.toUriString();
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return true;
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+			}
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return false;
+		}
+	}
+
+	@Override
+	public List<CentralUserInfoDTO> findAllUnapprovedUsersForCentralAuth() {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getFetchPendingUsersApprovalEndPoint(), "");
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				return modelMapper.map(jsonObject.get("data"), new TypeToken<List<CentralUserInfoDTO>>() {
+				}.getType());
+
+			} else {
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return new ArrayList<>();
+		}
+	}
+
+	@Override
+	public boolean updateUserApprovalStatus(String userName) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getUpdateUserApprovalStatus(), "");
+		UserNameRequest userNameRequest = new UserNameRequest();
+		userNameRequest.setUsername(userName);
+		HttpEntity<?> entity = new HttpEntity<>(userNameRequest, headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.PUT, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				return (boolean) jsonObject.get("data");
+
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return false;
+		}
+	}
+
+	@Override
+	public boolean deleteFromCentralAuthUser(String user) {
+		String apiKey = authProperties.getResourceAPIKey();
+		UserNameRequest userNameRequest = new UserNameRequest();
+		userNameRequest.setUsername(user);
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
+		String deleteUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getDeleteUserEndpoint(), "");
+		HttpEntity<?> entity = new HttpEntity<>(userNameRequest, headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(deleteUserUrl, HttpMethod.PUT, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return true;
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+			}
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return false;
+		}
+	}
+
+	/**
+	 * update notification email alert flag user wise 2 type of notification flag -
+	 * accessAlertNotification and errorAlertNotification
+	 *
+	 * @param loggedUserName
+	 * @param notificationEmail
+	 * @return
+	 */
+	@Override
+	public UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail) {
+		UserInfo userinfo = userInfoRepository.findByUsername(loggedUserName);
+
+		if (Objects.nonNull(userinfo) && Objects.nonNull(notificationEmail)
+				&& (userinfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)
+						|| userinfo.getAuthorities().contains(Constant.ROLE_PROJECT_ADMIN))) {
+			userinfo.setNotificationEmail(notificationEmail);
+			userInfoRepository.save(userinfo);
+			return userinfo;
+		}
+		return null;
+	}
+
+	@Override 
+	public List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers() {
+		List<UserAccessApprovalResponseDTO> userAccessApprovalResponseDTOList = new ArrayList<>();
+		List<CentralUserInfoDTO> nonApprovedUserList = findAllUnapprovedUsersForCentralAuth();
+		nonApprovedUserList.stream().forEach(userInfoDTO -> {
+			UserAccessApprovalResponseDTO userAccessApprovalResponseDTO = new UserAccessApprovalResponseDTO();
+			userAccessApprovalResponseDTO.setUsername(userInfoDTO.getUsername());
+			userAccessApprovalResponseDTO.setEmail(userInfoDTO.getEmail());
+			userAccessApprovalResponseDTO.setApproved(userInfoDTO.isApproved());
+			List<String> whitelistDomain = authProperties.getWhiteListDomainForEmail();
+			if (CollectionUtils.isNotEmpty(whitelistDomain)
+					&& whitelistDomain.stream().anyMatch(domain -> userInfoDTO.getEmail().contains(domain))) {
+				userAccessApprovalResponseDTO.setWhitelistDomainEmail(true);
+			} else {
+				userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
+			}
+			userAccessApprovalResponseDTOList.add(userAccessApprovalResponseDTO);
+		});
+		return userAccessApprovalResponseDTOList;
+	}
+
 }

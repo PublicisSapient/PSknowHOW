@@ -42,6 +42,11 @@ import { ChipsModule } from 'primeng/chips';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { AdditionalFilterFieldComponent } from './additional-filter-field/additional-filter-field.component';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { CarouselModule } from 'primeng/carousel';
+import { FeatureFlagDirective } from './custom-directives/feature-flag.directive';
+import { ConditionalInputComponent } from './conditional-input/conditional-input.component';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 @NgModule({
   imports: [
@@ -63,6 +68,9 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     ChipsModule,
     RadioButtonModule,
     InputSwitchModule,
+    CarouselModule,
+    InputNumberModule,
+    OverlayPanelModule
   ],
   exports: [
     NgSelectModule,
@@ -72,7 +80,10 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     CalendarModule,
     FooterComponent,
     KpiFilterComponent,
-    FieldMappingFormComponent
+    FieldMappingFormComponent,
+    FeatureFlagDirective,
+    CarouselModule,
+    ConditionalInputComponent
   ],
   declarations: [
     ProjectFilterComponent,
@@ -82,8 +93,10 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     KpiFilterComponent,
     FieldMappingFormComponent,
     FieldMappingFieldComponent,
-    AdditionalFilterFieldComponent
+    AdditionalFilterFieldComponent,
+    FeatureFlagDirective,
+    ConditionalInputComponent
   ],
-  providers : [ConfirmationService]
+  providers: [ConfirmationService]
 })
 export class SharedModuleModule { }

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,7 +14,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,7 +32,6 @@ import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -39,7 +42,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -52,7 +54,6 @@ import com.publicissapient.kpidashboard.common.model.scm.MergeReqCount;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -83,22 +84,15 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		Node root = treeAggregatorDetail.getRoot();
-		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-
-			Filters filters = Filters.getFilter(k);
-			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(kpiElement, mapTmp, v, kpiRequest);
-			}
-
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
+		Map<String, Node> mapTmp = new HashMap<>();
+		mapTmp.put(projectNode.getId(), projectNode);
+		projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.MEAN_TIME_TO_MERGE);
+		calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.MEAN_TIME_TO_MERGE);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.MEAN_TIME_TO_MERGE);
 		Map<String, Map<String, List<DataCount>>> kpiFilterWiseProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((issueType, dataCounts) -> {
@@ -117,12 +111,11 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
-
 		return kpiElement;
 	}
 
-	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
-			List<Node> projectLeafNodeList, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node projectNode,
+			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
 		LocalDate localStartDate = dateRange.getStartDate();
@@ -133,75 +126,88 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		List<MergeRequests> mergeRequestsList = fetchKPIDataFromDb(projectLeafNodeList, localStartDate.toString(),
-				localEndDate.toString(), null);
+		List<MergeRequests> mergeRequestsList = fetchKPIDataFromDb(Arrays.asList(projectNode),
+				localStartDate.toString(), localEndDate.toString(), null);
 
 		// converting to map with keys collectorItemId
 		Map<ObjectId, List<MergeRequests>> mergeRequestsListItemId = mergeRequestsList.stream()
 				.collect(Collectors.groupingBy(MergeRequests::getProcessorItemId));
 
 		List<KPIExcelData> excelData = new ArrayList<>();
-		projectLeafNodeList.stream().forEach(node -> {
-			String projectName = node.getProjectFilter().getName();
+		String projectName = projectNode.getProjectFilter().getName();
 
-			ProjectFilter accountHierarchyData = node.getProjectFilter();
-			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-			Map<String, List<Tool>> mapOfListOfTools = toolMap.get(configId);
-			List<Tool> reposList = new ArrayList<>();
-			populateRepoList(reposList, mapOfListOfTools);
-			if (CollectionUtils.isEmpty(reposList)) {
-				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
-				return;
-			}
+		ProjectFilter accountHierarchyData = projectNode.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		Map<String, List<Tool>> mapOfListOfTools = toolMap.get(configId);
+		List<Tool> reposList = new ArrayList<>();
+		populateRepoList(reposList, mapOfListOfTools);
+		if (CollectionUtils.isEmpty(reposList)) {
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}",
+					projectNode.getProjectFilter());
+			return;
+		}
 
-			List<Map<String, Double>> repoWiseMRList = new ArrayList<>();
-			List<String> repoList = new ArrayList<>();
-			List<String> branchList = new ArrayList<>();
+		List<Map<String, Double>> repoWiseMRList = new ArrayList<>();
+		List<String> repoList = new ArrayList<>();
+		List<String> branchList = new ArrayList<>();
 
-			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
-			List<MergeRequests> aggMergeRequests = new ArrayList<>();
-			reposList.forEach(repo -> {
-				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
-						&& repo.getProcessorItemList().get(0).getId() != null) {
-					List<MergeRequests> mergeReqList = mergeRequestsListItemId
-							.get(repo.getProcessorItemList().get(0).getId());
-					if (CollectionUtils.isNotEmpty(mergeReqList)) {
-						Map<String, Double> excelDataLoader = new HashMap<>();
-						aggMergeRequests.addAll(mergeReqList);
-						List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(mergeReqList, excelDataLoader,
-								projectName, duration, dataPoints);
-						aggDataMap.put(getBranchSubFilter(repo, projectName), dataCountList);
-						repoWiseMRList.add(excelDataLoader);
-						repoList.add(repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug());
-						branchList.add(repo.getBranch());
-					}
+		Map<String, List<DataCount>> aggDataMap = new HashMap<>();
+		List<MergeRequests> aggMergeRequests = new ArrayList<>();
+		List<RepoToolValidationData> repoToolValidationDataList = new ArrayList<>();
+		reposList.forEach(repo -> {
+			if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
+					&& repo.getProcessorItemList().get(0).getId() != null) {
+				List<MergeRequests> mergeReqList = mergeRequestsListItemId
+						.get(repo.getProcessorItemList().get(0).getId());
+				if (CollectionUtils.isNotEmpty(mergeReqList)) {
+					Map<String, Double> excelDataLoader = new HashMap<>();
+					String repoName = repo.getRepositoryName() != null ? repo.getRepositoryName() : repo.getRepoSlug();
+					aggMergeRequests.addAll(mergeReqList);
+					List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(mergeReqList, repo,
+							projectName, duration, dataPoints, repoToolValidationDataList, repoName);
+					aggDataMap.put(getBranchSubFilter(repo, projectName), dataCountList);
+					repoWiseMRList.add(excelDataLoader);
+					repoList.add(repoName);
+					branchList.add(repo.getBranch());
 				}
-			});
-			List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(aggMergeRequests, new HashMap<>(), projectName,
-					duration, dataPoints);
-			aggDataMap.put(Constant.AGGREGATED_VALUE, dataCountList);
-			mapTmp.get(node.getId()).setValue(aggDataMap);
-			populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, node);
+			}
 		});
+		List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(aggMergeRequests, null, projectName,
+				duration, dataPoints, new ArrayList<>(), null);
+		aggDataMap.put(Constant.AGGREGATED_VALUE, dataCountList);
+		mapTmp.get(projectNode.getId()).setValue(aggDataMap);
+		populateExcelDataObject(requestTrackerId, repoToolValidationDataList, excelData);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.MEAN_TIME_TO_MERGE.getColumns());
 	}
 
 	private List<DataCount> setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList,
-			Map<String, Double> excelDataLoader, String projectName, String duration, Integer dataPoints) {
+			Tool tool, String projectName, String duration, Integer dataPoints,
+			List<RepoToolValidationData> repoToolValidationDataList, String repoName) {
 
 		List<DataCount> dataCountList = new ArrayList<>();
 		LocalDate currentDate = LocalDate.now();
 		for (int i = 0; i < dataPoints; i++) {
-			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
+			CustomDateRange dateRange = KpiHelperService.getStartAndEndDateExcludingWeekends(currentDate, duration);
 			List<Double> durationList = new ArrayList<>();
 			for (MergeRequests mergeReq : mergeReqList) {
 				LocalDate closedDate = Instant.ofEpochMilli(mergeReq.getClosedDate()).atZone(ZoneId.systemDefault())
 						.toLocalDate();
-				if (closedDate.compareTo(dateRange.getStartDate()) >= 0
-						&& closedDate.compareTo(dateRange.getEndDate()) <= 0) {
-					double mergeDuration = (double) (mergeReq.getClosedDate()) - mergeReq.getCreatedDate();
+				if (closedDate.compareTo(dateRange.getStartDate()) >= 0 && closedDate.compareTo(
+						dateRange.getEndDate()) <= 0) {
+					Double mergeDuration = (double) (mergeReq.getClosedDate()) - mergeReq.getCreatedDate();
 					durationList.add(mergeDuration);
+					if(tool != null) {
+						RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+						repoToolValidationData.setProjectName(projectName);
+						repoToolValidationData.setMeanTimeToMerge(
+								TimeUnit.MILLISECONDS.toHours(mergeDuration.longValue()));
+						repoToolValidationData.setDate(getDateRange(dateRange, duration));
+						repoToolValidationData.setRepoUrl(repoName);
+						repoToolValidationData.setBranchName(tool.getBranch());
+						repoToolValidationData.setMergeRequestUrl(mergeReq.getMergeRequestUrl());
+						repoToolValidationDataList.add(repoToolValidationData);
+					}
 				}
 			}
 			String date = getDateRange(dateRange, duration);
@@ -209,9 +215,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			if (null != valueForCurrentLeaf) {
 				DataCount dataCount = setDataCount(projectName, date, valueForCurrentLeaf);
 				dataCountList.add(dataCount);
-				excelDataLoader.put(date, (double) TimeUnit.MILLISECONDS.toHours(valueForCurrentLeaf.longValue()));
 			}
-			currentDate = getNextRangeDate(duration, currentDate);
+			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
 		Collections.reverse(dataCountList);
 		return dataCountList;
@@ -228,15 +233,6 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			range = dateRange.getStartDate().toString();
 		}
 		return range;
-	}
-
-	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
-			currentDate = currentDate.minusWeeks(1);
-		} else {
-			currentDate = currentDate.minusDays(1);
-		}
-		return currentDate;
 	}
 
 	/**
@@ -320,14 +316,11 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		}
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, List<Map<String, Double>> repoWiseMRList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> validationDataMap, Node node) {
+	private void populateExcelDataObject(String requestTrackerId,
+			List<RepoToolValidationData> repoToolValidationDataList, List<KPIExcelData> validationDataMap) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
-			String projectName = node.getProjectFilter().getName();
-
-			KPIExcelUtility.populateMeanTimeMergeExcelData(projectName, repoWiseMRList, repoList, branchList,
-					validationDataMap);
+			KPIExcelUtility.populateMeanTimeMergeExcelData(repoToolValidationDataList, validationDataMap);
 
 		}
 	}
@@ -411,6 +404,11 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI84(), KPICode.MEAN_TIME_TO_MERGE.getKpiId());
 	}
 
 }

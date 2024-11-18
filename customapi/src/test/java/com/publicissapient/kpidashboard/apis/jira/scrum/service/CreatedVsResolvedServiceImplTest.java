@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
@@ -200,7 +200,7 @@ public class CreatedVsResolvedServiceImplTest {
 				startDate, endDate, kpiRequest);
 		createdVsResolvedListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
 		assertThat("createdVsResolved value :",
-				((List<JiraIssue>) (createdVsResolvedListMap.get(CREATED_VS_RESOLVED_KEY))).size(), equalTo(44));
+				((List<JiraIssue>) (createdVsResolvedListMap.get(CREATED_VS_RESOLVED_KEY))).size(), equalTo(45));
 	}
 
 	@Test

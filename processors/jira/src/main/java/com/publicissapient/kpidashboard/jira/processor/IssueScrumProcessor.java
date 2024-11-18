@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.jira.processor;
 import java.io.IOException;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.springframework.batch.item.ItemProcessor;
@@ -100,7 +100,7 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	private JiraIssue convertIssueToJiraIssue(ReadData readData) throws JSONException {
 		return jiraIssueProcessor.convertToJiraIssue(readData.getIssue(), readData.getProjectConfFieldMapping(),
-				readData.getBoardId());
+				readData.getBoardId(), readData.getProcessorId());
 	}
 
 	private JiraIssueCustomHistory convertIssueToJiraIssueHistory(ReadData readData, JiraIssue jiraIssue)
@@ -111,7 +111,7 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	private Set<SprintDetails> processSprintData(ReadData readData) throws IOException {
 		return sprintDataProcessor.processSprintData(readData.getIssue(), readData.getProjectConfFieldMapping(),
-				readData.getBoardId());
+				readData.getBoardId(), readData.getProcessorId());
 	}
 
 	private Set<AccountHierarchy> createAccountHierarchies(JiraIssue jiraIssue, ReadData readData,

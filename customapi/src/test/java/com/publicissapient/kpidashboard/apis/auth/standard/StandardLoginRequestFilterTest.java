@@ -22,9 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,10 +36,8 @@ import org.springframework.security.core.Authentication;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
 import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StandardLoginRequestFilterTest {
@@ -67,14 +64,11 @@ public class StandardLoginRequestFilterTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
-	@Mock
-	private AuthTypesConfigService authTypesConfigService;
-
 	@Before
 	public void setup() {
 		path = "/login";
 		filter = new StandardLoginRequestFilter(path, manager, resultHandler, authenticationFailureHandler,
-				customApiConfig, authTypesConfigService);
+				customApiConfig);
 	}
 
 	@Test
@@ -91,10 +85,6 @@ public class StandardLoginRequestFilterTest {
 	@Test
 	public void shouldAuthenticate() {
 		when(request.getMethod()).thenReturn("POST");
-		AuthTypeStatus authTypeStatus = new AuthTypeStatus();
-		authTypeStatus.setAdLogin(false);
-		authTypeStatus.setStandardLogin(true);
-		when(authTypesConfigService.getAuthTypesStatus()).thenReturn(authTypeStatus);
 		String principal = "user1";
 		String credentials = "password1";
 		when(request.getParameter("username")).thenReturn(principal + " ");
@@ -114,10 +104,6 @@ public class StandardLoginRequestFilterTest {
 	@Test
 	public void shouldAuthenticateWithNullUsernamePassword() {
 		when(request.getMethod()).thenReturn("POST");
-		AuthTypeStatus authTypeStatus = new AuthTypeStatus();
-		authTypeStatus.setAdLogin(false);
-		authTypeStatus.setStandardLogin(true);
-		when(authTypesConfigService.getAuthTypesStatus()).thenReturn(authTypeStatus);
 		String principal = null;
 		String credentials = null;
 		when(request.getParameter("username")).thenReturn(principal);
@@ -133,15 +119,6 @@ public class StandardLoginRequestFilterTest {
 		assertEquals("", authentication.getPrincipal());
 		assertEquals("", authentication.getCredentials());
 		assertEquals(AuthType.STANDARD, authentication.getDetails());
-	}
-
-	@Test(expected = AuthenticationServiceException.class)
-	public void shouldThrowExceptionIfDisabled() {
-		AuthTypeStatus authTypeStatus = new AuthTypeStatus();
-		authTypeStatus.setAdLogin(true);
-		authTypeStatus.setStandardLogin(false);
-		when(authTypesConfigService.getAuthTypesStatus()).thenReturn(authTypeStatus);
-		filter.attemptAuthentication(request, response);
 	}
 
 }

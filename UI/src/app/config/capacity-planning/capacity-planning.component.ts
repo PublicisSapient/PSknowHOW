@@ -23,6 +23,7 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
+import { HelperService } from 'src/app/services/helper.service';
 
 interface CapacitySubmissionReq {
   projectNodeId: string;
@@ -79,7 +80,7 @@ export class CapacityPlanningComponent implements OnInit {
   sprintDetails: any;
   projectDetails: any;
   selectedProjectBaseConfigId: string;
-  selectedProjectName : string;
+  selectedProjectName: string;
   selectedSprintDetails: any;
   selectedSprintId: any;
   selectedSprintName: any;
@@ -88,6 +89,8 @@ export class CapacityPlanningComponent implements OnInit {
   selectedFilterCount = 0;
   filterData = <any>[];
   masterData = <any>{};
+  projectAssigneeEmails = [];
+  projectAssigneeEmailsCopy = [];
   isToggleEnableForSelectedProject = false;
   projectAssigneeRoles = [];
   projectAssigneeRolesObj;
@@ -103,7 +106,8 @@ export class CapacityPlanningComponent implements OnInit {
   showPopuup = false;
   reqObj: CapacitySubmissionReq;
   isAdminForSelectedProject = false;
-  constructor(private http_service: HttpService, private messageService: MessageService, private cdr: ChangeDetectorRef, private getAuthorizationService: GetAuthorizationService) { }
+  constructor(private http_service: HttpService, private messageService: MessageService, private cdr: ChangeDetectorRef, public getAuthorizationService: GetAuthorizationService,
+    private helperService: HelperService) { }
 
   ngOnInit(): void {
     this.cols = {
@@ -164,10 +168,14 @@ export class CapacityPlanningComponent implements OnInit {
       selectedProjectValue: new UntypedFormControl()
     });
     this.popupForm = new UntypedFormGroup({
-      capacity: new UntypedFormControl()
+      capacity: new UntypedFormControl(),
     });
 
+
     this.getFilterDataOnLoad();
+
+
+
   }
 
   resetProjectSelection() {
@@ -185,8 +193,8 @@ export class CapacityPlanningComponent implements OnInit {
       capacity: new UntypedFormControl()
     });
 
-      //add additionalFilterCapacity checks
-     this.squadForm = new UntypedFormGroup({});
+    //add additionalFilterCapacity checks
+    this.squadForm = new UntypedFormGroup({});
   }
 
   // called when user switches the "Scrum/Kanban" switch
@@ -234,17 +242,17 @@ export class CapacityPlanningComponent implements OnInit {
       .subscribe(filterData => {
         if (filterData[0] !== 'error' && filterData?.['data']?.length > 0) {
           this.filterData = filterData['data'];
-            this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
-            this.squadListArr = this.getSortedAdditonalFilter(this.projectListArr);
-            this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
-            this.squadListArr = this.makeUniqueArrayList(this.squadListArr);
-            const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
-            this.checkDefaultFilterSelection(defaultSelection);
-            if (!Object.keys(filterData).length) {
-              this.resetProjectSelection();
-              // show error message
-              this.messageService.add({ severity: 'error', summary: 'Projects not found.' });
-            }
+          this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
+          this.squadListArr = this.getSortedAdditonalFilter(this.projectListArr);
+          this.projectListArr = this.helperService.makeUniqueArrayList(this.projectListArr);
+          this.squadListArr = this.helperService.makeUniqueArrayList(this.squadListArr);
+          const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
+          this.checkDefaultFilterSelection(defaultSelection);
+          if (!Object.keys(filterData).length) {
+            this.resetProjectSelection();
+            // show error message
+            this.messageService.add({ severity: 'error', summary: 'Projects not found.' });
+          }
 
         } else {
           this.resetProjectSelection();
@@ -258,22 +266,6 @@ export class CapacityPlanningComponent implements OnInit {
   sortAlphabetically(objArray) {
     objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
     return objArray;
-  }
-  makeUniqueArrayList(arr) {
-    let uniqueArray = [];
-    for (let i = 0; i < arr?.length; i++) {
-      const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
-      if (idx == -1) {
-        uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
-      } else {
-        uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-        uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-      }
-
-    }
-    return uniqueArray;
   }
 
   checkDefaultFilterSelection(flag) {
@@ -311,10 +303,10 @@ export class CapacityPlanningComponent implements OnInit {
     }
   }
 
-  getSquadsOfSelectedProject(projectName){
-      if (projectName) {
-        this.selectedSquad = [...this.squadListArr?.filter((x) => x['path'][0]?.includes(projectName))];
-        }
+  getSquadsOfSelectedProject(projectName) {
+    if (projectName) {
+      this.selectedSquad = [...this.squadListArr?.filter((x) => x['path'][0]?.includes(projectName))];
+    }
   }
 
   getCapacityData(projectId) {
@@ -377,6 +369,21 @@ export class CapacityPlanningComponent implements OnInit {
           this.jiraAssigneeLoader = false;
           if (response && response?.success && response?.data) {
             this.projectJiraAssignees = response['data'];
+            this.http_service.getAssigneeEmails(projectId)
+              .subscribe(response => {
+                if (response && response?.success && response?.data) {
+                  this.projectAssigneeEmails = response.data;
+                  this.projectAssigneeEmailsCopy = [...this.projectAssigneeEmails].map(x => {
+                    return {
+                      'name': x,
+                      'value': x
+                    }
+                  });
+                } else {
+                  this.messageService.add({ severity: 'error', summary: 'Could not fetch Assignee Emails.' });
+                }
+
+              });
           } else {
             this.messageService.add({ severity: 'error', summary: 'Error in fetching Project Assignee.' });
           }
@@ -506,6 +513,7 @@ export class CapacityPlanningComponent implements OnInit {
     selectedSprint.assigneeCapacity.forEach(assignee => {
       this.selectedSprintAssigneFormArray.push(
         {
+          email: new FormControl(assignee.email, [Validators.email]),
           role: new FormControl(assignee.role),
           squad: new FormControl(assignee.squad),
           plannedCapacity: new FormControl({ value: assignee.plannedCapacity, disabled: !assignee.role }, [Validators.pattern('[0-9]*')]),
@@ -547,15 +555,15 @@ export class CapacityPlanningComponent implements OnInit {
     }
   }
 
-  validateInput($event) {
-    if ($event.key === 'e' || $event.key === '-') {
+  validateInput($event, field?) {
+    if ($event.key === '-' || (field !== 'email' && $event.key === 'e')) {
       $event.preventDefault();
     }
   }
 
   onSprintCapacitySave(selectedSprint) {
     selectedSprint.capacity = this.calculateTotalCapacityForSprint(selectedSprint);
-    selectedSprint.additionalFilterCapacityList = this.generateAdditionalFilterCapacityList( selectedSprint);
+    selectedSprint.additionalFilterCapacityList = this.generateAdditionalFilterCapacityList(selectedSprint);
     this.projectCapacityEditMode = false;
     const postData = { ...selectedSprint };
     delete postData['id'];
@@ -604,19 +612,19 @@ export class CapacityPlanningComponent implements OnInit {
 
   enableDisableSubmitButton() {
     if (this.selectedView === 'upload_Sprint_Capacity') {
-      if(this.selectedSquad.length>0 && this.squadForm!=null){
-       this.isCapacitySaveDisabled = false;
+      if (this.selectedSquad.length > 0 && this.squadForm != null) {
+        this.isCapacitySaveDisabled = false;
         this.capacityErrorMessage = '';
         Object.entries(this.squadForm?.value).forEach(([key, value]) => {
           if (value == null || (value instanceof FormControl && value.value == null)) {
-              this.isCapacitySaveDisabled = true;
-              this.capacityErrorMessage = 'Please enter Capacity';
-              return;
+            this.isCapacitySaveDisabled = true;
+            this.capacityErrorMessage = 'Please enter Capacity';
+            return;
           }
-      });
+        });
 
       }
-      else{
+      else {
         this.enableDisableCapacitySubmitButton();
       }
     }
@@ -663,40 +671,40 @@ export class CapacityPlanningComponent implements OnInit {
 
       if (this.selectedSquad.length > 0) {
 
-          if (data?.additionalFilterCapacityList) {
-              const flattened = data.additionalFilterCapacityList.flatMap(item => item.nodeCapacityList);
-              this.selectedSquad.forEach(squad => {
-                  const matchingFilter = flattened.find(filter => filter.additionalFilterId === squad.nodeId);
+        if (data?.additionalFilterCapacityList) {
+          const flattened = data.additionalFilterCapacityList.flatMap(item => item.nodeCapacityList);
+          this.selectedSquad.forEach(squad => {
+            const matchingFilter = flattened.find(filter => filter.additionalFilterId === squad.nodeId);
 
-                  if (matchingFilter) {
-                    if (!this.squadForm.controls[squad.nodeId]) {
-                        this.squadForm.addControl(squad.nodeId, new UntypedFormControl(matchingFilter.additionalFilterCapacity));
-                    } else {
-                        this.squadForm.controls[squad.nodeId].setValue(matchingFilter.additionalFilterCapacity);
-                    }
-                } else {
-                    if (!this.squadForm.controls[squad.nodeId]) {
-                        this.squadForm.addControl(squad.nodeId, new UntypedFormControl(null));
-                    }
-                }
+            if (matchingFilter) {
+              if (!this.squadForm.controls[squad.nodeId]) {
+                this.squadForm.addControl(squad.nodeId, new UntypedFormControl(matchingFilter.additionalFilterCapacity));
+              } else {
+                this.squadForm.controls[squad.nodeId].setValue(matchingFilter.additionalFilterCapacity);
+              }
+            } else {
+              if (!this.squadForm.controls[squad.nodeId]) {
+                this.squadForm.addControl(squad.nodeId, new UntypedFormControl(null));
+              }
+            }
 
-              });
-          }
-          else {
-              this.selectedSquad.forEach(squad => {
-                let control= new UntypedFormControl();
-                if (this.squadForm.get(squad.nodeId)) {
-                  // Update existing control
-                  this.squadForm.get(squad.nodeId).setValue(control);
-                } else {
-                  // Add new control
-                  this.squadForm.addControl(squad.nodeId, control);
-                }
-              });
-          }
-    }
+          });
+        }
+        else {
+          this.selectedSquad.forEach(squad => {
+            let control = new UntypedFormControl();
+            if (this.squadForm.get(squad.nodeId)) {
+              // Update existing control
+              this.squadForm.get(squad.nodeId).setValue(control);
+            } else {
+              // Add new control
+              this.squadForm.addControl(squad.nodeId, control);
+            }
+          });
+        }
+      }
 
-    this.popupForm = new UntypedFormGroup({capacity: new UntypedFormControl(data?.capacity ? data?.capacity : '')});
+      this.popupForm = new UntypedFormGroup({ capacity: new UntypedFormControl(data?.capacity ? data?.capacity : '') });
 
       this.reqObj['capacity'] = data?.capacity ? data?.capacity : '';
       if (this.kanban) {
@@ -717,11 +725,11 @@ export class CapacityPlanningComponent implements OnInit {
 
   // called on the click of the Submit button when creating capacity per sprint(hrs)
   submitCapacity() {
-    if(this.squadForm?.value && Object.keys(this.squadForm.value).length > 0){
+    if (this.squadForm?.value && Object.keys(this.squadForm.value).length > 0) {
       this.reqObj['additionalFilterCapacityList'] = this.toggleOffGenerateAdditionalFilterCapacityList(this.squadForm?.value)
       this.reqObj['capacity'] = Object.values(this.squadForm?.value).reduce((acc: number, value: number) => acc + value, 0).toString();
     }
-    else{
+    else {
       this.reqObj['capacity'] = this.popupForm?.get('capacity').value;
     }
     this.http_service.saveCapacity(this.reqObj)
@@ -772,7 +780,7 @@ export class CapacityPlanningComponent implements OnInit {
     this.clearSquadForm();
   }
 
-  clearSquadForm(){
+  clearSquadForm() {
     if (this.squadForm && this.squadForm.controls) {
       Object.keys(this.squadForm?.controls).forEach(key => {
         this.squadForm.removeControl(key);
@@ -795,102 +803,101 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   checkMandatoryFields(assigneeFormControls, fieldName) {
-    if(fieldName==='role'|| fieldName==='squad'){
+    if (fieldName === 'role' || fieldName === 'squad') {
       const roleValue = assigneeFormControls['role']?.value;
       const squadValue = assigneeFormControls['squad']?.value;
-      if (this.selectedSquad.length > 0){
-          if((squadValue !== null) && (roleValue !== null)){
+      if (this.selectedSquad.length > 0) {
+        if ((squadValue !== null) && (roleValue !== null)) {
           return true;
+        }
       }
-    }
-      else if(roleValue !== null){
+      else if (roleValue !== null) {
         return true;
       }
-  }
+    }
     return false;
   }
 
   generateAdditionalFilterCapacityList(selectedSprint) {
-  if (this.selectedSquad.length > 0){
-    const squadCapacityMap: { [key: string]: { [key: string]: number } } = {};
+    if (this.selectedSquad.length > 0) {
+      const squadCapacityMap: { [key: string]: { [key: string]: number } } = {};
 
-    // Group by squad and sum availableCapacity
-    selectedSprint.assigneeCapacity.forEach(member => {
-      const squad = this.selectedSquad.find(squad => squad.nodeId === member.squad);
-      if (squad) {
-        if (!squadCapacityMap[squad.labelName]) {
-          squadCapacityMap[squad.labelName] = {};
+      // Group by squad and sum availableCapacity
+      selectedSprint.assigneeCapacity.forEach(member => {
+        const squad = this.selectedSquad.find(squad => squad.nodeId === member.squad);
+        if (squad) {
+          if (!squadCapacityMap[squad.labelName]) {
+            squadCapacityMap[squad.labelName] = {};
+          }
+          if (!squadCapacityMap[squad.labelName][squad.nodeId]) {
+            squadCapacityMap[squad.labelName][squad.nodeId] = 0;
+          }
+          squadCapacityMap[squad.labelName][squad.nodeId] += member.availableCapacity;
         }
-        if (!squadCapacityMap[squad.labelName][squad.nodeId]) {
-          squadCapacityMap[squad.labelName][squad.nodeId] = 0;
-        }
-        squadCapacityMap[squad.labelName][squad.nodeId] += member.availableCapacity;
-      }
-    });
+      });
 
-    return this.createAdditionalFilterCapacityList(squadCapacityMap);
+      return this.createAdditionalFilterCapacityList(squadCapacityMap);
     }
 
-}
+  }
 
-toggleOffGenerateAdditionalFilterCapacityList(capacityObject: { [key: string]: number }) {
-  if (this.selectedSquad.length > 0) {
-    const squadCapacityMap: { [key: string]: { [key: string]: number } } = {};
+  toggleOffGenerateAdditionalFilterCapacityList(capacityObject: { [key: string]: number }) {
+    if (this.selectedSquad.length > 0) {
+      const squadCapacityMap: { [key: string]: { [key: string]: number } } = {};
 
-    // Group by squad and sum availableCapacity
-    for (const key in capacityObject) {
-      const value = capacityObject[key];
-      const squad = this.selectedSquad.find(squad => key.includes(squad.nodeId));
-      if (squad) {
-        if (!squadCapacityMap[squad.labelName]) {
-          squadCapacityMap[squad.labelName] = {};
+      // Group by squad and sum availableCapacity
+      for (const key in capacityObject) {
+        const value = capacityObject[key];
+        const squad = this.selectedSquad.find(squad => key.includes(squad.nodeId));
+        if (squad) {
+          if (!squadCapacityMap[squad.labelName]) {
+            squadCapacityMap[squad.labelName] = {};
+          }
+          if (!squadCapacityMap[squad.labelName][squad.nodeId]) {
+            squadCapacityMap[squad.labelName][squad.nodeId] = 0;
+          }
+          squadCapacityMap[squad.labelName][squad.nodeId] += value;
         }
-        if (!squadCapacityMap[squad.labelName][squad.nodeId]) {
-          squadCapacityMap[squad.labelName][squad.nodeId] = 0;
-        }
-        squadCapacityMap[squad.labelName][squad.nodeId] += value;
       }
+      return this.createAdditionalFilterCapacityList(squadCapacityMap);
     }
-    return this.createAdditionalFilterCapacityList(squadCapacityMap);
-  }
-}
-
- createAdditionalFilterCapacityList( squadCapacityMap ){
-  const additionalFilterCapacityList = [];
-
-  for (const labelName in squadCapacityMap) {
-    const nodeCapacityList = Object.keys(squadCapacityMap[labelName]).map(nodeId => {
-      return {
-        additionalFilterId: nodeId,
-        additionalFilterCapacity: squadCapacityMap[labelName][nodeId]
-      };
-    });
-
-    additionalFilterCapacityList.push({
-      filterId: labelName,
-      nodeCapacityList: nodeCapacityList
-    });
   }
 
-  return additionalFilterCapacityList;
+  createAdditionalFilterCapacityList(squadCapacityMap) {
+    const additionalFilterCapacityList = [];
 
- }
+    for (const labelName in squadCapacityMap) {
+      const nodeCapacityList = Object.keys(squadCapacityMap[labelName]).map(nodeId => {
+        return {
+          additionalFilterId: nodeId,
+          additionalFilterCapacity: squadCapacityMap[labelName][nodeId]
+        };
+      });
 
-getNodeName(assignee) {
-  if (assignee?.squad) {
-    const squad = this.selectedSquad.find(s => s.nodeId === assignee.squad);
-    return squad ? squad.nodeName : '- -';
+      additionalFilterCapacityList.push({
+        filterId: labelName,
+        nodeCapacityList: nodeCapacityList
+      });
+    }
+
+    return additionalFilterCapacityList;
+
   }
-  return '- -';
-}
 
+  getNodeName(assignee) {
+    if (assignee?.squad) {
+      const squad = this.selectedSquad.find(s => s.nodeId === assignee.squad);
+      return squad ? squad.nodeName : '- -';
+    }
+    return '- -';
+  }
 
-getSortedAdditonalFilter(projectListArr) {
-//Get the levels of the projects in projectListArr
- let projectMap= projectListArr.map(project => project.level);
-// Step 3: Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
- return this.sortAlphabetically(this.filterData.filter(data => projectMap.includes(data.level - 2)));
+  getSortedAdditonalFilter(projectListArr) {
+    //Get the levels of the projects in projectListArr
+    let projectMap = projectListArr.map(project => project.level);
+    // Filter out the objects from filterData which have a level that is exactly 2 levels above any project level
+    return this.sortAlphabetically(this.filterData.filter(data => projectMap.includes(data.level - 2)));
 
-}
+  }
 
 }

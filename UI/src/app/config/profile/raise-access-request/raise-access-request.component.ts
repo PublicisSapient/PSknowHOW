@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { HttpService } from '../../../services/http.service';
 import { MessageService } from 'primeng/api';
@@ -133,18 +133,5 @@ export class RaiseAccessRequestComponent implements OnInit {
       this.requestData['accessNode'] = {};
       this.roleList.filter((role) => role.roleName === 'ROLE_SUPERADMIN')[0].disabled = false;
     }
-  }
-
-  // logout is clicked  and removing auth token , username
-  logout() {
-    this.httpService.logout()
-      .subscribe(getData => {
-        if (!(getData !== null && getData[0] === 'error')) {
-          localStorage.removeItem('auth_token');
-          this.sharedService.setCurrentUserDetails({});
-
-          this.router.navigate(['./authentication/login']);
-        }
-      });
   }
 }

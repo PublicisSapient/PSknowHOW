@@ -99,7 +99,7 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedMultipleValueGroup(root, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -307,6 +307,11 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		private String piName;
 		private DateTime piEndDate;
 		private List<JiraIssue> epicList = new ArrayList<>();
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI153(), KPICode.PI_PREDICTABILITY.getKpiId());
 	}
 
 }

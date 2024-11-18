@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -232,8 +232,7 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			howerMap.put(UNLOGGED_STORIES, unloggedStory.size());
 			howerMap.put(TOTAL_STORY_LIST, sumTotalStories.intValue());
 
-			Double value = Double
-					.valueOf(100 * ((Integer) howerMap.get(UNLOGGED_STORIES)) / (Integer) howerMap.get(STORY_LIST));
+			Double value = (double) (100 * ((Integer) howerMap.get(UNLOGGED_STORIES))) / (Integer) howerMap.get(STORY_LIST);
 
 			if (CollectionUtils.isNotEmpty(totalStory)) {
 				populateValidationDataObject(kpiElement, requestTrackerId, totalStory, validationDataMap,

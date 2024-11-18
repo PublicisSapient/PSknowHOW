@@ -38,6 +38,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -52,6 +53,7 @@ import com.publicissapient.kpidashboard.azurerepo.repository.AzureRepoProcessorR
 import com.publicissapient.kpidashboard.azurerepo.repository.AzureRepoRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -312,8 +314,10 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 				if (CollectionUtils.isNotEmpty(azureRepoInfo)) {
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
-					commitsCount = processRepoData(azurerepoRepos, azureRepoInfo, reposCount, proBasicConfig);
-					mergReqCount = processMergeRequestData(azurerepoRepos, azureRepoInfo, reposCount, proBasicConfig);
+					commitsCount = processRepoData(azurerepoRepos, azureRepoInfo, reposCount, proBasicConfig,
+							processorExecutionTraceLog);
+					mergReqCount = processMergeRequestData(azurerepoRepos, azureRepoInfo, reposCount, proBasicConfig,
+							processorExecutionTraceLog);
 					MDC.put("ProjectDataEndTime", String.valueOf(System.currentTimeMillis()));
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -324,7 +328,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 				executionStatus = false;
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(executionStatus);
-				processorExecutionTraceLog.setLastEnableAssigneeToggleState(false);
+				processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 				processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				log.error("Error while processing", exception);
 			}
@@ -369,12 +373,13 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * @return executionStatus
 	 */
 	private int processRepoData(List<AzureRepoModel> azurerepoRepos, List<ProcessorToolConnection> azureRepoInfo,
-			int reposCount, ProjectBasicConfig projectBasicConfig) {
+			int reposCount, ProjectBasicConfig projectBasicConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog) {
 		int commitsCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
-				ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 				try {
+					processorToolConnectionService.validateConnectionFlag(entry);
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
 						if (projectBasicConfig.isSaveAssigneeDetails()
@@ -416,6 +421,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 						reposCount++;
 					}
 				} catch (FetchingCommitException exception) {
+					Throwable cause = exception.getCause();
+					isClientException(entry, cause);
 					log.error(String.format("Error in processing %s", entry.getUrl()), exception);
 					executionStatus = false;
 				}
@@ -426,13 +433,29 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 
 	}
 
+	/**
+	 * this method check for the client exception
+	 * 
+	 * @param entry
+	 *            entry
+	 * @param cause
+	 *            cause
+	 */
+	private void isClientException(ProcessorToolConnection entry, Throwable cause) {
+		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) cause).getStatusCode().value())
+					.getReasonPhrase();
+			processorToolConnectionService.updateBreakingConnection(entry.getConnectionId(), errMsg);
+		}
+	}
+
 	private int processMergeRequestData(List<AzureRepoModel> azurerepoRepos,
-			List<ProcessorToolConnection> azureRepoInfo, int reposCount, ProjectBasicConfig proBasicConfig) {
+			List<ProcessorToolConnection> azureRepoInfo, int reposCount, ProjectBasicConfig proBasicConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog) {
 
 		int mergReqCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
-				ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 				try {
 					if (azureRepo.getToolConfigId().equals(entry.getId())) {
 						boolean firstTimeRun = (azureRepo.getLastUpdatedCommit() == null);
@@ -471,6 +494,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 						reposCount++;
 					}
 				} catch (FetchingCommitException exception) {
+					Throwable cause = exception.getCause();
+					isClientException(entry, cause);
 					log.error(String.format("Error in processing %s", entry.getUrl()), exception);
 					executionStatus = false;
 				}
@@ -578,16 +603,19 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll().stream()
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()))
+				.toList();
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
 			return allProjects;
 		}
-		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
-				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
-				.collect(Collectors.toList());
+		return CollectionUtils.emptyIfNull(allProjects).stream()
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled())
+						&& selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
+				.toList();
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {

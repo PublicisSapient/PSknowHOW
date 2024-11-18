@@ -20,9 +20,8 @@ import { NgModule } from '@angular/core';
 import { ConfigRoutingModule } from './config.route';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { ReactiveFormsModule } from '@angular/forms';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChipsModule } from 'primeng/chips';
@@ -30,7 +29,6 @@ import { AccordionModule } from 'primeng/accordion';
 import { FieldsetModule } from 'primeng/fieldset';
 import { PasswordModule } from 'primeng/password';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-// import { ButtonModule, SharedModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { AutoCompleteComponent } from '../component/auto-complete/auto-complete.component';
 import { ConfigComponent } from './config.component';
@@ -38,11 +36,9 @@ import { UploadComponent } from './upload/upload.component';
 import { DashboardconfigComponent } from './dashboard-config/dashboard-config.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
 import { ScrumKanbanPipe } from './pipes/scrumKanbanPipe';
-// import { TextMaskPipe } from './pipes/textMaskPipe';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { ProfileModule } from './profile/profile.module';
@@ -54,7 +50,6 @@ import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings
 import { CardModule } from 'primeng/card';
 import { SharedModuleModule } from '../shared-module/shared-module.module';
 import { CalendarModule } from 'primeng/calendar';
-import { AdSettingsComponent } from './ad-settings/ad-settings.component';
 import { DialogModule } from 'primeng/dialog';
 import { ViewNewUserAuthRequestComponent } from './profile/view-new-user-auth-request/view-new-user-auth-request.component';
 import { TabViewModule } from 'primeng/tabview';
@@ -63,6 +58,8 @@ import { CompareStartEndWithCurrentDatePipe } from './pipes/compareStartEndWithC
 import { ManageAssigneeComponent } from './manage-assignee/manage-assignee.component';
 import { RatingComponent } from './rating/rating.component';
 import { CapacityPlanningComponent } from './capacity-planning/capacity-planning.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ScrollTopModule } from 'primeng/scrolltop';
 
 @NgModule({
   imports: [
@@ -77,7 +74,6 @@ import { CapacityPlanningComponent } from './capacity-planning/capacity-planning
     MultiSelectModule,
     ChipsModule,
     AccordionModule,
-    // ButtonModule, SharedModule,
     FieldsetModule,
     DropdownModule,
     PasswordModule,
@@ -95,7 +91,9 @@ import { CapacityPlanningComponent } from './capacity-planning/capacity-planning
     CardModule,
     DialogModule,
     TabViewModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    OverlayPanelModule,
+    ScrollTopModule
   ],
   declarations: [
     ConfigComponent,
@@ -103,16 +101,13 @@ import { CapacityPlanningComponent } from './capacity-planning/capacity-planning
     UploadComponent,
     DashboardconfigComponent,
     ScrumKanbanPipe,
-    // TextMaskPipe,
     AdvancedSettingsComponent,
-    AdSettingsComponent,
     ViewNewUserAuthRequestComponent,
     TypeofPipe,
     CompareStartEndWithCurrentDatePipe,
     ManageAssigneeComponent,
     RatingComponent,
     CapacityPlanningComponent
-    // FilterComponent
   ],
   providers: [MessageService, ConfirmationService]
 

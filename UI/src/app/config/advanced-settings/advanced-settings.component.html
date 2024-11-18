@@ -18,12 +18,10 @@
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="p-grid p-m-0">
-  <div class="p-col-2">
+  <!-- <div class="p-col-2">
     <p-panelMenu [model]="items" [multiple]="false"></p-panelMenu>
-  </div>
-
-
-  <div class="p-col-10">
+  </div> -->
+  <div class="p-col-12">
     <div class="main">
       <div class="content server-role" *ngIf="selectedView === 'server_role'">
         <label class="p-text-bold">Server Role:</label>
@@ -38,42 +36,44 @@
       </div>
       <div class="content select-scenario" *ngIf="selectedView === 'processor_state'">
 
-        <p-table [value]="processorData.data" [paginator]="true" [rows]="15" [loading]="dataLoading"
+        <p-table [value]="toolConfigsDetails" [paginator]="false" [rows]="15" [loading]="dataLoading"
           styleClass="p-datatable-striped"  loadingIcon="loading-img" [autoLayout]="true">
 
           <ng-template pTemplate="caption">
             <div class="table-header">
               Processors
               <div class="d-flex align-items-center">
-                    <span style="font-size: 0.8em;">
-                        Select Project
-                    </span>
-                    <span class="p-mr-3 p-ml-3">
-                      <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
-                      [style]="{'min-width':'300px', 'max-width':'300px'}" [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}"
-                      [filter]="true" filterBy="name" [showClear]="false" placeholder="Select a Project"
-                      (onChange)="updateProjectSelection($event)"
-                      >
-                        <ng-template pTemplate="selectedItem">
-                            <div class="userProject-item userProject-item-value"  *ngIf="selectedProject">
-                                <div>{{selectedProject.name}}</div>
-                            </div>
-                        </ng-template>
-                        <ng-template let-userProject pTemplate="item">
-                            <div class="userProject-item">
-                                <div>{{userProject.name}}</div>
-                            </div>
-                        </ng-template>
-                      </p-dropdown>
-                    </span>
+                <span style="font-size: 0.8em;">
+                  Select Project
+                </span>
+                <span class="p-mr-3 p-ml-3">
+                  <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
+                    [style]="{'min-width':'300px', 'max-width':'300px'}"
+                    [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}" [filter]="true" filterBy="name"
+                    [showClear]="false" placeholder="Select a Project" (onChange)="updateProjectSelection($event)">
+                    <ng-template pTemplate="selectedItem">
+                      <div class="userProject-item userProject-item-value" *ngIf="selectedProject">
+                        <div>{{selectedProject.name}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-userProject pTemplate="item">
+                      <div class="userProject-item">
+                        <div>{{userProject.name}}</div>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                </span>
 
-                </div>
+              </div>
             </div>
-        </ng-template>
+          </ng-template>
           <ng-template pTemplate="header">
             <tr>
               <th id="processorName">Processor Name</th>
+              <th id="processorName">Processor Type</th>
+              <th id="connectionName">Connection Name</th>
               <th id="executionTime">Last Executed On</th>
+              <th></th>
               <th id="state">Status</th>
               <th id="run-btn">Action</th>
             </tr>
@@ -81,26 +81,66 @@
           <ng-template pTemplate="body" let-processor let-expanded="expanded">
             <tr>
               <td class='custom-table-cell'>
-                {{ processor.processorName === 'Azure' ? 'Azure Board' : processor.processorName }}
+                {{ processor.toolName === 'Azure' ? 'Azure Board' : processor.toolName }}
+              </td>
+              <td class='custom-table-cell'>
+                {{ getToolCategory(processor.toolName) }}
               </td>
 
               <td class='custom-table-cell'>
-                  {{ showExecutionDate(processor.processorName) }}
+                {{  processor.connectionName }}
               </td>
               <td class='custom-table-cell'>
-                <div *ngIf="showProcessorLastState(processor.processorName) !== 'NA'"
-                  class="status-container" [ngClass]="showProcessorLastState(processor.processorName) === 'Success' ? 'active' : 'inactive'">
-                  {{ showProcessorLastState(processor.processorName)}}
+                <span
+                  *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">{{
+                  showExecutionDate(processor.toolName) }}</span>
+              </td>
+
+
+              <td class="custom-table-cell">
+                <p-progressBar mode="indeterminate"
+                  *ngIf="processor.toolName === 'Jira' && findTraceLogForTool(processor.toolName)?.executionOngoing === true "
+                  [style]="{ height: '6px' }"></p-progressBar>
+              </td>
+              <td class='custom-table-cell'>
+                <div class="p-d-flex p-align-center">
+                  <div class="p-d-flex p-align-center" *ngIf="(!findTraceLogForTool(processor.toolName)?.executionOngoing && processor.toolName === 'Jira') || processor.toolName !== 'Jira'">
+                    <div *ngIf="showProcessorLastState(processor.toolName) !== 'NA'" class="status-container"
+                    [ngClass]="{
+                      'active': showProcessorLastState(processor.toolName) === 'Success',
+                      'inactive': showProcessorLastState(processor.toolName) === 'Failure',
+                      'pending': showProcessorLastState(processor.toolName) === 'Warning'
+                    }">
+                      {{ showProcessorLastState(processor.toolName)}}
+                    </div>
+                    <!-- <span *ngIf="showProcessorLastState(processor.toolName) === 'NA'">NA</span> -->
+                  </div>
+                  <div class="p-ml-2" *ngIf="processor.toolName === 'Jira'">
+                    <i class="pi pi-info-circle"
+                      [ngClass]="{'disabled': !(findTraceLogForTool('Jira')?.progressStatusList?.length || findTraceLogForTool('Jira')?.errorMessage)}"
+                      (click)="(findTraceLogForTool('Jira')?.errorMessage || findTraceLogForTool('Jira')?.progressStatusList?.length) ? op.toggle($event) : ''"
+                      style="font-size: 1.2rem"></i>
+                  </div>
+                  <div class="p-ml-2" *ngIf="isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning'">
+                    <i class="pi pi-info-circle"
+                    (click)="rOp.toggle($event)" style="font-size: 1.2rem"></i>
+                    <p-overlayPanel #rOp [showCloseIcon]="false">
+                      Reached the API rate limit. Repo scanning will automatically resume after {{getSCMToolTimeDetails(processor.toolName)}}
+                    </p-overlayPanel>
+                  </div>
                 </div>
-                <span *ngIf="showProcessorLastState(processor.processorName) === 'NA'">NA</span>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
-                <button pButton pRipple label="Run Now" icon="pi pi-forward"
-                  [disabled]="shouldDisableRunProcessor()"
+               <button pButton pRipple label="Run Now"
+                  icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
+                  [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
+                  (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
                   class="p-button-sm p-button-success p-button-raised"
-                  (click)="runProcessor(processor.processorName)"></button>
-
-                  <div  class="action-btns p-ml-3" [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.processorName)?.length > 0 && findTraceLogForTool(processor?.processorName))}" *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt" (click)="deleteProcessorData(processor)"></i></div>
+                  (click)="runProcessor(processor.toolName)"></button>
+                <div class="action-btns p-ml-3"
+                  [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.toolName)?.length > 0 && findTraceLogForTool(processor?.toolName)) || findTraceLogForTool(processor?.toolName)?.isDeleteDisable}"
+                  *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt"
+                    (click)="deleteProcessorData(processor)"></i></div>
               </td>
             </tr>
           </ng-template>
@@ -112,9 +152,9 @@
             </tr>
           </ng-template>
         </p-table>
-      </div>
-      <div class="content ad-settings" *ngIf="selectedView === 'ad_settings'">
-        <app-ad-settings></app-ad-settings>
+        <button pButton type="button" class="p-button-success p-button-raised p-button p-component p-mt-5" (click)="backToProjectList()">
+          <i class="pi pi-angle-double-left" style="font-size: 2rem"></i> Back to Project List
+        </button>
       </div>
     </div>
   </div>
@@ -122,7 +162,80 @@
 
 <p-confirmDialog #cd [transitionOptions]="'0ms'">
   <p-footer>
-      <button type="button" (click)="cd.accept()" pButton label="Yes"></button>
-      <button type="button" (click)="cd.reject()" pButton label="No"></button>
+    <button type="button" (click)="cd.accept()" pButton label="Yes"></button>
+    <button type="button" (click)="cd.reject()" pButton label="No"></button>
   </p-footer>
 </p-confirmDialog>
+
+<p-overlayPanel #op [showCloseIcon]="false">
+  <div class="progress-dialog-body p-mb-4">
+    <section *ngIf="findTraceLogForTool('Jira')?.progressStatusList?.length && !(findTraceLogForTool('Jira')?.errorMessage); else logError">
+      <h3>Progress Stats:</h3>
+      <p-table [value]="findTraceLogForTool('Jira')?.progressStatusList" [tableStyle]="{ 'min-width': '40rem' }"
+        [scrollable]="true" scrollHeight="200px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Step Name</th>
+            <th>End Time</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>{{item.stepName}}</td>
+            <td>{{endTimeConversion(item?.endTime)}}</td>
+            <td>{{item.status}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <ng-template #logError>
+      <h3 class="p-text-center" class="error-text"><img src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />{{ findTraceLogForTool('Jira')?.errorMessage}}</h3>
+    </ng-template>
+
+    <section *ngIf="findTraceLogForTool('Jira')?.errorDetailList?.length > 0">
+      <h3>Errors:</h3>
+      <p-table [value]="findTraceLogForTool('Jira')?.errorDetailList" [tableStyle]="{ 'min-width': '40rem' }"
+        [scrollable]="true" scrollHeight="200px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>URL</th>
+            <th>Impact</th>
+            <th>Status</th>
+            <th>Error</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td style="word-break: break-all">{{item.url}}</td>
+            <td>{{item.impact}}</td>
+            <td>{{item.status}}</td>
+            <td>{{item.error}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']">
+      <li class="tooltip-item p-d-flex p-pt-2">
+        <div class="icon-container">
+          <i class="fas fa-exclamation-triangle text-yellow icon-list"></i>
+        </div>
+        <div>
+          There are some Jira issues that no longer satisfy your Scrum board's JQL condition.
+          This could be due to changes in JQL query or changes in the Jira issue fields.
+        </div>
+      </li>
+      <li class="tooltip-item p-d-flex p-pt-2">
+        <div class="icon-container">
+          <i class="fas fa-bolt text-green icon-list"></i>
+        </div>
+        <div>
+          Delete your Jira processor in Misc Settings and click on "Run Now" to rectify past sprint data.
+        </div>
+      </li>
+    </ul>
+  </div>
+</p-overlayPanel>
+

@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SonarAPIUtils {
 
+	private static final String AUTHORIZATION= "Authorization";
+
 	private SonarAPIUtils() {
 
 	}
@@ -39,7 +41,7 @@ public class SonarAPIUtils {
 			String authentication = username + ":" + password;
 			byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 			String authenticationHeader = "Basic " + new String(encodedAuth);
-			header.set("Authorization", authenticationHeader);
+			header.set(AUTHORIZATION, authenticationHeader);
 		}
 		return header;
 	}
@@ -51,9 +53,9 @@ public class SonarAPIUtils {
 				String authentication = accessToken + ":";
 				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 				String authenticationHeader = "Basic " + new String(encodedAuth);
-				headers.set("Authorization", authenticationHeader);
+				headers.set(AUTHORIZATION, authenticationHeader);
 			} else {
-				headers.add("Authorization", "Bearer " + accessToken);
+				headers.add(AUTHORIZATION, "Bearer " + accessToken);
 			}
 		}
 		return headers;

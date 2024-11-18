@@ -1,0 +1,1866 @@
+{
+    "message": "Project Config Fetched successfully",
+    "success": true,
+    "data": {
+        "username": "SUPERADMIN",
+        "basicProjectConfigId": "getConfig",
+        "scrum": [
+            {
+                "boardId": 1,
+                "boardName": "My KnowHOW",
+                "boardSlug": "my-knowhow",
+                "kpis": [
+                    {
+                        "kpiId": "kpi14",
+                        "kpiName": "Defect Injection Rate",
+                        "isEnabled": true,
+                        "order": 1,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472ec",
+                            "kpiId": "kpi14",
+                            "kpiName": "Defect Injection Rate",
+                            "isDeleted": "False",
+                            "defaultOrder": 1,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "200",
+                            "thresholdValue": 10.0,
+                            "kanban": false,
+                            "groupId": 3,
+                            "kpiInfo": {
+                                "definition": "Meausures the Percentage of Defect created and linked to stories in a sprint against the number of stories in the same sprint",
+                                "formula": [
+                                    {
+                                        "lhs": "DIR for a sprint",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of defects tagged to all stories closed in a sprint",
+                                            "Total no. of stories closed in the sprint"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Injection-Rate"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-175",
+                                "175-125",
+                                "125-75",
+                                "75-25",
+                                "25-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi82",
+                        "kpiName": "First Time Pass Rate",
+                        "isEnabled": true,
+                        "order": 2,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472ed",
+                            "kpiId": "kpi82",
+                            "kpiName": "First Time Pass Rate",
+                            "isDeleted": "False",
+                            "defaultOrder": 2,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "100",
+                            "thresholdValue": 75.0,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect",
+                                "formula": [
+                                    {
+                                        "lhs": "FTPR",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of issues closed in a sprint with no return transition or any defects tagged",
+                                            "Total no. of issues closed in the sprint"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#First-time-pass-rate"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "multiSelectDropDown",
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-25",
+                                "25-50",
+                                "50-75",
+                                "75-90",
+                                "90-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi111",
+                        "kpiName": "Defect Density",
+                        "isEnabled": true,
+                        "order": 3,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472ee",
+                            "kpiId": "kpi111",
+                            "kpiName": "Defect Density",
+                            "isDeleted": "False",
+                            "defaultOrder": 3,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "500",
+                            "thresholdValue": 25.0,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the total number of defect created and linked to stories in a sprint against the size of stories in the same sprint",
+                                "formula": [
+                                    {
+                                        "lhs": "Defect Density",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of defects tagged to all stories closed in a sprint",
+                                            "Total size of stories closed in the sprint"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Density"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-90",
+                                "90-60",
+                                "60-25",
+                                "25-10",
+                                "10-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi35",
+                        "kpiName": "Defect Seepage Rate",
+                        "isEnabled": true,
+                        "order": 4,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472ef",
+                            "kpiId": "kpi35",
+                            "kpiName": "Defect Seepage Rate",
+                            "isDeleted": "False",
+                            "defaultOrder": 4,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "100",
+                            "thresholdValue": 10.0,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the percentage of defects leaked from the QA (sprint) testing stage to the UAT/Production stage",
+                                "formula": [
+                                    {
+                                        "lhs": "DSR for a sprint",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of  valid defects reported at a stage (e.g. UAT)",
+                                            " Total no. of defects reported in the current stage and previous stage (UAT & QA)"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Seepage-Rate"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-90",
+                                "90-75",
+                                "75-50",
+                                "50-25",
+                                "25-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi34",
+                        "kpiName": "Defect Removal Efficiency",
+                        "isEnabled": true,
+                        "order": 5,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f0",
+                            "kpiId": "kpi34",
+                            "kpiName": "Defect Removal Efficiency",
+                            "isDeleted": "False",
+                            "defaultOrder": 5,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "100",
+                            "thresholdValue": 90.0,
+                            "kanban": false,
+                            "groupId": 3,
+                            "kpiInfo": {
+                                "definition": "Measure of percentage of defects closed against the total count tagged to the iteration",
+                                "formula": [
+                                    {
+                                        "lhs": "DRE for a sprint",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of defects in the iteration that are fixed",
+                                            "Total no. of defects in an iteration"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Removal-Efficiency"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-25",
+                                "25-50",
+                                "50-75",
+                                "75-90",
+                                "90-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi37",
+                        "kpiName": "Defect Rejection Rate",
+                        "isEnabled": true,
+                        "order": 6,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f1",
+                            "kpiId": "kpi37",
+                            "kpiName": "Defect Rejection Rate",
+                            "isDeleted": "False",
+                            "defaultOrder": 6,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "100",
+                            "thresholdValue": 10.0,
+                            "kanban": false,
+                            "groupId": 3,
+                            "kpiInfo": {
+                                "definition": "Measures the percentage of defect rejection  based on status or resolution of the defect",
+                                "formula": [
+                                    {
+                                        "lhs": "DRR for a sprint",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of defects rejected in a sprint",
+                                            "Total no. of defects Closed in a sprint"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Rejection-Rate"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-75",
+                                "75-50",
+                                "50-30",
+                                "30-10",
+                                "10-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi28",
+                        "kpiName": "Defect Count By Priority",
+                        "isEnabled": true,
+                        "order": 7,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f2",
+                            "kpiId": "kpi28",
+                            "kpiName": "Defect Count By Priority",
+                            "isDeleted": "False",
+                            "defaultOrder": 7,
+                            "kpiUnit": "Number",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "90",
+                            "thresholdValue": 55.0,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the number of defects grouped by priority in an iteration",
+                                "formula": [
+                                    {
+                                        "lhs": "Defect Count By Priority=No. of defects linked to stories grouped by priority"
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-by-Priority"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "multiSelectDropDown",
+                            "aggregationCriteria": "sum",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Count",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi36",
+                        "kpiName": "Defect Count By RCA",
+                        "isEnabled": true,
+                        "order": 8,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f3",
+                            "kpiId": "kpi36",
+                            "kpiName": "Defect Count By RCA",
+                            "isDeleted": "False",
+                            "defaultOrder": 8,
+                            "kpiUnit": "Number",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "100",
+                            "thresholdValue": 55.0,
+                            "kanban": false,
+                            "groupId": 3,
+                            "kpiInfo": {
+                                "definition": "Measures the number of defects grouped by root cause in an iteration",
+                                "formula": [
+                                    {
+                                        "lhs": "Defect Count By RCA = No. of defects linked to stories grouped by Root Cause"
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-By-RCA"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "multiSelectDropDown",
+                            "aggregationCriteria": "sum",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Count",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi126",
+                        "kpiName": "Created vs Resolved defects",
+                        "isEnabled": true,
+                        "order": 9,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f4",
+                            "kpiId": "kpi126",
+                            "kpiName": "Created vs Resolved defects",
+                            "isDeleted": "False",
+                            "defaultOrder": 9,
+                            "kpiUnit": "Number",
+                            "chartType": "grouped_column_plus_line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "lineLegend": "Resolved Defects",
+                            "barLegend": "Created Defects",
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "300",
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Comparative view of number of defects created and number of defects closed in an iteration.",
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Created-vs-Resolved"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "radioButton",
+                            "aggregationCriteria": "sum",
+                            "trendCalculation": [
+                                {
+                                    "type": "Upwards",
+                                    "lhs": "value",
+                                    "rhs": "lineValue",
+                                    "operator": "<"
+                                },
+                                {
+                                    "type": "Upwards",
+                                    "lhs": "value",
+                                    "rhs": "lineValue",
+                                    "operator": "="
+                                },
+                                {
+                                    "type": "Downwards",
+                                    "lhs": "value",
+                                    "rhs": "lineValue",
+                                    "operator": ">"
+                                }
+                            ],
+                            "trendCalculative": true,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Count",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi42",
+                        "kpiName": "Regression Automation Coverage",
+                        "isEnabled": true,
+                        "order": 10,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f5",
+                            "kpiId": "kpi42",
+                            "kpiName": "Regression Automation Coverage",
+                            "isDeleted": "False",
+                            "defaultOrder": 10,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Zypher",
+                            "maxValue": "100",
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
+                                "formula": [
+                                    {
+                                        "lhs": "Regression Automation Coverage ",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of regression test cases automated",
+                                            "Total no. of regression test cases"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-20",
+                                "20-40",
+                                "40-60",
+                                "60-80",
+                                "80-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi16",
+                        "kpiName": "In-Sprint Automation Coverage",
+                        "isEnabled": true,
+                        "order": 11,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f6",
+                            "kpiId": "kpi16",
+                            "kpiName": "In-Sprint Automation Coverage",
+                            "isDeleted": "False",
+                            "defaultOrder": 11,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Zypher",
+                            "maxValue": "100",
+                            "thresholdValue": 80.0,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the progress of automation of test cases created within the Sprint",
+                                "formula": [
+                                    {
+                                        "lhs": "In-Sprint Automation Coverage ",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of in-sprint test cases automated",
+                                            "Total no. of in-sprint test cases created"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#In-Sprint-Automation-Coverage"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-20",
+                                "20-40",
+                                "40-60",
+                                "60-80",
+                                "80-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi17",
+                        "kpiName": "Unit Test Coverage",
+                        "isEnabled": true,
+                        "order": 12,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f7",
+                            "kpiId": "kpi17",
+                            "kpiName": "Unit Test Coverage",
+                            "isDeleted": "False",
+                            "defaultOrder": 12,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Sonar",
+                            "maxValue": "100",
+                            "thresholdValue": 55.0,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measure  of the amount of code that is covered by unit tests.",
+                                "formula": [
+                                    {
+                                        "lhs": "The calculation is done directly in Sonarqube"
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "multiSelectDropDown",
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-20",
+                                "20-40",
+                                "40-60",
+                                "60-80",
+                                "80-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Weeks",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi38",
+                        "kpiName": "Sonar Violations",
+                        "isEnabled": true,
+                        "order": 13,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f8",
+                            "kpiId": "kpi38",
+                            "kpiName": "Sonar Violations",
+                            "isDeleted": "False",
+                            "defaultOrder": 13,
+                            "kpiUnit": "Number",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Sonar",
+                            "maxValue": "",
+                            "thresholdValue": 55.0,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the count of issues that voilates the set of coding rules, defined through the associated Quality profile for each programming language in the project.",
+                                "formula": [
+                                    {
+                                        "lhs": "Issues are categorized in 3 types: Bug, Vulnerability and Code Smells"
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Violations"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "multiSelectDropDown",
+                            "aggregationCriteria": "sum",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Weeks",
+                            "yaxisLabel": "Count",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi27",
+                        "kpiName": "Sonar Tech Debt",
+                        "isEnabled": true,
+                        "order": 14,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472f9",
+                            "kpiId": "kpi27",
+                            "kpiName": "Sonar Tech Debt",
+                            "isDeleted": "False",
+                            "defaultOrder": 14,
+                            "kpiUnit": "Days",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": true,
+                            "kpiSource": "Sonar",
+                            "maxValue": "90",
+                            "thresholdValue": 55.0,
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Time Estimate required to fix all Issues/code smells reported in Sonar code analysis.",
+                                "formula": [
+                                    {
+                                        "lhs": "It is calculated as effort to fix all Code Smells. The effort is calculated in minutes and converted to days by assuming 1 Day =8 Hours."
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Tech-Debt"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "dropDown",
+                            "aggregationCriteria": "sum",
+                            "maturityRange": [
+                                "-100",
+                                "100-50",
+                                "50-30",
+                                "30-10",
+                                "10-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Weeks",
+                            "yaxisLabel": "Days",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi168",
+                        "kpiName": "Sonar Code Quality",
+                        "isEnabled": true,
+                        "order": 14,
+                        "kpiDetail": {
+                            "id": "656347659b6b2f1d4faa9ebe",
+                            "kpiId": "kpi168",
+                            "kpiName": "Sonar Code Quality",
+                            "isDeleted": "False",
+                            "defaultOrder": 14,
+                            "kpiUnit": "unit",
+                            "chartType": "bar-with-y-axis-group",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": true,
+                            "kpiSource": "Sonar",
+                            "maxValue": "90",
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
+                                "details": [
+                                    {
+                                        "type": "paragraph",
+                                        "value": "Code Quality in Sonarqube is shown as Grades (A to E)."
+                                    },
+                                    {
+                                        "type": "paragraph",
+                                        "value": "A is the highest (best) and,"
+                                    },
+                                    {
+                                        "type": "paragraph",
+                                        "value": "E is the least"
+                                    },
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "dropDown",
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "5",
+                                "4",
+                                "3",
+                                "2",
+                                "1"
+                            ],
+                            "yaxisOrder": {
+                                "5": "E",
+                                "4": "D",
+                                "3": "C",
+                                "2": "B",
+                                "1": "A"
+                            },
+                            "trendCalculative": false,
+                            "xaxisLabel": "Months",
+                            "yaxisLabel": "Code Quality",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi70",
+                        "kpiName": "Test Execution and pass percentage",
+                        "isEnabled": true,
+                        "order": 16,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472fb",
+                            "kpiId": "kpi70",
+                            "kpiName": "Test Execution and pass percentage",
+                            "isDeleted": "False",
+                            "defaultOrder": 16,
+                            "kpiUnit": "%",
+                            "chartType": "grouped_column_plus_line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "lineLegend": "Passed",
+                            "barLegend": "Executed",
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Zypher",
+                            "maxValue": "100",
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the percentage of test cases that have been executed & and the test that have passed.",
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Test-Execution-and-pass-percentage"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-20",
+                                "20-40",
+                                "40-60",
+                                "60-80",
+                                "80-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi40",
+                        "kpiName": "Issue Count",
+                        "isEnabled": true,
+                        "order": 17,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472fc",
+                            "kpiId": "kpi40",
+                            "kpiName": "Issue Count",
+                            "isDeleted": "False",
+                            "defaultOrder": 17,
+                            "kpiUnit": "",
+                            "chartType": "line",
+                            "showTrend": false,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "",
+                            "kanban": false,
+                            "groupId": 5,
+                            "kpiInfo": {
+                                "definition": "Number of Issues assigned in a sprint.",
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Issue-Count"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "radioButton",
+                            "aggregationCriteria": "sum",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Count",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi72",
+                        "kpiName": "Commitment Reliability",
+                        "isEnabled": true,
+                        "order": 18,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472fd",
+                            "kpiId": "kpi72",
+                            "kpiName": "Commitment Reliability",
+                            "isDeleted": "False",
+                            "defaultOrder": 18,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "200",
+                            "thresholdValue": 85.0,
+                            "kanban": false,
+                            "groupId": 2,
+                            "kpiInfo": {
+                                "definition": "Measures the percentage of work completed at the end of a iteration in comparison to the initial scope and the final scope",
+                                "formula": [
+                                    {
+                                        "lhs": "Commitment reliability",
+                                        "operator": "division",
+                                        "operands": [
+                                            "No. of issues or Size of issues completed",
+                                            "No. of issues or Size of issues committed"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "dropDown",
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-40",
+                                "40-60",
+                                "60-75",
+                                "75-90",
+                                "90-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi5",
+                        "kpiName": "Sprint Predictability",
+                        "isEnabled": true,
+                        "order": 19,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472fe",
+                            "kpiId": "kpi5",
+                            "kpiName": "Sprint Predictability",
+                            "isDeleted": "False",
+                            "defaultOrder": 19,
+                            "kpiInAggregatedFeed": "True",
+                            "kpiOnDashboard": [
+                                "Aggregated"
+                            ],
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "showTrend": false,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "10",
+                            "kanban": false,
+                            "groupId": 2,
+                            "kpiInfo": {
+                                "definition": "Measures the percentage the iteration velocity against the average velocity of last 3 iteration.",
+                                "formula": [
+                                    {
+                                        "lhs": "Sprint Predictability for a sprint",
+                                        "operator": "division",
+                                        "operands": [
+                                            "sprint velocity of the targeted sprint.",
+                                            "average sprint velocity of previous 3 sprints"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Predictability"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "average",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi39",
+                        "kpiName": "Sprint Velocity",
+                        "isEnabled": true,
+                        "order": 20,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de16472ff",
+                            "kpiId": "kpi39",
+                            "kpiName": "Sprint Velocity",
+                            "isDeleted": "False",
+                            "defaultOrder": 20,
+                            "kpiUnit": "SP",
+                            "chartType": "grouped_column_plus_line",
+                            "showTrend": false,
+                            "isPositiveTrend": true,
+                            "lineLegend": "Sprint Velocity",
+                            "barLegend": "Last 5 Sprints Average",
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "300",
+                            "kanban": false,
+                            "groupId": 2,
+                            "kpiInfo": {
+                                "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Velocity"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "sum",
+                            "trendCalculation": [
+                                {
+                                    "type": "Upwards",
+                                    "lhs": "value",
+                                    "rhs": "lineValue",
+                                    "operator": "<"
+                                },
+                                {
+                                    "type": "Upwards",
+                                    "lhs": "value",
+                                    "rhs": "lineValue",
+                                    "operator": "="
+                                },
+                                {
+                                    "type": "Downwards",
+                                    "lhs": "value",
+                                    "rhs": "lineValue",
+                                    "operator": ">"
+                                }
+                            ],
+                            "trendCalculative": true,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Count",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi46",
+                        "kpiName": "Sprint Capacity Utilization",
+                        "isEnabled": true,
+                        "order": 21,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de1647300",
+                            "kpiId": "kpi46",
+                            "kpiName": "Sprint Capacity Utilization",
+                            "isDeleted": "False",
+                            "defaultOrder": 21,
+                            "kpiUnit": "Hours",
+                            "chartType": "grouped_column_plus_line",
+                            "showTrend": false,
+                            "isPositiveTrend": true,
+                            "lineLegend": "Logged",
+                            "barLegend": "Estimated",
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "500",
+                            "kanban": false,
+                            "groupId": 5,
+                            "kpiInfo": {
+                                "definition": "Measure the outcome of sprint as planned estimate vs actual estimate",
+                                "details": [
+                                    {
+                                        "type": "paragraph",
+                                        "value": "Estimated Hours: It explains the total hours required to complete Sprint backlog. The capacity is defined in KnowHOW"
+                                    },
+                                    {
+                                        "type": "paragraph",
+                                        "value": "Logged Work: The amount of time team has logged within a Sprint. It is derived as sum of all logged work against issues tagged to a Sprint in Jira"
+                                    },
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Capacity-Utilization"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "sum",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Hours",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi8",
+                        "kpiName": "Code Build Time",
+                        "isEnabled": true,
+                        "order": 24,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de1647303",
+                            "kpiId": "kpi8",
+                            "kpiName": "Code Build Time",
+                            "isDeleted": "False",
+                            "defaultOrder": 24,
+                            "kpiUnit": "min",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": true,
+                            "kpiSource": "Jenkins",
+                            "maxValue": "100",
+                            "kanban": false,
+                            "groupId": 1,
+                            "kpiInfo": {
+                                "definition": "Measures the time taken for a builds of a given Job.",
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Code-Build-Time"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "dropDown",
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-45",
+                                "45-30",
+                                "30-15",
+                                "15-5",
+                                "5-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Weeks",
+                            "yaxisLabel": "Count(Mins)",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi73",
+                        "kpiName": "Release Frequency",
+                        "isEnabled": true,
+                        "order": 26,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de1647305",
+                            "kpiId": "kpi73",
+                            "kpiName": "Release Frequency",
+                            "isDeleted": "False",
+                            "defaultOrder": 26,
+                            "kpiUnit": "",
+                            "chartType": "line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "300",
+                            "kanban": false,
+                            "groupId": 4,
+                            "kpiInfo": {
+                                "definition": "Measures the number of releases done in a month",
+                                "formula": [
+                                    {
+                                        "lhs": "Release Frequency for a month = Number of fix versions in JIRA for a project that have a release date falling in a particular month"
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Release-Frequency"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "sum",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Months",
+                            "yaxisLabel": "Count",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi113",
+                        "kpiName": "Value delivered (Cost of Delay)",
+                        "isEnabled": true,
+                        "order": 27,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de1647306",
+                            "kpiId": "kpi113",
+                            "kpiName": "Value delivered (Cost of Delay)",
+                            "isDeleted": "False",
+                            "defaultOrder": 27,
+                            "kpiUnit": "",
+                            "chartType": "line",
+                            "upperThresholdBG": "white",
+                            "lowerThresholdBG": "red",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "300",
+                            "kanban": false,
+                            "groupId": 4,
+                            "kpiInfo": {
+                                "definition": "Cost of delay (CoD) is a indicator of the economic value of completing a feature sooner as opposed to later.",
+                                "formula": [
+                                    {
+                                        "lhs": "COD for a Epic or a Feature  =  User-Business Value + Time Criticality + Risk Reduction and/or Opportunity Enablement."
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Value-delivered-(Cost-of-Delay)"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "sum",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Months",
+                            "yaxisLabel": "Count(Days)",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi149",
+                        "kpiName": "Happiness Index",
+                        "isEnabled": true,
+                        "order": 28,
+                        "kpiDetail": {
+                            "id": "64b4ed7acba3c12de1647338",
+                            "kpiId": "kpi149",
+                            "kpiName": "Happiness Index",
+                            "isDeleted": "False",
+                            "defaultOrder": 28,
+                            "kpiUnit": "",
+                            "chartType": "line",
+                            "showTrend": false,
+                            "isPositiveTrend": true,
+                            "boxType": "3_column",
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "5",
+                            "kanban": false,
+                            "groupId": 16,
+                            "kpiInfo": {
+                                "details": [
+                                    {
+                                        "type": "paragraph",
+                                        "value": "KPI for tracking moral of team members"
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "multiSelectDropDown",
+                            "aggregationCriteria": "average",
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Rating",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi153",
+                        "kpiName": "PI Predictability",
+                        "isEnabled": true,
+                        "order": 29,
+                        "kpiDetail": {
+                            "id": "64ec311d1ef9f8e4f46ea8d6",
+                            "kpiId": "kpi153",
+                            "kpiName": "PI Predictability",
+                            "isDeleted": "False",
+                            "defaultOrder": 29,
+                            "kpiUnit": "",
+                            "chartType": "multipleline",
+                            "showTrend": true,
+                            "isPositiveTrend": true,
+                            "calculateMaturity": false,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": "200",
+                            "kanban": false,
+                            "groupId": 4,
+                            "kpiInfo": {
+                                "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+                                        }
+                                    }
+                                ]
+                            },
+                            "aggregationCriteria": "sum",
+                            "trendCalculative": false,
+                            "xaxisLabel": "PIs",
+                            "yaxisLabel": "Business Value",
+                            "isAdditionalFilterSupport": false
+                        },
+                        "shown": true
+                    },
+                    {
+                        "kpiId": "kpi164",
+                        "kpiName": "Scope Churn",
+                        "isEnabled": true,
+                        "order": 30,
+                        "kpiDetail": {
+                            "id": "650bc420797db1ee82d622bf",
+                            "kpiId": "kpi164",
+                            "kpiName": "Scope Churn",
+                            "isDeleted": "false",
+                            "defaultOrder": 30,
+                            "kpiUnit": "%",
+                            "chartType": "line",
+                            "upperThresholdBG": "red",
+                            "lowerThresholdBG": "white",
+                            "showTrend": true,
+                            "isPositiveTrend": false,
+                            "calculateMaturity": true,
+                            "hideOverallFilter": false,
+                            "kpiSource": "Jira",
+                            "maxValue": 200.0,
+                            "thresholdValue": 20.0,
+                            "kanban": false,
+                            "groupId": 5,
+                            "kpiInfo": {
+                                "definition": "Scope churn explains the change in the scope of the sprint since the start of the iteration",
+                                "formula": [
+                                    {
+                                        "lhs": "Scope Churn",
+                                        "operator": "division",
+                                        "operands": [
+                                            "Count of Stories added + Count of Stories removed",
+                                            "Count of Stories in Initial Commitment at the time of Sprint start"
+                                        ]
+                                    }
+                                ],
+                                "details": [
+                                    {
+                                        "type": "link",
+                                        "kpiLinkDetail": {
+                                            "text": "Detailed Information at",
+                                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+                                        }
+                                    }
+                                ]
+                            },
+                            "kpiFilter": "radioButton",
+                            "aggregationCriteria": "average",
+                            "maturityRange": [
+                                "-50",
+                                "50-30",
+                                "30-20",
+                                "20-10",
+                                "10-"
+                            ],
+                            "trendCalculative": false,
+                            "xaxisLabel": "Sprints",
+                            "yaxisLabel": "Percentage",
+                            "isAdditionalFilterSupport": true
+                        },
+                        "shown": true
+                    }
+                ],
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": true,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Organization Level"
+                    },
+                    "additionalFilters": [{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sprint",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sqd",
+                            "sortBy": null
+                        }
+                    }]
+                }
+            },
+            {
+                "boardId": 2,
+                "boardName": "Speed",
+                "boardSlug": "speed",
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": true,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Organization Level"
+                    },
+                    "additionalFilters": [{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sprint",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sqd",
+                            "sortBy": null
+                        }
+                    }]
+                }
+            },
+            {
+                "boardId": 3,
+                "boardName": "Quality",
+                "boardSlug": "quality",
+
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": true,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Organization Level"
+                    },
+                    "additionalFilters": [{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sprint",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sqd",
+                            "sortBy": null
+                        }
+                    }]
+                }
+            },
+            {
+                "boardId": 4,
+                "boardName": "Value",
+                "boardSlug": "value",
+
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": true,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Organization Level"
+                    }
+                }
+            },
+            {
+                "boardId": 5,
+                "boardName": "Iteration",
+                "boardSlug": "iteration",
+
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": false,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "sprint",
+                            "sortBy": "sprintState"
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Project",
+                        "emittedLevel": "sprint"
+                    },
+                    "additionalFilters": [{
+                        "type": "multiSelect",
+                        "defaultLevel": {
+                            "labelName": "sqd",
+                            "sortBy": null
+                        }
+                    }]
+                }
+            },
+            {
+                "boardId": 6,
+                "boardName": "Developer",
+                "boardSlug": "developer",
+
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": true,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": null,
+                    "additionalFilters": [{
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "branch",
+                            "sortBy": null
+                        }
+                    },{
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "developer",
+                            "sortBy": null
+                        }
+                    }]
+                }
+            }
+        ],
+        "others": [
+            {
+                "boardId": 13,
+                "boardName": "Release",
+                "boardSlug": "release",
+
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": false,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "release",
+                            "sortBy": "releaseState"
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Project",
+                        "emittedLevel": "release"
+                    }
+                }
+            },
+            {
+                "boardId": 14,
+                "boardName": "DORA",
+                "boardSlug": "dora",
+
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": false,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Organization Level"
+                    }
+                }
+            },
+            {
+                "boardId": 15,
+                "boardName": "Backlog",
+                "boardSlug": "backlog",
+
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": false,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": null
+                }
+            },
+            {
+                "boardId": 16,
+                "boardName": "Kpi Maturity",
+                "boardSlug": "kpi-maturity",
+
+                "filters": {
+                    "projectTypeSwitch": {
+                        "enabled": true,
+                        "visible": true
+                    },
+                    "primaryFilter": {
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": {
+                        "labelName": "Organization Level"
+                    }
+                }
+            }
+        ],
+        "configDetails": {
+            "kpiWiseAggregationType": {
+                "kpi159": "sum",
+                "kpi158": "average",
+                "kpi114": "sum",
+                "kpi997": "sum",
+                "kpi116": "average",
+                "kpi118": "sum",
+                "kpi82": "average",
+                "kpi37": "average",
+                "kpi38": "sum",
+                "kpi39": "sum",
+                "kpi73": "sum",
+                "kpi74": "sum",
+                "kpi153": "sum",
+                "kpi111": "average",
+                "kpi34": "average",
+                "kpi157": "average",
+                "kpi113": "sum",
+                "kpi35": "average",
+                "kpi36": "sum",
+                "kpi148": "sum",
+                "kpi149": "average",
+                "kpi5": "average",
+                "kpi8": "average",
+                "kpi50": "sum",
+                "kpi48": "sum",
+                "kpi49": "sum",
+                "kpi84": "average",
+                "kpi40": "sum",
+                "kpi42": "average",
+                "kpi146": "sum",
+                "kpi46": "sum",
+                "kpi137": "average",
+                "kpi139": "sum",
+                "kpi16": "average",
+                "kpi17": "average",
+                "kpi51": "sum",
+                "kpi53": "average",
+                "kpi54": "sum",
+                "kpi55": "sum",
+                "kpi11": "average",
+                "kpi58": "sum",
+                "kpi14": "average",
+                "kpi126": "sum",
+                "kpi127": "sum",
+                "kpi70": "average",
+                "kpi71": "average",
+                "kpi72": "average",
+                "kpi27": "sum",
+                "kpi28": "sum",
+                "kpi160": "average",
+                "kpi162": "average",
+                "kpi62": "average",
+                "kpi63": "average",
+                "kpi64": "sum",
+                "kpi65": "sum",
+                "kpi166": "sum",
+                "kpi66": "average",
+                "kpi67": "sum"
+            },
+            "percentile": 90.0,
+            "hierarchySelectionCount": 3,
+            "dateRangeFilter": {
+                "types": [
+                    "Days",
+                    "Weeks",
+                    "Months"
+                ],
+                "counts": [
+                    5,
+                    10,
+                    15
+                ]
+            },
+            "repoToolFlag": false
+        }
+    }
+}

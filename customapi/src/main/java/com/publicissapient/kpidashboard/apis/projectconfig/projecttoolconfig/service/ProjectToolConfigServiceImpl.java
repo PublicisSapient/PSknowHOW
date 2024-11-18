@@ -20,13 +20,17 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.se
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +41,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
@@ -78,9 +81,12 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private ToolDataCleanUpServiceFactory dataCleanUpServiceFactory;
 	@Autowired
 	private ConfigHelperService configHelperService;
-
+	@Autowired
+	private CustomApiConfig customApiConfig;
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	@Autowired
+	private AuthenticationService authenticationService;
 
 	/**
 	 * make a copy of the list so the original list is not changed, and remove() is
@@ -171,9 +177,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				&& hasTool(projectToolConfig.getBasicProjectConfigId(), ProcessorConstants.JIRA)) {
 			return new ServiceResponse(false, "Jira already configured for this project", null);
 		}
-		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)
-				&& setRepoToolConfig(projectToolConfig) == HttpStatus.NOT_FOUND.value()) {
-			return new ServiceResponse(false, "", null);
+		if (isRepoTool(projectToolConfig, projectToolConfig.getBasicProjectConfigId().toString())) {
+			ServiceResponse repoToolServiceResponse = setRepoToolConfig(projectToolConfig);
+			if (Boolean.FALSE.equals(repoToolServiceResponse.getSuccess()))
+				return repoToolServiceResponse;
 		}
 
 		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA_TEST)
@@ -193,8 +200,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 		log.info("Successfully pushed project_tools into db");
 		projectToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
+		projectToolConfig.setCreatedBy(authenticationService.getLoggedInUser());
 		projectToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), TIME_FORMAT));
 		toolRepository.save(projectToolConfig);
+		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 		return new ServiceResponse(true, "created and saved new project_tools", projectToolConfig);
@@ -229,10 +238,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			cleanData(projectTool);
 		}
 
-
 		projectTool.setToolName(projectToolConfig.getToolName());
 		projectTool.setBasicProjectConfigId(projectToolConfig.getBasicProjectConfigId());
 		projectTool.setConnectionId(projectToolConfig.getConnectionId());
+		projectTool.setBrokenConnection(projectToolConfig.isBrokenConnection());
 		projectTool.setProjectId(projectToolConfig.getProjectId());
 		projectTool.setProjectKey(projectToolConfig.getProjectKey());
 		projectTool.setJobName(projectToolConfig.getJobName());
@@ -272,8 +281,11 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setGitLabSdmID(projectToolConfig.getGitLabSdmID());
 		projectTool.setAzureIterationStatusFieldUpdate(projectToolConfig.isAzureIterationStatusFieldUpdate());
 		projectTool.setProjectComponent(projectToolConfig.getProjectComponent());
+		projectTool.setTeam(projectToolConfig.getTeam());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
+		projectTool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+		projectTool.setUpdatedBy(authenticationService.getLoggedInUser());
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 		if (projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.ZEPHYR)
@@ -314,13 +326,17 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 		ProjectToolConfig tool = optionalProjectToolConfig.get();
 		if (isValidTool(basicProjectConfigId, tool)) {
-			if (isRepoTool(tool) && !repoToolsConfigService.updateRepoToolProjectConfiguration(toolList, tool,
-					basicProjectConfigId)) {
+			if (isRepoTool(tool, basicProjectConfigId)
+					&& !repoToolsConfigService.updateRepoToolProjectConfiguration(
+							toolList.stream()
+									.filter(projectToolConfig -> projectToolConfig.getToolName()
+											.equals(tool.getToolName()))
+									.collect(Collectors.toList()),
+							tool, basicProjectConfigId)) {
 				return false;
 			}
 			cleanData(tool);
 			toolRepository.deleteById(new ObjectId(projectToolId));
-
 			log.info("tool with id {} deleted", projectToolId);
 
 			return true;
@@ -331,8 +347,11 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	}
 
-	private boolean isRepoTool(ProjectToolConfig tool){
-		return tool.getToolName().equalsIgnoreCase(Constant.REPO_TOOLS);
+	private boolean isRepoTool(ProjectToolConfig tool, String basicProjectConfigId) {
+		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
+		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
+				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
+		return scmToolList.contains(tool.getToolName()) && projectBasicConfig.isDeveloperKpiEnabled();
 	}
 
 	private void cleanData(ProjectToolConfig tool) {
@@ -387,16 +406,19 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setBranch(e.getBranch());
 			projectConfToolDto.setDefaultBranch(e.getDefaultBranch());
 			projectConfToolDto.setConnectionId(e.getConnectionId());
+			projectConfToolDto.setBrokenConnection(e.isBrokenConnection());
 			projectConfToolDto.setId(e.getId().toString());
 			projectConfToolDto.setToolName(e.getToolName());
 			projectConfToolDto.setProjectId(e.getProjectId());
 			projectConfToolDto.setGitLabID(e.getGitLabID());
 			projectConfToolDto.setProjectKey(e.getProjectKey());
 			projectConfToolDto.setJobName(e.getJobName());
+			projectConfToolDto.setAzurePipelineName(e.getAzurePipelineName());
 			projectConfToolDto.setJobType(e.getJobType());
 			projectConfToolDto.setEnv(e.getEnv());
 			projectConfToolDto.setRepoSlug(e.getRepoSlug());
 			projectConfToolDto.setRepositoryName(e.getRepositoryName());
+			projectConfToolDto.setGitFullUrl(e.getGitFullUrl());
 			projectConfToolDto.setBitbucketProjKey(e.getBitbucketProjKey());
 			projectConfToolDto.setCreatedAt(e.getCreatedAt());
 			projectConfToolDto.setUpdatedAt(e.getUpdatedAt());
@@ -418,6 +440,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setDeploymentProjectName(e.getDeploymentProjectName());
 			projectConfToolDto.setParameterNameForEnvironment(e.getParameterNameForEnvironment());
 			projectConfToolDto.setConnectionName(getConnection(e.getConnectionId()).getConnectionName());
+			projectConfToolDto.setTeam(e.getTeam());
 			projectConfToolDtoList.add(projectConfToolDto);
 			projectConfToolDto.setJiraTestCaseType(e.getJiraTestCaseType());
 			projectConfToolDto.setTestAutomatedIdentification(e.getTestAutomatedIdentification());
@@ -456,14 +479,15 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private List<ProjectToolConfig> getRepoTool(ObjectId basicProjectConfigId, Connection connection, String type) {
 		List<ProjectToolConfig> tools = toolRepository.findByToolNameAndBasicProjectConfigId(type,
 				basicProjectConfigId);
-		return tools.stream().filter(projectToolConfig -> projectToolConfig.getConnectionId().equals(connection.getId()))
-						.collect(Collectors.toList());
+		return tools.stream()
+				.filter(projectToolConfig -> projectToolConfig.getConnectionId().equals(connection.getId()))
+				.collect(Collectors.toList());
 	}
 
-	private int setRepoToolConfig(ProjectToolConfig projectToolConfig) {
+	private ServiceResponse setRepoToolConfig(ProjectToolConfig projectToolConfig) {
 		Connection connection = getConnection(projectToolConfig.getConnectionId());
 		List<ProjectToolConfig> repoConfigList = getRepoTool(projectToolConfig.getBasicProjectConfigId(), connection,
-				ProcessorConstants.REPO_TOOLS);
+				projectToolConfig.getToolName());
 		List<String> branchList = repoConfigList.stream().map(ProjectToolConfig::getBranch).filter(Objects::nonNull)
 				.collect(Collectors.toList());
 		projectToolConfig.setIsNew(CollectionUtils.isEmpty(repoConfigList));
@@ -479,7 +503,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	public boolean cleanToolData(String basicProjectConfigId, String projectToolId) {
 		ProjectToolConfig tool = toolRepository.findById(projectToolId);
 		if (isValidTool(basicProjectConfigId, tool)) {
-			if (isRepoTool(tool)) {
+			if (isRepoTool(tool, basicProjectConfigId)) {
 				repoToolsConfigService.deleteRepoToolProject(configHelperService.getProjectConfig(basicProjectConfigId),
 						true);
 			}

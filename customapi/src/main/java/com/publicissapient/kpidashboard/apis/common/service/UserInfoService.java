@@ -20,16 +20,19 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * An Interface to gets users and authorities.
@@ -88,17 +91,6 @@ public interface UserInfoService {
 	UserInfo demoteFromAdmin(String username, AuthType authType);
 
 	/**
-	 * Is user valid boolean.
-	 *
-	 * @param userId
-	 *            the user id
-	 * @param authType
-	 *            the auth type
-	 * @return the boolean
-	 */
-	boolean isUserValid(String userId, AuthType authType);
-
-	/**
 	 * update user info if already present
 	 * 
 	 * @param userInfo
@@ -116,7 +108,7 @@ public interface UserInfoService {
 	ServiceResponse updateUserRole(String username, UserInfo userInfo);
 
 	/**
-	 * Return userinfo along with email in case of ldap or standardlogin
+	 * Return userinfo along with email in case of standardlogin
 	 * 
 	 * @param username
 	 *            username
@@ -136,7 +128,7 @@ public interface UserInfoService {
 	 * @param username
 	 *            username
 	 */
-	ServiceResponse deleteUser(String username);
+	ServiceResponse deleteUser(String username, boolean centralAuthService);
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
 
@@ -168,4 +160,32 @@ public interface UserInfoService {
 	 * @return user info object
 	 */
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
+
+	// ----auth Service Methods started---------
+	List<CentralUserInfoDTO> findAllUnapprovedUsersForCentralAuth();
+
+	boolean updateUserApprovalStatus(String userNameRequest);
+
+	boolean deleteFromCentralAuthUser(String user);
+
+	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String authCookieToken);
+
+	boolean getCentralAuthUserDeleteUserToken(String authCookieToken);
+
+	// ----auth Service Methods Ended---------
+
+	/**
+	 * update notification email alert flag user wise
+	 * 
+	 * @param loggedUserName
+	 * @param notificationEmail
+	 * @return
+	 */
+	UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail);
+
+	/**
+	 * all unapproved users from central auth and also flag which is not whitelist domain as per properties
+	 */
+	List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers();
+
 }

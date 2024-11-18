@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,7 +137,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_VELOCITY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.SPRINT_VELOCITY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.SPRINT_VELOCITY);
 		kpiElement.setTrendValueList(trendValues);
 		log.debug("[SPRINT-VELOCITY-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
@@ -295,7 +295,8 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			trendValueList.add(dataCount);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_VELOCITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));	}
+		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_VELOCITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+	}
 
 	/**
 	 * Create map consisting of sprint and its velocity
@@ -424,4 +425,10 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI39(), KPICode.SPRINT_VELOCITY.getKpiId());
+	}
+
 }

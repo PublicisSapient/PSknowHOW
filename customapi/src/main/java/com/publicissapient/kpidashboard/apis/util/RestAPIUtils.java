@@ -24,6 +24,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
  */
 @Component
 public class RestAPIUtils {
+	private static final String AUTHORIZATION = "Authorization";
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
@@ -38,9 +39,9 @@ public class RestAPIUtils {
 				String authentication = accessToken + ":";
 				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 				String authenticationHeader = "Basic " + new String(encodedAuth);
-				headers.set("Authorization", authenticationHeader);
+				headers.set(AUTHORIZATION, authenticationHeader);
 			} else {
-				headers.add("Authorization", "Bearer " + accessToken);
+				headers.add(AUTHORIZATION, "Bearer " + accessToken);
 			}
 		}
 		return headers;
@@ -61,7 +62,7 @@ public class RestAPIUtils {
 			String authentication = username + ":" + password;
 			byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 			String authenticationHeader = "Basic " + new String(encodedAuth);
-			header.set("Authorization", authenticationHeader);
+			header.set(AUTHORIZATION, authenticationHeader);
 		}
 		return header;
 	}
@@ -69,7 +70,7 @@ public class RestAPIUtils {
 	public HttpHeaders getHeadersForPAT(String pat) {
 		HttpHeaders header = new HttpHeaders();
 		String authenticationHeader = "Bearer " + pat;
-		header.set("Authorization", authenticationHeader);
+		header.set(AUTHORIZATION, authenticationHeader);
 		return header;
 	}
 
@@ -86,7 +87,7 @@ public class RestAPIUtils {
 	 * @return HttpHeaders the http header
 	 */
 	public HttpHeaders addHeaders(HttpHeaders header, String key, String value) {
-		if (null != header) {
+		if (null == header) {
 			header = new HttpHeaders();
 		}
 		header.add(key, value);
@@ -120,27 +121,6 @@ public class RestAPIUtils {
 	public String convertToString(JSONObject jsonData, String key) {
 		Object jsonObj = jsonData.get(key);
 		return jsonObj == null ? null : jsonObj.toString();
-	}
-
-	/**
-	 * Converts list of string to jsonArray.
-	 *
-	 * @param jsonArray
-	 *            the json object
-	 * @param key
-	 *            the project key
-	 * @return the string data
-	 */
-	public List<String> convertListFromArray(JSONArray jsonArray, String key) {
-		List<String> list = new ArrayList<>();
-		for (Object obj : jsonArray) {
-			JSONObject jsonObject = (JSONObject) obj;
-			if (jsonObject != null) {
-				String value = jsonObject.get(key).toString();
-				list.add(value);
-			}
-		}
-		return list;
 	}
 
 	public List<String> convertListFromMultipleArray(JSONArray jsonArray, String key) {

@@ -17,26 +17,28 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.core.listener.JobExecutionListenerSupport;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
 @Slf4j
 @JobScope
-public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
+public class JiraIssueSprintJobListener implements JobExecutionListener {
 
 	@Autowired
 	SprintTraceLogRepository sprintTraceLogRepository;
@@ -47,12 +49,8 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 	@Autowired
 	JiraClientService jiraClientService;
 
+	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
-
-	@Autowired
-	public JiraIssueSprintJobListener(@Value("#{jobParameters['sprintId']}") String sprintId) {
-		this.sprintId = sprintId;
-	}
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
@@ -71,25 +69,27 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 		log.info("****** Creating Sprint trace log ********");
 		long endTime = System.currentTimeMillis();
 		// saving the execution details
-		SprintTraceLog fetchDetails = sprintTraceLogRepository.findBySprintId(sprintId);
-		fetchDetails.setLastSyncDateTime(endTime);
+
+		SprintTraceLog sprintTrace = sprintTraceLogRepository.findFirstBySprintId(sprintId);
+		sprintTrace.setLastSyncDateTime(endTime);
 		if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-			fetchDetails.setErrorInFetch(false);
-			fetchDetails.setFetchSuccessful(true);
+			sprintTrace.setErrorInFetch(false);
+			sprintTrace.setFetchSuccessful(true);
 			// clearing cache
 			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
+			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 
 		} else {
-			fetchDetails.setErrorInFetch(true);
-			fetchDetails.setFetchSuccessful(false);
+			sprintTrace.setErrorInFetch(true);
+			sprintTrace.setFetchSuccessful(false);
 		}
 		log.info("Saving sprint Trace Log for sprintId: {}", sprintId);
-		sprintTraceLogRepository.save(fetchDetails);
+		sprintTraceLogRepository.save(sprintTrace);
 		if (jiraClientService.isContainRestClient(sprintId)){
 			try {
 				jiraClientService.getRestClientMap(sprintId).close();
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException("Failed to close rest client",e);// NOSONAR
 			}
 			jiraClientService.removeRestClientMapClientForKey(sprintId);
 			jiraClientService.removeKerberosClientMapClientForKey(sprintId);

@@ -21,6 +21,7 @@
  import { HttpService } from '../../services/http.service';
  import { MessageService } from 'primeng/api';
  import { SharedService } from '../../services/shared.service';
+ import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 
  @Component({
    selector: 'app-dashboard-config',
@@ -39,45 +40,46 @@
     loader = false;
     kpiToBeHidden;
     userName : string;
-     constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService) {
+    userProjects : Array<any>;
+    selectedProject : object;
+    backupUserProjects : Array<any> = [];
+    noProjectsForSelectedCategory : boolean = false;
+     constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService,
+     private getAuthorizationService : GetAuthorizationService) {
      }
      ngOnInit() {
-         this.getKpisData();
          this.service.currentUserDetailsObs.subscribe(details=>{
           if(details){
             this.userName = details['user_name'];
           }
         });
+        this.getProjects();
     }
-    getKpisData() {
+    getKpisData(projectID) {
        // api integration to get kpis data
-       if (this.isEmptyObject(this.kpiListData)) {
-        this.loader = true;
-        this.httpService.getShowHideKpi().subscribe((response) => {
+        this.httpService.getShowHideKpi(projectID).subscribe((response) => {
           this.loader = false;
-          if (response[0] === 'error') {
-            this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
-          } else {
-            if (response.success === true) {
-              this.kpiListData = response.data;
-              this.setFormControlData();
-              const kpiObjects = Object.keys(this.kpiListData);
-              for(const i of kpiObjects) {
-                  if (typeof this.kpiListData[i] === 'object') {
-                    //removing Capacity kpi from iteration
-                      if(i === 'scrum'){
-                        const iterationData = this.kpiListData[i].find(boardDetails => boardDetails.boardName.toLowerCase() === 'iteration');
-                        const kpiIndex= iterationData.kpis.findIndex(kpi => kpi.kpiId === 'kpi121');
-                        this.kpiToBeHidden = iterationData.kpis.splice(kpiIndex,1);
-                      }
-                      this.tabListContent[i] =  this.kpiListData[i];
-                      this.tabHeaders.push(i);
-                  }
-              }
+          if (response?.success === true) {
+            this.kpiListData = response.data;
+            this.setFormControlData();
+            const kpiObjects = Object.keys(this.kpiListData);
+            for(const i of kpiObjects) {
+                if (typeof this.kpiListData[i] === 'object') {
+                  //removing Capacity kpi from iteration
+                    if(i === 'scrum'){
+                      const iterationData = this.kpiListData[i].find(boardDetails => boardDetails.boardName.toLowerCase() === 'iteration');
+                      const kpiIndex= iterationData.kpis.findIndex(kpi => kpi.kpiId === 'kpi121');
+                      this.kpiToBeHidden = iterationData.kpis.splice(kpiIndex,1);
+                    }
+                    this.tabListContent[i] =  this.kpiListData[i];
+                    if(!this.tabHeaders.includes(i))
+                    this.tabHeaders.push(i);
+                }
             }
+          }else{
+            this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
           }
         });
-      }
      }
      isEmptyObject(value) {
         return Object.keys(value).length === 0 && value.constructor === Object;
@@ -109,8 +111,22 @@
 
      handleTabChange(event) {
         this.selectedTab = this.tabHeaders[event.index];
+        if(this.selectedTab?.toLowerCase() === 'kanban'){
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
+        }else{
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === 'scrum') || (project.type === 'common'))
+        }
+        if(this.userProjects != null && this.userProjects.length > 0) {
+          this.noProjectsForSelectedCategory = false;
+          this.selectedProject = this.userProjects[0];
+          this.loader = true;
+          this.getKpisData(this.selectedProject['id']);
+        }else{
+          this.noProjectsForSelectedCategory = true;
+          this.selectedProject = {}
+        }
         this.setFormControlData();
-        this.kpiChangesObj = {};
+        this.kpiChangesObj = {};  
      }
      get kpiFormValue() {
          return this.kpiForm.controls;
@@ -137,8 +153,10 @@
        delete this.kpiListData['id'];
      }
      this.kpiListData['username'] = this.userName;
+     this.kpiListData['basicProjectConfigId'] = this.selectedProject['id'];
    }
-     //update the changes to api
+
+  //Save show/hide configuration
    updateData() {
      this.assignUserNameForKpiData();
      this.loader = true;
@@ -152,7 +170,7 @@
         iterationKpis.kpis = iterationData.kpis;
       }
     }
-     this.httpService.submitShowHideKpiData(kpiListPayload)
+     this.httpService.submitShowHideKpiData(kpiListPayload,this.selectedProject['id'])
        .subscribe(response => {
          this.loader = false;
          if (response[0] === 'error') {
@@ -160,8 +178,6 @@
          } else {
            if (response.success === true) {
              this.messageService.add({ severity: 'success', summary: 'Successfully Saved', detail: '' });
-             // setting in global Service
-             this.service.setDashConfigData(response.data);
            } else {
              this.messageService.add({ severity: 'error', summary: 'Error in Saving Configuraion' });
            }
@@ -197,12 +213,15 @@ return item.kpiId;
        }
      }
      // on kpicategory flag change,  setting all of its kpi flag
-     handleKpiCategoryChange(event, boardData) {
+     handleKpiCategoryChange(event, boardData) { 
        const modifiedObj = {...boardData};
        const targetSelector = event.originalEvent?.target?.closest('.kpi-category-header')?.querySelector('.kpis-list');
+       if(modifiedObj.boardName?.toLowerCase() === 'iteration'){
+        modifiedObj.kpis = [...modifiedObj.kpis, ...this.kpiToBeHidden];
+       }
        if (event.checked) {
-        if(targetSelector.classList.contains('hide-kpisList')) {
-          targetSelector.classList.remove('hide-kpisList');
+        if(targetSelector?.classList.contains('hide-kpisList')) {
+          targetSelector?.classList.remove('hide-kpisList');
         }
         modifiedObj.kpis.forEach((item) => {
           item.shown = true;
@@ -211,7 +230,7 @@ return item.kpiId;
           return item;
         });
        } else {
-        targetSelector.classList.add('hide-kpisList');
+        targetSelector?.classList.add('hide-kpisList');     
         modifiedObj.kpis.forEach((item) => {
           item.shown = false;
           this.kpiFormValue.kpis['controls'][item.kpiId].setValue(false);
@@ -227,4 +246,65 @@ return item.kpiId;
         selectedKpi.shown = shown;
       }
      }
+
+  // used to fetch projects
+  getProjects() {
+    const that = this;
+    this.noProjectsForSelectedCategory = false;
+    this.httpService.getUserProjects()
+      .subscribe(response => {
+        if (response[0] !== 'error' && !response.error) {
+          if (this.getAuthorizationService.checkIfSuperUser()) {
+            that.userProjects = [];
+           const all = {
+            name: "ALL",
+            id: "all",
+            type : 'common',
+            isSort : false
+          };
+            that.userProjects = response.data.map((filteredProj) => ({
+                name: filteredProj.projectName,
+                id: filteredProj.id,
+                type : filteredProj.kanban ? 'kanban' : 'scrum'
+              }));
+              if(this.userProjects && that.userProjects.length){
+                that.userProjects.unshift(all);
+              }
+          } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
+            that.userProjects = [];
+            that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
+              .map((filteredProj) => ({
+                  name: filteredProj.projectName,
+                  id: filteredProj.id,
+                  type : filteredProj.kanban ? 'kanban' : 'scrum'
+                }));
+          }
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'User needs to be assigned a project for the access to work on dashboards.' });
+        }
+
+        if (that.userProjects != null && that.userProjects.length > 0) {
+          that.userProjects.sort((a, b) => b.isSort === false ? 0 : a.name.localeCompare(b.name, undefined, { numeric: true }));
+          this.loader = true;
+          this.tabHeaders = [];
+          this.backupUserProjects = this.userProjects;
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
+          that.selectedProject = that.userProjects[0];
+          this.getKpisData(that.selectedProject?.['id']);
+          if(!this.userProjects || this.userProjects?.length == 0){
+            this.noProjectsForSelectedCategory = true
+            this.loader = false;
+          }
+        }
+      });
+  }
+  
+  updateProjectSelection(projectSelectionEvent) {
+    const currentSelection = projectSelectionEvent.value;
+    if (currentSelection) {
+      this.selectedProject = currentSelection;
+    }
+    this.loader = true;
+    this.getKpisData(this.selectedProject['id'])
+  }
  }

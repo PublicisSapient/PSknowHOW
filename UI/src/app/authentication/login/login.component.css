@@ -230,23 +230,23 @@ input[type='password'],
     outline: none;
 }
 
-.login-form input:focus~label,
+/* .login-form input:focus~label,
 .login-form textarea:focus~label,
 .login-form input:valid~label,
 .login-form textarea:valid~label {
     top: -14px;
     font-size: 12px;
     color: var(--color-gray-c6);
-}
+} */
 
 .login-form input:focus~.bar::before,
 .login-form textarea:focus~.bar::before {
     width: 100%;
 }
 
-.login-form form input[type='password'] {
+/* .login-form form input[type='password'] {
     letter-spacing: .3em;
-}
+} */
 
 .login-form form label {
     color: var(--color-gray-c6);

@@ -84,4 +84,6 @@ public class JiraProcessorConfig {
 	private Integer prevMonthCountToFetchData;
 	private Integer daysToReduce;
 	private Integer chunkSize;
+	private String uiHost;
+	private List<String> domainNames;
 }

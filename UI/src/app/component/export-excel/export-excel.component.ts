@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ExcelService } from 'src/app/services/excel.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { Table } from 'primeng/table';
+import { SharedService } from 'src/app/services/shared.service';
+import { HttpService } from 'src/app/services/http.service';
+import { SortEvent } from 'primeng/api';
 
 @Component({
   selector: 'app-export-excel',
@@ -8,6 +12,7 @@ import { HelperService } from 'src/app/services/helper.service';
   styleUrls: ['./export-excel.component.css'],
 })
 export class ExportExcelComponent implements OnInit {
+  @ViewChild('table') tableComponent: Table;
   displayModal = false;
   modalDetails = {
     header: '',
@@ -26,13 +31,19 @@ export class ExportExcelComponent implements OnInit {
 
     '5': '../assets/img/smiley-5.svg',
   };
+  tableColumnData = {};
+  tableColumnForm = {};
+  filteredColumn;
+  excludeColumnFilter = [];
 
   constructor(
     private excelService: ExcelService,
     private helperService: HelperService,
-  ) {}
+    private sharedService: SharedService,
+    private httpService: HttpService
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   // download excel functionality
   downloadExcel(
@@ -61,8 +72,8 @@ export class ExportExcelComponent implements OnInit {
         )
         .subscribe((getData) => {
           if (
-            getData['excelData'] ||
-            !getData?.hasOwnProperty('validationData')
+            getData['excelData'] 
+            || !getData?.hasOwnProperty('validationData')
           ) {
             if (chartType == 'stacked-area') {
               let kpiObj = JSON.parse(JSON.stringify(getData));
@@ -85,7 +96,9 @@ export class ExportExcelComponent implements OnInit {
 
             this.modalDetails['tableHeadings'] =
               this.kpiExcelData.headerNames.map((column) => column.header);
+            // this.modalDetails['tableValues'] = additionalFilterSupport ? this.kpiExcelData.excelData : [];
             this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
+            this.generateTableColumnData();
             this.modalDetails['header'] = kpiName;
             this.displayModal = true;
           } else {
@@ -131,6 +144,9 @@ export class ExportExcelComponent implements OnInit {
   }
 
   clearModalDataOnClose() {
+    this.excludeColumnFilter = [];
+    this.tableColumnData = {}
+    this.tableColumnForm = {}
     this.displayModal = false;
     this.modalDetails = {
       header: '',
@@ -141,5 +157,80 @@ export class ExportExcelComponent implements OnInit {
 
   checkIfArray(arr) {
     return Array.isArray(arr);
+  }
+
+  onFilterClick(columnName) {
+    this.filteredColumn = columnName;
+  }
+
+  onFilterBlur(columnName) {
+    this.filteredColumn = this.filteredColumn === columnName ? '' : this.filteredColumn;
+  }
+
+  generateTableColumnData() {
+    if(this.modalDetails['tableValues'].length > 0) {
+      this.modalDetails['tableHeadings'].forEach(colName => {
+        this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
+          if (this.typeOf(colData)) {
+            if (!this.excludeColumnFilter.includes(colName)) {
+              this.excludeColumnFilter.push(colName)
+            }
+            return { name: colData.text, value: colData.text }
+          } else {
+            return { name: colData, value: colData }
+          }
+        });
+        this.tableColumnForm[colName] = [];
+      });
+    }
+  }
+
+  generateExcel(exportMode) {
+    const tableData = {
+      columns: [],
+      excelData: []
+    };
+    let excelData = [];
+    let columns = [];
+    if (exportMode === 'all') {
+      this.excelService.generateExcel(this.kpiExcelData, this.modalDetails['header']);
+    } else {
+      excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+      tableData.columns = this.modalDetails['tableHeadings']
+
+      excelData.forEach(colData => {
+        let obj = {};
+        for (let key in colData) {
+          if (this.typeOf(colData[key]) && colData[key].hasOwnProperty('hyperlink')) {
+            obj[key] = { [colData[key]['text']]: colData[key]['hyperlink'] }
+          } else {
+            obj[key] = colData[key]
+          }
+        }
+        tableData.excelData.push(obj);
+      });
+
+      let kpiData = this.excelService.generateExcelModalData(tableData);
+      this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+    }
+  }
+
+  typeOf(value) {
+    return typeof value === 'object' && value !== null;
+  }
+
+  customSort(event: SortEvent) {
+    let result = null;
+    event.data.sort((data1, data2) => {
+      const utcDate1: any = !isNaN(new Date(data1[event.field]).getTime()) && new Date(data1[event.field]).toISOString().slice(0, 10);
+      const utcDate2: any = !isNaN(new Date(data2[event.field]).getTime()) && new Date(data2[event.field]).toISOString().slice(0, 10);
+      if (event.field === 'Created Date' || event.field === 'Closed Date') {
+        result = (utcDate1 < utcDate2) ? -1 : (utcDate1 > utcDate2) ? 1 : 0;
+      }
+      else {
+        result = data1[event.field].localeCompare(data2[event.field])
+      }
+      return event.order * result;
+    });
   }
 }

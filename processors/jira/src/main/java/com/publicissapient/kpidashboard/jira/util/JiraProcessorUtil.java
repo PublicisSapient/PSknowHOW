@@ -22,28 +22,42 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONArray;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.scope.context.StepContext;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ProgressStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.util.JsonUtils;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class JiraProcessorUtil {
+
+	private JiraProcessorUtil() {
+	}
 
 	// not static because not thread safe
 	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
@@ -58,6 +72,21 @@ public class JiraProcessorUtil {
 	private static final String ACTIVATEDDATE = "activatedDate";
 	private static final String GOAL = "goal";
 	private static final String BOARDID = "boardId";
+	private static final Pattern EXCEPTION_WITH_MESSAGE_PATTERN = Pattern
+			.compile("^(\\w+(?:\\.\\w+)*Exception):\\s*(.+)$");
+
+	private static final Pattern EXCEPTION_WITH_STATUS_CODE_PATTERN = Pattern
+			.compile("(\\w+(?:\\.\\w+)*Exception)\\{[^}]*statusCode=Optional\\.of\\((\\d+)\\)");
+
+	private static final Pattern ERROR_COLLECTION_PATTERN = Pattern
+			.compile("\\[ErrorCollection\\{status=(\\d+), errors=\\{.*\\}, errorMessages=\\[.*\\]\\}\\]");
+
+	private static final Pattern ERROR_WITH_STATUS_CODE_PATTERN = Pattern.compile("Error:\\s*(\\d+)\\s*-\\s*(.*)");
+
+	private static final String UNAUTHORIZED = "Sorry, you are not authorized to access the requested resource.";
+	private static final String TO_MANY_REQUEST = "Too many request try after sometime.";
+	private static final String OTHER_CLIENT_ERRORS = "An unexpected error has occurred. Please contact the KnowHow Support for assistance.";
+	private static final String FORBIDDEN="Forbidden, check your credentials.";
 
 	/**
 	 * This method return UTF-8 decoded string response
@@ -74,7 +103,7 @@ public class JiraProcessorUtil {
 		byte[] responseBytes;
 		try {
 			CharsetDecoder charsetDecoder = StandardCharsets.UTF_8.newDecoder();
-			if (responseStr.isEmpty() || NULL_STR.equalsIgnoreCase(responseStr)) {
+			if (responseStr == null || responseStr.isEmpty() || NULL_STR.equalsIgnoreCase(responseStr)) {
 				return StringUtils.EMPTY;
 			}
 			responseBytes = responseStr.getBytes(StandardCharsets.UTF_8);
@@ -169,7 +198,7 @@ public class JiraProcessorUtil {
 		return sprint;
 	}
 
-	private static void setSprintDetailsFromString(String sprintData, SprintDetails sprint) {
+	public static Object setSprintDetailsFromString(String sprintData, SprintDetails sprint) {
 		sprintData = sprintData.trim().replaceAll("\\s", " ");
 		String sprintDataStr = sprintData.substring(sprintData.indexOf('[') + 1, sprintData.length() - 1);
 		String[] splitStringList = sprintDataStr.split(SPRINT_SPLIT);
@@ -228,6 +257,7 @@ public class JiraProcessorUtil {
 				}
 			}
 		}
+		return null;
 	}
 
 	private static void setSprintDetailsFromJson(String sprintData, SprintDetails sprint) {
@@ -303,4 +333,87 @@ public class JiraProcessorUtil {
 
 		return finalQuery;
 	}
+
+	/**
+	 * Method to fetch progress of chunk based issues processing from context save
+	 * into traceLog.
+	 *
+	 * @param processorExecutionTraceLog
+	 *            processorTraceLog
+	 * @param stepContext
+	 *            stepContext
+	 */
+	public static ProcessorExecutionTraceLog saveChunkProgressInTrace(
+			ProcessorExecutionTraceLog processorExecutionTraceLog, StepContext stepContext) {
+		if (stepContext == null) {
+			log.error("StepContext is null");
+			return null;
+		}
+		if (processorExecutionTraceLog == null) {
+			log.error("ProcessorExecutionTraceLog is not present");
+			return null;
+		}
+		JobExecution jobExecution = stepContext.getStepExecution().getJobExecution();
+		int totalIssues = jobExecution.getExecutionContext().getInt(JiraConstants.TOTAL_ISSUES, 0);
+		int processedIssues = jobExecution.getExecutionContext().getInt(JiraConstants.PROCESSED_ISSUES, 0);
+		int pageStart = jobExecution.getExecutionContext().getInt(JiraConstants.PAGE_START, 0);
+		String boardId = jobExecution.getExecutionContext().getString(JiraConstants.BOARD_ID, "");
+
+		List<ProgressStatus> progressStatusList = Optional
+				.ofNullable(processorExecutionTraceLog.getProgressStatusList()).orElseGet(ArrayList::new);
+		ProgressStatus progressStatus = new ProgressStatus();
+
+		String stepMsg = MessageFormat.format("Process Issues {0} to {1} out of {2}", pageStart, processedIssues,
+				totalIssues) + (StringUtils.isNotEmpty(boardId) ? ", Board ID : " + boardId : "");
+		progressStatus.setStepName(stepMsg);
+		progressStatus.setStatus(BatchStatus.COMPLETED.toString());
+		progressStatus.setEndTime(System.currentTimeMillis());
+		progressStatusList.add(progressStatus);
+		processorExecutionTraceLog.setProgressStatusList(progressStatusList);
+		return processorExecutionTraceLog;
+	}
+
+	public static String generateLogMessage(Throwable exception) {
+		String exceptionMessage = exception.getMessage();
+
+		String logMessage = matchPattern(exceptionMessage, EXCEPTION_WITH_STATUS_CODE_PATTERN, true);
+		if (logMessage != null)
+			return logMessage;
+
+		logMessage = matchPattern(exceptionMessage, EXCEPTION_WITH_MESSAGE_PATTERN, false);
+		if (logMessage != null)
+			return logMessage;
+
+		logMessage = matchPattern(exceptionMessage, ERROR_COLLECTION_PATTERN, true);
+		if (logMessage != null)
+			return logMessage;
+
+		logMessage = matchPattern(exceptionMessage, ERROR_WITH_STATUS_CODE_PATTERN, true);
+		if (logMessage != null)
+			return logMessage;
+
+		return OTHER_CLIENT_ERRORS;
+	}
+
+	private static String matchPattern(String exceptionMessage, Pattern pattern, boolean hasStatusCode) {
+		Matcher matcher = pattern.matcher(exceptionMessage);
+		if (matcher.find()) {
+			if (hasStatusCode) {
+				int statusCode = Integer.parseInt(matcher.group(1));
+				switch (statusCode) {
+				case 401:
+					return UNAUTHORIZED;
+				case 429:
+					return TO_MANY_REQUEST;
+				case 403:
+					return FORBIDDEN;
+				default:
+					return OTHER_CLIENT_ERRORS;
+				}
+			}
+			return OTHER_CLIENT_ERRORS;
+		}
+		return null;
+	}
+
 }

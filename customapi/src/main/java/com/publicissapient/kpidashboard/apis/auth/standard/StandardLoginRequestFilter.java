@@ -18,11 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.auth.standard;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -31,16 +27,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
 import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
 	CustomApiConfig customApiConfig;
-
-	@Autowired
-	private AuthTypesConfigService authTypesConfigService;
 
 	/**
 	 * 
@@ -50,15 +44,13 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 	 */
 	public StandardLoginRequestFilter(String path, AuthenticationManager authManager,
 			AuthenticationResultHandler authenticationResultHandler,
-			CustomAuthenticationFailureHandler authenticationFailureHandler, CustomApiConfig customApiConfig,
-			AuthTypesConfigService authTypesConfigService) {
+			CustomAuthenticationFailureHandler authenticationFailureHandler, CustomApiConfig customApiConfig) {
 		super();
 		setAuthenticationManager(authManager);
 		setAuthenticationSuccessHandler(authenticationResultHandler);
 		setAuthenticationFailureHandler(authenticationFailureHandler);
 		setFilterProcessesUrl(path);
 		this.customApiConfig = customApiConfig;
-		this.authTypesConfigService = authTypesConfigService;
 	}
 
 	/**
@@ -72,12 +64,6 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {// NOSONAR //NOPMD
-
-		AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
-
-		if (authTypesStatus != null && !authTypesStatus.isStandardLogin()) {
-			throw new AuthenticationServiceException("Standard login is disabled");
-		}
 
 		if (!request.getMethod().equals("POST")) {
 			throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());

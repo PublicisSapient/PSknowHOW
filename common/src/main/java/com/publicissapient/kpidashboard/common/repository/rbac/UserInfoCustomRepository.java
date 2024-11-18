@@ -27,4 +27,10 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 public interface UserInfoCustomRepository {
 
 	List<UserInfo> findByProjectAccess(String basicProjectConfigId);
+	/**
+	 * Fetch all the admin user of given projID
+	 * @param basicProjectConfigId basicProjectConfigId
+	 * @return List<UserInfo>
+	 */
+	List<UserInfo> findAdminUserOfProject(List<String> basicProjectConfigId);
 }

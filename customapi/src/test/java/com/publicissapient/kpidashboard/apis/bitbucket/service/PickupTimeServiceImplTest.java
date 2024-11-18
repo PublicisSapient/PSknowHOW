@@ -18,19 +18,25 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +49,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
@@ -66,10 +73,6 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 @RunWith(MockitoJUnitRunner.class)
 public class PickupTimeServiceImplTest {
 
-    private static final String P1 = "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent";
-    private static final String P2 = "p2, critical, P2 - Critical, 2, High";
-    private static final String P3 = "p3, P3 - Major, major, 3, Medium";
-    private static final String P4 = "p4, P4 - Minor, minor, 4, Low";
     private static Tool tool3;
     public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
     public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -103,6 +106,10 @@ public class PickupTimeServiceImplTest {
     CacheService cacheService;
     @Mock
     private CommonService commonService;
+    @Mock
+    private AssigneeDetailsRepository assigneeDetailsRepository;
+    @Mock
+    private KpiHelperService kpiHelperService;
 
     @Before
     public void setup() {
@@ -117,14 +124,14 @@ public class PickupTimeServiceImplTest {
         kpiRequest.setLabel("Project");
         kpiElement = kpiRequest.getKpiList().get(0);
         kpiRequest.setXAxisDataPoints(5);
-        kpiRequest.setDuration("WEEKS");
+        kpiRequest.setDuration("DAYS");
 
         AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
                 .newInstance();
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
         RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
         repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
-
+        repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().minusDays(2).toString());
         projectConfigList.forEach(projectConfig -> {
             projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
         });
@@ -136,6 +143,25 @@ public class PickupTimeServiceImplTest {
         configHelperService.setFieldMappingMap(fieldMappingMap);
 
         Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
+        when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+
+        when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+
+		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
+				.thenReturn(kpiRequestTrackerId);
+
+        AssigneeDetails assigneeDetails = new AssigneeDetails();
+        assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
+        assigneeDetails.setSource("Jira");
+        Set<Assignee> assigneeSet = new HashSet<>();
+        assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
+                new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
+        assigneeSet.add(new Assignee("llid", "Hiren",
+                new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+        assigneeDetails.setAssignee(assigneeSet);
+        when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
+        when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
 
     }
 
@@ -155,13 +181,13 @@ public class PickupTimeServiceImplTest {
         List<ProcessorItem> collectorItemList1 = new ArrayList<>();
         collectorItemList1.add(processorItem1);
 
-        tool3 = createTool("url3", "RepoTool", collectorItemList1);
+        tool3 = createTool("url3", "Bitbucket", collectorItemList1);
 
         toolList3.add(tool3);
 
-        toolGroup.put(Constant.TOOL_BITBUCKET, toolList1);
-        toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
-        toolGroup.put(Constant.REPO_TOOLS, toolList3);
+        toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
+        toolGroup.put(Constant.TOOL_AZUREREPO, toolList1);
+        toolGroup.put(Constant.REPO_TOOLS, toolList2);
         toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 
     }
@@ -183,10 +209,9 @@ public class PickupTimeServiceImplTest {
         dataCountList.add(dataCountValue);
         DataCount dataCount = setDataCountValues("Scrum Project", "3", "4", dataCountList);
         trendValues.add(dataCount);
-        trendValueMap.put(P1, trendValues);
-        trendValueMap.put(P2, trendValues);
-        trendValueMap.put(P3, trendValues);
-        trendValueMap.put(P4, trendValues);
+        trendValueMap.put("Overall#Overall", trendValues);
+        trendValueMap.put("Overall#Hiren", trendValues);
+
     }
 
     private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
@@ -205,21 +230,36 @@ public class PickupTimeServiceImplTest {
 
     @Test
     public void testGetKpiData() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+
+		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
+				.thenReturn(kpiRequestTrackerId);
+
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
+				repoToolKpiMetricResponseList);
+		try {
+			KpiElement kpiElement = pickupTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+		}
+	}
+
+    @Test
+    public void testGetKpiDataDays() throws ApplicationException {
+        kpiRequest.setDuration(Constant.DAYS);
         TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
-        when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-
-        when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-
-        String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
-        when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
-                .thenReturn(kpiRequestTrackerId);
-
-        when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
         try {
             KpiElement kpiElement = pickupTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                    treeAggregatorDetail);
+                    treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+            assertThat("Trend Size: ", ((List)kpiElement.getTrendValueList()).size(), equalTo(2));
         } catch (ApplicationException e) {
             e.printStackTrace();
         }

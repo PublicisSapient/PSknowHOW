@@ -25,6 +25,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * Model class to hold different params to define cycle time on scrum and kanban
  * board
@@ -40,6 +42,9 @@ public class CycleTime {
 	private DateTime readyTime;
 	private DateTime deliveryTime;
 	private DateTime liveTime;
+	private LocalDateTime liveLocalDateTime;
+	private LocalDateTime readyLocalDateTime;
+	private LocalDateTime deliveryLocalDateTime;
 
 	private Long intakeDor;
 	private Long dorDod;

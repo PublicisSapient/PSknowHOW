@@ -45,6 +45,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
@@ -83,7 +84,7 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -159,8 +160,10 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 		Map<String, Double> dateCount = getLastNMonth(customApiConfig.getSprintCountForFilters());
 		List<ProjectVersion> projectVersionList = Lists.newArrayList();
 		List<String> dateList = Lists.newArrayList();
-
-		for (ProjectVersion pv : projectRelease.getListProjectVersion()) {
+		// Filter to include only released versions
+		List<ProjectVersion> releasedVersions = projectRelease.getListProjectVersion().stream()
+				.filter(ProjectVersion::isReleased).toList();
+		for (ProjectVersion pv : releasedVersions) {
 			if (pv.getReleaseDate() != null) {
 				String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear();
 				if (dateCount.keySet().contains(yearMonth)) {
@@ -213,4 +216,10 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI73(), KPICode.PROJECT_RELEASES.getKpiId());
+	}
+
 }

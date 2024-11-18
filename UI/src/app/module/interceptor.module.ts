@@ -18,8 +18,7 @@
 
 import { Injectable, NgModule } from '@angular/core';
 import { throwError } from 'rxjs';
-import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse, HttpResponse, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
 import { catchError, tap } from 'rxjs/operators';
@@ -38,12 +37,20 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
         const requestArea = req.headers.get('requestArea') || 'internal';
 
+        if (environment.AUTHENTICATION_SERVICE) {
+            let cookie = document.cookie?.split(';');
+            let authCookie_EXPIRY = cookie?.find(x => x.includes('authCookie_EXPIRY'));
+            authCookie_EXPIRY = authCookie_EXPIRY?.split('=')[1];
+            if (!authCookie_EXPIRY) {
+                this.redirectToLogin();
+            }
+        }
 
         if (req.headers.get('httpErrorHandler')) {
             req = req.clone({ headers: req.headers.delete('httpErrorHandler') });
         }
 
-		req = req.clone({withCredentials: true});
+        req = req.clone({ withCredentials: true });
 
         if (req.headers.get('requestArea')) {
             req = req.clone({ headers: req.headers.delete('requestArea') });
@@ -55,8 +62,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             req = req.clone({ headers: req.headers.set('Content-Type', ['text/csv']) });
         }
         const requestId = uuid.v4();
-                req = req.clone({ headers: req.headers.set('request-Id', requestId) });
-
+        req = req.clone({ headers: req.headers.set('request-Id', requestId) });
 
         const redirectExceptions = [
             environment.baseUrl + '/api/jenkins/kpi',
@@ -83,66 +89,82 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         return next.handle(req)
             .pipe(
                 tap(event => {
-                    if (event instanceof HttpResponse){
-                        if(!event?.url?.includes('api/authdetails') && 
-                        ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
-                            this.httpService.getAuthDetails();
-                        }
+                    if (event instanceof HttpResponse) {
+                        /**Todo: Not autochanging the user role on role change. User will have to manually logout when his/her role is changed.
+                         * Currently commiting this code as per comment on ticket DTS-30823 */
+                        // if(!event?.url?.includes('api/authdetails') &&
+                        // ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
+                        //     this.httpService.getAuthDetails();
+                        // }
                     }
                 }),
                 catchError((err) => {
-                if (err instanceof HttpErrorResponse) {
-                    if (err.status === 401) {
-                        if (requestArea === 'internal') {
-                            this.service.setCurrentUserDetails({});
-                            if(!environment.SSO_LOGIN){
-                                this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+                    if (err instanceof HttpErrorResponse) {
+                        if (err.status === 401) {
+                            if (requestArea === 'internal') {
+                                if (environment?.['SSO_LOGIN']) {
+                                    this.service.setCurrentUserDetails({});
+                                    console.log('SSO_LOGIN', true)
+                                } else {
+                                    if (environment.AUTHENTICATION_SERVICE) {
+                                        this.redirectToLogin();
+                                    } else {
+                                        this.service.setCurrentUserDetails({});
+                                        this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+                                    }
+                                }
                             }
-                        }
 
-                        if (environment.SSO_LOGIN) {
-                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+
+                        if (environment?.['SSO_LOGIN']) {
+                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
                                 window.location.reload();
                             });
                         }
-                    } else if(err.status === 403 && environment.SSO_LOGIN){
+                    } else if(err.status === 403 && environment?.['SSO_LOGIN']){
                         this.httpService.unauthorisedAccess =true;
                         this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
                         if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
                             this.service.clearAllCookies();
-                            this.router.navigate(['./dashboard/mydashboard']).then(success => {
+                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
                                 window.location.reload();
                             });
                         }else{
                             if (httpErrorHandler !== 'local') {
                                 if (requestArea === 'internal') {
                                     if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                        if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
+                                        if(!environment?.['SSO_LOGIN'] || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
                                         this.router.navigate(['./dashboard/Error']);
                                         }
-                                        setTimeout(() => {
-                                            this.service.raiseError(err);
-                                        }, 0);
                                     }
                                 }
                             }
                         }
+                        }
                     }
-                }
-                // error thrown here needs to catch in  error block of subscribe
-                return throwError(err);
-            }));
+                    // error thrown here needs to catch in  error block of subscribe
+                    return throwError(err);
+                }));
     }
 
     checkForPartialRedirectExceptions(url, exceptionsArr) {
         let result = false;
         exceptionsArr.forEach(element => {
-            if(url.indexOf(element) !== -1) {
+            if (url.indexOf(element) !== -1) {
                 result = true;
             }
         });
         return result;
+    }
+
+    redirectToLogin() {
+        /** redirect to central login url*/
+        let redirect_uri = window.location.href;
+        localStorage.setItem('redirect_uri', JSON.stringify(redirect_uri))
+        if (environment.CENTRAL_LOGIN_URL) {
+            window.location.href = environment.CENTRAL_LOGIN_URL + "?redirect_uri=" + redirect_uri;
+        }
     }
 }
 

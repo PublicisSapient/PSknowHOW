@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 

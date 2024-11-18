@@ -24,9 +24,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,10 +32,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
-
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationResultHandlerTest {
@@ -66,19 +64,6 @@ public class AuthenticationResultHandlerTest {
 
 	@Test
 	public void testOnSucess() throws IOException, ServletException {
-		JSONObject jsonObject = new JSONObject();
-		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName")).thenReturn(jsonObject);
-		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
-		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
-		when(authenticationService.getUsername(authentication)).thenReturn("userName");
-		handler.onAuthenticationSuccess(null, response, authentication);
-		verify(authenticationResponseService).handle(response, authentication);
-	}
-
-	@Test
-	public void testOnSucess1() throws IOException, ServletException {
-		CustomUserDetails cud = new CustomUserDetails();
-		cud.setUsername("userName");
 		JSONObject jsonObject = new JSONObject();
 		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName")).thenReturn(jsonObject);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);

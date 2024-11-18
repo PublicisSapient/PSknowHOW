@@ -49,7 +49,7 @@
         <div class="p-component p-panelmenu-header">
           <a class="p-panelmenu-header-link p-align-center" routerLink="AccessMgmt" *ngIf="isSuperAdmin" routerLinkActive="selected">
             <i class="fa fa-universal-access p-menuitem-icon" aria-hidden="true"></i>
-            Access Mgmt.
+            Manage Access
           </a>
         </div>
       </div>
@@ -71,7 +71,8 @@
           </a>
         </div>
       </div>
-      <div *ngIf="!adLogin && !ssoLogin" class="p-panelmenu-panel">
+
+      <div *ngIf="loginType?.toLowerCase() === 'standard'" class="p-panelmenu-panel">
         <div class="p-component p-panelmenu-header">
           <a class="p-panelmenu-header-link p-align-center" routerLink="UserSettings" routerLinkActive="selected"
             [class.disabled]="changePswdDisabled ? true : null">
@@ -85,7 +86,7 @@
           <a class="p-panelmenu-header-link p-align-center" routerLink="AutoApprove" *ngIf="isSuperAdmin"
             routerLinkActive="selected">
             <i class="fas fa-check-circle p-menuitem-icon" aria-hidden="true"></i>
-            Auto Approval
+            Auto Approve
           </a>
         </div>
       </div>

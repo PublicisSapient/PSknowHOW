@@ -37,12 +37,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -181,6 +183,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
+					processorToolConnectionService.validateConnectionFlag(tool);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					GitHubProcessorItem gitHubProcessorItem = getGitHubProcessorItem(tool, processor.getId());
 					boolean firstTimeRun = (gitHubProcessorItem.getLastUpdatedCommit() == null);
@@ -214,6 +217,8 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				} catch (FetchingCommitException exception) {
+					Throwable cause = exception.getCause();
+					isClientException(tool, cause);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -244,6 +249,22 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		MDC.clear();
 		return executionStatus;
 	}
+
+	/**
+	 *
+	 * @param tool
+	 *            tool
+	 * @param cause
+	 *            cause
+	 */
+	private void isClientException(ProcessorToolConnection tool, Throwable cause) {
+		if (cause != null && ((HttpClientErrorException) cause).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) cause).getStatusCode().value())
+					.getReasonPhrase();
+			processorToolConnectionService.updateBreakingConnection(tool.getConnectionId(), errMsg);
+		}
+	}
+
 	@Override
 	public boolean executeSprint(String sprintId) {
 		return false;
@@ -395,7 +416,10 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 	 * @return List of projects
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll().stream()
+				.filter(projectBasicConfig -> Boolean.FALSE.equals(projectBasicConfig.isDeveloperKpiEnabled()))
+				.toList();
+		;
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
@@ -404,7 +428,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		}
 		return CollectionUtils.emptyIfNull(allProjects).stream().filter(
 				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private void clearSelectedBasicProjectConfigIds() {

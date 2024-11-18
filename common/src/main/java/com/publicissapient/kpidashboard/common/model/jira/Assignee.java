@@ -1,4 +1,4 @@
-/*******************************************************************************
+	/*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
 import java.util.Objects;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +42,12 @@ public class Assignee {
 
 	private String assigneeId;
 	private String assigneeName;
+	private Set<String> email;
+
+	public Assignee(String assigneeId, String assigneeName) {
+		this.assigneeId = assigneeId;
+		this.assigneeName = assigneeName;
+	}
 
 	@Override
 	public boolean equals(Object o) {

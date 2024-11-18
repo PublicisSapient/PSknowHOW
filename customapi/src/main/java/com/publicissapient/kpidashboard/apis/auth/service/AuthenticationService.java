@@ -18,10 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.springframework.http.ResponseEntity;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+
+import java.util.List;
 
 /**
  * An Interface to provide authentication service.
@@ -202,6 +207,7 @@ public interface AuthenticationService {
 	 */
 	String getUsername(org.springframework.security.core.Authentication authentication);
 
-	Iterable<Authentication> getAuthenticationByApproved(boolean approved);
+	List<UserAccessApprovalResponseDTO> getAuthenticationByApproved(boolean approved);
 
+	ResponseEntity<ServiceResponse> changePasswordForCentralAuth(ChangePasswordRequest request);
 }

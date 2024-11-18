@@ -20,8 +20,11 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -46,9 +50,9 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 
- * @author prigupta8
  *
+ * @author prigupta8
+ * @implNote {@link KpiIntegrationServiceImpl }
  */
 @Service
 @Slf4j
@@ -69,10 +73,13 @@ public class SonarServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
+	private boolean referFromProjectCache = true;
+
 	/**
 	 * Process Sonar KPI request for Kanban projects
-	 * 
+	 *
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @return {@code List<KpiElement>}
 	 */
 	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
@@ -80,8 +87,7 @@ public class SonarServiceR {
 
 		log.info("[SONAR][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
 				kpiRequest.getKpiList());
-		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
-				.collect(Collectors.toList());
+		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new).toList();
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] projectKeyCache = null;
 		try {
@@ -96,6 +102,7 @@ public class SonarServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
+
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
 				if (filteredAccountDataList.isEmpty()) {
@@ -110,7 +117,24 @@ public class SonarServiceR {
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
-				calculateKPIAggregatedMetrics(kpiRequest, responseList, treeAggregatorDetail);
+				ExecutorService executorService = Executors
+						.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+				List<CompletableFuture<Void>> futures = new ArrayList<>();
+				for (KpiElement kpiElement : kpiRequest.getKpiList()) {
+					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+						try {
+							responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiElement,
+									treeAggregatorDetail));
+						} catch (Exception e) {
+							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
+						}
+					}, executorService);
+					futures.add(future);
+				}
+				CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+				allFutures.join(); // Wait for all tasks to complete
+				executorService.shutdown();
 
 				List<KpiElement> missingKpis = filterKips(origRequestedKpis, responseList);
 				responseList.addAll(missingKpis);
@@ -128,41 +152,68 @@ public class SonarServiceR {
 
 	/**
 	 * Calculates all KPI aggregated metrics
-	 * 
+	 *
 	 * @param kpiRequest
-	 * @param responseList
+	 *            kpiRequest
 	 * @param kpiElement
+	 *            kpiElement
 	 * @param treeAggregatorDetail
-	 * @throws Exception
+	 *            treeAggregatorDetail
+	 * @return kpielement
 	 */
-	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+			TreeAggregatorDetail treeAggregatorDetail) {
 		long startTime;
 
-		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+		try {
+			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
 
-		SonarKPIService<?, ?, ?> sonarKPIService = null;
-		sonarKPIService = SonarKPIServiceFactory.getSonarKPIService(kpi.name());
+			SonarKPIService<?, ?, ?> sonarKPIService = null;
+			sonarKPIService = SonarKPIServiceFactory.getSonarKPIService(kpi.name());
 
-		startTime = System.currentTimeMillis();
+			startTime = System.currentTimeMillis();
 
-		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-				.clone(treeAggregatorDetail);
-		responseList.add(sonarKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
-		if (log.isInfoEnabled()) {
-			log.info("[SONAR-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
-					System.currentTimeMillis() - startTime);
+			TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+					.clone(treeAggregatorDetail);
+			List<Node> projectNodes = treeAggregatorDetailClone.getMapOfListOfProjectNodes()
+					.get(CommonConstant.PROJECT.toLowerCase());
+
+			if (!projectNodes.isEmpty() && (projectNodes.size() > 1
+					|| kpiHelperService.isToolConfigured(kpi, kpiElement, projectNodes.get(0)))) {
+				kpiElement = sonarKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
+				kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+				if (projectNodes.size() == 1) {
+					kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, projectNodes.get(0));
+				}
+			}
+			if (log.isInfoEnabled()) {
+				log.info("[SONAR-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+						System.currentTimeMillis() - startTime);
+			}
+		} catch (ApplicationException exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+			log.error("[SONAR][{}]. Error while KPI calculation for data. No data found {} {}",
+					kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), exception.getStackTrace());
+		} catch (Exception exception) {
+			kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+			log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", exception);
+			return kpiElement;
 		}
+		return kpiElement;
 
 	}
 
 	/**
 	 * Sets KPI reponse List into KnowHow Cache
-	 * 
+	 *
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param responseList
+	 *            responseList
 	 * @param groupId
+	 *            groupId
 	 * @param projectKeyCache
+	 *            projectKeyCache
 	 */
 	private void setIntoKnowHowCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projectKeyCache) {
@@ -183,32 +234,22 @@ public class SonarServiceR {
 		return cachedData;
 	}
 
-	private void calculateKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			TreeAggregatorDetail treeAggregatorDetail) {
-		for (KpiElement kpiEle : kpiRequest.getKpiList()) {
-			try {
-				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
-			} catch (ApplicationException e) {
-				log.error("[SONAR][{}]. Error while KPI calculation for data. No data found {} {}",
-						kpiRequest.getRequestTrackerId(), kpiRequest.getKpiList(), e.getStackTrace());
-			}
-		}
-	}
-
 	private List<KpiElement> filterKips(List<KpiElement> origRequestedKpis, List<KpiElement> responseList) {
-		return origRequestedKpis.stream()
-				.filter(reqKpi -> responseList.stream()
-						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
-				.collect(Collectors.toList());
+		return origRequestedKpis.stream().filter(reqKpi -> responseList.stream()
+				.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
 	}
 
 	/**
+	 *
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
+	 *            filteredAccountDataList
+	 * @return array of string
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
@@ -218,16 +259,34 @@ public class SonarServiceR {
 
 	/**
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 * @return
+	 *            filteredAccountDataList
+	 * @return list of hierrachy
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
-
 		return filteredAccountDataList;
 	}
+
+	/**
+	 *
+	 * This method is called when the request for kpi is done from exposed API
+	 *
+	 * @param kpiRequest
+	 *            SONAR KPI request true if flow for precalculated, false for direct
+	 *            * flow.
+	 * @return List of KPI data
+	 */
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) {
+		referFromProjectCache = false;
+		List<KpiElement> kpiElementList = process(kpiRequest);
+		referFromProjectCache = true;
+		return kpiElementList;
+	}
+
 }

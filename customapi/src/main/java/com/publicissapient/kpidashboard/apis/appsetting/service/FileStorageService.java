@@ -62,5 +62,4 @@ public interface FileStorageService {
 	 * @return boolean
 	 */
 	boolean deleteLogo();
-
 }

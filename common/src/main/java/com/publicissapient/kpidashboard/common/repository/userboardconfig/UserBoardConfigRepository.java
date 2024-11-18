@@ -17,6 +17,8 @@
 
 package com.publicissapient.kpidashboard.common.repository.userboardconfig;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -48,5 +50,34 @@ public interface UserBoardConfigRepository extends MongoRepository<UserBoardConf
 	 * @param userName
 	 */
 	void deleteByUsername(String userName);
+
+	/**
+	 * Fetch by basicProjConfigId & userName
+	 * 
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @param userName
+	 *            userName
+	 * @return user_board_config
+	 */
+	UserBoardConfig findByBasicProjectConfigIdAndUsername(String basicProjectConfigId, String userName);
+
+	/**
+	 * Fetch by basicProjectConfigId
+	 * 
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return Project Config Details
+	 */
+	List<UserBoardConfig> findByBasicProjectConfigIdIn(List<String> basicProjectConfigId);
+
+	/**
+	 * Fetch all the doc with basicProjConfigId
+	 * 
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return List<UserBoardConfig>
+	 */
+	List<UserBoardConfig> findByBasicProjectConfigId(String basicProjectConfigId);
 
 }

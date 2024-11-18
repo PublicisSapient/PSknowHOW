@@ -24,7 +24,8 @@ describe('ViewNewUserAuthRequestComponent', () => {
       {
         username: 'testuser8',
         email: 'test8@gmail.com',
-        approved: false
+        approved: false,
+        whitelistDomainEmail: false
       }
     ]
   };
@@ -61,7 +62,13 @@ describe('ViewNewUserAuthRequestComponent', () => {
   it('should get new user requests', () => {
     component.ngOnInit();
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/userapprovals')[0].flush(fakeRequestsData);
+    let url = '';
+    if(environment['AUTHENTICATION_SERVICE']){
+      url = baseUrl + '/api/userapprovals/central';
+    }else{
+      url = baseUrl + '/api/userapprovals';
+    }
+    httpMock.match(url)[0].flush(fakeRequestsData);
     expect(component.newUserAccessRequestData).toEqual(fakeRequestsData.data);
   });
 
@@ -70,7 +77,8 @@ describe('ViewNewUserAuthRequestComponent', () => {
     const fakeRequest = {
       username: 'testuser8',
       email: 'test8@gmail.com',
-      approved: false
+      approved: false,
+      whitelistDomainEmail:false
     };
     const fakeResponse = {
       message: 'Unapproved User details',
@@ -79,7 +87,13 @@ describe('ViewNewUserAuthRequestComponent', () => {
     };
     component.updateRequestStatus(fakeRequest, true);
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/userapprovals')[0].flush(fakeResponse);
+    let url = '';
+    if(environment['AUTHENTICATION_SERVICE']){
+      url = baseUrl + '/api/userapprovals/central';
+    }else{
+      url = baseUrl + '/api/userapprovals';
+    }
+    httpMock.match(url)[0].flush(fakeResponse);
     expect(component.showLoader).toBeFalse();
     expect(component.newUserAccessRequestData).toEqual([]);
   });
@@ -89,7 +103,8 @@ describe('ViewNewUserAuthRequestComponent', () => {
     const fakeRequest = {
       username: 'testuser8',
       email: 'test8@gmail.com',
-      approved: false
+      approved: false,
+      whitelistDomainEmail: false
     };
     const fakeResponse = {
       message: 'Unapproved User details',

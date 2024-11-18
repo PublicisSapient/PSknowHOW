@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +55,8 @@ public class NotificationHandler {
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
 	private static final String NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
 	private static final String NOTIFICATION_KEY = "Error_In_Jira_Processor";
+	private static final String NOTIFICATION_MSG = "Notification_Msg";
+	private static final String NOTIFICATION_ERROR = "Notification_Error";
 	private static final String ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY = "Error_In_Jira_Processor";
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
@@ -68,19 +70,30 @@ public class NotificationHandler {
 	private NotificationService notificationService;
 
 	/**
-	 *
+	 * send mail project admin/superadmin who had enabled notification preferences
+	 * 
 	 * @param value
 	 *            value
+	 * @param allFailureExceptions
+	 *            allFailureExceptions
 	 * @param projectBasicConfigId
 	 *            projectBasicConfigId
 	 */
-	public void sendEmailToProjectAdmin(String value, String projectBasicConfigId) {
-		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
+	public void sendEmailToProjectAdminAndSuperAdmin(String value, String allFailureExceptions,
+			String projectBasicConfigId) {
+		List<String> emailAddresses = getEmailAddressBasedProjectIdAndRole(projectBasicConfigId);
+		if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getDomainNames())) {
+			emailAddresses = emailAddresses.stream().filter(emailAddress -> {
+				String domain = StringUtils.substringAfter(emailAddress, "@").trim();
+				return jiraProcessorConfig.getDomainNames().contains(domain);
+			}).collect(Collectors.toList());
+		}
 		Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
 		if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
 
 			Map<String, String> customData = new HashMap<>();
-			customData.put(NOTIFICATION_KEY, value);
+			customData.put(NOTIFICATION_MSG, value);
+			customData.put(NOTIFICATION_ERROR, allFailureExceptions);
 			String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
 			String templateKey = jiraProcessorConfig.getMailTemplate()
@@ -93,19 +106,37 @@ public class NotificationHandler {
 		}
 	}
 
-	private List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId) {
+	/**
+	 * find User List will all project admin who have access of that particular
+	 * project and that hierarchy and superadmin user and which users had enabled
+	 * notification alert
+	 * 
+	 * @param projectConfigId
+	 * @return
+	 */
+	private List<String> getEmailAddressBasedProjectIdAndRole(String projectConfigId) {
 		Set<String> emailAddresses = new HashSet<>();
-		List<UserInfo> usersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(ROLE_PROJECT_ADMIN));
+		List<UserInfo> usersList = userInfoRepository
+				.findByAuthoritiesIn(Arrays.asList(ROLE_PROJECT_ADMIN, ROLE_SUPERADMIN));
+		List<UserInfo> notificationEnableUsersList = usersList.stream()
+				.filter(userInfo -> userInfo.getNotificationEmail() != null
+						&& userInfo.getNotificationEmail().get(CommonConstant.ERROR_ALERT_NOTIFICATION))
+				.collect(Collectors.toList());
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
-		if (CollectionUtils.isNotEmpty(usersList)) {
-			usersList.forEach(action -> {
-				Optional<ProjectsAccess> projectAccess = action.getProjectsAccess().stream()
+		if (CollectionUtils.isNotEmpty(notificationEnableUsersList)) {
+			notificationEnableUsersList.forEach(userInfo -> {
+				// Case handel for SUPERADMIN
+				if (CollectionUtils.isEmpty(userInfo.getProjectsAccess())) {
+					emailAddresses.add(userInfo.getEmailAddress());
+				}
+				// case handel for ProjectAdmin
+				Optional<ProjectsAccess> projectAccess = userInfo.getProjectsAccess().stream()
 						.filter(access -> access.getRole().equalsIgnoreCase(ROLE_PROJECT_ADMIN)).findAny();
 				if (projectAccess.isPresent()) {
 					projectAccess.get().getAccessNodes().stream().forEach(accessNode -> {
 						if (accessNode.getAccessItems().stream().anyMatch(item -> item.getItemId()
 								.equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
-							emailAddresses.add(action.getEmailAddress());
+							emailAddresses.add(userInfo.getEmailAddress());
 						}
 					});
 				}

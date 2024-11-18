@@ -44,17 +44,25 @@ public enum KPIExcelColumn {
 	CODE_BUILD_TIME("kpi8",
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
-							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad" )), CODE_COMMIT("kpi11",
-									Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No. Of Commit",
-											"No. of Merge")),
+			Arrays.asList("Sprint Name", "Story ID", "Issue Description")),
+	CODE_COMMIT("kpi11", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "No Of Commit",
+			"No of Merge")),
+	REPO_TOOL_CODE_COMMIT("kpi157",
+			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer", "No Of Commit", "No of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
-			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
-					"Mean Time To Merge (In Hours)")), AVERAGE_RESOLUTION_TIME(
+			Arrays.asList("Project", "Repo", "Branch", "Merge Request Url", "Days/Weeks",
+					"Mean Time To Merge (In Hours)")),
+	REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", Arrays.asList("Project", "Repo", "Branch", "Days/Weeks", "Developer",
+			"Merge Request Url", "Mean Time To Merge (In Hours)")),
+	AVERAGE_RESOLUTION_TIME(
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
 									"Resolution Time(In Days)")),
-	LEAD_TIME("kpi3", Arrays.asList("Issue Id", "Issue Description", "Intake to DOR (In Days)", "DOR to DOD (In Days)", "DOD TO Live (In Days)", "Lead Time (In Days)")),
+
+	LEAD_TIME("kpi3", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Created Date", "Closed Date",
+			"Lead Time (In Days)")),
+
 	LEAD_TIME_KANBAN("kpi53", Arrays.asList("Project Name", "Story ID", "Issue Description", "Open to Triage(In Days)",
 			"Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 
@@ -68,8 +76,8 @@ public enum KPIExcelColumn {
 											Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",
 													"Original Time Estimate (in hours)",
 													"Total Time Spent (in hours)")), COMMITMENT_RELIABILITY("kpi72",
-															Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Status","Issue Type",
-																	"Initial Commitment", "Size(story point/hours)")),
+															Arrays.asList("Sprint Name", "Story ID", "Squad", "Issue Status","Issue Type", "Scope" ,
+																	"Size(story point/hours)")),
 
 	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad", "Linked Defects")),
 
@@ -78,7 +86,7 @@ public enum KPIExcelColumn {
 	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Squad",  "Linked Defects to Story",
 			"Size(story point/hours)")),
 
-	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Escaped Defect")),
+	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Escaped defect identifier")),
 
 	DEFECT_REMOVAL_EFFICIENCY("kpi34",
 			Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Squad", "Defect Removed")),
@@ -113,6 +121,9 @@ public enum KPIExcelColumn {
 
 	CHANGE_FAILURE_RATE("kpi116", Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
 			"Build Failure Percentage", "Weeks")),
+	CHANGE_FAILURE_RATE_KANBAN("kpi184", Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
+			"Build Failure Percentage", "Weeks")),
+	BUILD_FREQUENCY("kpi172", Arrays.asList("Project Name", "Job Name","Weeks", "Start Date", "Build Url")),
 
 	TEST_EXECUTION_AND_PASS_PERCENTAGE("kpi70",
 			Arrays.asList("Sprint Name", "Total Test", "Executed Test", "Execution %", "Passed Test", "Passed %")),
@@ -124,6 +135,7 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
 	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
+	DEPLOYMENT_FREQUENCY_KANBAN("kpi183", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
 
 	DEFECTS_WITHOUT_STORY_LINK("kpi80",
 			Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
@@ -171,7 +183,10 @@ public enum KPIExcelColumn {
 			"Build Status", "Build Url")),
 
 	CODE_COMMIT_MERGE_KANBAN("kpi65",
-			Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No. Of Commit")),
+			Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No Of Commit")),
+
+	REPO_TOOL_CODE_COMMIT_MERGE_KANBAN("kpi159",
+			Arrays.asList("Project Name", "Repo", "Branch", "Developer", "Days/Weeks", "No Of Commit")),
 
 	TEAM_CAPACITY_KANBAN("kpi58",
 			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
@@ -229,7 +244,7 @@ public enum KPIExcelColumn {
 			"Size(story point/hours)", "Issue Status", "Due Date", "Remaining Estimate", "Assignee")),
 
 	INVALID("INVALID_KPI", Arrays.asList("Invalid")), BACKLOG_READINESS_EFFICIENCY("kpi138",
-			Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)")),
+			Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)","Created Date","DOR Date")),
 
 	FIRST_TIME_PASS_RATE_ITERATION("kpi135",
 			Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
@@ -250,7 +265,7 @@ public enum KPIExcelColumn {
 			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
 
 	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
-			"Issue Status", "Root Cause", "Priority", "Assignee")),
+			"Issue Status", "Root Cause", "Priority", "Assignee", "Testing Phase")),
 
 	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", Arrays.asList("Issue ID", "Issue Description", "Sprint Name",
 			"Issue Type", "Issue Status", "Root Cause", "Priority", "Assignee")),
@@ -269,7 +284,7 @@ public enum KPIExcelColumn {
 									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
 	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
-			"Priority", "Assignee", "Issue Status")),
+			"Priority", "Assignee", "Issue Status", "Release Tag Date (Latest)", "Dev Completion Date", "Completion Date")),
 
 	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Squad", "Status", "PI Name",
 			"Planned Value", "Achieved Value")),
@@ -286,18 +301,56 @@ public enum KPIExcelColumn {
 			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
 
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
-			"Sprint Name", "Assignee", "Issue Status")),
+			"Sprint Name", "Assignee", "Issue Status", "Testing Phase")),
+
 	PICKUP_TIME("kpi160",
-			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
-					"Pickup Time (In Hours)")),
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Pickup Time (In Hours)")),
 
 	PR_SIZE("kpi162",
-			Arrays.asList("Project", "Repo", "Branch", "Days/Weeks",
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "No of Merge",
 					"PR Size (No. of lines)")),
 
-	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
+	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
+			"To Do(Value/Percentage)", "In Progress(Value/Percentage)", "Done(Value/Percentage)")),
 
-	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status"));
+	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status",
+			"To Do(Value/Percentage)", "In Progress(Value/Percentage)", "Done(Value/Percentage)")),
+
+    MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
+            "Created Date", "Completion Date", "Time to Recover (In Hours)")),
+
+	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month")),
+	FLOW_EFFICIENCY("kpi170", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size (In Story Points)",
+			"Wait Time", "Total Time", "Flow Efficiency")),
+
+	CYCLE_TIME("kpi171", Arrays.asList("Issue Id", "Issue Type", "Issue Description","DOR Date", "Intake to DOR",
+			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live")),
+	REWORK_RATE("kpi173", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Rework Rate")),
+
+	REVERT_RATE("kpi180", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Revert PR",
+			"No of Merge", "Revert Rate")),
+
+	PR_SUCCESS_RATE("kpi182", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "No of Merge",
+			"Closed PR", "PR Success Rate")),
+
+	PR_DECLINE_RATE("kpi181", Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Declined PR",
+			"Closed PR", "PR Decline Rate")),
+
+	RISKS_AND_DEPENDENCIES("kpi176", Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Issue Status",
+			"Priority", "Created Date", "Assignee")),
+
+	RELEASE_PLAN("kpi179", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
+			"Priority", "Assignee", "Issue Status", "Planned Completion Date (Due Date)")),
+	DEFECT_COUNT_BY("kpi178", Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause List", "Priority", "Testing Phase", "Assignee")),
+
+	DEFECT_COUNT_BY_EXPORT("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
+			"Issue Status", "Root Cause", "Priority", "Testing Phase", "Assignee")),
+	INNOVATION_RATE("kpi185",
+			Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Added Lines", "Total Lines Changed",
+					"Innovation Rate")), DEFECT_RATE("kpi186",
+							Arrays.asList("Project", "Repo", "Branch", "Developer", "Days/Weeks", "Defect PR",
+									"No of Merge", "Defect Rate"));
 
 	// @formatter:on
 
@@ -309,7 +362,7 @@ public enum KPIExcelColumn {
 	KPIExcelColumn(String kpiID, List<Object> columns) {
 		this.kpiId = kpiID;
 		if (columns.get(0) instanceof String) {
-			this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
+			this.columns = columns.stream().map(Object::toString).toList();
 		} else {
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();
@@ -352,12 +405,9 @@ public enum KPIExcelColumn {
 		List<AccountHierarchyData> accountHierarchyData = (List<AccountHierarchyData>) cacheService
 				.cacheAccountHierarchyData();
 		for (ObjectId projectId : projectIds) {
-			if (CollectionUtils.isNotEmpty(accountHierarchyData)
-					&& CollectionUtils
-							.isNotEmpty((accountHierarchyData).stream()
-									.filter(a -> addFilterCat.containsKey(a.getLabelName())
-											&& a.getBasicProjectConfigId().equals(projectId))
-									.collect(Collectors.toList()))) {
+			if (CollectionUtils.isNotEmpty(accountHierarchyData) && CollectionUtils.isNotEmpty((accountHierarchyData).stream().filter(
+					a -> addFilterCat.containsKey(a.getLabelName()) && a.getBasicProjectConfigId().equals(projectId))
+					.toList())) {
 				squadConfigured = true;
 				break;
 			}

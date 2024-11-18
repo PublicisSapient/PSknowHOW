@@ -18,28 +18,50 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
+import static com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl.ERROR_MESSAGE_CONSUMING_REST_API;
+import static com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl.ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL;
+import static com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl.ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
+import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class provides method to perform CRUD and validation operations on user
@@ -48,19 +70,22 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepositor
  * @author prijain3
  *
  */
+@Slf4j
 @Service
 public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
 	private final AuthenticationRepository authenticationRepository;
 	private final AuthProperties authProperties;
 	private final UserInfoRepository userInfoRepository;
+	private final CookieUtil cookieUtil;
 
 	@Autowired
 	public DefaultAuthenticationServiceImpl(AuthenticationRepository authenticationRepository,
-			AuthProperties authProperties, UserInfoRepository userInfoRepository) {
+			AuthProperties authProperties, UserInfoRepository userInfoRepository, CookieUtil cookieUtil) {
 		this.authenticationRepository = authenticationRepository;
 		this.authProperties = authProperties;
 		this.userInfoRepository = userInfoRepository;
+		this.cookieUtil = cookieUtil;
 	}
 
 	/**
@@ -195,17 +220,21 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		DateTime now = DateTime.now(DateTimeZone.UTC);
 
+		if (!Pattern.matches(CommonConstant.USERNAME_PATTERN, username) || authentication == null) {
+			throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
+		}
+
 		if (checkForResetFailAttempts(authentication, now)) {
 			resetFailAttempts(username);
 		} else if (checkForLockedUser(authentication)) {
 			throw new LockedException("Account Locked: Invalid Login Limit Reached " + username);
 		}
 
-		if (authentication != null && !authentication.isApproved()) {
+		if (!authentication.isApproved()) {
 			throw new PendingApprovalException("Login Failed: Your access request is pending for approval");
 		}
 
-		if (authentication != null && authentication.checkPassword(password)) {
+		if (authentication.checkPassword(password)) {
 			return new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(),
 					new ArrayList<>());
 		}
@@ -319,14 +348,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	public String getLoggedInUser() {
 		org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
-		String username;
-
-		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-		} else {
-			username = authentication.getPrincipal().toString();
-		}
-		return username;
+		return authentication.getPrincipal().toString();
 	}
 
 	@Override
@@ -336,14 +358,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			return null;
 		}
 
-		String username;
-
-		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-		} else {
-			username = authentication.getPrincipal().toString();
-		}
-		return username;
+		return authentication.getPrincipal().toString();
 	}
 
 	/**
@@ -353,8 +368,57 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	 * @return
 	 */
 	@Override
-	public Iterable<Authentication> getAuthenticationByApproved(boolean approved) {
-		return authenticationRepository.findByApproved(approved);
+	public List<UserAccessApprovalResponseDTO> getAuthenticationByApproved(boolean approved) {
+		List<UserAccessApprovalResponseDTO> userAccessApprovalResponseDTOList = new ArrayList<>();
+		List<Authentication> nonApprovedUserList = authenticationRepository.findByApproved(approved);
+		nonApprovedUserList.stream().filter(Objects::nonNull).forEach(userInfoDTO -> {
+			UserAccessApprovalResponseDTO userAccessApprovalResponseDTO = new UserAccessApprovalResponseDTO();
+			userAccessApprovalResponseDTO.setUsername(userInfoDTO.getUsername());
+			userAccessApprovalResponseDTO.setEmail(userInfoDTO.getEmail());
+			userAccessApprovalResponseDTO.setApproved(userInfoDTO.isApproved());
+			List<String> whitelistDomain = authProperties.getWhiteListDomainForEmail();
+			if (CollectionUtils.isNotEmpty(whitelistDomain)
+					&& whitelistDomain.stream().anyMatch(domain -> userInfoDTO.getEmail().contains(domain))) {
+				userAccessApprovalResponseDTO.setWhitelistDomainEmail(true);
+			} else {
+				userAccessApprovalResponseDTO.setWhitelistDomainEmail(false);
+			}
+			userAccessApprovalResponseDTOList.add(userAccessApprovalResponseDTO);
+		});
+		return userAccessApprovalResponseDTOList;
 	}
 
+	@Override
+	public ResponseEntity<ServiceResponse> changePasswordForCentralAuth(ChangePasswordRequest request) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeadersForApiKey(apiKey, true);
+		String changePasswordUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getChangePasswordEndPoint(), "");
+		HttpEntity<?> entity = new HttpEntity<>(request, headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(changePasswordUrl, HttpMethod.POST, entity, String.class);
+			if (response.getStatusCode().is2xxSuccessful() && Objects.nonNull(response.getBody())) {
+				JSONObject jsonObject = new JSONObject(response.getBody());
+				ServiceResponse serviceResponse = new ServiceResponse();
+				serviceResponse.setMessage(jsonObject.getString("message"));
+				serviceResponse.setSuccess(jsonObject.getBoolean("success"));
+				serviceResponse.setData(jsonObject.getString("data"));
+				return ResponseEntity.ok(serviceResponse);
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
+				throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+			}
+		} catch (JSONException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (HttpClientErrorException e) {
+			log.error(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL, e.getMessage());
+			throw new APIKeyInvalidException(ERROR_WHILE_CONSUMING_AUTH_SERVICE_IN_USER_INFO_SERVICE_IMPL);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		}
+	}
 }

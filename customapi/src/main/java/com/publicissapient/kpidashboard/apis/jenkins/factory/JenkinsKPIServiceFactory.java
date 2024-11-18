@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsKPIService;
 /**
  * Factory class for providing service objects.
  */
+@Builder
 @Service
 public class JenkinsKPIServiceFactory {
 

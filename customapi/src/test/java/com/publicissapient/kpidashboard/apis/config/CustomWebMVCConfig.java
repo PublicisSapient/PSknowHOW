@@ -28,17 +28,16 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
+import com.publicissapient.kpidashboard.common.mapper.CustomObjectMapper;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan({ "com.publicissapient.kpidashboard" })
-public class CustomWebMVCConfig extends WebMvcConfigurerAdapter {
+public class CustomWebMVCConfig implements WebMvcConfigurer {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable("api");
@@ -61,16 +60,6 @@ public class CustomWebMVCConfig extends WebMvcConfigurerAdapter {
 		PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
 		resolver.setMaxPageSize(Integer.MAX_VALUE);
 		argumentResolvers.add(resolver);
-	}
-
-	/*
-	 * Added for Swagger
-	 */
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		String[] staticResourceMappingPath = { "classpath:/static/" };
-
-		registry.addResourceHandler("/**").addResourceLocations(staticResourceMappingPath);
 	}
 
 }

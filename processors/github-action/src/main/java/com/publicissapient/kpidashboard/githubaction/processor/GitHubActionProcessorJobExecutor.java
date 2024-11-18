@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -40,12 +40,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Build;
@@ -152,20 +154,22 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 						proBasicConfig.getId().toHexString());
 
 				try {
+					processorToolConnectionService.validateConnectionFlag(gitHubActions);
 					log.info("Fetching jobs : {}", gitHubActions.getJobName());
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					MDC.put("ProjectDataStartTime", String.valueOf(System.currentTimeMillis()));
 
 					GitHubActionClient gitHubActionClient = gitHubActionClientFactory.getGitHubActionClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						processBuildJob(gitHubActionClient, gitHubActions, processor, processorExecutionTraceLog, count,
-								proBasicConfig);
+						count = processBuildJob(gitHubActionClient, gitHubActions, processor,
+								processorExecutionTraceLog, proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count));
 					} else {
 						processDeployJob(gitHubActionClient, gitHubActions, processor, proBasicConfig, deploymentJobs,
 								processorExecutionTraceLog);
 					}
 				} catch (RestClientException | FetchingBuildException exception) {
+					isClientException(gitHubActions, exception);
 					executionStatus = false;
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
@@ -188,6 +192,23 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		MDC.clear();
 		return executionStatus;
 
+	}
+
+	/**
+	 * to check for client exception and update the flag if related to connection
+	 * 
+	 * @param gitHubActions
+	 *            gitHubActions
+	 * @param exception
+	 *            exception
+	 */
+	private void isClientException(ProcessorToolConnection gitHubActions, Exception exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			processorToolConnectionService.updateBreakingConnection(gitHubActions.getConnectionId(), errMsg);
+		}
 	}
 
 	@Override
@@ -236,16 +257,16 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		}
 	}
 
-	private void processBuildJob(GitHubActionClient gitHubActionClient, ProcessorToolConnection gitHubActions,
-			GitHubActionProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, int count,
+	private int processBuildJob(GitHubActionClient gitHubActionClient, ProcessorToolConnection gitHubActions,
+			GitHubActionProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog,
 			ProjectBasicConfig proBasicConfig) throws FetchingBuildException {
 
 		Set<Build> buildsByJob = gitHubActionClient.getBuildJobsFromServer(gitHubActions, proBasicConfig);
+		int updatedJobs = 0;
 		if (CollectionUtils.isNotEmpty(buildsByJob)) {
 
-			int updatedJobs = addNewBuildDetails(buildsByJob, gitHubActions, processor.getId(), proBasicConfig);
-			count += updatedJobs;
-			log.info("Job updated for :{}", count);
+			updatedJobs = addNewBuildDetails(buildsByJob, gitHubActions, processor.getId(), proBasicConfig);
+			log.info("Job updated for :{}", updatedJobs);
 
 		} else {
 			log.error("Job Details not fetched for : {}, job : {}", gitHubActions.getUrl(), gitHubActions.getJobName());
@@ -255,7 +276,7 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		processorExecutionTraceLog.setExecutionSuccess(true);
 		processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
-
+		return updatedJobs;
 	}
 
 	private int addNewBuildDetails(Set<Build> buildsByJob, ProcessorToolConnection gitHubActions, ObjectId processorId,

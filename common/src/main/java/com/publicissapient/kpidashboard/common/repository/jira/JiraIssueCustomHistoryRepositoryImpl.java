@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,23 +65,10 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	public static final String STATUS_UPDATION_LOG_STORY_CHANGED_TO = "statusUpdationLog.story.changedTo";
 	public static final String URL = "url";
 	public static final String DESCRIPTION = "description";
+	public static final String ESTIMATE = "estimate";
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
-
-	/**
-	 * To iso 8601 utc string.
-	 *
-	 * @param date
-	 *            the date
-	 * @return the string
-	 */
-	public static String toISO8601UTC(Date date) {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US);
-		df.setTimeZone(tz);
-		return df.format(date);
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -186,6 +173,13 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
+		query.fields().include(STORY_ID);
+		query.fields().include(STORY_TYPE);
+		query.fields().include(BASIC_PROJ_CONF_ID);
+		query.fields().include(STATUS_CHANGE_LOG);
+		query.fields().include(TICKET_CREATED_DATE_FIELD);
+		query.fields().include(URL);
+		query.fields().include(DESCRIPTION);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 
@@ -300,6 +294,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		query.fields().include(TICKET_CREATED_DATE_FIELD);
 		query.fields().include(URL);
 		query.fields().include(DESCRIPTION);
+		query.fields().include(ESTIMATE);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 

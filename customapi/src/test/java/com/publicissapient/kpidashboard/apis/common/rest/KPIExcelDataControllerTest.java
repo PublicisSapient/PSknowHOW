@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,6 +67,9 @@ public class KPIExcelDataControllerTest {
 	@InjectMocks
 	private KPIExcelDataController kpiExcelDataController;
 
+	@Mock
+	private CustomApiConfig customApiConfig;
+
 	@Before
 	public void setup() {
 		mockMvc = MockMvcBuilders.standaloneSetup(kpiExcelDataController).build();
@@ -97,13 +101,15 @@ public class KPIExcelDataControllerTest {
 				+ "      \"kpiUnit\": \"Percentage\",\n" + "      \"kpiSource\": \"Jira\",\n"
 				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n"
 				+ "  \"ids\": [\n" + "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
+		when(customApiConfig.getxApiKey()).thenReturn("testKey");
 		when(kpiExcelDataService.process(Mockito.anyString(), Mockito.anyInt(), Mockito.any(),
-				(List<String>) Mockito.isNull(), Mockito.any(), (Boolean) Mockito.isNull()))
+				(List<String>) Mockito.isNull(), Mockito.any(), (Boolean) Mockito.isNull(),Mockito.any()))
 						.thenReturn((KPIExcelValidationDataResponse) kpiExcelValidationDataResponse);
 
 		mockMvc.perform(post("/v1/kpi/kpi14").header("x-filter-level", 1)
-				.header("x-filter-id", Arrays.asList("GMA_GMA", "CIM_CIM")).contentType(MediaType.APPLICATION_JSON_UTF8)
-				.content(request)).andExpect(status().is2xxSuccessful()).andDo(print());
+						.header("x-filter-id", Arrays.asList("GMA_GMA", "CIM_CIM")).header("X-Api-Key", "testKey")
+						.contentType(MediaType.APPLICATION_JSON).content(request)).andExpect(status().is2xxSuccessful())
+				.andDo(print());
 	}
 
 	@Test

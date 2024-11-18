@@ -62,8 +62,14 @@ public final class AzureConstants {
 	public static final String WHERE = "where";
 	public static final String DUE_DATE = "Microsoft.VSTS.Scheduling.DueDate";
 	public static final String WORKLOG = "Microsoft.VSTS.Scheduling.CompletedWork";
-    public static final String USER = "user";
+	public static final String USER = "user";
 	public static final String SPACE = " ";
+	public static final String FORWARD_SLASH = "/";
+	public static final String COMPLETED = "completed";
+	public static final String RESOLVED = "resolved";
+	public static final String INPROGRESS = "inprogress";
+	public static final String PROPOSED = "proposed";
+	public static final String REMOVED = "removed";
 
 	static {
 		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

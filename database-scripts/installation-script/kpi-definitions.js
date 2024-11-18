@@ -749,11 +749,33 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": true,
     "hideOverallFilter": true,
     "maturityRange": [
-      "-50",
-      "50-30",
-      "30-20",
-      "20-10",
-      "10-"
+          "-60",
+          "60-45",
+          "45-30",
+          "30-15",
+          "15-"
+     ],
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212"
+        }
     ]
   },
   {
@@ -1198,12 +1220,44 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
-      "-1",
-      "1-2",
-      "2-5",
-      "5-10",
-      "10-"
-    ]
+      "0-2" ,
+      "2-4" ,
+      "4-6" ,
+      "6-8" ,
+      "8-"
+    ],
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+		  "label": ">= 2 per week",
+		  "displayRange": "0,1"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+		  "label": "Once per week",
+		  "displayRange": "2,3"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "Once in 2 weeks",
+          "displayRange": "4,5"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "Once in 4 weeks",
+          "displayRange": "6,7"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212",
+          "label": "< Once in 8 weeks",
+          "displayRange": "8 and Above"
+        }
+     ]
   },
   {
     "kpiId": "kpi73",
@@ -2538,7 +2592,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 2,
+    "defaultOrder": 3,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 11,
@@ -2571,7 +2625,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Production Defects Ageing",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2596,7 +2650,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Refinement Rejection Rate",
     "kpiUnit": "%",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 6,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2647,7 +2701,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Defect Reopen Rate",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 3,
+    "defaultOrder": 5,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2864,7 +2918,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 8,
+    "defaultOrder": 1,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 11,
@@ -2898,58 +2952,45 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi3",
-    "kpiName": "Lead Time",
-    "isDeleted": "False",
-    "kpiCategory": "Backlog",
-    "boxType": "2_column",
-    "kpiBaseLine": "0",
-    "thresholdValue": "",
-    "defaultOrder": 1,
-    "kpiUnit": "Count",
-    "kpiSource": "Jira",
-    "groupId": 11,
-    "kanban": false,
-    "chartType": "",
-    "kpiInfo": {
-      "definition": "Measures Total time between a request was made and  all work on this item is completed and the request was delivered .",
-      "formula": [
-        {
-          "lhs": "It is calculated as the sum Ideation time, Development time & Release time"
-        }
-      ],
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
-        },
-        {
-          "type": "paragraph",
-          "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
-        },
-        {
-          "type": "paragraph",
-          "value": "Release time (DOD to Live): Time taken between story completion to it going live."
-        },
-        {
-          "type": "link",
-          "kpiLinkDetail": {
-            "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+      "kpiId": "kpi3",
+      "kpiName": "Lead Time",
+      "isDeleted": "False",
+      "kpiCategory": "Backlog",
+      "boxType": null,
+      "kpiBaseLine": "0",
+      "thresholdValue": "20",
+      "defaultOrder": "1",
+      "kpiUnit": "Days",
+      "kpiSource": "Jira",
+      "groupId": 11,
+      "kanban": false,
+      "aggregationCriteria": "sum",
+      "chartType": "line",
+      "kpiInfo": {
+        "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+        "formula": null,
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
+            }
           }
-        }
-      ]
+        ]
+      },
+      "xAxisLabel": "Range",
+      "yAxisLabel": "Days",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "kpiFilter": "dropdown",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false,
+      "kpiSubCategory": "Flow KPIs",
+      "lowerThresholdBG": "white",
+      "upperThresholdBG": "red",
+      "maturityRange": ["-60", "60-45", "45-30", "30-10", "10-"]
     },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "kpiWidth": 100,
-    "isPositiveTrend": false,
-    "showTrend": false,
-    "kpiFilter": "multiSelectDropDown",
-    "isAdditionalFilterSupport": false,
-    "kpiSubCategory": "Flow KPIs",
-    "calculateMaturity": true,
-  },
   {
     "kpiId": "kpi148",
     "kpiName": "Flow Load",
@@ -3036,7 +3077,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 1,
     "kpiCategory": "Release",
     "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
@@ -3045,8 +3086,17 @@ db.getCollection('kpi_master').insertMany(
     "kanban": false,
     "chartType": "CumulativeMultilineChart",
     "kpiInfo": {
-      "definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release."
-    },
+      "definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+          }
+        }
+      ]
+    }
     "xAxisLabel": "",
     "yAxisLabel": "Count",
     "kpiWidth": 100,
@@ -3077,9 +3127,8 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "dropdown",
       "boxType": "chart",
-      "kpiSubCategory": "Summary",
+      "kpiSubCategory": "Backlog Overview",
       "calculateMaturity": false
   },
   {
@@ -3102,9 +3151,8 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "dropdown",
       "boxType": "chart",
-      "kpiSubCategory": "Summary",
+      "kpiSubCategory": "Backlog Overview",
       "calculateMaturity": false
   },
   {
@@ -3178,9 +3226,8 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "dropdown",
     "boxType": "chart",
-    "kpiSubCategory": "Summary",
+    "kpiSubCategory": "Backlog Overview",
     "calculateMaturity": false
   },
   {
@@ -3203,8 +3250,7 @@ db.getCollection('kpi_master').insertMany(
           "type": "paragraph",
           "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
         }
-      ],
-      "maturityLevels": []
+      ]
     },
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Days",
@@ -3214,7 +3260,41 @@ db.getCollection('kpi_master').insertMany(
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+    "maturityRange": [
+      "90-",
+      "30-90",
+      "7-30",
+      "1-7",
+      "-1"
+    ]
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+		  "label": "< 1 Day"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+		  "label": "< 7 Days"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "< 30 Days"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "< 90 Days"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212",
+          "label": ">= 90 Days"
+        }
+      ]
   },
   {
     "kpiId": "kpi157",
@@ -3641,7 +3721,7 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "multiSelectDropDown",
+      "kpiFilter": "radioButton",
       "boxType": "chart",
       "calculateMaturity": false,
       "kpiSubCategory": "Epic View"
@@ -3652,7 +3732,7 @@ db.getCollection('kpi_master').insertMany(
         "maxValue": "",
         "kpiUnit": "Count",
         "isDeleted": "False",
-        "defaultOrder": 5,
+        "defaultOrder": 4,
         "kpiCategory": "Backlog",
         "kpiSource": "Jira",
         "groupId": 11,
@@ -3670,7 +3750,192 @@ db.getCollection('kpi_master').insertMany(
         "isAdditionalFilterSupport": false,
         "kpiFilter": "",
         "boxType": "chart",
-        "calculateMaturity": false
+        "calculateMaturity": false,
+        "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+ },
+ {
+    "kpiId": "kpi168",
+    "kpiName": "Sonar Code Quality",
+    "kpiUnit": "unit",
+    "maxValue": "90",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiSource": "Sonar",
+    "groupId": 1,
+    "kanban": false,
+    "chartType": "bar-with-y-axis-group",
+    "kpiInfo": {
+      "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Code Quality in Sonarqube is shown as Grades (A to E)."
+        },
+        {
+          "type": "paragraph",
+          "value": "A is the highest (best) and,"
+        },
+        {
+          "type": "paragraph",
+          "value": "E is the least"
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "Months",
+    "yAxisLabel": "Code Quality",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": ["5", "4", "3", "2", "1"],
+    "yaxisOrder" : {
+            5 : 'E',
+            4 : 'D',
+            3 : 'C',
+            2 : 'B',
+            1 : 'A'
+        }
+  },
+  {
+    "kpiId": "kpi170",
+    "kpiName": "Flow Efficiency",
+    "kpiUnit": "%",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+        "definition": "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
+    },
+    "xAxisLabel": "Duration",
+    "yAxisLabel": "Percentage",
+    "isPositiveTrend": false,
+    "kpiFilter": "dropDown",
+    "showTrend": false,
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kpiSubCategory": "Flow KPIs"
+  },
+  {
+      "kpiId": "kpi166",
+      "kpiName": "Mean Time to Recover",
+      "maxValue": "100",
+      "kpiUnit": "Hours",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiSource": "Jira",
+      "kpiCategory": "Dora",
+      "groupId": 15,
+      "thresholdValue": 0,
+      "kanban": false,
+      "chartType": "line",
+      "kpiInfo": {
+          "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+          "details": [
+              {
+                  "type": "paragraph",
+                  "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "The average of all such tickets will be shown."
+              },
+              {
+                   "type" : "link",
+                    "kpiLinkDetail" : {
+                    "text" : "Detailed Information at",
+                    "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+                    }
+               }
+          ]
+      },
+      "xAxisLabel": "Weeks",
+      "yAxisLabel": "Hours",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "kpiFilter": "",
+      "aggregationCriteria": "sum",
+      "aggregationCircleCriteria": "average",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": true,
+       "maturityRange": [
+            "48-",
+            "24-48",
+            "12-24",
+            "1-12",
+            "-1"
+          ],
+ "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212"
+        }
+      ]
+    },
+  {
+      "kpiId": "kpi171",
+      "kpiName": "Cycle Time",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 11,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "stackedColumn",
+      "isAggregationStacks" : false ,
+      "xAxisLabel": "",
+      "yAxisLabel": "Days",
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropDown",
+      "boxType": "chart",
+      "calculateMaturity": false,
+      "kpiInfo" : {
+      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
+          }
+        }
+      ]
+      },
+      "kpiSubCategory": "Flow KPIs"
     }
 ]
 );
@@ -3795,6 +4060,12 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kpiId": "kpi27",
 		"categoryId": "categoryTwo",
 		"kpiOrder": 14,
+		"kanban": false
+	},
+    {
+		"kpiId": "kpi168",
+		"categoryId": "categoryTwo",
+		"kpiOrder": 15,
 		"kanban": false
 	},
 	{
@@ -6965,7 +7236,8 @@ db.kpi_column_configs.insertMany([
 
 //field_mapping_structure
 db.getCollection('field_mapping_structure').insertMany(
-[{
+[
+{
         "fieldName": "jiraStoryIdentificationKpi40",
         "fieldLabel": "Issue type to identify Story",
         "fieldType": "chips",
@@ -7664,12 +7936,12 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "jiraDodKPI14",
-        "fieldLabel": "Status considered for defect closure",
+        "fieldLabel": "Status considered for Issue closure",
         "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
+            "definition": "Status considered for issue closure (Mention completed status of all types of issues)"
         }
     },
     {
@@ -7683,7 +7955,7 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-        "fieldName": "jiraDodKPI3",
+        "fieldName": "jiraDodKPI171",
         "fieldLabel": "DOD Status",
         "fieldType": "chips",
         "fieldCategory": "workflow",
@@ -8929,6 +9201,88 @@ db.getCollection('field_mapping_structure').insertMany(
       }
     },
     {
+        "fieldName": "jiraStatusStartDevelopmentKPI154",
+        "fieldLabel": "Status to identify start of development",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which issue is started development. <br> Example: In Analysis<hr>"
+        }
+    },
+    {
+        "fieldName": "jiraDevDoneStatusKPI154",
+        "fieldLabel": "Status to identify Dev completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+        }
+    },
+    {
+        "fieldName": "jiraQADoneStatusKPI154",
+        "fieldLabel": "Status to identify QA completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the QA work is completed and an issue can be ready for signoff/close",
+        }
+    },
+    {
+        "fieldName": "jiraIterationCompletionStatusKPI154",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+        }
+    },
+    {
+        "fieldName": "jiraStatusForInProgressKPI154",
+        "fieldLabel": "Status to identify In Progress issues",
+        "section": "WorkFlow Status Mapping",
+        "fieldType": "chips",
+        "readOnly": true,
+        "tooltip": {
+            "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
+        }
+    },
+    {
+       "fieldName": "jiraSubTaskIdentification",
+       "fieldLabel": "Sub-Task Issue Types",
+       "fieldType": "chips",
+       "fieldCategory": "Issue_Type",
+       "section": "Issue Types Mapping",
+       "tooltip": {
+       "definition": "Any issue type mentioned will be considered as sub-task linked with story"
+       }
+    },
+    {
+        "fieldName": "storyFirstStatusKPI154",
+        "fieldLabel": "Status when 'Story' issue type is created",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All status that identify open statuses.",
+
+        }
+    },
+    {
+        "fieldName": "jiraOnHoldStatusKPI154",
+        "fieldLabel": "Status when issue type is put on Hold",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All status that identify hold/blocked statuses.",
+
+        }
+    },
+    {
        "fieldName":"jiraDefectRejectionStatusKPI155",
        "fieldLabel":"Ticket Rejected/Dropped Status",
        "fieldType":"text",
@@ -8962,7 +9316,7 @@ db.getCollection('field_mapping_structure').insertMany(
     	"fieldName": "uploadDataKPI42",
     	"fieldLabel": "KPI calculation logic",
     	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
+    	"toggleLabelRight": "Upload Data",
     	"section": "WorkFlow Status Mapping",
     	"processorCommon": false,
     	"tooltip": {
@@ -8973,7 +9327,7 @@ db.getCollection('field_mapping_structure').insertMany(
     	"fieldName": "uploadDataKPI16",
     	"fieldLabel": "KPI calculation logic",
     	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
+    	"toggleLabelRight": "Upload Data",
     	"section": "WorkFlow Status Mapping",
     	"processorCommon": false,
     	"tooltip": {
@@ -9161,5 +9515,372 @@ db.getCollection('field_mapping_structure').insertMany(
   "tooltip":{
     "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
   }
-}
+},
+{
+  "fieldName": "startDateCountKPI150",
+  "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
+  "fieldType": "number",
+  "section": "Issue Types Mapping",
+  "tooltip": {
+    "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
+  }
+},
+    {
+        "fieldName": "thresholdValueKPI14",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI82",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI111",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI35",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI34",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI37",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI28",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI36",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+           "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI16",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI17",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI38",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI27",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+           "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI72",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI84",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI11",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI62",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI64",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI67",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI65",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI157",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI158",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI159",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI160",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI164",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI3",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+{
+    "fieldName": "jiraStoryIdentificationKPI166",
+    "fieldLabel": "Issue type to identify Production incidents",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All issue types that are used as/equivalent to Production incidents.",
+
+    }
+},
+{
+    "fieldName": "jiraProductionIncidentIdentification",
+    "fieldLabel": "Production incidents identification",
+    "fieldType": "radiobutton",
+    "section": "Defects Mapping",
+    "tooltip": {
+        "definition": "This field is used to identify if a production incident is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: PROD_DEFECT (This has to be one value).<hr>"
+    },
+    "options": [{
+        "label": "CustomField",
+        "value": "CustomField"
+    },
+    {
+        "label": "Labels",
+        "value": "Labels"
+    }
+    ],
+    "nestedFields": [
+
+        {
+            "fieldName": "jiraProdIncidentRaisedByCustomField",
+            "fieldLabel": "Production Incident Custom Field",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "filterGroup": ["CustomField"],
+            "tooltip": {
+                "definition": "Provide customfield name to identify Production Incident. <br> Example: customfield_13907<hr>"
+            }
+        },
+        {
+            "fieldName": "jiraProdIncidentRaisedByValue",
+            "fieldLabel": "Production Incident Values",
+            "fieldType": "chips",
+            "filterGroup": ["CustomField", "Labels"],
+            "tooltip": {
+                "definition": "Provide label name to identify Production IncidentProduction IncideProd_Incidentxample: Clone_by_QA <hr>"
+            }
+        }
+    ]
+},
+{
+    "fieldName": "jiraDodKPI166",
+    "fieldLabel": "DOD Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+    }
+},
+{
+    "fieldName": "jiraIssueClosedStateKPI170",
+    "fieldLabel": "Status to identify Close Statuses",
+    "fieldCategory": "workflow",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"
+    }
+    },
+{
+    "fieldName": "jiraIssueWaitStateKPI170",
+    "fieldLabel": "Status to identify Wait Statuses",
+    "fieldCategory": "workflow",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
+    }
+},
+{
+ "fieldName": "populateByDevDoneKPI150",
+ "fieldLabel": "Prediction logic",
+ "fieldType": "toggle",
+ "toggleLabelLeft" : "Overall completion",
+ "toggleLabelRight": "Dev Completion",
+ "section": "WorkFlow Status Mapping",
+ "processorCommon": false,
+ "tooltip": {
+   "definition": "Enabled State (Kpi will populate w.r.t Dev complete date)"
+ }
+},
+{
+ "fieldName": "jiraDevDoneStatusKPI150",
+ "fieldLabel": "Status to identify Dev completed issues",
+ "fieldType": "chips",
+ "fieldCategory": "workflow",
+ "section": "WorkFlow Status Mapping",
+ "tooltip": {
+   "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+ }
+},
+{
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
+},
+{
+     "fieldName": "jiraLiveStatusKPI171",
+     "fieldLabel": "Live Status - Cycle Time",
+     "fieldCategory": "workflow",
+     "fieldType": "chips",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+       "definition": "Status/es that identify that an issue is LIVE in Production"
+     }
+   },
+   {
+     "fieldName": "jiraIssueTypeKPI171",
+     "fieldLabel": "Issue type to be included",
+     "fieldCategory": "Issue_Type",
+     "fieldType": "chips",
+     "section": "Issue Types Mapping",
+     "tooltip": {
+       "definition": "All issue types that should be included in Lead time calculation."
+     }
+   }
+
 ]);

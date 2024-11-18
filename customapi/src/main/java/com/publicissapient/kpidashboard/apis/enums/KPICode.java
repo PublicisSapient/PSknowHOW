@@ -25,6 +25,14 @@ import java.util.Arrays;
 public enum KPICode {
 
     /**
+     * JIRA_PROCESSOR field
+     */
+    JIRA_PROCESSOR("kpi0", KPISource.JIRA.name()),
+    /**
+     * JIRA_PROCESSOR_KANBAN
+     */
+    JIRA_PROCESSOR_KANBAN("kpi1", KPISource.JIRAKANBAN.name()),
+    /**
      * The Dor to dod.
      */
     LEAD_TIME("kpi3", KPISource.JIRA.name()),
@@ -45,9 +53,9 @@ public enum KPICode {
      */
     DEFECT_INJECTION_RATE("kpi14", KPISource.JIRA.name()),
     /**
-     * Code quality kpi code.
+     * Sonar Code quality kpi code.
      */
-    CODE_QUALITY("kpi15", KPISource.SONAR.name()),
+    SONAR_CODE_QUALITY("kpi168", KPISource.SONAR.name()),
     /**
      * Automation test percentage kpi code.
      */
@@ -253,10 +261,6 @@ public enum KPICode {
     /**
      * Average Resolution Time
      */
-    AVERAGE_RESOLUTION_TIME("kpi83", KPISource.JIRA.name()),
-    /**
-     * Average Resolution Time
-     */
     MEAN_TIME_TO_MERGE("kpi84", KPISource.BITBUCKET.name()),
     /**
      * Change Failure Rate kpi code
@@ -265,11 +269,15 @@ public enum KPICode {
     /**
      * Change Failure Rate kpi code for kanban
      */
-    CHANGE_FAILURE_RATE_KANBAN("kpi117", KPISource.JENKINSKANBAN.name()),
+    CHANGE_FAILURE_RATE_KANBAN("kpi184", KPISource.JENKINSKANBAN.name()),
     /**
      * Deployment Frequency kpi code
      */
     DEPLOYMENT_FREQUENCY("kpi118", KPISource.JENKINS.name()),
+    /**
+     * Deployment Frequency kpi code for kanban
+     */
+    DEPLOYMENT_FREQUENCY_KANBAN("kpi183", KPISource.JENKINSKANBAN.name()),
     /**
      * Open Ticket Aging By Priority kpi code
      */
@@ -278,10 +286,6 @@ public enum KPICode {
      * Work Remaining
      */
     WORK_REMAINING("kpi119", KPISource.JIRA.name()),
-    /**
-     * Iteration Status
-     */
-    ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
     /**
      * Defect Count By RCA (Iteration)
      */
@@ -294,6 +298,10 @@ public enum KPICode {
      * Defect Count By Priority (Iteration)
      */
     DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()),
+    /**
+     * Risks and Dependencies
+     */
+    RISKS_AND_DEPENDENCIES("kpi176", KPISource.JIRA.name()),
     /**
      * Defect Count By Status (Release)
      */
@@ -314,6 +322,10 @@ public enum KPICode {
      * Release Progress
      */
     RELEASE_PROGRESS("kpi147", KPISource.JIRA.name()),
+    /**
+     * Release Plan
+     */
+    RELEASE_PLAN("kpi179", KPISource.JIRA.name()),
     /**
      * Scope Change
      */
@@ -474,7 +486,66 @@ public enum KPICode {
     /**
      * Epic Progress (Backlog)
      */
-    BACKLOG_EPIC_PROGRESS("kpi169", KPISource.JIRA.name());
+    BACKLOG_EPIC_PROGRESS("kpi169", KPISource.JIRA.name()),
+    /**
+     *  Meantime to Recover(Dora)
+     */
+    MEAN_TIME_TO_RECOVER("kpi166",KPISource.JIRA.name()),
+    /**
+     * Flow Efficiency (Backlog)
+     */
+    FLOW_EFFICIENCY("kpi170", KPISource.JIRA.name()),
+
+    /**
+     * Build frequency KPI (Speed)
+     */
+    BUILD_FREQUENCY("kpi172", KPISource.JENKINS.name()),
+    /**
+     * Cycle Time (Backlog)
+     */
+    CYCLE_TIME("kpi171", KPISource.JIRA.name()),
+    /**
+     * Rework Rate (Developer)
+     */
+    REWORK_RATE("kpi173", KPISource.BITBUCKET.name()),
+    /**
+     * Defect Count By (Release->Quality)
+     */
+    DEFECT_COUNT_BY("kpi178", KPISource.JIRA.name()),
+    /**
+     * Revert Rate (Developer)
+     */
+    REVERT_RATE("kpi180", KPISource.BITBUCKET.name()),
+    /**
+     * PR Decline Rate (Developer)
+     */
+    PR_DECLINE_RATE("kpi181", KPISource.BITBUCKET.name()),
+    /**
+     * Success Rate (Developer)
+     */
+    PR_SUCCESS_RATE("kpi182", KPISource.BITBUCKET.name()),
+    /**
+     * Innovation Rate (Developer)
+     */
+    INNOVATION_RATE("kpi185", KPISource.BITBUCKET.name()),
+    /**
+     * Defect Rate (Developer)
+     */
+    DEFECT_RATE("kpi186", KPISource.BITBUCKET.name()),
+
+
+
+
+
+
+
+
+
+
+    //do not remove below codes as they are required for test case
+    TEST_SONAR("TEST_SONAR", KPISource.SONAR.name()),
+    TEST_JIRA("TEST_JIRA", KPISource.JIRA.name()),
+    TEST_ZEPHYR("TEST_ZEPHYR", KPISource.ZEPHYR.name());
 
 
     // @formatter:on

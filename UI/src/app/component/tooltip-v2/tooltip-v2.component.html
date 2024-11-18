@@ -1,0 +1,73 @@
+<div class="tooltip p-p-3" *ngIf="show" (mouseleave)="hideTooltip($event)"
+  [ngStyle]="relativeTooltipTop > 0 ? {'top': toolTipTop ? 150 + 'px' : 30 + 'px'} : {'top': relativeTooltipTop + 'px'}"
+  [ngClass]="{'tooltip-kpi': kpiName?.length > 0,'tooltip-width': kpiName?.length > 25, 'tooltip-wider': showingMaturityRange, 'bottomArrow': bottomArrow, 'allText': allText, 'p-d-none': !show}">
+  <div class="tooltip-wrapper" *ngIf="!allText" [ngClass]="{'tooltip-wrapper-card' : !(showChartView === 'chart')}">
+    <p class="p-mb-1 paragraph">{{data?.definition}}</p>
+    <div class="" *ngIf="!filterNo">
+      <ng-container *ngIf="data?.formula?.length > 0">
+        <div *ngFor="let item of data?.formula" class="p-d-flex p-align-center p-mb-2">
+          <h4 class="p-mb-0 p-text-center">{{item?.lhs}}</h4>
+          <div *ngIf="item?.rhs || item?.operands" class="p-pl-2 p-pr-2">=</div>
+          <div class="p-d-flex p-align-center" [ngClass]="{'p-flex-column': item?.operator === 'division'}">
+            <h4 *ngIf="item?.operands" class="p-text-center">{{item?.operands[0]}}</h4>
+            <div *ngIf="item?.operator === 'division'" class="divide"></div>
+            <h4 *ngIf="item?.operands" class="p-mb-0 p-mt-2 p-text-center">{{item?.operands[1]}}</h4>
+            <h4 *ngIf="item?.rhs" class="p-mb-0 p-text-center">{{item?.rhs}}</h4>
+          </div>
+        </div>
+      </ng-container>
+      <div *ngFor="let item of data?.details; let i = index;">
+        <ng-container [ngSwitch]="item?.type">
+          <p *ngSwitchCase="'paragraph'" class="paragraph p-pl-3 p-mb-0 kpi-info-list">
+            {{item?.value}}
+          </p>
+          <p *ngSwitchCase="'link'" class="paragraph p-pl-3 p-mb-0 kpi-info-list">
+            {{item?.kpiLinkDetail?.text}} <a [href]="item?.kpiLinkDetail?.link" class="link"
+              target="_blank">{{item?.kpiLinkDetail?.link}}</a>
+          </p>
+
+          <table *ngSwitchCase="'table'" class="p-d-flex p-flex-column p-align-center border">
+            <caption style="display: none;">Tooltip</caption>
+            <thead style="display: none;">
+              <tr>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <ng-container *ngFor="let element of item?.tableRows;last as isLast">
+
+              <tr class='w-100' [ngClass]="{'border-bottom':!isLast || element?.type === 'header'}">
+                <td *ngFor="let cell of element?.value" class="p-p-1"
+                  [ngStyle]="{'width': (100/element?.value?.length)+'%'}">
+                  <ng-container *ngIf="element?.type === 'header'"><b>{{cell}}</b></ng-container>
+                  <ng-container *ngIf="element?.type === 'body'">{{cell}}</ng-container>
+                </td>
+              </tr>
+            </ng-container>
+
+          </table>
+        </ng-container>
+      </div>
+      <div *ngIf="data?.maturityLevels?.length > 0" class="p-d-flex p-flex-wrap p-pl-4 p-grid">
+        <div *ngFor="let maturity of data?.maturityLevels.slice().reverse()" class="paragraph p-col-3">
+          <div *ngIf="maturity.color" class="maturity-indicator" [ngStyle]="{ 'background-color' : maturity.color}">
+          </div>
+          <span class="paragraph p-pr-2">{{maturity?.level}}</span><span *ngIf="showingMaturityRange">:
+          </span> {{maturity?.range}}
+        </div>
+      </div>
+    </div>
+    <div *ngIf="filterNo">
+      <ng-container *ngFor="let item of data?.details[filterNo];">
+        <p class=" paragraph p-pl-3 p-mb-0 kpi-info-list">
+          {{item?.value}}
+        </p>
+      </ng-container>
+    </div>
+  </div>
+
+  <div *ngIf="allText">
+    <p class=" paragraph p-px-2 p-mb-0">
+      {{data}}
+    </p>
+  </div>
+</div>

@@ -17,17 +17,9 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import java.util.Optional;
+
 import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.CreateMetadata;
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -37,7 +29,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.CreateMetadata;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
@@ -46,53 +48,55 @@ import java.util.Optional;
 @Component
 @StepScope
 public class MetaDataTasklet implements Tasklet {
-    @Autowired
-    FetchProjectConfiguration fetchProjectConfiguration;
+	@Autowired
+	FetchProjectConfiguration fetchProjectConfiguration;
 
-    @Autowired
-    JiraClient jiraClient;
+	@Autowired
+	JiraClient jiraClient;
 
-    @Autowired
-    CreateMetadata createMetadata;
+	@Autowired
+	JiraClientService jiraClientService;
 
-    @Autowired
-    JiraProcessorConfig jiraProcessorConfig;
+	@Autowired
+	CreateMetadata createMetadata;
 
-    @Autowired
-    JiraClientService jiraClientService;
+	@Autowired
+	JiraProcessorConfig jiraProcessorConfig;
 
-    private String projectId;
+	@Value("#{jobParameters['projectId']}")
+	private String projectId;
 
-    @Autowired
-    public MetaDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-        this.projectId = projectId;
-    }
+	@Value("#{jobParameters['isScheduler']}")
+	private String isScheduler;
 
-    /**
-     * @param sc StepContribution
-     * @param cc ChunkContext
-     * @return RepeatStatus
-     * @throws Exception Exception
-     */
-    @TrackExecutionTime
-    @Override
-    public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
-        ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        log.info("Fetching metadata for the project : {}", projConfFieldMapping.getProjectName());
-        Optional<Connection> connectionOptional = projConfFieldMapping.getJira().getConnection();
-        KerberosClient krb5Client = null;
-        if (connectionOptional.isPresent()) {
-            Connection connection = connectionOptional.get();
-            krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
-                    connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
-        }
-        ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-		jiraClientService.setRestClientMap(projectId,client);
-        jiraClientService.setKerberosClientMap(projectId,krb5Client);
-        if (jiraProcessorConfig.isFetchMetadata()) {
-            createMetadata.collectMetadata(projConfFieldMapping, client);
-        }
-        return RepeatStatus.FINISHED;
-    }
+	/**
+	 * @param sc
+	 *            StepContribution
+	 * @param cc
+	 *            ChunkContext
+	 * @return RepeatStatus
+	 * @throws Exception
+	 *             Exception
+	 */
+	@TrackExecutionTime
+	@Override
+	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		log.info("Fetching metadata for the project : {}", projConfFieldMapping.getProjectName());
+		Optional<Connection> connectionOptional = projConfFieldMapping.getJira().getConnection();
+		KerberosClient krb5Client = null;
+		if (connectionOptional.isPresent() && connectionOptional.get().isJaasKrbAuth()) {
+			Connection connection = connectionOptional.get();
+			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
+					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
+			jiraClientService.setKerberosClientMap(projectId,krb5Client);
+		}
+		ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
+        jiraClientService.setRestClientMap(projectId,client);
+		if (jiraProcessorConfig.isFetchMetadata()) {
+			createMetadata.collectMetadata(projConfFieldMapping, client, isScheduler);
+		}
+		return RepeatStatus.FINISHED;
+	}
 
 }

@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JiraClientService {
 
     private final ConcurrentHashMap<String,ProcessorJiraRestClient> restClientMap= new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String,KerberosClient> kerberosClientMap= new ConcurrentHashMap<>();
 
     public boolean isContainRestClient(String basicProjectConfigId) {
         return restClientMap.containsKey(basicProjectConfigId);
@@ -49,8 +50,6 @@ public class JiraClientService {
     public void removeRestClientMapClientForKey(String basicProjectConfigId) {
         restClientMap.remove(basicProjectConfigId);
     }
-
-    private final ConcurrentHashMap<String,KerberosClient> kerberosClientMap= new ConcurrentHashMap<>();
 
     public boolean isContainKerberosClient(String basicProjectConfigId) {
         return kerberosClientMap.containsKey(basicProjectConfigId);

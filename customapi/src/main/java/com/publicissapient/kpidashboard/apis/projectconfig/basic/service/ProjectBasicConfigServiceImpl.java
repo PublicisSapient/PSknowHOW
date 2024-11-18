@@ -32,8 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,8 +55,10 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -69,12 +69,14 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -146,6 +148,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
+	@Autowired
+	private HappinessKpiDataRepository happinessKpiDataRepository;
+
 	/**
 	 * method to save basic configuration
 	 *
@@ -165,6 +170,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			ModelMapper mapper = new ModelMapper();
 			basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 			basicConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+			basicConfig.setCreatedBy(authenticationService.getLoggedInUser());
 			tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
 			String accessRoleOfParent = projectAccessManager.getAccessRoleOfNearestParent(basicConfig, username);
 
@@ -239,6 +245,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				}
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
+				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
 				performFilterOperation(basicConfigDtoCreation(updatedBasicConfig, mapper), true);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
@@ -377,8 +384,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			deleteBasicConfig(projectBasicConfig);
 			removeProjectUserInfo(projectBasicConfig);
 			rejectAccessRequestsWithProject(projectBasicConfig);
-			addToTraceLog(projectBasicConfig);
 			deleteSprintDetailsData(projectBasicConfig);
+			deleteAssigneeDetails(projectBasicConfig);
+			deleteHappinessKpiDetails(projectBasicConfig);
+			addToTraceLog(projectBasicConfig);
 			cleanAllCache();
 
 		}
@@ -386,13 +395,26 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return projectBasicConfig;
 	}
 
+	private void deleteHappinessKpiDetails(ProjectBasicConfig projectBasicConfig) {
+		happinessKpiDataRepository.deleteByBasicProjectConfigId(projectBasicConfig.getId());
+	}
+
+	private void deleteAssigneeDetails(ProjectBasicConfig projectBasicConfig) {
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository
+				.findByBasicProjectConfigId(projectBasicConfig.getId().toString());
+		if (assigneeDetails != null) {
+			assigneeDetailsRepository.delete(assigneeDetails);
+		}
+	}
+
 	public void deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean isRepoTool) {
 
-		if(isRepoTool.equals(Boolean.TRUE)) {
+		if (isRepoTool.equals(Boolean.TRUE)) {
 			repoToolsConfigService.deleteRepoToolProject(projectBasicConfig, false);
 		}
 
 	}
+
 	private void rejectAccessRequestsWithProject(ProjectBasicConfig projectBasicConfig) {
 		log.info("removing project [{}, {}] from project access requests", projectBasicConfig.getProjectName(),
 				projectBasicConfig.getId().toHexString());
@@ -422,9 +444,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig) {
-
+		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
+				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
-		Boolean isRepoTool = tools.stream().anyMatch(toolConfig -> ProcessorConstants.REPO_TOOLS.equals(toolConfig.getToolName()));
+		Boolean isRepoTool = tools.stream()
+				.anyMatch(toolConfig -> scmToolList.contains(toolConfig.getToolName())
+						&& projectBasicConfig.isDeveloperKpiEnabled());
 		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 
@@ -548,16 +573,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return projectBasicConfigNodes;
 	}
 
-	private void addParentInExistedNode(String value, String groupName,
-			Set<ProjectBasicConfigNode> projectBasicConfigNodes, ProjectBasicConfigNode parentNode) {
-		ProjectBasicConfigNode existedNode = projectBasicConfigNodes.stream()
-				.filter(proNode -> value.equals(proNode.getValue()) && groupName.equals(proNode.getGroupName()))
-				.findAny().orElse(null);
-		if (null != existedNode && (!existedNode.getParent().contains(parentNode))) {
-			existedNode.getParent().add(parentNode);
-		}
-	}
-
 	private ProjectBasicConfigNode createProjectBasicNode(String value, List<ProjectBasicConfigNode> parent,
 			String groupName) {
 		ProjectBasicConfigNode projectBasicNode = new ProjectBasicConfigNode();
@@ -659,5 +674,52 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		for (ProjectBasicConfigNode child : node.getChildren()) {
 			findLeaf(child, leafNodes);
 		}
+	}
+
+	@Override
+	public List<HierarchyResponseDTO> getHierarchyData() {
+		List<ProjectBasicConfigDTO> basicConfigDTOS = getAllProjectsBasicConfigsDTOWithoutPermission();
+		List<ProjectBasicConfigDTO> scrumProjectBasicConfigList = basicConfigDTOS.stream()
+				.filter(projectBasicConfigDTO -> !projectBasicConfigDTO.getIsKanban()).collect(Collectors.toList());
+		Map<ObjectId, List<SprintDetails>> groupedByProject = getTop5SprintDetailsGroupedByProject(
+				scrumProjectBasicConfigList.stream().map(ProjectBasicConfigDTO::getId).toList());
+		List<HierarchyResponseDTO> hierarchyResponseDTOS = new ArrayList<>();
+		for (ProjectBasicConfigDTO projectBasicConfig : scrumProjectBasicConfigList) {
+			HierarchyResponseDTO dto = new HierarchyResponseDTO();
+			dto.setProjectId(projectBasicConfig.getId().toString());
+			dto.setProjectName(projectBasicConfig.getProjectName());
+			projectBasicConfig.getHierarchy().forEach(hirarchy -> {
+				int level = hirarchy.getHierarchyLevel().getLevel();
+				String value = hirarchy.getValue();
+				switch (level) {
+				case 1 -> dto.setHierarchyLevelOne(value);
+				case 2 -> dto.setHierarchyLevelTwo(value);
+				case 3 -> dto.setHierarchyLevelThree(value);
+				default -> dto.setHierarchyLevelFour(value);
+				}
+			});
+			dto.setSprintDetailsList(groupedByProject.getOrDefault(projectBasicConfig.getId(), new ArrayList<>()));
+			hierarchyResponseDTOS.add(dto);
+		}
+		return hierarchyResponseDTOS.stream().sorted(Comparator.comparing(HierarchyResponseDTO::getProjectName))
+				.collect(Collectors.toList());
+	}
+
+	public Map<ObjectId, List<SprintDetails>> getTop5SprintDetailsGroupedByProject(
+			List<ObjectId> basicProjectConfigIds) {
+		List<String> sprintStatusList = new ArrayList<>();
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
+		List<SprintDetails> sprintDetailsList = sprintRepository
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateASC(basicProjectConfigIds,
+						sprintStatusList);
+
+		// Sort by beginDate in descending order
+
+		sprintDetailsList.sort((s1, s2) -> s2.getStartDate().compareTo(s1.getStartDate()));
+		// Group by basicProjectConfigId and limit to top 5
+		return sprintDetailsList.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId, Collectors.collectingAndThen(
+						Collectors.toList(), list -> list.stream().limit(5).collect(Collectors.toList()))));
 	}
 }

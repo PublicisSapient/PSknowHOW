@@ -67,7 +67,7 @@ public class Connection extends BasicModel {
 	private String createdAt;
 	private String updatedAt;
 	private String createdBy;
-	private boolean connPrivate;
+	private boolean sharedConnection;// shared with everyone
 	private String updatedBy;
 	private List<String> connectionUsers;
 	private boolean vault;// GS requirement
@@ -80,11 +80,11 @@ public class Connection extends BasicModel {
 	private String samlEndPoint;
 	private String repoOwnerName;
 	private String repositoryName;
-	private String sshUrl;
-	private String httpUrl;
 	private String email;
 	private String repoToolProvider;
-	private Boolean isCloneable;
+	private boolean brokenConnection;
+	private String connectionErrorMsg;
+
 
 	public boolean getIsOAuth() {
 		return this.isOAuth;

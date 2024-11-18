@@ -43,7 +43,8 @@
             **com/publicissapient/kpidashboard/**/criteria/*,
             **com/publicissapient/kpidashboard/**/*Constants.java,
             **com/publicissapient/kpidashboard/**/*Constant.java,
-            **com/publicissapient/kpidashboard/**/*Properties.java
+            **com/publicissapient/kpidashboard/**/*Properties.java,
+            **com/publicissapient/kpidashboard/**/factory/**
         </sonar.coverage.exclusions>
         <sonar.test.exclusions>
             **/src/test/java/**
@@ -74,14 +75,14 @@
 				<module>azure-pipeline</module>
 				<module>azure-repo</module>
 				<module>azure-boards</module>
-				
+				<module>argocd</module>
 			</modules>
             <build>
                 <plugins>
                     <plugin>
 					    <groupId>org.jacoco</groupId>
 					    <artifactId>jacoco-maven-plugin</artifactId>
-					    <version>0.8.5</version>
+					    <version>0.8.11</version>
 					    <configuration>
 		                    <dataFile>${jacoco.destfile}</dataFile>
 		                </configuration>

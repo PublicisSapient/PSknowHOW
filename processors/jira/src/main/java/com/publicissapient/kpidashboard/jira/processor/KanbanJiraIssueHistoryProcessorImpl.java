@@ -52,6 +52,7 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 
 	@Autowired
 	private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
+
 	@Override
 	public KanbanIssueCustomHistory convertToKanbanIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,
 			KanbanJiraIssue kanbanJiraIssue) {

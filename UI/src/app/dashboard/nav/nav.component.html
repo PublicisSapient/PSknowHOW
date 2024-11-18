@@ -29,7 +29,7 @@
       <div class="open-btn">
         <img src="../../../assets/img/menu-unfold.svg" alt="Edit"
           (click)="visibleSidebar = true;service.setSideNav(true)" class="close-icon" />
-          <app-feedback [visibleSidebar]="visibleSidebar"></app-feedback>
+        <app-feedback [visibleSidebar]="visibleSidebar"></app-feedback>
       </div>
     </div>
   </div>
@@ -44,66 +44,44 @@
           <img src="../../../assets/img/ico-scrum-black.svg" alt="Scrum" class="ico-default p-mr-1" />SCRUM</label>
         <input id="tab2" class="tab2 test" type="radio" name="tabs" [checked]='kanban'>
         <label class="label2 rounded filter-btn" for="tab2" (click)="setSelectedType('Kanban')" id="Layout-Kanban"
-        [ngClass]="{'disable-kanban': selectedTab.toLowerCase() === 'iteration' ||  selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release' || selectedTab.toLowerCase() === 'dora'}">
+          [ngClass]="{'disable-kanban': selectedTab.toLowerCase() === 'iteration' ||  selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release' || selectedTab.toLowerCase() === 'dora'}">
           <img src="../../../assets/img/ico-kanban-black.svg" alt="Kanban" class="ico-default p-mr-1" />
           <img src="../../../assets/img/ico-kanban-white.svg" alt="Kanban" class="ico-active p-mr-1" />KANBAN</label>
       </div>
     </div>
     <!--Scrum/Kanban Switch Ends-->
     <div class="navigation rows ">
-      <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between"> -->
       <ng-container *ngIf="boardNameArr?.length>0">
         <ul class="nav-menu p-d-flex p-pl-3 p-pr-3 p-mt-0">
           <ng-container *ngFor="let board of boardNameArr">
-            <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100"
-              *ngIf="(board.boardName?.toLowerCase() !== 'kpi maturity') || (board.boardName?.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
-              <a class="nav-link w-100"
-                [routerLink]="board.boardName?.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{exact: true}"
-                [ngClass]="{'active': selectedTab?.toLowerCase() == board.boardName?.toLowerCase()}"
-                (click)="selectTab(board.boardName)">
-                {{board.boardName}}
+            <ng-container *featureFlag="board.boardName">
+              <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100"
+                *ngIf="(board.boardName?.toLowerCase() !== 'kpi maturity') || (board.boardName?.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
+                <a class="nav-link w-100"
+                  [routerLink]="board.link"
+                  routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                  [ngClass]="{'active': selectedTab?.toLowerCase() == board.boardName?.toLowerCase()}"
+                  (click)="selectTab(board.link)">
+                  {{board.boardName}}
 
-                <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" class="white-icon"
-                  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
-                <img src="../../../assets/img/ico-edit.svg" alt="Rename your dashboard" class="red-icon"
-                  *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
+                  <img src="../../../assets/img/icon-feather-edit-3.svg" alt="Rename your dashboard" class="white-icon"
+                    *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
+                  <img src="../../../assets/img/ico-edit.svg" alt="Rename your dashboard" class="red-icon"
+                    *ngIf="board.boardName ==  mainTab" (click)="openEditModal()" />
 
-              </a>
-            </li>
-
+                </a>
+              </li>
+            </ng-container>
           </ng-container>
         </ul>
       </ng-container>
       <ng-container *ngIf="boardNameArr?.length === 0">
         <ul class="nav-menu p-d-flex p-pl-3 p-pr-3 p-mt-0">
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li *ngFor="let item in navItems" class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-
         </ul>
       </ng-container>
-
-      <!-- </ul> -->
     </div>
     <div class="close-btn cursor-pointer" (click)="visibleSidebar = false;service.setSideNav(false)">
       <img src="../../../assets/img/menu-fold.svg" alt="Edit" class="icon-hamburger" />

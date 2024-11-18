@@ -3,20 +3,29 @@ package com.publicissapient.kpidashboard.apis.azure.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.azure.model.AzurePipelinesResponseDTO;
+import com.publicissapient.kpidashboard.apis.azure.model.AzureTeamsDTO;
+import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
@@ -32,6 +41,8 @@ public class AzureToolConfigServiceImpl {
 	private static final String VALUE = "value";
 	private static final String NAME = "name";
 	private static final String ID = "id";
+	private static final String BASE_URL_FORMAT_REGEX = "(https?://[^/]+/[^/]+)";
+	private static final String AZURE_GET_TEAMS_API = "/_apis/teams?$mine=true";
 
 	@Autowired
 	private RestAPIUtils restAPIUtils;
@@ -41,6 +52,8 @@ public class AzureToolConfigServiceImpl {
 
 	@Autowired
 	private ConnectionRepository connectionRepository;
+	@Autowired
+	private ConnectionService connectionService;
 
 	public List<AzurePipelinesResponseDTO> getAzurePipelineNameAndDefinitionIdList(String connectionId,
 			String version) {
@@ -58,6 +71,7 @@ public class AzureToolConfigServiceImpl {
 					version);
 
 			try {
+				connectionService.validateConnectionFlag(connection);
 				HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
 				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
 						String.class);
@@ -79,10 +93,29 @@ public class AzureToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
+				isClientException(connection, exception);
 				log.error("Error while fetching ProjectsAndPlanKeyList from {}:  {}", finalUrl, exception.getMessage());
 			}
 		}
 		return responseList;
+	}
+
+	/**
+	 * this method check for the client exception
+	 * 
+	 * @param connection
+	 *            connection
+	 * @param exception
+	 *            exception
+	 */
+	private void isClientException(Connection connection, Exception exception) {
+		if (exception instanceof HttpClientErrorException
+				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum
+					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+			connectionService.updateBreakingConnection(connection, errMsg);
+
+		}
 	}
 
 	public List<AzurePipelinesResponseDTO> getAzureReleaseNameAndDefinitionIdList(String connectionId) {
@@ -136,5 +169,68 @@ public class AzureToolConfigServiceImpl {
 		} else {
 			log.error("Connection Base Url cannot be null");
 		}
+	}
+
+	public List<AzureTeamsDTO> getAzureTeamsList(final String connectionId) {
+		List<AzureTeamsDTO> responseList = new ArrayList<>();
+
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		HttpHeaders headers = null;
+		String baseUrl = "";
+
+		if (optConnection.isPresent()) {
+			Connection connection = optConnection.get();
+			baseUrl = this.getFormattedBaseUrl(connection.getBaseUrl());
+
+			if (StringUtils.isNotEmpty(baseUrl)) {
+				String username = connection.getUsername();
+				String pat = connection.getPat() == null ? null : restAPIUtils.decryptPassword(connection.getPat());
+
+				headers = restAPIUtils.getHeaders(username, pat);
+			}
+		}
+		if (headers != null) {
+			headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+			final String finalUrl = baseUrl + AZURE_GET_TEAMS_API;
+			try {
+				connectionService.validateConnectionFlag(optConnection.get());
+				HttpEntity<?> httpEntity = new HttpEntity<>(headers);
+				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
+						String.class);
+				if (response.getStatusCode() == HttpStatus.OK) {
+					JSONArray jsonArray = restAPIUtils.convertJSONArrayFromResponse(response.getBody(), VALUE);
+					for (Object job : jsonArray) {
+						AzureTeamsDTO azureTeamsDTO = new AzureTeamsDTO();
+						final String teamId = restAPIUtils.convertToString((JSONObject) job, ID);
+						final String teamName = restAPIUtils.convertToString((JSONObject) job, NAME);
+						azureTeamsDTO.setId(teamId);
+						azureTeamsDTO.setName(teamName);
+						responseList.add(azureTeamsDTO);
+					}
+				} else {
+					String statusCode = response.getStatusCode().toString();
+					log.error("Error while fetching teams from {}. with status {}", finalUrl, statusCode);
+				}
+
+			} catch (Exception exception) {
+				isClientException(optConnection.get(), exception);
+				log.error("Error while fetching teams from {}:  {}", finalUrl, exception.getMessage());
+			}
+		}
+		return responseList;
+	}
+
+	private String getFormattedBaseUrl(String inputUrl) {
+
+		String matchedPart = "";
+		Pattern pattern = Pattern.compile(BASE_URL_FORMAT_REGEX);
+		Matcher matcher = pattern.matcher(inputUrl);
+		if (matcher.find()) {
+			matchedPart = matcher.group(1);
+			log.info("URL matched with regex, Base URL is {}", matcher.group(1));
+		} else {
+			log.error("Unable to format URL with regex, Please check configuration");
+		}
+		return matchedPart;
 	}
 }

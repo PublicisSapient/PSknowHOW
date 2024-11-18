@@ -18,8 +18,24 @@
 
 package com.publicissapient.kpidashboard.apis;
 
-import javax.validation.Validator;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.URIScheme;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -30,6 +46,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -37,12 +55,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.util.DefaultLogoInsertor;
 
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
+import io.mongock.runner.springboot.EnableMongock;
 
 /**
  * CustomApiApplication class is the entry point of all Sprint boot application.
@@ -53,6 +66,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  */
 @SpringBootApplication
 @EnableCaching
+@EnableMongock
 @EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
 @ComponentScan(basePackages = { "com.publicissapient.kpidashboard" })
 public class CustomApiApplication extends SpringBootServletInitializer {
@@ -76,28 +90,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 		imageInsertor.insertDefaultImage();
 	}
 
-	/**
-	 * This method provide the configuration to integrate Swagger 2 into an existing
-	 * Sprint Boot CustomApiApplication
-	 * 
-	 * @return Bean of Docket class
-	 */
-	@Bean
-	public Docket documentation() {
-		return new Docket(DocumentationType.SWAGGER_2).enable(true).select().apis(RequestHandlerSelectors.any())
-				.paths(PathSelectors.any()).build().pathMapping("/").apiInfo(metadata());
-	}
 
-	/**
-	 * This method provide the informational part of documentation for swagger:
-	 * title, version, license, description, etc.
-	 * 
-	 * @return An instance of AppInfor class
-	 */
-	private ApiInfo metadata() {
-		return new ApiInfoBuilder().title("KnowHOW API").description("API Documentation for KnowHOW").version("2.0")
-				.build();
-	}
 
 	/**
 	 * This method provide the instance of LocalValidatorFactoryBean which supports
@@ -106,7 +99,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 * @return Bean of Validator class
 	 */
 	@Bean
-	public Validator validator() {
+	public LocalValidatorFactoryBean validator() {
 		return new LocalValidatorFactoryBean();
 	}
 
@@ -124,10 +117,39 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 		return methodValidationPostProcessor;
 	}
 
+	/**
+	 * create rest template bean which accept response given by github
+	 *
+	 * @return RestTemplate RestTemplate
+	 * @throws KeyStoreException
+	 *             KeyStoreException
+	 * @throws NoSuchAlgorithmException
+	 *             NoSuchAlgorithmException
+	 * @throws KeyManagementException
+	 *             KeyManagementException
+	 */
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
+	public RestTemplate restTemplate()  throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+		final RestTemplate restTemplate = new RestTemplate();
+
+		SSLContext sslContext = SSLContextBuilder.create()
+				.loadTrustMaterial((X509Certificate[] certificateChain, String authType) -> true)  // <--- accepts each certificate
+				.build();
+
+		Registry<ConnectionSocketFactory> socketRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+				.register(URIScheme.HTTPS.getId(), new SSLConnectionSocketFactory(sslContext))
+				.register(URIScheme.HTTP.getId(), new PlainConnectionSocketFactory())
+				.build();
+
+		HttpClient httpClient = HttpClientBuilder.create()
+				.setConnectionManager(new PoolingHttpClientConnectionManager(socketRegistry))
+				.setConnectionManagerShared(true)
+				.build();
+
+		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		restTemplate.setRequestFactory(requestFactory);
+		return restTemplate;
 	}
 
 }

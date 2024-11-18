@@ -37,8 +37,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -89,6 +89,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class JiraIssueProcessorImpl implements JiraIssueProcessor {
+	private static final String TEST_PHASE= "TestPhase";
+	private static final String UAT_PHASE= "UAT";
 
 	AssigneeDetails assigneeDetails;
 	@Autowired
@@ -149,7 +151,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	@Override
-	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, ObjectId processorId)
 			throws JSONException {
 
 		JiraIssue jiraIssue = null;
@@ -164,7 +166,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			return jiraIssue;
 		}
 
-		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		Set<String> issueTypeNames = Arrays.stream(fieldMapping.getJiraIssueTypeNames()).map(String::toLowerCase)
 				.collect(Collectors.toSet());
 		IssueType issueType = issue.getIssueType();
@@ -178,7 +179,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
 			jiraIssue = getJiraIssue(projectConfig, issueId);
-			jiraIssue.setProcessorId(jiraProcessorId);
+			jiraIssue.setProcessorId(processorId);
 
 			Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 			IssueField epic = fields.get(fieldMapping.getEpicName());
@@ -188,6 +189,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
 			setEpicLinked(fieldMapping, jiraIssue, fields);
+			setSubTaskLinkage(jiraIssue, fieldMapping, issue, fields);
 			processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
 			setURL(issue.getKey(), jiraIssue, projectConfig);
 			setRCA(fieldMapping, issue, jiraIssue, fields);
@@ -197,9 +199,10 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			setProjectSpecificDetails(projectConfig, jiraIssue, issue);
 			setAdditionalFilters(jiraIssue, issue, projectConfig);
 			setStoryLinkWithDefect(issue, jiraIssue, fields);
-			setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setTestingPhaseDefectIdentificationField(issue, fieldMapping, jiraIssue, fields);
+			// ADD Production Incident field to feature
+			setProdIncidentIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
 			jiraIssue.setAffectedVersions(getAffectedVersions(issue));
 			setIssueEpics(issueEpics, epic, jiraIssue);
@@ -227,6 +230,16 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
 				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
 			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		}
+	}
+
+	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
+			Map<String, IssueField> fields) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
+			Set<String> mainStorySet = new HashSet<>();
+			storyWithSubTaskDefect(issue, fields, mainStorySet);
+			jiraIssue.setParentStoryId(mainStorySet);
 		}
 	}
 
@@ -269,7 +282,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	}
 
-	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+	void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
 			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
@@ -287,7 +300,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
-	String setAssigneeName(String assigneeId, String basicProjectConfigId) {
+	private String setAssigneeName(String assigneeId, String basicProjectConfigId) {
 		String assigneeName = JiraConstants.USER + JiraConstants.SPACE + 1;
 		if (null == assigneeDetails
 				|| !assigneeDetails.getBasicProjectConfigId().equalsIgnoreCase(basicProjectConfigId)) {
@@ -337,7 +350,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 		if (StringUtils.isNotBlank(fieldMapping.getJiraTechDebtIdentification())) {
 			if (fieldMapping.getJiraTechDebtIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
-				if (org.apache.commons.collections.CollectionUtils.containsAny(issue.getLabels(),
+				if (org.apache.commons.collections4.CollectionUtils.containsAny(issue.getLabels(),
 						fieldMapping.getJiraTechDebtValue())) {
 					jiraIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
 				}
@@ -348,7 +361,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& null != fields.get(fieldMapping.getJiraTechDebtCustomField())
 					&& fields.get(fieldMapping.getJiraTechDebtCustomField().trim()) != null
 					&& fields.get(fieldMapping.getJiraTechDebtCustomField().trim()).getValue() != null
-					&& org.apache.commons.collections.CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(),
+					&& org.apache.commons.collections4.CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(),
 							JiraIssueClientUtil
 									.getListFromJson(fields.get(fieldMapping.getJiraTechDebtCustomField().trim())))) {
 				jiraIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
@@ -537,16 +550,26 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
 				&& fieldMapping.getJiradefecttype().stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)
-				&& fields.get(fieldMapping.getRootCause()) != null
-				&& fields.get(fieldMapping.getRootCause()).getValue() != null) {
-			rcaList.addAll(getRootCauses(fieldMapping, fields));
+				&& null != fieldMapping.getRootCauseIdentifier()) {
+			if (StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier())
+					&& fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+				List<String> commonLabel = issue.getLabels().stream()
+						.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
+				if (CollectionUtils.isNotEmpty(commonLabel)) {
+					rcaList.addAll(commonLabel);
+				}
+			} else if (StringUtils.isNotEmpty(fieldMapping.getRootCauseIdentifier())
+					&& fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+					&& StringUtils.isNotEmpty(fieldMapping.getRootCause())
+					&& fields.get(fieldMapping.getRootCause().trim()) != null
+					&& fields.get(fieldMapping.getRootCause().trim()).getValue() != null) {
+				rcaList.addAll(getRootCauses(fieldMapping, fields));
+			}
 		}
 		if (rcaList.isEmpty()) {
 			rcaList.add(JiraConstants.RCA_CAUSE_NONE);
 		}
-
 		jiraIssue.setRootCauseList(rcaList);
-
 	}
 
 	private List<String> getRootCauses(FieldMapping fieldMapping, Map<String, IssueField> fields) {
@@ -603,38 +626,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		return rcaCauseResult.toLowerCase();
 	}
 
-	private void setQADefectIdentificationField(FieldMapping featureConfig, Issue issue, JiraIssue feature,
-			Map<String, IssueField> fields) {
-		try {
-			if (CollectionUtils.isNotEmpty(featureConfig.getJiradefecttype()) && featureConfig.getJiradefecttype()
-					.stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
-				if (null != featureConfig.getJiraBugRaisedByQAIdentification() && featureConfig
-						.getJiraBugRaisedByQAIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
-					List<String> commonLabel = issue.getLabels().stream()
-							.filter(x -> featureConfig.getJiraBugRaisedByQAValue().contains(x))
-							.collect(Collectors.toList());
-					if (CollectionUtils.isNotEmpty(commonLabel)) {
-						feature.setDefectRaisedByQA(true);
-					}
-				} else if (null != featureConfig.getJiraBugRaisedByQAIdentification()
-						&& featureConfig.getJiraBugRaisedByQAIdentification().trim()
-								.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
-						&& fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()) != null
-						&& fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue() != null
-						&& isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getJiraBugRaisedByQAValue(),
-								fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue(), null)) {
-					feature.setDefectRaisedByQA(true);
-				} else {
-					feature.setDefectRaisedByQA(false);
-				}
-			}
-
-		} catch (Exception e) {
-			log.error("Error while parsing QA field {}", e);
-		}
-
-	}
-
 	private void setProductionDefectIdentificationField(FieldMapping featureConfig, Issue issue, JiraIssue feature,
 			Map<String, IssueField> fields) {
 		try {
@@ -654,7 +645,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 						&& fields.get(featureConfig.getProductionDefectCustomField().trim()) != null
 						&& fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue() != null
 						&& isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getProductionDefectValue(),
-								fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue(), null)) {
+								fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue(), null, "")) {
 					feature.setProductionDefect(true);
 				} else if (null != featureConfig.getProductionDefectIdentifier()
 						&& featureConfig.getProductionDefectIdentifier().trim()
@@ -722,7 +713,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()) != null
 					&& fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue() != null
 					&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraBugRaisedByValue(),
-							fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue(), null)) {
+							fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue(), jiraIssue, UAT_PHASE )) {
 				jiraIssue.setDefectRaisedBy(NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue());
 			} else {
 				jiraIssue.setDefectRaisedBy("");
@@ -732,7 +723,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String> bugRaisedValue, Object issueFieldValue,
-			JiraIssue jiraIssue) {
+			JiraIssue jiraIssue, String feature) {
 		List<String> lowerCaseBugRaisedValue = bugRaisedValue.stream().map(String::toLowerCase)
 				.collect(Collectors.toList());
 		JSONParser parser = new JSONParser();
@@ -748,23 +739,24 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					jsonObject = (org.json.simple.JSONObject) parser.parse(array.get(i).toString());
 					if (lowerCaseBugRaisedValue
 							.contains(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase())) {
-						testPhasesList.add(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase());
+						testPhasesList.add(jsonObject.get(JiraConstants.VALUE).toString());
 						isRaisedByThirdParty = true;
 						break;
 					}
 
 				}
 				if (Objects.nonNull(jiraIssue)) {
-					jiraIssue.setEscapedDefectGroup(testPhasesList);
+					setSpecificField(jiraIssue, feature, testPhasesList);
+
 				}
 			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject
 					&& lowerCaseBugRaisedValue.contains(((org.codehaus.jettison.json.JSONObject) issueFieldValue)
 							.get(JiraConstants.VALUE).toString().toLowerCase())) {
 				isRaisedByThirdParty = true;
 				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
-						.toString().toLowerCase();
-				if (lowerCaseBugRaisedValue.contains(testPhase) && Objects.nonNull(jiraIssue)) {
-					jiraIssue.setEscapedDefectGroup(Collections.singletonList(testPhase));
+						.toString();
+				if (lowerCaseBugRaisedValue.contains(testPhase.toLowerCase()) && Objects.nonNull(jiraIssue)) {
+					setSpecificField(jiraIssue,feature, Collections.singletonList(testPhase));
 				}
 			}
 
@@ -772,6 +764,14 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			log.error("JIRA Processor | Error while parsing third party field {}", e);
 		}
 		return isRaisedByThirdParty;
+	}
+
+	private void setSpecificField(JiraIssue jiraIssue, String feature, List<String> testPhasesList) {
+		if (feature.equalsIgnoreCase(TEST_PHASE)) {
+			jiraIssue.setEscapedDefectGroup(testPhasesList.stream().map(String::toLowerCase).collect(Collectors.toList()));
+		} else if (feature.equalsIgnoreCase(UAT_PHASE)) {
+			jiraIssue.setUatDefectGroup(testPhasesList);
+		}
 	}
 
 	private void processSprintData(JiraIssue jiraIssue, IssueField sprintField, ProjectConfFieldMapping projectConfig) {
@@ -917,27 +917,32 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	private void setDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
-					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
-				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
-				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
-				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-				}
-			}
+			jiraIssue.setDueDate(getFormattedDate(issue, fields, fieldMapping.getJiraDueDateField(),
+					fieldMapping.getJiraDueDateCustomField()));
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			jiraIssue.setDevDueDate(getFormattedDate(issue, fields, fieldMapping.getJiraDevDueDateField(),
+					fieldMapping.getJiraDevDueDateCustomField()));
+		}
+	}
+
+	private String getFormattedDate(Issue issue, Map<String, IssueField> fields, String jiraDateField,
+			String jiraDateCustomField) {
+		String dateValue = null;
+
+		if (jiraDateField.equalsIgnoreCase(CommonConstant.DUE_DATE) && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+			dateValue = JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+					.concat(DateUtil.ZERO_TIME_ZONE_FORMAT);
+		} else if (StringUtils.isNotEmpty(jiraDateCustomField)
+				&& ObjectUtils.isNotEmpty(fields.get(jiraDateCustomField))) {
+			IssueField issueField = fields.get(jiraDateCustomField);
 			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-				jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+				dateValue = JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT);
 			}
 		}
+		return dateValue;
 	}
 
 	private void setTestingPhaseDefectIdentificationField(Issue issue, FieldMapping fieldMapping, JiraIssue jiraIssue,
@@ -953,7 +958,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()) != null
 					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue() != null) {
 				isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getTestingPhaseDefectValue(),
-						fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(), jiraIssue);
+						fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(), jiraIssue, TEST_PHASE);
 			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() && fieldMapping
 					.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.COMPONENT)) {
 				setTestPhaseDefectsListForComponent(issue, fieldMapping, jiraIssue);
@@ -961,4 +966,36 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
+	private void setProdIncidentIdentificationField(FieldMapping featureConfig, Issue issue, JiraIssue feature,
+			Map<String, IssueField> fields) {
+		try {
+			if (CollectionUtils.isNotEmpty(featureConfig.getJiradefecttype()) && featureConfig.getJiradefecttype()
+					.stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
+				if (null != featureConfig.getJiraProductionIncidentIdentification() && featureConfig
+						.getJiraProductionIncidentIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+					List<String> commonLabel = issue.getLabels().stream()
+							.filter(x -> featureConfig.getJiraProdIncidentRaisedByValue().contains(x))
+							.collect(Collectors.toList());
+					if (CollectionUtils.isNotEmpty(commonLabel)) {
+						feature.setProductionIncident(true);
+					}
+				} else
+					feature.setProductionIncident(null != featureConfig.getJiraProductionIncidentIdentification()
+							&& featureConfig.getJiraProductionIncidentIdentification().trim()
+									.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+							&& fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()) != null
+							&& fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim())
+									.getValue() != null
+							&& isBugRaisedByValueMatchesRaisedByCustomField(
+									featureConfig.getJiraProdIncidentRaisedByValue(),
+									fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim())
+											.getValue(),
+									null, ""));
+			}
+
+		} catch (Exception e) {
+			log.error("Error while parsing Production Incident field", e);
+		}
+
+	}
 }

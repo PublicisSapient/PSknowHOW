@@ -17,12 +17,13 @@
  ******************************************************************************/
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
+import { HelperService } from 'src/app/services/helper.service';
 
 declare const require: any;
 @Component({
@@ -56,15 +57,52 @@ export class ProjectListComponent implements OnInit {
   cols: Array<any> = [];
   globalSearchFilter: Array<string> = [];
   @ViewChild(Table) table: Table;
+  isNewProject = false;
+  items: MenuItem[];
+  roleBasedItems: MenuItem[];
+  selectedProductForExecutingAction: any;
 
   constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
-    private authorization: GetAuthorizationService) { }
+    private getAuthorizationService: GetAuthorizationService, private helper: HelperService) { }
 
   ngOnInit(): void {
     this.getData();
     this.roleAccessAssign();
-    this.getHierarchy();
     this.sharedService.setSelectedToolConfig(null);
+    this.helper.getGlobalConfig();
+
+    this.items = [
+      {
+        label: 'Edit Config', icon: 'pi pi-file-edit', command: () => {
+          this.editConfiguration(this.selectedProductForExecutingAction, 2);
+        }
+      },
+      {
+        label: 'Delete Project', icon: 'pi pi-trash', command: () => {
+          this.deleteProject(this.selectedProductForExecutingAction);
+        }
+      },
+      {
+        label: 'Settings', icon: 'pi pi-wrench', command: () => {
+          this.allProjectList.forEach(project => {
+            this.editConfiguration(this.selectedProductForExecutingAction, 0);
+          })
+        }
+      }
+    ];
+
+    this.roleBasedItems = [
+      {
+        label: 'Edit Config', icon: 'pi pi-file-edit', command: () => {
+          this.editConfiguration(this.selectedProductForExecutingAction, 2);
+        }
+      },
+    ];
+
+  }
+
+  public handleActionsClick(currentProject) {
+    this.selectedProductForExecutingAction = currentProject;
   }
 
   /* Assign role along with project Id */
@@ -108,45 +146,13 @@ export class ProjectListComponent implements OnInit {
     this.http.getProjectListData().subscribe(responseList => {
       if (responseList[0].success) {
         this.projectList = responseList[0]?.data;
-        // this.allProjectList = this.projectList;
         if (this.projectList?.length > 0) {
-          for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
-            const obj = {
-              id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
-              heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
-            };
-            this.cols?.push(obj);
-          }
-          const projectObj = {
-            id: 'name',
-            heading: 'Project'
-          };
-          this.cols?.unshift(projectObj);
-          const typeObj = {
-            id: 'type',
-            heading: 'Type'
-          };
-          this.cols?.push(typeObj);
-          for (let i = 0; i < this.cols?.length; i++) {
-            this.globalSearchFilter?.push(this.cols[i]?.id);
-          }
-
-          for (let i = 0; i < this.projectList?.length; i++) {
-            const obj = {
-              id: this.projectList[i]?.id,
-              name: this.projectList[i]?.projectName,
-              type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
-              saveAssigneeDetails : this.projectList[i]?.saveAssigneeDetails,
-            };
-            for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
-              obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
-            }
-            this.allProjectList?.push(obj);
-          }
+          this.fillColumns();
+          this.addProjectType();
         }
         this.loading = false;
         this.table?.reset();
-
+        this.sharedService.setProjectList(this.allProjectList);
       } else {
         this.loading = false;
         this.messenger.add({
@@ -157,9 +163,50 @@ export class ProjectListComponent implements OnInit {
     });
   }
 
+  fillColumns() {
+    for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
+      const obj = {
+        id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
+        heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
+      };
+      this.cols?.push(obj);
+    }
+  }
+
+  addProjectType() {
+    const projectObj = {
+      id: 'name',
+      heading: 'Project'
+    };
+    this.cols?.unshift(projectObj);
+    const typeObj = {
+      id: 'type',
+      heading: 'Type'
+    };
+    this.cols?.push(typeObj);
+    for (let i = 0; i < this.cols?.length; i++) {
+      this.globalSearchFilter?.push(this.cols[i]?.id);
+    }
+
+    for (let i = 0; i < this.projectList?.length; i++) {
+      const obj = {
+        id: this.projectList[i]?.id,
+        name: this.projectList[i]?.projectName,
+        type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
+        saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
+        developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,
+        projectOnHold: this.projectList[i]?.projectOnHold,
+      };
+      for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
+        obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
+      }
+      this.allProjectList?.push(obj);
+    }
+  }
+
   newProject() {
     this.sharedService.setSelectedProject(null);
-    this.router.navigate(['./dashboard/Config/BasicConfig']);
+    this.isNewProject = true;
   }
 
   editProject(project) {
@@ -177,12 +224,12 @@ export class ProjectListComponent implements OnInit {
         this.http.deleteProject(project).subscribe(response => {
           this.projectDeletionStatus(response);
           let arr = this.sharedService.getCurrentUserDetails('projectsAccess');
-          if(arr?.length){
+          if (arr?.length) {
             arr?.map((item) => {
               item.projects = item.projects.filter(x => x.projectId != project.id);
             });
             arr = arr?.filter(item => item.projects?.length > 0);
-            this.sharedService.setCurrentUserDetails({projectsAccess: arr});
+            this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
           }
         }, error => {
           this.projectDeletionStatus(error);
@@ -231,44 +278,9 @@ export class ProjectListComponent implements OnInit {
     }
   }
 
-  // handleDateFilterChange() {
-  //   let days = this.selectedDateFilter;
-  //   let date = new Date();
-  //   if (days) {
-  //     this.projectList = this.allProjectList.filter((project) => new Date(project.updatedAt) >= new Date(date.getTime() - (days * 24 * 60 * 60 * 1000)));
-  //   } else {
-  //     this.projectList = this.allProjectList;
-  //   }
-  // }
+  editConfiguration(project, tabNum) {
+    this.sharedService.setSelectedProject(project);
+    this.router.navigate([`/dashboard/Config/ConfigSettings/${project['id']}`], { queryParams: { 'type': project['type'].toLowerCase(), tab: tabNum } });
 
-  editConfiguration(project) {
-    const newProjectObj = {};
-    Object.keys(project).forEach((key) => {
-      if (key !== 'id' && key !== 'saveAssigneeDetails') {
-        newProjectObj[this.cols.filter((col) => col.id === key)[0].heading] = project[key];
-      }
-    });
-    newProjectObj['id'] = project['id'];
-    newProjectObj['saveAssigneeDetails']= project["saveAssigneeDetails"];
-    this.sharedService.setSelectedProject(newProjectObj);
-    this.router.navigate(['/dashboard/Config/ToolMenu']);
-
-  }
-
-  getHierarchy() {
-    this.http.getHierarchyLevels().subscribe(formFieldData => {
-      formFieldData.forEach(element => {
-        if (element.suggestions && element.suggestions.length) {
-          element.suggestions = element.suggestions.map(suggestion => ({
-              name: suggestion,
-              code: suggestion
-            }));
-        }
-        element.value = '';
-        element.required = true;
-      });
-
-      localStorage.setItem('hierarchyData', JSON.stringify(formFieldData));
-    });
   }
 }

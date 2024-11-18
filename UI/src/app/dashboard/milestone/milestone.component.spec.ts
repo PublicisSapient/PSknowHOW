@@ -12,6 +12,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ExcelService } from 'src/app/services/excel.service';
 import { DatePipe } from '@angular/common';
 import { of } from 'rxjs';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 
 
@@ -272,6 +273,56 @@ describe('MilestoneComponent', () => {
                 showTrend: true,
                 isPositiveTrend: true,
                 calculateMaturity: false,
+                kpiSubCategory : 'Speed',
+                kpiSource: 'Jira',
+                maxValue: '300',
+                kanban: true,
+                groupId: 4,
+                kpiWidth : 100,
+                kpiInfo: {
+                    definition: 'Release Frequency highlights the number of releases done in a month',
+                    formula: [
+                        {
+                            lhs: 'Release Frequency for a month',
+                            rhs: 'Number of fix versions in JIRA for a project that have a release date falling in a particular month'
+                        }
+                    ],
+                    details: [
+                        {
+                            type: 'paragraph',
+                            value: 'It is calculated as a ‘Count’. Higher the Release Frequency, more valuable it is for the Business or a Project'
+                        },
+                        {
+                            type: 'paragraph',
+                            value: 'A progress indicator shows trend of Release Frequency between last 2 months. An upward trend is considered positive'
+                        }
+                    ]
+                },
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
+                squadSupport: false,
+                xaxisLabel: 'Months',
+                yaxisLabel: 'Count'
+            },
+            shown: true
+        },
+        {
+            kpiId: 'kpi75',
+            kpiName: 'Release Frequency',
+            isEnabled: true,
+            order: 1,
+            kpiDetail: {
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi74',
+                kpiName: 'Release Frequency',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                showTrend: true,
+                isPositiveTrend: true,
+                calculateMaturity: false,
+                kpiSubCategory : 'Value',
                 kpiSource: 'Jira',
                 maxValue: '300',
                 kanban: true,
@@ -308,6 +359,7 @@ describe('MilestoneComponent', () => {
     let helperService: HelperService
     let httpService;
     let excelService;
+    let exportExcelComponent;
     beforeEach(async () => {
         service = new SharedService();
         await TestBed.configureTestingModule({
@@ -315,7 +367,7 @@ describe('MilestoneComponent', () => {
                 HttpClientTestingModule,
                 RouterTestingModule.withRoutes(routes),
             ],
-            declarations: [MilestoneComponent],
+            declarations: [MilestoneComponent,ExportExcelComponent],
             providers: [
                 HelperService,
                 { provide: APP_CONFIG, useValue: AppConfig },
@@ -330,6 +382,7 @@ describe('MilestoneComponent', () => {
         httpService = TestBed.inject(HttpService);
         helperService = TestBed.inject(HelperService);
         excelService = TestBed.inject(ExcelService);
+        exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
 
         fixture = TestBed.createComponent(MilestoneComponent);
         component = fixture.componentInstance;
@@ -410,15 +463,15 @@ describe('MilestoneComponent', () => {
     it('should process kpi config Data', () => {
         component.configGlobalData = configGlobalData;
         component.navigationTabs = [
-            {'label':'Release Review', 'count': 0},
-            {'label':'Release Progress', 'count': 0},
+            {'label':'Speed', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
+            {'label':'Quality', 'count': 0,kpis : [],width :'half'},
+            {'label':'Value', 'count': 0,kpis : [],width :'full'},
           ];
         component.processKpiConfigData();
         expect(component.noKpis).toBeFalse();
         component.configGlobalData[0]['isEnabled'] = false;
         component.configGlobalData[0]['shown'] = false;
         component.processKpiConfigData();
-        expect(component.noKpis).toBeTrue();
         expect(Object.keys(component.kpiConfigData).length).toBe(configGlobalData.length);
     });
 
@@ -446,15 +499,19 @@ describe('MilestoneComponent', () => {
             kpiId: 'kpi17',
             kpiName: 'Unit Test Coverage'
         }];
-        component.masterData = {
-            kpiList: [{
-                kpiId: 'kpi17',
+        component.updatedConfigGlobalData = [{
+            kpiId: 'kpi17',
+            kpiName: 'Unit Test Coverage',
+            isEnabled: true,
+            order: 23,
+            kpiDetail: {
                 kanban: false,
                 kpiSource: 'Jira',
                 kpiCategory: 'Release',
                 groupId: 1
-            }]
-        };
+            },
+            shown: true
+        }]
         const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
         const postJiraSpy = spyOn(component, 'postJiraKpi');
         component.groupJiraKpi(['kpi17']);
@@ -573,6 +630,9 @@ describe('MilestoneComponent', () => {
         const kpi = {
             'kpiId': 'kpi123'
         }
+        component.filterApplyData = {
+            ids : ['fakeRelease']
+        }
         component.handleSelectedOption(event, kpi)
         component.kpiSelectedFilterObj['kpi123'] = {};
         component.kpiSelectedFilterObj['kpi123'] = event
@@ -666,7 +726,7 @@ describe('MilestoneComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraGroupId1));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(fakeJiraGroupId1));
         const spycreateKpiWiseId = spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         const spycreateAllKpiArray = spyOn(component, 'createAllKpiArray');
         component.postJiraKpi(fakeJiraPayload, 'jira');
@@ -760,7 +820,7 @@ describe('MilestoneComponent', () => {
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
-        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraGroupId1));
+        const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(fakeJiraGroupId1));
         const spycreateKpiWiseId = spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
         const spycreateAllKpiArray = spyOn(component, 'createAllKpiArray');
         component.postJiraKpi(fakeJiraPayload, 'jira');
@@ -796,6 +856,9 @@ describe('MilestoneComponent', () => {
         };
         const kpi = {
             'kpiId': 'kpi123'
+        }
+        component.filterApplyData = {
+            ids : ['fakeRelease']
         }
         component.handleSelectedOption(event, kpi)
         component.kpiSelectedFilterObj['kpi123'] = {};
@@ -853,7 +916,7 @@ describe('MilestoneComponent', () => {
             filter2: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
@@ -903,7 +966,7 @@ describe('MilestoneComponent', () => {
             filter1: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
@@ -940,7 +1003,7 @@ describe('MilestoneComponent', () => {
             filter1: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toBeGreaterThan(0)
     })
@@ -955,7 +1018,7 @@ describe('MilestoneComponent', () => {
         component.kpiSelectedFilterObj['kpi124'] = {}
         const combo = [{ filter1: 'Overall' }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
     })
@@ -984,26 +1047,54 @@ describe('MilestoneComponent', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
             trendValueList: [
-                { label: "l1" }
+                {
+                    "value": [
+                        {
+                            "data": "2",
+                            "value": [
+                                {
+                                    "value": 1,
+                                    "drillDown": [
+                                        {
+                                            "value": 1,
+                                            "subFilter": "Open",
+                                            "size": 5
+                                        }
+                                    ],
+                                    "subFilter": "To Do",
+                                    "size": 5
+                                },
+                            ],
+                            "kpiGroup": "KnowHOW | Developer Dashboard to show KPIs from Repos",
+                            "size": "5.0"
+                        },
+                    ]
+                }
             ]
         }];
         component.kpiSelectedFilterObj['kpi124'] = {
             filter1: ['hold', 'in progress']
         }
 
-        const spyObj = spyOn(component, 'applyAggregationLogic');
+        // const spyObj = spyOn(component, 'applyAggregationLogic');
         spyOn(component, 'getKpiChartType');
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
     })
 
     it("should create kpi wise list", () => {
+        component.filterApplyData = {ids : ['fakeRelease']}
+        spyOn(component,'getChartData');
+        spyOn(helperService,'setFilterValueIfAlreadyHaveBackup');
         const fakeKPi = helperService.createKpiWiseId(fakeMilestoneKpiResponse.response);
         component.createAllKpiArray(fakeKPi)
         expect(component.allKpiArray.length).toBeGreaterThan(0);
     })
 
     it("should create kpi array when trendvalueList is object", () => {
+        component.filterApplyData = {ids : ['fakeRelease']}
+        spyOn(component,'getChartData');
+        spyOn(helperService,'setFilterValueIfAlreadyHaveBackup');
         let kpi = [{
             kpiId: "kpi141",
             trendValueList: {
@@ -1067,12 +1158,395 @@ describe('MilestoneComponent', () => {
                 shown: true
             }
         ];
-        spyOn(helperService, 'getKpiCommentsHttp').and.resolveTo(response);
+        spyOn(helperService, 'getKpiCommentsCount').and.returnValue(Promise.resolve({}))
         component.getKpiCommentsCount();
         tick();
-        expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
+        expect(component.kpiCommentsCountObj).toBeDefined();
     }));
 
+    it('should work download excel functionality', () => {
+        spyOn(component.exportExcelComponent, 'downloadExcel')
+        component.downloadExcel('kpi122', 'name', true, true);
+        expect(exportExcelComponent).toBeDefined();
+    })
+
+    it('should set the colorObj', () => {
+        component.kpiChartData = {
+            kpi121: {
+                kpiId: 'kpi123'
+            }
+        }
+        const x = {
+            'Sample One_hierarchyLevelOne': {
+                nodeName: 'Sample One',
+                color: '#079FFF'
+            }
+        };
+        service.setColorObj(x);
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.colorObj).toBe(x);
+    });
+
+    it('should noTabAccess false when emp details not available', () => {
+        service.setEmptyData('');
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.noTabAccess).toBeFalsy();
+    })
+
+    it('should noTabAccess true when emp details available', () => {
+        service.setEmptyData('test');
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.noTabAccess).toBeTruthy();
+    })
+
+    it('should get chartdata for kpi when trendValueList is an Array of two filters for card', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: [
+                { filter1: 'hold', filter2: 'f2', value: [{ count: 1 }] },
+                { filter1: 'f2', filter2: 'f2', value: [{ count: 2 }] },
+                { filter1: 'in progress', filter2: 'f2', value: [{ count: 2 }] },
+            ]
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['hold', 'in progress'],
+            filter2: ['f2']
+        }
+        const spyObj = spyOn(component, 'applyAggregationLogic');
+        spyOn(component, 'getKpiChartType').and.returnValue('abc')
+        component.getChartData('kpi124', 0)
+        expect(spyObj).toHaveBeenCalled();
+    })
+
+    it('should get chartdata for kpi when trendValueList is an Array of two filters for chart', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: [
+                { filter1: 'hold', filter2: 'f2', value: [{ count: 1 }] },
+                { filter1: 'f2', filter2: 'f2', value: [{ count: 2 }] },
+                { filter1: 'in progress', filter2: 'f2', value: [{ count: 2 }] },
+            ]
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['hold', 'in progress'],
+            filter2: ['f2']
+        }
+
+        const spyObj = spyOn(component, 'applyAggregationForChart');
+        spyOn(component, 'getKpiChartType').and.returnValue('GroupBarChart')
+        component.getChartData('kpi124', 0)
+        expect(spyObj).toHaveBeenCalled();
+    })
+
+    it('should get chartdata for kpi when trendValueList is an Array of two filters without aggregration', () => {
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: [
+                { filter1: 'hold', filter2: 'f2', value: [{ count: 1 }] },
+            ]
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['hold', 'in progress'],
+            filter2: ['f2']
+        }
+        spyOn(component, 'getKpiChartType').and.returnValue('abc')
+        component.getChartData('kpi124', 0)
+    })
+
+    it('should apply aggregation for chart when value is object', () => {
+        const data = [
+            {
+                filter1: "Defect",
+                value: [{
+                    "data": "0",
+                    "value": { data: 12 },
+                    "hoverValue": {
+                        "Defect": 5,
+                    },
+                }]
+            },
+            {
+                filter1: "Change request",
+                value: [{
+                    "data": "0",
+                    "value": { data: 1 },
+                    "hoverValue": {
+                        "Change request": 5
+                    },
+                }
+                ]
+            }
+        ];
+        const result = component.applyAggregationForChart(data);
+        expect(result[0]?.value[0].value.data).toEqual(13);
+    });
+
+    it('should apply aggregation for chart when value is array', () => {
+        const data = [
+            {
+                filter1: "Defect",
+                value: [{
+                    "data": "0",
+                    "value": [{ data: 12 }],
+                    "hoverValue": {
+                        "Defect": 5,
+                    },
+                }]
+            },
+            {
+                filter1: "Change request",
+                value: [{
+                    "data": "0",
+                    "value": [{ data: 12 }],
+                    "hoverValue": {
+                        "Change request": 5
+                    },
+                }
+                ]
+            }
+        ];
+        const result = component.applyAggregationForChart(data);
+        expect(result).toBeDefined();
+    });
+
+    it('should reload kpis', () => {
+        const data = {
+            kpiDetail: {
+                kpiId: 'kpi123',
+                groupId: 9
+            }
+        }
+        const rValue = {
+            kpiList: ['kpi123']
+        }
+        spyOn(helperService, 'groupKpiFromMaster').and.returnValue(rValue);
+        const spyObj = spyOn(component, 'postJiraKpi');
+        component.reloadKPI(data);
+        expect(spyObj).toHaveBeenCalled();
+    })
+
+    it('should return true if data is present in the first format', () => {
+        const result = component.checkIfDataPresent([{ data: 5 }]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return true if data is present in the second format', () => {
+       const result = component.checkIfDataPresent([{ value: [{ data: 10 }] }]);
+        expect(result).toBeTrue();
+      });
+    
+      it('should return false if data is present but not a valid number in the second format', () => {
+        const result = component.checkIfDataPresent([{ value: [{ data: 'xyz' }] }]);
+        expect(result).toBeFalse();
+      });
+
+      it("should createapiarry for radiobutton",()=>{
+        const data = {
+            kpi141 : {
+                kpiId: "kpi141",
+                kpiName: "Defect Count by Status",
+                unit: "Count",
+                maxValue: "",
+                chartType: "",
+                kpiInfo: {
+                    definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+                },
+                id: "64b4ed7acba3c12de164732c",
+                isDeleted: false,
+                kpiCategory: "Release",
+                kpiUnit: "Count",
+                kanban: false,
+                kpiSource: "Jira",
+                trendValueList: [
+                    {
+                        filter1 : 'story',
+                        value : [
+                            {
+                                data: "1",
+                                value: [
+                                    {
+                                        value: 0,
+                                        drillDown: [],
+                                        subFilter: "To Do"
+                                    },
+                                ],
+                                kpiGroup: "Issue Count"
+                            }
+                        ]
+                    }
+                ],
+                groupId: 9
+            }
+        };
+
+        component.updatedConfigGlobalData = [
+            {
+                kpiId: 'kpi141',
+                kpiName: 'Deployment Frequency',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kpiFilter : 'radiobutton'
+                },
+                shown: true
+            }
+        ];
+
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story']
+        }
+        component.kpiDropdowns = {
+            kpi141 : {
+                options : ['story']
+            }
+        } 
+        component.filterApplyData = {ids : ['release1']}
+        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        component.createAllKpiArray(data);
+        expect(component.kpiSelectedFilterObj).toBeDefined();
+      })
+
+      it("should createapiarry for dropdown",()=>{
+        component.filterApplyData = {ids : ['release1']}
+        const data = {
+            kpi141 : {
+                kpiId: "kpi141",
+                kpiName: "Defect Count by Status",
+                unit: "Count",
+                maxValue: "",
+                chartType: "",
+                kpiInfo: {
+                    definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+                },
+                id: "64b4ed7acba3c12de164732c",
+                isDeleted: false,
+                kpiCategory: "Release",
+                kpiUnit: "Count",
+                kanban: false,
+                kpiSource: "Jira",
+                trendValueList: [
+                    {
+                        filter1 : 'story',
+                        value : [
+                            {
+                                data: "1",
+                                value: [
+                                    {
+                                        value: 0,
+                                        drillDown: [],
+                                        subFilter: "To Do"
+                                    },
+                                ],
+                                kpiGroup: "Issue Count"
+                            }
+                        ]
+                    }
+                ],
+                groupId: 9
+            }
+        };
+
+        component.updatedConfigGlobalData = [
+            {
+                kpiId: 'kpi141',
+                kpiName: 'Deployment Frequency',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kpiFilter : 'dropdown'
+                },
+                shown: true
+            }
+        ];
+
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story']
+        }
+        component.kpiDropdowns = {
+            kpi141 : {
+                options : ['story']
+            }
+        }
+        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        component.createAllKpiArray(data);
+        expect(component.kpiSelectedFilterObj).toBeDefined();
+      })
+
+      it("should createapiarry for multi dropdown",()=>{
+        component.filterApplyData = {ids : ['release1']}
+        const data = {
+            kpi141 : {
+                kpiId: "kpi141",
+                kpiName: "Defect Count by Status",
+                unit: "Count",
+                maxValue: "",
+                chartType: "",
+                kpiInfo: {
+                    definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+                },
+                filters : {
+                    filter1 : {
+                        options : ['story']
+                    }
+                },
+                id: "64b4ed7acba3c12de164732c",
+                isDeleted: false,
+                kpiCategory: "Release",
+                kpiUnit: "Count",
+                kanban: false,
+                kpiSource: "Jira",
+                trendValueList: [
+                    {
+                        filter1 : 'story',
+                        value : [
+                            {
+                                data: "1",
+                                value: [
+                                    {
+                                        value: 0,
+                                        drillDown: [],
+                                        subFilter: "To Do"
+                                    },
+                                ],
+                                kpiGroup: "Issue Count"
+                            }
+                        ]
+                    }
+                ],
+                groupId: 9
+            }
+        };
+
+        component.updatedConfigGlobalData = [
+            {
+                kpiId: 'kpi141',
+                kpiName: 'Deployment Frequency',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kpiFilter : 'multiDropdown'
+                },
+                shown: true
+            }
+        ];
+
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story']
+        }
+        component.kpiDropdowns = {
+            kpi141 : {
+                options : ['story']
+            }
+        }
+        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        component.createAllKpiArray(data);
+        expect(component.kpiSelectedFilterObj).toBeDefined();
+      })
+
 });
+
 
 

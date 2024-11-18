@@ -1,9 +1,15 @@
+
 <div [ngClass]="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help') ? 'header' : 'header-config' " class="p-p-2">
-   <div class="logo cursor-pointer">
-      <img *ngIf="logoImage" src={{logoImage}}
-         (click)="navigateToHomePage()" alt="Logo" />
-      <img *ngIf="!logoImage" src="assets/img/sapientLogo.PNG"
-         (click)="navigateToHomePage()" alt="Logo" />
+   <div class="p-d-flex p-align-start">
+      <div class="position-relative p-mr-2 die-container" *ngIf="auth_service && isSpeedSuite">
+         <img src="assets/img/icon-dice.png" class="icon-dice" (click)="appItems.toggle($event)" alt="Switch" width="50"/>
+         <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
+         <p-menu [model]="appList" [popup]="true" #appItems></p-menu>
+      </div>
+      <div class="logo cursor-pointer">
+         <img *ngIf="logoImage" src={{logoImage}} (click)="navigateToHomePage()" alt="Logo" />
+         <img *ngIf="!logoImage" src="assets/img/sapientLogo.PNG" (click)="navigateToHomePage()" alt="Logo" />
+      </div>
    </div>
    <div class="f"
    *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
@@ -23,7 +29,7 @@
                         </ng-select>
                      </div>
                      <!-- Trend line value -->
-                     <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
+                     <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="max-width: 250px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            [multiple]="true"
                            [items]="trendLineValueList"
@@ -46,7 +52,7 @@
                            <ng-template ng-option-tmp let-item="item" let-index="index">
                               {{item.nodeName}}
                               <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
-                          </ng-template>
+                        </ng-template>
                            <ng-template ng-footer-tmp>
                               <div class="p-d-flex p-justify-end p-align-center p-mt-1">
                                  <button pButton pRipple label="Cancel" icon="pi pi-times"
@@ -65,17 +71,17 @@
                            [items]="trendLineValueList"
                            bindLabel="nodeName"
                            bindValue="nodeId"
-                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project',true) : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project') : onSelectedTrendValueChange(true)"
+                           [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project', true) : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project', true) : onSelectedTrendValueChange(true)"
                            class="trend-line-value p-pb-0">
                            <ng-template ng-option-tmp let-item="item" let-index="index">
                               {{item.nodeName}}
                               <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
-                          </ng-template>
+                        </ng-template>
                         </ng-select>
                      </div>
                      <div *ngIf="selectedTab?.toLowerCase() === 'iteration'" class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint">
                      <ng-select  formControlName="selectedSprintValue" [dropdownPosition]="'bottom'"
-                        (change)="handleIterationFilters('sprint',true)" placeholder="Sprint" [clearable]="false"
+                        (change)="handleIterationFilters('sprint', true)" placeholder="Sprint" [clearable]="false"
                         class="p-pb-0">
                         <ng-option *ngFor="let item of filteredAddFilters['sprint']" [value]="item.nodeId">
                            {{item.nodeName}}{{item.sprintState?.toLowerCase() === 'active'? ' (Active)' : ' (Closed)'}}
@@ -92,7 +98,7 @@
                      </ng-select>
                   </div>
                   </div>
-                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'release'">
+                  <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'kpi-maturity' && selectedTab?.toLowerCase() !== 'backlog'  && selectedTab?.toLowerCase() !== 'release'">
                      <!-- Date filter start -->
                      <div *ngIf="(kanban && selectedDateFilter !== '') || this.selectedTab?.toLowerCase() === 'developer'"
                         class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
@@ -131,28 +137,38 @@
                      <!-- Date filter end -->
                      <!-- additional filters start -->
                      <div class="p-d-flex"
-                        *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'dora' && selectedTab?.toLowerCase() !== 'developer'">
+                        *ngIf="!noAdditionalFilters">
                         <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
-                           <div *ngIf="item?.hierarchyLevelId !== 'release'  && !(item?.hierarchyLevelId === 'sprint' && selectedTab?.toLowerCase() === 'iteration')"
+                           <div *ngIf="item?.hierarchyLevelId !== 'release' && !(item?.hierarchyLevelId === 'sprint' && selectedTab?.toLowerCase() === 'iteration')"
                               class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
                               [ngClass]="{'active': toggleDropdownObj[item?.hierarchyLevelId], 'disabled': isAddFilterDisabled(item?.hierarchyLevelId)}"
                               (click)="toggleDropdownObj[item.hierarchyLevelId] = !toggleDropdownObj[item.hierarchyLevelId]"
+                              pTooltip="Squad selection applies to Sprint KPIs only" tooltipPosition="bottom"
                               [id]="item.hierarchyLevelId+'Btn'">
                               {{item?.hierarchyLevelName}}
                            </div>
                            <div class="filter-options-container add-filters-dropdown" [id]="item.hierarchyLevelId+'DDn'"
                               *ngIf="toggleDropdownObj[item?.hierarchyLevelId] && filteredAddFilters[item.hierarchyLevelId]?.length > 0">
                               <div class="filter-options">
+                                 <div class="search-container" style="padding-bottom: 1rem"  *ngIf="item?.hierarchyLevelId === 'sprint'">
+                                    <span class="p-input-icon-left">
+                                       <i class="pi pi-search"></i>
+                                       <input type="text" pInputText [formControlName]="item.hierarchyLevelId+'Search'" style="padding-left: 2rem;height: 30px;" (input)="applySearchFilter(item?.hierarchyLevelId)">
+                                 </span>
+                                 </div>
                                  <label class="checkbox-modified"
-                                    *ngFor="let key of filteredAddFilters[item.hierarchyLevelId]; let i = index">
-                                    <div 
+                                    *ngFor="let key of copyFilteredAddFilters[item.hierarchyLevelId]; let i = index">
+                                   <div
                                        [formGroupName]="item?.hierarchyLevelId">
                                        <input type="checkbox" [formControlName]="key.nodeId"
-                                          [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]" 
+                                          [checked]="filterForm?.get(item?.hierarchyLevelId)?.value[key.nodeId]"
                                           class="p-mr-1" />
                                     </div>
                                     {{key.nodeName}}
                                  </label>
+                                 <div class="search-container"  *ngIf="item?.hierarchyLevelId === 'sprint' && !copyFilteredAddFilters[item.hierarchyLevelId].length ">
+                                 Not Found..
+                                 </div>
                               </div>
                               <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
                                  <button pButton pRipple label="Cancel" icon="pi pi-times"
@@ -160,7 +176,7 @@
                                     (click)="toggleDropdownObj[item?.hierarchyLevelId] = false"></button>
                                  <button pButton pRipple label="Apply" icon="pi pi-save"
                                     class="p-button-secondary p-button-sm"
-                                    (click)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('sqd', true) : applyChanges(item?.hierarchyLevelId)"
+                                    (click)=" selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('sqd', true) : applyChanges(item?.hierarchyLevelId)"
                                     [attr.disabled]="checkIfBtnDisabled(item?.hierarchyLevelId)"></button>
                               </div>
                            </div>
@@ -176,7 +192,7 @@
 
             <!-- SHow/Hide start for iteration and backlog -->
 
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release')"
+            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'kpi-maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release'|| selectedTab?.toLowerCase() === 'dora')"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn"
@@ -206,7 +222,8 @@
                            (click)="toggleDropdown['showHide'] = false"></button>
 
                         <button type="submit" pButton pRipple class="p-button-sm p-button-success p-button-raised"
-                           icon="pi pi-check" iconPos="left" label="Save" (click)="kpisNewOrder = []"></button>
+                           icon="{{ showHideLoader ? 'pi pi-spin pi-spinner' : 'pi pi-check' }}" iconPos="left" label="Save" (click)="kpisNewOrder = []"
+                           [ngClass]="{'active': toggleDropdown['showHide'],'disabled': showHideLoader}"></button>
                      </div>
 
                   </form>
@@ -216,13 +233,13 @@
             <!-- /show/hide kpi's ends -->
             <!-- Capacity Planning link start -->
             <div [ngClass]="{'disabled': !isAdmin}" class="btn-custom p-p-2 rounded filter-btn noti-btn-wraper"
-                role="button" (click)="redirectToCapacityPlanning()" title="Go to Capacity Planning">
+               role="button" (click)="redirectToCapacityPlanning()" title="Go to Capacity Planning">
                <i class="pi pi-users" style="font-size: 20px;font-weight: bold;"></i>
             </div>
             <!-- Capacity Planning link end -->
             <!-- comments icon start -->
             <div class="position-relative">
-               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
+               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'kpi-maturity'"
                   [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project'
                || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1)}">
                   <img #commentSummary class="p-p-2 " (click)="handleBtnClick();"
@@ -272,9 +289,9 @@
    </div>
 
    <div class="p-d-flex">
-      <div class="back-btn-wraper">
-         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3 cursor-pointer">
-            <button class="back-btn" routerLinkActive="active" (click)="navigateToDashboard()">BACK TO DASHBOARD</button>
+      <div class="back-btn-wraper" *ngIf="userRole !== 'ROLE_VIEWER'">
+         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')" class="back-btn-container rounded p-mr-3">
+            <button pButton pRipple class="back-btn" [disabled] = "backToDashboardLoader" routerLinkActive="active" icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="BACK TO DASHBOARD" (click)="navigateToDashboard()"></button>
          </div>
       </div>
       <div class="username-btn-wraper" role="button">
@@ -291,7 +308,6 @@
    <div class="filter-nav">
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'release' && selectedTab?.toLowerCase() !== 'dora'">
          <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
-            <!-- *ngIf="!kanban"-->
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
                <li class="selectedfilter p-mr-3">
                   <div class="selected-node">
@@ -322,7 +338,7 @@
             </ng-container>
          </ul>
          <!-- toggle view -->
-         <div class="tabs" *ngIf="selectedTab?.toLowerCase() !== 'maturity'">
+         <div class="tabs" *ngIf="selectedTab?.toLowerCase() !== 'kpi-maturity'">
             <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
             <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
                <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
@@ -340,10 +356,10 @@
             </label>
             <!-- SHow/Hide start -->
 
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity'"
+            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'kpi-maturity'"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
-                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
+                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn"
                   #showHide [ngClass]="{'active': toggleDropdown['showHide'],'disabled': noProjects}" (click)="toggleDropdown['showHide'] = !toggleDropdown['showHide']">
                   Show/Hide
                </div>
@@ -378,18 +394,17 @@
             </div>
 
             <!-- Download button start -->
-            <!--*ngIf="isSuperAdmin && ( selectedTab == 'mydashboard' || selectedTab == 'EngineeringMaturity')"-->
-            <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn"
+            <!-- <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn"
                *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'"
                id="Filter-Download-Btn" (click)="exportToExcel($event)" [ngClass]="{'disabled': showChart || noProjects}"
                [attr.title]="'Export View'">
                <img src="../../../assets/img/ico-download.svg" alt="Download" />
-            </div>
+            </div> -->
             <!-- Download button end -->
             <!-- Download excel Button error message start -->
-            <span class="float-right errMsz alert alert-danger" style="padding: 6px 17px;"
+            <!-- <span class="float-right errMsz alert alert-danger" style="padding: 6px 17px;"
                *ngIf="( enginneringMaturityErrorMessage !== '' ) && ( selectedTab === 'EngineeringMaturity' )">{{
-               enginneringMaturityErrorMessage }}</span>
+               enginneringMaturityErrorMessage }}</span> -->
             <!-- Download excel Button error message end -->
          </div>
       </div>
@@ -422,7 +437,6 @@
                   {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' :
                   'NA'}}</p>
             </span>
-
             <span *ngIf="selectedTab?.toLowerCase() === 'iteration' && selectedProjectForIteration && selectedProjectForIteration[0]?.additionalFilters?.length">
                <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
                   <ng-container *ngFor="let item of selectedProjectForIteration; let i = index;">
@@ -466,14 +480,14 @@
                   <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
                      Last Sync
                   </h4>
- 
+
                </div>
                <p class="last-sync-date p-m-0 p-text-right">
                   {{selectedProjectLastSyncStatus != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
                </p>
             </div>
 
-            <div class="p-mr-2" *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
+            <div class="p-mr-2" *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
                <span class="refresh-state p-p-2" (click)="displayModal = true"
                *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
                   <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>REFRESH
@@ -498,10 +512,17 @@
    <p-header>Are you sure you want to refresh?</p-header>
    <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
-          <button type="button" pButton pRipple icon="pi pi-times" (click)="displayModal = false" label="Cancel"
-              class="p-button p-button-danger p-button-raised"></button>
-          <button type="button" pButton pRipple icon="fa fa-check" (click)="fetchData()" label="Ok"
-              class="p-button p-button-success p-button-raised"></button>
+         <button type="button" pButton pRipple icon="pi pi-times" (click)="displayModal = false" label="Cancel"
+            class="p-button p-button-danger p-button-raised"></button>
+         <button type="button" pButton pRipple icon="fa fa-check" (click)="fetchData()" label="Ok"
+            class="p-button p-button-success p-button-raised"></button>
       </div>
-  </p-footer>
- </p-dialog>
+</p-footer>
+</p-dialog>
+<p-dialog header="Access Denied" [(visible)]="displayMessage" [modal]="true">
+   <p>
+      Sorry! You do not have access to this project in KnowHOW.
+      Click <a class="link" routerLink="/dashboard/Config/Profile/RaiseRequest" (click)="displayMessage = false">here</a> to request for project access.
+   </p>
+</p-dialog>
+<app-page-loader *ngIf="loader"></app-page-loader>

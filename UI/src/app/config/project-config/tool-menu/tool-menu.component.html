@@ -15,137 +15,156 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-  <p-toast [style]="{marginTop: '80px'}"></p-toast>
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="main">
-    <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject">
-        <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
-            <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div" *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' ">
-                <p class="form_title p-text-capitalize">{{project?.key}}</p>
-                <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
+  <div class="p-d-flex p-jc-between p-align-center p-mb-5">
+    <h1>Project Configuration</h1>
+    <div>
+      <span class="p-text-capitalize" style="font-size: 1.2rem;">
+        Select Project
+      </span>
+      <span class="p-ml-3">
+        <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
+          [style]="{'min-width':'300px', 'max-width':'300px'}"
+          [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}" [filter]="true" filterBy="name"
+          [showClear]="false" placeholder="Select a Project" (onChange)="updateProjectSelection()">
+          <ng-template pTemplate="selectedItem">
+            <div class="userProject-item userProject-item-value" *ngIf="selectedProject">
+              <div>{{selectedProject.name}}</div>
             </div>
-        </ng-container>
+          </ng-template>
+          <ng-template let-userProject pTemplate="item">
+            <div class="userProject-item">
+              <div>{{userProject.name}}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </span>
     </div>
-    <p-dataView #dv [value]="tools" [loading]="dataLoading" [paginator]="true" [rows]="16" filterBy="toolName"
-        layout="grid">
-        <ng-template pTemplate="header">
-            <div class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
-                <div class="p-d-flex">
-                    <a routerLink="/dashboard/Config/ProjectList" pButton pRipple type="button" icon="pi pi-arrow-left"
-                        class="p-button-raised p-button-secondary back-button p-mr-5"></a>
-                    <span class="p-input-icon-left p-mb-2 p-mb-md-0">
-                        <i class="pi pi-search"></i>
-                        <input type="search" pInputText placeholder="Search by Name"
-                            (input)="dv.filter($event.target.value)">
-                    </span>
-                </div>
-                <p-selectButton optionValue="value" [options]="projectTypeOptions" optionLabel="name"
-                    [(ngModel)]="selectedType" (onChange)="projectTypeChange($event, true)" [disabled]="disableSwitch">
-                </p-selectButton>
-                <div class="p-d-flex" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
-                <button pButton type="button" label="Generate Token" iconPos="right" (click)="generateTokenConfirmation()"
-                [loading]="generateTokenLoader" class="p-mt-0 p-mr-3" [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [style]="{'height':'2.5rem'}" pTooltip="You can generate the token to submit tools data via knowHOW POST APIs." tooltipPosition="top"></button>
-                </div>
-                <div class="p-d-flex">
-                    <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
-                        <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
-                            [disabled]="isAssigneeSwitchDisabled" (onChange)="onAssigneeSwitchChange($event)">
-                        </p-inputSwitch>
-                        <label for="assigneeSwitch" class="p-mr-5" style="font-family: 'FuturaNext_Medium', sans-serif;">
-                            &nbsp;&nbsp;Individual KPIs
-                            <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
-                                pTooltip='<div class="inner-content">
-                                    {{assigneeSwitchInfo}}
-                                </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"></span>
-                        </label>
-                    </div>
-                    <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
-                </div>
+  </div>
+  <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject">
+    <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
+      <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div"
+        *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' && project?.key != 'developerKpiEnabled' && project?.key != 'projectOnHold'">
+        <p class="form_title p-text-capitalize">{{project?.key}}</p>
+        <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
+      </div>
+    </ng-container>
+  </div>
+  <div class="p-d-flex p-jc-end p-mt-3 p-mb-3">
+    <button pButton type="button" class="p-button-success p-button-raised p-button p-component"
+      (click)="gotoProcessor()">
+      Run Processor <i class="pi pi-angle-double-right" style="font-size: 2rem"></i>
+    </button>
+  </div>
+  <p-dataView #dv [value]="tools" [loading]="dataLoading" [paginator]="false" [rows]="16" filterBy="toolName"
+    layout="list">
+    <ng-template pTemplate="header">
+      <div class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
+        <div class="p-d-flex">
+          <a routerLink="/dashboard/Config/ProjectList" pButton pRipple type="button" icon="pi pi-arrow-left"
+            class="p-button-raised p-button-secondary back-button p-mr-5"></a>
+          <span class="p-input-icon-left p-mb-2 p-mb-md-0">
+            <i class="pi pi-search"></i>
+            <input type="search" pInputText placeholder="Search by Name" (input)="dv.filter($event.target.value)">
+          </span>
+        </div>
+        <p-selectButton optionValue="value" [options]="projectTypeOptions" optionLabel="name" [(ngModel)]="selectedType"
+          (onChange)="projectTypeChange($event, true)" [disabled]="disableSwitch">
+        </p-selectButton>
+        <div class="p-d-flex">
+          <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+        </div>
 
-            </div>
-        </ng-template>
-        <ng-template let-tool pTemplate="listItem">
-            <div class="p-sm-12">
-                <div class="tool-list-item p-card" [ngClass]="{'bg-grey': !isProjectConfigured(tool.toolName)}">
-                    <figure class="card__media bg--0">
-                        <em class="{{ tool.icon.length ? tool.icon : 'fas fa-tools' }}"></em>
-                    </figure>
-                    <div class="card__media__body">
-                        <div class="card__primary__title">
-                            <h3 class="card__primary__title__text">{{ tool.toolName }}</h3>
-                            <small class="card__primary__title__subtext">{{ tool.description }}</small>
-                        </div>
-                    </div>
-                    <div class="card__actions">
-                        <button pButton type="button" routerLink="{{ tool.routerLink }}"
-                            [queryParams]="{toolName : tool.queryParams1}"
-                            label="{{isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText}}"
-                            icon="far fa-plus-square"
-                            class="p-button-success p-button-raised p-button p-component p-mt-1"></button>
-                        <button pButton type="button" routerLink="{{ tool.routerLink2 }}" label="Mappings"
-                            icon="far fa-plus-square" *ngIf="tool.routerLink2 && tool.routerLink2.length"
-                            class="p-button-success p-button-raised p-button p-component p-mt-1"
-                            [disabled]="!disableSwitch"></button>
-                    </div>
-                </div>
-            </div>
-        </ng-template>
-        <ng-template let-tool let-i="index" pTemplate="gridItem">
-            <div class="p-sm-12 p-md-3">
-                <div class="tool-grid-item p-card p-m-3 p-d-flex p-flex-wrap" [ngClass]="{'bg-grey': !isProjectConfigured(tool.toolName)}">
-                    <div class="card__media__body">
-                        <div class="card__primary__title">
-                            <h3 class="card__primary__title__text">{{ tool.toolName }}</h3>
-                            <small class="card__primary__title__subtext">{{ tool.description }}</small>
-                        </div>
-                    </div>
-                    <figure class="card__media bg--0 figure">
-                        <em class="{{ tool.icon.length ? tool.icon : 'fas fa-tools' }}"></em>
-                    </figure>
-                    <div class="card__actions">
-                        <button pButton type="button" routerLink="{{ tool.routerLink }}"
-                            [queryParams]="{toolName : tool.queryParams1}"
-                            label="{{ isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText }}"
-                            icon="far fa-plus-square"
-                            class="p-button-success p-button-raised p-button p-component mr-1 p-mt-1"></button>
-                        <button pButton type="button" routerLink="{{ tool.routerLink2 }}" label="Mappings"
-                            icon="far fa-plus-square" *ngIf="tool.routerLink2 && tool.routerLink2.length"
-                            class="p-button-success p-button-raised p-button p-component mr-0 p-mt-1"
-                            [disabled]="!disableSwitch"></button>
-                    </div>
-                </div>
-            </div>
-        </ng-template>
-    </p-dataView>
-
-</div>
-
-<p-confirmDialog #cd [transitionOptions]="'0ms'">
-    <p-footer>
-        <button type="button" (click)="cd.reject()" pButton label="Cancel" class="p-button-secondary" [style]="{'line-height': 'unset'}"></button>
-        <button type="button" (click)="cd.accept()" pButton label="Continue"></button>
-    </p-footer>
-  </p-confirmDialog>
-
-
-<p-dialog header="Token Generated" [(visible)]="displayGeneratedToken" [responsive]="true" showEffect="fade" [modal]="true"
-[style]="{width: '80vw'}" styleClass="p-fluid">
-    <p>Token has been generated successfully!</p>
-
-    <div class="p-inputgroup p-mb-2">
-        <input type="text" pInputText [(ngModel)]="generatedToken" readonly #inputGeneratedToken>
-        <span class="p-inputgroup-addon p-p-1" (click)="copyToken()"
-         tooltipPosition="top" tooltipEvent="focus">
-            <i class="pi pi-copy p-p-1" style="font-size: 1.5rem" [ngClass]="{'pi-check': tokenCopied,'color-green':tokenCopied }"></i></span>
-    </div>
-    <i>Please copy the token to submit the data, you will not be able to view the token once the screen is closed.</i>
-    <ng-template pTemplate="footer">
-        <button pButton type="button" label="Ok" (click)="displayGeneratedToken=false" ></button>
+      </div>
     </ng-template>
-</p-dialog>
-
-<p-confirmDialog #confirmToEnableDialog key="confirmToEnableDialog" [style]="{width: '50vw'}">
-    <p-footer>
-        <button type="button" (click)="confirmToEnableDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
-        <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Enable"></button>
-    </p-footer>
-</p-confirmDialog>
+    <ng-template let-tool pTemplate="listItem">
+      <div class="p-sm-12">
+        <div class="tool-list-item p-card" [ngClass]="{'bg-grey': !isProjectConfigured(tool.toolName)}">
+          <figure class="card__media bg--0">
+            <em class="{{ tool.icon.length ? tool.icon : 'fas fa-tools' }}"></em>
+          </figure>
+          <div class="card__media__body">
+            <div class="card__primary__title">
+              <div class="p-grid p-m-0 p-p-0">
+                <div class="p-md-4 inline-div">
+                  <p class="form_title p-text-capitalize">Tool Name</p>
+                  <p><strong class="sub-text p-text-capitalize">{{ tool.toolName }}</strong></p>
+                </div>
+                <div class="p-md-4 inline-div">
+                  <p class="form_title p-text-capitalize">Tool Type</p>
+                  <p><strong class="sub-text p-text-capitalize">{{ tool.category }}</strong></p>
+                </div>
+                <div class="p-md-4 inline-div">
+                  <p class="form_title p-text-capitalize">Connection Name</p>
+                  <p><strong class="sub-text p-text-capitalize">{{ tool.connectionName ? tool.connectionName : '-'
+                      }}</strong></p>
+                </div>
+                <div class="p-md-4 inline-div">
+                  <p class="form_title p-text-capitalize">Last Updated</p>
+                  <p>
+                    <strong class="sub-text p-text-capitalize" *ngIf="tool.updatedAt">{{ tool.updatedAt | date:
+                      'dd-MMM-yyyy (EE) - h:mm a' }}</strong>
+                    <strong class="sub-text p-text-capitalize" *ngIf="!tool.updatedAt">-</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card__actions">
+            <button pButton type="button" routerLink="{{ tool.routerLink }}"
+              [queryParams]="{type: selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase(), toolName : tool.queryParams1}"
+              label="{{isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText}}"
+              icon="far fa-plus-square" class="p-button-success p-button-raised p-button p-component p-mt-1"
+              (click)="setSelectedProject()"></button>
+            <button pButton type="button" routerLink="{{ tool.routerLink2 }}" label="Mappings" icon="far fa-plus-square"
+              *ngIf="tool.routerLink2 && tool.routerLink2.length"
+              class="p-button-success p-button-raised p-button p-component p-mt-1" [disabled]="!disableSwitch"
+              (click)="setSelectedProject()"></button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template let-tool let-i="index" pTemplate="gridItem">
+      <div class="p-sm-12 p-md-3">
+        <div class="tool-grid-item p-card p-m-3 p-d-flex p-flex-wrap"
+          [ngClass]="{'bg-grey': !isProjectConfigured(tool.toolName)}">
+          <div class="p-d-flex p-jc-center p-mb-3 grid-card">
+            <figure class="card__media bg--0 figure">
+              <em class="{{ tool.icon.length ? tool.icon : 'fas fa-tools' }}"></em>
+            </figure>
+          </div>
+          <div class="card__media__body">
+            <div class="card__primary__title">
+              <h4 class="card__primary__title__text">{{ tool.toolName }}</h4>
+              <p class="card__primary__title__subtext">Tool Type: <strong>{{ tool.category }}</strong></p>
+              <p class="card__primary__title__subtext">Connection: <strong>{{ tool.connectionName ? tool.connectionName
+                  : '-' }}</strong></p>
+              <p class="card__primary__title__subtext">Last Updated:
+                <strong *ngIf="tool.updatedAt">{{ tool.updatedAt | date: 'dd-MMM-yyyy (EE) - h:mm a' }}</strong>
+                <strong *ngIf="!tool.updatedAt">-</strong>
+              </p>
+            </div>
+          </div>
+          <div class="card__actions">
+            <button pButton type="button" routerLink="{{ tool.routerLink }}"
+              [queryParams]="{type: selectedProject?.type?.toLowerCase() || selectedProject?.Type?.toLowerCase(), toolName : tool.queryParams1}"
+              label="{{ isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText }}"
+              icon="far fa-plus-square"
+              class="p-button-success p-button-raised p-button p-component mr-1 p-mt-1"></button>
+            <button pButton type="button" routerLink="{{ tool.routerLink2 }}" label="Mappings" icon="far fa-plus-square"
+              *ngIf="tool.routerLink2 && tool.routerLink2.length"
+              class="p-button-success p-button-raised p-button p-component mr-0 p-mt-1"
+              [disabled]="!disableSwitch"></button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-dataView>
+  <div class="p-d-flex p-jc-end p-mt-3">
+    <button pButton type="button" class="p-button-success p-button-raised p-button p-component"
+      (click)="gotoProcessor()">
+      Run Processor <i class="pi pi-angle-double-right" style="font-size: 2rem"></i>
+    </button>
+  </div>
+</div>

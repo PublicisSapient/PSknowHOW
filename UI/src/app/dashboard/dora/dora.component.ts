@@ -12,7 +12,6 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 })
 export class DoraComponent implements OnInit {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
-  masterData;
   filterData = [];
   jenkinsKpiData = {};
   jiraKpiData = {};
@@ -51,7 +50,6 @@ export class DoraComponent implements OnInit {
     tableValues: []
   };
   kpiExcelData;
-  isGlobalDownload = false;
   kpiTrendsObj = {};
   selectedTab = 'dora';
   showCommentIcon = false;
@@ -64,18 +62,32 @@ export class DoraComponent implements OnInit {
   selectedJobFilter = 'Select';
   loaderJiraArray = [];
   updatedConfigDataObj: object = {};
+  kpiThresholdObj = {};
+  isTooltip = '';
+  maturityObj = {};
+  toolTipTop: number = 0;
 
-  constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
-    this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
-        this.allKpiArray = [];
-        this.kpiChartData = {};
-        this.kpiSelectedFilterObj = {};
-        this.kpiDropdowns = {};
-        this.sharedObject = sharedobject;
-        if (this.globalConfig || this.service.getDashConfigData()) {
-          this.receiveSharedData(sharedobject);
+  constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
+
+    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+      if (Object.keys(x).length > 0) {
+        this.colorObj = x;
+        this.trendBoxColorObj = { ...x };
+        let tempObj = {};
+        for (const key in this.trendBoxColorObj) {
+          const idx = key.lastIndexOf('_');
+          const nodeName = key.slice(0, idx);
+          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+          tempObj[nodeName] = [];
         }
+      }
+      this.kpiLoader = true;
+      return this.service.passDataToDashboard;
+    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
+      // used to get all filter data when user click on apply button in filter
+      if (sharedobject?.filterData?.length) {
+        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+        this.receiveSharedData(sharedobject);
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
@@ -89,23 +101,11 @@ export class DoraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
-      if (Object.keys(x).length > 0) {
-        this.colorObj = x;
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          this.trendBoxColorObj = { ...x };
-          for (const key in this.trendBoxColorObj) {
-            const idx = key.lastIndexOf('_');
-            const nodeName = key.slice(0, idx);
-            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          }
-        }
-      }
-    }));
 
-    this.httpService.getTooltipData().subscribe(filterData => {
+    this.httpService.getConfigDetails().subscribe(filterData => {
       if (filterData[0] !== 'error') {
         this.tooltip = filterData;
+        this.service.setGlobalConfigData(filterData);
       }
     });
 
@@ -128,8 +128,9 @@ export class DoraComponent implements OnInit {
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
-    if (this.updatedConfigGlobalData?.length === 0) {
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+    const shownKpis = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
+    if (shownKpis?.length === 0) {
       this.noKpis = true;
     } else {
       this.noKpis = false;
@@ -165,28 +166,18 @@ export class DoraComponent implements OnInit {
   }
 
 
-  getKpiCommentsCount(kpiId?) {
-    let requestObj = {
-      "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-      "level": this.filterApplyData?.level,
-      "nodeChildId": "",
-      'kpiIds': []
-    };
-    if (kpiId) {
-      requestObj['kpiIds'] = [kpiId];
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj[kpiId] = res[kpiId];
-      });
-    } else {
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj = res;
-      });
-    }
+  async getKpiCommentsCount(kpiId?) {
+    const nodes = [...this.filterApplyData?.['selectedMap']['project']];
+    const level = this.filterApplyData?.level;
+    const nodeChildId = '';
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
   }
 
   receiveSharedData($event) {
-    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
+    this.isTooltip = '';
+    if (this.service.getSelectedLevel() && this.service.getSelectedLevel()['hierarchyLevelName']) {
+      this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelName'].toLowerCase() === 'project' ? true : false;
+    }
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
       if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {
@@ -195,7 +186,6 @@ export class DoraComponent implements OnInit {
     }
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
     this.processKpiConfigData();
-    this.masterData = $event.masterData;
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
     this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
@@ -203,7 +193,7 @@ export class DoraComponent implements OnInit {
       this.noTabAccess = false;
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
-      if (this.masterData && Object.keys(this.masterData).length) {
+      if (this.configGlobalData?.length > 0) {
         this.groupJenkinsKpi(kpiIdsForCurrentBoard);
         this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
@@ -227,16 +217,16 @@ export class DoraComponent implements OnInit {
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData?.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jenkins' && obj.kpiCategory?.toLowerCase() == 'dora') {
-        groupIdSet.add(obj.groupId);
+    this.updatedConfigGlobalData?.forEach((obj) => {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jenkins' && obj['kpiDetail'].kpiCategory?.toLowerCase() == 'dora') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
 
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'dora');
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'dora');
         if (this.kpiJenkins?.kpiList?.length > 0) {
           for (let i = 0; i < this.kpiJenkins?.kpiList?.length; i++) {
             this.kpiJenkins.kpiList[i]['filterDuration'] = {
@@ -255,16 +245,16 @@ export class DoraComponent implements OnInit {
     this.jiraKpiData = {};
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData?.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory?.toLowerCase() == 'dora') {
-        groupIdSet.add(obj.groupId);
+    this.updatedConfigGlobalData?.forEach((obj) => {
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory?.toLowerCase() == 'dora') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
 
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Dora');
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Dora');
         if (this.kpiJira?.kpiList?.length > 0) {
           this.postJiraKpi(this.kpiJira, 'jira');
         }
@@ -355,12 +345,17 @@ export class DoraComponent implements OnInit {
 
   getChartData(kpiId, idx, aggregationType) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
+    this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
         const tempArr = {};
-        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.aggregationValue;
+        if (Array.isArray(this.kpiSelectedFilterObj[kpiId])) {
+          for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+            tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.aggregationValue;
+          }
+        } else {
+          tempArr[this.kpiSelectedFilterObj[kpiId]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId])[0]?.value);
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
       } else {
@@ -384,11 +379,7 @@ export class DoraComponent implements OnInit {
     if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
-
-    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-    if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-      this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    }
+    this.setMaturityColor(kpiId, this.kpiSelectedFilterObj[kpiId]);
   }
 
   createAllKpiArray(data, inputIsChartData = false) {
@@ -433,10 +424,10 @@ export class DoraComponent implements OnInit {
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
         } else if (Array.isArray(event[key])) {
           for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
           }
         } else {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
         }
       }
     } else {
@@ -455,22 +446,142 @@ export class DoraComponent implements OnInit {
     this.globalConfig = null;
   }
 
-   reloadKPI(event) {
-          const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
-          if(idx !== -1){
-              this.allKpiArray.splice(idx,1);
-          }
-          const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
-          if (currentKPIGroup?.kpiList?.length > 0) {
-              const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
-                  switch (kpiSource) {
-                      case 'jenkins':
-                          this.postJenkinsKpi(currentKPIGroup, 'jenkins');
-                          break;
-                      default:
-                          this.postJiraKpi(currentKPIGroup, 'jira');
-              }
-          }
+  reloadKPI(event) {
+    const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+    if (idx !== -1) {
+      this.allKpiArray.splice(idx, 1);
+    }
+    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+      const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
+      switch (kpiSource) {
+        case 'jenkins':
+          this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+          break;
+        default:
+          this.postJiraKpi(currentKPIGroup, 'jira');
       }
+    }
+  }
+
+  setMaturityColor(kpiId, selectedFilter = null) {
+    let selectedKPI = this.allKpiArray.filter(kpi => kpi.kpiId === kpiId)[0];
+    let maturity = '';
+    if (this.kpiChartData[kpiId] && this.kpiChartData[kpiId].length && selectedKPI) {
+      if (!selectedFilter) {
+        maturity = 'M' + this.kpiChartData[kpiId][0].maturity;
+      } else {
+        maturity = this.calculateMaturity(kpiId, selectedKPI.maturityRange);
+      }
+      let maturityColor = selectedKPI.maturityLevel.filter((level) => level.level === maturity)[0]?.bgColor;
+      this.kpiChartData[kpiId][0].maturityColor = maturityColor;
+      this.getMaturityData(kpiId);
+    }
+  }
+
+  calculateMaturity(kpiId, maturityRange) {
+    if (maturityRange && maturityRange.length) {
+      let aggregatedValue = this.kpiChartData[kpiId][0]?.['aggregationValue'];
+      let maturity = '';
+
+      let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
+
+      switch (findIncrementalOrDecrementalRange) {
+        case 'incremental':
+          for (let i = 0; i < maturityRange.length; i++) {
+            const range = maturityRange[i].split('-');
+            const lowerBound = parseInt(range[0]);
+            const upperBound = range[1] === '' ? Infinity : parseInt(range[1]);
+            if (upperBound === Infinity) {
+              if (aggregatedValue >= lowerBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            } else {
+              if (aggregatedValue >= lowerBound && aggregatedValue < upperBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            }
+          }
+          break;
+
+        case 'decremental':
+          for (let i = 0; i < maturityRange.length; i++) {
+            const range = maturityRange[i].split('-');
+            const upperBound = range[0] === '' ? Infinity : parseInt(range[0]);
+            const lowerBound = parseInt(range[1]);
+            if (upperBound === Infinity) {
+              if (aggregatedValue >= lowerBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            } else {
+              if (aggregatedValue >= lowerBound && aggregatedValue < upperBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            }
+          }
+          break;
+      }
+
+      return maturity;
+    }
+  }
+
+  findIncrementalOrDecrementalRange(range) {
+    if (parseInt(range[1].split('-')[1] + 1) > parseInt(range[2].split('-')[1] + 1)) {
+      return 'decremental';
+    } else {
+      return 'incremental';
+    }
+  }
+
+  showTooltip(event, val, kpiId) {
+    if (event) {
+      const { top, left, width, height } = event.target.getBoundingClientRect();
+      this.toolTipTop = top;
+    } else {
+      this.toolTipTop = 0;
+    }
+    if (val) {
+      this.isTooltip = kpiId;
+    } else {
+      this.isTooltip = '';
+    }
+  }
+
+  getMaturityData(kpiId) {
+    let selectedKPI = this.allKpiArray.filter(kpi => kpi.kpiId === kpiId)[0];
+
+    if (!this.maturityObj[kpiId]) {
+
+      this.maturityObj[kpiId] = {
+        maturityLevels: [],
+      };
+
+      let maturityRange = JSON.parse(JSON.stringify(selectedKPI.maturityRange));
+
+      let maturityLevel = JSON.parse(JSON.stringify(selectedKPI.maturityLevel));
+      let displayRange = maturityLevel.map((item) => item.displayRange);
+      let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
+
+      if (findIncrementalOrDecrementalRange === 'decremental') {
+        maturityRange = maturityRange.reverse();
+      } else {
+        maturityLevel = maturityLevel.reverse();
+        displayRange = displayRange.reverse();
+      }
+
+      maturityLevel.forEach((element, index) => {
+        this.maturityObj[kpiId]['maturityLevels'].push({
+          level: element.level,
+          range: displayRange[index],
+          color: element.bgColor
+        });
+      });
+    }
+  }
 
 }

@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +53,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -68,6 +69,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 /**
  * test file of release progress of backlog dashboard
+ * 
  * @author shi6
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -84,7 +86,7 @@ public class BacklogEpicProgressServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@InjectMocks
@@ -156,7 +158,8 @@ public class BacklogEpicProgressServiceImplTest {
 				.thenReturn(epic);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);
-		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
+		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0), "", "", kpiRequest);
 
 		Assertions.assertThat(resultListMap).isNotEmpty();
 		Assertions.assertThat(resultListMap.containsKey(TOTAL_ISSUES)).isTrue();
@@ -175,21 +178,18 @@ public class BacklogEpicProgressServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.PROJECT) {
-				leafNodeList.addAll(v);
-			}
-		});
-		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
+		Map<String, Object> resultListMap = epicProgressService.fetchKPIDataFromDb(
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0), "", "", kpiRequest);
 		assertThat(((Set<JiraIssue>) resultListMap.get(EPIC_LINKED)).size()).isEqualTo(0);
 	}
 
 	@Test
 	public void testGetStatusWiseCountListPositive() {
+		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueArrayList,
-				jiraIssueReleaseStatusList.get(0), "Epic", fieldMapping);
-		assertThat(dataCount.getData()).isEqualTo("44");
-		assertThat(dataCount.getSize()).isEqualTo("60.0");
+				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
+		assertThat(dataCount.getData()).isEqualTo("45");
+		assertThat(dataCount.getSize()).isEqualTo("63.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
 		assertThat(toDoCount.getValue()).isEqualTo(5L);
 		assertThat(toDoCount.getSize()).isEqualTo(4.0);
@@ -200,8 +200,8 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(inProgressCount.getSubFilter()).isEqualTo(IN_PROGRESS);
 
 		DataCount doneCount = ((List<DataCount>) dataCount.getValue()).get(2);
-		assertThat(doneCount.getValue()).isEqualTo(39L);
-		assertThat(doneCount.getSize()).isEqualTo(56.0);
+		assertThat(doneCount.getValue()).isEqualTo(40L);
+		assertThat(doneCount.getSize()).isEqualTo(59.0);
 		assertThat(doneCount.getSubFilter()).isEqualTo(DONE);
 	}
 
@@ -211,8 +211,9 @@ public class BacklogEpicProgressServiceImplTest {
 	@Test
 	public void testGetStatusWiseCountListNegative() {
 		List<JiraIssue> jiraIssueList = null;
+		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueList,
-				jiraIssueReleaseStatusList.get(0), "Epic", fieldMapping);
+				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("0");
 	}
 
@@ -233,7 +234,7 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(epicWiseSize).hasSize(1);
 		assertThat(epicWiseSize.get("-")).isEqualTo(null);
 		assertThat(epicWiseSize.get("EPIC-2")).isEqualTo("57.0");
-		assertThat(iterationKpiValues).hasSize(1);
+		assertThat(iterationKpiValues).hasSize(2);
 		assertThat(iterationKpiValues.get(0).getValue()).hasSize(1);
 	}
 
@@ -257,7 +258,7 @@ public class BacklogEpicProgressServiceImplTest {
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssueArrayList);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

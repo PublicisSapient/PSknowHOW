@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
@@ -106,7 +107,7 @@ public class SonarViolationsKanbanServiceImpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(treeAggregatorDetail.getRoot(), nodeWiseKPIValue, KPICode.SONAR_VIOLATIONS_KANBAN);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.SONAR_VIOLATIONS_KANBAN);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
@@ -129,7 +130,7 @@ public class SonarViolationsKanbanServiceImpl
 	@Override
 	public Map<String, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return getSonarHistoryForAllProjects(leafNodeList, startDate, true);
+		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
 	/**
@@ -351,14 +352,13 @@ public class SonarViolationsKanbanServiceImpl
 	}
 
 	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
+	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
+		return calculateKpiValueForLong(valueList, kpiId);
 	}
 
 	@Override
-	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
-		return calculateKpiValueForLong(valueList, kpiId);
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI64(),KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId());
 	}
 
 }

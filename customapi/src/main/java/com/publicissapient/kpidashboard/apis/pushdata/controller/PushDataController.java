@@ -20,10 +20,9 @@ package com.publicissapient.kpidashboard.apis.pushdata.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +46,7 @@ import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIServi
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushBaseService;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Validated

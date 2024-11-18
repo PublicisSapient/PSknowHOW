@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -359,6 +359,8 @@ public class AccountHierarchyServiceImpl
 			SprintDetails sprintDetails, Map<String, Integer> hierarchyLevelIdMap) {
 		if (sprintDetails != null) {
 			hierarchy.setSprintState(sprintDetails.getState());
+			hierarchy.setBeginDate(sprintDetails.getStartDate());
+			hierarchy.setEndDate(sprintDetails.getEndDate());
 		}
 		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(), hierarchy.getParentId(),
 				hierarchy.getLabelName(), hierarchy);

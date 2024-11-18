@@ -26,8 +26,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
 /**
- * Represents boards config - user can customize KPIs config on each board
- * 
+ * Represents boards config - user/ project admin can customize KPIs config on each board
+ * if basicProjectConfigId is there then it is proj level config set by admin/superAdmin
+ * else if basicProjectConfigId is null then it is user level config details
  * @author yasbano
  *
  */
@@ -38,6 +39,7 @@ public class UserBoardConfig {
 	@Id
 	private ObjectId id;
 	private String username;
+	private String basicProjectConfigId;// will be used to save proj level configs
 	private List<Board> scrum;
 	private List<Board> kanban;
 	private List<Board> others;

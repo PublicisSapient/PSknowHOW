@@ -95,7 +95,7 @@ public class NetOpenTicketCountByRCAServiceImpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.NET_OPEN_TICKET_COUNT_BY_RCA);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.NET_OPEN_TICKET_COUNT_BY_RCA);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();

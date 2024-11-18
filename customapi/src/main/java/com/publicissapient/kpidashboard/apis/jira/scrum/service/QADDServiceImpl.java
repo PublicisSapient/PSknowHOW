@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -132,7 +132,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_DENSITY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.DEFECT_DENSITY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_DENSITY);
 		kpiElement.setTrendValueList(trendValues);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
@@ -329,9 +329,9 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 * @param storyPointList2
 	 *            the story point list 2
 	 */
-	private void processSubCategoryMap(List<String> storyIdList, Map<String, Object> storyDefectDataListMap, // NOPMD
+	private void processSubCategoryMap(List<String> storyIdList, Map<String, Object> storyDefectDataListMap, // NOSONAR
 																											 // //NOSONAR
-			List<Double> qaddList, Set<JiraIssue> sprintWiseDefectList, List<String> totalStoryIdList, // NOSONAR
+			List<Double> qaddList, Set<JiraIssue> sprintWiseDefectList, List<String> totalStoryIdList,
 			List<JiraIssue> storyList, List<JiraIssue> storyFilteredList, List<String> storyPointList2,
 			FieldMapping fieldMapping) {// NOSONAR
 		HashMap<String, JiraIssue> mapOfStories = new HashMap<>();
@@ -361,8 +361,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 				storyPointsTotal = storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum();// NOPMD
 			} else {
 				storyPointsTotal = storyList.stream()
-						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 				storyPointsTotal = storyPointsTotal / 60;
 				storyPointsTotal = storyPointsTotal / fieldMapping.getStoryPointToHourMapping();
 			}
@@ -381,20 +381,6 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 
 	private void populateList(Set<JiraIssue> additionalFilterDefectList, HashMap<String, JiraIssue> mapOfStories) {
 		if (!additionalFilterDefectList.isEmpty()) {
-			JiraIssue jiraIssue = additionalFilterDefectList.stream().findFirst().orElse(new JiraIssue());
-			// Filter for QA tagged defects
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(new ObjectId(jiraIssue.getBasicProjectConfigId()));
-
-			if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByQAValue())) {
-				additionalFilterDefectList = additionalFilterDefectList.stream().filter(f -> f.isDefectRaisedByQA()) // NOSONAR
-						.collect(Collectors.toSet());
-			} else if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByValue())) {
-				additionalFilterDefectList = additionalFilterDefectList.stream()
-						.filter(f -> f.getDefectRaisedBy() != null && !(f.getDefectRaisedBy().equalsIgnoreCase("UAT")))
-						.collect(Collectors.toSet());
-			}
-
 			// Filter for defects NOT linked to stories in a given sprint
 			additionalFilterDefectList.addAll(additionalFilterDefectList.stream()
 					.filter(f -> (!f.getDefectStoryID().isEmpty()
@@ -444,6 +430,11 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
 		return calculateKpiValueForDouble(valueList, kpiId);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI111(),KPICode.DEFECT_DENSITY.getKpiId());
 	}
 
 }

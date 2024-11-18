@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,13 +34,16 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -403,6 +407,7 @@ public final class CommonUtils {
 		cacheManagerMap.put(Constant.KPI_REQUEST_TRACKER_ID_KEY, "requestTrackerCache");
 
 		cacheManagerMap.put(CommonConstant.CACHE_FIELD_MAPPING_MAP, CommonConstant.CACHE_FIELD_MAPPING_MAP);
+		cacheManagerMap.put(CommonConstant.CACHE_BOARD_META_DATA_MAP, CommonConstant.CACHE_BOARD_META_DATA_MAP);
 		cacheManagerMap.put(CommonConstant.CACHE_TOOL_CONFIG_MAP, CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheManagerMap.put(CommonConstant.CACHE_PROJECT_CONFIG_MAP, CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 
@@ -515,5 +520,95 @@ public final class CommonUtils {
 			return "0d";
 		}
 		return returnString.toString();
+	}
+
+	/**
+	 * Method to get next working date i.e excluding sat sun
+	 * 
+	 * @param currentDate
+	 *            currentDate
+	 * @param daysToAdd
+	 *            count of days to add
+	 * @return
+	 */
+	public static java.time.LocalDate getNextWorkingDate(java.time.LocalDate currentDate, long daysToAdd) {
+		java.time.LocalDate resultDate = currentDate.plusDays(daysToAdd);
+
+		while (resultDate.getDayOfWeek() == DayOfWeek.SATURDAY || resultDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			resultDate = resultDate.plusDays(1);
+		}
+
+		return resultDate;
+	}
+
+	public static String convertSecondsToDays(int inputSeconds) {
+		if (inputSeconds <= 0) {
+			return "0s";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		int days = inputSeconds / (24 * 3600);
+
+		if (days > 0) {
+			sb.append(days).append('d');
+			inputSeconds %= (days * 24 * 3600);
+		}
+
+		int hours = inputSeconds / 3600;
+		if (hours > 0) {
+			sb.append(' ').append(hours).append('h');
+		}
+		return sb.toString();
+	}
+
+	// -- auth-N-auth changes starts here ------
+
+	/**
+	 *
+	 * @param apiKey
+	 * @param usingBasicAuth
+	 * @return
+	 */
+
+	public static HttpHeaders getHeaders(String apiKey, boolean usingBasicAuth) {
+		HttpHeaders headers = new HttpHeaders();
+		if (apiKey != null && !apiKey.isEmpty()) {
+			if (usingBasicAuth) {
+				headers.set("x-api-key", apiKey);
+			} else {
+				headers.add("x-api-key", apiKey);
+			}
+		}
+		return headers;
+	}
+
+	/**
+	 * This method returns api end Point url
+	 *
+	 * @return api end Point
+	 */
+	public static String getAPIEndPointURL(String centralAuthEndPoint, String resourceEndPoint, String username) {
+
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(centralAuthEndPoint);
+		uriBuilder.path(resourceEndPoint);
+		if (!username.isEmpty()) {
+			uriBuilder.path(username);
+		}
+		return uriBuilder.toUriString();
+	}
+
+	public static boolean checkObjectNullValue(Object value) {
+		if (ObjectUtils.isEmpty(value)) {
+			return true;
+		} else {
+			if (value instanceof List) {
+				return CollectionUtils.isEmpty((List<?>) value);
+			}
+			if (value instanceof String[]) {
+				return ((String[]) value).length < 1;
+			}
+
+		}
+		return false;
 	}
 }

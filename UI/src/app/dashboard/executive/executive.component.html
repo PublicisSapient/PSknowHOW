@@ -21,10 +21,10 @@
   <div class="{{selectedtype}}" id="{{selectedtype}}">
     <div class="clearfix" *ngIf="showChart !== 'table'">
       <div class="right-container col">
-        <div class="p-grid justify-content-start p-pt-3 p-pl-2 p-pr-2">
+        <div class="p-grid justify-content-start p-pt-3 p-m-0">
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-              <div [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
+              <div *ngIf="kpi['isEnabled']" [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                 [trendData]="kpiTrendsObj[kpi?.kpiId]" [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                 [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
@@ -43,20 +43,20 @@
                           <ng-container *ngIf="!(showChart === 'table')">
                             <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'tooltip'"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                              [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                              [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                               [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList[kpi?.kpiId]"
                               [selectedtype]="selectedtype"></app-groupstackchart>
                             <app-table *ngSwitchCase="'table'" [trendBoxColorObj]="trendBoxColorObj" [data]="kpiChartData[kpi?.kpiId].data"
                               [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders" [showMarker]="'true'"
                               [showMarkerColumnNumber]="0"></app-table>
-                            <app-multiline *ngSwitchCase="'line'" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                            <app-multiline *ngSwitchCase="'line'" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
-                              [selectedtype]="selectedtype" [viewType]="showChart" [board]="'executive'" 
+                              [selectedtype]="selectedtype" [viewType]="showChart" [board]="'executive'"
                               [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                             </app-multiline>
-                            <app-multiline-style *ngSwitchCase="'multipleline'" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                            <app-multiline-style *ngSwitchCase="'multipleline'" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
@@ -64,11 +64,20 @@
                             </app-multiline-style>
                             <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
                               [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true" [unit]="kpi?.kpiDetail?.kpiUnit"
+                              [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                              [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
+                              [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
+                              [selectedtype]="selectedtype" [viewType]="showChart"  [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
+                              [kpiId]="kpi?.kpiId">
+                            </app-grouped-column-plus-line-chart>
+                            <app-bar-with-y-axis-group *ngSwitchCase="'bar-with-y-axis-group'"
+                              [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true" [unit]="kpi?.kpiDetail?.kpiUnit"
                               [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
                               [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
-                              [selectedtype]="selectedtype" [viewType]="showChart"  [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
-                            </app-grouped-column-plus-line-chart>
+                              [selectedtype]="selectedtype" [viewType]="showChart"  [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
+                              [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder">
+                            </app-bar-with-y-axis-group>
                           </ng-container>
                         </ng-container>
                       </div>
@@ -94,7 +103,7 @@
                     </ng-template>
                   </ng-container>
                 </app-kpi-card>
-                
+
               </div>
             </ng-container>
             <ng-template #noDataAccess>
@@ -122,3 +131,7 @@
 </ng-template>
 
 <app-export-excel #exportExcel></app-export-excel>
+
+<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2">
+  <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
+</ng-container>

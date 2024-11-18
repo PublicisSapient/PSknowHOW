@@ -35,7 +35,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
   source = null;
 
   constructor(private service: SharedService, private router: Router) {
-    // this.pollForAvailability('/');
   }
 
     ngOnInit() {
@@ -47,10 +46,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
             this.redirectButtonRoute = '/';
             this.pollForAvailability(this.redirectButtonRoute);
             break;
-          // case 400: this.errorMsg = 'Some error occurred';
-          //   this.redirectButtonText = 'Go to homepage';
-          //   this.redirectButtonRoute = '/';
-          //   break;
           case 401:
             this.service.setCurrentUserDetails({});
             this.errorMsg = 'Session Expired';

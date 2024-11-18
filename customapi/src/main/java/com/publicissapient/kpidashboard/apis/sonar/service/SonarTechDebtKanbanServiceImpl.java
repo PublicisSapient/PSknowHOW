@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
@@ -114,7 +115,7 @@ public class SonarTechDebtKanbanServiceImpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.SONAR_TECH_DEBT_KANBAN);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.SONAR_TECH_DEBT_KANBAN);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
@@ -226,16 +227,10 @@ public class SonarTechDebtKanbanServiceImpl
 	@Override
 	public Map<String, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return getSonarHistoryForAllProjects(leafNodeList, startDate, true);
+		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> pList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
-	}
-
-	private Long getTechDebtValue(Object sqlIndex) {
+	public Long getTechDebtValue(Object sqlIndex) {
 		Long techDebtValue = -1l;
 		if (sqlIndex != null) {
 			if (sqlIndex instanceof Double) {
@@ -356,6 +351,12 @@ public class SonarTechDebtKanbanServiceImpl
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
+	}
+
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI67(),KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
 	}
 
 }

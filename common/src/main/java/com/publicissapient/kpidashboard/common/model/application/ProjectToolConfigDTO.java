@@ -46,14 +46,17 @@ public class ProjectToolConfigDTO {
 	private String toolName;
 	private ObjectId basicProjectConfigId;
 	private ObjectId connectionId;
+	private boolean brokenConnection;
 	private String connectionName;
 	private String projectId;
 	private String projectKey;
 	private String jobName;
+	private String azurePipelineName;
 	private String jobType;
 	private String branch;
 	private String defaultBranch;
 	private String env;
+	private String gitFullUrl;
 	private String repositoryName;
 	private String repoSlug;
 	private String bitbucketProjKey;
@@ -65,6 +68,7 @@ public class ProjectToolConfigDTO {
 	private String updatedAt;
 	private boolean queryEnabled;
 	private String boardQuery;
+	private String team;
 	private List<BoardDetails> boards;
 	// TestCase Fields For zephyr tool
 	private List<String> regressionAutomationLabels;
@@ -112,7 +116,5 @@ public class ProjectToolConfigDTO {
 	private String projectComponent;
 
 	private Boolean isNew;
-
-	private String repoCloningEnabled;
 	private String scanningBranch;
 }

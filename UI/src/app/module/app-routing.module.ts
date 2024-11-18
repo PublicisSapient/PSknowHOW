@@ -17,23 +17,13 @@
  ******************************************************************************/
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { ExecutiveComponent } from '../dashboard/executive/executive.component';
-import { MaturityComponent } from '../dashboard/maturity/maturity.component';
-import { ErrorComponent } from '../dashboard/error/error.component';
-import { IterationComponent } from '../dashboard/iteration/iteration.component';
-import { DeveloperComponent } from '../dashboard/developer/developer.component';
-import { DashboardComponent } from '../dashboard/dashboard.component';
+import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../services/auth.guard';
 import { Logged } from '../services/logged.guard';
 import { AccessGuard } from '../services/access.guard';
 import { GuestGuard } from '../services/guest.guard';
-import { BacklogComponent } from '../dashboard/backlog/backlog.component';
-import { SSOGuard } from '../services/sso.guard';
-import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-failure.component';
-import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
-import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
-import { DoraComponent } from '../dashboard/dora/dora.component';
+import { FeatureGuard } from '../services/feature.guard';
+
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -41,51 +31,16 @@ import { DoraComponent } from '../dashboard/dora/dora.component';
  * Logged/Authguard is used for authentication guard, check token everytime while routing
  */
 
-
-const routes: Routes = [
-  { path: '', redirectTo: 'authentication', pathMatch: 'full' },
-  {
-    path: 'authentication',
-    // loadChildren: '../authentication/authentication.module#AuthenticationModule',
-    loadChildren: () => import('../authentication/authentication.module').then(m => m.AuthenticationModule),
-    resolve: [Logged],
-    canActivate:[SSOGuard]
-  },
-  {
-    path: 'dashboard', component: DashboardComponent,
-    children: [
-      { path: '', redirectTo: 'iteration', pathMatch: 'full'},
-      { path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-      { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
-      {
-        path: 'Config',
-        // loadChildren: '../config/config.module#ConfigModule'
-        loadChildren: () => import('../config/config.module').then(m => m.ConfigModule),
-      },
-      { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-
-    ], canActivate: [AuthGuard]
-  },
-  { path: 'authentication-fail', component: SsoAuthFailureComponent },
-  { path: '**', redirectTo: 'authentication' }
-];
-
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy' })],
 
   exports: [RouterModule],
   providers: [
     AuthGuard,
     Logged,
     AccessGuard,
-    GuestGuard
+    GuestGuard,
+    FeatureGuard
   ]
 })
 export class AppRoutingModule { }

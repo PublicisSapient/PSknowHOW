@@ -16,8 +16,8 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { UntypedFormGroup, FormControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { MyprofileComponent } from './myprofile.component';
@@ -30,14 +30,19 @@ import { ProfileComponent } from '../profile.component';
 import { environment } from 'src/environments/environment';
 import { SharedService } from 'src/app/services/shared.service';
 import { of } from 'rxjs';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { MessageService } from 'primeng/api';
 describe('MyprofileComponent', () => {
   let component: MyprofileComponent;
   let fixture: ComponentFixture<MyprofileComponent>;
   let httpService;
   let httpMock;
   let shared;
+  let authService;
+  let messageService;
   const baseUrl = environment.baseUrl;
-  const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'rishabh.shukla@publicissapient.com' } };
+  const successResponse = { message: 'Email updated successfully', success: true, data: { username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com' } };
   const hierarchyData = [
     {
       level: 1,
@@ -646,9 +651,10 @@ describe('MyprofileComponent', () => {
         CommonModule,
         HttpClientTestingModule,
         RouterTestingModule,
+        InputSwitchModule
       ],
       declarations: [MyprofileComponent],
-      providers: [HttpService, ProfileComponent, SharedService , { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, ProfileComponent, SharedService , MessageService , { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   }));
@@ -659,7 +665,8 @@ describe('MyprofileComponent', () => {
     httpService = TestBed.inject(HttpService);
     httpMock = TestBed.inject(HttpTestingController);
     shared = TestBed.inject(SharedService);
-
+    authService = TestBed.inject(GetAuthorizationService);
+    messageService = TestBed.inject(MessageService);
     let localStore = {};
 
     spyOn(window.localStorage, 'getItem').and.callFake((key) =>
@@ -669,7 +676,7 @@ describe('MyprofileComponent', () => {
       (key, value) => (localStore[key] = value + '')
     );
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
-
+    shared.setCurrentUserDetails({ username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com'})
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
     fixture.detectChanges();
   });
@@ -678,21 +685,79 @@ describe('MyprofileComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set email', () => {
-    component.ngOnInit();
-    shared.currentUserDetailsSubject.next({user_name : "dummyUser",user_email:"someemail@abc.com"})
-    spyOn(shared,'getCurrentUserDetails').and.returnValue("someemail@abc.com")
-    component.userEmailForm.controls['email'].setValue('someemail@abc.com');
-    component.userEmailForm.controls['confirmEmail'].setValue('someemail@abc.com');
-    spyOn(httpService,'changeEmail').and.returnValue(of(successResponse))
-    component.setEmail();
-    fixture.detectChanges();
-    expect(component.userEmailConfigured).toBeTruthy();
-  });
-
   it('should group projects role-wise', () => {
     component.groupProjects(JSON.parse('[{"role":"DUMMY","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"DUMMY","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]'));
     expect(Object.keys(component.roleBasedProjectList).length).toEqual(2);
   });
 
+  it('should populate dynamicCols with objects based on the hierarchyData from localStorage', () => {
+    localStorage.setItem('hierarchyData','[{"hierarchyLevelId": 1, "hierarchyLevelName": "Level 1"}, {"hierarchyLevelId": 2, "hierarchyLevelName": "Level 2"}]')
+    component.getTableHeadings();
+    expect(component.dynamicCols).toEqual([
+      { id: 1, name: 'Level 1' },
+      { id: 2, name: 'Level 2' },
+      { id: 'projectName', name: 'Projects' },
+    ]);
+  });
+
+ it('should update notification email flag successfully', (fakeAsync(() => {
+    // component.ngOnInit();
+    const event = { checked: true };
+    const toggleField = 'accessAlertNotification';
+    component.notificationEmailForm = new UntypedFormGroup({
+      "accessAlertNotification": new FormControl(false),
+      "errorAlertNotification": new FormControl(false)
+    });
+
+    const successResponse = {
+      success: true,
+      message: 'Flag Updated successfully in user info details' ,
+      data :  {
+        "username": "dummyUser",
+        "authorities": [
+          "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "SAML",
+        "emailAddress": "someemail@abc.com",
+        "notificationEmail": {
+          "accessAlertNotification": true,
+          "errorAlertNotification": false
+        }
+      }
+    };
+    shared.currentUserDetailsSubject.next({
+      user_name : "dummyUser",
+      user_email:"someemail@abc.com" ,
+      notificationEmail: {
+        "accessAlertNotification": true,
+        "errorAlertNotification": false
+      }
+    })
+    spyOn(httpService,'notificationEmailToggleChange').and.returnValue(of(successResponse))
+    const spyObj = spyOn(shared, 'setCurrentUserDetails');
+    component.toggleNotificationEmail(event, toggleField);
+    tick();
+    expect(spyObj).toHaveBeenCalled();
+  })));
+
+  it('should give error while updating notification email flag', (fakeAsync(() => {
+    // component.ngOnInit();
+    const event = { checked: true };
+    const toggleField = 'accessAlertNotification';
+    component.notificationEmailForm = new UntypedFormGroup({
+      "accessAlertNotification": new FormControl(false),
+      "errorAlertNotification": new FormControl(false)
+    });
+
+    const errResponse = {
+      success: false,
+      message: 'Something went wrong'
+    };
+    
+    spyOn(httpService,'notificationEmailToggleChange').and.returnValue(of(errResponse))
+    const spyObj = spyOn(messageService, 'add');
+    component.toggleNotificationEmail(event, toggleField);
+    tick();
+    expect(spyObj).toHaveBeenCalled();
+  })));
 });

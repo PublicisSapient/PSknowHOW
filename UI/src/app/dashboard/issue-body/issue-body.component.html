@@ -1,0 +1,70 @@
+<div>
+     <!-- Due Date section -->
+    <div class="duedate-container">
+        <h5 class="p-mb-2 p-mt-2">Due dates</h5>
+        <div class="p-d-flex">
+            <div class="indicator"></div>
+            <div class="p-d-flex p-justify-between" [style]="{'flex-grow':1}">
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">DUE DATE</h4>
+                    <p class="p-mt-1 font-bold">{{ issueData['Due Date'] !== '-' ? (issueData['Due Date'] | date:"dd-MMM-yyyy") : '-' }}</p>
+                </span>
+                <span>
+                    <h4 class="p-mb-1  p-mt-2"  [style]="{'color':'#666666'}">DEV DUE DATE</h4>
+                    <p class="p-mt-1 font-bold">{{ issueData['Dev Due Date'] !== "-" ? (issueData['Dev Due Date'] | date:"dd-MMM-yyyy") : "-"}}</p>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- key metrics section -->
+    <div>
+        <h5 class="p-mb-2 p-mt-2">Key metrics</h5>
+        <div class="p-d-flex p-justify-between p-flex-wrap" >
+            <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
+                <div class="indicator"></div>
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Work Logged</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['Logged Work']}}</p>
+                </span>
+            </div>
+            <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
+                <div class="indicator"></div>
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Size</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['Size(story point/hours)']}}</p>
+                </span>
+            </div>
+            <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
+                <div class="indicator"></div>
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Time with user</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['timeWithUser']}}</p>
+                </span>
+            </div>
+            <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
+                <div class="indicator"></div>
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Time in status</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['timeWithStatus']}}</p>
+                </span>
+            </div>
+            <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
+                <div class="indicator"></div>
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Original Estimate</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['Original Estimate']}}</p>
+                </span>
+            </div>
+            <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
+                <div class="indicator"></div>
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Remaining Estimate</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['Remaining Estimate']}}</p>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+</div>

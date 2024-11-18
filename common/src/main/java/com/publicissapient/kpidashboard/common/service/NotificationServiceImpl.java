@@ -6,12 +6,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.RecoverableDataAccessException;
@@ -22,13 +18,16 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -63,48 +62,66 @@ public class NotificationServiceImpl implements NotificationService  {
                 log.error("Notification Event not sent : notification subject for {} not found in properties file",
                         notSubject);
             }
-        }else {
-            sendEmailWithoutKafka(emailAddresses, customData, notSubject, notKey, topic, templateKey);
+        }
+        //else if (isSendGridEnabled) {
+       // this else if can be used to send email via SendGrid when kafka is off and sendgrid is true
+        //}
+        else {
+            sendEmailWithoutKafka(emailAddresses, customData, notSubject, notKey, topic, notificationSwitch , templateKey );
         }
 
     }
 
     @Override
-    public void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData, String notSubject, String notKey, String topic, String templateKey) {
-        EmailServerDetail emailServerDetail = getEmailServerDetail();
-        if (StringUtils.isNotBlank(notSubject) && emailServerDetail!=null) {
-            EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null, notSubject, null, additionalData, emailServerDetail.getEmailHost(), emailServerDetail.getEmailPort());
-            JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEvent);
-            MimeMessage message = javaMailSender.createMimeMessage();
-            try {
-                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
-                Context context = new Context();
-                Map<String, String> customData = emailEvent.getCustomData();
-                if (MapUtils.isNotEmpty(customData)) {
-                    customData.forEach((k, value) -> {
-                        BiConsumer<String, Object> setVariable = context::setVariable;
-                        setVariable.accept(k,value);
-                    });
-                }
-                String html = templateEngine.process(templateKey, context);
-                if(StringUtils.isNotEmpty(html)) {
-                    helper.setTo(emailEvent.getTo().stream().toArray(String[]::new));
-                    helper.setText(html, true);
-                    helper.setSubject(emailEvent.getSubject());
-                    helper.setFrom(emailEvent.getFrom());
-                    javaMailSender.send(message);
-                    log.info("Email successfully sent for the key : {}", templateKey);
-                }
-            } catch (MessagingException me) {
-                log.error("Email not sent for the key : {}", templateKey);
-            } catch (TemplateInputException tie) {
-                log.error("Template not found for the key : {}", templateKey);
-                throw new RecoverableDataAccessException("Template not found for the key :" + templateKey);
-            } catch (TemplateProcessingException tpe) {
-                throw new RecoverableDataAccessException("Template not parsed for the key :" + templateKey);
-            }
-        }
-    }
+	public void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData,
+			String notSubject, String notKey, String topic, boolean notificationSwitch, String templateKey) {
+		if (notificationSwitch) {
+			EmailServerDetail emailServerDetail = getEmailServerDetail();
+			if (StringUtils.isNotBlank(notSubject) && emailServerDetail != null) {
+				EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
+						notSubject, null, additionalData, emailServerDetail.getEmailHost(),
+						emailServerDetail.getEmailPort());
+				JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEvent);
+				MimeMessage message = javaMailSender.createMimeMessage();
+				try {
+					sentMailViaJavaMail(templateKey, emailEvent, javaMailSender, message);
+				} catch (MessagingException me) {
+					log.error("Email not sent for the key : {}", templateKey);
+				} catch (TemplateInputException tie) {
+					log.error("Template not found for the key : {}", templateKey);
+					throw new RecoverableDataAccessException("Template not found for the key :" + templateKey);
+				} catch (TemplateProcessingException tpe) {
+					throw new RecoverableDataAccessException("Template not parsed for the key :" + templateKey);
+				}
+			}
+		} else {
+			log.info(
+					"Notification Switch is Off. If want to send notification set true for notification.switch in property");
+		}
+	}
+
+	private void sentMailViaJavaMail(String templateKey, EmailEvent emailEvent, JavaMailSenderImpl javaMailSender,
+			MimeMessage message) throws MessagingException {
+		MimeMessageHelper helper = new MimeMessageHelper(message,
+				MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+		Context context = new Context();
+		Map<String, String> customData = emailEvent.getCustomData();
+		if (MapUtils.isNotEmpty(customData)) {
+			customData.forEach((k, value) -> {
+				BiConsumer<String, Object> setVariable = context::setVariable;
+				setVariable.accept(k, value);
+			});
+		}
+		String html = templateEngine.process(templateKey, context);
+		if (StringUtils.isNotEmpty(html)) {
+			helper.setTo(emailEvent.getTo().stream().toArray(String[]::new));
+			helper.setText(html, true);
+			helper.setSubject(emailEvent.getSubject());
+			helper.setFrom(emailEvent.getFrom());
+			javaMailSender.send(message);
+			log.info("Email successfully sent for the key : {}", templateKey);
+		}
+	}
 
     private EmailServerDetail getEmailServerDetail() {
         List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
@@ -122,6 +139,7 @@ public class NotificationServiceImpl implements NotificationService  {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.ssl.trust", "*");
         props.put("mail.debug", "true");
+        props.put("mail.smtp.ssl.checkserveridentity", "false");
         return mailSender;
     }
 }

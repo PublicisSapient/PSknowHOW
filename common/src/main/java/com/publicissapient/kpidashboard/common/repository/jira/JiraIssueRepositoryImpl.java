@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -45,6 +45,8 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.PARENT_STORY_ID;
 
 /**
  * Repository for {@link JiraIssue} with custom methods implementation.
@@ -219,12 +221,63 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NAME);
 		query.fields().include(TYPE_NAME);
 		query.fields().include(PRIORITY);
+		query.fields().include(ROOT_CAUSE);
 		query.fields().include(AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES);
 		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
 		query.fields().include(LOGGED_WORK_MINUTES);
 		query.fields().include(SPRINT_ASSET_STATE);
 		query.fields().include(SPRINT_END_DATE);
 		query.fields().include(ADDITIONAL_FILTER);
+		return operations.find(query, JiraIssue.class);
+
+	}
+
+    @Override
+	public List<JiraIssue> findIssueByNumberOrParentStoryIdAndType(Set<String> storyNumber,
+																   Map<String, Map<String, Object>> uniqueProjectMap, String findBy) {
+		Criteria criteria = new Criteria();
+
+		// Project level storyType filters
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(CONFIG_ID).is(project);
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+		});
+		criteria = criteria.and(findBy).in(storyNumber);
+
+		Query query = new Query(criteria);
+		if (!CollectionUtils.isEmpty(projectCriteriaList)) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+
+			query = new Query(criteriaProjectLevelAdded);
+		}
+		query.fields().include(CONFIG_ID);
+		query.fields().include(NUMBER);
+		query.fields().include(STATUS);
+		query.fields().include(RESOLUTION);
+		query.fields().include(PROJECT_NAME);
+		query.fields().include(SPRINT_ID);
+		query.fields().include(SPRINT_NAME);
+		query.fields().include(STORY_POINTS);
+		query.fields().include(JIRA_ISSUE_STATUS);
+		query.fields().include(DEFECT_STORY_ID);
+		query.fields().include(ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(ESTIMATE);
+		query.fields().include(URL);
+		query.fields().include(NAME);
+		query.fields().include(TYPE_NAME);
+		query.fields().include(PRIORITY);
+		query.fields().include(AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES);
+		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(LOGGED_WORK_MINUTES);
+		query.fields().include(SPRINT_ASSET_STATE);
+		query.fields().include(SPRINT_END_DATE);
+		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(PARENT_STORY_ID);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -299,6 +352,9 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(JIRA_ISSUE_STATUS);
 		query.fields().include(URL);
 		query.fields().include(NAME);
+		query.fields().include("labels");
+		query.fields().include("uatDefectGroup");
+		query.fields().include(SPRINT_ID);
 		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 
@@ -436,6 +492,42 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	/**
+	 * Method to fetch true value of fieldName
+	 * 
+	 * @param mapOfFilters
+	 *            mapOfFilters
+	 * @param fieldName
+	 *            fieldName
+	 * @param flag
+	 *            boolean flag
+	 * @param dateFrom
+	 *            dateFrom
+	 * @param dateTo
+	 *            dateTo
+	 * @return List<JiraIssue>
+	 */
+	@Override
+	public List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag,
+			String dateFrom, String dateTo) {
+
+		String startDate = dateFrom + START_TIME;
+		String endDate = dateTo + END_TIME;
+
+		Criteria criteria = new Criteria();
+
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+		criteria = criteria.and(TICKET_CREATED_DATE_FIELD).gte(startDate).lte(endDate);
+		// Field to check for true
+		criteria = criteria.and(fieldName).is(flag);
+
+		Query query = new Query(criteria);
+		query.fields().include(NUMBER);
+
+		return operations.find(query, JiraIssue.class);
+
+	}
+
+	/**
 	 * Find defects without story link.
 	 *
 	 * @param mapOfFilters
@@ -531,8 +623,14 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(URL);
 		query.fields().include(RESOLUTION);
 		query.fields().include(JIRA_ISSUE_STATUS);
-		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(DEFECT_STORY_ID);
 		query.fields().include(TYPE_NAME);
+		query.fields().include(PRIORITY);
+		query.fields().include(ROOT_CAUSE);
+		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(SPRINT_ASSET_STATE);
+		query.fields().include(SPRINT_END_DATE);
+		query.fields().include(ADDITIONAL_FILTER);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -560,7 +658,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NUMBER);
 		query.fields().include(STORY_POINTS);
 		query.fields().include("name");
-		query.fields().include("state");
+		query.fields().include(STATE);
 		query.fields().include("status");
 		query.fields().include(SPRINT_NAME);
 		query.fields().include(SPRINT_ID);
@@ -832,24 +930,21 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			projectCriteriaList.add(projectCriteria);
 		});
 
-		Criteria criteriaProjectLevelAdded =null;
-		if(CollectionUtils.isNotEmpty(projectCriteriaList)) {
+		if (CollectionUtils.isNotEmpty(projectCriteriaList)) {
 			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
 					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
-			criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+			Query query = new Query(criteriaProjectLevelAdded);
+			// add projection
+			return operations.find(query, JiraIssue.class);
 		}
-		else{
-			criteriaProjectLevelAdded= new Criteria().andOperator(criteria);
-		}
-		Query query = new Query(criteriaProjectLevelAdded);
-		// add projection
-		return operations.find(query, JiraIssue.class);
+		return new ArrayList<>();
 
 	}
 
 	/**
 	 * find unique Release Version Name group by type name
-	 *
+	 * 
 	 * @param mapOfFilters
 	 * @return
 	 */
@@ -862,16 +957,14 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		MatchOperation matchStage = Aggregation.match(criteria);
 
-		GroupOperation groupOperation = Aggregation.group(
-				"typeName", "basicProjectConfigId", "releaseVersions.releaseName"
-		);
+		GroupOperation groupOperation = Aggregation.group(TYPE_NAME, "basicProjectConfigId",
+				"releaseVersions.releaseName");
 
-		ProjectionOperation projectionOperation = Aggregation.project()
-				.andExpression("_id.typeName").as("uniqueTypeName")
-				.andExpression("_id.releaseName").as("releaseName")
+		ProjectionOperation projectionOperation = Aggregation.project().andExpression("_id.typeName")
+				.as("uniqueTypeName").andExpression("_id.releaseName").as("releaseName")
 				.andExpression("_id.basicProjectConfigId").as("basicProjectConfigId");
 
-		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupOperation , projectionOperation);
+		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupOperation, projectionOperation);
 		return operations.aggregate(aggregation, JiraIssue.class, ReleaseWisePI.class).getMappedResults();
 	}
 

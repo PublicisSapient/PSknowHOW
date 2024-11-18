@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.Feature;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -128,18 +128,16 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			Set<JiraIssue> defectListWthDropSet, JiraIssue jiraIssue) {
 		if (!StringUtils.isBlank(jiraIssue.getStatus())) {
 			Map<String, List<String>> defectStatus = droppedDefects.get(jiraIssue.getBasicProjectConfigId());
-			if (!defectStatus.isEmpty()) {
-				if (StringUtils.isNotEmpty(jiraIssue.getResolution())
-						&& CollectionUtils.isNotEmpty(defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION))
-						&& defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION).stream().map(String::toLowerCase)
-								.collect(Collectors.toList()).contains(jiraIssue.getResolution().toLowerCase())) {
-					defectListWthDropSet.add(jiraIssue);
-				} else if (StringUtils.isNotEmpty(jiraIssue.getStatus())
-						&& CollectionUtils.isNotEmpty(defectStatus.get(Constant.DEFECT_REJECTION_STATUS))
-						&& defectStatus.get(Constant.DEFECT_REJECTION_STATUS).stream().map(String::toLowerCase)
-								.collect(Collectors.toList()).contains(jiraIssue.getStatus().toLowerCase())) {
-					defectListWthDropSet.add(jiraIssue);
-				}
+			if (!defectStatus.isEmpty() && (StringUtils.isNotEmpty(jiraIssue.getResolution())
+					&& CollectionUtils.isNotEmpty(defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION))
+					&& defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION).stream().map(String::toLowerCase)
+							.collect(Collectors.toList()).contains(jiraIssue.getResolution().toLowerCase())
+					|| (StringUtils.isNotEmpty(jiraIssue.getStatus())
+							&& CollectionUtils.isNotEmpty(defectStatus.get(Constant.DEFECT_REJECTION_STATUS))
+							&& defectStatus.get(Constant.DEFECT_REJECTION_STATUS).stream().map(String::toLowerCase)
+									.collect(Collectors.toList()).contains(jiraIssue.getStatus().toLowerCase())))) {
+				defectListWthDropSet.add(jiraIssue);
+
 			}
 		}
 	}
@@ -170,7 +168,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_REJECTION_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.DEFECT_REJECTION_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_REJECTION_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		log.debug("[DRR-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
@@ -517,6 +515,11 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI37(),KPICode.DEFECT_REJECTION_RATE.getKpiId());
 	}
 
 }

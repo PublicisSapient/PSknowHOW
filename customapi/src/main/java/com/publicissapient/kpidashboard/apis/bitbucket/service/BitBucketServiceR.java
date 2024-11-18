@@ -20,6 +20,9 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -40,15 +43,15 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Bitbucket service to process bitbucket data.
- * 
+ *
  * @author anisingh4
  */
 @Service
@@ -102,16 +105,16 @@ public class BitBucketServiceR {
 					return (List<KpiElement>) cachedData;
 				}
 
-				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
-						filterHelperService.getHierarchyIdLevelMap(false)
-								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
+				Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
 				kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
 				kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
+				List<ParallelBitBucketServices> listOfTask = new ArrayList<>();
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
-					calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
+					listOfTask.add(new ParallelBitBucketServices(kpiRequest, responseList, kpiEle, filteredNode));
 				}
+
+				ForkJoinTask.invokeAll(listOfTask);
 				List<KpiElement> missingKpis = origRequestedKpis.stream()
 						.filter(reqKpi -> responseList.stream()
 								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
@@ -122,7 +125,7 @@ public class BitBucketServiceR {
 				responseList.addAll(origRequestedKpis);
 			}
 
-		} catch (ApplicationException e) {
+		} catch (Exception e) {
 			log.error("[BITBUCKET][{}]. Error while KPI calculation for data {} {}", kpiRequest.getRequestTrackerId(),
 					kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
@@ -131,24 +134,15 @@ public class BitBucketServiceR {
 		return responseList;
 	}
 
-	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 
-		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
+		if (null != filteredNode.getAccountHierarchy()) {
+			filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
+					filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+		}
 
-		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-
-		bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
-
-		long startTime = System.currentTimeMillis();
-
-		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-				.clone(treeAggregatorDetail);
-		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
-
-		long processTime = System.currentTimeMillis() - startTime;
-		log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
-
+		return filteredNode;
 	}
 
 	/**
@@ -173,7 +167,7 @@ public class BitBucketServiceR {
 
 	/**
 	 * Cache response.
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param responseList
 	 * @param groupId
@@ -189,5 +183,88 @@ public class BitBucketServiceR {
 			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.BITBUCKET.name(), groupId,
 					kpiRequest.getSprintIncluded());
 		}
+	}
+
+	public class ParallelBitBucketServices extends RecursiveAction {
+
+		private final KpiRequest kpiRequest;
+		private final transient List<KpiElement> responseList;
+		private final transient KpiElement kpiEle;
+		private final Node filteredNode;
+
+		/**
+		 *
+		 * @param kpiRequest
+		 *            kpi request
+		 * @param responseList
+		 *            response list
+		 * @param kpiEle
+		 *            kpi element
+		 * @param filteredNode
+		 *            filtered project node
+		 */
+		public ParallelBitBucketServices(KpiRequest kpiRequest, List<KpiElement> responseList, KpiElement kpiEle,
+				Node filteredNode) {
+			super();
+			this.kpiRequest = kpiRequest;
+			this.responseList = responseList;
+			this.kpiEle = kpiEle;
+			this.filteredNode = filteredNode;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@SuppressWarnings("PMD.AvoidCatchingGenericException")
+		@Override
+		public void compute() {
+				responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiEle, filteredNode));
+
+		}
+
+		/**
+		 * This method call by multiple thread, take object of specific KPI and call
+		 * method of these KPIs
+		 *
+		 * @param kpiRequest
+		 *            Bitbucket KPI request
+		 * @param kpiElement
+		 *            kpiElement object
+		 * @param filteredAccountNode
+		 *            filter tree object
+		 * @return Kpielement
+		 */
+		private KpiElement calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, KpiElement kpiElement,
+				Node filteredAccountNode) {
+
+			BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
+
+			KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+			try {
+				bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
+				long startTime = System.currentTimeMillis();
+				Node nodeDataClone = (Node) SerializationUtils.clone(filteredAccountNode);
+
+				if (Objects.nonNull(nodeDataClone)
+						&& kpiHelperService.isToolConfigured(kpi, kpiElement, nodeDataClone)) {
+					kpiElement = bitBucketKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone);
+					kpiElement.setResponseCode(CommonConstant.KPI_PASSED);
+					kpiHelperService.isMandatoryFieldSet(kpi, kpiElement, nodeDataClone);
+				}
+
+				long processTime = System.currentTimeMillis() - startTime;
+				log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
+						processTime);
+			} catch (ApplicationException exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+				log.error("Kpi not found", exception);
+			} catch (Exception exception) {
+				kpiElement.setResponseCode(CommonConstant.KPI_FAILED);
+				log.error("[PARALLEL_BITBUCKET_SERVICE].Exception occurred", exception);
+				return kpiElement;
+			}
+			return kpiElement;
+		}
+
 	}
 }

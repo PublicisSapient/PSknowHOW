@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -202,4 +203,10 @@ public interface JiraIssueRepository
 	@Query(value = "{ 'number' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'typeName' : ?2  }", fields = "{ 'number' : 1, 'basicProjectConfigId' : 1,'url':1, 'name':1, 'status':1 }")
 	Set<JiraIssue> findNumberInAndBasicProjectConfigIdAndTypeName(List<String> numberIds, String basicProjectConfigId,
 			String typeName);
+
+	Set<JiraIssue> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
+			Set<String> parentStoryIds, List<String> originalTypes);
+
+	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
+	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);
 }

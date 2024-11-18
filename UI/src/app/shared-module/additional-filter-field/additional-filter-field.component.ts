@@ -37,6 +37,7 @@ export class AdditionalFilterFieldComponent implements OnInit {
   selectedFieldMapping: any = {};
   additionalFilterOptions: any = [];
   additionalFilterConfig = [];
+  
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -70,9 +71,9 @@ export class AdditionalFilterFieldComponent implements OnInit {
 
   generateAdditionalFilterMappings() {
     this.addAdditionalFilterOptions();
-    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping();
-    if (this.selectedFieldMapping) {
-      const additionalFilterMappings = this.selectedFieldMapping.additionalFilterConfig;
+    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping()?.fieldMappingResponses?.find(ele=>ele.fieldName === 'additionalFilterConfig');
+    if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
+      const additionalFilterMappings = this.selectedFieldMapping.originalValue;
       this.additionalFiltersArray = [];
 
       const additionalFilters = this.filterHierarchy?.filter((filter) => filter.level > this.filterHierarchy?.filter(f => f.hierarchyLevelId === 'sprint')[0].level);
@@ -84,7 +85,7 @@ export class AdditionalFilterFieldComponent implements OnInit {
           code: element.filterId
         });
 
-        if (element['identifyFrom'] && element['identifyFrom'].length) {
+        if (element['identifyFrom']?.length) {
           if (!this.fieldMappingForm.controls[element.filterId + 'Identifier']) {
             this.fieldMappingForm.addControl(element.filterId + 'Identifier', this.formBuilder.control(''));
             this.fieldMappingForm.controls[element.filterId + 'Identifier'].setValue(element['identifyFrom']);

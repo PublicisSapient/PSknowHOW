@@ -33,9 +33,11 @@ public final class CommonConstant {
 	public static final String TESTING_KPI_CACHE = "testingKpiCache";
 	public static final String JIRAKANBAN_KPI_CACHE = "jiraKanbanKpiCache";
 	public static final String CACHE_ACCOUNT_HIERARCHY = "accountHierarchy";
+	public static final String CACHE_SPRINT_HIERARCHY = "sprintHierarchy";
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
+	public static final String CACHE_BOARD_META_DATA_MAP = "boardMetaDataMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
 
@@ -67,6 +69,7 @@ public final class CommonConstant {
 	public static final String REJECTION_RESOLUTION = "rejectionResolution";
 	public static final String QA_ROOT_CAUSE = "qaRootCause";
 	public static final String UAT_DEFECT = "uatdefect";
+	public static final String FILTERS = "filters";
 
 	public static final String TICKET_CLOSED_STATUS = "ticketClosedStatus";
 	public static final String TICKET_LIVE_STATUS = "ticketLiveStatus";
@@ -143,6 +146,8 @@ public final class CommonConstant {
 	public static final String ADDED_ISSUES = "addedIssues";
 	public static final String ADDED = "Added";
 	public static final String REMOVED = "Removed";
+
+	public static final String INITIAL = "Initial";
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
@@ -191,7 +196,6 @@ public final class CommonConstant {
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
-	public static final String REPO_TOOLS = "RepoTool";
     public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
 	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
@@ -216,6 +220,7 @@ public final class CommonConstant {
 	public static final String JIRADODKPI152="jiraDodKPI152";
 	public static final String JIRADODKPI151="jiraDodKPI151";
 	public static final String JIRADODKPI37="jiraDodKPI37";
+	public static final String JIRASTARTDEVKPI54="jiraStatusStartDevelopmentKPI154";
 	public static final String JIRADODKPI155="jiraDodKPI155";
 	public static final String JIRADODKPI163="jiraDodKPI163";
 	public static final String JIRAISSUETYPEKPI35="jiraIssueTypeKPI35";
@@ -228,10 +233,13 @@ public final class CommonConstant {
 	public static final String JIRADEFECTCOUNTLISSUETYPEKPI36="jiraDefectCountlIssueTypeKPI36";
 	public static final String JIRAQAKPI111ISSUETYPE="jiraQAKPI111IssueType";
 	public static final String JIRASTORYIDENTIFICATIONKPI129="jiraStoryIdentificationKPI129";
+	public static final String JIRASTORYIDENTIFICATIONKPI166="jiraStoryIdentificationKPI166";
 	public static final String JIRASTORYIDENTIFICATIONKPI40="jiraStoryIdentificationKpi40";
+	public static final String JIRASTORYCATEGORYKPI40="jiraStoryCategoryKpi40";
 	public static final String JIRA_STORY_IDENTIFICATION_KPI164="jiraStoryIdentificationKPI164";
 
 	public static final String STORYFIRSTSTATUSKPI148="storyFirstStatusKPI148";
+	public static final String STORYFIRSTSTATUSKPI154="storyFirstStatusKPI154";
 	public static final String STORYFIRSTSTATUSKPI3="storyFirstStatusKPI3";
 	public static final String JIRASTATUSFORQAKPI148="jiraStatusForQaKPI148";
 	public static final String JIRASTATUSFORQAKPI135="jiraStatusForQaKPI135";
@@ -266,9 +274,6 @@ public final class CommonConstant {
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI122="jiraIterationCompletionStatusKPI122";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI75="jiraIterationCompletionStatusKPI75";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI145="jiraIterationCompletionStatusKPI145";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI140="jiraIterationCompletionStatusKPI140";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI132="jiraIterationCompletionStatusKPI132";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI136="jiraIterationCompletionStatusKPI136";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI72="jiraIterationCompletionStatusKpi72";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI39="jiraIterationCompletionStatusKpi39";
 	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI5="jiraIterationCompletionStatusKpi5";
@@ -304,6 +309,7 @@ public final class CommonConstant {
 	public static final String JIRASTATUSFORINPROGRESSKPI128="jiraStatusForInProgressKPI128";
 	public static final String JIRASTATUSFORINPROGRESSKPI123="jiraStatusForInProgressKPI123";
 	public static final String JIRASTATUSFORINPROGRESSKPI119="jiraStatusForInProgressKPI119";
+	public static final String JIRASTATUSFORINPROGRESSKPI154="jiraStatusForInProgressKPI154";
 
 	public static final String JIRASTORYPOINTSCUSTOMFIELD="jiraStoryPointsCustomField";
 	public static final String EPICCOSTOFDELAY="epicCostOfDelay";
@@ -319,6 +325,32 @@ public final class CommonConstant {
 	public static final String JIRA = "Jira";
 
 	public static final String REPO = "Repo";
+	public static final String JIRADODKPI166="jiraDodKPI166";
+	public static final String JIRAISSUERISKTYPE = "jiraIssueRiskTypeKPI176";
+	public static final String JIRAISSUEDEPENDENCYTYPE = "jiraIssueDependencyTypeKPI176";
+
+	public static final String ACCESS_ALERT_NOTIFICATION = "accessAlertNotification";
+
+	public static final String ERROR_ALERT_NOTIFICATION = "errorAlertNotification";
+
+	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$";//Username can only contain letters and numbers Maximum length is 30 and min is 4 characters
+
+	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
+    public static final String PARENT_STORY_ID = "parentStoryId";
+	public static final String NUMBER = "number";
+
+	//-- auth-N-auth changes ends here --
+
+	public static final String KPI_PASSED= "200";
+	public static final String KPI_FAILED= "400";
+	public static final String MANDATORY_FIELD_MAPPING= "201";
+	public static final String TOOL_NOT_CONFIGURED= "202";
+	public static final String KPI_COMBINED_SORCE= "kpi_combined_source";
+
+
+
 
 	private CommonConstant() {
 

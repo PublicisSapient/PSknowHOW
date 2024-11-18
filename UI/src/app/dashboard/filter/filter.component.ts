@@ -16,13 +16,13 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ElementRef, ViewChild, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
@@ -31,6 +31,8 @@ import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
 import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { interval, Subject } from 'rxjs';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-filter',
@@ -45,7 +47,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('commentSummaryDdn') commentSummaryDdn: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
-
+  appList: MenuItem[] | undefined;
   subject = new Subject();
   isSuperAdmin = false;
   masterData: any = {};
@@ -128,6 +130,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
+  auth_service = environment.AUTHENTICATION_SERVICE;
+  isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
   lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup: boolean = false;
@@ -136,28 +140,72 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected: number = 1;
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
-  selectedProjectForIteration : any = [];
+  showSwitchDropdown: boolean = false;
+  showHideLoader: boolean = false;
+  kpiListDataProjectLevel: any = {};
+  nodeIdQParam: string = '';
+  sprintIdQParam: string = '';
+  displayMessage: boolean = false;
+  copyFilteredAddFilters = {};
+  loader: boolean = false;
+  backToDashboardLoader: boolean = false;
+  selectedProjectForIteration: any = [];
+  selectedItems: number = 0;
   isAdditionalFilter: boolean = false;
+  isRecommendationsEnabled: boolean = false;
+  userRole: string = '';
+  noAdditionalFilters: boolean = false;
 
   constructor(
-    private service: SharedService,
+    public service: SharedService,
     private httpService: HttpService,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
-    private helperService: HelperService
+    private helperService: HelperService,
+    public route: ActivatedRoute,
+    private featureFlagsService: FeatureFlagsService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.items.push({
+      label: 'Logout',
+      icon: 'fas fa-sign-out-alt',
+      command: () => {
+        this.logout();
+      },
+    });
     if (!this.ssoLogin) {
-      this.items.push({
-        label: 'Logout',
-        icon: 'fas fa-sign-out-alt',
-        command: () => {
-          this.logout();
+
+
+      this.appList = [
+        {
+          label: 'KnowHOW',
+          icon: '',
+          styleClass: 'p-menuitem-link-active'
         },
-      });
+        {
+          label: 'Assessments',
+          icon: '',
+          command: () => {
+            window.open(
+              environment['MAP_URL'],
+              '_blank'
+            );
+          }
+        },
+        {
+          label: 'Retros',
+          icon: '',
+          command: () => {
+            window.open(
+              environment['RETROS_URL'],
+              '_blank'
+            );
+          }
+        }
+      ];
     }
 
     this.service.currentUserDetailsObs.subscribe(details => {
@@ -166,7 +214,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
+    this.selectedTab = this.service.getSelectedTab() || 'my-knowhow';
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.service.setShowTableView(this.showChart);
     this.getNotification();
@@ -174,12 +222,14 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.toggleFilter();
     this.initializeUserInfo();
     this.getLogoImage();
+    this.getRecommendationsFlag();
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
         this.lastSyncData = {};
         this.subject.next(true);
         this.selectedTab = data.selectedTab;
+
         if (this.toggleDropdown['commentSummary']) {
           this.toggleDropdown['commentSummary'] = false;
         }
@@ -195,7 +245,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.totalProjectSelected = 1;
           this.service.setShowTableView(this.showChart);
         }
-        if (this.selectedTab.toLowerCase() === 'maturity') {
+        if (this.selectedTab.toLowerCase() === 'kpi-maturity') {
           this.showChart = 'chart';
           this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()
           this.totalProjectSelected = 1;
@@ -243,6 +293,15 @@ export class FilterComponent implements OnInit, OnDestroy {
 
       this.service.globalDashConfigData.subscribe(data => {
         this.kpiListData = data;
+        if (this.kpiListData) {
+          let selectedBoard = this.kpiListData[this.kanban ? 'kanban' : 'scrum']?.find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
+          if (!selectedBoard) {
+            selectedBoard = this.kpiListData['others']?.find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase());
+          }
+          if (!selectedBoard?.filters?.additionalFilters) {
+            this.noAdditionalFilters = true;
+          }
+        }
       }),
 
       this.service.passEventToNav.subscribe(() => {
@@ -258,10 +317,11 @@ export class FilterComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.httpService.getTooltipData().subscribe((filterData) => {
+    this.httpService.getConfigDetails().subscribe((filterData) => {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
         this.dateRangeFilter = filterData?.dateRangeFilter;
+        this.service.setGlobalConfigData(filterData);
         if (this.selectedTab.toLowerCase() === 'developer') {
           this.selectedDayType = 'Days';
           // different date filter for developer tab
@@ -276,8 +336,6 @@ export class FilterComponent implements OnInit, OnDestroy {
             ]
           }
         }
-        // this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
-        this.service.setGlobalConfigData(filterData);
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
@@ -287,6 +345,15 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.getLogoImage().subscribe((logoImage) => {
       this.getLogoImage();
     });
+
+    this.service.sprintQueryParamObs.subscribe((val) => {
+      this.sprintIdQParam = val.value;
+    })
+  }
+
+  async getRecommendationsFlag() {
+    this.isRecommendationsEnabled = await this.featureFlagsService.isFeatureEnabled('RECOMMENDATIONS');
+    this.service.setRecommendationsFlag(this.isRecommendationsEnabled);
   }
 
   initializeFilterForm() {
@@ -310,6 +377,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
 
     let authoritiesArr;
+    this.userRole = this.service.getCurrentUserDetails('authorities')[0];
     if (this.service.getCurrentUserDetails('authorities')) {
       authoritiesArr = this.service.getCurrentUserDetails('authorities');
     }
@@ -322,7 +390,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
-          this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });
@@ -389,7 +456,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'mydashboard' || this.selectedTab?.toLowerCase() === 'developer') {
+    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'kpi-maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer') {
       this.allowMultipleSelection = false;
     } else {
       this.allowMultipleSelection = true;
@@ -415,25 +482,26 @@ export class FilterComponent implements OnInit, OnDestroy {
     };
 
     this.setHierarchyLevels();
-    this.ga.setPageLoad(data);
     this.getKpiOrderedList();
+    this.navigateToSelectedTab();
   }
 
-  makeUniqueArrayList(arr) {
-    let uniqueArray = [];
-    for (let i = 0; i < arr?.length; i++) {
-      const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
-      if (idx == -1) {
-        uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
-      } else {
-        uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-        uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-      }
-    }
-    return uniqueArray;
-  }
+  /** moved to service layer */
+  // makeUniqueArrayList(arr) {
+  //   let uniqueArray = [];
+  //   for (let i = 0; i < arr?.length; i++) {
+  //     const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
+  //     if (idx == -1) {
+  //       uniqueArray = [...uniqueArray, arr[i]];
+  //       uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
+  //       uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
+  //     } else {
+  //       uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+  //       uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+  //     }
+  //   }
+  //   return uniqueArray;
+  // }
 
   getFilterDataOnLoad() {
     if (this.filterKpiRequest && this.filterKpiRequest !== '') {
@@ -462,6 +530,19 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.initializeFilterForm();
         this.noProjects = true;
       } else {
+        /** subscribe to query params */
+        this.service.projectQueryParamObs.subscribe((val) => {
+          this.nodeIdQParam = val.value;
+          if (this.nodeIdQParam) {
+            const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
+            if (ifProjectExist === -1) {
+              this.noAccessMsg = true;
+              this.displayMessage = true
+              return;
+            }
+          }
+        })
+
         this.service.setNoProjects(false);
         this.noProjects = false;
       }
@@ -472,10 +553,13 @@ export class FilterComponent implements OnInit, OnDestroy {
         let arr = this.filterData.filter((x) => x.labelName.toLowerCase() === this.additionalFiltersArr[i]['hierarchyLevelId']?.toLowerCase());
         if (arr?.length > 0) {
           arr = this.sortAlphabetically(arr);
-          arr = this.makeUniqueArrayList(arr);
+          arr = this.helperService.makeUniqueArrayList(arr);
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
-            this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId'], arr);
+          if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint' || this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sqd') {
+            this.filterForm.controls['sprintSearch'] = new UntypedFormControl('');
+          }
+          this.createFormGroup(this.additionalFiltersArr[i]['hierarchyLevelId'], arr);
         }
       }
       if (!this.noProjects) {
@@ -509,9 +593,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       const obj = {};
       const alreadySelectedSprints = this.getSprintsWhichWasAlreadySelected(level);
       for (let i = 0; i < arr?.length; i++) {
-        if(alreadySelectedSprints.includes(arr[i]['nodeId'])){
+        if (alreadySelectedSprints.includes(arr[i]['nodeId'])) {
           obj[arr[i]['nodeId']] = new UntypedFormControl(true);
-        }else{
+        } else {
           obj[arr[i]['nodeId']] = new UntypedFormControl(false);
         }
       }
@@ -581,16 +665,25 @@ export class FilterComponent implements OnInit, OnDestroy {
                 this.filteredAddFilters[key] = [...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects))];
               } else {
                 this.filteredAddFilters[key] = [...this.filteredAddFilters[key], ...this.additionalFiltersDdn[key]?.filter((x) => x['parentId']?.includes(selectedProjects[i]) && x['sprintState']?.toLowerCase() == 'closed')];
-              }} else {
-                this.filteredAddFilters[key] = [...this.additionalFiltersDdn[key]?.filter((x) => x['path'][0]?.includes(Array.isArray(selectedProjects) ? selectedProjects[i] : selectedProjects))];
+              }
+            } else {
+              this.filteredAddFilters[key] = [...this.additionalFiltersDdn[key]?.filter((x) => x['path'][0]?.includes(Array.isArray(selectedProjects) ? selectedProjects[i] : selectedProjects))];
             }
           }
         }
       }
     }
+    this.copyFilteredAddFilters = { ...this.filteredAddFilters };
   }
 
-  onSelectedTrendValueChange(isChangedFromUI) {
+  onSelectedTrendValueChange(isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if (isChangedFromUI) {
+      this.emptyIdsFromQueryParam();
+    }
+    /** Refreshing kpiFilter backup when project is changing */
+    this.service.setAddtionalFilterBackup({});
+    this.service.setKpiSubFilterObj({});
     this.resetAddtionalFIlters();
     this.applyChanges();
     this.totalProjectSelected = this.service.getSelectedTrends().length;
@@ -612,14 +705,13 @@ export class FilterComponent implements OnInit, OnDestroy {
       } else {
         selectedTrendValues.push(this.trendLineValueList?.filter((x) => x.nodeId == selectedTrendIds)[0]);
       }
+      if (selectedTrendValues.length === 1) {
+        this.selectedProjectData = selectedTrendValues[0];
+        this.getProcessorsTraceLogsForProject(selectedTrendValues[0]['basicProjectConfigId']);
+      }
 
       this.service.setSelectedLevel(selectedLevel);
       this.service.setSelectedTrends(selectedTrendValues);
-
-      if(this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity'){
-        this.setSelectedSprintOnServiceLayer(applySource);
-      }
-
       if (!applySource) {
         this.ngselect?.close();
         this.ngselect?.blur();
@@ -640,10 +732,10 @@ export class FilterComponent implements OnInit, OnDestroy {
           if (additionalFilterFormVal) {
             if (typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
-              if(this.selectedTab?.toLowerCase() != 'backlog' && this.selectedTab?.toLowerCase() != 'value'){
+              if (this.selectedTab?.toLowerCase() != 'backlog' && this.selectedTab?.toLowerCase() != 'value') {
                 for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
                   let parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
-                  if(parentNodeIdx < 0){
+                  if (parentNodeIdx < 0) {
                     parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter[j]['path'][0]?.includes(x.nodeId))
                   }
                   if (parentNodeIdx >= 0) {
@@ -651,12 +743,12 @@ export class FilterComponent implements OnInit, OnDestroy {
                       [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
                   }
                 }
-                if(Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0){
+                if (Object.keys(this.additionalFiltersDdn)[i] != 'sprint' && selectedAdditionalFilter?.length > 0) {
                   this.isAdditionalFilter = true;
-                }else{
+                } else {
                   this.isAdditionalFilter = false;
                 }
-              }else{
+              } else {
                 this.isAdditionalFilter = false;
               }
             } else {
@@ -670,6 +762,10 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
 
+      if (this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'kpi-maturity') {
+        this.setSelectedSprintOnServiceLayer(applySource);
+      }
+
       if (!applySource) {
         this.filterAdditionalFilters();
       }
@@ -680,7 +776,11 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
       this.createFilterApplyData();
       this.setMarker();
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, filterApplied,);
+      this.getKpiOrderListProjectLevel();
+      if (this.copyFilteredAddFilters['sprint']?.length > 0) {
+        let len = this.copyFilteredAddFilters['sprint']?.length;
+        this.service.setSprintForRnR(this.copyFilteredAddFilters['sprint'][len - 1]);
+      }
     }
   }
 
@@ -701,20 +801,21 @@ export class FilterComponent implements OnInit, OnDestroy {
             this.filterApplyData['ids'].push(temp[j].nodeId);
           }
           this.filterApplyData['label'] = temp[j]?.labelName;
-        if (temp[j].labelName != 'sprint' || this.filterApplyData['selectedMap']['sprint']?.length == 0) {
-          if(this.selectedTab.toLowerCase() === 'iteration'){
-            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0],this.filterApplyData['selectedMap']['project'])
-            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['sprint'])
-          }else{
-            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId,this.filterApplyData['selectedMap']['project'])
+          if (this.selectedTab?.toLowerCase() === 'iteration') {
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.parentId[0], this.filterApplyData['selectedMap']['project'])
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId, this.filterApplyData['selectedMap']['sprint'])
+          } else {
+            this.checkAndAssignProjectsInFilterApplyData(this.selectedFilterArray[i]?.nodeId, this.filterApplyData['selectedMap']['project'])
           }
-        }
         }
       } else {
         this.filterApplyData['level'] = this.selectedFilterArray[i]?.level;
         this.filterApplyData['selectedMap'][this.selectedFilterArray[i]?.labelName].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['ids'].push(this.selectedFilterArray[i]?.nodeId);
         this.filterApplyData['label'] = this.selectedFilterArray[i]?.labelName;
+        if (this.selectedTab?.toLowerCase() === 'backlog') {
+          this.filterApplyData['selectedMap']['sprint'].push(...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(this.selectedFilterArray[i]?.nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+        }
       }
     }
 
@@ -729,9 +830,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.compileGAData();
   }
 
-   /** This method is using as a helper of createFilterApplyData() */
-   checkAndAssignProjectsInFilterApplyData(value,selectedMap){
-    if(!selectedMap.includes(value)){
+  /** This method is using as a helper of createFilterApplyData() */
+  checkAndAssignProjectsInFilterApplyData(value, selectedMap) {
+    if (!selectedMap.includes(value)) {
       selectedMap.push(value);
     }
   }
@@ -744,10 +845,11 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   navigateToSelectedTab() {
     if (this.selectedTab !== 'Config' && Object.keys(this.kpiListData)?.length > 0) {
-      if (this.selectedTab === 'Maturity') {
+      if (this.selectedTab?.toLowerCase() === 'kpi-maturity') {
         if (!this.checkIfMaturityTabHidden()) {
+          this.backToDashboardLoader = false
           this.router.navigateByUrl(
-            `/dashboard/Maturity`,
+            `/dashboard/kpi-maturity`,
           );
           return;
         } else {
@@ -761,7 +863,31 @@ export class FilterComponent implements OnInit, OnDestroy {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`);
+      this.changeSelectedTab();
+      this.backToDashboardLoader = false
+      this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`], { queryParamsHandling: 'merge' });
+    }
+  }
+
+  changeSelectedTab() {
+    if (Object.keys(this.kpiListData)?.length > 0) {
+      let boardDetails = JSON.parse(JSON.stringify(this.kpiListData[this.kanban ? 'kanban' : 'scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())
+        || this.kpiListData['others'].find(boardDetail => boardDetail.boardName.toLowerCase() === this.selectedTab?.toLowerCase())));
+      let kpisShownCount = 0;
+      if (boardDetails?.boardName?.toLowerCase() === 'iteration') {
+        boardDetails['kpis'] = [...boardDetails?.kpis?.filter((item) => item.kpiId != 'kpi121')];
+      }
+      boardDetails?.kpis?.forEach((item) => {
+        if (item.shown) {
+          kpisShownCount++
+        }
+      })
+      if (kpisShownCount <= 0) {
+        this.selectedTab = this.kpiListData[this.kanban ? 'kanban' : 'scrum'][0]?.boardName;
+        this.service.setSelectedTab(this.selectedTab?.split(' ').join('-').toLowerCase());
+        this.backToDashboardLoader = false
+        this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
+      }
     }
   }
 
@@ -769,11 +895,12 @@ export class FilterComponent implements OnInit, OnDestroy {
     const previousSelectedTab = this.router.url.split('/')[2];
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.kanban = false;
-      this.selectedTab = 'iteration';
+      this.projectIndex = 0;
       this.service.setEmptyFilter();
       this.service.setSelectedType('scrum');
-      this.projectIndex = 0;
-      this.router.navigateByUrl(`/dashboard/iteration`);
+
+      this.changeSelectedTab();
+      this.router.navigate([`/dashboard/${this.selectedTab?.split(' ').join('-').toLowerCase()}`]);
     }
   }
 
@@ -784,13 +911,11 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   getKpiOrderedList() {
     if (this.isEmptyObject(this.kpiListData)) {
-      this.httpService.getShowHideKpi().subscribe(
+      this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
             this.service.setDashConfigData(this.kpiListData);
-            this.processKpiList();
-            this.navigateToSelectedTab();
           }
         },
         (error) => {
@@ -801,9 +926,36 @@ export class FilterComponent implements OnInit, OnDestroy {
         },
       );
     } else {
-      this.processKpiList();
-      this.navigateToSelectedTab();
+      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.kpiListData);
+      this.service.setDashConfigData(this.kpiListData);
     }
+  }
+
+  getKpiOrderListProjectLevel() {
+    let projectList = [];
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
+    }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(
+      (response) => {
+        if (response.success === true) {
+          this.kpiListDataProjectLevel = response.data;
+          this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.kpiListData)
+          this.service.setDashConfigData(this.kpiListData);
+          const selectedType = this.kanban ? 'kanban' : 'scrum';
+          this.service.setUpdatedBoardList(this.kpiListData, selectedType);
+          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, true, null, true, this.kpiListData);
+          this.processKpiList();
+          this.navigateToSelectedTab();
+        }
+      },
+      (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error in fetching roles. Please try after some time.',
+        });
+      },
+    );
   }
 
   processKpiList() {
@@ -844,6 +996,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
           kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(showKpi);
           this.showKpisList.push(this.kpiList[i]);
+        } else {
+          kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(this.kpiList[i]['isEnabled']);
         }
       }
       if (this.showKpisList?.length > 0) {
@@ -862,6 +1016,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.showKpisList.length; i++) {
       kpiObj[this.showKpisList[i]['kpiId']] = event.checked;
     }
+    for (let i = 0; i < this.kpiList?.length; i++) {
+      if (!this.kpiList[i]['shown']) {
+        kpiObj[this.kpiList[i]['kpiId']] = this.kpiList[i]['isEnabled'];
+      }
+    }
     this.kpiFormValue['kpis'].setValue(kpiObj);
   }
   handleKpiChange(event) {
@@ -879,6 +1038,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
   submitKpiConfigChange() {
+    this.showHideLoader = true;
     for (let i = 0; i < this.kpiList.length; i++) {
       this.kpiList[i]['isEnabled'] =
         this.kpiFormValue['kpis'].value[this.kpiList[i]['kpiId']];
@@ -895,7 +1055,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }
     this.assignUserNameForKpiData();
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (response) => {
         if (response.success === true) {
           this.messageService.add({
@@ -911,12 +1071,14 @@ export class FilterComponent implements OnInit, OnDestroy {
             summary: 'Error in Saving Configuraion',
           });
         }
+        this.showHideLoader = false;
       },
       (error) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error in saving kpis. Please try after some time.',
         });
+        this.showHideLoader = false;
       },
     );
   }
@@ -931,7 +1093,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }
     this.kpiList = this.kpisNewOrder.filter((kpi) => kpi.kpiId !== 'kpi121');
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (response) => {
         this.kpisNewOrder = [];
         if (response.success === true) {
@@ -972,7 +1134,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setDashConfigData(null);
     this.service.selectedtype = '';
     this.initializeFilterForm();
-
+    this.displayMessage = false;
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
@@ -982,7 +1144,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   handleSelect(event) {
     this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == event?.toLowerCase());
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-    this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+    this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
     this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId?.toLowerCase() === event?.toLowerCase()));
     this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase();
@@ -1036,21 +1198,23 @@ export class FilterComponent implements OnInit, OnDestroy {
   checkIfFilterAlreadySelected() {
     const selectedLevel = this.service.getSelectedLevel();
     const selectedTrends = this.service.getSelectedTrends();
-
-    if (Object.keys(selectedLevel).length > 0 && selectedTrends.length > 0) {
+    if (Object.keys(selectedLevel).length > 0 && selectedTrends?.length > 0) {
       if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
           this.findProjectWhichHasData();
         } else {
           this.defaultFilterSelection = false;
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
-          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
-          this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
+          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend?.['nodeId']) : selectedTrends?.[0]?.['nodeId'];
+          this.filterForm.get('selectedTrendValue').setValue(this.nodeIdQParam ? this.nodeIdQParam : selectedTrendValue);
         }
       } else {
         if (this.previousType === this.kanban) {
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
-          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          let selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          if (this.nodeIdQParam) {
+            selectedTrendValue = this.allowMultipleSelection ? [this.nodeIdQParam] : this.nodeIdQParam
+          }
           this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
         } else {
           this.checkDefaultFilterSelection();
@@ -1072,7 +1236,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     if (this.trendLineValueList?.length > 0) {
       this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
       this.setTrendValueFilter();
       this.service.setSelectedLevel(this.hierarchyLevels[this.hierarchyLevels.length - 1]);
       this.service.setSelectedTrends([this.trendLineValueList[0]]);
@@ -1116,7 +1280,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     let projectIndex = 0;
     if (this.trendLineValueList?.length > 0) {
       this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
 
       for (let i = 0; i < this.trendLineValueList.length; i++) {
         projectIndex = i;
@@ -1128,17 +1292,17 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
         } else {
           this.checkIfProjectHasData();
-          if (Object.keys(this.selectedSprint).length > 0) {
+          if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
             break;
           }
         }
       }
       if (projectIndex < this.trendLineValueList?.length) {
-        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[projectIndex]?.nodeId);
-        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterForm?.get('selectedTrendValue')?.setValue(this.nodeIdQParam ? this.nodeIdQParam : this.trendLineValueList[projectIndex]?.nodeId);
+        this.filterForm.get('selectedSprintValue').setValue(this.sprintIdQParam ? this.sprintIdQParam : this.selectedSprint['nodeId']);
       } else {
         this.projectIndex = 0;
-        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+        this.filterForm?.get('selectedTrendValue')?.setValue(this.sprintIdQParam ? this.sprintIdQParam : this.trendLineValueList[this.projectIndex]?.nodeId);
       }
       this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
@@ -1149,14 +1313,16 @@ export class FilterComponent implements OnInit, OnDestroy {
     let activeSprints = [];
     let closedSprints = [];
     this.selectedSprint = {};
-    const selectedProject = this.selectedProjectData['nodeId'];
+    const selectedProject = this.selectedProjectData?.['nodeId'];
     this.filteredAddFilters['sprint'] = [];
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
       this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(selectedProject))];
     }
     activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
     closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
-    if (activeSprints?.length > 0) {
+    if (this.sprintIdQParam) {
+      this.selectedSprint = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == this.sprintIdQParam)[0];
+    } else if (activeSprints?.length > 0) {
       this.selectedSprint = { ...activeSprints[0] };
     } else if (closedSprints?.length > 0) {
       this.selectedSprint = closedSprints[0];
@@ -1174,15 +1340,28 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
+  emptyIdsFromQueryParam() {
+    // Get the current URL tree
+    const currentUrlTree = this.router.createUrlTree([], { relativeTo: this.route });
+    // Navigate to the updated URL without query parameters
+    this.router.navigateByUrl(currentUrlTree);
+    this.service.setProjectQueryParamInFilters('');
+    this.service.setSprintQueryParamInFilters('');
+  }
+
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
-  handleIterationFilters(level,isChangedFromUI?) {
+  handleIterationFilters(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if (isChangedFromUI) {
+      this.emptyIdsFromQueryParam();
+    }
     this.refreshKpiLevelFiltersBackup(level, isChangedFromUI) // Refreshing KPi level filters backup
-    if(level !== 'sqd' && isChangedFromUI === true){
+    if (level !== 'sqd' && isChangedFromUI === true) {
       this.resetAddtionalFIlters();
-     }
-     this.selectedProjectForIteration = [];
+    }
+    this.selectedProjectForIteration = [];
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1192,7 +1371,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.checkIfProjectHasData();
-        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint?.['nodeId']);
         this.filterAdditionalFilters();
       }
 
@@ -1209,20 +1388,21 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setCurrentSelectedSprint(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
-        if(this.filterForm.get('sqd')){
+        if (this.filterForm.get('sqd')) {
           this.closeAllDropdowns();
-           const AllSqd = this.filterForm.get('sqd').value;
-           const selectedSqd = Object.keys(AllSqd).filter(sq => AllSqd[sq] === true);
-            if (selectedSqd) {
-              const selectedAdditionalFilter = this.additionalFiltersDdn['sqd'].filter(sqd => selectedSqd.includes(sqd['nodeId']));
-              this.selectedFilterArray[0]['additionalFilters'] = selectedAdditionalFilter;
-              this.setSelectedSprintOnServiceLayer('sqd');
-              this.selectedProjectForIteration = this.service.getSelectedTrends();
-              this.selectedProjectForIteration[0]['additionalFilters'] = selectedAdditionalFilter;
+          const AllSqd = this.filterForm.get('sqd').value;
+          const selectedSqd = Object.keys(AllSqd).filter(sq => AllSqd[sq] === true);
+          if (selectedSqd) {
+            const selectedAdditionalFilter = this.additionalFiltersDdn['sqd'].filter(sqd => selectedSqd.includes(sqd['nodeId']));
+            this.selectedFilterArray[0]['additionalFilters'] = selectedAdditionalFilter;
+            this.setSelectedSprintOnServiceLayer('sqd');
+            this.selectedProjectForIteration = this.service.getSelectedTrends();
+            this.selectedProjectForIteration[0]['additionalFilters'] = selectedAdditionalFilter;
           }
         }
         this.createFilterApplyData();
-        this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+        this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+        this.getKpiOrderListProjectLevel()
       }
     }
   }
@@ -1243,7 +1423,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (selectedField) {
       const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
 
-      if (obj && (obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+      if (obj && ((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end'))) {
         return dateString;
       }
 
@@ -1272,18 +1452,16 @@ export class FilterComponent implements OnInit, OnDestroy {
   removeItem(hierarchyLevelId, nodeId) {
     const hierarchy = this.filterForm.get(hierarchyLevelId);
     if (typeof hierarchy?.value === 'object' && Object.keys(hierarchy?.value)?.length > 0) {
-      this.filterForm.get(hierarchyLevelId).get(nodeId).setValue(false);
+      this.filterForm.get(hierarchyLevelId)?.['controls']?.[nodeId].setValue(false);
     } else {
       this.filterForm.get(hierarchyLevelId).setValue('');
     }
 
-    if(this.selectedTab.toLowerCase() === 'iteration'){
+    if (this.selectedTab.toLowerCase() === 'iteration') {
       this.handleIterationFilters(hierarchyLevelId)
-    }else{
+    } else {
       this.applyChanges(hierarchyLevelId);
     }
-
-    this.applyChanges(hierarchyLevelId);
   }
 
   removeNode(nodeId: string) {
@@ -1298,6 +1476,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (response.success) {
         if (this.selectedProjectData && this.selectedProjectData['basicProjectConfigId'] === basicProjectConfigId) {
           this.processorsTracelogs = response.data;
+          this.service.setProcessorLogDetails(this.processorsTracelogs);
         }
         this.showExecutionDate();
       } else {
@@ -1311,22 +1490,27 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   findTraceLogForTool() {
-    return this.processorsTracelogs.find((ptl) => this.processorName.includes(ptl['processorName'].toLowerCase()));
+    return this.service.getProcessorLogDetails().find((ptl) => this.processorName.includes(ptl['processorName'].toLowerCase()));
   }
 
   showExecutionDate() {
     this.selectedProjectLastSyncDetails = this.findTraceLogForTool();
     if (this.selectedProjectLastSyncDetails != undefined && this.selectedProjectLastSyncDetails != null) {
-      if (this.selectedProjectLastSyncDetails.executionSuccess) {
+      if (this.selectedProjectLastSyncDetails.executionSuccess && this.selectedProjectLastSyncDetails.executionEndedAt !== 0) {
         this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
         this.selectedProjectLastSyncStatus = "SUCCESS";
       } else {
-        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
-        this.selectedProjectLastSyncStatus = "FAILURE";
+        if (this.selectedProjectLastSyncDetails.executionEndedAt !== 0) {
+          this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+          this.selectedProjectLastSyncStatus = "FAILURE";
+        } else {
+          this.selectedProjectLastSyncStatus = "NA";
+          this.selectedProjectLastSyncDate = "";
+        }
       }
     } else {
-      this.selectedProjectLastSyncStatus = "";
       this.selectedProjectLastSyncDate = "NA";
+      this.selectedProjectLastSyncDate = "";
     }
     this.fetchActiveIterationStatus();
   }
@@ -1358,11 +1542,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setShowTableView(this.showChart);
   }
 
-  exportToExcel($event = null) {
-    this.disableDownloadBtn = true;
-    this.service.setGlobalDownload(true);
-  }
-
   getNotification() {
     this.totalRequestCount = 0;
     this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {
@@ -1390,16 +1569,27 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
-    this.httpService.logout().subscribe((getData) => {
-      if (!(getData !== null && getData[0] === 'error')) {
+    this.loader = true;
+    this.httpService.logout().subscribe((responseData) => {
+      // if (responseData?.success) {
+      if (!environment['AUTHENTICATION_SERVICE']) {
         this.helperService.isKanban = false;
-        localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
+        this.service.setVisibleSideBar(false);
+        this.service.setAddtionalFilterBackup({});
+        this.service.setKpiSubFilterObj({});
+        localStorage.clear();
+        this.loader = false;
         this.router.navigate(['./authentication/login']);
+      } else {
+        this.loader = false;
+        let redirect_uri = window.location.href;
+        window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
       }
-    });
+      // }
+    })
   }
 
   // when user would want to give access on project from notification list
@@ -1434,50 +1624,69 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** when user clicks on Back to dashboard or logo*/
-  navigateToDashboard() {
-    this.httpService.getShowHideKpi().subscribe(response => {
-      this.service.setDashConfigData(response.data);
-      this.kpiListData = response.data;
-      this.getNotification();
-      this.selectedFilterData.kanban = this.kanban;
-      this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
-      this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
-        this.previousType = this.kanban;
-        this.filterData = filterApiData['data'];
-        const selectedLevel = this.service.getSelectedLevel();
-        if (Object.keys(selectedLevel).length > 0) {
-          this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === selectedLevel['hierarchyLevelId'].toLowerCase());
-          this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-          this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
-        }
-        this.service.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
-        const selectedTrends = this.service.getSelectedTrends();
-        const selectedTrendNodeIds = selectedTrends.map(trend => trend.nodeId);
-        const filteredTrendValue = this.trendLineValueList.filter(trend => selectedTrendNodeIds.includes(trend.nodeId));
-        this.service.setSelectedTrends(filteredTrendValue);
-        if (filteredTrendValue.length === 0) {
-          this.checkIfFilterAlreadySelected();
-        }
-        this.navigateToSelectedTab();
-      });
-
-      // reset date filter
-      this.selectedDayType = 'Days';
-      this.service.setSelectedDateFilter(this.selectedDayType);
-      this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
-      this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+  handleRedirection(userLevelData) {
+    this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, userLevelData)
+    this.service.setDashConfigData(this.kpiListData);
+    this.getNotification();
+    this.selectedFilterData.kanban = this.kanban;
+    this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+    this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+      this.previousType = this.kanban;
+      this.filterData = filterApiData['data'];
+      const selectedLevel = this.service.getSelectedLevel();
+      if (Object.keys(selectedLevel).length > 0) {
+        this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === selectedLevel['hierarchyLevelId'].toLowerCase());
+        this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
+        this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
+      }
+      this.service.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
+      const selectedTrends = this.service.getSelectedTrends();
+      const selectedTrendNodeIds = selectedTrends.map(trend => trend.nodeId);
+      const filteredTrendValue = this.trendLineValueList.filter(trend => selectedTrendNodeIds.includes(trend.nodeId));
+      this.service.setSelectedTrends(filteredTrendValue);
+      if (filteredTrendValue.length === 0) {
+        this.checkIfFilterAlreadySelected();
+      }
+      this.navigateToSelectedTab();
     });
+
+    // reset date filter
+    this.selectedDayType = 'Days';
+    this.service.setSelectedDateFilter(this.selectedDayType);
+    this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+    this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
   }
 
-  getCurrentUserDetails() {
-    this.httpService.getCurrentUserDetails().subscribe(details => {
-      if (details['success']) {
-        this.service.setCurrentUserDetails(details['data']);
+  /** when user clicks on Back to dashboard or logo*/
+  navigateToDashboard() {
+    this.backToDashboardLoader = true;
+    let projectList = [];
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
+    }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
+      this.service.setSideNav(false);
+      this.service.setVisibleSideBar(false);
+      this.kpiListDataProjectLevel = response.data;
+      let userLevelData = this.service.getDashConfigData();
+      if (!userLevelData) {
+        this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(boardResponse => {
+          userLevelData = boardResponse.data;
+          this.handleRedirection(userLevelData)
+        })
+      } else {
+        this.handleRedirection(userLevelData);
       }
     });
   }
-  handleMilestoneFilter(level) {
+
+  handleMilestoneFilter(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if (isChangedFromUI) {
+      this.emptyIdsFromQueryParam();
+    }
+    this.refreshKpiLevelFiltersBackup(level, isChangedFromUI) // Refreshing KPi level filters backup
+
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
@@ -1490,11 +1699,15 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.checkIfProjectHasRelease();
         this.filterForm.get('selectedRelease').setValue(this.selectedRelease['nodeId']);
       }
+      if (this?.selectedProjectData) {
+        this.getProcessorsTraceLogsForProject(this?.selectedProjectData['basicProjectConfigId']);
+      }
       this.service.setNoRelease(false);
       this.selectedFilterArray = [];
       this.selectedFilterArray.push(this.filteredAddFilters['release'].filter(rel => rel['nodeId'] === this.filterForm.get('selectedRelease').value)[0]);
       this.createFilterApplyData();
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+      this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+      this.getKpiOrderListProjectLevel();
     } else {
       this.filterForm.controls['selectedRelease'].reset();
       this.service.setNoRelease(true);
@@ -1511,20 +1724,13 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
     if (this.filteredAddFilters['release'].length) {
       this.filteredAddFilters['release'] = this.sortAlphabetically(this.filteredAddFilters['release']);
-      const letestPassedRelease = this.findLatestPassedRelease(this.filteredAddFilters['release']);
-      if (letestPassedRelease?.length > 1) {
-        /** When more than one passed release */
-        const letestPassedReleaseStartDate = letestPassedRelease[0].releaseEndDate;
-        const letestPassedReleaseOnSameStartDate = letestPassedRelease.filter(release => release.releaseStartDate && (new Date(release.releaseEndDate).getTime() === new Date(letestPassedReleaseStartDate).getTime()));
-        if (letestPassedReleaseOnSameStartDate?.length > 1) {
-          this.selectedRelease = letestPassedReleaseOnSameStartDate.sort((a, b) => new Date(a.releaseStartDate).getTime() - new Date(b.releaseStartDate).getTime())[0];
-        } else {
-          /** First release with letest end date */
-          this.selectedRelease = letestPassedRelease[0];
-        }
-      } else if (letestPassedRelease?.length === 1) {
-        /** First release with letest end date */
-        this.selectedRelease = letestPassedRelease[0];
+      const unreleasedReleases = this.filteredAddFilters['release'].filter(release => release.releaseState?.toLowerCase() === "unreleased");
+      if (unreleasedReleases?.length > 0) {
+        /** If there are unreleased releases, find the nearest one in the future */
+        unreleasedReleases.sort((a, b) => new Date(a.releaseEndDate).getTime() - new Date(b.releaseEndDate).getTime());
+        const todayEOD = new Date(new Date().setHours(0, 0, 0, 0));
+        const nearestUnreleasedFuture = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > todayEOD);
+        this.selectedRelease = nearestUnreleasedFuture ? nearestUnreleasedFuture : unreleasedReleases[unreleasedReleases?.length - 1];
       } else {
         /** First alphabetically release */
         this.selectedRelease = this.filteredAddFilters['release'][0];
@@ -1577,20 +1783,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
         this.displayModal = false;
         if (activeSprintStatus['success']) {
-          interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+          interval(3000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
             if (response?.['success']) {
-              this.selectedProjectLastSyncStatus = '';
-              this.lastSyncData = response['data'];
-              if (response['data']?.fetchSuccessful === true) {
-                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-                this.selectedProjectLastSyncStatus = 'SUCCESS';
-                this.subject.next(true);
-              } else if (response['data']?.errorInFetch) {
-                this.lastSyncData = {};
-                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-                this.selectedProjectLastSyncStatus = 'FAILURE';
-                this.subject.next(true);
-              }
+              this.checkStatusAndSendRequest(response);
             } else {
               this.subject.next(true);
               this.lastSyncData = {};
@@ -1610,9 +1805,24 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
+  checkStatusAndSendRequest(response) {
+    this.selectedProjectLastSyncStatus = '';
+    this.lastSyncData = response['data'];
+    if (response['data']?.fetchSuccessful === true) {
+      this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+      this.selectedProjectLastSyncStatus = 'SUCCESS';
+      this.subject.next(true);
+    } else if (response['data']?.errorInFetch) {
+      this.lastSyncData = {};
+      this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+      this.selectedProjectLastSyncStatus = 'FAILURE';
+      this.subject.next(true);
+    }
+  }
+
   onUpdateKPI() {
     this.lastSyncData = {};
-    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, this.isAdditionalFilter, true, null, true, this.kpiListData);
   }
 
   getRecentComments() {
@@ -1623,7 +1833,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       "kpiIds": this.showKpisList?.map((item) => item.kpiId),
       "nodes": []
     }
-
+    if (this.selectedTab?.toLowerCase() == 'backlog') {
+      reqObj['nodeChildId'] = "";
+    }
     this.showKpisList.forEach(x => {
       this.kpiObj[x.kpiId] = x.kpiName;
     });
@@ -1716,13 +1928,24 @@ export class FilterComponent implements OnInit, OnDestroy {
     return final;
   }
 
+  /*Sets the selected sprints on the service layer for storage. */
+  setSelectedSprintOnServiceLayer(level) {
+    let selectedSprint = {}
+    this.selectedFilterArray?.forEach(element => {
+      if (element['additionalFilters'].length) {
+        selectedSprint = { ...selectedSprint, [this.selectedTab.toLowerCase() === 'iteration' ? element['parentId'][0] : element['nodeId']]: element['additionalFilters'] }
+      }
+    });
+    this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), [level]: selectedSprint });
+  }
+
   /**
   Filters a list of sprints to only include those that were previously selected
   @returns An array containing the node IDs of sprints that were previously selected */
 
   getSprintsWhichWasAlreadySelected(level) {
     const sprintsWhichWasAlreadySelected = []
-    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'maturity') {
+    if (this.service.getAddtionalFilterBackup() && this.service.getAddtionalFilterBackup()[level] && this.selectedTab.toLowerCase() != 'developer' && this.selectedTab.toLowerCase() != 'dora' && this.selectedTab.toLowerCase() != 'kpi-maturity') {
       const selectedProjects = this.service.getSelectedTrends().map(data => data.nodeId);
       selectedProjects.forEach(nodeId => {
         const projectWhichSprintWasSelected = Object.keys(this.service.getAddtionalFilterBackup()[level]);
@@ -1734,37 +1957,75 @@ export class FilterComponent implements OnInit, OnDestroy {
     return sprintsWhichWasAlreadySelected;
   }
 
+  /************************
+   * Refresh KPI Level Filters when project is changing
+   */
+  refreshKpiLevelFiltersBackup(level, isManually) {
+    if (isManually) {
+      if (level === 'release' || level === 'sprint') {
+        const updatedFilterBackup = { ...this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()] = {} }
+        this.service.setKpiSubFilterObj(updatedFilterBackup)
+      } else {
+        this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), kpiFilters: {} });
+        this.service.setKpiSubFilterObj({})
+      }
+    }
+  }
+
+  /**
+   * Responsible for filter sprint (addtional filters)
+   * @param hierarchyLevelId
+   */
+  applySearchFilter(hierarchyLevelId) {
+    const sTxt = this.filterForm.controls[hierarchyLevelId + 'Search'].value;
+    this.copyFilteredAddFilters[hierarchyLevelId] = this.filteredAddFilters[hierarchyLevelId].filter((item) =>
+      item.nodeName.toLowerCase().includes(sTxt.toLowerCase())
+    );
+  }
+
   resetAddtionalFIlters() {
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
   }
 
-    /*Sets the selected sprints on the service layer for storage. */
-    setSelectedSprintOnServiceLayer(level) {
-      let selectedSprint = {}
-      this.selectedFilterArray?.forEach(element => {
-        if (element['additionalFilters'].length) {
-          selectedSprint = { ...selectedSprint, [this.selectedTab.toLowerCase() === 'iteration' ? element['parentId'][0] : element['nodeId']]: element['additionalFilters'] }
-        }
-      });
-    this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), [level] : selectedSprint });
-    }
+  /**
+   * Validation on sprint addtional filters on speed/quality/value
+   * As of now out of scope but in future it can be.Hence please don't delete */
 
-     /************************
-     * Refresh KPI Level Filters when project is changing
-     */
-     refreshKpiLevelFiltersBackup(level, isManually) {
-      if (isManually) {
-        if (level === 'release' || level === 'sprint') {
-          if(this.service.getAddtionalFilterBackup()['kpiFilters'] && this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()]){
-            const updatedFilterBackup = { ...this.service.getAddtionalFilterBackup()['kpiFilters'][this.selectedTab.toLowerCase()]}
-            this.service.setKpiSubFilterObj(updatedFilterBackup)
-            }
-        } else {
-          this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), kpiFilters: {} });
-          this.service.setKpiSubFilterObj({})
-        }
-      }
-    }
+  // onCheckboxChange(event) {
+  // const selectedProjects = this.filterForm?.get('selectedTrendValue')?.value || [];
+  // const sprintWithTrueValues = Object.keys(this.filterForm.controls['sprint'].value).filter(key => this.filterForm.controls['sprint'].value[key] === true);
+  // const sprintCountForKpiCalculation = this.service.getGlobalConfigData().sprintCountForKpiCalculation;
+
+  // const projectAlongWithSprints = selectedProjects.map(projectId => {
+  //   const sprints = this.additionalFiltersDdn['sprint']
+  //     ?.filter(sprint => sprint['parentId']?.includes(projectId) && sprint['sprintState']?.toLowerCase() === 'closed')
+  //     .map(sprint => sprint.nodeId);
+
+  //   const selectedSprints = sprints.filter(sprint => sprintWithTrueValues.includes(sprint));
+  //   return {
+  //     nodeId: projectId,
+  //     sprints: sprints,
+  //     selectedSprints: selectedSprints,
+  //     sprintCount: selectedSprints.length
+  //   };
+  // });
+
+  // projectAlongWithSprints.forEach(project => {
+  //   const isFullSelection = project.selectedSprints.length === sprintCountForKpiCalculation;
+
+  //   project.sprints.forEach(sprint => {
+  //     const sprintControl = (this.filterForm.controls['sprint'] as UntypedFormGroup).get(sprint);
+  //     if (sprintControl) {
+  //       if (isFullSelection && !project.selectedSprints.includes(sprint)) {
+  //         sprintControl.disable();
+  //       } else {
+  //         sprintControl.enable();
+  //       }
+  //     }
+  //   });
+  // });
+  // }
+
 }

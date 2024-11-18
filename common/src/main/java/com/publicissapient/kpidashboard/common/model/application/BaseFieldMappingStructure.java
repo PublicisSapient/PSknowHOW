@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -44,19 +42,27 @@ import lombok.Setter;
 public class BaseFieldMappingStructure extends BasicModel {
 	private String fieldName;
 	private String fieldLabel;
+	private String placeHolderText;
+	private Integer fieldDisplayOrder;
 	private String fieldType;
 	private String fieldCategory;
 	private String toggleLabel;
+	private String toggleLabelLeft;
+	private String toggleLabelRight;
 	private String section;
+	private Integer sectionOrder;
 	private boolean processorCommon;
+	private boolean mandatory;
 	private MappingToolTip tooltip;
 	private List<Options> options;
 	private List<String> filterGroup;
+	private String readOnly;
+	private boolean nodeSpecific;
 
 	@Data
 	@Getter
 	@Setter
-	class MappingToolTip {
+	public static class MappingToolTip {
 		String definition;
 		String kpiImpacted;
 		String toggleDefinition;
@@ -65,9 +71,13 @@ public class BaseFieldMappingStructure extends BasicModel {
 	@Data
 	@Getter
 	@Setter
-	class Options {
+	public static class Options {
 		String label;
 		Object value;
+		String labelValue;
+		String operator;
+		String maxValue;
+		String minValue;
 	}
 
 }

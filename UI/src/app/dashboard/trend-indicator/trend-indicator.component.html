@@ -1,51 +1,52 @@
 <div class="indicator-container p-mb-2 p-mr-1" [ngStyle]="{'border-color': color}">
 
-    <div class="indicator-average-data" *ngIf="dataTrend && cols?.length == 0">
-        <div class="p-pr-1 p-text-center">
-            <div class="indicator-heading">Latest Trend</div>
-            <!-- <p class="average-data-primary" [ngStyle]="{'color': color}"
-                *ngIf="kpiData?.kpiDetail?.chartType === 'stackedColumn' else lineChartTemplate">
-                {{lastValue !== 'NA' ? (lastValue | number: '1.0-1') : lastValue}}
-                <span *ngIf="kpiData?.kpiDetail?.kpiUnit !== 'Number'"
-                    [ngClass]="{'unit': kpiData?.kpiDetail?.kpiUnit !=='%'}"
-                    [ngStyle]="{'color': color}">{{kpiData?.kpiDetail?.kpiUnit}}</span>
-            </p> -->
-            <!-- <ng-template #lineChartTemplate> -->
-                <p class="average-data-primary" [ngStyle]="{'color': color}">{{dataTrend?.value}}
-                    <span class="positive-trend" *ngIf="dataTrend?.trend == '+ve'">
-                        (<b class="pi pi-plus font-bold"></b>
-                        <span class="kpi-trend">{{'VE' | uppercase}}</span>)
-                    </span>
-                    <span class="negative-trend" *ngIf="dataTrend?.trend == '-ve'">
-                        (<b class="pi pi-minus font-bold"></b>
-                        <span class="kpi-trend">{{'VE' | uppercase}}</span>)
-                    </span>
-                    <span class="other-trend" *ngIf="dataTrend?.trend != '+ve' && dataTrend?.trend != '-ve'">
-                        ({{dataTrend?.trend}})
-                    </span>
-                    <!-- <span *ngIf="kpiData?.kpiDetail?.kpiUnit !== 'Number'"
-                        [ngClass]="{'unit': kpiData?.kpiDetail?.kpiUnit !=='%'}"
-                        [ngStyle]="{'color': color}">{{kpiData?.kpiDetail?.kpiUnit}}</span> -->
-                </p>
-            <!-- </ng-template> -->
-        </div>
-
-        
-        <div class="p-text-center">
-            <div class="indicator-heading">Maturity</div>
-            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit ? ' '+dataTrend?.kpiUnit.charAt(0).toUpperCase() : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}</p>
-        </div>
+  <div class="indicator-average-data" *ngIf="dataTrend && cols?.length == 0">
+    <div class="p-pr-1 p-text-center">
+      <div class="indicator-heading">{{(dataTrend?.value) ? "Latest" : ''}} Trend</div>
+      <!-- <ng-template #lineChartTemplate> -->
+      <p class="average-data-primary" [ngStyle]="{'color': color}">{{dataTrend?.value}}
+        <span class="positive-trend" *ngIf="dataTrend?.trend == '+ve'">
+          (<b class="pi pi-plus font-bold"></b>
+          <span class="kpi-trend">{{'VE' | uppercase}}</span>)
+        </span>
+        <span class="negative-trend" *ngIf="dataTrend?.trend == '-ve'">
+          (<b class="pi pi-minus font-bold"></b>
+          <span class="kpi-trend">{{'VE' | uppercase}}</span>)
+        </span>
+        <span class="other-trend" *ngIf="dataTrend?.trend != '+ve' && dataTrend?.trend != '-ve'">
+          ({{dataTrend?.trend}})
+        </span>
+      </p>
+      <!-- </ng-template> -->
     </div>
 
 
-    <div class="p-d-flex p-justify-center w-100" *ngIf="cols?.length>0">
-        <div *ngFor="let col of cols; let i = index;">
-            <div *ngIf="i != 0">
-                <div class="p-text-center" [ngClass]="{'p-pr-3': i != cols.length - 1}">
-                    <div class="indicator-heading">{{col?.header}}</div>
-                    <p class="average-data-primary" [ngStyle]="{'color': col?.field == 'value' && color}">{{dataTrend[col?.field]}}</p>
-                </div>
-            </div>
-        </div>
+    <div class="p-text-center">
+      <div class="indicator-heading">Maturity<span
+          *ngIf="dataTrend?.maturityDenominator && dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA'"
+          class="fa fa-info-circle kpi-info-icon" aria-hidden="true" [style]="{'position': 'relative'}"
+          [pTooltip]="getTooltipContent()" [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper">
+        </span>
+      </div>
+      <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity
+        !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' &&
+        dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit ? ' '+dataTrend?.kpiUnit.charAt(0).toUpperCase() : ''}}
+        {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')' : dataTrend?.maturity}}
+
+      </p>
     </div>
+  </div>
+
+
+  <div class="p-d-flex p-justify-center w-100" *ngIf="cols?.length>0">
+    <div *ngFor="let col of cols; let i = index;">
+      <div *ngIf="i != 0">
+        <div class="p-text-center" [ngClass]="{'p-pr-3': i != cols.length - 1}">
+          <div class="indicator-heading">{{col?.header}}</div>
+          <p class="average-data-primary" [ngStyle]="{'color': col?.field == 'value' && color}">
+            {{dataTrend[col?.field]}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -45,4 +45,26 @@ public class UserInfoCustomRepositoryImpl implements UserInfoCustomRepository {
 		query.addCriteria(Criteria.where("projectsAccess.accessNodes.accessItems.itemId").is(basicProjectConfigId));
 		return mongoOperations.find(query, UserInfo.class);
 	}
+
+	/**
+	 * Fetch all the admin user of given projID
+	 * 
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return List<UserInfo>
+	 */
+	@Override
+	public List<UserInfo> findAdminUserOfProject(List<String> basicProjectConfigId) {
+
+		Query query = new Query();
+
+		Criteria accessCriteria = Criteria.where("projectsAccess").elemMatch(
+				Criteria.where("role").in("ROLE_PROJECT_ADMIN", "ROLE_SUPERADMIN").and("accessNodes").elemMatch(Criteria
+						.where("accessLevel").is("project").and("accessItems.itemId").in(basicProjectConfigId)));
+
+		query.addCriteria(accessCriteria);
+
+		return mongoOperations.find(query, UserInfo.class);
+	}
+
 }

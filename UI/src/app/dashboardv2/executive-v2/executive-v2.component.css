@@ -1,0 +1,148 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
+.z-index-10 {
+    z-index: 10;
+}
+
+#cycle-time-priority-days .bs-wizard-dot {
+    top: 19px !important;
+}
+
+#cycle-time-priority-days .progress {
+    height: 18px !important;
+}
+
+.Exec-Scrum-Checkins {
+    z-index: 9;
+}
+
+.no-projects {
+    height: calc(100vh - 138px);
+    margin: 20px;
+    border-radius: 7px;
+    background-color: white;
+}
+
+.no-projects h2 {
+    color: var(--color-black);
+}
+
+.kpi-card-container {
+    scroll-snap-type: both mandatory;
+}
+
+.tabs-container {
+    display: flex;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.tab {
+    background-color: #fff;
+    border: 1px solid #D5DBE1;
+    display: inline-block;
+    font-size: 12px;
+    padding: 0 8px 0 8px;
+    cursor: pointer;
+    height: 33px;
+    line-height: 33px;
+}
+
+.tab:first-child {
+    border-top-left-radius: 5px;
+    border-right: none;
+}
+
+.tab:last-child {
+    border-top-right-radius: 5px;
+    border-left: none;
+}
+
+.tab.is-selected {
+    border-bottom: 2px solid #0B4BC8;
+    font-weight: bold;
+}
+
+
+.text-data {
+    font-size: 1.5rem;
+    color: var(--color-secondary-blue);
+    margin: 0;
+}
+
+.text-label {
+    color: var(--color-cyan-blue);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.text-time {
+    color: var(--color-red);
+}
+.text-data .unit{
+    font-size: 1.5rem;
+}
+.btn-arrow-down{
+    color: var(--color-black);
+    width: .8rem;
+    cursor: pointer;
+}
+.card-type-1{
+    position: relative;
+}
+
+.text-blue{
+    color: var(--color-secondary-blue);
+    text-decoration: underline;
+}
+
+.p-h-100{
+    height: 100%;
+}
+
+.kpi-content-container{
+    border-right: 1px solid #c0c0c0;
+}
+
+:host::ng-deep .p-dialog{
+    width: auto !important;
+    max-width: 90vw !important;
+    min-width: 544px;
+}
+
+:host ::ng-deep.p-dialog-header-icons{
+    top: -8px;
+    right: -8px;
+    border-radius: 2px;
+    background-color: black;
+    border: none;
+    padding: 5px;
+}
+
+:host ::ng-deep .p-dialog-header-close-icon {
+    color: white;
+  }
+
+.export-button{
+    position: absolute;
+    right: 10px;
+    top: 14px;
+}

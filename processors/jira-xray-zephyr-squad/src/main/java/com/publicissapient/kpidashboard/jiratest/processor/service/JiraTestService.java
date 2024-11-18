@@ -11,6 +11,8 @@ import com.publicissapient.kpidashboard.jiratest.model.ProjectConfFieldMapping;
 
 public interface JiraTestService {
 
+	int processesJiraIssues(ProjectConfFieldMapping projectConfig);
+
 	/**
 	 * Purges the issues provided
 	 *
@@ -28,7 +30,7 @@ public interface JiraTestService {
 	 * @param projectConfig
 	 *            Project Configuration Mapping
 	 */
-	int processesJiraIssues(ProjectConfFieldMapping projectConfig, boolean isOffline);
+	//int processesJiraIssues(ProjectConfFieldMapping projectConfig, boolean isOffline);
 
 	/**
 	 * Gets all issues from JIRA

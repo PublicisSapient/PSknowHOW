@@ -1,15 +1,32 @@
-FROM psknowhow/amazoncorretto:8.1
+# Use a base image
+FROM amazoncorretto:17
 
-# There are environment variables with periods in the names so change bash as default
-RUN ln -sf /bin/bash /bin/sh 
-#&& apt-get update && apt upgrade libc-bin -y
+# Create a non-root user
+ARG USER=knowhowuser
+ARG UID=1000
+ARG GID=1000
 
-VOLUME /tmp
-VOLUME /app
-VOLUME /app/properties
-VOLUME /app/offline_data
-VOLUME /app/certs
+RUN ln -sf /bin/bash /bin/sh \
+    && yum install -y shadow-utils \
+    && groupadd -g $GID $USER \
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER \
+    && yum clean all -y
 
+# Set environment variables for volumes
+ENV APP_DIR="/app" \
+    PROPERTIES_DIR="/app/properties" \
+    keytoolalias="myknowhow" \
+    certhostpath="/app/certs/" \
+    keystorefile="/usr/lib/jvm/java-17-amazon-corretto/lib/security/cacerts" \
+    JAVA_OPTS=""
+
+# Set the working directory
+WORKDIR $APP_DIR
+
+# Create the volumes
+VOLUME $PROPERTIES_DIR
+
+# Set the JAR file variables
 ARG ZEPHYR_JAR_FILE=processors/jira-zephyr-scale/target/zephyr-processor.jar
 ARG JIRA_TEST_JAR_FILE=processors/jira-xray-zephyr-squad/target/jiratest-processor.jar
 ARG BITBUCKET_JAR_FILE=processors/bitbucket/target/bitbucket-processor.jar
@@ -21,6 +38,7 @@ ARG GITLAB_JAR_FILE=processors/gitlab/target/gitlab-processor.jar
 ARG GITHUB_JAR_FILE=processors/github/target/github-processor.jar
 ARG GITHUBACTION_JAR_FILE=processors/github-action/target/githubaction-processor.jar
 
+# Set the properties file names
 ARG JENKINS_PROPERTIES_FILE_NAME=jenkins.properties
 ARG BAMBOO_PROPERTIES_FILE_NAME=bamboo.properties
 ARG BITBUCKET_PROPERTIES_FILE_NAME=bitbucket.properties
@@ -32,21 +50,19 @@ ARG GITLAB_PROPERTIES_FILE_NAME=gitlab.properties
 ARG GITHUB_PROPERTIES_FILE_NAME=github.properties
 ARG GITHUBACTION_PROPERTIES_FILE_NAME=githubaction.properties
 
-ADD ${ZEPHYR_JAR_FILE} /app/zephyr.jar
-ADD ${JIRA_TEST_JAR_FILE} /app/jiratest.jar
-ADD ${JENKINS_JAR_FILE} /app/jenkins.jar
-ADD ${SONAR_JAR_FILE} /app/sonar.jar
-ADD ${BAMBOO_JAR_FILE} /app/bamboo.jar
-ADD ${BITBUCKET_JAR_FILE} /app/bitbucket.jar
-ADD ${TEAMCITY_JAR_FILE} /app/teamcity.jar
-ADD ${GITLAB_JAR_FILE} /app/gitlab.jar
-ADD ${GITHUB_JAR_FILE} /app/github.jar
-ADD ${GITHUBACTION_JAR_FILE} /app/githubaction.jar
+# Copy JAR files
+ADD ${ZEPHYR_JAR_FILE} $APP_DIR/zephyr.jar
+ADD ${JIRA_TEST_JAR_FILE} $APP_DIR/jiratest.jar
+ADD ${JENKINS_JAR_FILE} $APP_DIR/jenkins.jar
+ADD ${SONAR_JAR_FILE} $APP_DIR/sonar.jar
+ADD ${BAMBOO_JAR_FILE} $APP_DIR/bamboo.jar
+ADD ${BITBUCKET_JAR_FILE} $APP_DIR/bitbucket.jar
+ADD ${TEAMCITY_JAR_FILE} $APP_DIR/teamcity.jar
+ADD ${GITLAB_JAR_FILE} $APP_DIR/gitlab.jar
+ADD ${GITHUB_JAR_FILE} $APP_DIR/github.jar
+ADD ${GITHUBACTION_JAR_FILE} $APP_DIR/githubaction.jar 
 
-
-WORKDIR /app
-ENV JAVA_OPTS=""
-
+# Expose ports
 EXPOSE 50001
 EXPOSE 50002
 EXPOSE 50003
@@ -58,6 +74,17 @@ EXPOSE 50019
 EXPOSE 50020
 EXPOSE 50022
 
-ADD processors/devops-processor-startup/start_combined_collector.sh start_combined_collector.sh
-RUN ["chmod", "+x", "/app/start_combined_collector.sh"]
+# Copy startup script
+ADD processors/devops-processor-startup/start_combined_collector.sh $APP_DIR/start_combined_collector.sh
+
+# Set the ownership of the working directory to the non-root user
+
+RUN chown -R $USER:$USER $APP_DIR \
+    && chmod +x $APP_DIR/start_combined_collector.sh \
+    && chmod 766 $keystorefile
+
+# Switch to the non-root user
+USER $USER:$GID
+
+# Command to run the application
 CMD ["sh", "start_combined_collector.sh"]

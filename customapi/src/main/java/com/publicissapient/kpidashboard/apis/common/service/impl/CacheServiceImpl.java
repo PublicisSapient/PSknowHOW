@@ -33,10 +33,12 @@ import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceKanbanImpl;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
@@ -68,6 +70,9 @@ public class CacheServiceImpl implements CacheService {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
+	@Autowired
+	private AuthenticationService authNAuthService;
+	List<AccountHierarchyData> accountHierarchyDataList;
 
 	@Override
 	public void clearCache(String cacheName) {
@@ -88,7 +93,17 @@ public class CacheServiceImpl implements CacheService {
 	@Cacheable(CommonConstant.CACHE_ACCOUNT_HIERARCHY)
 	@Override
 	public Object cacheAccountHierarchyData() {
-		return accountHierarchyService.createHierarchyData();
+		accountHierarchyDataList=accountHierarchyService.createHierarchyData();
+		return accountHierarchyDataList;
+	}
+
+	@Cacheable(CommonConstant.CACHE_SPRINT_HIERARCHY)
+	@Override
+	public Object cacheSprintLevelData() {
+		return accountHierarchyDataList.stream()
+				.filter(data -> data.getNode().stream()
+						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+								&& node.getAccountHierarchy().getSprintState() != null)).toList();
 
 	}
 
@@ -114,6 +129,15 @@ public class CacheServiceImpl implements CacheService {
 		log.info("updating FieldMapping Cache");
 		configHelperService.loadConfigData();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP);
+
+	}
+	
+	@Cacheable(CommonConstant.CACHE_BOARD_META_DATA_MAP)
+	@Override
+	public Object cacheBoardMetaDataMapData() {
+		log.info("updating BoardMetaData Cache");
+		configHelperService.loadBoardMetaData();
+		return configHelperService.getConfigMapData(CommonConstant.CACHE_BOARD_META_DATA_MAP);
 
 	}
 
@@ -257,4 +281,5 @@ public class CacheServiceImpl implements CacheService {
 				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
 
 	}
+
 }

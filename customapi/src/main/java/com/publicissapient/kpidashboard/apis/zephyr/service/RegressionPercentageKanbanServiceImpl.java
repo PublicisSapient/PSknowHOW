@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +122,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE);
 
 		kpiElement.setTrendValueList(trendValues);

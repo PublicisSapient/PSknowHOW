@@ -17,25 +17,40 @@
 # limitations under the License.
 #
 ################################################################################
-if [ -e /etc/ssl/certs/knowhow.key ]
-then
-    echo "SSL certificate copyied from Host or already present "
+
+API_HOST=${API_HOST:-customapi}
+API_PORT=${API_PORT:-8080}
+# Determine the environment (dev or prod) based on an environment variable
+ENVIRONMENT=${ENVIRONMENT:-dev} # default to dev you can pass external var to change to prod
+
+if [ "$ENVIRONMENT" = "prod" ]; then
+   cp /tmp/nginx_prod.conf ${CONF_LOC}/nginx_prod.conf
+   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOC}/nginx_prod.conf
+   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOC}/nginx_prod.conf
+else
+   cp /tmp/nginx_dev.conf ${CONF_LOC}/nginx_dev.conf
+   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOC}/nginx_dev.conf
+   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOC}/nginx_dev.conf
+fi
+
+if [ -e $CERT_LOC/knowhow_ssl.key ] || [ "$ENVIRONMENT" = "prod" ]; then
+    echo "SSL certificate already exist in host or managed externally. "
 else
     openssl req -newkey rsa:4096 \
             -x509 \
             -sha256 \
             -days 3650 \
             -nodes \
-            -out /etc/ssl/certs/knowhow.cer \
-            -keyout /etc/ssl/certs/knowhow.key \
+            -out $CERT_LOC/knowhow_ssl.cer \
+            -keyout $CERT_LOC/knowhow_ssl.key \
             -subj "/C=IN/ST=HR/L=ggn/O=Security/OU=IT Department/CN=${DNS_SSL}"
-    echo "Self sign certificate created "
+    echo "Self-signed certificate created"
 fi
-API_HOST=${API_HOST:-api}
-API_PORT=${API_PORT:-8080}
+# Check if the passphrase file exists
+if [ ! -e $CERT_LOC/knowhow_ssl_passphrase.txt ]; then
+    echo $(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10) > $CERT_LOC/knowhow_ssl_passphrase.txt
+    echo "Passphrase file created"
+fi
 
-sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/ui2.conf
-sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/ui2.conf
 envsubst < /var/lib/nginx/ui2/assets/env.template.json > /var/lib/nginx/ui2/assets/env.json 
 nginx -g "daemon off;"
-/bin/sh

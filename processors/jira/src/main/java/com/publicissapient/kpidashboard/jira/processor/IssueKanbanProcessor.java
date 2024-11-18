@@ -19,7 +19,7 @@ package com.publicissapient.kpidashboard.jira.processor;
 
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class IssueKanbanProcessor implements ItemProcessor<ReadData, CompositeRe
 
 	private KanbanJiraIssue convertIssueToKanbanJiraIssue(ReadData readData) throws JSONException {
 		return kanbanJiraIssueProcessor.convertToKanbanJiraIssue(readData.getIssue(),
-				readData.getProjectConfFieldMapping(), readData.getBoardId());
+				readData.getProjectConfFieldMapping(), readData.getBoardId(), readData.getProcessorId());
 	}
 
 	private KanbanIssueCustomHistory convertIssueToKanbanIssueHistory(ReadData readData,

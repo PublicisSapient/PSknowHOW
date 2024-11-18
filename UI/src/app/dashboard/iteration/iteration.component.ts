@@ -28,10 +28,12 @@ import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { SortEvent } from 'primeng/api';
 
 declare let require: any;
 
@@ -44,7 +46,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   @ViewChild('table') tableComponent: Table;
   subscriptions: any[] = [];
-  masterData = <any>{};
   filterData = <any>[];
   filterApplyData = <any>{};
   noOfFilterSelected = 0;
@@ -73,47 +74,51 @@ export class IterationComponent implements OnInit, OnDestroy {
   upDatedConfigData;
   timeRemaining = 0;
   displayModal = false;
-  modalDetails= {
+  modalDetails = {
     header: '',
     tableHeadings: [],
     tableValues: [],
-    kpiId:''
+    kpiId: ''
   };
   kpiDropdowns = {};
   trendBoxColorObj: any;
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
   noProjects = false;
-  tableColumnData= {};
-  tableColumnForm={};
-  excludeColumnFilter=[];
-  excludeColumns=[];
-  selectedColumns=[];
-  tableColumns=[];
-  tableHeaders=[];
+  tableColumnData = {};
+  tableColumnForm = {};
+  excludeColumnFilter = [];
+  excludeColumns = [];
+  selectedColumns = [];
+  tableColumns = [];
+  tableHeaders = [];
   filteredColumn;
-  markerInfo=[];
+  markerInfo = [];
   globalConfig;
   sharedObject;
   activeIndex = 0;
-  navigationTabs:Array<object> =[
-    {'label':'Iteration Review', 'count': 0,width : 'half',kpis : []},
-    {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
+  navigationTabs: Array<object> = [
+    { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [] },
+    { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
   ];
-  forzenColumns = ['issue id','issue description'];
+  forzenColumns = ['issue id', 'issue description'];
   commitmentReliabilityKpi;
   kpiCommentsCountObj: object = {};
   currentSelectedSprint;
+  kpiThresholdObj = {};
+  dailyStandupData: object = {};
+  selectedProjectId: string;
 
-  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
+  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
+    private featureFlagService: FeatureFlagsService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'iteration') {
+      if (sharedobject?.filterData?.length) {
         this.allKpiArray = [];
         this.kpiChartData = {};
         this.kpiSelectedFilterObj = {};
         this.kpiDropdowns = {};
         this.kpiCommentsCountObj = {};
         this.sharedObject = sharedobject;
-        if(this.globalConfig || this.service.getDashConfigData()){
+        if (this.globalConfig || this.service.getDashConfigData()) {
           this.receiveSharedData(sharedobject);
         }
         this.noTabAccess = false;
@@ -123,11 +128,9 @@ export class IterationComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(globalConfig && this.sharedObject){
-        if(this.sharedObject || this.service.getFilterObject()){
-          this.receiveSharedData(this.service.getFilterObject());
-        }
+      if (globalConfig && this.sharedObject) {
         this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
+        this.checkForAssigneeDataAndSetupTabs();
         this.processKpiConfigData();
       }
     }));
@@ -146,53 +149,60 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   processKpiConfigData() {
-    if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE' && false){
-      this.navigationTabs =  [
-        {'label':'Iteration Review', 'count': 0,width : 'half',kpis : [],fullWidthKpis : []},
-        {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
-        {'label':'Daily Standup','count':1 , width : 'full',kpis : []}
-      ];
-    }else{
-      this.navigationTabs =  [
-        {'label':'Iteration Review', 'count': 0 , width : 'half',kpis : [],fullWidthKpis:[]},
-        {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
-      ];
-    }
-    const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
+    const disabledKpis = this.configGlobalData?.filter(item => item?.shown && !item?.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item?.shown);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
-    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.isEnabled);
 
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
-      if(x['label'] === 'Daily Standup'){
+      if (x['label'] === 'Daily Standup') {
         return x;
       }
-      return { ...x, count: 0};
+      return { ...x, count: 0 };
     });
-    for(let i = 0; i<this.upDatedConfigData?.length; i++){
-      let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
+
+    this.upDatedConfigData?.forEach(data => {
+      let board = data?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
-      if(idx != -1) {
+      if (idx !== -1) {
         this.navigationTabs[idx]['count']++;
-        this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
+        this.navigationTabs[idx]['kpis'].push(data);
       }
-    }
-    if(this.commitmentReliabilityKpi?.isEnabled){
+    });
+
+    if (this.commitmentReliabilityKpi?.isEnabled) {
       this.navigationTabs[0]['count']++;
     }
 
-    this.navigationTabs.map(tabDetails => {
-      if(tabDetails['width'] === 'half'){
+    this.formatNavigationTabs();
+
+    if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
+      this.noKpis = true;
+    } else {
+      this.noKpis = false;
+    }
+    this.configGlobalData?.forEach(element => {
+      if (element?.shown && element?.isEnabled) {
+        this.kpiConfigData[element?.kpiId] = true;
+      } else {
+        this.kpiConfigData[element?.kpiId] = false;
+      }
+    });
+  }
+
+  formatNavigationTabs() {
+    this.navigationTabs.forEach(tabDetails => {
+      if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
         let halfWithKpis = []
-        tabDetails['kpis'].forEach(kpiDetails=>{
-          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
+        tabDetails['kpis'].forEach(kpiDetails => {
+          if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
             fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-          }else{
+          } else {
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
         })
@@ -204,19 +214,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
       return tabDetails;
     })
-
-    if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
-      this.noKpis = true;
-    } else {
-      this.noKpis = false;
-    }
-    this.configGlobalData.forEach(element => {
-      if (element.shown && element.isEnabled) {
-        this.kpiConfigData[element.kpiId] = true;
-      } else {
-        this.kpiConfigData[element.kpiId] = false;
-      }
-    });
   }
 
   getSelectedType(sharedobject) {
@@ -228,32 +225,101 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    if(this.service.getDashConfigData()){
+    if (this.service.getDashConfigData()) {
+      this.activeIndex = 0;
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
-      this.masterData = $event.masterData;
-      this.filterData = $event.filterData;
-      this.filterApplyData = $event.filterApplyData;
-      this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
-      if (this.filterData?.length) {
-        this.noTabAccess = false;
-        // call kpi request according to tab selected
-        if (this.masterData && Object.keys(this.masterData).length) {
-          if (this.selectedtype !== 'Kanban') {
-            // this.groupHygieneKpi();
-            const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-            const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
-            const today = new Date().toISOString().split('T')[0];
-            const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
-            this.timeRemaining = this.calcBusinessDays(today, endDate);
-            this.groupJiraKpi(kpiIdsForCurrentBoard);
-            this.getKpiCommentsCount();
-          }
-        }
+      if (!$event.filterApplyData['ids'] || !$event.filterApplyData['ids']?.length || !$event.filterApplyData['ids'][0]) {
+        this.noSprints = true;
       } else {
-        this.noTabAccess = true;
+        this.noSprints = false;
+        this.filterData = $event.filterData;
+        this.filterApplyData = $event.filterApplyData;
+        this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
+        if (this.filterData?.length) {
+          this.noTabAccess = false;
+          // call kpi request according to tab selected
+          if (this.configGlobalData?.length > 0) {
+            if (this.selectedtype !== 'Kanban') {
+              // we should only call kpi154 on the click of Daily Standup tab
+              let kpiIdsForCurrentBoard;
+              switch (this.activeIndex) {
+                case 2:
+                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
+                  break;
+                  case 1:
+                    kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi125');
+                  break;
+                default:
+                  kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId !== 'kpi125' && kpiId !== 'kpi154');
+                  break;
+              }
+              const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
+              if (selectedSprint) {
+                this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
+                this.checkForAssigneeDataAndSetupTabs();
+
+                const today = new Date().toISOString().split('T')[0];
+                const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
+                this.timeRemaining = this.calcBusinessDays(today, endDate);
+
+                this.groupJiraKpi(kpiIdsForCurrentBoard);
+                if ($event.filterApplyData['label'] !== 'sqd') {
+                  this.getKpiCommentsCount();
+                }
+              }
+            }
+          }
+        } else {
+          this.noTabAccess = true;
+        }
       }
     }
+  }
+
+  checkForAssigneeDataAndSetupTabs() {
+    this.httpService.getProjectListData().subscribe(async responseList => {
+      let selectedProject = responseList[0].data.filter((project) => project.id === this.selectedProjectId)[0];
+      let showDSVorNot = false;
+      if (selectedProject) {
+        showDSVorNot = selectedProject['saveAssigneeDetails'];
+      }
+      let showDailyStandup = await this.featureFlagService.isFeatureEnabled('DAILY_STANDUP');
+      if (this.service.currentSelectedSprint?.sprintState.toLowerCase() === 'active' && showDSVorNot) { // && showDailyStandup) {
+        this.navigationTabs = [
+          { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
+          { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
+          { 'label': 'Daily Standup', 'count': 1, width: 'full', kpis: [] }
+        ];
+      } else {
+        this.navigationTabs = [
+          { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
+          { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
+        ];
+      }
+
+      /**reset the kpi count */
+      this.navigationTabs = this.navigationTabs.map((x) => {
+        return { ...x, count: 0 };
+      });
+      for (let i = 0; i < this.upDatedConfigData?.length; i++) {
+        let board = this.upDatedConfigData[i]?.subCategoryBoard;
+        let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
+        if (idx != -1) {
+          this.navigationTabs[idx]['count']++;
+          this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
+        }
+      }
+      if (this.commitmentReliabilityKpi?.isEnabled) {
+        this.navigationTabs[0]['count']++;
+      }
+
+      this.formatNavigationTabs();
+
+      if (this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup').length) {
+        this.dailyStandupData = this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup')[0]['kpis'];
+      }
+    });
 
   }
 
@@ -262,16 +328,16 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.jiraKpiData = {};
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory == 'Iteration') {
-        groupIdSet.add(obj.groupId);
+    this.updatedConfigGlobalData.forEach((obj) => {
+      // we should only call kpi154 on the click of Daily Standup tab, there is separate code for sending kpi154 request
+      if (!obj['kpiDetail'].kanban && obj['kpiDetail'].kpiSource === 'Jira' && obj['kpiDetail'].kpiCategory == 'Iteration' && obj.kpiId !== 'kpi154' && obj.kpiId !== 'kpi125') {
+        groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
-
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Iteration');
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Iteration');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });
@@ -284,8 +350,9 @@ export class IterationComponent implements OnInit, OnDestroy {
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
+    console.log(this.loaderJiraArray)
     this.kpiLoader = true;
-    this.jiraKpiRequest = this.httpService.postKpi(postData, source)
+    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // getData = require('../../../test/resource/fakeIterationKpi.json');
@@ -294,9 +361,6 @@ export class IterationComponent implements OnInit, OnDestroy {
           for (const kpi in localVariable) {
             this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
           }
-          // if (localVariable && localVariable['kpi76'] && localVariable['kpi76'].maturityValue) {
-          //   this.colorAccToMaturity(localVariable['kpi76'].maturityValue);
-          // }
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(localVariable);
         } else {
@@ -309,15 +373,6 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiLoader = false;
       });
   }
-
-  // return colors according to maturity only for CycleTime
-  /*colorAccToMaturity(maturityValue) {
-    const maturityArray = maturityValue.toString().split('-');
-    for (let index = 0; index <= 2; index++) {
-      const maturity = maturityArray[index];
-      this.maturityColorCycleTime[index] = this.helperService.colorAccToMaturity(maturity);
-    }
-  }*/
 
   ngOnInit() {
     this.service.kpiListNewOrder.next([]);
@@ -337,6 +392,11 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     }));
 
+    this.httpService.getConfigDetails().subscribe(filterData => {
+      if (filterData[0] !== 'error') {
+        this.service.setGlobalConfigData(filterData);
+      }
+    });
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
@@ -361,31 +421,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, false);
   }
 
-  // Return video link if video link present
-  getVideoLink(kpiId) {
-    const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
-    if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-      return kpiData?.videoLink?.videoUrl;
-    } else {
-      // Show message that video is not available
-    }
-  }
-
-  // Return boolean flag based on link is available and video is enabled
-  isVideoLinkAvailable(kpiId) {
-    let kpiData;
-    try {
-      kpiData = this.masterData?.kpiList?.find(kpiObj => kpiObj.kpiId === kpiId);
-      if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch {
-      return false;
-    }
-  }
-
   sortAlphabetically(objArray) {
     if (objArray && objArray?.length > 1) {
       objArray?.sort((a, b) => a.data.localeCompare(b.data));
@@ -403,14 +438,14 @@ export class IterationComponent implements OnInit, OnDestroy {
     return count;
   }
 
-  applyAggregationForChart(arr){
+  applyAggregationForChart(arr) {
     const aggregatedArr = JSON.parse(JSON.stringify(arr[0]));
-    for(let i=1;i<arr.length;i++){
-        for(let j=0;j<arr[i].value.length;j++){
-            aggregatedArr.value[j].value +=arr[i].value[j].value;
+    for (let i = 1; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].value.length; j++) {
+        aggregatedArr.value[j].value += arr[i].value[j].value;
 
-            aggregatedArr.value[j].hoverValue = {...aggregatedArr.value[j].hoverValue,...arr[i].value[j].hoverValue};
-        }
+        aggregatedArr.value[j].hoverValue = { ...aggregatedArr.value[j].hoverValue, ...arr[i].value[j].hoverValue };
+      }
     }
     return [aggregatedArr];
   }
@@ -450,15 +485,15 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     aggregatedArr[0]?.data?.forEach((item) => {
       item['value'] = +(item['value']?.toFixed(2));
-      if(item.value1){
+      if (item.value1) {
         item['value1'] = +(item['value1']?.toFixed(2));
       }
     });
 
     const evalvateExpression = aggregatedArr[0]['data'].filter(el => el.hasOwnProperty('expressions'));
-    if(evalvateExpression.length > 0){
-      evalvateExpression.forEach(item =>{
-        this.evalvateExpression(item, aggregatedArr[0]['data'],arr);
+    if (evalvateExpression.length > 0) {
+      evalvateExpression.forEach(item => {
+        this.evalvateExpression(item, aggregatedArr[0]['data'], arr);
       });
     }
     return aggregatedArr;
@@ -487,15 +522,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     element.value = tempArr[0];
   }
 
-  createCombinations(arr1, arr2) {
-    let arr = [];
-    for (let i = 0; i < arr1?.length; i++) {
-      for (let j = 0; j < arr2?.length; j++) {
-        arr.push({ filter1: arr1[i], filter2: arr2[j] });
-      }
-    }
-    return arr;
-  }
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
     /**if trendValueList is an object */
@@ -505,7 +531,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         let tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
-        tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
+        tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
         for (let i = 0; i < tempArr?.length; i++) {
           preAggregatedValues?.push(...trendValueList['value']?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
         }
@@ -548,9 +574,12 @@ export class IterationComponent implements OnInit, OnDestroy {
         for (let i = 0; i < filters?.length; i++) {
           preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'].toLowerCase() === filters[i].toLowerCase())];
         }
-        this.kpiChartData[kpiId] = [...preAggregatedValues];
-      }else{
-
+        if (preAggregatedValues[0]?.hasOwnProperty('value')) {
+          this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+        } else {
+          this.kpiChartData[kpiId] = [...preAggregatedValues];
+        }
+      } else {
         this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
       }
     }
@@ -558,9 +587,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.kpiChartData[kpiId] = [...trendValueList];
     } else {
       this.kpiChartData[kpiId] = [];
-    }
-    if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-      this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
     if (kpiId === 'kpi121') {
       const iterationConfigData = {
@@ -574,7 +600,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
   }
 
-  getKpiChartType(kpiId){
+  getKpiChartType(kpiId) {
     return this.updatedConfigGlobalData.filter(kpiDetails => kpiDetails.kpiId === kpiId)[0]?.kpiDetail?.chartType;
   }
 
@@ -593,42 +619,31 @@ export class IterationComponent implements OnInit, OnDestroy {
       const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
-        this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-        const tempObj = {};
-        for (const key in filters) {
-          tempObj[key] = ['Overall'];
-        }
-        this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
-        this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-        this.getDropdownArray(data[key]?.kpiId);
+        this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-        this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
         }
         else if (formType?.toLowerCase() == 'dropdown') {
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
         }
         else if (filters && Object.keys(filters)?.length > 0) {
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-          const tempObj = {};
-          for (const key in filters) {
-            tempObj[key] = ['Overall'];
-          }
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
         } else {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
         }
-        this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+
       }
       this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
     }
+  }
+
+  setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
+    this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, 'iteration', refreshValue, initialValue, this.filterApplyData['ids'][0], filters)
+    this.getDropdownArray(kpiId);
   }
 
   getDropdownArray(kpiId) {
@@ -680,10 +695,10 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = {"filter1":[event]};
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
-
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'iteration', this.filterApplyData['ids'][0]);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
   }
@@ -766,13 +781,13 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     }
     this.excludeColumns = this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns ? this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns : [];
-    this.httpService.getkpiColumns(basicConfigId,kpi.kpiId).subscribe(response =>{
-      if(response['success']){
+    this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
+      if (response['success']) {
         this.tableColumns = response['data']['kpiColumnDetails'];
-        this.selectedColumns=this.tableColumns.filter(colDetails => colDetails.isDefault || colDetails.isShown).map(col => col.columnName);
+        this.selectedColumns = this.tableColumns.filter(colDetails => colDetails.isDefault || colDetails.isShown).map(col => col.columnName);
         this.tableComponent.clear();
         this.generateTableColumnsFilterData(Object.keys(tableValues[0]));
-        this.tableHeaders= this.selectedColumns;
+        this.tableHeaders = this.selectedColumns;
         this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
         this.modalDetails['kpiId'] = kpi.kpiId;
         this.modalDetails['tableValues'] = tableValues;
@@ -783,15 +798,15 @@ export class IterationComponent implements OnInit, OnDestroy {
     });
   }
 
-  generateTableColumnsFilterData(tableValue){
+  generateTableColumnsFilterData(tableValue) {
     const unSelectedColumn = [];
     const defaultAndSelectedColumns = this.tableColumns.map(col => col.columnName);
-    this.modalDetails['tableHeadings'] = [...new Set([...tableValue,...defaultAndSelectedColumns])];
+    this.modalDetails['tableHeadings'] = [...new Set([...tableValue, ...defaultAndSelectedColumns])];
     this.modalDetails['tableHeadings'] = this.modalDetails['tableHeadings'].filter(colName => !this.excludeColumns.includes(colName));
-    this.modalDetails['tableHeadings'].forEach(col =>{
-      if(!defaultAndSelectedColumns.includes(col)){
+    this.modalDetails['tableHeadings'].forEach(col => {
+      if (!defaultAndSelectedColumns.includes(col)) {
         unSelectedColumn.push({
-          columnName:col,
+          columnName: col,
           isDefault: false,
           isShown: false,
           order: 0
@@ -802,72 +817,68 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.tableColumns.push(...unSelectedColumn);
   }
 
-  generateExcludeColumnsFilterList(tableValue){
-  this.excludeColumnFilter = ['Linked Defect', 'Defect Priority','Linked Stories'];
-    for(const colunmName in tableValue){
-      if(typeof tableValue[colunmName] == 'object'){
+  generateExcludeColumnsFilterList(tableValue) {
+    this.excludeColumnFilter = ['Linked Defect', 'Defect Priority', 'Linked Stories'];
+    for (const colunmName in tableValue) {
+      if (typeof tableValue[colunmName] == 'object') {
         this.excludeColumnFilter.push(colunmName);
       }
     }
   }
 
-  onFilterClick(columnName){
-    this.filteredColumn =columnName;
+  onFilterClick(columnName) {
+    this.filteredColumn = columnName;
   }
 
-  onFilterBlur(columnName){
-    this.filteredColumn= this.filteredColumn === columnName ? '' : this.filteredColumn;
+  onFilterBlur(columnName) {
+    this.filteredColumn = this.filteredColumn === columnName ? '' : this.filteredColumn;
   }
 
-  applyColumnFilter(){
+  applyColumnFilter() {
     this.saveKpiColumnsConfig(this.selectedColumns);
   }
 
-  saveTableColumnOrder(){
-    if(this.tableComponent.columns.length > 0){
+  saveTableColumnOrder() {
+    if (this.tableComponent.columns.length > 0) {
       this.saveKpiColumnsConfig(this.tableComponent.columns);
     }
   }
 
-  saveKpiColumnsConfig(selectedColumns: any[]){
-    const postData={
-      kpiId:'',
-      basicProjectConfigId:'',
-      kpiColumnDetails:[]
+  saveKpiColumnsConfig(selectedColumns: any[]) {
+    const postData = {
+      kpiId: '',
+      basicProjectConfigId: '',
+      kpiColumnDetails: []
     };
-    postData.kpiId=this.modalDetails['kpiId'];
-    postData['basicProjectConfigId']=this.service.selectedTrends[0].basicProjectConfigId;
-    postData['kpiColumnDetails']= this.tableColumns.filter(col =>{
+    postData.kpiId = this.modalDetails['kpiId'];
+    postData['basicProjectConfigId'] = this.service.selectedTrends[0].basicProjectConfigId;
+    postData['kpiColumnDetails'] = this.tableColumns.filter(col => {
       const selectedColIndex = selectedColumns.findIndex(colName => colName === col.columnName);
-      if(selectedColIndex !== -1){
+      if (selectedColIndex !== -1) {
         col.isShown = true;
-        col.order=selectedColIndex;
+        col.order = selectedColIndex;
         return true;
-      } else{
-        col.isShown =false;
+      } else {
+        col.isShown = false;
         return false;
       }
     });
-    postData['kpiColumnDetails'].sort((a,b) => a.order -b.order);
-    this.tableHeaders =  postData['kpiColumnDetails'].map(col => col.columnName);
-    this.httpService.postkpiColumnsConfig(postData).subscribe(response =>{
+    postData['kpiColumnDetails'].sort((a, b) => a.order - b.order);
+    this.tableHeaders = postData['kpiColumnDetails'].map(col => col.columnName);
+    this.httpService.postkpiColumnsConfig(postData).subscribe(response => {
       if (response && response['success'] && response['data']) {
         this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
-    } else {
+      } else {
         this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
-    }
+      }
     });
   }
 
-  generateTableColumnData(){
-    this.modalDetails['tableHeadings'].forEach(colName =>{
-      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({name:colData,value:colData}));
-      this.tableColumnForm[colName]= [];
+  generateTableColumnData() {
+    this.modalDetails['tableHeadings'].forEach(colName => {
+      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: colData, value: colData }));
+      this.tableColumnForm[colName] = [];
     });
-
-    this.tableComponent.sortMode = 'multiple';
-    this.tableComponent.multiSortMeta = [{field: 'Assignee', order: 1},{field: 'Due Date', order: -1}];
-    this.tableComponent.sortMultiple();
   }
 
   generateExcel(exportMode) {
@@ -876,12 +887,12 @@ export class IterationComponent implements OnInit, OnDestroy {
       excelData: []
     };
     let excelData = [];
-    let columns =[];
+    let columns = [];
     if (exportMode === 'all') {
       excelData = this.modalDetails['tableValues'];
       columns = this.modalDetails['tableHeadings'];
     } else {
-      excelData = this.tableComponent?.filteredValue ?  this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+      excelData = this.tableComponent?.filteredValue || this.modalDetails['tableValues'];
       columns = this.tableHeaders;
     }
 
@@ -891,21 +902,21 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     excelData.forEach(colData => {
       let obj = {};
-      for(let key in colData){
-        if(this.typeOf(colData[key])){
+      for (let key in colData) {
+        if (this.typeOf(colData[key])) {
           obj[key] = [];
-          for(let y in colData[key]){
+          for (let y in colData[key]) {
             //added check if valid url
-            if(colData[key][y].includes('http')){
-              obj[key].push({text: y, hyperlink: colData[key][y]});
-            }else{
+            if (colData[key][y].includes('http')) {
+              obj[key].push({ text: y, hyperlink: colData[key][y] });
+            } else {
               obj[key].push(colData[key][y]);
             }
           }
-        }else if(key == 'Issue Id'){
+        } else if (key == 'Issue Id') {
           obj['Issue Id'] = {};
           obj['Issue Id'][colData[key]] = colData['Issue URL'];
-        }else{
+        } else {
           obj[key] = colData[key]
         }
       }
@@ -915,27 +926,9 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
-  drop(event: CdkDragDrop<string[]>,tab) {
-    if (event?.previousIndex !== event.currentIndex) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      if(tab.width === 'half'){
-        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
-      }
-      this.upDatedConfigData = [];
-      this.navigationTabs.forEach(tabs=>{
-        this.upDatedConfigData  = this.upDatedConfigData.concat(tabs['kpis']);
-      })
-      this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
-      const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-      disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
-      const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
-      hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + disabledKpis.length + index + 3);
-      const capacityKpi = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121');
-     if (capacityKpi) {
-        this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
-      }
-    }
+  drop(event: CdkDragDrop<string[]>, updatedContainer) {
+    const capacityKpi = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121');
+    this.helperService.drop(event, updatedContainer, this.navigationTabs, this.upDatedConfigData, this.configGlobalData, capacityKpi);
   }
 
   typeOf(value) {
@@ -943,33 +936,47 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   /** Reload KPI once field mappoing updated */
-  reloadKPI(event){
+  reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId,'Iteration');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId, 'Iteration');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(currentKPIGroup, 'jira');
+      this.postJiraKpi(currentKPIGroup, 'jira');
     }
   }
 
-  getKpiCommentsCount(kpiId?){
-    let requestObj = {
-      "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
-      "level":this.filterApplyData?.level,
-      "nodeChildId": this.filterApplyData['selectedMap']?.sprint[0],
-      'kpiIds': []
-    };
-    if(kpiId){
-      requestObj['kpiIds'] = [kpiId];
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj[kpiId] = res[kpiId];
-      });
-    }else{
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj = res;
-      });
-    }
+  async getKpiCommentsCount(kpiId?) {
+    const nodes = this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId;
+    const level = this.filterApplyData?.level;
+    const nodeChildId = this.filterApplyData['selectedMap']?.sprint[0];
+    this.kpiCommentsCountObj = await this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj, nodes, level, nodeChildId, this.updatedConfigGlobalData, kpiId)
+  }
 
+  handleTabChange(e) {
+    let index = e.index;
+    if (index === 1) {
+      let kpi125Data = this.configGlobalData?.filter(kpi => kpi.kpiId === 'kpi125')[0];
+      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi125'], kpi125Data['groupId'], 'Iteration');
+      this.postJiraKpi(this.kpiJira, 'jira');
+    }
+    if (index === 2) {
+      let kpi154Data = this.configGlobalData?.filter(kpi => kpi.kpiId === 'kpi154')[0];
+      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, ['kpi154'], kpi154Data['groupId'], 'Iteration');
+      this.postJiraKpi(this.kpiJira, 'jira');
+    }
+  }
+
+  customSort(event: SortEvent) {
+    const getSortValue = (data: any, field: string) => {
+      const value = (field in data) ? data[field].trim() : '-';
+      return (field.includes('Date') && value !== '-') ? new Date(value).toISOString().split('T')[0] : value;
+    };
+
+    event.data.sort((data1, data2) => {
+      const value1 = getSortValue(data1, event.field);
+      const value2 = getSortValue(data2, event.field);
+      const result = (value1 === '-' && value2 === '-') ? 0 : value1.localeCompare(value2);
+      return event.order * result;
+    });
   }
 
 }

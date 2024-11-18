@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -35,10 +35,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.Metadata;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
-import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
+import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 
 /**
  * This class provides various methods to TEST operations on EditKPIConfig
@@ -64,7 +65,9 @@ public class EditKpiConfigServiceImplTest {
 	@InjectMocks
 	private EditKpiConfigServiceImpl editKpiConfigServiceImpl;
 	@Mock
-	private BoardMetadataRepository boardMetadataRepository;
+	private ConfigHelperService configHelperService;
+	@Mock
+	private AccountHierarchyRepository accountHierarchyRepository;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -101,14 +104,34 @@ public class EditKpiConfigServiceImplTest {
 	 */
 	@Test
 	public void testgetDataForType1() {
-		testType = "Test";
 		testProjectconfigid = "5f7ee917485b2c09bc8bac7a";
+		AccountHierarchy ac = new AccountHierarchy();
+		ac.setNodeName("KnowHOW v8.0.0_PSknowHOW");
+		ac.setBasicProjectConfigId(new ObjectId(testProjectconfigid));
+		ac.setBeginDate("2023-08-31T00:00:00.000Z");
+		ac.setEndDate("2023-10-31T00:00:00.000Z");
+		ac.setLabelName("release");
+		ac.setReleaseState("Released");
+		AccountHierarchy ac1 = new AccountHierarchy();
+		ac1.setNodeName("KnowHOW v8.0.0_PSknowHOW");
+		ac1.setBasicProjectConfigId(new ObjectId(testProjectconfigid));
+		ac1.setBeginDate("");
+		ac1.setEndDate("2023-10-31T00:00:00.000Z");
+		ac1.setLabelName("release");
+		ac1.setReleaseState("Released");
+
+		List<AccountHierarchy> ahlist = new ArrayList<>();
+		ahlist.add(ac);
+		ahlist.add(ac1);
+		testType = "Test";
 		List<BoardMetadata> testListBoardMetadata = new ArrayList<>();
 		testListBoardMetadata.add(testBoardMetadata);
-		when(boardMetadataRepository.findByProjectToolConfigId(new ObjectId(testProjectconfigid)))
+		when(configHelperService.getBoardMetaData(new ObjectId(testProjectconfigid)))
 				.thenReturn(testBoardMetadata);
-		Map<String, List<MetadataValue>> data = editKpiConfigServiceImpl.getDataForType(testProjectconfigid);
-		assertThat("Count : ", data.size(), equalTo(1));
+		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigIdAndReleaseStateOrderByEndDateDesc("release",
+				new ObjectId(testProjectconfigid), "Released")).thenReturn(ahlist);
+		Map<String, List<MetadataValue>> data = editKpiConfigServiceImpl.getDataForType(testProjectconfigid, "kpi150");
+		assertThat("Count : ", data.size(), equalTo(2));
 
 	}
 }

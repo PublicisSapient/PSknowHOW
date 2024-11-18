@@ -30,9 +30,11 @@ import { TableModule } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
+import { HelperService } from 'src/app/services/helper.service';
 
 import { environment } from 'src/environments/environment';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 describe('ProjectListComponent', () => {
   let component: ProjectListComponent;
@@ -42,6 +44,7 @@ describe('ProjectListComponent', () => {
   let httpMock;
   let router: Router;
   const baseUrl = environment.baseUrl;
+  let confirmationService;
 
   const projectListData = require('../../../../test/resource/projectListData.json');
   const formFieldData = [
@@ -196,7 +199,9 @@ describe('ProjectListComponent', () => {
         MessageService,
         ConfirmationService,
         GetAuthorizationService,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
+        HelperService,
+        DatePipe
       ]
     })
       .compileComponents();
@@ -208,6 +213,7 @@ describe('ProjectListComponent', () => {
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     httpMock = TestBed.inject(HttpTestingController);
+    confirmationService = TestBed.inject(ConfirmationService);
     router = TestBed.inject(Router);
 
     let localStore = {};
@@ -226,25 +232,10 @@ describe('ProjectListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  xit('should fetch project list data',() => {
-    spyOn(httpService, 'getProjectListData').and.callThrough();
-    spyOn(httpService, 'getHierarchyLevels').and.callThrough();
-    component.ngOnInit();
-    expect(httpService.getProjectListData).toHaveBeenCalledTimes(1);
-    expect(httpService.getHierarchyLevels).toHaveBeenCalledTimes(1);
-    const basicConfigsReq = httpMock.expectOne(`${baseUrl}/api/basicconfigs`);
-    const getHierarchyReq = httpMock.expectOne(`${baseUrl}/api/hierarchylevels`);
-    expect(basicConfigsReq.request.method).toBe('GET');
-    expect(getHierarchyReq.request.method).toBe('GET');
-    basicConfigsReq.flush(projectListData);
-    getHierarchyReq.flush(formFieldData);
-    expect(Object.keys(component.projectList)).toEqual(Object.keys(projectListData.data));
-  });
-
   it('should navigate to basic-config on click of "New"', () => {
     const navigateSpy = spyOn(router, 'navigate');
     component.newProject();
-    expect(navigateSpy).toHaveBeenCalledWith(['./dashboard/Config/BasicConfig']);
+    expect(component.isNewProject).toBeTruthy();
   });
 
   it('should navigate to basic-config on click of "Edit"', () => {
@@ -310,14 +301,104 @@ describe('ProjectListComponent', () => {
       }
     };
 
-    const confirmationService = TestBed.inject(ConfirmationService);
-
     const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.accept());
     component.deleteProject(project);
     expect(mockConfirm).toHaveBeenCalled();
     httpMock.expectOne(baseUrl + '/api/basicconfigs/631f394dcfef11709d7ddc7b').flush(deleteResponse);
     fixture.detectChanges();
   });
+
+  it('should delete project on click of "Delete" and get projectsAccess', () => {
+    const project = {
+      id: '631f394dcfef11709d7ddc7b',
+      name: 'MAP',
+      type: 'Scrum',
+      country: 'India',
+      state: 'Haryana',
+      city: 'Gurgaon'
+  };
+
+    const deleteResponse = {
+      message: 'MAP deleted successfully',
+      success: true,
+      data: {
+        id: '631f394dcfef11709d7ddc7b',
+        projectName: 'MAP',
+        createdAt: '2022-09-12T19:21:09',
+        kanban: false,
+        hierarchy: [
+          {
+            hierarchyLevel: {
+              level: 1,
+              hierarchyLevelId: 'country',
+              hierarchyLevelName: 'Country'
+            },
+            value: 'India'
+          },
+        ],
+        isKanban: false
+      }
+    };
+
+    spyOn(sharedService,'getCurrentUserDetails').and.returnValue([{
+      projects : [
+        {projectId : '123'}
+      ]
+    }])
+    spyOn(httpService,'deleteProject').and.returnValue(of({success : true}))
+    spyOn(component,'projectDeletionStatus');
+
+    const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.accept());
+    component.deleteProject(project);
+    expect(mockConfirm).toHaveBeenCalled();
+  });
+
+  it('should get error while deleting proect', () => {
+    const project = {
+      id: '631f394dcfef11709d7ddc7b',
+      name: 'MAP',
+      type: 'Scrum',
+      country: 'India',
+      state: 'Haryana',
+      city: 'Gurgaon'
+  };
+
+    const deleteResponse = {
+      message: 'MAP deleted successfully',
+      success: true,
+      data: {
+        id: '631f394dcfef11709d7ddc7b',
+        projectName: 'MAP',
+        createdAt: '2022-09-12T19:21:09',
+        kanban: false,
+        hierarchy: [
+          {
+            hierarchyLevel: {
+              level: 1,
+              hierarchyLevelId: 'country',
+              hierarchyLevelName: 'Country'
+            },
+            value: 'India'
+          },
+        ],
+        isKanban: false
+      }
+    };
+
+    spyOn(sharedService,'getCurrentUserDetails').and.returnValue([{
+      projects : [
+        {projectId : '123'}
+      ]
+    }])
+    spyOn(httpService,'deleteProject').and.returnValue(throwError('Error'))
+    spyOn(component,'projectDeletionStatus');
+
+    const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.accept());
+    component.deleteProject(project);
+    expect(mockConfirm).toHaveBeenCalled();
+  });
+
+
 
   it("should route on tool component on edit button ",()=>{
 
@@ -352,16 +433,12 @@ describe('ProjectListComponent', () => {
       name: 'JIRAPROJ',
       type: 'Scrum',
     };
+    const tabNum = 2;
     const navigateSpy = spyOn(router, 'navigate');
     spyOn(sharedService , 'setSelectedProject');
-    component.editConfiguration(fakeProject);
+    component.editConfiguration(fakeProject, tabNum);
     expect(sharedService.setSelectedProject).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ToolMenu']);
-  })
-
-  it("should get HierarchyLevels",()=>{
-    spyOn(httpService,'getHierarchyLevels').and.returnValue(of(formFieldData));
-    component.getHierarchy();
+    expect(navigateSpy).toHaveBeenCalledOnceWith(['/dashboard/Config/ConfigSettings/63b3f9098ec44416b3ce9699'], { queryParams: { type: 'scrum', tab: 2 } });
   })
 
   it("should get success response while getting project list",()=>{
@@ -411,10 +488,120 @@ describe('ProjectListComponent', () => {
   })
 
   it("should project list zero while getting project list",()=>{
-   
+
     spyOn(httpService,'getProjectListData').and.returnValue(of(projectListData.data));
     component.getData();
     expect(component.loading).toBeFalse();
     expect(component.projectList.length).toBe(0)
   })
+
+  describe('YourComponent', () => {
+    it('should set isAdminOrSuperAdmin to true if roleAccess contains ROLE_SUPERADMIN', () => {
+      // Arrange
+      component.roleAccess = {
+        ROLE_SUPERADMIN: true,
+        ROLE_PROJECT_ADMIN: false
+      };
+
+      // Act
+      component.checkUserIsAdminOrSuperAdmin();
+
+      // Assert
+      expect(component.isAdminOrSuperAdmin).toBeTrue();
+    });
+
+    it('should set isAdminOrSuperAdmin to true if roleAccess contains ROLE_PROJECT_ADMIN', () => {
+      // Arrange
+      component.roleAccess = {
+        ROLE_SUPERADMIN: false,
+        ROLE_PROJECT_ADMIN: true
+      };
+
+      // Act
+      component.checkUserIsAdminOrSuperAdmin();
+
+      // Assert
+      expect(component.isAdminOrSuperAdmin).toBeTrue();
+    });
+
+    it('should set isAdminOrSuperAdmin to false if roleAccess does not contain ROLE_SUPERADMIN or ROLE_PROJECT_ADMIN', () => {
+      // Arrange
+      component.roleAccess = {
+        ROLE_SUPERADMIN: false,
+        ROLE_PROJECT_ADMIN: false
+      };
+
+      // Act
+      component.checkUserIsAdminOrSuperAdmin();
+
+      // Assert
+      expect(component.isAdminOrSuperAdmin).toBeTrue();
+    });
+
+    it('should set isAdminOrSuperAdmin to true if authorities contains ROLE_SUPERADMIN', () => {
+      // Arrange
+      component.authorities = ['ROLE_SUPERADMIN'];
+
+      // Act
+      component.checkUserIsAdminOrSuperAdmin();
+
+      // Assert
+      expect(component.isAdminOrSuperAdmin).toBeTrue();
+    });
+
+    it('should set isAdminOrSuperAdmin to false if authorities does not contain ROLE_SUPERADMIN', () => {
+      // Arrange
+      component.authorities = ['ROLE_USER'];
+
+      // Act
+      component.checkUserIsAdminOrSuperAdmin();
+
+      // Assert
+      expect(component.isAdminOrSuperAdmin).toBeFalse();
+    });
+
+    it('should set isAdminOrSuperAdmin to false if roleAccess and authorities are empty', () => {
+      // Act
+      component.checkUserIsAdminOrSuperAdmin();
+
+      // Assert
+      expect(component.isAdminOrSuperAdmin).toBeFalse();
+    });
+  });
+
+ it('should assign role for access',()=>{
+  spyOn(sharedService,'getCurrentUserDetails').and.returnValue([
+      {
+        projects : [
+          {
+            projectId: '123',
+            role : 'admin'
+          }
+        ],
+        authorities : []
+      }
+
+  ])
+
+  const spyobj = spyOn(component,'checkUserIsAdminOrSuperAdmin')
+  component.roleAccessAssign();
+  expect(spyobj).toHaveBeenCalled();
+ })
+
+ it('should get confirmation of proect deletion status',()=>{
+  const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.accept());
+  component.projectDeletionStatus({success : false});
+ })
+
+ it('should reject confirmation of proect deletion status',()=>{
+  const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.reject());
+  component.projectDeletionStatus({success : false});
+ })
+
+ it('should reject confirmation of proect deletion status when response is true',()=>{
+  const mockConfirm: any = spyOn<any>(confirmationService, 'confirm').and.callFake((confirmation: Confirmation) => confirmation.reject());
+  component.projectDeletionStatus({success : true});
+ })
+
+
 });

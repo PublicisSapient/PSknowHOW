@@ -40,10 +40,6 @@ max-width: unset;
 width: 80px;
 }
 
-.long-text {
-word-break: break-all;
-}
-
 input:disabled, textarea:disabled {
 background-color: #dee2e6;
 }
@@ -60,9 +56,9 @@ width: 100%;
 border-color: #B00020;
 }
 
-.search-box-custom-width {
+/* .search-box-custom-width {
 width: 450px;
-}
+} */
 
 /* ::ng-deep .ui-float-label textarea:focus ~ label,
 ::ng-deep .ui-float-label textarea.ui-state-filled ~ label {
@@ -79,3 +75,9 @@ display: block !important;
 ::ng-deep .field-mapping .p-autocomplete{
   width: 100%;
 }
+
+.link{
+  color : var(--color-secondary-blue);
+  cursor: pointer;
+}
+

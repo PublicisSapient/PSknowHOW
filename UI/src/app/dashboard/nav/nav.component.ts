@@ -19,8 +19,6 @@
 import { Component, OnInit} from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
-import { GoogleAnalyticsService } from '../../services/google-analytics.service';
-import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
@@ -35,7 +33,6 @@ export class NavComponent implements OnInit {
   selectedTab;
   subscription: Subscription;
   configOthersData;
-  worker: any;
   kpiConfigData = {};
   kpiListData: any = {};
   changedBoardName: any;
@@ -45,33 +42,47 @@ export class NavComponent implements OnInit {
   boardNameArr: any[] = [];
   boardId = 1;
   ssoLogin= environment.SSO_LOGIN;
-  visibleSidebar = true;
+  visibleSidebar;
   kanban = false;
-  
+  navItems: number = 7;
+
   constructor(
     private httpService: HttpService,
     private messageService: MessageService,
     public service: SharedService,
     public router: Router,
-    private ga: GoogleAnalyticsService,
-    private helper: HelperService,
   ) {
     this.selectedType = this.service.getSelectedType() ? this.service.getSelectedType() : 'scrum';
     this.kanban= this.selectedType.toLowerCase() === 'scrum' ? false : true;
     const selectedTab = window.location.hash.substring(1);
+
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
-    if(this.selectedTab.includes('-')){
-      this.selectedTab = this.selectedTab.split('-').join(' ');
+    this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
+    // if(this.selectedTab.includes('-')){
+    //   this.selectedTab = this.selectedTab.split('-').join(' ');
+    // }
+    if(this.selectedTab.includes('?')){
+      this.selectedTab = this.selectedTab.split('?')[0];
     }
     if(this.selectedTab !== 'unauthorized access'){
       this.service.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
     }
+
+    this.service.onTypeOrTabRefresh.subscribe(data => {
+      this.selectedTab = data?.selectedTab;
+    })
+
+    this.service.boardNamesListSubject.subscribe((data) => {
+      this.boardNameArr = data;
+    })
+
   }
 
-
-
   ngOnInit() {
-    this.service.setSideNav(true);
+    this.service.visibleSideBarObs.subscribe(value =>{
+      this.visibleSidebar = value;
+    });
+    this.service.setSideNav(false);
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;
@@ -79,14 +90,12 @@ export class NavComponent implements OnInit {
         this.boardNameArr[0].boardName = this.mainTab;
       }
     });
-
-    this.startWorker();
     this.getKpiOrderedList();
   }
 
   // call when user is seleting tab
   selectTab(selectedTab) {
-    this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
+    this.selectedTab = this.boardNameArr?.filter(board => board.link === selectedTab)[0]?.boardName;
     if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release' || selectedTab.toLowerCase() === 'dora') && this.selectedType.toLowerCase() !== 'scrum'){
       this.selectedType = 'Scrum';
     }
@@ -119,30 +128,10 @@ export class NavComponent implements OnInit {
     }
   }
 
-  startWorker() {
-    if (typeof Worker !== 'undefined') {
-      // Create a new
-      this.worker = new Worker(new URL('../../app.worker',import.meta.url), { type: 'module' });
-      this.worker.onmessage = ({ data }) => {
-        this.stopWorker();
-      };
-      this.worker.postMessage(localStorage.getItem('auth_token'));
-    } else {
-      // Web Workers are not supported in this environment.
-      // You should add a fallback so that your program still executes correctly.
-      console.log('Web workers not supported!!!');
-    }
-  }
-
-  stopWorker() {
-    this.worker.terminate();
-    this.worker = undefined;
-  }
-
   getKpiOrderedList() {
     this.kpiListData = this.service.getDashConfigData();
     if (!this.kpiListData || !Object.keys(this.kpiListData).length) {
-      this.httpService.getShowHideKpi().subscribe(
+      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : []}).subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
@@ -163,27 +152,8 @@ export class NavComponent implements OnInit {
 
   processKPIListData() {
     this.configOthersData = this.kpiListData['others'].find(boardDetails => boardDetails.boardName === 'Kpi Maturity')?.kpis;
-    this.boardNameArr = [];
-    if (
-      this.kpiListData[this.selectedType] &&
-      Array.isArray(this.kpiListData[this.selectedType])
-    ) {
-      for (let i = 0; i < this.kpiListData[this.selectedType]?.length; i++) {
-        this.boardNameArr.push({
-          boardName: this.kpiListData[this.selectedType][i].boardName,
-          link: this.kpiListData[this.selectedType][i].boardName.toLowerCase().split(' ').join('-')
-        });
-      }
-    }
+    this.service.setUpdatedBoardList(this.kpiListData, this.selectedType);
 
-    for (let i = 0; i < this.kpiListData['others']?.length; i++) {
-      this.boardNameArr.push({
-        boardName: this.kpiListData['others'][i].boardName,
-        link:
-          this.kpiListData['others'][i].boardName.toLowerCase()
-      });
-    }
-    
     // renamed tab name was not updating when navigating on iteration/backlog, issue fixed
     if (this.changedBoardName) {
       this.service.changedMainDashboardValueSub.next(this.changedBoardName);
@@ -212,7 +182,7 @@ export class NavComponent implements OnInit {
     this.kpiListData.kanban[0].boardName = this.changedBoardName;
     this.service.setDashConfigData(this.kpiListData);
     this.selectTab(this.changedBoardName);
-    this.httpService.updateUserBoardConfig(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (data) => {
         if (data.success) {
           this.messageService.add({
@@ -239,6 +209,10 @@ export class NavComponent implements OnInit {
 
   closeEditModal() {
     this.displayEditModal = false;
+  }
+
+  setVisibleSideBar(val){
+    this.service.setVisibleSideBar(val);
   }
 
 }

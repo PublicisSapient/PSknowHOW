@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,7 @@ public class UnitCoverageKanbanServiceimpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.UNIT_TEST_COVERAGE_KANBAN);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.UNIT_TEST_COVERAGE_KANBAN);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
@@ -131,12 +132,6 @@ public class UnitCoverageKanbanServiceimpl
 	}
 
 	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
-	}
-
-	@Override
 	public Double calculateKPIMetrics(Map<String, List<SonarHistory>> stringListMap) {
 		return null;
 	}
@@ -144,7 +139,7 @@ public class UnitCoverageKanbanServiceimpl
 	@Override
 	public Map<String, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return getSonarHistoryForAllProjects(leafNodeList, startDate, true);
+		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
 	@Override
@@ -266,9 +261,7 @@ public class UnitCoverageKanbanServiceimpl
 	private Double getCoverageValue(Object coverage) {
 		Double value = -1D;
 		if (coverage != null) {
-			if (coverage instanceof Double) {
-				value = (Double) coverage;
-			} else if (coverage instanceof String) {
+			if (coverage instanceof String) {
 				value = Double.parseDouble(coverage.toString());
 			} else {
 				value = (Double) coverage;
@@ -316,5 +309,10 @@ public class UnitCoverageKanbanServiceimpl
 
 		);
 		return map;
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI62(),KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId());
 	}
 }

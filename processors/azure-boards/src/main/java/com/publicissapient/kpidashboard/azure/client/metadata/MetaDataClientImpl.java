@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azure.client.metadata;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.atlassian.jira.rest.client.api.domain.Field;
@@ -38,12 +40,14 @@ import com.publicissapient.kpidashboard.azure.util.AzureConstants;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.MetadataType;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.azure.AzureStateCategory;
 import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.Identifier;
 import com.publicissapient.kpidashboard.common.model.jira.Metadata;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.azure.AzureStateCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 
@@ -60,6 +64,7 @@ public class MetaDataClientImpl implements MetadataClient {
 	private final BoardMetadataRepository boardMetadataRepository;
 	private final FieldMappingRepository fieldMappingRepository;
 	private final MetadataIdentifierRepository metadataIdentifierRepository;
+	private final AzureStateCategoryRepository azureStateCategoryRepository;
 
 	/**
 	 * Creates object
@@ -74,12 +79,13 @@ public class MetaDataClientImpl implements MetadataClient {
 	 *            for saving missing field mapping
 	 */
 	public MetaDataClientImpl(AzureAdapter azureAdapter, BoardMetadataRepository boardMetadataRepository,
-			FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository) {
+			FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository, AzureStateCategoryRepository azureStateCategoryRepository) {
 
 		this.boardMetadataRepository = boardMetadataRepository;
 		this.azureAdapter = azureAdapter;
 		this.fieldMappingRepository = fieldMappingRepository;
 		this.metadataIdentifierRepository = metadataIdentifierRepository;
+		this.azureStateCategoryRepository= azureStateCategoryRepository;
 	}
 
 	@Override
@@ -105,6 +111,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			}
 
 			if (CollectionUtils.isNotEmpty(statusList)) {
+				processAndSaveStateCategory(projectConfig.getBasicProjectConfigId().toString(),statusList);
 				mapWorkFlow(statusList, metadataList);
 			}
 			boardMetadata.setMetadata(metadataList);
@@ -243,9 +250,9 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setSprintName(customField.get(CommonConstant.SPRINT));
 		fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
 
-		fieldMapping.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+		fieldMapping.setJiraIssueTypeNames(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE,new ArrayList<>()).stream().toArray(String[]::new));
 		fieldMapping
-				.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+				.setJiraIssueTypeNamesAVR(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()).stream().toArray(String[]::new));
 		fieldMapping.setJiraIssueTypeNamesKPI161(
 				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping.setJiraIssueTypeNamesKPI151(
@@ -257,23 +264,24 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIssueTypeNamesKPI148(
 				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
-		fieldMapping.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
-		fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));
-		fieldMapping.setEpicRiskReduction(customField.get(CommonConstant.RISK_REDUCTION));
-		fieldMapping.setEpicTimeCriticality(customField.get(CommonConstant.TIME_CRITICALITY));
-		fieldMapping.setEpicUserBusinessValue(customField.get(CommonConstant.USER_BUSINESS_VALUE));
-		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
+		fieldMapping.setJiraIssueEpicType(issueTypeMap.getOrDefault(CommonConstant.EPIC,new ArrayList<>()).stream().toList());
+		fieldMapping.setEpicJobSize(customField.getOrDefault(CommonConstant.JOB_SIZE,""));
+		fieldMapping.setEpicRiskReduction(customField.getOrDefault(CommonConstant.RISK_REDUCTION,""));
+		fieldMapping.setEpicTimeCriticality(customField.getOrDefault(CommonConstant.TIME_CRITICALITY,""));
+		fieldMapping.setEpicUserBusinessValue(customField.getOrDefault(CommonConstant.USER_BUSINESS_VALUE,""));
+		fieldMapping.setEpicWsjf(customField.getOrDefault(CommonConstant.WSJF, ""));
 		if (CollectionUtils.isNotEmpty(firstStatusList)) {
 			fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
-			fieldMapping.setStoryFirstStatusKPI3(firstStatusList.get(0));
+			fieldMapping.setStoryFirstStatusKPI171(firstStatusList.get(0));
 			fieldMapping.setStoryFirstStatusKPI148(firstStatusList.get(0));
 			fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
 		} else {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
-			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI171(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 		}
+		fieldMapping.setRootCauseIdentifier(AzureConstants.CUSTOM_FIELD);
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStatusForDevelopmentAVR(workflowMap.get(CommonConstant.DEVELOPMENT));
 		fieldMapping.setJiraStatusForDevelopmentKPI82(workflowMap.get(CommonConstant.DEVELOPMENT));
@@ -282,12 +290,13 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraStatusForQaKPI82(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDorKPI3(workflowMap.getOrDefault(CommonConstant.DOR, new ArrayList<>()));
+		fieldMapping.setJiraDorKPI171(workflowMap.getOrDefault(CommonConstant.DOR, new ArrayList<>()));
 		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI171(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
@@ -300,14 +309,10 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIterationCompletionStatusKPI123(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI131(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI133(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI135(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI122(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI75(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI145(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusKPI140(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusKPI136(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKpi72(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKpi39(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKpi5(workflowMap.get(CommonConstant.DOD));
@@ -345,6 +350,8 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setResolutionTypeForRejectionKPI14(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping
 				.setResolutionTypeForRejectionQAKPI111(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
+		fieldMapping
+				.setResolutionTypeForRejectionKPI34(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setJiraQAKPI111IssueType(issueTypeMap.get(CommonConstant.STORY));
 
 		if (projectConfig.isKanban()) {
@@ -516,7 +523,53 @@ public class MetaDataClientImpl implements MetadataClient {
 
 	private List<String> createFieldList(Set<String> allTypes, Identifier identifier) {
 		List<String> identifierValue = identifier.getValue() == null ? new ArrayList<>() : identifier.getValue();
-		return identifierValue.stream().filter(allTypes::contains).collect(Collectors.toList());
+		return identifierValue.stream().filter(allTypes::contains).toList();
+	}
+
+	/**
+	 * convert status list to AzureStateCategory
+	 * 
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @param statusList
+	 *            statusList
+	 */
+	private void processAndSaveStateCategory(String basicProjectConfigId, List<Status> statusList) {
+		AzureStateCategory azureStateCategory = azureStateCategoryRepository
+				.findByBasicProjectConfigId(basicProjectConfigId);
+		if (null == azureStateCategory) {
+			Map<String, Set<String>> statusCategoryMap = statusList.stream()
+					.collect(Collectors.toMap(Status::getDescription, // Key mapper
+							status -> new HashSet<>(Collections.singletonList(status.getName())), // Value mapper
+							(existingSet, newName) -> { // Merge function
+								existingSet.addAll(newName);
+								return existingSet;
+							}, HashMap::new // Supplier for the map
+					));
+			if (MapUtils.isNotEmpty(statusCategoryMap)) {
+				AzureStateCategory stateCategory = new AzureStateCategory();
+				stateCategory.setBasicProjectConfigId(basicProjectConfigId);
+				statusCategoryMap.forEach((category, value) -> {
+
+					if (AzureConstants.COMPLETED.equalsIgnoreCase(category)) {
+						stateCategory.setCompletedList(value);
+					} else if (AzureConstants.RESOLVED.equalsIgnoreCase(category)) {
+						stateCategory.setResolvedList(value);
+					} else if (AzureConstants.INPROGRESS.equalsIgnoreCase(category)) {
+						stateCategory.setInProgressList(value);
+					} else if (AzureConstants.PROPOSED.equalsIgnoreCase(category)) {
+						stateCategory.setProposedList(value);
+					} else if (AzureConstants.REMOVED.equalsIgnoreCase(category)) {
+						stateCategory.setRemovedList(value);
+					}
+
+				});
+				azureStateCategoryRepository.save(stateCategory);
+				log.info("saved project state category for the project : {}", basicProjectConfigId);
+			}
+		} else {
+			log.info("project state category is already in db for the project : {} ", basicProjectConfigId);
+		}
 	}
 
 }

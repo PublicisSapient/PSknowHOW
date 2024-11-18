@@ -15,28 +15,30 @@
  * limitations under the License.
  *
  ******************************************************************************/
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-field-mapping-field',
   templateUrl: './field-mapping-field.component.html',
   styleUrls: ['./field-mapping-field.component.css'],
-  providers:[
-    {provide:NG_VALUE_ACCESSOR,
-    useExisting: FieldMappingFieldComponent,
-    multi:true}
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: FieldMappingFieldComponent,
+      multi: true
+    }
   ]
 })
-export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
+export class FieldMappingFieldComponent implements ControlValueAccessor {
 
   @Input() fieldConfig;
   @Output() onSearch = new EventEmitter();
   @Input() fieldMappingMetaData;
+  @Input() thresholdUnit;
   value;
   isDisabled = false;
 
-  constructor() { }
   onChange = (val) => {
   };
   onTouched = () => { };
@@ -53,10 +55,29 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
     this.isDisabled = isDisabled;
   }
 
-  ngOnInit(): void {
+  setValue(isAddtional?) {
+    if (typeof this.value === 'string' || this.value instanceof String) {
+      this.onChange(this.value.trim());
+    } else if (Array.isArray(this.value) && (isAddtional != true)) {
+      this.value = this.value.map((val) => val.trim());
+      this.onChange(this.value);
+    }
+    else {
+      if(this.value == null){
+        this.value = 0;
+      }
+      this.onChange(this.value);
+    }
   }
 
-  setValue() {
+  setValueConditionalInput(event) {
+    this.value = event.map((val) => {
+      return {
+        'labelValue': val.labelValue,
+        'countValue': val.countValue
+      }
+    });
+
     this.onChange(this.value);
   }
 
@@ -65,13 +86,22 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
     this.setValue();
   }
 
-  setAdditionalFilterValue(value){
+  setAdditionalFilterValue(value) {
     this.value = value;
+    this.setValue(true);
+  }
+
+  showDialogToAddValue(isSingle, fieldName, type) {
+    this.onSearch.emit({ isSingle, fieldName, type });
+  }
+
+  enterNumericValue(event) {
+    if (!!event && !!event.preventDefault && event.key === '.' || event.key === 'e' || event.key === '-' || event.key === '+') {
+      event.preventDefault();
+      return;
+    }
+  }
+  numericInputUpDown(event: any) {
     this.setValue();
   }
-
-  showDialogToAddValue(isSingle, fieldName, type){
-    this.onSearch.emit({isSingle,fieldName,type});
-  }
-
 }

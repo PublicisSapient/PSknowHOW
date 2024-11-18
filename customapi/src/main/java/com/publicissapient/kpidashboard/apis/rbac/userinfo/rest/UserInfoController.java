@@ -18,19 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
+import java.util.Map;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +45,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -85,31 +85,50 @@ public class UserInfoController {
 	/***
 	 * update the role updateAccessOfUserInfo()
 	 * 
-	 * @param username
-	 *            unique object username present in the database
-	 * @return responseEntity of userInfo with data,message and status
+	 * @param userInfoDto
+	 *            object containing the updated user info data
+	 * @return responseEntity of userInfo with data, message, and status
 	 */
 	@PreAuthorize("hasPermission(null, 'UPDATE_USER_INFO')")
-	@PostMapping("/{username}")
-	public ResponseEntity<ServiceResponse> updateUserRole(@PathVariable("username") String username,
-			@Valid @RequestBody UserInfoDTO userInfoDto) {
+	@PostMapping("/updateUserRole")
+	public ResponseEntity<ServiceResponse> updateUserRole(@Valid @RequestBody UserInfoDTO userInfoDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		UserInfo userInfo = modelMapper.map(userInfoDto, UserInfo.class);
 
 		log.info("user info ");
-		ServiceResponse response = userInfoService.updateUserRole(username, userInfo);
+		ServiceResponse response = userInfoService.updateUserRole(userInfo.getUsername(), userInfo);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 
 	}
+
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
-	@DeleteMapping(value = "/{userName}")
-	public ResponseEntity<ServiceResponse> deleteUser(@PathVariable String userName) {
+	@PostMapping("/deleteUser")
+	public ResponseEntity<ServiceResponse> deleteUser(@Valid @RequestBody UserNameRequest userNameRequest) {
 		log.info("Inside deleteUser() method of UserInfoController ");
+		String userName = userNameRequest.getUsername();
 		String loggedUserName = authenticationService.getLoggedInUser();
-		UserInfo userInfo = userInfoRepository.findFirstByUsername(userName);
+		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
-			ServiceResponse response = userInfoService.deleteUser(userName);
+			ServiceResponse response = userInfoService.deleteUser(userName, false);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			log.info("Unauthorized to perform deletion of user " + userName);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
+		}
+
+	}
+
+	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
+	@PostMapping(value = "/central/deleteUser")
+	public ResponseEntity<ServiceResponse> deleteUserFromCentral(@Valid @RequestBody UserNameRequest userNameRequest) {
+		log.info("Inside deleteUser() method of UserInfoController ");
+		String userName = userNameRequest.getUsername();
+		String loggedUserName = authenticationService.getLoggedInUser();
+		UserInfo userInfo = userInfoRepository.findByUsername(userName);
+		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
+			ServiceResponse response = userInfoService.deleteUser(userName, true);
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} else {
 			log.info("Unauthorized to perform deletion of user " + userName);
@@ -136,4 +155,29 @@ public class UserInfoController {
 
 		}
 	}
+
+	/**
+	 * enable and disable email notification user wise
+	 * user can enable/disable ERROR_ALERT_NOTIFICATION and ACCESS_ALERT_NOTIFICATION
+	 * this API will access only ProjectAdmin And SUPER ADMIN
+	 * @param notificationEmail
+	 * @return
+	 */
+	@PostMapping("/notificationPreferences")
+	public ResponseEntity<ServiceResponse> updateFlagEmailNotification(
+			@Valid @RequestBody Map<String, Boolean> notificationEmail) {
+		String loggedUserName = authenticationService.getLoggedInUser();
+
+		UserInfo userInfo = userInfoService.updateNotificationEmail(loggedUserName, notificationEmail);
+
+		if (Objects.nonNull(userInfo)) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Notification preferences updated successfully.", userInfo));
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ServiceResponse(false, "Sorry! Couldn't save your preferences. Please try again later", null));
+
+		}
+
+	}
+
 }

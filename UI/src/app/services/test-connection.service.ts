@@ -51,7 +51,7 @@ export class TestConnectionService {
     );
   }
 
-  testZephyr(baseUrl, username, password, apiEndPoint, accessToken, cloudEnv, vault): Observable<any> {
+  testZephyr(baseUrl, username, password, apiEndPoint, accessToken, cloudEnv, vault, bearerToken, patOAuthToken): Observable<any> {
     const postData = {
       baseUrl,
       username,
@@ -59,7 +59,9 @@ export class TestConnectionService {
       apiEndPoint,
       accessToken,
       cloudEnv,
-      vault
+      vault,
+      bearerToken,
+      patOAuthToken
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
@@ -241,13 +243,14 @@ export class TestConnectionService {
     );
   }
 
-  testRepoTool(httpUrl, repoToolProvider, username, accessToken, email): Observable<any> {
+  testRepoTool(baseUrl,apiEndPoint, repoToolProvider, username, accessToken, email): Observable<any> {
     let postData = {};
 
     postData = {
-      httpUrl,
+      baseUrl,
+      apiEndPoint,
       repoToolProvider,
-      username, 
+      username,
       accessToken,
       email
     };
@@ -258,6 +261,18 @@ export class TestConnectionService {
     );
   }
 
-
+  testArgoCD(baseUrl, username, password, vault): Observable<any> {
+    const postData = {
+      baseUrl,
+      username,
+      password: password ? password : '',
+      vault
+    };
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('requestArea', 'thirdParty');
+    return this.http.post(environment.baseUrl + '/api/testconnection/argocd', postData
+      , { headers }
+    );
+  }
 
 }

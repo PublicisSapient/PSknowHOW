@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -39,7 +40,7 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.common.service.NotificationService;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -390,13 +391,13 @@ public class ProjectAccessManager {
 	 */
 	private String getEmailAddress(AccessRequest accessRequestsData) {
 		String email = "";
-		email = getUserInfo(accessRequestsData.getUsername()).getEmailAddress();
+		email = getUserInfo(accessRequestsData.getUsername()).getEmailAddress().toLowerCase();
 		if (StringUtils.isEmpty(email)) {
 			Authentication authentication = authenticationRepository.findByUsername(accessRequestsData.getUsername());
 			if (null == authentication) {
 				log.error("User {} Does not Exist in Authentication Collection", accessRequestsData.getUsername());
 			} else {
-				email = authentication.getEmail();
+				email = authentication.getEmail().toLowerCase();
 			}
 		}
 		return email;
@@ -456,8 +457,11 @@ public class ProjectAccessManager {
 			// creating global children map
 			createGlobalChildrenMap(accessLevel, accessRequest.getAccessNode().getAccessItems(), projectBasicConfigNode,
 					globalChildrenMap);
+			boolean isUserExists = existingUserInfo != null && existingUserInfo.getAuthorities().size() == 1
+					&& existingUserInfo.getAuthorities().contains(Constant.ROLE_VIEWER)
+					&& existingUserInfo.getProjectsAccess().isEmpty();
 
-			if (existingUserInfo != null && isNewUser(existingUserInfo)) {
+			if (isUserExists) {
 				updateAuthorities(resultUserInfo, accessRequest.getRole());
 				setFirstProjectsAccess(resultUserInfo, accessRequest.getRole(), accessRequest.getAccessNode());
 
@@ -653,6 +657,7 @@ public class ProjectAccessManager {
 			copyOfUserInfo.setLastName(userInfo.getLastName());
 			copyOfUserInfo.setEmailAddress(userInfo.getEmailAddress());
 			copyOfUserInfo.setProjectsAccess(userInfo.getProjectsAccess());
+			copyOfUserInfo.setNotificationEmail(userInfo.getNotificationEmail());
 		}
 		return copyOfUserInfo;
 	}
@@ -774,17 +779,19 @@ public class ProjectAccessManager {
 	public List<RoleWiseProjects> getProjectAccessesWithRole(String username) {
 
 		UserInfo userInfo = getUserInfo(username);
-
-		List<ProjectsAccess> projectsAccesses = userInfo.getProjectsAccess();
-
 		List<RoleWiseProjects> result = new ArrayList<>();
+		if(Objects.nonNull(userInfo)) {
+			List<ProjectsAccess> projectsAccesses = userInfo.getProjectsAccess();
 
-		projectsAccesses.forEach(projectsAccess -> {
-			RoleWiseProjects roleWiseProjects = new RoleWiseProjects();
-			roleWiseProjects.setRole(projectsAccess.getRole());
-			roleWiseProjects.setProjects(getProjects(projectsAccess.getAccessNodes()));
-			result.add(roleWiseProjects);
-		});
+			if (CollectionUtils.isNotEmpty(projectsAccesses)) {
+				projectsAccesses.forEach(projectsAccess -> {
+					RoleWiseProjects roleWiseProjects = new RoleWiseProjects();
+					roleWiseProjects.setRole(projectsAccess.getRole());
+					roleWiseProjects.setProjects(getProjects(projectsAccess.getAccessNodes()));
+					result.add(roleWiseProjects);
+				});
+			}
+		}
 
 		return result;
 	}

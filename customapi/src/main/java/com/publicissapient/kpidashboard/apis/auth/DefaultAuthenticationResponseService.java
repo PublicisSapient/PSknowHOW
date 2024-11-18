@@ -20,9 +20,6 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,19 +27,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class call repository method to save the user authentication.
- * 
+ *
  * @author prijain3
  *
  */
 @Component
+@Slf4j
 public class DefaultAuthenticationResponseService implements AuthenticationResponseService {
 
 	@Autowired
@@ -56,29 +55,12 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	 */
 	@Override
 	public void handle(HttpServletResponse response, Authentication authentication) {
-		String emailAddress = StringUtils.EMPTY;
-		String username;
-
-		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress();
-			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
-
-		} else {
-			username = authentication.getPrincipal().toString();
-		}
-
-		AuthType authType = authentication.getDetails() == null ? AuthType.STANDARD
-				: (AuthType) authentication.getDetails();
-
-		if (authType.equals(AuthType.LDAP) && userInfoService.getUserInfo(username) == null) {
-			UserInfo defaultUserInfo = userInfoService.createDefaultUserInfo(username, authType, emailAddress);
-			userInfoService.save(defaultUserInfo);
-		}
+		String username = authentication.getPrincipal().toString();
 
 		Collection<GrantedAuthority> authorities = userInfoService.getAuthorities(username);
 		AbstractAuthenticationToken authenticationWithAuthorities = new UsernamePasswordAuthenticationToken(
 				authentication.getPrincipal(), authentication.getCredentials(), authorities);
-		authenticationWithAuthorities.setDetails(authType);
+		authenticationWithAuthorities.setDetails(AuthType.STANDARD);
 		tokenAuthenticationService.addAuthentication(response, authenticationWithAuthorities);
 
 	}

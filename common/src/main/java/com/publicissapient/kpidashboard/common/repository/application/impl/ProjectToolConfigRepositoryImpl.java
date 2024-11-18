@@ -21,10 +21,10 @@ package com.publicissapient.kpidashboard.common.repository.application.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
 
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
@@ -54,8 +54,8 @@ public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigReposit
 		List<ProjectToolConfigProcessorItem> returnList = new ArrayList<>();
 		while (itr.hasNext()) {
 			Document obj = itr.next();
-			ProjectToolConfigProcessorItem item = operations.getConverter().read(ProjectToolConfigProcessorItem.class,
-					obj);
+			MongoConverter converter = operations.getConverter();
+			ProjectToolConfigProcessorItem item = converter.read(ProjectToolConfigProcessorItem.class, obj);
 			returnList.add(item);
 		}
 		return transform(returnList);

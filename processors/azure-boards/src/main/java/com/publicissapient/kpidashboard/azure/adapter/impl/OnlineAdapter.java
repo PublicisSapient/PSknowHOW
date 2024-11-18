@@ -27,6 +27,7 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import com.atlassian.jira.rest.client.api.domain.Field;
@@ -41,10 +42,12 @@ import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
 import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.azure.util.AzureConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.iterations.AzureIterationsModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,6 +68,10 @@ public class OnlineAdapter implements AzureAdapter {
 
 	private AzureServer azureServerObj;
 
+	private ProcessorToolConnectionService processorToolConnectionService;
+
+	private static JSONObject workItemTypeJson = new JSONObject();
+
 	public OnlineAdapter() {
 	}
 
@@ -81,10 +88,11 @@ public class OnlineAdapter implements AzureAdapter {
 	}
 
 	public OnlineAdapter(AzureProcessorConfig azureProcessorConfig, ProcessorAzureRestClient client,
-			AzureServer azureServerObj) {
+			AzureServer azureServerObj, ProcessorToolConnectionService processorToolConnectionService) {
 		this.azureProcessorConfig = azureProcessorConfig;
 		this.client = client;
 		this.azureServerObj = azureServerObj;
+		this.processorToolConnectionService = processorToolConnectionService;
 	}
 
 	/**
@@ -107,6 +115,13 @@ public class OnlineAdapter implements AzureAdapter {
 			try {
 				azureWiqlModel = client.getWiqlResponse(azureServer, startTimesByIssueType, projectConfig, dataExist);
 			} catch (RestClientException rce) {
+				if (rce instanceof HttpClientErrorException
+						&& ((HttpClientErrorException) rce).getStatusCode().is4xxClientError()) {
+					String errMsg = ClientErrorMessageEnum
+							.fromValue(((HttpClientErrorException) rce).getStatusCode().value()).getReasonPhrase();
+					processorToolConnectionService
+							.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+				}
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
 
 			}
@@ -187,8 +202,8 @@ public class OnlineAdapter implements AzureAdapter {
 		} else {
 
 			try {
-				issueType = parseWorkItemTypes(client.getMetadataJson(azureServerObj,
-						azureProcessorConfig.getApiWorkItemTypesEndPoint(), false));
+				workItemTypeJson = getWorkItemTypeJson();
+				issueType = parseWorkItemTypes(workItemTypeJson);
 
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
@@ -196,6 +211,10 @@ public class OnlineAdapter implements AzureAdapter {
 			}
 		}
 		return issueType;
+	}
+
+	private JSONObject getWorkItemTypeJson() {
+		return client.getMetadataJson(azureServerObj, azureProcessorConfig.getApiWorkItemTypesEndPoint(), false);
 	}
 
 	/**
@@ -278,8 +297,7 @@ public class OnlineAdapter implements AzureAdapter {
 			log.warn(MSG_AZURE_CLIENT_SETUP_FAILED);
 		} else {
 			try {
-				status = parseStatus(
-						client.getMetadataJson(azureServerObj, azureProcessorConfig.getApiStatusEndPoint(), false));
+				status = parseStatus(workItemTypeJson);
 
 			} catch (RestClientException rce) {
 				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
@@ -292,18 +310,22 @@ public class OnlineAdapter implements AzureAdapter {
 	/**
 	 * @return parsed status list
 	 */
-	private List<Status> parseStatus(JSONObject statusJsonObject) {
+	private List<Status> parseStatus(JSONObject workItemTypeJson) {
 		List<Status> statusList = null;
 
-		if (statusJsonObject != null) {
+		if (workItemTypeJson != null) {
 			statusList = Lists.newArrayList();
-			JSONArray jsonArray = (JSONArray) statusJsonObject.get(AzureConstants.STATES);
-			for (int i = 0; i < jsonArray.size(); i++) {
-				JSONObject innerObject = (JSONObject) jsonArray.get(i);
-				Status field = new Status(null, 0L, innerObject.get(AzureConstants.NAME).toString(),
-						innerObject.get(AzureConstants.CATEGORY).toString(), null);
-				statusList.add(field);
+			JSONArray valueArray = (JSONArray) workItemTypeJson.get(AzureConstants.VALUE);
+			for (int i = 0; i < valueArray.size(); i++) {
+				JSONObject statusJsonObject = (JSONObject) valueArray.get(i);
+				JSONArray jsonArray = (JSONArray) statusJsonObject.get(AzureConstants.STATES);
+				for (int j = 0; j < jsonArray.size(); j++) {
+					JSONObject innerObject = (JSONObject) jsonArray.get(j);
+					Status field = new Status(null, 0L, innerObject.get(AzureConstants.NAME).toString(),
+							innerObject.get(AzureConstants.CATEGORY).toString(), null);
+					statusList.add(field);
 
+				}
 			}
 		}
 

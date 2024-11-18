@@ -54,6 +54,11 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   @Input() viewType :string = 'chart'
   @Input() lowerThresholdBG : string;
   @Input() upperThresholdBG : string;
+  @Input() kpiId: string;
+  resizeObserver = new ResizeObserver(entries => {
+    const data = this.transform2(this.data);
+    this.draw2(data);
+  });
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -154,7 +159,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
-    d3.select(this.elem).select('#svgLegend').select('svg').remove();
+    d3.select(this.elem).select('#svgLegend').select('div').remove();
     d3.select(this.elem).select('#legendIndicator').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
     if (viewType === 'large' && selectedProjectCount === 1) {
@@ -175,11 +180,13 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
     const categoriesNames = data.map((d) => d.categorie);
     const rateNames = data[0].value.map((d) => d.rate);
-    const paddingTop = 24; 
+    const paddingTop = 24;
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
-    const width = data.length <= 5 ? document.getElementById('chart').offsetWidth - 70 : data.length * barWidth * 10;
+    const containerWidth = d3.select(this.elem).select('#chart').node().offsetWidth || window.innerWidth;
+    const resizeWidth = (containerWidth > (data.length * barWidth * 10) ? containerWidth : (data.length * barWidth * 10))
+    const width = data.length <= 5 ? containerWidth - 70 : resizeWidth;
     const height = (viewType === 'large' && selectedProjectCount === 1) ? 250 - paddingTop : 210 - paddingTop;
     const paddingFactor = width < 600 ? 0.30 : 0.55;
 
@@ -283,8 +290,9 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       .select('#horizontalSVG')
       .append('svg')
       .attr('width', width)
-      .attr('height', height);
-    // .append('g');
+      .attr('height', height + paddingTop)
+      .append('g')
+      .attr('transform', `translate(${0}, ${paddingTop})`);
 
 
     const svgY = d3
@@ -297,10 +305,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     const svgLegend = d3
       .select(this.elem)
       .select('#svgLegend')
-      .append('svg')
-      .attr('width', width + margin.right - 50)
-      .attr('height', 50)
-      .append('g');
+      .append('div')
 
 
     const xAxisText = svgX
@@ -315,7 +320,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       if (viewType === 'large' && selectedProjectCount === 1) {
         xAxisText.each((d, i, nodes) => {
           const textElement = d3.select(nodes[i]);
-          const width = tempAxis.bandwidth(); 
+          const width = tempAxis.bandwidth();
           this.wrap(textElement, width);
         });
       }
@@ -447,44 +452,17 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     // Define the div for the tooltip
     const div = d3.select(this.elem).select('#chart').append('div')
       .attr('class', 'tooltip')
-      .style('display', 'none')
+      .style('visibility', 'hidden')
       .style('opacity', 0);
 
-    // bar legend
-    const prevLength = -40;
-    let legend = svgLegend.selectAll('.d3-legend')
-      .data(data[0].value)
-      .enter()
-      .append('g')
-      .attr('class', 'd3-legend')
-      .attr('transform', (d, i) => {
-        const len = ((i + 1) * 160) + prevLength;
-        return 'translate(' + (len) + ', 0)';
-      });
+    // Preparing data for legend tooltip 
+    const legendToolTipData: any = [['Project', self.barLegend]];
 
-    // Legend indicator  .attr("x", width/2)
-    legend.append('rect')
-      .attr('width', 12)
-      .attr('height', 12)
-      .style('fill', (d, i) => color(i));
+    // Adding bar graph info in legend tooltip data
+    data[0].value.forEach(element => {
+      legendToolTipData.push([(element.rate.length > 15) ? element.rate.substring(0, 12).trim() + '...' : element.rate, 'rect'])
+    });
 
-    //Legend text /.attr("x", width/2 + 20)
-    legend.append('text')
-      .attr('x', 24)
-      .attr('y', 2)
-      .attr('dy', '.85em')
-      .style('text-anchor', 'start')
-      .style('font-size', 10)
-      .text((d) => d.rate.length > 15 ? d.rate.substring(0, 12) + '...' : d.rate);
-
-    // bar legend text
-    svgLegend.append('text')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('dy', '.85em')
-      .style('text-anchor', 'start')
-      .style('font-size', 10)
-      .text(self.barLegend);
     // self.lineChart = false;
     if (self.lineChart) {
       const lineOpacity = '1';
@@ -499,13 +477,17 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       const duration = 250;
 
       try {
-         const unFormatedData= JSON.parse(JSON.stringify(self.unmodifiedData));
-         unFormatedData[0].value = unFormatedData[0].value.map(details=>{
+         let unFormatedData= JSON.parse(JSON.stringify(self.unmodifiedData));
+         unFormatedData = unFormatedData.map(project =>{
+          const index = this.service.getSelectedTrends().findIndex(seleceProject=>seleceProject.nodeName.toLowerCase() === project.data.toLowerCase())
+          project.value.map(details=>{
           const XValue = details.date || details.sSprintName;
-          const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
+          const projectName = '_'+this.service.getSelectedTrends()[index]?.nodeName;
           const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
-           return {...details,sortSprint:removeProject};
+          details['sortSprint'] = removeProject;
         })
+        return project;
+      })
         const newRawData = unFormatedData;
          const colorArr = this.color;
         /* Add line into SVG acoording to data */
@@ -522,7 +504,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           .domain([0, maxYValue])
           .range([height - margin.top, 0]);
 
-        let xScale 
+        let xScale
         if(viewType === 'large' && selectedProjectCount === 1){
           xScale =  d3.scaleBand()
           .rangeRound([0, width - margin.left])
@@ -592,7 +574,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               .style('stroke-width', lineStroke)
               .style('cursor', 'none');
           });
-
+         let tooltipDivCounter = 0;
         /* Add circles (data) on the line */
         lines.selectAll('circle-group')
           .data(newRawData).enter()
@@ -610,28 +592,33 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             if (d.hoverValue) {
               div.transition()
                 .duration(200)
-                .style('display', 'block')
+                .style('visibility', 'visible')
                 .style('position', 'fixed')
                 .style('opacity', .9);
 
               const circle = event.target;
               const {
                 top: yPosition,
-                left: xPosition
+                left: xPosition,
+                right : xPositionRight
               } = circle.getBoundingClientRect();
 
-              div.html(`${d.date || d.sSprintName}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.lineValue + ' ' + showUnit}` + '</span>')
-                .style('left', xPosition + 20 + 'px')
+              div.attr('id',`hoverToolTip${this.kpiId}${tooltipDivCounter}`).html(`${d.date || d.sortSprint}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.lineValue + showUnit}` + '</span>')
+              const tooltipDivWidth = document.getElementById(`hoverToolTip${this.kpiId}${tooltipDivCounter}`).getBoundingClientRect().width;
+              let newLeft = xPosition - (tooltipDivWidth/2);
+
+                div.style('left', newLeft + 'px')
                 .style('top', yPosition + 20 + 'px');
               for (const hoverData in d.hoverValue) {
                 div.append('p').html(`${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.hoverValue[hoverData]}` + ' </span>');
               }
+              tooltipDivCounter++;
             }
           })
           .on('mouseout', (d) => {
             div.transition()
               .duration(500)
-              .style('display', 'none')
+              .style('visibility', 'hidden')
               .style('opacity', 0);
 
           })
@@ -681,7 +668,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               }
             })
             .style('top', d => {
-              return yScale(d.lineValue) - 25 + 'px'
+              return yScale(d.lineValue) + 'px'
             })
             .text(d => d.lineValue+ ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
             .transition()
@@ -705,52 +692,14 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           });
         });
 
+        // Adding line graph info in legend tooltip data
+        legendToolTipData[0].push(self.lineLegend);
+        legendToolTipData.map((element, i) => {
+          if (i !== 0) {
+            legendToolTipData[i].push('curcleLine')
+          }
+        });
 
-        // line legend
-        legend = svgLegend.selectAll('.d3-lineLegend')
-          .data(data[0].value)
-          .enter()
-          .append('g')
-          .attr('class', 'd3-lineLegend')
-          .attr('transform', (d, i) => {
-            const len = ((i + 1) * 160) + prevLength;
-            return 'translate(' + (len) + ', 12)';
-          });
-
-        const legendLine = legend
-          .append('svg:line')
-          .attr('x1', 0)
-          .attr('x2', 15)
-          .attr('y1', 8)
-          .attr('y2', 8)
-          .style('stroke', (d, i) => color(i))
-          .attr('stroke-width', '2')
-          .attr('class', 'legendLine');
-
-
-        legend.append('circle')
-          .style('stroke', 'gray')
-          .style('fill', (d, i) => color(i))
-          .attr('r', 4)
-          .attr('cx', 7)
-          .attr('cy', 8);
-
-        //Legend text /.attr("x", width/2 + 20)
-        legend.append('text')
-          .attr('x', 24)
-          .attr('y', 2)
-          .attr('dy', '.85em')
-          .style('text-anchor', 'start')
-          .style('font-size', 10)
-          .text((d) => d.rate.length > 15 ? d.rate.substring(0, 12) + '...' : d.rate);
-
-        svgLegend.append('text')
-          .attr('x', 0)
-          .attr('y', 15)
-          .attr('dy', '.85em')
-          .style('text-anchor', 'start')
-          .style('font-size', 10)
-          .text(self.lineLegend);
       } catch (ex) {
         console.log(ex);
       }
@@ -783,33 +732,101 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         .style('font-size', 10)
         .text((d) => 'Legend');
 
+      //container for legend tooltip
+      const legendToolTipDiv = d3.select(this.elem).select('#chart').append('div')
+        .attr('class', 'legend-tooltip')
+        .style('display', 'none')
+        .style('opacity', 0);
+
+      // Defining Table for legend tooltip 
+      const legendTableLayout = svgLegend.append('table')
+        .style("border-collapse", "collapse")
+        .style("border", "1px #767373 solid");
+
+      //Table headers
+      legendTableLayout.append("thead").append("tr")
+        .selectAll("th")
+        .data(legendToolTipData[0])
+        .enter().append("th")
+        .text(function (d) { return d; })
+        .style("border", "1px #767373 solid")
+        .style("padding", "5px")
+        .style("background-color", "lightgray")
+        .style("font-weight", "bold")
+        .style("text-transform", "uppercase");
+
+      var colorCounter = 1;
+
+      //Table body
+      legendTableLayout.append("tbody")
+        .selectAll("tr").data(legendToolTipData.slice(1))
+        .enter().append("tr")
+        .selectAll("td")
+        .data(function (d) { return d; })
+        .enter().append("td")
+        .style("border", "1px #767373 solid")
+        .style("padding", "5px")
+        .each(function (d, ind) {
+          const cell = d3.select(this);
+          if (d === 'rect') {
+            cell.append('svg')
+              .attr('width', 13)
+              .attr('height', 11)
+              .append('rect')
+              .attr('width', 12)
+              .attr('height', 12)
+              .style('fill', (d, i) => color(colorCounter));
+          } else if (d === 'curcleLine') {
+            const circleLineCellContainer = cell.append('svg')
+              .attr('width', 18)
+              .attr('height', 15)
+
+            circleLineCellContainer.append('svg:line')
+              .attr('x1', 0)
+              .attr('x2', 18)
+              .attr('y1', 8)
+              .attr('y2', 8)
+              .style('stroke', (d, i) => color(colorCounter))
+              .attr('stroke-width', '2')
+              .attr('class', 'legendLine')
+
+            circleLineCellContainer
+              .append('circle')
+              .style('stroke', 'gray')
+              .style('fill', (d, i) => color(colorCounter))
+              .attr('r', 5)
+              .attr('cx', 9)
+              .attr('cy', 8);
+          }
+          else {
+            cell.append("span")
+              .text(d);
+            colorCounter++;
+          }
+        })
 
       legendIndicator
         .on('mouseover', () => {
           const topValue = 30;
 
-          div.transition()
+            legendToolTipDiv.transition()
             .duration(200)
             .style('display', 'block')
             .style('opacity', 1)
-            .style('padding', '20px 10px')
+            .style('padding', '15px 5px')
             .style('max-width', 'unset')
-            .style('width', '400px');
 
           const htmlString = self.elem.querySelector('#svgLegend').innerHTML;
 
-          div.html(htmlString)
+          legendToolTipDiv.html(htmlString)
             .style('left', 70 + 'px')
             .style('top', y[0] - topValue + 'px');
         })
         .on('mouseout', () => {
-          div.transition()
-            .duration(500)
-            .style('display', 'none')
-            .style('opacity', 0)
-            .style('padding', '5px')
-            .style('max-width', '220px')
-            .style('width', 'auto');
+          legendToolTipDiv.transition()
+          .duration(500)
+          .style('display', 'none')
+          .style('opacity', 0)
 
         });
     }
@@ -839,4 +856,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     })
   }
 
+  ngAfterViewInit() {
+    this.resizeObserver.observe(d3.select(this.elem).select('#chart').node());
+  }
 }

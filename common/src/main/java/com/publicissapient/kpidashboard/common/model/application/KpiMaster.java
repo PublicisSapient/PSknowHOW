@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -57,7 +58,9 @@ public class KpiMaster extends BasicModel {
 	private String chartType;
 	private String upperThresholdBG;
 	private String lowerThresholdBG;
+	@JsonProperty("xaxisLabel")
 	private String xAxisLabel;
+	@JsonProperty("yaxisLabel")
 	private String yAxisLabel;
 	private boolean showTrend;
 	private Boolean isPositiveTrend;
@@ -77,6 +80,7 @@ public class KpiMaster extends BasicModel {
 	private Boolean isTrendUpOnValIncrease;
 
 	private String kpiSource;
+	private String combinedKpiSource;
 	private Object maxValue;
 	private Double thresholdValue;
 
@@ -94,4 +98,6 @@ public class KpiMaster extends BasicModel {
 	private Integer kpiWidth;
 	private List<MaturityLevel> maturityLevel;
 	private Boolean isRepoToolKpi;
+	private Map<Integer,String> yaxisOrder;
+	private Boolean isAggregationStacks;
 }

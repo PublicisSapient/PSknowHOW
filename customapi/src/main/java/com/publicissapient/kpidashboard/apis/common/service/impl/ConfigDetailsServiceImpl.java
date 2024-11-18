@@ -52,6 +52,8 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setDateRangeFilter(dateRangeFilter);
 		configDetails.setGitlabToolFieldFlag(customApiConfig.getIsGitlabFieldEnable());
 		configDetails.setNoOfDataPoints(customApiConfig.getSprintCountForFilters());
+		configDetails.setGitlabToolFieldFlag(customApiConfig.getIsGitlabFieldEnable());
+		configDetails.setSprintCountForKpiCalculation(customApiConfig.getSprintCountForKpiCalculation());
 		return configDetails;
 	}
 

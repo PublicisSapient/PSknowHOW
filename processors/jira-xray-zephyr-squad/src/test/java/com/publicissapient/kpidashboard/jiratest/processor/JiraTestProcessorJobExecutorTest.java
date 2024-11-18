@@ -150,8 +150,8 @@ public class JiraTestProcessorJobExecutorTest {
 				Arrays.asList("604092b52b424d5e90d39342", "604092b52b424d5e90d39343", "604092b52b424d5e90d39344"));
 		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(toolList);
-		ProjectConfFieldMapping projectConfig = new ProjectConfFieldMapping();
-		when(jiraTestService.processesJiraIssues(projectConfig,true)).thenReturn(10);
+		when(jiraTestService.processesJiraIssues(any())).thenReturn(10);
+		when(projectConfigRepository.findById(any())).thenReturn(projectConfigList.stream().findFirst());
 		Assert.assertEquals(true, jiraTestProcessorJobExecutor.execute(jiraProcessor));
 		jiraTestProcessorJobExecutor.setProjectsBasicConfigIds(null);
 	}

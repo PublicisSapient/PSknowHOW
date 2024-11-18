@@ -18,11 +18,11 @@
 
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FieldMappingComponent } from './field-mapping.component';
-import { MessageService,ConfirmationService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, FormControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
@@ -192,7 +192,7 @@ const fakeSelectedFieldMapping = {
   "jiraTechDebtCustomField": "",
   "jiraTechDebtValue": [],
   "jiraDefectRejectionStatus": "Closed",
-  "issueStatusExcluMissingWork":  [
+  "issueStatusExcluMissingWork": [
     "Open",
   ],
   "jiraBugRaisedByIdentification": "",
@@ -695,21 +695,31 @@ describe('FieldMappingComponent', () => {
 
   it('should fetch dropdown metadata on load', () => {
     component.selectedToolConfig = fakeSelectedTool;
+    spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: "project1" })
     spyOn(httpService, 'getKPIConfigMetadata').and.callThrough();
+    const kpiId = 'kpi123';
+    component.kpiId = 'kpi123'
     component.getDropdownData();
     expect(httpService.getKPIConfigMetadata).toHaveBeenCalledTimes(1);
-    const metadataReq = httpMock.expectOne(baseUrl + '/api/editConfig/jira/editKpi/' + sharedService.getSelectedToolConfig()[0].id);
+    const metadataReq = httpMock.expectOne(baseUrl + '/api/editConfig/jira/editKpi/' + 'project1/' + kpiId);
     expect(metadataReq.request.method).toBe('GET');
     metadataReq.flush(dropDownMetaData);
     expect(Object.keys(component.fieldMappingMetaData)).toEqual(Object.keys(dropDownMetaData.data));
   });
 
- 
+  it('should not get dropdown data', () => {
+    component.selectedToolConfig = [{
+      id: "djhasgdjahdgj"
+    }];
+    spyOn(httpService, 'getKPIConfigMetadata').and.returnValue(of('Error'));
+    component.getDropdownData();
+    expect(component.fieldMappingMetaData).toEqual([]);
+  })
 
   it('should initialize component', () => {
     sharedService.setSelectedFieldMapping(fakeSelectedFieldMappingWithAdditionalFilters);
     component.ngOnInit();
-    const spy = spyOn(component,'getMappings').and.callThrough();;
+    const spy = spyOn(component, 'getMappings').and.callThrough();;
     expect(spy).toBeDefined();
   });
 
@@ -732,9 +742,95 @@ describe('FieldMappingComponent', () => {
       }
     };
 
-    const spy = spyOn(component,'getMappings').and.callThrough();;
+    const spy = spyOn(component, 'getMappings').and.callThrough();;
     component.onUpload(event);
     expect(spy).toBeDefined();
+  });
+
+  it('should export data', () => {
+    component.selectedToolConfig = [{
+      id: "djhasgdjahdgj"
+    }];
+    const response = {
+      "message": "field mappings",
+      "success": true,
+      "data": {
+        "id": "63622c10e9dabd60dcf7c9d2"
+      }
+    }
+    const fileData = {
+      fileName: 'mappings.json',
+      text: JSON.stringify(response.data)
+    }
+    const spy = spyOn<any>(component, 'dyanmicDownloadByHtmlTag')
+    spyOn(httpService, 'getFieldMappings').and.returnValue(of(response));
+    component.export();
+    expect(spy).toHaveBeenCalledWith(fileData)
+  })
+
+  it('should create a dynamic download link and trigger a click event', () => {
+    const fileName = 'test.json';
+    const text = '{"key": "value"}';
+
+    spyOn(document, 'createElement').and.callThrough();
+    const spy = spyOn(document, 'dispatchEvent');
+
+    // Change the access modifier of the 'setting' property from private to public
+    (component as any).setting.element.dynamicDownload = document.createElement('a');
+
+    const element = (component as any).setting.element.dynamicDownload;
+    (component as any).dyanmicDownloadByHtmlTag({ fileName, text });
+    expect(element.getAttribute('download')).toBe(fileName);
+  });
+
+  // ---------------------< getMappings >---------------------
+
+  it('should set selectedFieldMapping and metaDataTemplateCode when getSelectedFieldMapping returns non-empty object', () => {
+    const selectedFieldMapping = { field1: 'value1', field2: 'value2' };
+    const metaDataTemplateCode = 'templateCode';
+    spyOn(sharedService, 'getSelectedFieldMapping').and.returnValue({ fieldMappingResponses: selectedFieldMapping, metaTemplateCode: metaDataTemplateCode });
+
+    component.getMappings();
+
+    expect(component.selectedFieldMapping).toEqual(selectedFieldMapping);
+    expect(component.metaDataTemplateCode).toEqual(metaDataTemplateCode);
+  });
+
+  it('should set form control values when selectedFieldMapping is non-empty and form controls exist', () => {
+    const selectedFieldMapping = { field1: 'value1', field2: 'value2' };
+    spyOn(sharedService, 'getSelectedFieldMapping').and.returnValue({ fieldMappingResponses: selectedFieldMapping });
+    component.fieldMappingForm = new FormGroup({
+      field1: new FormControl(),
+      field2: new FormControl()
+    });
+
+    component.getMappings();
+
+    expect(component.fieldMappingForm.get('field1')?.value).toEqual('value1');
+    expect(component.fieldMappingForm.get('field2')?.value).toEqual('value2');
+  });
+
+  it('should not set form control values when selectedFieldMapping is empty', () => {
+    spyOn(sharedService, 'getSelectedFieldMapping').and.returnValue({ fieldMappingResponses: {} });
+    component.fieldMappingForm = new FormGroup({
+      field1: new FormControl(),
+      field2: new FormControl()
+    });
+
+    component.getMappings();
+
+    expect(component.fieldMappingForm.get('field1')?.value).toBeNull();
+    expect(component.fieldMappingForm.get('field2')?.value).toBeNull();
+  });
+
+  it('should not set form control values when form controls do not exist', () => {
+    const selectedFieldMapping = { field1: 'value1', field2: 'value2' };
+    spyOn(sharedService, 'getSelectedFieldMapping').and.returnValue({ fieldMappingResponses: selectedFieldMapping });
+
+    component.getMappings();
+
+    expect(component.fieldMappingForm?.get('field1')).toBeUndefined();
+    expect(component.fieldMappingForm?.get('field2')).toBeUndefined();
   });
 
 });

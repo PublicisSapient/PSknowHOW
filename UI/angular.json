@@ -16,8 +16,7 @@
             "allowedCommonJsDependencies": [
               "rxjs/internal/observable/timer",
               "exceljs",
-              "file-saver",
-              "crypto-js"
+              "file-saver"
             ],
             "outputPath": "dist/dashboard",
             "index": "src/index.html",
@@ -42,8 +41,7 @@
             "scripts": [
               "node_modules/@popperjs/core/dist/umd/popper.min.js",
               "node_modules/d3/dist/d3.min.js"
-            ],
-            "webWorkerTsConfig": "tsconfig.worker.json"
+            ]
           },
           "configurations": {
             "production": {

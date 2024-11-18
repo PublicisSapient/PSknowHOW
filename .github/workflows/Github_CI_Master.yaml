@@ -15,10 +15,16 @@ on:
       - ready_for_review
       - reopened
       - unlocked
-    branches: [ master ]
+    branches: 
+      - master
+      - develop
+      - qa-master
   pull_request_review:
     types: [edited, dismissed]
-    branches: [ master ]
+    branches: 
+      - master
+      - develop
+      - qa-master
 env:
   GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
   sonartoken: ${{secrets.SONARQUBE_TOKEN}}
@@ -54,6 +60,8 @@ jobs:
         if: steps.changes.outputs.UI == 'true'
         id: BuildUI
         run: |
+          hostname
+          java -version
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm cache clean --force
@@ -99,7 +107,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt' # See 'Supported distributions' for available options
-          java-version: '8'
+          java-version: '17'
       - name: Cache Maven packages
         uses: actions/cache@v2
         with:
@@ -128,7 +136,7 @@ jobs:
         if: steps.customapi.outputs.customapi == 'true'
         id: sonartestcustomapi
         run: |
-               mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f customapi/pom.xml
+               mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f customapi/pom.xml -X
       - name: Running sonarqube quality gates CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
         id: qgtestcustomapi
@@ -165,7 +173,7 @@ jobs:
                   -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.PROCESSORS \
                   -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} \
                   -Dsonar.branch.name=$GITHUB_HEAD_REF \
-                  -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f processors/pom.xml
+                  -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f processors/pom.xml -X
       - name: Checking code Quality using SonarQube qg for processor
         id: Sonarqgprocessor
         if: steps.processors.outputs.processors == 'true'

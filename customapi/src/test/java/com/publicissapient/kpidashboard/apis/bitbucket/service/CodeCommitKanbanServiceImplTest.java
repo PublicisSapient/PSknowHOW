@@ -21,17 +21,19 @@
  */
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,6 +119,11 @@ public class CodeCommitKanbanServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi65");
 		kpiRequest.setLabel("PROJECT");
+		String[] ids = { "5" };
+		kpiRequest.setIds(ids);
+		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
+		selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
+		kpiRequest.setSelectedMap(selectedMap);
 
 		AccountHierarchyKanbanFilterDataFactory accountHierarchyKanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
 				.newInstance();
@@ -234,7 +241,7 @@ public class CodeCommitKanbanServiceImplTest {
 						.thenReturn(kpiRequestTrackerId);
 
 		KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 			String projectName = data.getFilter();
 			switch (projectName) {

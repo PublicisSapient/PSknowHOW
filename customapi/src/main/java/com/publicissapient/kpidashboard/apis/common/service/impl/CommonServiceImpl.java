@@ -32,9 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +46,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -57,6 +55,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -95,8 +94,6 @@ public class CommonServiceImpl implements CommonService {
 
 		String maturityRange = Arrays.toString(maturityRangeList.toArray());
 
-		log.info("Fetching maturity level for {} with value: {} and range: {}", kpiId, actualMaturityVal,
-				maturityRange);
 		try {
 			if (actualMaturityVal == null || Constant.NOT_AVAILABLE.equalsIgnoreCase(actualMaturityVal)) {
 				return Constant.ZERO;
@@ -198,7 +195,7 @@ public class CommonServiceImpl implements CommonService {
 	 * @return
 	 */
 	private boolean hasSingleValueList(String type) {
-		return KPICode.CODE_QUALITY.getKpiId().equalsIgnoreCase(type)
+		return KPICode.SONAR_CODE_QUALITY.getKpiId().equalsIgnoreCase(type)
 				|| KPICode.CODE_QUALITY_KANBAN.getKpiId().equalsIgnoreCase(type);
 	}
 
@@ -214,7 +211,7 @@ public class CommonServiceImpl implements CommonService {
 	}
 
 	/**
-	 * This method is to search the email addresses based on roles
+	 * This method is to search the email addresses based on roles and which have notification enabled
 	 * 
 	 * @param roles
 	 * @return list of email addresses
@@ -223,16 +220,21 @@ public class CommonServiceImpl implements CommonService {
 		Set<String> emailAddresses = new HashSet<>();
 		List<UserInfo> superAdminUsersList = userInfoRepository.findByAuthoritiesIn(roles);
 		if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
-			List<String> userNames = superAdminUsersList.stream().map(UserInfo::getUsername)
+			List<UserInfo> notificationEnableUsersList = superAdminUsersList.stream()
+					.filter(userInfo -> userInfo.getNotificationEmail() != null
+							&& userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
 					.collect(Collectors.toList());
 			emailAddresses
-					.addAll(superAdminUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
+					.addAll(notificationEnableUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
 							.map(UserInfo::getEmailAddress).collect(Collectors.toSet()));
-			List<Authentication> authentications = authenticationRepository.findByUsernameIn(userNames);
-			if (CollectionUtils.isNotEmpty(authentications)) {
-				emailAddresses
-						.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
-
+			List<String> usernameList = notificationEnableUsersList.stream().map(UserInfo::getUsername)
+					.collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(usernameList)) {
+				List<Authentication> authentications = authenticationRepository.findByUsernameIn(usernameList);
+				if (CollectionUtils.isNotEmpty(authentications)) {
+					emailAddresses
+							.addAll(authentications.stream().map(Authentication::getEmail).collect(Collectors.toSet()));
+				}
 			}
 		}
 		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -249,9 +251,13 @@ public class CommonServiceImpl implements CommonService {
 		Set<String> emailAddresses = new HashSet<>();
 		List<String> usernameList = new ArrayList<>();
 		List<UserInfo> usersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN));
+		List<UserInfo> notificationEnableUsersList = usersList.stream()
+				.filter(userInfo -> userInfo.getNotificationEmail() != null
+						&& userInfo.getNotificationEmail().get(CommonConstant.ACCESS_ALERT_NOTIFICATION))
+				.collect(Collectors.toList());
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
-		if (CollectionUtils.isNotEmpty(usersList)) {
-			usersList.forEach(action -> {
+		if (CollectionUtils.isNotEmpty(notificationEnableUsersList)) {
+			notificationEnableUsersList.forEach(action -> {
 				Optional<ProjectsAccess> projectAccess = action.getProjectsAccess().stream()
 						.filter(access -> access.getRole().equalsIgnoreCase(Constant.ROLE_PROJECT_ADMIN)).findAny();
 				if (projectAccess.isPresent()) {
@@ -259,7 +265,7 @@ public class CommonServiceImpl implements CommonService {
 						if (accessNode.getAccessItems().stream().anyMatch(item -> item.getItemId()
 								.equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
 							usernameList.add(action.getUsername());
-							emailAddresses.add(action.getEmailAddress());
+							emailAddresses.add(action.getEmailAddress().toLowerCase());
 						}
 					});
 				}
@@ -328,6 +334,11 @@ public class CommonServiceImpl implements CommonService {
 		if (null != trendMap.get(CommonConstant.OVERALL)) {
 			sortedMap.put(CommonConstant.OVERALL, trendMap.get(CommonConstant.OVERALL));
 			trendMap.remove(CommonConstant.OVERALL);
+		}
+		if (null != trendMap.get(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL)) {
+			sortedMap.put(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL,
+					trendMap.get(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL));
+			trendMap.remove(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL);
 		}
 		Map<String, List<DataCount>> temp = trendMap.entrySet().stream()
 				.sorted((i1, i2) -> i1.getKey().compareTo(i2.getKey()))

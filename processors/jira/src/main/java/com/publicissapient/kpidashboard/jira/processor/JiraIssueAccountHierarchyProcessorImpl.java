@@ -20,10 +20,10 @@ package com.publicissapient.kpidashboard.jira.processor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -80,26 +80,25 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 				.filter(x -> x.getLevel() > sprintHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
 				.collect(Collectors.toList());
 
-		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
-		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-
+		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = accountHierarchyList.stream().collect(Collectors
+				.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p, (existingValue, newValue) -> existingValue));
 		Set<AccountHierarchy> setToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
 				&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())
 				&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
 
-			Map<ObjectId, AccountHierarchy> projectDataMap = new HashMap<>();
 			ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
 			Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
 					.filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(basicProjectConfigId))
 					.collect(Collectors.toMap(sprintDetails -> sprintDetails.getSprintID().split("_")[0],
 							sprintDetails -> sprintDetails));
-			AccountHierarchy projectData = projectDataMap.computeIfAbsent(basicProjectConfigId, id -> {
-				List<AccountHierarchy> projectDataList = accountHierarchyRepository
-						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, id);
-				return projectDataList.isEmpty() ? null : projectDataList.get(0);
-			});
+			AccountHierarchy projectData= null;
+			Optional<AccountHierarchy> first = accountHierarchyList.stream().filter(hierarchy -> hierarchy.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)).findFirst();
+			if(first.isPresent()){
+				projectData= first.get();
+			}
+
 
 			for (String sprintId : jiraIssue.getSprintIdList()) {
 				SprintDetails sprintDetails = sprintDetailsMap.get(sprintId);

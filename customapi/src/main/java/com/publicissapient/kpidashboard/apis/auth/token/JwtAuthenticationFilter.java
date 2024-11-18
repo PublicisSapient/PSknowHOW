@@ -20,14 +20,6 @@ package com.publicissapient.kpidashboard.apis.auth.token;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +27,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends GenericFilterBean {
@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 		}
 
-		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request,
+		Authentication authentication = tokenAuthenticationService.validateAuthentication((HttpServletRequest) request,
 				(HttpServletResponse) response);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -40,6 +40,8 @@ public interface CacheService {
 
 	Object cacheAccountHierarchyData();
 
+	Object cacheSprintLevelData();
+
 	Object cacheAccountHierarchyKanbanData();
 
 	void setIntoApplicationCache(String key, String value);
@@ -86,6 +88,8 @@ public interface CacheService {
 	Object cacheProjectConfigMapData();
 
 	Object cacheFieldMappingMapData();
+
+	Object cacheBoardMetaDataMapData();
 
 	Object cacheToolConfigMapData();
 

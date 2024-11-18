@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -46,6 +46,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KanbanJiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
@@ -129,6 +130,10 @@ public class TicketOpenVsClosedByPriorityServiceImplTest {
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("storyOpenRateByIssue", "sum");
 
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
+
+
 	}
 
 	@After
@@ -154,9 +159,8 @@ public class TicketOpenVsClosedByPriorityServiceImplTest {
 				.thenReturn(kanbanJiraIssueList);
 		when(kanbanJiraIssueHistoryRepository.findIssuesByStatusAndDate(any(), any(), any(), any(), any()))
 				.thenReturn(historyClosedList);
-		when(customApiConfig.getpriorityP1()).thenReturn(P1);
-		when(customApiConfig.getpriorityP2()).thenReturn(P2);
-		when(customApiConfig.getpriorityP3()).thenReturn(P3);
+//		when(customApiConfig.getpriorityP1()).thenReturn(P1);
+
 
 
 		Map<String, List<DataCount>> trendMap = new HashMap<>();

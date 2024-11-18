@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,6 +113,22 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return list of feature
 	 */
 	List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters);
+
+	/**
+	 * Find issues with boolean field
+	 * 
+	 * @param mapOfFilters
+	 *            mapOfFilters
+	 * @param fieldName
+	 *            fieldName
+	 * @param dateFrom
+	 *            dateFrom
+	 * @param dateTo
+	 *            dateTo
+	 * @return List<JiraIssue>
+	 */
+	List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag, String dateFrom,
+										  String dateTo);
 
 	List<JiraIssue> findUnassignedIssues(String startDate, String endDate, Map<String, List<String>> mapOfFilters);
 
@@ -257,7 +274,7 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 
 	/**
 	 * find unique Release Version Name group by type name
-	 *
+	 * 
 	 * @param mapOfFilters
 	 * @param @return
 	 */
@@ -267,4 +284,18 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 
 	List<JiraIssue> findIssueByNumberWithAdditionalFilter(Set<String> storyNumber,
 										  Map<String, Map<String, Object>> uniqueProjectMap);
-}
+
+	/**
+	 * Finds Jira issues by either their number or parent story ID and applies
+	 * project-specific filters.
+	 *
+	 * @param storyNumber
+	 *            a set of story numbers and/or parent story IDs to match against.
+	 * @param uniqueProjectMap
+	 *            a map where the key is the project configuration ID and the value
+	 *            is another map containing filter criteria such as issue types,
+	 *            each mapped to a list of patterns.
+	 * @return a list of Jira issues that match the specified criteria.
+	 */
+	List<JiraIssue> findIssueByNumberOrParentStoryIdAndType(Set<String> storyNumber,
+			Map<String, Map<String, Object>> uniqueProjectMap, String findBy);}

@@ -25,13 +25,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -74,19 +76,24 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	 * @see org.springframework.batch.item.ItemWriter#write(java.util.List)
 	 */
 	@Override
-	public void write(List<? extends CompositeResult> compositeResults) throws Exception {
-		Set<JiraIssue> jiraIssues = new HashSet<>();
-		List<JiraIssueCustomHistory> jiraHistoryItems = new ArrayList<>();
+	public void write(Chunk<? extends CompositeResult> compositeResults) throws Exception {
+		Map<String, JiraIssue> jiraIssues = new HashMap<>();
+		Map<String, JiraIssueCustomHistory> jiraHistoryItems = new HashMap<>();
 		Set<AccountHierarchy> accountHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
 		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
+		Set<Assignee> assignee = new HashSet<>();
 
 		for (CompositeResult compositeResult : compositeResults) {
 			if (null != compositeResult.getJiraIssue()) {
-				jiraIssues.add(compositeResult.getJiraIssue());
+				String key = compositeResult.getJiraIssue().getNumber() + ","
+						+ compositeResult.getJiraIssue().getBasicProjectConfigId();
+				jiraIssues.putIfAbsent(key, compositeResult.getJiraIssue());
 			}
 			if (null != compositeResult.getJiraIssueCustomHistory()) {
-				jiraHistoryItems.add(compositeResult.getJiraIssueCustomHistory());
+				String key = compositeResult.getJiraIssueCustomHistory().getStoryID() + ","
+						+ compositeResult.getJiraIssueCustomHistory().getBasicProjectConfigId();
+				jiraHistoryItems.putIfAbsent(key, compositeResult.getJiraIssueCustomHistory());
 			}
 			if (null != compositeResult.getSprintDetailsSet()) {
 				sprintDetailsSet.addAll(compositeResult.getSprintDetailsSet());
@@ -94,16 +101,13 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 			if (CollectionUtils.isNotEmpty(compositeResult.getAccountHierarchies())) {
 				accountHierarchies.addAll(compositeResult.getAccountHierarchies());
 			}
-			if (null != compositeResult.getAssigneeDetails()) {
-				assigneesToSave.put(compositeResult.getAssigneeDetails().getBasicProjectConfigId(),
-						compositeResult.getAssigneeDetails());
-			}
+			addAssigness(assigneesToSave, assignee, compositeResult);
 		}
 
-		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+		if (MapUtils.isNotEmpty(jiraIssues)) {
 			writeJiraItem(jiraIssues);
 		}
-		if (CollectionUtils.isNotEmpty(jiraHistoryItems)) {
+		if (MapUtils.isNotEmpty(jiraHistoryItems)) {
 			writeJiraHistory(jiraHistoryItems);
 		}
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
@@ -117,14 +121,34 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		}
 	}
 
-	private void writeJiraItem(Set<JiraIssue> jiraItems) {
-		log.info("Writing issues to Jira_Issue Collection");
-		jiraIssueRepository.saveAll(jiraItems);
+	/**
+	 * Adding assignees to map
+	 *
+	 * @param assigneesToSave
+	 * @param assignee
+	 * @param compositeResult
+	 */
+	private static void addAssigness(Map<String, AssigneeDetails> assigneesToSave, Set<Assignee> assignee,
+			CompositeResult compositeResult) {
+		if (compositeResult.getAssigneeDetails() != null
+				&& CollectionUtils.isNotEmpty(compositeResult.getAssigneeDetails().getAssignee())) {
+			assignee.addAll(compositeResult.getAssigneeDetails().getAssignee());
+			compositeResult.getAssigneeDetails().setAssignee(assignee);
+			assigneesToSave.put(compositeResult.getAssigneeDetails().getBasicProjectConfigId(),
+					compositeResult.getAssigneeDetails());
+		}
 	}
 
-	private void writeJiraHistory(List<JiraIssueCustomHistory> jiraHistoryItems) {
+	private void writeJiraItem(Map<String, JiraIssue> jiraItems) {
+		log.info("Writing issues to Jira_Issue Collection");
+		List<JiraIssue> jiraIssues = new ArrayList<>(jiraItems.values());
+		jiraIssueRepository.saveAll(jiraIssues);
+	}
+
+	private void writeJiraHistory(Map<String, JiraIssueCustomHistory> jiraHistoryItems) {
 		log.info("Writing issues to Jira_Issue_custom_history Collection");
-		jiraIssueCustomHistoryRepository.saveAll(jiraHistoryItems);
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>(jiraHistoryItems.values());
+		jiraIssueCustomHistoryRepository.saveAll(jiraIssueCustomHistories);
 	}
 
 	private void writeSprintDetail(Set<SprintDetails> sprintDetailsSet) {

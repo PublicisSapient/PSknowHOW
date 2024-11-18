@@ -45,10 +45,9 @@
             <div class="group">
               <input autocomplete="off" type="text" id="username" name="username" formControlName="username"
                 [ngClass]="{ 'is-invalid': submitted && f.username.errors }" required="required"
-                title="Username can only contain letters and numbers" />
+                title="Username can only contain letters and numbers" placeholder="User Name"/>
               <span class="highlight"></span>
               <span class="bar"></span>
-              <label for="username">User Name</label>
               <div *ngIf="submitted && f.username.errors" class="invalid-text">
                 <div *ngIf="f.username.errors.required">Username is required</div>
                 <div *ngIf="f.username.errors.minlength">Minimum length is 4 characters</div>
@@ -59,11 +58,10 @@
             </div>
             <div class="group" data-validate="Password is required">
               <input type="password" name="password" id="password" formControlName="password"
-                [ngClass]="{ 'is-invalid': submitted && f.password.errors }" required="required"
+                [ngClass]="{ 'is-invalid': submitted && f.password.errors }" required="required" placeholder="Password"
                 title="At least 8 characters in length with Lowercase letters, Uppercase letters, Numbers and Special characters" />
               <span class="highlight"></span>
               <span class="bar"></span>
-              <label for="password">Password</label>
   
               <!-- Password validation-->
               <div *ngIf="submitted && f.password.errors" class="invalid-text">
@@ -79,12 +77,11 @@
   
   
             <div class="group" data-validate="Password is required">
-              <input type="password" name="confirmpassword" formControlName="confirmpassword"
+              <input type="password" name="confirmpassword" formControlName="confirmpassword" placeholder="Confirm Password"
                 [ngClass]="{ 'is-invalid': submitted && f.confirmpassword.errors }" id="confirm-pswd"
                 required="required" />
               <span class="highlight"></span>
               <span class="bar"></span>
-              <label for="confirm-pswd">Confirm Password</label>
   
               <!--Required password validation-->
               <div *ngIf="submitted && f.confirmpassword && f.confirmpassword.errors" class="invalid-text">
@@ -99,10 +96,9 @@
   
             <div class="group" data-validate="Email is required">
               <input type="text" name="email" formControlName="email"
-                [ngClass]="{ 'is-invalid': submitted && f.email.errors }" required="required" id="email" />
+                [ngClass]="{ 'is-invalid': submitted && f.email.errors }" required="required" id="email" placeholder="Email"/>
               <span class="highlight"></span>
               <span class="bar"></span>
-              <label for="email">Email</label>
   
               <!--Required password validation-->
               <div *ngIf="submitted && f.email && f.email.errors" class="invalid-text">

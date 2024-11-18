@@ -26,99 +26,53 @@
           <div class="login-form">
            <!-- Display error messages-->
            <div *ngIf="error" class="alert alert-danger w-100 p-mb-0">{{error}}</div>
-            <p-tabView class="title w-100" [activeIndex]="adLogin ? 0 : 1">
-              
-              <p-tabPanel header="Active Directory Login" *ngIf="loginConfig['adLogin']">
-                <form class="w-100" [formGroup]="adLoginForm" (ngSubmit)="onSubmit('AD')" autocomplete="off">
-                  <div class="group">
-                    <input autocomplete="new-username" type="text" name="username" id="Layout-UserName"
-                      formControlName="username" [ngClass]="{ 'is-invalid': submitted && adf.username.errors }"
-                      required="required" />
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>User Name</label>
-      
-      
-                    <div *ngIf="submitted && adf.username.errors" class="invalid-text">
-                      <div *ngIf="adf.username.errors.required">Username is required</div>
-                    </div>
-                  </div>
-      
-      
-                  <div class="group" data-validate="Password is required">
-                    <input autocomplete="new-password" type="password" name="password" id="Layout-Password"
-                      formControlName="password" [ngClass]="{ 'is-invalid': submitted && adf.password.errors }"
-                      required="required" />
-      
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>Password</label>
-      
-      
-                    <div *ngIf="submitted && adf.password.errors" class="invalid-text">
-                      <div *ngIf="adf.password.errors.required">Password is required</div>
-                    </div>
-                  </div>
-      
-                  <div class="group">
-                    <button id="Layout-ADLogin-Btn cursor-pointer">
-                      Log In
-                    </button>
-                  </div>
-                </form>
-              </p-tabPanel>
-      
-              <p-tabPanel header="KnowHOW Login" *ngIf="loginConfig['standardLogin']">
-                <form class="w-100" [formGroup]="loginForm" (ngSubmit)="onSubmit('standard')">
-                  <div class="group">
-                    <input autocomplete="off" type="text" name="username" id="Layout-UserName" formControlName="username"
-                      [ngClass]="{ 'is-invalid': submitted && f.username.errors }" required="required" />
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>User Name</label>
-      
-                    <!-- User validation-->
-                    <div *ngIf="submitted && f.username.errors" class="invalid-text">
-                      <div *ngIf="f.username.errors.required">Username is required</div>
-                    </div>
-                  </div>
-      
-      
-                  <div class="group" data-validate="Password is required">
-                    <input type="password" name="password" id="Layout-Password" formControlName="password"
-                      [ngClass]="{ 'is-invalid': submitted && f.password.errors }" required="required" />
-      
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>Password</label>
-      
-                    <!-- Password validation-->
-                    <div *ngIf="submitted && f.password.errors" class="invalid-text">
-                      <div *ngIf="f.password.errors.required">Password is required</div>
-                    </div>
-                  </div>
-      
-      
-                  <div class="group">
-                    <button id="Layout-Login-Btn">
-                      Log In
-                    </button>
-                  </div>
-      
-                  <div class="redirection">
-                    <a class="link" routerLink="/authentication/forgetPasswordEmail">Forgot Password?</a>
-                  </div>
-      
-      
-                  <div class="redirection">
-                    <span class="text p-mr-2">Don't have an account?</span>
-                    <a class="link" routerLink="/authentication/register">Create an account</a>
-                  </div>
-      
-      
-                </form>
-              </p-tabPanel>
-            </p-tabView>
+            <h2>KnowHOW Login</h2>
+            <form class="w-100" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <div class="group">
+                <input autocomplete="off" type="text" name="username" id="Layout-UserName" formControlName="username"
+                  [ngClass]="{ 'is-invalid': submitted && f.username.errors }" required="required" placeholder="User Name"/>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+  
+                <!-- User validation-->
+                <div *ngIf="submitted && f.username.errors" class="invalid-text">
+                  <div *ngIf="f.username.errors.required">Username is required</div>
+                </div>
+              </div>
+  
+  
+              <div class="group" data-validate="Password is required">
+                <input type="password" name="password" id="Layout-Password" formControlName="password"
+                  [ngClass]="{ 'is-invalid': submitted && f.password.errors }" required="required" placeholder="Password"/>
+  
+                <span class="highlight"></span>
+                <span class="bar"></span>
+  
+                <!-- Password validation-->
+                <div *ngIf="submitted && f.password.errors" class="invalid-text">
+                  <div *ngIf="f.password.errors.required">Password is required</div>
+                </div>
+              </div>
+  
+  
+              <div class="group">
+                <button id="Layout-Login-Btn">
+                  Log In
+                </button>
+              </div>
+  
+              <div class="redirection">
+                <a class="link" routerLink="/authentication/forgetPasswordEmail">Forgot Password?</a>
+              </div>
+  
+  
+              <div class="redirection">
+                <span class="text p-mr-2">Don't have an account?</span>
+                <a class="link" routerLink="/authentication/register">Create an account</a>
+              </div>
+  
+  
+            </form>
             <!-- Spinner -->
             <div class="spinner-align w-100">
               <svg *ngIf="loading" class="spinner" width="50px" height="40px" viewBox="0 0 66 66"

@@ -34,10 +34,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -75,6 +74,9 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserInfoServiceImplTest {
@@ -176,35 +178,6 @@ public class UserInfoServiceImplTest {
 
 	}
 
-	@Test
-	public void shouldValidateUser() {
-		UserInfo user = new UserInfo();
-		user.setUsername("standarduser");
-		user.setAuthType(AuthType.STANDARD);
-
-		when(userInfoRepository.findByUsernameAndAuthType("abc123", AuthType.STANDARD)).thenReturn(null);
-		boolean result = service.isUserValid("abc123", AuthType.STANDARD);
-		assertFalse(result);
-
-		when(userInfoRepository.findByUsernameAndAuthType("standarduser", AuthType.STANDARD)).thenReturn(user);
-		result = service.isUserValid("standarduser", AuthType.STANDARD);
-		assertTrue(result);
-	}
-
-	@Test
-	public void isValidUserLdap_Exception() {
-		String userId = "testUserId";
-
-		when(authProperties.getAdUrl()).thenReturn("ldap://dluads2.sapient.com");
-		when(authProperties.getLdapBindUser()).thenReturn("testuser@sapient.com");
-		when(authProperties.getAdDomain()).thenReturn("sapient.com");
-		when(authProperties.getLdapBindPass()).thenReturn("secretPassword");
-
-		boolean isValid = service.isUserValid(userId, AuthType.LDAP);
-		assertFalse(isValid);
-
-	}
-
 	/**
 	 * 1. if username present in the db then update it with new one else return null
 	 *
@@ -248,24 +221,6 @@ public class UserInfoServiceImplTest {
 
 		UserInfo userInfo = service.getUserInfoWithEmail(anyString(), any());
 		assertNull(userInfo);
-	}
-
-	@Test
-	public void getUserInfoWithEmailTest_ldap() {
-		UserInfo user = new UserInfo();
-		user.setUsername("standarduser");
-		user.setAuthType(AuthType.LDAP);
-		user.setEmailAddress("email@email.com");
-
-		Authentication auth = new Authentication();
-		auth.setUsername("username");
-		auth.setEmail("mail@mail.com");
-
-		when(userInfoRepository.findByUsernameAndAuthType(anyString(), any())).thenReturn(user);
-
-		UserInfo userInfo = service.getUserInfoWithEmail(anyString(), any());
-		assertNotNull(userInfo);
-		assertNotNull(userInfo.getEmailAddress());
 	}
 
 	@Test
@@ -382,6 +337,34 @@ public class UserInfoServiceImplTest {
 		assertTrue(result.getSuccess());
 	}
 
+	@Test
+	public void validateUpdateUserRole_UserNotFound() {
+		ProjectsAccess pa = new ProjectsAccess();
+		pa.setRole("Role");
+		pa.setAccessNodes(new ArrayList<>());
+
+		List<ProjectsAccess> paList = new ArrayList<>();
+		paList.add(pa);
+
+		UserInfo testUser = new UserInfo();
+		testUser.setUsername("User");
+		testUser.setAuthType(AuthType.SSO);
+		testUser.setAuthorities(Arrays.asList("ROLE_VIEWER"));
+		testUser.setProjectsAccess(paList);
+
+		UserInfo u = new UserInfo();
+		u.setProjectsAccess(paList);
+		u.setUsername("user");
+		u.setAuthType(AuthType.SSO);
+		u.setEmailAddress("testEmail@test.com");
+		when(userInfoRepository.findByUsername("User")).thenReturn(null);
+		when(userInfoRepository.save(any())).thenReturn(testUser);
+		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class)))
+				.thenReturn(testUser);
+		ServiceResponse result = service.updateUserRole("User", u);
+		assertTrue(result.getSuccess());
+	}
+
 	/**
 	 * method to test deleteUser() ;
 	 * <p>
@@ -389,7 +372,7 @@ public class UserInfoServiceImplTest {
 	 */
 	@Test
 	public void deleteUserTest() {
-		ServiceResponse result = service.deleteUser("testuser");
+		ServiceResponse result = service.deleteUser("testuser" , false);
 		assertTrue(result.getSuccess());
 	}
 
@@ -428,4 +411,45 @@ public class UserInfoServiceImplTest {
 		assertNotNull(userDetailsResponseDTO);
 	}
 
+	@Test
+	public void getOrSaveDefaultUser() {
+		UserInfo user = new UserInfo();
+		user.setUsername("testUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_SUPERADMIN"));
+		user.setEmailAddress("email");
+		when(userInfoRepository.count()).thenReturn(1l);
+		when(userInfoRepository.save(any())).thenReturn(user);
+		UserInfoDTO userInfo = service.getOrSaveDefaultUserInfo("user", AuthType.STANDARD, "email");
+		assertNotNull(userInfo);
+	}
+
+	@Test
+	public void getOrSaveUserInfo() {
+		UserInfo user = new UserInfo();
+		user.setUsername("testUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_SUPERADMIN"));
+		user.setEmailAddress("email");
+		when(userInfoRepository.save(any())).thenReturn(user);
+		UserInfo userInfo = service.getOrSaveUserInfo("user", AuthType.STANDARD, new ArrayList<>());
+		assertNotNull(userInfo);
+	}
+
+	@Test
+	public void updateNotificationEmailTest() {
+		Map<String, Boolean> notificationEmail = new HashMap<>();
+		notificationEmail.put("accessAlertNotification" , true);
+		notificationEmail.put("errorAlertNotification" , false);
+		UserInfo user = new UserInfo();
+		user.setUsername("testUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_PROJECT_ADMIN"));
+		user.setEmailAddress("email");
+		when(userInfoRepository.findByUsername("testUser")).thenReturn(user);
+		when(userInfoRepository.save(any())).thenReturn(user);
+		UserInfo userInfo = service.updateNotificationEmail("testUser", notificationEmail);
+		assertNotNull(userInfo);
+		assertNotNull(userInfo.getNotificationEmail());
+	}
 }

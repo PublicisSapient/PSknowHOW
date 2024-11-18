@@ -36,8 +36,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -137,7 +137,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.LEAD_TIME_FOR_CHANGE);
-		List<DataCount> trendValues = getAggregateTrendValues(kpiRequest, nodeWiseKPIValue,
+		List<DataCount> trendValues = getAggregateTrendValues(kpiRequest, kpiElement,nodeWiseKPIValue,
 				KPICode.LEAD_TIME_FOR_CHANGE);
 		kpiElement.setTrendValueList(trendValues);
 
@@ -712,6 +712,11 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 		}
 		return lastNMonth;
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI156(), KPICode.LEAD_TIME_FOR_CHANGE.getKpiId());
 	}
 
 }

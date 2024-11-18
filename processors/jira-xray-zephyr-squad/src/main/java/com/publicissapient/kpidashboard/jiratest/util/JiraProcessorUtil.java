@@ -92,8 +92,7 @@ public final class JiraProcessorUtil {
 		return "";
 	}
 
-	public static String createJql(String projectKey, Map<String, String> startDateTimeStrByIssueType,
-								   ProjectConfFieldMapping projectConfig) {
+	public static String createJql(String projectKey, Map<String, String> startDateTimeStrByIssueType) {
 
 		if (StringUtils.isEmpty(projectKey) || startDateTimeStrByIssueType == null) {
 			return "";
@@ -101,13 +100,13 @@ public final class JiraProcessorUtil {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("project IN ('");
 		stringBuilder.append(projectKey);
-		stringBuilder.append("') AND ");
-		if (Objects.nonNull(projectConfig.getProcessorToolConnection())
-				&& StringUtils.isNotEmpty(projectConfig.getProcessorToolConnection().getBoardQuery())) {
-			stringBuilder.append(projectConfig.getProcessorToolConnection().getBoardQuery());
-			stringBuilder.append(" AND");
-		}
-		stringBuilder.append(" (");
+//		stringBuilder.append("') AND ");
+//		if (Objects.nonNull(projectConfig.getProcessorToolConnection())
+//				&& StringUtils.isNotEmpty(projectConfig.getProcessorToolConnection().getBoardQuery())) {
+//			stringBuilder.append(projectConfig.getProcessorToolConnection().getBoardQuery());
+//			stringBuilder.append(" AND");
+//		}
+//		stringBuilder.append(" (");
 		int size = startDateTimeStrByIssueType.entrySet().size();
 		int count = 0;
 		for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {

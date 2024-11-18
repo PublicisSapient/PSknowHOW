@@ -18,6 +18,33 @@
             "75-90",
             "90-"
         ],
+        "maturityLevel":[
+            {
+                "level": "M5",
+                "bgColor": "#167a26",
+                "label": ">= 2 per week"
+            },
+            {
+                "level": "M4",
+                "bgColor": "#4ebb1a",
+                "label": "Once per week"
+            },
+            {
+                "level": "M3",
+                "bgColor": "#ef7643",
+                "label": "Once in 2 weeks"
+            },
+            {
+                "level": "M2",
+                "bgColor": "#f53535",
+                "label": "Once in 4 weeks"
+            },
+            {
+                "level": "M1",
+                "bgColor": "#c91212",
+                "label": "< Once in 8 weeks"
+            }
+        ],
         "groupId": 2,
         "trendValueList": [
             {

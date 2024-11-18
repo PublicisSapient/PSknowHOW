@@ -19,18 +19,25 @@
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnModel;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConnectionDetail;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -41,8 +48,6 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricRe
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
@@ -52,10 +57,14 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -71,123 +80,169 @@ public class RepoToolsConfigServiceImpl {
 	CustomApiConfig customApiConfig;
 
 	@Autowired
-	private RestAPIUtils restAPIUtils;
-
-	@Autowired
 	private ConfigHelperService configHelperService;
 
 	@Autowired
 	private ProcessorItemRepository processorItemRepository;
 
 	@Autowired
-	private ProcessorRepository processorRepository;
+	private ProcessorRepository<?> processorRepository;
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	@Autowired
+	private ConnectionRepository connectionRepository;
+	@Autowired
+	private AesEncryptionService aesEncryptionService;
+	@Autowired
+	private RepoToolsClient repoToolsClient;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	public static final String TOOL_BRANCH = "branch";
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
-
-	private RepoToolsClient repoToolsClient;
-
-	public RepoToolsClient createRepoToolsClient() {
-		return new RepoToolsClient();
-	}
+	public static final String PROJECT = "/projects/";
+	public static final String REPOS = "/repos/";
+	public static final String AZURE_PROVIDER = "azure";
+	public static final String BITBUCKET_PROVIDER = "bitbucket_oauth2";
+	public static final String WARNING = "WARNING";
 
 	/**
-	 * enroll a project to the repo tool
-	 * 
-	 * @param projectToolConfig
-	 * @param connection
-	 * @param branchNames
-	 * @return
+	 * Configures and enrolls a project in the repo tool.
+	 *
+	 * @param projectToolConfig the ProjectToolConfig object containing project tool configuration
+	 * @param connection the Connection object containing connection details
+	 * @param branchNames the list of branch names to be scanned
+	 * @return a ServiceResponse object indicating the success or failure of the operation
 	 */
-	public int configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
+	public ServiceResponse configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
 			List<String> branchNames) {
-		int httpStatus = HttpStatus.NOT_FOUND.value();
 		try {
-
-			// create scanning account
-			ToolCredential toolCredential = new ToolCredential(connection.getUsername(), connection.getAccessToken(),
-					connection.getEmail());
-			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
-			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
-					.findByToolName(connection.getRepoToolProvider().toLowerCase());
-
+			RepoToolConfig repoToolConfig = new RepoToolConfig();
 			// create configuration details for repo tool
-			RepoToolConfig repoToolConfig = new RepoToolConfig(projectToolConfig.getRepositoryName(),
-					projectToolConfig.getIsNew(), projectToolConfig.getBasicProjectConfigId().toString(),
-					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getHttpUrl(),
-					projectToolConfig.getDefaultBranch(),
-					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames);
-
-			repoToolsClient = createRepoToolsClient();
+			setToolWiseRepoToolConfig(connection, projectToolConfig, repoToolConfig);
+			repoToolConfig.setIsNew(projectToolConfig.getIsNew());
+			repoToolConfig.setHttpUrl(projectToolConfig.getGitFullUrl());
+			repoToolConfig.setDefaultBranch(projectToolConfig.getBranch());
+			repoToolConfig.setProjectCode(createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()));
+			repoToolConfig.setFirstScanFrom(LocalDateTime.now().minusMonths(3).toString().replace("T", " "));
+			repoToolConfig.setScanningBranches(branchNames);
+			repoToolConfig.setIsCloneable(true);
 			// api call to enroll the project
-			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
+			repoToolsClient.enrollProjectCall(repoToolConfig,
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
-					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
-
-		} catch (Exception ex) {
+					customApiConfig.getRepoToolAPIKey());
+		} catch (HttpClientErrorException | HttpServerErrorException ex) {
 			log.error("Exception occcured while enrolling project {}",
 					projectToolConfig.getBasicProjectConfigId().toString(), ex);
+			String errorMessage = ex.getResponseBodyAsString();
+			try {
+				errorMessage = objectMapper.readTree(errorMessage).get("error").asText();
+			} catch (Exception e) {
+				log.error("Error parsing JSON response", e);
+				errorMessage = ex.getStatusCode().value() == HttpStatus.BAD_REQUEST.value()
+						? "Project with similar configuration already exists"
+						: "";
+			}
+			return new ServiceResponse(false, errorMessage, null);
 		}
-		return httpStatus;
+		return new ServiceResponse(true, "", null);
 	}
 
 	/**
-	 * trigger repo tool scanning process
-	 * 
-	 * @param basicProjectconfigIdList
-	 * @return
+	 * Configures the RepoToolConfig object based on the tool-specific details.
+	 *
+	 * @param connection the Connection object containing connection details
+	 * @param projectToolConfig the ProjectToolConfig object containing project tool configuration
+	 * @param repoToolConfig the RepoToolConfig object to be configured
 	 */
-	public int triggerScanRepoToolProject(List<String> basicProjectconfigIdList) {
+	private void setToolWiseRepoToolConfig(Connection connection, ProjectToolConfig projectToolConfig,
+			RepoToolConfig repoToolConfig) {
+		// Split the Git URL to extract the repository name
+		String[] split = projectToolConfig.getGitFullUrl().split("/");
+		String name = split[split.length - 1];
+		if (name.contains("."))
+			name = name.split(".git")[0];
+
+		String accessToken = "";
+
+		// Configure the RepoToolConfig based on the tool name
+		switch (projectToolConfig.getToolName()) {
+		case Constant.TOOL_GITHUB:
+			accessToken = connection.getAccessToken();
+			repoToolConfig.setProvider(Constant.TOOL_GITHUB.toLowerCase());
+			repoToolConfig.setName(projectToolConfig.getRepositoryName());
+			break;
+		case Constant.TOOL_BITBUCKET:
+			accessToken = connection.getPassword();
+			repoToolConfig
+					.setApiEndPoint(connection.getApiEndPoint() + PROJECT + split[split.length - 2] + REPOS + name);
+			repoToolConfig.setProvider(BITBUCKET_PROVIDER);
+			projectToolConfig.setRepositoryName(projectToolConfig.getRepoSlug());
+			repoToolConfig.setName(projectToolConfig.getRepoSlug());
+			break;
+		case Constant.TOOL_GITLAB:
+			accessToken = connection.getAccessToken();
+			repoToolConfig.setProvider(ProcessorConstants.GITLAB.toLowerCase());
+			projectToolConfig.setRepositoryName(name);
+			repoToolConfig.setName(name);
+			break;
+		case Constant.TOOL_AZUREREPO:
+			accessToken = connection.getPat();
+			repoToolConfig.setProvider(AZURE_PROVIDER);
+			repoToolConfig.setOrganization(split[3]);
+			repoToolConfig.setName(projectToolConfig.getRepositoryName());
+			break;
+		default:
+			throw new IllegalStateException("Unexpected value: " + projectToolConfig.getToolName());
+		}
+
+		// Set the scanning account details in the RepoToolConfig
+		repoToolConfig.setScanningAccount(new ToolCredential(connection.getUsername(),
+				aesEncryptionService.decrypt(accessToken, customApiConfig.getAesEncryptionKey()),
+				connection.getEmail()));
+
+		// Set the project code in the RepoToolConfig
+		repoToolConfig.setProjectCode(projectToolConfig.getBasicProjectConfigId().toString().concat(name));
+	}
+
+	/**
+	 * Triggers a scan for a repo tool project.
+	 *
+	 * @param processorName the name of the processor
+	 * @param basicProjectConfigId the ID of the basic project configuration
+	 * @return the HTTP status code of the scan trigger request
+	 */
+	public int triggerScanRepoToolProject(String processorName, String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		Processor processor = processorRepository.findByProcessorName(CommonConstant.REPO_TOOLS);
-
+		Processor processor = processorRepository.findByProcessorName(processorName);
 		// get repo tools configuration from ProjectToolConfig
-		List<ProjectToolConfig> projectRepos = projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(
-				CommonConstant.REPO_TOOLS, new ObjectId(basicProjectconfigIdList.get(0)));
-
-		List<ProcessorExecutionTraceLog> processorExecutionTraceLogList = new ArrayList<>();
-
+		List<ProjectToolConfig> projectRepos = projectToolConfigRepository
+				.findByToolNameAndBasicProjectConfigId(processorName, new ObjectId(basicProjectConfigId));
 		try {
 
 			List<ProjectToolConfig> projectToolConfigList = projectRepos.stream()
 					.filter(projectToolConfig -> projectToolConfig.getBasicProjectConfigId()
-							.equals(new ObjectId(basicProjectconfigIdList.get(0))))
-					.collect(Collectors.toList());
+							.equals(new ObjectId(basicProjectConfigId)))
+					.toList();
 			if (CollectionUtils.isNotEmpty(projectToolConfigList)) {
-				String projectCode = createProjectCode(basicProjectconfigIdList.get(0));
-
-				// create ProcessorExecutionTraceLog
-				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-						new ObjectId(basicProjectconfigIdList.get(0)).toHexString());
-				processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-				repoToolsClient = createRepoToolsClient();
+				String projectCode = createProjectCode(basicProjectConfigId);
 
 				// api call to start project scanning
 				httpStatus = repoToolsClient.triggerScanCall(projectCode,
 						customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolTriggerScan(),
-						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+						customApiConfig.getRepoToolAPIKey());
 
 				// save ProcessorItemRepository for all the ProjectToolConfig
-				processorItemRepository.saveAll(createProcessorItemList(projectToolConfigList, processor.getId()));
+				processorItemRepository.saveAll(createProcessorItemList(projectToolConfigList, processor));
 
-				if (httpStatus == HttpStatus.OK.value()) {
-					// save ProcessorExecutionTraceLog
-					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-					processorExecutionTraceLog.setExecutionSuccess(true);
-					processorExecutionTraceLogList.add(processorExecutionTraceLog);
-					processorExecutionTraceLogService.save(processorExecutionTraceLog);
-				}
 			}
 		} catch (Exception ex) {
-			log.error("Exception occcured while scanning project {}", basicProjectconfigIdList, ex);
+			log.error("Exception occurred while scanning project", ex);
 		}
 		return httpStatus;
 	}
@@ -200,43 +255,64 @@ public class RepoToolsConfigServiceImpl {
 	 */
 	public String createProjectCode(String basicProjectConfigId) {
 		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
-		return projectBasicConfig.getProjectName() + "_" + basicProjectConfigId;
+		return (projectBasicConfig.getProjectName() + "_" + basicProjectConfigId).replaceAll("\\s", "");
 	}
 
 	/**
-	 * update a project enrolled in repo tool
-	 * 
-	 * @param toolList
-	 * @param tool
-	 * @param basicProjectConfigId
-	 * @return
+	 * Updates the configuration of a project enrolled in the repo tool.
+	 *
+	 * @param toolList the list of ProjectToolConfig objects representing the tools associated with the project
+	 * @param tool the ProjectToolConfig object representing the tool to be updated
+	 * @param basicProjectConfigId the ID of the basic project configuration
+	 * @return true if the project configuration was successfully updated, false otherwise
 	 */
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		long count = toolList.stream()
-				.filter(projectToolConfig -> projectToolConfig.getToolName().equals(CommonConstant.REPO_TOOLS)).count();
-		repoToolsClient = createRepoToolsClient();
-		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
-		if (count > 1) {
-			// delete only the repository
-			String deleteRepoUrl = customApiConfig.getRepoToolURL() + String.format(
-					customApiConfig.getRepoToolDeleteRepoUrl(),
-					projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), tool.getRepositoryName());
-			httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
-					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
-
+		if (toolList.size() > 1) {
+			toolList.remove(tool);
+			if (CollectionUtils.isNotEmpty(getToolByRepo(tool, toolList))) {
+				return true;
+			} else {
+				// delete only the repository
+				String deleteRepoUrl = customApiConfig.getRepoToolURL()
+						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
+								createProjectCode(basicProjectConfigId), tool.getRepositoryName());
+				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl, customApiConfig.getRepoToolAPIKey());
+			}
 		} else {
 			try {
+				ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 				// delete the project from repo tool if only one repository is present
 				httpStatus = deleteRepoToolProject(projectBasicConfig, false);
 			} catch (Exception ex) {
-				log.error("Exception while deleting project {}", projectBasicConfig.getProjectName(), ex);
+				log.error("Exception while deleting project {}", ex);
 			}
-
 		}
 		return httpStatus == HttpStatus.OK.value();
 	}
+
+	/**
+	 * Filters the list of ProjectToolConfig objects based on the tool's repository details.
+	 *
+	 * @param tool the ProjectToolConfig object representing the tool to be matched
+	 * @param projectToolConfigList the list of ProjectToolConfig objects to be filtered
+	 * @return a list of ProjectToolConfig objects that match the repository details of the given tool
+	 */
+	private List<ProjectToolConfig> getToolByRepo(ProjectToolConfig tool,
+			List<ProjectToolConfig> projectToolConfigList) {
+		if (tool.getToolName().equalsIgnoreCase(Constant.TOOL_GITLAB))
+			return projectToolConfigList.stream()
+					.filter(toolConfig -> toolConfig.getProjectId().equals(tool.getProjectId())).toList();
+		else if (tool.getToolName().equalsIgnoreCase(Constant.TOOL_BITBUCKET))
+			return projectToolConfigList.stream()
+					.filter(toolConfig -> toolConfig.getRepoSlug().equals(tool.getRepoSlug())).toList();
+		else {
+			return projectToolConfigList.stream()
+					.filter(toolConfig -> toolConfig.getRepositoryName().equals(tool.getRepositoryName())).toList();
+		}
+	}
+
 
 	/**
 	 * get metrics from repo tool kpis fo different projects
@@ -250,37 +326,36 @@ public class RepoToolsConfigServiceImpl {
 	 */
 	public List<RepoToolKpiMetricResponse> getRepoToolKpiMetrics(List<String> projectCode, String repoToolKpi,
 			String startDate, String endDate, String frequency) {
-		repoToolsClient = createRepoToolsClient();
 		String repoToolUrl = customApiConfig.getRepoToolURL().concat(repoToolKpi);
-		String repoToolApiKey = restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey());
+		String repoToolApiKey = customApiConfig.getRepoToolAPIKey();
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = new ArrayList<>();
-		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(projectCode, startDate, endDate,
-				frequency);
+		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(
+				projectCode.stream().map(code -> code.replaceAll("\\s", "")).toList(), startDate,
+				endDate, frequency);
 		try {
 			String url = String.format(repoToolUrl, startDate, endDate, frequency);
 			RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = repoToolsClient.kpiMetricCall(url,
 					repoToolApiKey, repoToolKpiRequestBody);
-			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
-					.collect(Collectors.toList());
-		} catch (HttpClientErrorException ex) {
+			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream).toList();
+		} catch (Exception ex) {
 			log.error("Exception while fetching KPI data {}", projectCode, ex);
 		}
 		return repoToolKpiMetricRespons;
 	}
 
 	/**
-	 * create ProcessorItemList for scanning
-	 * 
-	 * @param toolList
-	 * @param processorId
-	 * @return
+	 * Creates a list of ProcessorItem objects from a list of ProjectToolConfig objects and a Processor.
+	 *
+	 * @param toolList  the list of ProjectToolConfig objects
+	 * @param processor the Processor object
+	 * @return a list of ProcessorItem objects
 	 */
-	private List<ProcessorItem> createProcessorItemList(List<ProjectToolConfig> toolList, ObjectId processorId) {
+	private List<ProcessorItem> createProcessorItemList(List<ProjectToolConfig> toolList, Processor processor) {
 		List<ProcessorItem> processorItemList = new ArrayList<>();
 		toolList.forEach(tool -> {
 			ProcessorItem item = new ProcessorItem();
 			item.setToolConfigId(tool.getId());
-			item.setProcessorId(processorId);
+			item.setProcessorId(processor.getId());
 			item.setActive(Boolean.TRUE);
 			item.getToolDetailsMap().put(TOOL_BRANCH, tool.getBranch());
 			item.getToolDetailsMap().put(SCM, tool.getToolName());
@@ -300,14 +375,13 @@ public class RepoToolsConfigServiceImpl {
 	 * @return
 	 */
 	public int deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
+		String projectCode = (projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId()).replaceAll("\\s",
+				"");
 		String deleteUrl = customApiConfig.getRepoToolURL()
-				+ String.format(customApiConfig.getRepoToolDeleteProjectUrl(),
-						projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), onlyData);
+				+ String.format(customApiConfig.getRepoToolDeleteProjectUrl(), projectCode, onlyData);
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		try {
-			repoToolsClient = createRepoToolsClient();
-			httpStatus = repoToolsClient.deleteProject(deleteUrl,
-					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+			httpStatus = repoToolsClient.deleteProject(deleteUrl, customApiConfig.getRepoToolAPIKey());
 		} catch (Exception ex) {
 			log.error("Exception while deleting project {}", projectBasicConfig.getProjectName(), ex);
 
@@ -316,21 +390,87 @@ public class RepoToolsConfigServiceImpl {
 	}
 
 	/**
-	 * create ProcessorExecutionTraceLog to track repo tool project scan
+	 * create and save ProcessorExecutionTraceLog to track repo tool project scan
 	 * 
-	 * @param basicProjectConfigId
-	 * @return
+	 * @param repoToolsStatusResponse Object containing repo tool scanning status
 	 */
-	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
+	public void saveRepoToolProjectTraceLog(RepoToolsStatusResponse repoToolsStatusResponse) {
+
+		String basicProjectConfigId = repoToolsStatusResponse.getProject()
+				.substring(repoToolsStatusResponse.getProject().lastIndexOf('_') + 1);
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setProcessorName(ProcessorConstants.REPO_TOOLS);
+		String repoToolProvider = repoToolsStatusResponse.getRepositoryProvider();
+		if(repoToolProvider.equalsIgnoreCase(Constant.TOOL_GITHUB))
+			processorExecutionTraceLog.setProcessorName(Constant.TOOL_GITHUB);
+		else if (repoToolProvider.equalsIgnoreCase(Constant.TOOL_GITLAB))
+			processorExecutionTraceLog.setProcessorName(Constant.TOOL_GITLAB);
+		else if (repoToolProvider.equalsIgnoreCase(BITBUCKET_PROVIDER))
+			processorExecutionTraceLog.setProcessorName(Constant.TOOL_BITBUCKET);
+		else if (repoToolProvider.equalsIgnoreCase(AZURE_PROVIDER))
+			processorExecutionTraceLog.setProcessorName(Constant.TOOL_AZUREREPO);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
-				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
+				.findByProcessorNameAndBasicProjectConfigId(repoToolsStatusResponse.getRepositoryProvider(),
+						basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
-		return processorExecutionTraceLog;
+		boolean isWarning = WARNING.equalsIgnoreCase(repoToolsStatusResponse.getStatus());
+		processorExecutionTraceLog.setExecutionWarning(isWarning);
+		processorExecutionTraceLog
+				.setExecutionSuccess(Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
+		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		if (Boolean.TRUE.equals(isWarning))
+			processorExecutionTraceLog
+					.setExecutionResumesAt(LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.UTC).toEpochMilli());
+		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+
+	}
+
+	public int updateRepoToolConnection(Connection conn)
+	{
+		List<RepoToolConnectionDetail> repoToolConnectionDetails = new ArrayList<>();
+		try {
+			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
+					.findByToolName(conn.getRepoToolProvider().toLowerCase());
+			RepoToolConnectionDetail repoToolConnectionDetail = new RepoToolConnectionDetail();
+			repoToolConnectionDetail.setEmail(conn.getEmail());
+			repoToolConnectionDetail.setPassword(
+					aesEncryptionService.decrypt(conn.getAccessToken(), customApiConfig.getAesEncryptionKey()));
+			repoToolConnectionDetail.setUsername(conn.getUsername());
+			repoToolConnectionDetail.setProvider(repoToolsProvider.getRepoToolProvider());
+			repoToolConnectionDetails.add(repoToolConnectionDetail);
+			RepoToolConnModel repoToolConnModel = new RepoToolConnModel(repoToolConnectionDetails);
+
+			// api call to update the detail
+			repoToolsClient.updateConnection(repoToolConnModel,
+					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolUpdateConnectionUrl(),
+					customApiConfig.getRepoToolAPIKey());
+			return HttpStatus.OK.value();
+		} catch (HttpClientErrorException | HttpServerErrorException ex) {
+			log.error("Exception occcured while updating conneection  {}", repoToolConnectionDetails, ex);
+		}
+		return HttpStatus.BAD_REQUEST.value();
+	}
+
+	/**
+	 * get repository members from repo tool
+	 *
+	 * @param basicProjectConfigId
+	 * 		basic project config id
+	 * @return list of repo members
+	 */
+	public JsonNode getProjectRepoToolMembers(String basicProjectConfigId) {
+		String projectCode = createProjectCode(basicProjectConfigId);
+		JsonNode jsonNode = null;
+		try {
+			String membersUrl = customApiConfig.getRepoToolURL() + String.format(
+					customApiConfig.getRepoToolMembersUrl(), projectCode);
+			jsonNode = repoToolsClient.fetchProjectRepoToolMembers(membersUrl, customApiConfig.getRepoToolAPIKey());
+		} catch (Exception ex) {
+			log.error("Exception occured while fetching emails ", ex);
+		}
+		return jsonNode;
 	}
 
 }

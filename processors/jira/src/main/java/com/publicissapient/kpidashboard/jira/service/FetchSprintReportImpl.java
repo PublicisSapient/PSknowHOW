@@ -44,11 +44,12 @@ import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
@@ -94,12 +95,13 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	private JiraCommonService jiraCommonService;
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
+	@Autowired
+	private ProcessorToolConnectionService processorToolConnectionService;
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch) throws IOException {
+										   KerberosClient krb5Client, boolean isSprintFetch, ObjectId jiraProcessorId) throws IOException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
-		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
 					.collect(Collectors.toList());
@@ -109,7 +111,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			for (SprintDetails sprint : sprintDetailsSet) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
-				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} " + sprint.getSprintID(),
+				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} ", sprint.getSprintID(),
 						sprint.getState(), boardId);
 				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
@@ -136,7 +138,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 						fetchReport = false;
 					}
 				} else {
-					log.info("sprint id {} not found in db." + sprint.getSprintID());
+					log.info("sprint id {} not found in db.", sprint.getSprintID());
 					fetchReport = true;
 				}
 
@@ -467,12 +469,13 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			KerberosClient krb5Client, BoardDetails boardDetails) throws IOException {
+			KerberosClient krb5Client, BoardDetails boardDetails, ObjectId processorId) throws IOException {
 		List<SprintDetails> sprintDetailsBasedOnBoard = new ArrayList<>();
 		List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
 		if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 			Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-			sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false));
+			sprintDetailsBasedOnBoard
+					.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false, processorId));
 		}
 		return sprintDetailsBasedOnBoard;
 	}
@@ -493,6 +496,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			KerberosClient krb5Client) throws IOException {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		try {
+			processorToolConnectionService.validateJiraAzureConnFlag(projectConfig.getProjectToolConfig());
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
 				boolean isLast = false;
@@ -507,6 +511,12 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 			}
 		} catch (RestClientException rce) {
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400
+					&& rce.getStatusCode().get() < 500) {
+				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
+				processorToolConnectionService
+						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+			}
 			log.error("Client exception when fetching sprints for board", rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {

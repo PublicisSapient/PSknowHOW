@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -6,37 +6,37 @@ import * as d3 from 'd3';
   templateUrl: './cumulative-line-chart.component.html',
   styleUrls: ['./cumulative-line-chart.component.css']
 })
-export class CumulativeLineChartComponent implements OnInit,OnChanges {
+export class CumulativeLineChartComponent implements OnInit, OnChanges {
   @Input() data;
   @Input() kpiId;
   @Input() xCaption;
   @Input() yCaption;
   currentDayIndex;
+  VisibleXAxisLbl = [];
   graphData;
+  elem;
 
-  constructor() { }
+  constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.graphData= this.data[0]['dataGroup'].map(d => ({...d}));
+    this.elem = this.viewContainerRef.element.nativeElement;
+    this.graphData = this.data[0]['dataGroup'].map(d => ({ ...d }));
     this.draw();
   }
 
   draw() {
-    const chart = d3.select('#chart');
-    chart.select('svg').remove();
-     d3.select('.yaxis-container').select('svg').remove();
+    const elem = this.elem;
+    d3.select(elem).select("#chart").select('svg').remove();
+    d3.select('.yaxis-container').select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
-    let width = window.innerWidth-340 - margin.left - margin.right;
+    let width = window.innerWidth - 340 - margin.left - margin.right;
     const height = 220 - margin.top - margin.bottom;
 
-    if(this.graphData.length > 14){
-      width += (this.graphData.length - 14 ) * 79;
-    }
     // append the svg object to the body of the page
-    const svg = chart
+    const svg = d3.select(elem).select("#chart")
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
@@ -70,18 +70,45 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
       .range([0, width])
       .paddingOuter(0);
 
+    /**X-Axis Gaps */
+    const xLength = xCoordinates.length;
+    var gap = 0;
+    if (xLength <= 10) {
+      gap = 1;
+    } else if (xLength > 10 && xLength <= 30) {
+      gap = 2;
+    } else if (xLength > 30 && xLength <= 50) {
+      gap = 3;
+    } else if (xLength > 50 && xLength <= 70) {
+      gap = 4;
+    } else if (xLength > 70 && xLength <= 90) {
+      gap = 5;
+    } else if (xLength > 90 && xLength <= 110) {
+      gap = 6;
+    } else {
+      gap = 7
+    }
+
+    for (var i = 0; i < xCoordinates.length; i += gap) {
+      this.VisibleXAxisLbl.push(xCoordinates[i]);
+    }
+    if (!this.VisibleXAxisLbl.includes(xCoordinates[xCoordinates.length - 1])) {
+      this.VisibleXAxisLbl[this.VisibleXAxisLbl.length - 1] = xCoordinates[xCoordinates.length - 1];
+    }
+    /**X-Axis Gaps */
+
     const initialCoordinate = x(xCoordinates[1]);
 
     const svgX = svg.append('g')
       .attr('class', 'xAxis')
       .attr('transform', `translate(0, ${height})`)
-      .call(d3.axisBottom(x));
+      .call(d3.axisBottom(x).tickFormat((d, i) => this.VisibleXAxisLbl.includes(d) ? d : ""));
 
     const y = d3.scaleLinear()
       .domain([0, Math.ceil(Math.max(...maxYValue) / 5) * 5])
       .range([height, 0]);
 
-    const svgY = d3.select('.yaxis-container')
+    const svgY = d3.select(elem).select('.yaxis-container')
       .append('svg')
       .attr('width', width + 50)
       .attr('height', height + margin.top + margin.bottom)
@@ -117,8 +144,8 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
       .attr('transform', `translate(0, ${height})`)
       .selectAll('line.gridline').data(xCoordinates).enter()
       .append('svg:line')
-      .attr('x1', d => x(d)+initialCoordinate/2 )
-      .attr('x2', d => x(d)+initialCoordinate/2)
+      .attr('x1', d => x(d) + initialCoordinate / 2)
+      .attr('x2', d => x(d) + initialCoordinate / 2)
       .attr('y1', 0)
       .attr('y2', -height)
       .style('stroke', '#dedede')
@@ -130,7 +157,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
       .domain(categories)
       .range(['#5AA5A2', '#4472C4', '#D99748', '#CDBA38', '#D8725F']);
 
-    const tooltipContainer = d3.select('#chart').select('.tooltip-container');
+    const tooltipContainer = d3.select(elem).select('.tooltip-container');
 
     const showTooltip = (linedata) => {
       tooltipContainer
@@ -138,7 +165,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .data(linedata)
         .join('div')
         .attr('class', 'tooltip')
-        .style('left', d => x(d.filter) + initialCoordinate/2 + 'px')
+        .style('left', d => x(d.filter) + initialCoordinate / 2 + 'px')
         .style('top', d => y(d.value) + 8 + 'px')
         .text(d => d.value)
         .transition()
@@ -166,25 +193,25 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .append('path')
         .datum(lineData)
         .attr('d', d3.line()
-          .x((d) => x(d.filter) + initialCoordinate/2)
+          .x((d) => x(d.filter) + initialCoordinate / 2)
           .y((d) => y(d.value))
         )
         .attr('stroke', (d) => color(kpiGroup))
         .style('stroke-width', 2)
         .style('fill', 'none')
         .style('cursor', 'pointer')
-        .on('mouseover', function(event, linedata) {
+        .on('mouseover', function (event, linedata) {
           d3.select(this)
             .style('stroke-width', 4);
           showTooltip(linedata);
         })
-        .on('mouseout', function(event, d) {
+        .on('mouseout', function (event, d) {
           d3.select(this)
             .style('stroke-width', 2);
           hideTooltip();
         });
 
-        const circlegroup = svg
+      const circlegroup = svg
         .append('g')
         .attr('class', 'circle-group')
         .attr('transform', `translate(0,0)`)
@@ -192,13 +219,13 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .data(lineData)
         .enter()
         .append('circle')
-        .attr('cx', d => x(d.filter) + initialCoordinate/2)
+        .attr('cx', d => x(d.filter) + initialCoordinate / 2)
         .attr('cy', d => y(d.value))
         .attr('r', 3)
         .style('stroke-width', 5)
         .attr('stroke', 'transparent')
         .attr('fill', color(kpiGroup))
-        .on('mouseover', function(event) {
+        .on('mouseover', function (event) {
           d3.select(this)
             .transition()
             .duration(500)
@@ -207,7 +234,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
             .style('stroke-width', 10);
           showTooltip(lineData);
         })
-        .on('mouseout', function(event, d) {
+        .on('mouseout', function (event, d) {
           d3.select(this)
             .transition()
             .duration(500)
@@ -217,19 +244,18 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         });
     }
     //Add xCaption
-    d3.select('#container')
-      .select('.x-caption')
-      .append('span')
+    d3.select(elem).select('#container')
+      .select('.x-caption span')
       .text(this.xCaption);
 
     //Add YCaption
-    d3.select('.yaxis-container')
+    d3.select(elem).select('.yaxis-container')
       .append('div')
       .attr('class', 'y-caption')
       .append('span')
       .text(this.yCaption);
 
-    const legendDiv = d3.select('#legendContainer')
+    const legendDiv = d3.select(elem).select('#legendContainer')
       .style('margin-left', 60 + 'px');
 
     legendDiv.transition()
@@ -256,7 +282,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .append('path')
         .datum(dottedLineData)
         .attr('d', d3.line()
-          .x((d) => x(d.filter)+ initialCoordinate/2 )
+          .x((d) => x(d.filter) + initialCoordinate / 2)
           .y((d) => y(d.value))
         )
         .attr('stroke', '#D8725F')

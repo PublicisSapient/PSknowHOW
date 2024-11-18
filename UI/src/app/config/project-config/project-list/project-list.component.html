@@ -37,23 +37,23 @@
         </ng-template>
         <ng-template pTemplate="header" let-columns>
             <tr *ngIf="columns.length>0">
-                <th [pSortableColumn]="col.id" *ngFor="let col of columns" class="p-text-capitalize">
+                <th [pSortableColumn]="col.id" *ngFor="let col of columns" class="p-text-capitalize" scope="col">
                     <div class="p-d-flex col-head">
 
                         {{col.heading}}
                         <p-sortIcon [field]="col.id"></p-sortIcon>
                     </div>
                 </th>
-                <th class="p-text-right p-pr-5">Actions</th>
+                <th class="p-text-right p-pr-5" scope="col">Actions</th>
             </tr>
             <tr class="w-100" *ngIf="columns.length>0">
-                <th *ngFor="let col of columns">
+                <th *ngFor="let col of columns" scope="col">
                     <input pInputText [id]="col.id" type="text"
                         (input)="dt.filter($event.target.value, col.id, 'startsWith')" class="p-column-filter"
                         [style]="{'width':'100%'}" placeholder="Search" />
                     <label [for]="col.id"></label>
                 </th>
-                <th></th>
+                <th id="empty-header"></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-project let-columns="columns">
@@ -63,11 +63,18 @@
                 </td>
                 <td class="p-0 p-text-right">
                     <div class="p-d-flex p-jc-end">
-                        <div *ngIf="isAdminOrSuperAdmin" class="action-btns p-mr-5"
-                            (click)="editConfiguration(project)"><i class="fas fa-wrench"></i></div>
+                        <!-- <div *ngIf="isAdminOrSuperAdmin" class="action-btns p-mr-4"
+                            (click)="editConfiguration(project)">Edit Config</div>
                         <div *ngIf="isAdminOrSuperAdmin" class="action-btns" (click)="deleteProject(project)"
-                            [ngClass]="{'not-allowed': authorization.checkIfViewer(project)}"><i
-                                class="far fa-trash-alt p-mr-5"></i></div>
+                            [ngClass]="{'not-allowed': authorization.checkIfViewer(project)}">Delete Project</div> -->
+                        <div *ngIf="isAdminOrSuperAdmin">
+                          <ng-container *ngIf="!getAuthorizationService.checkIfViewer(project)">
+                            <p-splitButton label="" icon="pi pi-cog" [model]="items" (onDropdownClick)="handleActionsClick(project)" styleClass="p-button-text"></p-splitButton>
+                          </ng-container>
+                          <ng-container *ngIf="getAuthorizationService.checkIfViewer(project)">
+                            <p-splitButton label="" icon="pi pi-cog" [model]="roleBasedItems" (onDropdownClick)="handleActionsClick(project)" styleClass="p-button-text"></p-splitButton>
+                          </ng-container>
+                        </div>
                     </div>
                 </td>
             </tr>
@@ -81,6 +88,10 @@
         </ng-template>
     </p-table>
 </div>
+
+<p-dialog [(visible)]="isNewProject" [modal]="true" styleClass="field-mapping" (onHide)="isNewProject = false;getData()">
+    <app-basic-config *ngIf="isNewProject" (closeProjectSetupPopup)="isNewProject = false;"></app-basic-config>
+</p-dialog>
 
 <p-confirmDialog #cd>
     <p-footer>

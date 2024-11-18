@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.connection.service;
 
 import static com.publicissapient.kpidashboard.apis.constant.Constant.REPO_TOOLS;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_ARGOCD;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZURE;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREPIPELINE;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREREPO;
@@ -40,17 +41,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -97,6 +101,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 	@Autowired
 	private AuthenticationService authenticationService;
 
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
+
+	@Autowired
+	private RestAPIUtils restAPIUtils;
+
 	/**
 	 * Fetch all connection data.
 	 *
@@ -112,6 +122,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
+			maskConnectionDetails(connectionData);
 			log.info("Successfully fetched all connectionData");
 			return new ServiceResponse(true, "Found all connectionData", connectionData);
 		}
@@ -119,15 +130,82 @@ public class ConnectionServiceImpl implements ConnectionService {
 		List<Connection> nonAuthConnection = new ArrayList<>();
 
 		connectionData.stream().filter(
-				e -> !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()) && e.isConnPrivate())
+				e -> !e.isSharedConnection() && !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 				.forEach(nonAuthConnection::add);
 
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
 			connectionData.removeAll(nonAuthConnection);
 		}
-
+		maskConnectionDetails(connectionData);
 		log.info("Successfully fetched all connectionData");
 		return new ServiceResponse(true, "Found all connectionData", connectionData);
+	}
+
+	/**
+	 * Mask user info from connection details
+	 *
+	 * @param connectionData
+	 *            list of connections
+	 */
+	public void maskConnectionDetails(List<Connection> connectionData) {
+		connectionData.forEach(original -> {
+			original.setCreatedBy(maskStrings(original.getCreatedBy()));
+			original.setUsername(maskStrings(original.getUsername()));
+			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
+			if (CollectionUtils.isNotEmpty(original.getConnectionUsers())) {
+				List<String> connectionUsers = new ArrayList<>();
+				original.getConnectionUsers()
+						.forEach(connectionUser -> connectionUsers.add(maskStrings(connectionUser)));
+				original.setConnectionUsers(connectionUsers);
+			}
+		});
+	}
+
+	private String maskStrings(String username) {
+		if (StringUtils.isNotEmpty(username)) {
+			if (username.contains("@")) {
+				String[] parts = username.split("@");
+				if (parts.length == 2) {
+					String localPart = parts[0];
+					String domainPart = parts[1];
+					String maskedLocalPart = maskingLogic(localPart);
+					return maskedLocalPart + "@" + domainPart;
+				}
+			} else {
+				return maskingLogic(username);
+			}
+		}
+		return username;
+	}
+
+	/**
+	 * if length is more than 2 and less than 8, mask the last 3 characters if lenth
+	 * is more than 8 mask the last 3 character and the 4th character
+	 * 
+	 * @param userInput
+	 *            inputString
+	 * @return maskedString
+	 */
+	private String maskingLogic(String userInput) {
+		if (userInput.length() > 2) {
+			userInput = maskCharacters(userInput);
+			if (userInput.length() >= 8) {
+				StringBuilder stringBuilder = new StringBuilder(userInput);
+				stringBuilder.setCharAt(4, '*');
+				userInput = stringBuilder.toString();
+			}
+		}
+		return userInput;
+	}
+
+	private static String maskCharacters(String input) {
+		int length = input.length();
+		int startIndex = length - 3;
+		StringBuilder maskedString = new StringBuilder(input);
+		for (int i = startIndex; i < length; i++) {
+			maskedString.setCharAt(i, '*');
+		}
+		return maskedString.toString();
 	}
 
 	/**
@@ -143,8 +221,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (null == type) {
 			return new ServiceResponse(false, "No type in this collection", type);
 		}
-
-		List<Connection> typeList = connectionRepository.findByType(type);
+		List<Connection> typeList = connectionRepository.findAllWithoutSecret().stream()
+				.filter(connection -> StringUtils.isNotEmpty(connection.getType())
+						&& connection.getType().equalsIgnoreCase(type))
+				.collect(Collectors.toList());
 
 		if (CollectionUtils.isEmpty(typeList)) {
 			log.info("connection Db returned null");
@@ -152,18 +232,20 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
+			maskConnectionDetails(typeList);
 			log.info("Successfully found type@{}", type);
 			return new ServiceResponse(true, "Found type@" + type, typeList);
 		}
 
 		List<Connection> nonAuthConnection = new ArrayList<>();
 		typeList.stream().filter(
-				e -> !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()) && e.isConnPrivate())
+				e -> !e.isSharedConnection() && !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 				.forEach(nonAuthConnection::add);
 
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
 			typeList.removeAll(nonAuthConnection);
 		}
+		maskConnectionDetails(typeList);
 		log.info("Successfully found type@{}", type);
 
 		return new ServiceResponse(true, "Found type@" + type, typeList);
@@ -191,9 +273,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String api = "save";
 
 		if (connName == null) {
-			List<Connection> publicConnections = connectionRepository.findByTypeAndConnPrivate(conn.getType(), false);
+			List<Connection> publicConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(), true);
 
-			List<Connection> privateConnections = connectionRepository.findByTypeAndConnPrivate(conn.getType(), true)
+			List<Connection> privateConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(), false)
 					.stream().filter(e -> e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 					.collect(Collectors.toList());
 
@@ -209,8 +291,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			} else {
 
 				List<String> connectionUser = new ArrayList<>();
-				if(conn.getType().equals(REPO_TOOLS))
-					conn.setBaseUrl(conn.getHttpUrl());
 				connectionUser.add(username);
 				encryptSecureFields(conn);
 				conn.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
@@ -268,7 +348,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection = checkConnDetailsSonar(inputConn, currConn, api);
 			break;
 		case TOOL_BAMBOO:
+		case REPO_TOOLS:
 		case TOOL_TEAMCITY:
+		case TOOL_ARGOCD:
 			if (checkConnDetails(inputConn, currConn))
 				existingConnection = currConn;
 			break;
@@ -293,10 +375,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case TOOL_ZEPHYR:
 			existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
-			break;
-		case REPO_TOOLS:
-			if(inputConn.getHttpUrl().equals(currConn.getHttpUrl()))
-				existingConnection = currConn;
 			break;
 		default:
 			existingConnection = new Connection();
@@ -445,8 +523,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private List<Connection> getFilteredConnection(String username, Connection inputConn, ObjectId objId) {
 		List<Connection> connection = connectionRepository.findByType(inputConn.getType());
 
-		return connection.stream().filter(e -> !e.isConnPrivate()
-				|| (e.isConnPrivate() && e.getConnectionUsers().contains(username)) && (!e.getId().equals(objId)))
+		return connection.stream().filter(
+				e -> e.isSharedConnection() || e.getConnectionUsers().contains(username) && !e.getId().equals(objId))
 				.collect(Collectors.toList());
 	}
 
@@ -487,7 +565,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setCloudEnv(connection.isCloudEnv());
 		existingConnection.setVault(connection.isVault());
 		existingConnection.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
-		existingConnection.setConnPrivate(connection.isConnPrivate());
+		existingConnection.setSharedConnection(connection.isSharedConnection());
 		existingConnection.setAccessTokenEnabled(connection.isAccessTokenEnabled());
 		existingConnection.setUpdatedBy(authenticationService.getLoggedInUser());
 		existingConnection.setPatOAuthToken(connection.getPatOAuthToken());
@@ -497,14 +575,19 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setJaasUser(connection.getJaasUser());
 		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
 		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
-		existingConnection.setSshUrl(connection.getSshUrl());
-		existingConnection.setHttpUrl(connection.getHttpUrl());
 		existingConnection.setEmail(connection.getEmail());
+		existingConnection.setBrokenConnection(false);
 	}
 
 	private void saveConnection(Connection conn) {
 		if (conn != null) {
-			connectionRepository.save(conn);
+			if (conn.getType().equalsIgnoreCase(REPO_TOOLS)) {
+				int httpStatus = repoToolsConfigService.updateRepoToolConnection(conn);
+				if (httpStatus == HttpStatus.OK.value())
+					connectionRepository.save(conn);
+			} else {
+				connectionRepository.save(conn);
+			}
 		}
 	}
 
@@ -612,6 +695,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
+		case ProcessorConstants.ARGOCD:
 			setEncryptedPasswordFieldForDb(conn);
 			break;
 		case ProcessorConstants.GITLAB:
@@ -659,6 +743,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
+		case ProcessorConstants.ARGOCD:
 			connectionDTO.setPassword("");
 			break;
 		case ProcessorConstants.GITLAB:
@@ -740,6 +825,44 @@ public class ConnectionServiceImpl implements ConnectionService {
 		projectBasicConfigRepository.findByIdIn(basicProjectConfigIds)
 				.forEach(e -> projectInUseList.add(e.getProjectName()));
 		return projectInUseList;
+	}
+
+	/**
+	 * update breaking connection flag
+	 *
+	 * @param connection
+	 * @param conErrorMsg
+	 */
+	@Override
+	public void updateBreakingConnection(Connection connection, String conErrorMsg) {
+
+		if (connection != null) {
+
+			Optional<Connection> existingConnOpt = connectionRepository.findById(connection.getId());
+			if (existingConnOpt.isPresent()) {
+				Connection existingConnection = existingConnOpt.get();
+				if (StringUtils.isEmpty(conErrorMsg)) {
+					existingConnection.setBrokenConnection(false);
+					existingConnection.setConnectionErrorMsg(conErrorMsg);
+				} else {
+					existingConnection.setBrokenConnection(true);
+					existingConnection.setConnectionErrorMsg(conErrorMsg);
+				}
+				connectionRepository.save(existingConnection);
+			}
+
+		}
+	}
+
+	/**
+	 *
+	 * @param connection
+	 *            connection
+	 */
+	public void validateConnectionFlag(Connection connection) {
+		if (connection.isBrokenConnection()) {
+			updateBreakingConnection(connection, null);
+		}
 	}
 
 }

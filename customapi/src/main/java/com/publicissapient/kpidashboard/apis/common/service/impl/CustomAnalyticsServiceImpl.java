@@ -18,13 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import javax.servlet.http.HttpServletResponse;
-
-import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,11 +42,17 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -58,7 +69,10 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String USER_ID = "user_id";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-	private static final Object USER_AUTHORITIES = "authorities";
+	private static final String USER_AUTHORITIES = "authorities";
+	private static final String USER_AUTH_TYPE = "authType";
+	private static final String NOTIFICATION_EMAIL = "notificationEmail";
+
 	public static final String SUCCESS = "SUCCESS";
 
 	@Autowired
@@ -75,6 +89,13 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private ProjectAccessManager projectAccessManager;
 	@Autowired
 	private UserLoginHistoryService userLoginHistoryService;
+
+	@Autowired
+	private UserTokenReopository userTokenReopository;
+
+	final ModelMapper modelMapper = new ModelMapper();
+
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -90,7 +111,9 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		json.put(USER_NAME, username);
 		json.put(USER_EMAIL, email);
 		json.put(USER_ID, userinfo.getId().toString());
+		json.put(USER_AUTH_TYPE, userinfo.getAuthType().toString());
 		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
+		json.put(NOTIFICATION_EMAIL, userinfo.getNotificationEmail());
 		Gson gson = new Gson();
 
 		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
@@ -109,6 +132,73 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		log.info("Successfully added Google Analytics data to Response.");
 		return json;
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<String, Object> addAnalyticsDataAndSaveCentralUser(HttpServletResponse httpServletResponse, String username,
+			String authToken) {
+		Map<String, Object> userMap = new HashMap<>();
+		httpServletResponse.setContentType("application/json");
+		UserInfo userinfoKnowHow = userInfoRepository.findByUsername(username);
+		httpServletResponse.setCharacterEncoding("UTF-8");
+		if (Objects.isNull(userinfoKnowHow)) {
+			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username , authToken);
+			UserInfo centralUserInfo = new UserInfo();
+			if (Objects.nonNull(centralUserInfoDTO)) {
+				setUserDetailsFromCentralAuth(username, centralUserInfoDTO, centralUserInfo);
+				userinfoKnowHow = centralUserInfo;
+				UserTokenData userTokenData = new UserTokenData(username, authToken, LocalDateTime.now().toString());
+				userTokenReopository.save(userTokenData);
+			}
+		}
+		Authentication authentication = authenticationRepository.findByUsername(username);
+		userMap.put(USER_NAME, username);
+		if (Objects.nonNull(userinfoKnowHow)) {
+			String email = authentication == null ? userinfoKnowHow.getEmailAddress().toLowerCase()
+					: authentication.getEmail().toLowerCase();
+			userMap.put(USER_EMAIL, email);
+			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
+			userMap.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
+			userMap.put(USER_AUTH_TYPE, userinfoKnowHow.getAuthType().toString());
+			userMap.put(NOTIFICATION_EMAIL, userinfoKnowHow.getNotificationEmail());
+			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
+				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);
+			} else {
+				userMap.put(PROJECTS_ACCESS, new JSONArray());
+			}
+			userLoginHistoryService.createUserLoginHistoryInfo(userinfoKnowHow, SUCCESS);
+		}
+		userMap.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
+
+		log.info("Successfully added Google Analytics data to Response.");
+		return userMap;
+
+	}
+
+	/**
+	 *
+	 * @param username
+	 * @param centralUserInfoDTO
+	 * @param centralUserInfo
+	 */
+	private void setUserDetailsFromCentralAuth(String username, CentralUserInfoDTO centralUserInfoDTO,
+			UserInfo centralUserInfo) {
+		centralUserInfo.setUsername(username);
+		centralUserInfo.setAuthType(centralUserInfoDTO.getAuthType());
+		centralUserInfo.setAuthorities(Collections.singletonList(Constant.ROLE_VIEWER));
+		centralUserInfo.setProjectsAccess(Collections.emptyList());
+		centralUserInfo.setEmailAddress(centralUserInfoDTO.getEmail().toLowerCase());
+		centralUserInfo.setFirstName(centralUserInfoDTO.getFirstName());
+		centralUserInfo.setLastName(centralUserInfoDTO.getLastName());
+		centralUserInfo.setDisplayName(centralUserInfoDTO.getDisplayName());
+		centralUserInfo.setCreatedOn((new Date()).toString());
+		// to create Super admin User info for first time user
+		if (userInfoRepository.count() == 0) {
+			centralUserInfo.setAuthorities(Collections.singletonList(Constant.ROLE_SUPERADMIN));
+		}
+		userInfoRepository.save(centralUserInfo);
 	}
 
 	@Override

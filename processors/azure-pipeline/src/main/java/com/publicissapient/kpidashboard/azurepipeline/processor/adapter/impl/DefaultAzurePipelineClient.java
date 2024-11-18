@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -95,7 +96,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 		try {
 			String minTime = AzurePipelineUtils.getDateFromTimeInMili(lastStartTimeOfBuilds);
 			StringBuilder url = new StringBuilder(
-					AzurePipelineUtils.joinURL(azurePipelineServer.getUrl(), azurePipelineConfig.getApiEndPoint()));
+					AzurePipelineUtils.joinURL(AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl()), azurePipelineConfig.getApiEndPoint()));
 			url = AzurePipelineUtils.addParam(url, "api-version", azurePipelineServer.getApiVersion());
 			url = AzurePipelineUtils.addParam(url, "definitions", azurePipelineServer.getJobName());
 			if (!minTime.equals("1970-01-01T00:00:00.000Z")) {
@@ -150,7 +151,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 			}
 
 		} catch (ParseException e) {
-			log.error(String.format("Parsing jobs details on instance: %s", azurePipelineServer.getUrl()), e);
+			log.error(String.format("Parsing jobs details on instance: %s", AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl())), e);
 		}
 	}
 
@@ -170,8 +171,13 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 		}
 		build.setBuildUrl(AzurePipelineUtils.getString(buildJson, "url"));
 		build.setNumber(String.valueOf(buildJson.get("id")));
-		build.setStartTime(Instant.parse(AzurePipelineUtils.getString(buildJson, "startTime")).toEpochMilli());
-		build.setEndTime(Instant.parse(AzurePipelineUtils.getString(buildJson, "finishTime")).toEpochMilli());
+		Optional.ofNullable(AzurePipelineUtils.getString(buildJson, "startTime"))
+				.map(Instant::parse)
+				.map(Instant::toEpochMilli)
+				.ifPresent(build::setStartTime);
+		if (StringUtils.isNotEmpty(AzurePipelineUtils.getString(buildJson, "finishTime"))) {
+			build.setEndTime(Instant.parse(AzurePipelineUtils.getString(buildJson, "finishTime")).toEpochMilli());
+		}
 		build.setBuildStatus(getBuildStatus(buildJson));
 		build.setDuration(build.getEndTime() - build.getStartTime());
 		build.setTimestamp(System.currentTimeMillis());
@@ -186,7 +192,14 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * @return the build status
 	 */
 	private BuildStatus getBuildStatus(JSONObject buildJson) {
-		String status = AzurePipelineUtils.getString(buildJson, "result");
+		String status;
+		if (AzurePipelineUtils.getString(buildJson, "result") != null) {
+			status = AzurePipelineUtils.getString(buildJson, "result");
+		} else if (AzurePipelineUtils.getString(buildJson, "status") != null) {
+			status = AzurePipelineUtils.getString(buildJson, "status");
+		} else {
+			return BuildStatus.UNKNOWN;
+		}
 		switch (status) {
 		case "succeeded":
 			return BuildStatus.SUCCESS;
@@ -196,6 +209,8 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 			return BuildStatus.FAILURE;
 		case "canceled":
 			return BuildStatus.ABORTED;
+		case "inProgress":
+			return BuildStatus.IN_PROGRESS;
 		default:
 			return BuildStatus.UNKNOWN;
 		}
@@ -236,7 +251,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	private String getPat(String sUrl, ProcessorToolConnection azurePipelineServer) {
 		String pat = "";
 
-		if (AzurePipelineUtils.isSameServerInfo(sUrl, azurePipelineServer.getUrl())) {
+		if (AzurePipelineUtils.isSameServerInfo(sUrl, AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl()))) {
 
 			if (StringUtils.isNotEmpty(azurePipelineServer.getPat())) {
 				pat = azurePipelineServer.getPat();

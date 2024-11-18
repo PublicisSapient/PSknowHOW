@@ -18,9 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Interface to provide methods for analytics details
@@ -41,5 +43,17 @@ public interface CustomAnalyticsService {
 	 */
 	JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username);
 
-	public JSONObject getAnalyticsCheck();
+	/**
+	 * Creates and return JSON object containing analytics data.
+	 *
+	 * @param httpServletResponse
+	 *            HttpServletResponse
+	 * @param username
+	 *            user name
+	 * @return JSON of analytics data
+	 */
+	Map<String, Object> addAnalyticsDataAndSaveCentralUser(HttpServletResponse httpServletResponse, String username,
+			String authToken);
+
+	JSONObject getAnalyticsCheck();
 }

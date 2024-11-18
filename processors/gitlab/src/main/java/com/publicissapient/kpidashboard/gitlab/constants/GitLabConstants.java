@@ -82,14 +82,14 @@ public final class GitLabConstants {
 	public static final String RESP_CLOSED = "closed";
 	public static final String RESP_CREATED_AT = "created_at";
 	public static final String RESP_UPDATED_AT = "updated_at";
-	public static final String RESP_CLOSED_AT = "closed_at";
-	public static final String RESP_MERGED_AT = "merged_at";
 	public static final String RESP_USER_NAME = "username";
 	public static final String RESP_REVIEWERS = "reviewers";
 	public static final String RESP_SOURCE_BRANCH = "source_branch";
 	public static final String RESP_TARGET_BRANCH = "target_branch";
 	public static final String RESP_PROJECT_ID = "project_id";
 	public static final String REPOSITORY_NAME = "name";
+	public static final String WEB_URL = "web_url";
+	public static final String RESP_MERGED_AT = "merged_at";
 
 	/**
 	 * Instantiates a new bit bucket constants.

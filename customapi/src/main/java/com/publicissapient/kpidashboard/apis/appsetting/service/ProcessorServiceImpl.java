@@ -19,16 +19,18 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -37,10 +39,15 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
@@ -48,9 +55,8 @@ import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
-
 /**
  * This class provides various methods related to operations on Processor Data
  *
@@ -73,6 +79,13 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private ProcessorUrlConfig processorUrlConfig;
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	
+	@Autowired
+	private CustomApiConfig customApiConfig;
+	@Autowired
+	private CacheService cacheService;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
@@ -91,12 +104,19 @@ public class ProcessorServiceImpl implements ProcessorService {
 			ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
 
 		String url = processorUrlConfig.getProcessorUrl(processorName);
+		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
+				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		boolean isSuccess = true;
 		int statuscode = HttpStatus.NOT_FOUND.value();
 		String body = "";
-		if (processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
-			statuscode = repoToolsConfigService
-					.triggerScanRepoToolProject(processorExecutionBasicConfig.getProjectBasicConfigIds());
+		boolean isSCMToolEnabled = false;
+		String projectBasicConfigId = "";
+		if (processorExecutionBasicConfig != null) {
+			projectBasicConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
+			isSCMToolEnabled = configHelperService.getProjectConfig(projectBasicConfigId).isDeveloperKpiEnabled();
+		}
+		if (scmToolList.contains(processorName) && isSCMToolEnabled) {
+			statuscode = repoToolsConfigService.triggerScanRepoToolProject(processorName, projectBasicConfigId);
 		} else {
 			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 					.getRequest();
@@ -134,7 +154,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		if (msg != null) {
 			String[] parts = msg.split(":");
-			return (parts.length > 1) ? parts[1].trim().replaceAll("\"", "") : "";
+			return (parts.length > 1) ? parts[1].trim().replace("\"", "") : "";
 		} else {
 			return "";
 		}
@@ -156,8 +176,10 @@ public class ProcessorServiceImpl implements ProcessorService {
 			try {
 				HttpHeaders headers = new HttpHeaders();
 				headers.add(AUTHORIZATION, token);
-
-				HttpEntity<String> requestEntity = new HttpEntity<>(sprintId, headers);
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				Gson gson = new Gson();
+				String payload = gson.toJson(sprintId);
+				HttpEntity<String> requestEntity = new HttpEntity<>(payload,headers);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 				statuscode = resp.getStatusCode().value();
 			} catch (HttpClientErrorException ex) {
@@ -173,7 +195,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		// setting the fetchStatus as false for the fetch sprint
 		if (HttpStatus.OK.value() == statuscode) {
-			SprintTraceLog sprintTrace = sprintTraceLogRepository.findBySprintId(sprintId);
+			SprintTraceLog sprintTrace = sprintTraceLogRepository.findFirstBySprintId(sprintId);
 			sprintTrace = sprintTrace == null ? new SprintTraceLog() : sprintTrace;
 			sprintTrace.setSprintId(sprintId);
 			sprintTrace.setFetchSuccessful(false);
@@ -183,4 +205,18 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}
+
+	/**
+	 * saves the response statuses for repo tools
+	 *
+	 * @param repoToolsStatusResponse
+	 * 		repo tool response status
+	 */
+	public void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse) {
+		repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
+		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
+		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
+	}
+
 }

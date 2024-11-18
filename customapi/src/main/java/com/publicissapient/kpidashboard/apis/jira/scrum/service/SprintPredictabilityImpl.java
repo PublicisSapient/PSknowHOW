@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -94,8 +94,9 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints()).orElse(0.0d));
-		} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-			Double totalOriginalEstimateInHours = (double) (jiraIssue.getOriginalEstimateMinutes()) / 60;
+		} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
+			Double totalOriginalEstimateInHours = (double) (jiraIssue.getAggregateTimeOriginalEstimateMinutes()) / 60;
+			sprintIssue.setOriginalEstimate(Double.valueOf(jiraIssue.getAggregateTimeOriginalEstimateMinutes()));
 			effectSumDouble.addAndGet(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
 		}
 	}
@@ -135,7 +136,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_PREDICTABILITY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.SPRINT_PREDICTABILITY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.SPRINT_PREDICTABILITY);
 		kpiElement.setTrendValueList(trendValues);
 		log.debug("[SPRINTPREDICTABILITY-LEAF-NODE-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
@@ -297,11 +298,11 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-
 		Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(
 				Collectors.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
 
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
+
 			sprintDetails.forEach(sd -> {
 				Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
 				List<String> storyList = new ArrayList<>();
@@ -362,7 +363,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			}
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns(sprintLeafNodeList,cacheService,flterHelperService));
 	}
 
 	@Override
@@ -452,7 +453,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	}
 
 	/**
-	 *  @param requestTrackerId
+	 * @param requestTrackerId
 	 * @param excelData
 	 * @param currentSprintLeafVelocityMap
 	 * @param node
@@ -473,4 +474,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			}
 		}
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI5(), KPICode.SPRINT_PREDICTABILITY.getKpiId());
+	}
+
 }

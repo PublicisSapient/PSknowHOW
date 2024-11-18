@@ -19,13 +19,14 @@
 package com.publicissapient.kpidashboard.apis.repotools.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
+@Data
 public class MergeRequests {
 
-    private String id;
-    private String link;
     @JsonProperty("time_to_merge")
     private long timeToMerge;
+    private String link;
     @JsonProperty("created_at")
     private String createdAt;
     @JsonProperty("updated_at")

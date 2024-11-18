@@ -27,8 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +45,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.repository.sonar.SonarDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepository;
@@ -110,65 +109,19 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
 
 	/**
-	 * @param projectList
-	 * @param tempMap
-	 * @param kpiElement
-	 * @return
-	 */
-	public abstract Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement);
-
-	/**
-	 * Returns the list of sonar project details related to a project ID in the DB
-	 *
-	 * @param projectId
-	 * @return
-	 */
-	private List<SonarDetails> getSonarDetailsBasedOnProject(ObjectId projectId) {
-		List<SonarDetails> projectSonarList = new ArrayList<>();
-		if (null != configHelperService.getToolItemMap()
-				&& null != configHelperService.getToolItemMap().get(projectId)) {
-			List<Tool> sonarConfigListBasedOnProject = configHelperService.getToolItemMap().get(projectId)
-					.get(Constant.TOOL_SONAR);
-			if (CollectionUtils.isNotEmpty(sonarConfigListBasedOnProject)) {
-				sonarConfigListBasedOnProject.forEach(job -> {
-					if (CollectionUtils.isNotEmpty(job.getProcessorItemList())) {
-						List<ObjectId> processorItemList = new ArrayList<>();
-						job.getProcessorItemList()
-								.forEach(processorItem -> processorItemList.add(processorItem.getId()));
-						List<SonarDetails> sonarDetailsList = sonarDetailsRepository
-								.findByProcessorItemIdIn(processorItemList);
-						if (CollectionUtils.isNotEmpty(sonarDetailsList)) {
-							sonarDetailsList.stream().forEach(projectSonarList::add);
-						}
-
-					}
-
-				});
-			}
-		}
-		return projectSonarList;
-	}
-
-	/**
 	 * fetching data greater than start date from sonar history table
 	 * 
 	 * @param projectId
-	 * @param startDate
-	 * @param kanban
+	 * @param currentDate
 	 * @return
 	 */
-	private List<SonarHistory> getSonarHistoryBasedOnProject(ObjectId projectId, String startDate, boolean kanban) {
+	private List<SonarHistory> getSonarHistoryBasedOnProject(ObjectId projectId, LocalDate currentDate) {
 		List<SonarHistory> projectSonarList = new ArrayList<>();
 		if (null != configHelperService.getToolItemMap()
 				&& null != configHelperService.getToolItemMap().get(projectId)) {
 			List<Tool> sonarConfigListBasedOnProject = configHelperService.getToolItemMap().get(projectId)
 					.get(Constant.TOOL_SONAR);
 
-			LocalDate currentDate = LocalDate.now().minusWeeks(customApiConfig.getSonarWeekCount() + 1L);
-			if (kanban) {
-				currentDate = LocalDate.parse(startDate, dateTimeFormatter);
-			}
 			Long timestamp = currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
 			if (CollectionUtils.isNotEmpty(sonarConfigListBasedOnProject)) {
@@ -190,46 +143,49 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	}
 
 	/**
-	 * Get SonarDetails list for all Projects from the projectList configuration
-	 *
+	 * fetchng data from history table based on kanban/scrum
+	 * 
 	 * @param projectList
+	 * @param currentDate
 	 * @return
 	 */
-	public Map<String, List<SonarDetails>> getSonarDetailsForAllProjects(List<Node> projectList) {
-		Map<String, List<SonarDetails>> map = new HashMap<>();
+	public Map<String, List<SonarHistory>> getSonarHistoryForAllProjects(List<Node> projectList,
+			LocalDate currentDate) {
+		Map<String, List<SonarHistory>> map = new HashMap<>();
 		projectList.stream().filter(
 				node -> null != node.getProjectFilter() && null != node.getProjectFilter().getBasicProjectConfigId())
 				.forEach(node -> map.put(node.getId(),
-						getSonarDetailsBasedOnProject(node.getProjectFilter().getBasicProjectConfigId())));
+						getSonarHistoryBasedOnProject(node.getProjectFilter().getBasicProjectConfigId(), currentDate)));
 		return map;
 	}
 
 	/**
-	 * fetchng data from history table based on kanban/scrum
+	 * get start date to fetch from db for Kanban
 	 * 
-	 * @param projectList
 	 * @param startDate
-	 * @param isKanban
 	 * @return
 	 */
-	public Map<String, List<SonarHistory>> getSonarHistoryForAllProjects(List<Node> projectList, String startDate,
-			boolean isKanban) {
-		Map<String, List<SonarHistory>> map = new HashMap<>();
-		if (isKanban) {
-			projectList.stream()
-					.filter(node -> null != node.getProjectFilter()
-							&& null != node.getProjectFilter().getBasicProjectConfigId())
-					.forEach(node -> map.put(node.getId(), getSonarHistoryBasedOnProject(
-							node.getProjectFilter().getBasicProjectConfigId(), startDate, true)));
-		} else {
-			projectList.stream()
-					.filter(node -> null != node.getProjectFilter()
-							&& null != node.getProjectFilter().getBasicProjectConfigId())
-					.forEach(node -> map.put(node.getId(), getSonarHistoryBasedOnProject(
-							node.getProjectFilter().getBasicProjectConfigId(), startDate, false)));
-		}
-		return map;
+	public LocalDate getKanbanCurrentDateToFetchFromDb(String startDate) {
+		return LocalDate.parse(startDate, dateTimeFormatter);
+	}
 
+	/**
+	 * get start date to fetch from db for scrum
+	 * 
+	 * @param duration
+	 *            day/week/month
+	 * @param value
+	 *            value of how many days/week/months
+	 * @return
+	 */
+	public LocalDate getScrumCurrentDateToFetchFromDb(String duration, Long value) {
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK))
+			return LocalDate.now().minusWeeks(value + 1L);
+		else if (duration.equalsIgnoreCase(CommonConstant.MONTH))
+			return LocalDate.now().minusMonths(value + 1L);
+		else if (duration.equalsIgnoreCase(CommonConstant.DAYS))
+			return LocalDate.now().minusDays(value + 1L);
+		return LocalDate.now();
 	}
 
 	/**
@@ -301,6 +257,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 
 	/**
 	 * create sonar kpis data count obj
+	 * 
 	 * @param value
 	 * @param hoverValues
 	 * @param projectName
@@ -316,4 +273,30 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 		dataCount.setHoverValue(hoverValues);
 		return dataCount;
 	}
+
+	/**
+	 * Refines the code quality based on value
+	 *
+	 * @param value
+	 * @return codeQuality in String or null if value is null
+	 */
+	public String refineQuality(Object value) {
+		if (value != null) {
+			if (1 == (Long) value) {
+				return "A";
+			} else if (2 == (Long) value) {
+				return "B";
+			} else if (3 == (Long) value) {
+				return "C";
+			} else if (4 == (Long) value) {
+				return "D";
+			} else if (5 == (Long) value) {
+				return "E";
+			} else {
+				return "E";
+			}
+		}
+		return null;
+	}
+
 }

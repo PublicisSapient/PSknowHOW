@@ -79,13 +79,13 @@ public class KPIExcelData {
 	@JsonProperty("Story Size(In story point)")
 	private String storyPoints;
 
-	@JsonProperty("Intake to DOR(In Days)")
+	@JsonProperty("Intake to DOR")
 	private String intakeToDOR;
 
-	@JsonProperty("DOR to DOD (In Days)")
+	@JsonProperty("DOR to DOD")
 	private String dorToDod;
 
-	@JsonProperty("DOD TO Live (In Days)")
+	@JsonProperty("DOD to Live")
 	private String dodToLive;
 
 	@JsonProperty("Open to Triage(In Days)")
@@ -150,6 +150,9 @@ public class KPIExcelData {
 
 	@JsonProperty("Sonar Violations")
 	private String sonarViolation;
+
+	@JsonProperty("Code Quality")
+	private String codeQuality;
 
 	@JsonProperty("Weeks")
 	private String weeks;
@@ -262,14 +265,17 @@ public class KPIExcelData {
 	@JsonProperty("Day")
 	private String days;
 
-	@JsonProperty("No. Of Commit")
+	@JsonProperty("No Of Commit")
 	private String numberOfCommit;
 
-	@JsonProperty("No. of Merge")
+	@JsonProperty("No of Merge")
 	private String numberOfMerge;
 
 	@JsonProperty("Created Date")
 	private String createdDate;
+
+	@JsonProperty("Closed Date")
+	private String closeDate;
 
 	@JsonProperty("Updated Date")
 	private String updatedDate;
@@ -334,8 +340,8 @@ public class KPIExcelData {
 	@JsonProperty("Count")
 	private Map<String, Integer> count;
 
-	@JsonProperty("Initial Commitment")
-	private String initialCommited;
+	@JsonProperty("Scope")
+	private String scopeValue;
 
 	@JsonProperty("PI Name")
 	private String piName;
@@ -376,7 +382,84 @@ public class KPIExcelData {
 	@JsonProperty("Days/Weeks")
 	private String daysWeeks;
 
+	@JsonProperty("Time to Recover (In Hours)")
+	private String timeToRecover;
+
+	@JsonProperty("Wait Time")
+	private String waitTime;
+
+	@JsonProperty("Total Time")
+	private String totalTime;
+
+	@JsonProperty("Flow Efficiency")
+	private Long flowEfficiency;
+
+	@JsonProperty("Release Tag Date (Latest)")
+	private String latestReleaseTagDate;
+
+	@JsonProperty("Dev Completion Date")
+	private String devCompleteDate;
+
+	@JsonProperty("Testing Phase")
+	private String testingPhase;
+
+	@JsonProperty("Escaped defect identifier")
+	private String escapedIdentifier;
+
+	@JsonProperty("Rework Rate")
+	private String reworkRate;
+
+	@JsonProperty("Revert Rate")
+	private Double revertRate;
+
+	@JsonProperty("PR Success Rate")
+	private Double pRSccessRate;
+
+	@JsonProperty("PR Decline Rate")
+	private Double prDeclineRate;
+
+	@JsonProperty("To Do(Value/Percentage)")
+	private String toDo;
+
+	@JsonProperty("In Progress(Value/Percentage)")
+	private String inProgress;
+
+	@JsonProperty("Done(Value/Percentage)")
+	private String done;
+
 	@JsonProperty("Squad")
 	private List<String> squads;
+
+	@JsonProperty("Developer")
+	private String developer;
+
+	@JsonProperty("Merge Request Url")
+	private Map<String, String> mergeRequestUrl;
+
+	@JsonProperty("Innovation Rate")
+	private String innovationRate;
+
+	@JsonProperty("Defect Rate")
+	private String defectRate;
+
+	@JsonProperty("Added Lines")
+	private Long addedLines;
+
+	@JsonProperty("Total Lines Changed")
+	private Long totalLineChanges;
+
+	@JsonProperty("Defect PR")
+	private Long defectPRs;
+
+	@JsonProperty("Revert PR")
+	private Long revertPrs;
+
+	@JsonProperty("Declined PR")
+	private Long declinedPRs;
+
+	@JsonProperty("Closed PR")
+	private Long closedPRs;
+
+
 
 }

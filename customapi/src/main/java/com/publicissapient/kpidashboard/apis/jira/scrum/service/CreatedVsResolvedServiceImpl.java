@@ -33,14 +33,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -107,9 +107,10 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	private JiraIssueRepository jiraIssueRepository;
 
 	@Autowired
-	private FilterHelperService flterHelperService;
-	@Autowired
 	private CacheService cacheService;
+
+	@Autowired
+	private FilterHelperService flterHelperService;
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
@@ -156,7 +157,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.CREATED_VS_RESOLVED_DEFECTS);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.CREATED_VS_RESOLVED_DEFECTS);
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
 		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream()
@@ -424,16 +425,16 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData, Node node,
-			List<JiraIssue> totalCreatedTickets, Map<String, String> closedIssuesWithStatus,
-			List<JiraIssue> totalCreatedTicketsSprintStart) {
+										 List<JiraIssue> totalCreatedTickets,
+										 Map<String, String> closedIssuesWithStatus, List<JiraIssue> totalCreatedTicketsSprintStart) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			Map<String, JiraIssue> createdTicketMap = new HashMap<>();
 			totalCreatedTickets.stream()
 					.forEach(jiraIssue -> createdTicketMap.putIfAbsent(jiraIssue.getNumber(), jiraIssue));
-			KPIExcelUtility.populateCreatedVsResolvedExcelData(node.getSprintFilter().getName(), createdTicketMap,
-					totalCreatedTicketsSprintStart, closedIssuesWithStatus, excelData);
+			KPIExcelUtility.populateCreatedVsResolvedExcelData(node.getSprintFilter().getName(), createdTicketMap
+					, totalCreatedTicketsSprintStart, closedIssuesWithStatus,excelData);
 		}
 
 	}
@@ -564,4 +565,11 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		}
 		return hoverMap;
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI126(),
+				KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId());
+	}
+
 }

@@ -85,7 +85,7 @@ public class BitBucketControllerRTest {
 		kpiElement.setKpiSource("BitBucket");
 		kpiElementList.add(kpiElement);
 		when(bitbucketService.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(post("/bitbucket/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/bitbucket/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -96,7 +96,7 @@ public class BitBucketControllerRTest {
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
-		mockMvc.perform(post("/bitbucket/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/bitbucket/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}
@@ -118,7 +118,7 @@ public class BitBucketControllerRTest {
 		kpiElementList.add(kpiElement);
 
 		when(bitbucketServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -129,7 +129,7 @@ public class BitBucketControllerRTest {
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
-		mockMvc.perform(post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}

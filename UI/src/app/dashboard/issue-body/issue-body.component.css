@@ -1,0 +1,7 @@
+.indicator{
+    width: 1rem;
+    background-color: #3F51B5;
+    margin-right: 1rem;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}

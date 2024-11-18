@@ -6,15 +6,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
@@ -27,6 +25,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.atlassian.jira.rest.client.api.domain.IssueLink;
+import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
@@ -77,9 +77,6 @@ class JiraTestServiceImplTest {
 	private JiraOAuthProperties jiraOAuthProperties;
 	@Mock
 	private ToolCredentialProvider toolCredentialProvider;
-
-	@Mock
-	private ConnectionRepository connectionRepository;
 
 	private static ProjectConfFieldMapping getProjectConfFieldMapping() {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
@@ -154,14 +151,16 @@ class JiraTestServiceImplTest {
 		when(sr.getIssues()).thenReturn(issueIterable);
 
 		JiraTestProcessor jiraProcessor = new JiraTestProcessor();
-		Optional<Connection> connectionOptional = Optional.ofNullable(new Connection());
 		when(jiraTestProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
 		// when(getUserTimeZone(projectConfFieldMapping)).thenReturn("Indian/Maldives");
 		when(testCaseDetailsRepository.findTopByBasicProjectConfigId(any())).thenReturn(null);
 		when(jiraTestProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
-		when(connectionRepository.findById(any())).thenReturn(connectionOptional);
-		assertEquals(0, jiraTestServiceImpl.processesJiraIssues(projectConfFieldMapping));
+		List<String> excludeLinks = new ArrayList<>();
+		excludeLinks.add("cloned from");
+		excludeLinks.add("cloned to");
+		when(jiraTestProcessorConfig.getExcludeLinks()).thenReturn(excludeLinks);
+		assertEquals(3, jiraTestServiceImpl.processesJiraIssues(projectConfFieldMapping));
 	}
 
 	private void prepareIssuesData() {
@@ -184,6 +183,13 @@ class JiraTestServiceImplTest {
 				canBeAutomatedTestValue);
 		issuesFields.add(customIssueField1);
 		issuesFields.add(customIssueField2);
+
+		URI targetIssueUri = URI.create("https://example.com/issues/123");
+		IssueLinkType issueLinkType = new IssueLinkType("Blocks", "Blocks the completion of",
+				IssueLinkType.Direction.OUTBOUND);
+		List<IssueLink> issueLinks = new ArrayList<>();
+		IssueLink customIssueLink = new IssueLink("ISSUE-123", targetIssueUri, issueLinkType);
+		issueLinks.add(customIssueLink);
 		Iterable<IssueField> issueFieldIterable = new Iterable<IssueField>() {
 			@Override
 			public Iterator<IssueField> iterator() {
@@ -194,8 +200,8 @@ class JiraTestServiceImplTest {
 		Issue issue1 = new Issue("summary 1", null, "XYZ-1", 101L, null,
 				new IssueType(null, 11L, "Test", true, "Description 1", null),
 				new Status(null, null, "Open", null, null, null), "description", null, null, null, null, null,
-				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, null, null,
-				null, null, null, null, null, null, labelSet1);
+				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, issueLinks,
+				null, null, null, null, null, null, null, labelSet1);
 		Issue issue2 = new Issue("summary", null, "XYZ-2", 102L, null,
 				new IssueType(null, 11L, "TestCase", true, "Description 2", null),
 				new Status(null, null, "In Process", null, null, null), "description", null, null, null, null, null,
@@ -206,16 +212,6 @@ class JiraTestServiceImplTest {
 				new Status(null, null, "In Testing", null, null, null), "description", null, null, null, null, null,
 				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, null, null,
 				null, null, null, null, null, null, labelSet2);
-		Issue issue4 = new Issue("summary", null, "XYZ-4", 104L, null,
-				new IssueType(null, 11L, "TestCase", true, "Description 4", null),
-				new Status(null, null, "Pending", null, null, null), "description", null, null, null, null, null,
-				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, null, null,
-				null, null, null, null, null, null, labelSet1);
-		Issue issue5 = new Issue("summary", null, "XYZ-5", 105L, null,
-				new IssueType(null, 11L, "Test", true, "Description 5", null),
-				new Status(null, null, "Abandoned", null, null, null), "description", null, null, null, null, null,
-				DateTime.now(), DateTime.now(), null, null, null, null, null, issuesFields, null, null, null, null,
-				null, null, null, null, null, null, labelSet1);
 		issues.add(issue1);
 		issues.add(issue2);
 		issues.add(issue3);

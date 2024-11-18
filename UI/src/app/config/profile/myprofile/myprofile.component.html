@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="content">
   <div class="form-title-container p-mb-3 p-mt-3 p-ml-3 p-mr-3 clearfix bg-cyan p-d-flex">
     <div class="p-md-4 long-text float-left pad-r-0 pad-l-0 ">
@@ -26,11 +26,34 @@
       <h4 class="form_title">Configured email:</h4>
       <span class="sub-text">{{userEmail}}</span>
     </div>
-    <div class="p-md-4 long-text pull-right pad-r-0 pad-l-0" *ngIf="userRole !== '--'">
-      <h4 class="form_title">Current Role:</h4>
-      <span class="sub-text">{{userRole}}</span>
-    </div>
   </div>
+
+
+  <form class="notification-toggle" [formGroup]="notificationEmailForm" *ngIf="isSuperAdmin || isProjectAdmin">
+    <div>
+    <span class="switch-label">Notification preferences:</span>
+    <p class="switch-desc">*Applicable to PROJECT ADMIN and SUPERADMIN roles only</p>
+  </div>
+    <div class="p-d-flex p-ml-2">
+      <p-inputSwitch formControlName="accessAlertNotification" id="accessManageToggle"
+        styleClass="custom-switch"
+        (onChange)="toggleNotificationEmail($event, 'accessAlertNotification')"></p-inputSwitch>
+      <div>
+        <label class="switch-label" for="accessManageToggle">Access alerts</label>
+
+        <p class="switch-desc">Email notifications about access permission requests/grants</p>
+      </div>
+    </div>
+
+    <div class="p-d-flex p-ml-2">
+      <p-inputSwitch formControlName="errorAlertNotification" id="errorAlertToggle"
+        styleClass="custom-switch" (onChange)="toggleNotificationEmail($event, 'errorAlertNotification')"></p-inputSwitch>
+      <div>
+        <label class="switch-label" for="errorAlertToggle">Error alerts</label>
+        <p class="switch-desc">Email notifications about tool processor failures or other errors</p>
+      </div>
+    </div>
+  </form>
 
   <div class="card p-text-center border-warning p-mb-3" *ngIf="userEmail === '--' && !ssoLogin">
     <div class="card-header bg-warning border-warning">
@@ -66,7 +89,7 @@
         Please enter a valid
         email
       </div>
-      
+
       <div *ngIf="message && message.length" class="invalid-text">{{ message }}</div>
 
       <!--Loading div-->
@@ -174,7 +197,7 @@
       </div>
     </a>
 
-    <a *ngIf="!adLogin && !ssoLogin" class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" [class.disabled]="userEmail === '--'"
+    <a *ngIf="loginType?.toLowerCase() == 'standard'" class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" [class.disabled]="userEmail === '--'"
       routerLink="/dashboard/Config/Profile/UserSettings">
       <div class="action-box clearfix bg-role">
         <div class="action-icon float-left">
@@ -194,12 +217,12 @@
           <h3 class="form_title p-mb-2">Current Project Access</h3>
 
           <div class="request-table-container">
-            <p-table [value]="roleBasedProjectList" styleClass="p-datatable-striped" id="project-access-table"  loadingIcon="loading-img" 
+            <p-table [value]="roleBasedProjectList" styleClass="p-datatable-striped" id="project-access-table"  loadingIcon="loading-img"
             rowGroupMode="rowspan" groupRowsBy="role"
             sortField="role" sortMode="single">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Role</th>
+                  <th scope="col">Role</th>
                   <th *ngFor="let col of dynamicCols" id="col.id">
                     {{col?.name}}
                   </th>
@@ -208,7 +231,11 @@
               <ng-template pTemplate="body" let-project let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
                 <tr>
                   <td *ngIf="rowgroup" [attr.rowspan]="rowspan" class='border-bottom border-right'>
-                    <div>{{project['role']}}</div>
+                    <!-- <div>{{project['role']}}</div> -->
+                    <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_PROJECT_ADMIN'">Project Admin</div>
+                    <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_PROJECT_VIEWER'">Project Viewer</div>
+                    <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_SUPERADMIN'">Superadmin</div>
+                    <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_GUEST'">Guest</div>
                   </td>
                   <td class="p-p-3 border-bottom border-right" *ngFor="let col of dynamicCols">
                     <span [ngClass]="{'info-block':col.id === 'projectName'}">{{project[col.id]}}</span>

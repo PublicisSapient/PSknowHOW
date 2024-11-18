@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.IssueKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -86,6 +90,8 @@ public final class KpiDataHelper {
 	private static final String CLOSED = "closed";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	private static final DecimalFormat df = new DecimalFormat(".##");
+	private static final DateTimeFormatter DATE_FORMATTER
+			= DateTimeFormatter. ofPattern("yyyy-MM-dd");
 
 	private KpiDataHelper() {
 	}
@@ -254,9 +260,8 @@ public final class KpiDataHelper {
 							|| date.isEqual(kanbanCapacity.getEndDate()))
 							&& !(date.getDayOfWeek().equals(DayOfWeek.SUNDAY)
 									|| date.getDayOfWeek().equals(DayOfWeek.SATURDAY)); date = date.plusDays(1)) {
-						String formattedDate = DateUtil.localDateTimeConverter(date);
-						dateWiseCapacityMap.putIfAbsent(formattedDate, new ArrayList<>());
-						dateWiseCapacityMap.get(formattedDate).add(kanbanCapacity);
+						dateWiseCapacityMap.putIfAbsent(date.toString(), new ArrayList<>());
+						dateWiseCapacityMap.get(date.toString()).add(kanbanCapacity);
 					}
 				});
 				projectAndDateWiseCapacityMap.put(project, dateWiseCapacityMap);
@@ -689,6 +694,17 @@ public final class KpiDataHelper {
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
 	}
 
+	/**
+	 * To create Map of Modal Object
+	 *
+	 * @param jiraIssueList
+	 * @return
+	 */
+	public static Map<String, IssueKpiModalValue> createMapOfIssueModal(List<JiraIssue> jiraIssueList) {
+		return jiraIssueList.stream()
+				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IssueKpiModalValue()));
+	}
+
 	public static SprintDetails processSprintBasedOnFieldMappings(SprintDetails dbSprintDetail,
 			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus,
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate) {
@@ -738,8 +754,9 @@ public final class KpiDataHelper {
 								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime, LocalDateTime
 										.ofInstant(Instant.parse(sprintDetail.getStartDate()), ZoneId.systemDefault()),
 										endLocalDate));
+					} else {
+						return false; // Don't save completedIssue if issueDateMap is empty
 					}
-					return true;
 				}).collect(Collectors.toSet());
 			}
 		}
@@ -800,32 +817,43 @@ public final class KpiDataHelper {
 				CycleTimeValidationData cycleTimeValidationData = cycleTimeValidationDataOptional.get();
 				IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 				iterationKpiModalValue.setIssueId(customHistory.getStoryID());
+				iterationKpiModalValue.setIssueType(customHistory.getStoryType());
 				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
 				iterationKpiModalValue.setDescription(customHistory.getDescription());
-				String intakeToDor = calWeekHours(cycleTimeValidationData.getIntakeDate(),
-						cycleTimeValidationData.getDorDate());
-				String dorToDod = calWeekHours(cycleTimeValidationData.getDorDate(),
-						cycleTimeValidationData.getDodDate());
-				String dodToLive = calWeekHours(cycleTimeValidationData.getDodDate(),
-						cycleTimeValidationData.getLiveDate());
-				String leadTime = calWeekHours(cycleTimeValidationData.getIntakeDate(),
-						cycleTimeValidationData.getLiveDate());
-				iterationKpiModalValue.setIntakeToDor(getTimeValue(intakeToDor));
-				iterationKpiModalValue.setDorToDod(getTimeValue(dorToDod));
-				iterationKpiModalValue.setDodToLive(getTimeValue(dodToLive));
-				iterationKpiModalValue.setLeadTime(getTimeValue(leadTime));
+				if (isNotEmpty(cycleTimeValidationData.getIntakeTime())) {
+					iterationKpiModalValue.setIntakeToDOR(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getIntakeTime())));
+					iterationKpiModalValue.setDorDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getDorDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				} else {
+					iterationKpiModalValue.setIntakeToDOR(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDorDate(Constant.NOT_AVAILABLE);
+				}
+				if (isNotEmpty(cycleTimeValidationData.getDorTime())) {
+					iterationKpiModalValue.setDodDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getDodDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setDorToDod(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDorTime())));
+				} else {
+					iterationKpiModalValue.setDodDate(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDorToDod(Constant.NOT_AVAILABLE);
+				}
+				if (isNotEmpty(cycleTimeValidationData.getDodTime())) {
+					iterationKpiModalValue.setLiveDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getLiveDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setDodToLive(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDodTime())));
+				} else {
+					iterationKpiModalValue.setLiveDate(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDodToLive(Constant.NOT_AVAILABLE);
+				}
 				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
 			}
 		}
 		return dataMap;
-	}
-
-	private static String getTimeValue(String time) {
-		if (time != null && !time.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-			return CommonUtils.convertIntoDays((int) calculateTimeInDays(Long.parseLong(time)));
-		} else {
-			return Constant.NOT_AVAILABLE;
-		}
 	}
 
 	public static String calWeekHours(DateTime startDateTime, DateTime endDateTime) {
@@ -904,6 +932,7 @@ public final class KpiDataHelper {
 			List<JiraIssueCustomHistory> subTaskHistory, SprintDetails sprintDetail,
 			List<String> fieldMappingDoneStatus, Map<String, String> issueWiseDeliveredStatus) {
 		List<JiraIssue> resolvedSubtaskForSprint = new ArrayList<>();
+		// <Number>,PAIR<JiraIssue,Status>>
 		LocalDateTime sprintEndDateTime = sprintDetail.getCompleteDate() != null
 				? LocalDateTime.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
 				: LocalDateTime.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
@@ -1031,13 +1060,12 @@ public final class KpiDataHelper {
 			if (isStoryPoint) {
 				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
 			} else {
-				Integer timeInMin = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+				Integer timeInMin = Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0);
 				int inHours = timeInMin / 60;
 				return inHours / fieldMapping.getStoryPointToHourMapping();
 			}
 		}).sum();
 	}
-
 
 	/**
 	 * To calculate the added/removed date of sprint change for JiraIssues
@@ -1070,6 +1098,65 @@ public final class KpiDataHelper {
 		});
 
 		return issueDateMap;
+	}
+	
+	/**
+	 * Calculates the total work logs within a specified sprint date range.
+	 *
+	 * @param worklogHistory
+	 *            A list of {@link JiraHistoryChangeLog} objects representing the
+	 *            work log history.
+	 * @param sprintStartDate
+	 *            The start date of the sprint in ISO-8601 format (e.g.,
+	 *            "yyyy-MM-dd'T'HH:mm:ss").
+	 * @param sprintEndDate
+	 *            The end date of the sprint in ISO-8601 format (e.g.,
+	 *            "yyyy-MM-dd'T'HH:mm:ss").
+	 * @return The total work logs within the specified date range as a
+	 *         {@link Double}. Returns 0.0 if no logs are found.
+	 */
+	public static Double getWorkLogs(List<JiraHistoryChangeLog> worklogHistory, String sprintStartDate,
+			String sprintEndDate) {
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(worklogHistory)) {
+			filterStatusUpdationLogs = worklogHistory.stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(jiraIssueSprint.getUpdatedOn().toLocalDate(),
+							LocalDate.parse(sprintStartDate.split("T")[0], DATE_FORMATTER),
+							LocalDate.parse(sprintEndDate.split("T")[0], DATE_FORMATTER)))
+					.collect(Collectors.toList());
+		}
+
+		if (CollectionUtils.isNotEmpty(filterStatusUpdationLogs)) {
+			String firstChangedFrom = StringUtils.isEmpty(filterStatusUpdationLogs.get(0).getChangedFrom()) ? "0"
+					: filterStatusUpdationLogs.get(0).getChangedFrom();
+			String lastChangedTo = filterStatusUpdationLogs.get(filterStatusUpdationLogs.size() - 1).getChangedTo();
+			return Double.parseDouble(lastChangedTo) - Double.parseDouble(firstChangedFrom);
+		}
+		return 0D;
+	}
+
+	/**
+	 * Generates a map that maps a pair of (basicConfigId, parentID) to a set of
+	 * children (Jira issue numbers). This allows quick lookup of child issues based
+	 * on their parent and configuration ID.
+	 *
+	 * @param allJiraIssue
+	 *            A list of all Jira issues.
+	 * @return A map where each key is a pair of (basicConfigId, parentID) and the
+	 *         value is a set of child Jira issue numbers.
+	 */
+	public static Map<Pair<String, String>, Set<String>> getBasicConfigIdAndParentIdWiseChildrenMap(
+			List<JiraIssue> allJiraIssue) {
+
+		// Create a map of (basicConfigId, parentID) to children (JiraIssues) for quick
+		// lookup
+		return allJiraIssue.stream()
+				.filter(issue -> issue.getParentStoryId() != null && !issue.getParentStoryId().isEmpty())
+				.flatMap(issue -> issue.getParentStoryId().stream()
+						.map(parentId -> new AbstractMap.SimpleEntry<>(
+								Pair.of(issue.getBasicProjectConfigId(), parentId), issue.getNumber())))
+				.collect(Collectors.groupingBy(Map.Entry::getKey,
+						Collectors.mapping(Map.Entry::getValue, Collectors.toSet())));
 	}
 
 }

@@ -86,6 +86,8 @@ public class ConfigDetailsServiceImplTest {
 		Mockito.when(customApiConfig.getDateRangeFilterCounts()).thenReturn(Arrays.asList(5, 10, 15));
 		Mockito.when(customApiConfig.getDateRangeFilterTypes()).thenReturn(Arrays.asList("Days", "Weeks", "Months"));
 		Mockito.when(customApiConfig.getIsGitlabFieldEnable()).thenReturn(false);
+		Mockito.when(customApiConfig.getSprintCountForKpiCalculation()).thenReturn(5);
+
 		ConfigDetails configDetail = getConfigDetailsObject();
 		ConfigDetails configDetails = configDetailsServiceImpl.getConfigDetails();
 		Assert.assertEquals(configDetail.getKpiWiseAggregationType(), configDetails.getKpiWiseAggregationType());

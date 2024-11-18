@@ -49,10 +49,12 @@ import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.azure.util.AzureConstants;
 import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
+import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.iterations.AzureIterationsModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +73,9 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	private final AzureProcessorConfig azureProcessorConfig;
 
 	ObjectMapper mapper;
+
+	@Autowired
+	private ProcessorToolConnectionService processorToolConnectionService;
 
 	@Autowired
 	public ProcessorAsyncAzureRestClientImpl(RestOperationsFactory<RestOperations> restOperationsFactory,
@@ -284,9 +289,16 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	@Override
 	public AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
 			ProjectConfFieldMapping projectConfig, boolean dataExist) {
+
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
-		StringBuilder url = new StringBuilder(
-				AzureProcessorUtil.joinURL(azureServer.getUrl(), azureProcessorConfig.getApiEndpointWiql()));
+		StringBuilder url = new StringBuilder(azureServer.getUrl());
+
+		if (projectConfig.getProjectToolConfig() != null
+				&& StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())) {
+			url.append(AzureConstants.FORWARD_SLASH);
+			url.append(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getProjectToolConfig().getTeam()));
+		}
+		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointWiql()));
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
 		if (null != projectConfig.getFieldMapping().getJiraIssueTypeNames()
@@ -327,6 +339,13 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 			}
 
 		} else {
+			if (responseEntity.getStatusCode().is4xxClientError()) {
+				String errMsg = ClientErrorMessageEnum.fromValue(responseEntity.getStatusCode().value())
+						.getReasonPhrase();
+				processorToolConnectionService
+						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+			}
+
 			log.error("Response Error for Wiql API call ");
 		}
 		return azureWiqlModel;
@@ -336,8 +355,14 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	public AzureIterationsModel getIterationsResponse(AzureServer azureServer) {
 		AzureIterationsModel azureIterationsModel = new AzureIterationsModel();
 
-		StringBuilder url = new StringBuilder(
-				AzureProcessorUtil.joinURL(azureServer.getUrl(), azureProcessorConfig.getApiEndpointIterations()));
+		StringBuilder url = new StringBuilder(azureServer.getUrl());
+
+		if (StringUtils.isNotEmpty(azureServer.getTeam())) {
+			url.append(AzureConstants.FORWARD_SLASH);
+			url.append(AzureProcessorUtil.encodeSpaceInUrl(azureServer.getTeam()));
+		}
+		url = new StringBuilder(
+				AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
 		ResponseEntity<String> responseEntity = doRestCall(url.toString(), azureServer);
@@ -482,8 +507,16 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	@Override
 	public List<String> getIssuesBySprintResponse(AzureServer azureServer, String sprintId) {
 		List<String> sprintWiseItemIdList = new ArrayList<>();
-		StringBuilder url = new StringBuilder(AzureProcessorUtil.joinURL(azureServer.getUrl(),
-				azureProcessorConfig.getApiEndpointIterations(), "/" + sprintId + "/workitems"));
+
+		StringBuilder url = new StringBuilder(azureServer.getUrl());
+		if (StringUtils.isNotEmpty(azureServer.getTeam())) {
+			url.append(AzureConstants.FORWARD_SLASH);
+			url.append(AzureProcessorUtil.encodeSpaceInUrl(azureServer.getTeam()));
+		}
+
+		url = new StringBuilder(
+				AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
+		url.append(AzureConstants.FORWARD_SLASH).append(sprintId).append("/workitems");
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
 		ResponseEntity<String> responseEntity = doRestCall(url.toString(), azureServer);

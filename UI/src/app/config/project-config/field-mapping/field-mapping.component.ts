@@ -17,13 +17,12 @@
  ******************************************************************************/
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MessageService,ConfirmationService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { ChangeDetectionStrategy } from '@angular/core';
 import { FieldMappingFormComponent } from 'src/app/shared-module/field-mapping-form/field-mapping-form.component';
 declare const require: any;
 
@@ -46,7 +45,9 @@ export class FieldMappingComponent implements OnInit {
   populateDropdowns = true;
   uploadedFileName = '';
   fieldMappingConfig = [];
-  @ViewChild('fieldMappingFormComp') fieldMappingFormComp : FieldMappingFormComponent;
+  @ViewChild('fieldMappingFormComp') fieldMappingFormComp: FieldMappingFormComponent;
+  kpiId: string;
+  metaDataTemplateCode: string;
 
 
   private setting = {
@@ -54,9 +55,10 @@ export class FieldMappingComponent implements OnInit {
       dynamicDownload: null as HTMLElement
     }
   };
+  selectedProject: any;
 
   constructor(private formBuilder: UntypedFormBuilder, private router: Router, private sharedService: SharedService,
-    private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService,private confirmationService: ConfirmationService) { }
+    private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
 
@@ -66,7 +68,7 @@ export class FieldMappingComponent implements OnInit {
     } else {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
-
+    this.kpiId = this.selectedConfig?.type?.toLowerCase() === 'kanban' ? 'kpi1' : 'kpi0';
     if (this.sharedService.getSelectedToolConfig()) {
       this.selectedToolConfig = this.sharedService.getSelectedToolConfig().filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
       if (!this.selectedToolConfig || !this.selectedToolConfig.length) {
@@ -80,21 +82,21 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getMappings() {
-    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping();
+    this.selectedFieldMapping = this.sharedService.getSelectedFieldMapping()?.fieldMappingResponses;
+    this.metaDataTemplateCode = this.sharedService.getSelectedFieldMapping()?.metaTemplateCode;
     if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
       for (const obj in this.selectedFieldMapping) {
         if (this.fieldMappingForm && this.fieldMappingForm.controls[obj]) {
           this.fieldMappingForm.controls[obj].setValue(this.selectedFieldMapping[obj]);
         }
       }
-      // this.generateAdditionalFilterMappings();
     }
   }
 
   getKPIFieldMappingRelationships() {
-    const finalMappingURL = this.selectedConfig?.Type?.toLowerCase() === 'kanban' ? `${this.selectedConfig.id}/kpi1` : `${this.selectedConfig.id}/kpi0`
+    const finalMappingURL = this.selectedConfig?.type?.toLowerCase() === 'kanban' ? `${this.selectedConfig.id}/kpi1` : `${this.selectedConfig.id}/kpi0`
     this.http.getKPIFieldMappingConfig(finalMappingURL).subscribe(response => {
-      if(response && response['success']){
+      if (response && response['success']) {
         this.fieldMappingConfig = response?.data.fieldConfiguration;
       }
     });
@@ -102,7 +104,7 @@ export class FieldMappingComponent implements OnInit {
 
   getDropdownData() {
     if (this.selectedToolConfig && this.selectedToolConfig.length && this.selectedToolConfig[0].id) {
-      this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+      this.http.getKPIConfigMetadata(this.sharedService.getSelectedProject().id, this.kpiId).subscribe(Response => {
         if (Response.success) {
           this.fieldMappingMetaData = Response.data;
         } else {
@@ -128,7 +130,7 @@ export class FieldMappingComponent implements OnInit {
 
 
   export() {
-    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(resp=>{
+    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(resp => {
       this.dyanmicDownloadByHtmlTag({
         fileName: 'mappings.json',
         text: JSON.stringify(resp['data'])

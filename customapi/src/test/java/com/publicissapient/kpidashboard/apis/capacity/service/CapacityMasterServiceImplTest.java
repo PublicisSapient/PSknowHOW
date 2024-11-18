@@ -35,13 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -57,19 +50,26 @@ import org.testng.collections.Lists;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.data.CapacityKpiDataDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KanbanCapacityDataFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintDetailsService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCapacity;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
+import com.publicissapient.kpidashboard.common.model.application.LeafNodeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 
 /**
@@ -146,7 +146,7 @@ public class CapacityMasterServiceImplTest {
 		kanbanDbData.setCapacity(200.0);
 
 		scrumCapacityAssigneeMaster.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
-
+		
 		when(capacityKpiDataRepository.findAll()).thenReturn(capacityKpiDataList);
 		when(assigneeDetailsRepository
 				.findByBasicProjectConfigId(anyString()))
@@ -265,6 +265,7 @@ public class CapacityMasterServiceImplTest {
 	@Test
 	public void testProcessCapacityData_kanban_failure() {
 		kanbanCapacity = new CapacityMaster();
+		kanbanCapacity.setBasicProjectConfigId(new ObjectId("65eec0156f35b0294eb765f6"));
 		assertNull(capacityMasterServiceImpl.processCapacityData(kanbanCapacity));
 	}
 

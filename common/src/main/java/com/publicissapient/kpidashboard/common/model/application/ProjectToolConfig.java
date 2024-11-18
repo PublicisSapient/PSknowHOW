@@ -48,24 +48,30 @@ public class ProjectToolConfig extends BasicModel {
 	private String toolName;
 	private ObjectId basicProjectConfigId;
 	private ObjectId connectionId;
+	private boolean brokenConnection;
 	private String projectId;
 	private String projectKey;
 	private String jobName;
+	private String azurePipelineName;
 	private String jobType;
 	private String branch;
 	private String defaultBranch;
 	private String env;
 	private String repositoryName;
+	private String gitFullUrl;
 	private String repoSlug;
 	private String bitbucketProjKey;
 	private String apiVersion;
 	private String newRelicApiQuery;
 	private List<String> newRelicAppNames;
 	private String createdAt;
+	private String createdBy;
 	private String updatedAt;
+	private String updatedBy;
 	private boolean queryEnabled;
 	private String boardQuery;
 	private List<BoardDetails> boards;
+	private String team;
 	// TestCase Fields For zephyr tool
 	private List<String> regressionAutomationLabels;
 	private String testAutomationStatusLabel;
@@ -109,8 +115,6 @@ public class ProjectToolConfig extends BasicModel {
 	// jiraIterationCompletionStatusCustomField field mapping update identifier
 	private boolean azureIterationStatusFieldUpdate;
 	private String projectComponent;
-
 	private Boolean isNew;
-	private String repoCloningEnabled;
 
 }

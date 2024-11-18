@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -32,8 +33,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
+import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +52,9 @@ public class JobScheduler {
 	private static final String NUMBER_OF_PROCESSOR_AVAILABLE_MSG = "Total number of processor available : {} = number or projects run in parallel";
 	private static final String PROJECT_ID = "projectId";
 	private static final String CURRENTTIME = "currentTime";
+	private static final String IS_SCHEDULER = "isScheduler";
+	private static final String VALUE = "true";
+	private static final String PROCESSOR_ID = "processorId";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -64,6 +71,10 @@ public class JobScheduler {
 	Job fetchIssueKanbanJqlJob;
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
+	@Autowired
+	private OngoingExecutionsService ongoingExecutionsService;
+	@Autowired
+	private JiraProcessorRepository jiraProcessorRepository;
 
 	/**
 	 * This method is used to start scrum job setup with board
@@ -83,11 +94,18 @@ public class JobScheduler {
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-				try {
-					jobLauncher.run(fetchIssueScrumBoardJob, params);
-				} catch (Exception e) {
-					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+				final String projectId = params.getString(PROJECT_ID);
+				if (!ongoingExecutionsService.isExecutionInProgress(projectId)) {
+					try {
+						// making execution onGoing for project
+						ongoingExecutionsService.markExecutionInProgress(projectId);
+						jobLauncher.run(fetchIssueScrumBoardJob, params);
+					} catch (Exception e) {
+						log.info(
+								"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+								projectId, e);
+						ongoingExecutionsService.markExecutionAsCompleted(projectId);
+					}
 				}
 			});
 		}
@@ -112,11 +130,18 @@ public class JobScheduler {
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-				try {
-					jobLauncher.run(fetchIssueScrumJqlJob, params);
-				} catch (Exception e) {
-					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+				final String projectId = params.getString(PROJECT_ID);
+				if (!ongoingExecutionsService.isExecutionInProgress(projectId)) {
+					try {
+						// making execution onGoing for project
+						ongoingExecutionsService.markExecutionInProgress(projectId);
+						jobLauncher.run(fetchIssueScrumJqlJob, params);
+					} catch (Exception e) {
+						log.info(
+								"Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+								projectId, e);
+						ongoingExecutionsService.markExecutionAsCompleted(projectId);
+					}
 				}
 			});
 		}
@@ -139,11 +164,18 @@ public class JobScheduler {
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-				try {
-					jobLauncher.run(fetchIssueKanbanBoardJob, params);
-				} catch (Exception e) {
-					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+				final String projectId = params.getString(PROJECT_ID);
+				if (!ongoingExecutionsService.isExecutionInProgress(projectId)) {
+					try {
+						// making execution onGoing for project
+						ongoingExecutionsService.markExecutionInProgress(projectId);
+						jobLauncher.run(fetchIssueKanbanBoardJob, params);
+					} catch (Exception e) {
+						log.info(
+								"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+								projectId, e);
+						ongoingExecutionsService.markExecutionAsCompleted(projectId);
+					}
 				}
 			});
 		}
@@ -159,20 +191,27 @@ public class JobScheduler {
 	public void startKanbanJqlJob() {
 		log.info("Request coming for job for Kanban project configured with JQL via cron");
 
-		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+		List<String> kanbanJQLbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				true, true);
 
-		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
+		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanJQLbasicProjConfIds);
 		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-				try {
-					jobLauncher.run(fetchIssueKanbanJqlJob, params);
-				} catch (Exception e) {
-					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+				final String projectId = params.getString(PROJECT_ID);
+				if (!ongoingExecutionsService.isExecutionInProgress(projectId)) {
+					try {
+						// making execution onGoing for project
+						ongoingExecutionsService.markExecutionInProgress(projectId);
+						jobLauncher.run(fetchIssueKanbanJqlJob, params);
+					} catch (Exception e) {
+						log.info(
+								"Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+								projectId, e);
+						ongoingExecutionsService.markExecutionAsCompleted(projectId);
+					}
 				}
 			});
 		}
@@ -181,12 +220,15 @@ public class JobScheduler {
 
 	private List<JobParameters> getDynamicParameterSets(List<String> scrumBoardbasicProjConfIds) {
 		List<JobParameters> parameterSets = new ArrayList<>();
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 
 		scrumBoardbasicProjConfIds.forEach(configId -> {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			// Add dynamic parameters as needed
 			jobParametersBuilder.addString(PROJECT_ID, configId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(IS_SCHEDULER, VALUE);
+			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
 
 			JobParameters params = jobParametersBuilder.toJobParameters();
 			parameterSets.add(params);

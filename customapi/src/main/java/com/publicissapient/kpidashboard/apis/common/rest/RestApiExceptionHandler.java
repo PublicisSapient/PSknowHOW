@@ -21,16 +21,15 @@ package com.publicissapient.kpidashboard.apis.common.rest;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 import com.publicissapient.kpidashboard.common.util.UnsafeDeleteException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -74,7 +74,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-			HttpStatus status, WebRequest request) {
+															 HttpStatusCode status, WebRequest request) {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		log.error(ex.getMessage());
 		ErrorResponse errorResponse = createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -92,25 +92,11 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @return {@code ResponseEntity<Object>}
 	 */
 	@Override
-	protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status,
-			WebRequest request) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		log.warn("Bad Request - bind exception: ", ex);
 		return new ResponseEntity<>(ErrorResponse.fromBindException(ex), headers, status);
-	}
-
-	/**
-	 * 
-	 * @param ex
-	 * @param headers
-	 * @param status
-	 * @param request
-	 * @return {@code ResponseEntity<Object>}
-	 */
-	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		return handleBindException(new BindException(ex.getBindingResult()), headers, status, request);
 	}
 
 	/**

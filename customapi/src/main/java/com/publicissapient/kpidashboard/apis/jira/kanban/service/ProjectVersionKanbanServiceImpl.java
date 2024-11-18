@@ -101,7 +101,7 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES_KANBAN);
 		// 3rd change : remove code to set trendValuelist and call getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.PROJECT_RELEASES_KANBAN);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PROJECT_RELEASES_KANBAN);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -134,7 +134,10 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 				Map<String, Double> dateCount = getLastNMonth(customApiConfig.getJiraXaxisMonthCount());
 				List<DataCount> dc = new ArrayList<>();
 				List<ProjectVersion> projectVersionList = Lists.newArrayList();
-				for (ProjectVersion pv : projectRelease.getListProjectVersion()) {
+				// Filter to include only released versions
+				List<ProjectVersion> releasedVersions = projectRelease.getListProjectVersion().stream()
+						.filter(ProjectVersion::isReleased).toList();
+				for (ProjectVersion pv : releasedVersions) {
 					if (pv.getReleaseDate() != null && dateCount.keySet().contains(
 							pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear())) {
 						String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH

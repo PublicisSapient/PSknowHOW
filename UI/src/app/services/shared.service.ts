@@ -42,8 +42,8 @@ export class SharedService {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
-  iterationCongifData=new BehaviorSubject({});
-  kpiListNewOrder= new BehaviorSubject([]);
+  iterationCongifData = new BehaviorSubject({});
+  kpiListNewOrder = new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;
   private selectedProject;
@@ -52,10 +52,11 @@ export class SharedService {
   public passErrorToErrorPage;
   public engineeringMaturityExcelData;
   public suggestionsData: any = [];
-  private passServerRole= new BehaviorSubject<boolean>(false);
+  private passServerRole = new BehaviorSubject<boolean>(false);
   public boardId = 1;
-  public isDownloadExcel;
-  addtionalFilterBackup = {} ;
+  private authToken = '';
+  public sprintForRnR;
+  public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -72,6 +73,8 @@ export class SharedService {
   noSprints = new BehaviorSubject<any>(false);
   noSprintsObs = this.noSprints.asObservable();
   noProjects = new BehaviorSubject<boolean>(false);
+  noProjectsObj = {};
+  noProjectsObjObs = new BehaviorSubject<any>({});
   noProjectsObs = this.noProjects.asObservable();
   showTableView = new BehaviorSubject<string>('chart');
   showTableViewObs = this.showTableView.asObservable();
@@ -85,12 +88,40 @@ export class SharedService {
   currentUserDetailsSubject = new BehaviorSubject<any>(null);
   currentUserDetailsObs = this.currentUserDetailsSubject.asObservable();
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
+  public onScrumKanbanSwitch = new Subject<{ selectedType: string }>();
+  public onTabSwitch = new Subject<{ selectedBoard: string }>();
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
-  fieldMappingOptionsMetaData : any = []
-  kpiCardView : string = "chart";
+  fieldMappingOptionsMetaData: any = []
+  kpiCardView: string = "chart";
   maturityTableLoader = new Subject<boolean>();
-  globalConfigData;
+  globalConfigData: any
+  visibleSideBarSubject = new BehaviorSubject(false);
+  visibleSideBarObs = this.visibleSideBarSubject.asObservable();
+  addtionalFilterBackup = {};
+  projectQueryParamSubject = new BehaviorSubject<any>('');
+  projectQueryParamObs = this.projectQueryParamSubject.asObservable();
+  sprintQueryParamSubject = new BehaviorSubject<any>('');
+  sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
+  processorTraceLogs = [];
+  selectedTrendsEvent;
+  selectedTrendsEventSubject;
+  projectList = [];
+
+  public currentIssue = new BehaviorSubject({});
+  public currentData = this.currentIssue.asObservable();
+
+  // For additional filters
+  public populateAdditionalFilters;
+  public triggerAdditionalFilters;
+
+  boardNamesListSubject = new BehaviorSubject<any>([]);
+  boardNamesListObs = this.boardNamesListSubject.asObservable();
+
+  isRecommendationsEnabledSubject = new BehaviorSubject<boolean>(false);
+  isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
+
+  selectedMap = {};
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -98,23 +129,43 @@ export class SharedService {
     this.passErrorToErrorPage = new EventEmitter();
     this.passAllProjectsData = new EventEmitter();
     this.passEventToNav = new EventEmitter();
-    this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
+    // For additional filters
+    this.populateAdditionalFilters = new EventEmitter();
+    this.triggerAdditionalFilters = new EventEmitter();
+    // this.selectedTrendsEvent = new EventEmitter();
+
+    this.selectedTrendsEventSubject = new Subject<any>();
+    // Observable to subscribe to
+    this.selectedTrendsEvent = this.selectedTrendsEventSubject.asObservable();
   }
 
-
-  ngOnInit() {
+  // for DSV
+  setIssueData(data) {
+    this.currentIssue.next(data);
   }
 
-  setCurrentSelectedSprint(selectedSprint){
+  setCurrentSelectedSprint(selectedSprint) {
     this.currentSelectedSprint = selectedSprint;
     this.currentSelectedSprintSub.next(selectedSprint);
   }
 
+  // only Old UI code
   setSelectedTypeOrTabRefresh(selectedTab, selectedType) {
     this.selectedtype = selectedType;
     this.selectedTab = selectedTab;
     this.onTypeOrTabRefresh.next({ selectedTab, selectedType });
+  }
+  // end here
+
+  setScrumKanban(selectedType) {
+    this.selectedtype = selectedType;
+    this.onScrumKanbanSwitch.next({ selectedType });
+  }
+
+  setSelectedBoard(selectedBoard) {
+    this.selectedTab = selectedBoard;
+    this.onTabSwitch.next({ selectedBoard });
   }
 
   setSelectedTab(selectedTab) {
@@ -136,14 +187,35 @@ export class SharedService {
   }
 
   // setter dash config data
-  setDashConfigData(data) {
+  setDashConfigData(data, emit = true) {
     this.dashConfigData = JSON.parse(JSON.stringify(data));
+    if (emit) {
       this.globalDashConfigData.emit(data);
+    }
   }
 
   // getter kpi config data
   getDashConfigData() {
     return this.dashConfigData;
+  }
+
+  // Additional Filters in New UI
+  setAdditionalFilters(data) {
+    this.populateAdditionalFilters.emit(data);
+  }
+
+  // Additional Filters in New UI
+  applyAdditionalFilters(filters) {
+    this.triggerAdditionalFilters.emit(filters);
+  }
+
+  // getter-setter for selectedMap
+  getSelectedMap() {
+    return this.selectedMap;
+  }
+
+  setSelectedMap(data) {
+    this.selectedMap = data;
   }
 
   // login account type
@@ -157,6 +229,10 @@ export class SharedService {
 
   setLogoImage(logoImage: File) {
     this.subject.next({ File: logoImage });
+  }
+
+  setVisibleSideBar(value) {
+    this.visibleSideBarSubject.next(value);
   }
 
   clearLogoImage() {
@@ -194,10 +270,10 @@ export class SharedService {
     return this.sharedObject;
   }
 
-  setEmptyData(flag){
+  setEmptyData(flag) {
     this.setNoData.next(flag);
   }
-  getEmptyData(){
+  getEmptyData() {
     return this.setNoData.asObservable();
   }
 
@@ -207,7 +283,7 @@ export class SharedService {
   }
 
   // calls when user select different Tab (executive , quality etc)
-  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true) {
+  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true, configDetails = null, loading = false, dashConfigData = null, selectedType = null) {
     this.sharedObject = {};
     this.sharedObject.masterData = masterData;
     this.sharedObject.filterData = filterData;
@@ -215,10 +291,17 @@ export class SharedService {
     this.sharedObject.selectedTab = selectedTab;
     this.sharedObject.isAdditionalFilters = isAdditionalFilters;
     this.sharedObject.makeAPICall = makeAPICall;
+    this.sharedObject.loading = loading;
+    this.sharedObject.dashConfigData = dashConfigData;
+    this.sharedObject.selectedType = selectedType;
+    if (configDetails) {
+      this.sharedObject.configDetails = configDetails;
+    }
+
     //emit once navigation complete
-    setTimeout(()=>{
+    setTimeout(() => {
       this.passDataToDashboard.emit(this.sharedObject);
-    },0);
+    }, 0);
   }
 
   /** KnowHOW Lite */
@@ -267,37 +350,43 @@ export class SharedService {
     this.passServerRole.next(value);
   }
 
-  setColorObj(value){
+  setColorObj(value) {
     this.mapColorToProject.next(value);
   }
 
-  setKpiSubFilterObj(value){
+  setKpiSubFilterObj(value: any) {
     this.selectedFilterOption.next(value);
   }
 
-  setNoSprints(value){
+  setNoSprints(value) {
     this.noSprints.next(value);
   }
-  setNoProjects(value){
+  setNoProjects(value) {
     this.noProjects.next(value);
   }
-  setClickedItem(event){
+
+  setNoProjectsForNewUI(valueObj) {
+    this.noProjectsObj = valueObj;
+    this.noProjectsObjObs.next(this.noProjectsObj);
+  }
+
+  setClickedItem(event) {
     this.clickedItem.next(event);
   }
-  getClickedItem(){
+  getClickedItem() {
     return this.clickedItem.asObservable();
   }
-  setSelectedDateFilter(xLabel){
+  setSelectedDateFilter(xLabel) {
     this.xLabelValue = xLabel;
   }
-  getSelectedDateFilter(){
+  getSelectedDateFilter() {
     return this.xLabelValue;
   }
-  setShowTableView(val){
+  setShowTableView(val) {
     this.kpiCardView = val;
     this.showTableView.next(val);
   }
-  getKPICardView(){
+  getKPICardView() {
     return this.kpiCardView;
   }
 
@@ -309,19 +398,19 @@ export class SharedService {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
-   setGlobalDownload(val){
-    this.isDownloadExcel.emit(val);
+
+  setSelectedLevel(val) {
+    this.selectedLevel = { ...val };
   }
-  setSelectedLevel(val){
-    this.selectedLevel = {...val};
-  }
-  getSelectedLevel(){
+  getSelectedLevel() {
     return this.selectedLevel;
   }
-  setSelectedTrends(values){
+  setSelectedTrends(values) {
     this.selectedTrends = values;
+    // this.selectedTrendsEvent.emit(values);
+    this.selectedTrendsEventSubject.next(values);
   }
-  getSelectedTrends(){
+  getSelectedTrends() {
     return this.selectedTrends;
   }
 
@@ -331,45 +420,42 @@ export class SharedService {
     this.isSideNav.emit(flag);
   }
 
-  setCurrentUserDetails(details){
+  setCurrentUserDetails(details) {
 
-    if(!this.currentUserDetails  || !details || Object.keys(details).length === 0){
-      this.currentUserDetails=details;
-    }else{
-      this.currentUserDetails={...this.currentUserDetails,...details};
+    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
+      this.currentUserDetails = details;
+    } else {
+      this.currentUserDetails = { ...this.currentUserDetails, ...details };
     }
+    localStorage.setItem('currentUserDetails', JSON.stringify(this.currentUserDetails));
     this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
-  getCurrentUserDetails(key){
-    if(this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)){
-      return this.currentUserDetails[key] ;
-     }
+  getCurrentUserDetails(key = null) {
+    if (key) {
+      if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
+        return this.currentUserDetails[key];
+      }
+    } else if (this.currentUserDetails) {
+      return this.currentUserDetails;
+    }
     return false;
   }
 
-  setNoRelease(value){
+  setNoRelease(value) {
     this.noRelease.next(value)
   }
 
-  setFieldMappingMetaData(metaDataObj){
-    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData,metaDataObj];
+  setFieldMappingMetaData(metaDataObj) {
+    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData, metaDataObj];
   }
 
-  getFieldMappingMetaData(){
+  getFieldMappingMetaData() {
     return this.fieldMappingOptionsMetaData;
   }
 
-  setMaturiyTableLoader(value){
+  setMaturiyTableLoader(value) {
     this.maturityTableLoader.next(value)
-  }
-
-  setAddtionalFilterBackup(data){
-    this.addtionalFilterBackup = data;
-  }
-
-  getAddtionalFilterBackup(){
-    return this.addtionalFilterBackup;
   }
 
   setGlobalConfigData(data) {
@@ -378,6 +464,105 @@ export class SharedService {
 
   getGlobalConfigData() {
     return this.globalConfigData;
+  }
+
+  setAuthToken(value) {
+    this.authToken = value;
+  }
+
+  setProjectList(projects) {
+    this.projectList = projects;
+  }
+
+  getProjectList() {
+    return this.projectList;
+  }
+
+  getAuthToken() {
+    return this.authToken;
+  }
+
+  setProjectQueryParamInFilters(value) {
+    this.projectQueryParamSubject.next({ value });
+  }
+
+  setSprintQueryParamInFilters(value) {
+    this.sprintQueryParamSubject.next({ value });
+  }
+
+  setAddtionalFilterBackup(data) {
+    this.addtionalFilterBackup = data;
+  }
+
+  getAddtionalFilterBackup() {
+    return this.addtionalFilterBackup;
+  }
+  setProcessorLogDetails(data) {
+    this.processorTraceLogs = data;
+  }
+
+  getProcessorLogDetails() {
+    return this.processorTraceLogs
+  }
+
+  setUpdatedBoardList(kpiListData, selectedType) {
+    const boardNameArr = [];
+    if (
+      kpiListData[selectedType] &&
+      Array.isArray(kpiListData[selectedType])
+    ) {
+      for (let i = 0; i < kpiListData[selectedType]?.length; i++) {
+        let kpiShownCount = 0;
+        let board = kpiListData[selectedType][i];
+        let kpiList;
+        if (board?.boardName?.toLowerCase() === 'iteration') {
+          kpiList = board?.['kpis']?.filter((item) => item.kpiId != 'kpi121');
+        } else {
+          kpiList = board?.['kpis'];
+        }
+        kpiList?.forEach((item) => {
+          if (item.shown) {
+            kpiShownCount++;
+          }
+        });
+        if (kpiShownCount > 0) {
+          boardNameArr.push({
+            boardName: board?.boardName,
+            link: board?.boardSlug
+          });
+        }
+      }
+
+    }
+
+    for (let i = 0; i < kpiListData['others']?.length; i++) {
+      let kpiShownCount = 0;
+      kpiListData['others'][i]['kpis']?.forEach((item) => {
+        if (item.shown) {
+          kpiShownCount++;
+        }
+      });
+      if (kpiShownCount > 0) {
+        boardNameArr.push({
+          boardName: kpiListData['others'][i].boardName,
+          link:
+            kpiListData['others'][i].boardSlug
+        });
+      }
+    }
+    this.boardNamesListSubject.next(boardNameArr);
+  }
+
+  getSprintForRnR() {
+    return this.sprintForRnR;
+  }
+
+  setSprintForRnR(sprint) {
+    this.sprintForRnR = sprint;
+  }
+
+  setRecommendationsFlag(value: boolean) {
+    this.isRecommendationsEnabledSubject.next(value);
   }
 }
 

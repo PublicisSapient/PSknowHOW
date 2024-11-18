@@ -117,7 +117,6 @@ public class ZephyrServerImplTest {
 
 	@Test
 	public void getTestCaseSuccess() {
-
 		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://test.com/jira");
 		when(zephyrUtil.buildAPIUrl(toolInfo.getUrl(), toolInfo.getApiEndPoint()))
 				.thenReturn(UriComponentsBuilder.fromPath("https://test.com/jira/rest/atm/1.0"));
@@ -146,5 +145,22 @@ public class ZephyrServerImplTest {
 		assertThrows(RestClientException.class, () -> {
 			zephyrServer.getTestCase(0, projectConfFieldMapping);
 		});
+	}
+
+	@Test
+	public void testGetTestCaseBearerToken() {
+		toolInfo.setBearerToken(true);
+		toolInfo.setPatOAuthToken("ACBD");
+		when(zephyrUtil.getZephyrUrl(toolInfo.getUrl())).thenReturn("https://test.com/jira");
+		when(zephyrUtil.buildAPIUrl(toolInfo.getUrl(), toolInfo.getApiEndPoint()))
+				.thenReturn(UriComponentsBuilder.fromPath("https://test.com/jira/rest/atm/1.0"));
+		when(zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()))
+				.thenReturn("base64String");
+		when(zephyrUtil.buildBearerHeader(Mockito.anyString())).thenReturn(mockHttpEntity);
+		when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.GET), Mockito.eq(mockHttpEntity),
+				Mockito.any(Class.class))).thenReturn(testCaseResponse);
+		when(testCaseResponse.getStatusCode()).thenReturn(HttpStatus.OK);
+		when(testCaseResponse.getBody()).thenReturn(zephyrTestCaseArr);
+		assertEquals((zephyrServer.getTestCase(0, projectConfFieldMapping)).size(), testCaseList.size());
 	}
 }

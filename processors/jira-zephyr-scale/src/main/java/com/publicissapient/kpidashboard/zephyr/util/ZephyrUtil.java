@@ -41,6 +41,7 @@ public class ZephyrUtil {
 	private static final String API_PATH = "rest/atm/1.0";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String AUTH_PREFIX = "Basic ";
+	private static final String BEARER = "Bearer ";
 	private static final String URL_SEPARATOR = "//";
 	@Autowired
 	private ZephyrConfig processorConfiguration;
@@ -135,5 +136,11 @@ public class ZephyrUtil {
 
 	public String decryptPassword(String encryptedPassword) {
 		return aesEncryptionService.decrypt(encryptedPassword, zephyrConfig.getAesEncryptionKey());
+	}
+
+	public HttpEntity<String> buildBearerHeader(String patOAuthToken) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(AUTHORIZATION, BEARER + patOAuthToken);
+		return new HttpEntity<>(headers);
 	}
 }

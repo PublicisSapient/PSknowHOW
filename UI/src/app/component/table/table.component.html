@@ -2,7 +2,7 @@
     <p-table [value]="data" styleClass="p-datatable-sm" [autoLayout]="'true'" [ngStyle]="{'width':'100%'}">
         <ng-template pTemplate="header">
             <tr>
-                <th *ngFor="let col of cols"> {{col.header}}</th>
+                <th scope="col" *ngFor="let col of cols"> {{col.header}}</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-row>

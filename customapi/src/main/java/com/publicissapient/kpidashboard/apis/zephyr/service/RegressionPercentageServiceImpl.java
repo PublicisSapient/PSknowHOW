@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
@@ -53,6 +53,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -113,7 +114,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.REGRESSION_AUTOMATION_COVERAGE);
 		// 3rd change : remove code to set trendValuelist and call getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.REGRESSION_AUTOMATION_COVERAGE);
 		kpiElement.setTrendValueList(trendValues);
 
@@ -366,5 +367,11 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 				.filter(testExecution -> testExecution.getAutomatedRegressionTestCases() != null
 						&& testExecution.getTotalRegressionTestCases() != null)
 				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI42(),
+				KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId());
 	}
 }

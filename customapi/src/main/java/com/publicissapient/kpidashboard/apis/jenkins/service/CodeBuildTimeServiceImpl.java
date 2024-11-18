@@ -37,8 +37,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -65,6 +65,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -111,7 +112,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.CODE_BUILD_TIME);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.CODE_BUILD_TIME);
 		Map<String, Map<String, List<DataCount>>> issueTypeProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((issueType, dataCounts) -> {
@@ -181,11 +182,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
 					String jobName;
 					List<Build> buildList = entry.getValue();
-					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
-						jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
-					} else {
-						jobName = entry.getKey() + CommonConstant.ARROW + trendLineName;
-					}
+					jobName = getJobName(trendLineName, entry, buildList);
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuild(null, end, buildList, trendLineName, trendValueMap, jobName, aggDataMap);
 				}
@@ -204,6 +201,37 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_BUILD_TIME.getColumns());
+	}
+
+	/**
+	 * to get the job name
+	 * 
+	 * @param trendLineName
+	 *            trendLineName
+	 * @param entry
+	 *            entry
+	 * @param buildList
+	 *            list of builds
+	 * @return returns the job name
+	 */
+	private static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
+			List<Build> buildList) {
+		String jobName;
+		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+			} else {
+				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
+			}
+
+		} else {
+			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+				jobName = entry.getKey() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+			} else {
+				jobName = entry.getKey() + CommonConstant.ARROW + trendLineName;
+			}
+		}
+		return jobName;
 	}
 
 	/**
@@ -381,4 +409,10 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI8(), KPICode.CODE_BUILD_TIME.getKpiId());
+	}
+
 }

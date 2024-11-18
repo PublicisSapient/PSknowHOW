@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mockStatic;
@@ -29,10 +29,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +52,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
@@ -86,8 +93,8 @@ public class RepoToolCodeCommitServiceImplTest {
 	private KpiElement kpiElement;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 	private List<DataCount> trendValues = new ArrayList<>();
+	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
 	private List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
 	@InjectMocks
@@ -103,6 +110,10 @@ public class RepoToolCodeCommitServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+	@Mock
+	private KpiHelperService kpiHelperService;
 
 	@Before
 	public void setup() {
@@ -134,7 +145,52 @@ public class RepoToolCodeCommitServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+
+		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
+				.thenReturn(kpiRequestTrackerId);
+		try (MockedStatic<LocalDate> localDateMockedStatic = mockStatic(LocalDate.class)) {
+			// Define the specific date you want to return
+			LocalDate specificDate = LocalDate.of(2023, 7, 1);
+
+			// Mock the behavior of LocalDate.now()
+			localDateMockedStatic.when(LocalDate::now).thenReturn(specificDate);
+		}
+
+		setTreadValuesDataCount();
+		AssigneeDetails assigneeDetails = new AssigneeDetails();
+		assigneeDetails.setBasicProjectConfigId("634fdf4ec859a424263dc035");
+		assigneeDetails.setSource("Jira");
+		Set<Assignee> assigneeSet = new HashSet<>();
+		assigneeSet.add(new Assignee("aks", "Akshat Shrivastava",
+				new HashSet<>(Arrays.asList("akshat.shrivastav@publicissapient.com"))));
+		assigneeSet.add(new Assignee("llid", "Hiren",
+				new HashSet<>(Arrays.asList("99163630+hirbabar@users.noreply.github.com"))));
+		assigneeDetails.setAssignee(assigneeSet);
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
+		when(kpiHelperService.getRepoToolsKpiMetricResponse(any(), any(), any(), any(), any(), any())).thenReturn(
+				repoToolKpiMetricResponseList);
+		when(kpiHelperService.populateSCMToolsRepoList(anyMap())).thenReturn(toolList3);
+
+	}
+
+	private void setTreadValuesDataCount() {
+		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", new DataCount());
+		trendValues.add(dataCount);
+		trendValueMap.put("OverAll#OverAll", trendValues);
+		trendValueMap.put("BRANCH1 -> PR#Hiren", trendValues);
+	}
+
+	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(data);
+		dataCount.setMaturity(maturity);
+		dataCount.setMaturityValue(maturityValue);
+		dataCount.setValue(value);
+		return dataCount;
 	}
 
 	private void setToolMap() {
@@ -155,25 +211,26 @@ public class RepoToolCodeCommitServiceImplTest {
 		List<ProcessorItem> collectorItemList1 = new ArrayList<>();
 		collectorItemList1.add(processorItem1);
 
-		tool3 = createTool("url3", "RepoTool", "PSknowHOW", "master", collectorItemList1);
+		tool3 = createTool("url3", "Bitbucket", collectorItemList1);
 
 		toolList3.add(tool3);
 
-		toolGroup.put(Constant.REPO_TOOLS, toolList3);
+		toolGroup.put(Constant.TOOL_BITBUCKET, toolList3);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 
 	}
 
-	private Tool createTool(String url, String toolType, String repoName, String branch,
-			List<ProcessorItem> collectorItemList) {
+	private Tool createTool(String url, String toolType, List<ProcessorItem> collectorItemList) {
 		Tool tool = new Tool();
 		tool.setTool(toolType);
 		tool.setUrl(url);
-		tool.setRepositoryName(repoName);
-		tool.setBranch(branch);
+		tool.setBranch("master");
+		tool.setRepositoryName("PSknowHOW");
+
 		tool.setProcessorItemList(collectorItemList);
 		return tool;
 	}
+
 
 	@Test
 	public void testGetQualifierType() {
@@ -185,27 +242,37 @@ public class RepoToolCodeCommitServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-
-		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-
-		String kpiRequestTrackerId = "Bitbucket-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
-				.thenReturn(kpiRequestTrackerId);
-		try (MockedStatic<LocalDate> localDateMockedStatic = mockStatic(LocalDate.class)) {
-			// Define the specific date you want to return
-			LocalDate specificDate = LocalDate.of(2023, 7, 1);
-
-			// Mock the behavior of LocalDate.now()
-			localDateMockedStatic.when(LocalDate::now).thenReturn(specificDate);
-		}
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
-				.thenReturn(repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = repoToolCodeCommitService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
-				String projectName = data.getFilter();
+				String projectName = data.getFilter1();
+				switch (projectName) {
+				case "Overall":
+					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(1));
+					break;
+
+				case "master":
+					assertThat("Branch1 Commit Details:", data.getValue().size(), equalTo(2));
+					break;
+
+				}
+			});
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testGetKpiDataDays() throws ApplicationException {
+		kpiRequest.setDuration(Constant.DAYS);
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		try {
+			KpiElement kpiElement = repoToolCodeCommitService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
+				String projectName = data.getFilter1();
 				switch (projectName) {
 				case "Overall":
 					assertThat("Overall Commit Details:", data.getValue().size(), equalTo(2));

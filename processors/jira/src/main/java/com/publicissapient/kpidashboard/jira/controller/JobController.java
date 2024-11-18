@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -36,14 +36,15 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -51,6 +52,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +70,9 @@ public class JobController {
 	private static final String PROJECT_ID = "projectId";
 	private static final String SPRINT_ID = "sprintId";
 	private static final String CURRENTTIME = "currentTime";
+	private static final String IS_SCHEDULER = "isScheduler";
+	private static final String VALUE = "false";
+	private static final String PROCESSOR_ID = "processorId";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -93,6 +98,8 @@ public class JobController {
 	private FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
 	private OngoingExecutionsService ongoingExecutionsService;
+	@Autowired
+	private JiraProcessorRepository jiraProcessorRepository;
 
 	/**
 	 * This method is used to start job for the Scrum projects with board setup
@@ -118,8 +125,9 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueScrumBoardJob, params);
 				} catch (Exception e) {
-					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+					log.info(
+							"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
 				}
 			});
 
@@ -152,7 +160,7 @@ public class JobController {
 					jobLauncher.run(fetchIssueScrumJqlJob, params);
 				} catch (Exception e) {
 					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -162,12 +170,14 @@ public class JobController {
 
 	private List<JobParameters> getDynamicParameterSets(List<String> scrumBoardbasicProjConfIds) {
 		List<JobParameters> parameterSets = new ArrayList<>();
-
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		scrumBoardbasicProjConfIds.forEach(configId -> {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			// Add dynamic parameters as needed
 			jobParametersBuilder.addString(PROJECT_ID, configId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(IS_SCHEDULER, VALUE);
+			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
 
 			JobParameters params = jobParametersBuilder.toJobParameters();
 			parameterSets.add(params);
@@ -195,8 +205,9 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueKanbanBoardJob, params);
 				} catch (Exception e) {
-					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+					log.info(
+							"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -227,7 +238,7 @@ public class JobController {
 					jobLauncher.run(fetchIssueKanbanJqlJob, params);
 				} catch (Exception e) {
 					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -242,22 +253,24 @@ public class JobController {
 	 *            sprintId
 	 * @return ResponseEntity
 	 */
-	@Async
-	@PostMapping("/startfetchsprintjob")
+	@PostMapping(value = "/startfetchsprintjob", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) {
 		log.info("Request coming for fetching sprint job");
-		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
-
-		jobParametersBuilder.addString(SPRINT_ID, sprintId);
-		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
-		JobParameters params = jobParametersBuilder.toJobParameters();
-		try {
-			jobLauncher.run(fetchIssueSprintJob, params);
-		} catch (Exception e) {
-			log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}", params.getString(SPRINT_ID),e);
-		}
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
+		CompletableFuture.runAsync(() -> {
+			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+			jobParametersBuilder.addString(SPRINT_ID, sprintId);
+			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
+			JobParameters params = jobParametersBuilder.toJobParameters();
+			try {
+				jobLauncher.run(fetchIssueSprintJob, params);
+			} catch (Exception e) {
+				log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}",
+						params.getString(SPRINT_ID), e);
+			}
+		});
 		return ResponseEntity.ok().body("job started for Sprint : " + sprintId);
-
 	}
 
 	/**
@@ -273,7 +286,6 @@ public class JobController {
 		log.info("Request coming for fetching issue job");
 
 		String basicProjectConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
-
 		if (ongoingExecutionsService.isExecutionInProgress(basicProjectConfigId)) {
 			log.error("An execution is already in progress");
 			return ResponseEntity.badRequest()
@@ -282,13 +294,16 @@ public class JobController {
 
 		// Mark the execution as in progress before starting the job asynchronously
 		ongoingExecutionsService.markExecutionInProgress(basicProjectConfigId);
-
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		// Start the job asynchronously
 		CompletableFuture.runAsync(() -> {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 			jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
 			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(IS_SCHEDULER, VALUE);
+			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
 			JobParameters params = jobParametersBuilder.toJobParameters();
+
 
 			try {
 				Optional<ProjectBasicConfig> projBasicConfOpt = projectConfigRepository
@@ -296,7 +311,8 @@ public class JobController {
 
 				runProjectBasedOnConfig(basicProjectConfigId, params, projBasicConfOpt);
 			} catch (Exception e) {
-				log.error("Jira fetch failed for BasicProjectConfigId : {}, with exception : {}", params.getString(PROJECT_ID), e);
+				log.error("Jira fetch failed for BasicProjectConfigId : {}, with exception : {}",
+						params.getString(PROJECT_ID), e);
 			}
 		});
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);

@@ -43,18 +43,17 @@ public class JiraProcessorUtilTest {
 		String result = "project IN ('XYZ') AND ((issuetype IN ('Test1') AND updatedDate>='2020-08-24') OR"
 				+ " (issuetype IN ('Test2') AND updatedDate>='2020-08-23')) ORDER BY updated DESC";
 
-		ProjectConfFieldMapping projectConfig = new ProjectConfFieldMapping();
 		Map<String, String> startDateTimeStrByIssueType = new LinkedHashMap<>();
 		startDateTimeStrByIssueType.put("Test1", "2020-08-24");
 		startDateTimeStrByIssueType.put("Test2", "2020-08-23");
-		String actual = JiraProcessorUtil.createJql("XYZ", startDateTimeStrByIssueType, projectConfig);
+		String actual = JiraProcessorUtil.createJql("XYZ", startDateTimeStrByIssueType);
 		Assert.assertNotNull(actual);
 
 	}
 
 	@Test
 	public void createJql_Null() {
-		String actual = JiraProcessorUtil.createJql(null, null, null);
+		String actual = JiraProcessorUtil.createJql(null, null);
 		Assert.assertEquals("", actual);
 
 	}
@@ -77,8 +76,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void deodeUTF8StringEmpty() throws URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraDorKPI3(new ArrayList<>());
-		Object jiraResponse = fieldMapping.getJiraDorKPI3();
+		fieldMapping.setJiraDorKPI171(new ArrayList<>());
+		Object jiraResponse = fieldMapping.getJiraDorKPI171();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}
@@ -86,8 +85,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void deodeUTF8StringEmptyNull() throws URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraDorKPI3(null);
-		Object jiraResponse = fieldMapping.getJiraDorKPI3();
+		fieldMapping.setJiraDorKPI171(null);
+		Object jiraResponse = fieldMapping.getJiraDorKPI171();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}

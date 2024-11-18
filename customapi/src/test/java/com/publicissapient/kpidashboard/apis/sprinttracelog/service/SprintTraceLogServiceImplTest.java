@@ -59,7 +59,7 @@ public class SprintTraceLogServiceImplTest {
 
 
         // Mock repository method call
-        when(sprintTraceLogRepository.findBySprintId(validSprintId))
+        when(sprintTraceLogRepository.findFirstBySprintId(validSprintId))
                 .thenReturn(fetchRecord);
 
         // Call the method under test
@@ -92,7 +92,7 @@ public class SprintTraceLogServiceImplTest {
 		String validSprintId = "Sprint456";
 
 		// Mock repository method call (returning null)
-		when(sprintTraceLogRepository.findBySprintId(validSprintId)).thenReturn(null);
+		when(sprintTraceLogRepository.findFirstBySprintId(validSprintId)).thenReturn(null);
 
 		// Call the method under test
 		ServiceResponse response = activeItrFetchService.getActiveSprintFetchStatus(validSprintId);

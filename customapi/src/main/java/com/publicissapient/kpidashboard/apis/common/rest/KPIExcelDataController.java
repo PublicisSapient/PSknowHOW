@@ -24,6 +24,10 @@ import java.util.Arrays;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +55,8 @@ public class KPIExcelDataController {
 
 	@Autowired
 	private KPIExcelDataService kpiExcelDataService;
+	@Autowired
+	CustomApiConfig customApiConfig;
 
 	/**
 	 * Fetches KPI validation data (story keys, defect keys) for a specific KPI id.
@@ -61,18 +67,21 @@ public class KPIExcelDataController {
 	 *            the kpi id
 	 * @return validation kpi data
 	 */
-	@RequestMapping(value = "/v1/kpi/{kpiID}", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<KPIExcelValidationDataResponse> getValidationKPIData(
+	@RequestMapping(value = "/v1/kpi/{kpiID}", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	// NOSONAR
+	public ResponseEntity<KPIExcelValidationDataResponse> getValidationKPIData(HttpServletRequest request,
 			@NotNull @RequestBody KpiRequest kpiRequest, @NotNull @PathVariable("kpiID") String kpiID) {
-
+		String apiKey = customApiConfig.getxApiKey();
+		Boolean isApiAuth = StringUtils.isNotEmpty(
+				apiKey) && apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		String kpiRequestStr = kpiRequest.toString();
 		kpiID = CommonUtils.handleCrossScriptingTaintedValue(kpiID);
 		kpiRequestStr = CommonUtils.handleCrossScriptingTaintedValue(kpiRequestStr);
 		log.info("[KPI-EXCEL-DATA][]. Received Specific Excel KPI Data request for {} with kpiRequest {}", kpiID,
 				kpiRequestStr);
 
-		KPIExcelValidationDataResponse responseList = (KPIExcelValidationDataResponse) kpiExcelDataService
-				.process(kpiID, kpiRequest.getLevel(), Arrays.asList(kpiRequest.getIds()), null, kpiRequest, null);
+		KPIExcelValidationDataResponse responseList = (KPIExcelValidationDataResponse) kpiExcelDataService.process(
+				kpiID, kpiRequest.getLevel(), Arrays.asList(kpiRequest.getIds()), null, kpiRequest, null, isApiAuth);
 		return ResponseEntity.ok().body(responseList);
 	}
 

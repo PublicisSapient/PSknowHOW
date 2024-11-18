@@ -18,37 +18,44 @@
 
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.Filters;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
+import com.publicissapient.kpidashboard.common.service.BoardMetadataServiceImpl;
 
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Helper class for configuration
@@ -68,6 +75,8 @@ public class ConfigHelperService {
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 	@Autowired
+	private BoardMetadataServiceImpl boardMetadataServiceImpl;
+	@Autowired
 	private ProjectToolConfigRepositoryCustom toolConfigRepository;
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
@@ -79,16 +88,18 @@ public class ConfigHelperService {
 	private ProjectToolConfigRepository projectToolConfigRepository;
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
+	@Autowired
+	private FiltersRepository filtersRepository;
 
 	@Autowired
 	private FieldMappingStructureRepository fieldMappingStructureRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private Map<ObjectId, BoardMetadata> boardMetaDataMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfMap = new HashMap<>();
 
 	/**
 	 * Load project config list.
 	 */
-	@PostConstruct
 	public void loadConfigData() {
 		log.info("loadConfigData - loading project config, field mapping and tool_config");
 		projectConfigMap.clear();
@@ -109,9 +120,22 @@ public class ConfigHelperService {
 	}
 
 	/**
+	 * Load project board meta data.
+	 */
+	public void loadBoardMetaData() {
+		log.info("loading project board meta data");
+		boardMetaDataMap.clear();
+
+		List<BoardMetadata> boardMetaDataList = boardMetadataServiceImpl.findAll();
+
+		boardMetaDataMap = boardMetaDataList.stream()
+				.collect(Collectors.toMap(BoardMetadata::getProjectBasicConfigId, Function.identity()));
+
+	}
+
+	/**
 	 * This method load toolConfigMap
 	 */
-	@PostConstruct
 	public void loadToolConfig() {
 		toolItemMap.clear();
 		List<Tool> toolList = toolConfigRepository.getToolList();
@@ -177,6 +201,17 @@ public class ConfigHelperService {
 	}
 
 	/**
+	 * Gets Project Board metadata.
+	 *
+	 * @param key
+	 *            the key
+	 * @return the Board Meta data
+	 */
+	public BoardMetadata getBoardMetaData(ObjectId key) {
+		return getBoardMetaDataMap().get(key);
+	}
+
+	/**
 	 * Gets project config map.
 	 *
 	 * @return the project config map
@@ -215,58 +250,69 @@ public class ConfigHelperService {
 	}
 
 	/**
+	 * Gets board meta data map.
+	 *
+	 * @return the board meta data map
+	 */
+	public Map<ObjectId, BoardMetadata> getBoardMetaDataMap() {
+		return (Map<ObjectId, BoardMetadata>) cacheService.cacheBoardMetaDataMapData();
+	}
+
+	/**
+	 * Sets board meta data map.
+	 *
+	 * @param boardMetaDataMap
+	 *            the field mapping map
+	 */
+	public void setBoardMetaDataMap(Map<ObjectId, BoardMetadata> boardMetaDataMap) {
+		this.boardMetaDataMap = boardMetaDataMap;
+	}
+
+	/**
 	 * return Config data to cache service based on cache key
 	 *
 	 * @param key
 	 * @return config object
 	 */
 	public Object getConfigMapData(String key) {
-		switch (key) {
-		case CommonConstant.CACHE_PROJECT_CONFIG_MAP:
-			return projectConfigMap;
-		case CommonConstant.CACHE_FIELD_MAPPING_MAP:
-			return fieldMappingMap;
-		case CommonConstant.CACHE_TOOL_CONFIG_MAP:
-			return toolItemMap;
-		case CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP:
-			return projectToolConfMap;
-		default:
-			return null;
-		}
+		return switch (key) {
+		case CommonConstant.CACHE_PROJECT_CONFIG_MAP -> projectConfigMap;
+		case CommonConstant.CACHE_FIELD_MAPPING_MAP -> fieldMappingMap;
+		case CommonConstant.CACHE_BOARD_META_DATA_MAP -> boardMetaDataMap;
+		case CommonConstant.CACHE_TOOL_CONFIG_MAP -> toolItemMap;
+		case CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP -> projectToolConfMap;
+		default -> null;
+		};
 	}
 
 	/**
 	 * Load business unit Map.
 	 */
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_KPI_MASTER)
 	public Iterable<KpiMaster> loadKpiMaster() {
 		log.info("loading KPI Master data");
 		return kpiMasterRepository.findAll();
 	}
 
-
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_MATURITY_RANGE)
 	public Map<String, List<String>> calculateMaturity() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
 
-		Map<String, List<String>> kpiIdRangeMap = new HashMap<>();
+		Map<String, List<String>> kpiIdRangeMap = new HashMap<>(
+				masterList.stream().filter(d -> d.getMaturityRange() != null)
+						.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getMaturityRange)));
 
-		kpiIdRangeMap.putAll(masterList.stream().filter(d -> d.getMaturityRange() != null)
-				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getMaturityRange)));
-
-		masterList.stream().filter(d -> d.getMaturityLevel() != null)
+		// for LeadTimeKanban we require the maturity level to be used in the kpi
+		// calculation
+		masterList.stream().filter(
+				d -> d.getMaturityLevel() != null && d.getKpiId().equalsIgnoreCase(KPICode.LEAD_TIME_KANBAN.getKpiId()))
 				.forEach(master -> kpiIdRangeMap.putAll(master.getMaturityLevel().stream()
-						.collect(Collectors.toMap(MaturityLevel::getLevel, MaturityLevel::getRange)))
-
-				);
+						.collect(Collectors.toMap(MaturityLevel::getLevel, MaturityLevel::getRange))));
 
 		return kpiIdRangeMap;
 
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_AGG_CRITERIA)
 	public Map<String, String> calculateCriteria() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
@@ -274,7 +320,6 @@ public class ConfigHelperService {
 				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getAggregationCriteria));
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_AGG_CIRCLE_CRITERIA)
 	public Map<String, String> calculateCriteriaForCircleKPI() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
@@ -282,7 +327,6 @@ public class ConfigHelperService {
 				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getAggregationCircleCriteria));
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_PROJECT_BASIC_TREE)
 	public ProjectBasicConfigNode loadProjectBasicTree() {
 		log.info("loading Project Basic Tree");
@@ -292,7 +336,6 @@ public class ConfigHelperService {
 	/**
 	 * Load cache hierarchy level value Map.
 	 */
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE)
 	public List<HierarchyLevelSuggestion> loadHierarchyLevelSuggestion() {
 		log.info("loading hierarchy level Master data");
@@ -303,25 +346,27 @@ public class ConfigHelperService {
 	 * Load KPI Field Mapping.
 	 */
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_STUCTURE)
 	public Object loadFieldMappingStructure() {
 		log.info("loading FieldMappingStucture data");
 		return fieldMappingStructureRepository.findAll();
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_USER_BOARD_CONFIG)
 	public List<UserBoardConfig> loadUserBoardConfig() {
 		log.info("loading UserBoarConfig");
 		return userBoardConfigRepository.findAll();
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_PROJECT_TOOL_CONFIG)
 	public Object loadAllProjectToolConfig() {
 		log.info("loading projectToolConfig data");
 		return projectToolConfigRepository.findAll();
 	}
 
+	@Cacheable(CommonConstant.FILTERS)
+	public List<Filters> loadAllFilters() {
+		log.info("loading AllFilters");
+		return filtersRepository.findAll();
+	}
 }

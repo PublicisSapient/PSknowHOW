@@ -25,10 +25,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -55,6 +58,8 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.Week;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
@@ -114,7 +119,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	@Override
 	public CapacityMaster processCapacityData(CapacityMaster capacityMaster) {
 		boolean saved;
-
+		saveAssigneEmail(capacityMaster);
 		if (capacityMaster.isKanban()) {
 			saved = processKanbanTeamCapacityData(capacityMaster);
 		} else {
@@ -125,6 +130,41 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacityMaster = null;
 		}
 		return capacityMaster;
+	}
+
+	private void saveAssigneEmail(CapacityMaster capacityMaster) {
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository
+				.findByBasicProjectConfigId(capacityMaster.getBasicProjectConfigId().toString());
+		List<CapacityKpiData> capacities = (List<CapacityKpiData>) capacityKpiDataRepository.findAll();
+		if (assigneeDetails == null)
+			return;
+		Set<Assignee> assignee = assigneeDetails.getAssignee();
+		Map<String, Assignee> map = new HashMap<>();
+		if (assignee != null && capacityMaster.getAssigneeCapacity() != null) {
+			assignee.forEach(assignee1 -> map.put(assignee1.getAssigneeId(), assignee1));
+			capacityMaster.getAssigneeCapacity().forEach(capacity -> {
+				Assignee assignee1 = map.get(capacity.getUserId());
+				if (capacity.getEmail() != null)
+					assignee1.setEmail(capacity.getEmail());
+				map.put(assignee1.getAssigneeId(), assignee1);
+			});
+			Set<Assignee> finalAssignee = new HashSet<>();
+			map.forEach((key, value) -> finalAssignee.add(value));
+			assigneeDetails.setAssignee(finalAssignee);
+			assigneeDetailsRepository.save(assigneeDetails);
+
+			capacities.forEach(capacityKpiData1 -> {
+				if (capacityKpiData1.getAssigneeCapacity() != null) {
+					capacityKpiData1.getAssigneeCapacity().forEach(ass -> {
+						Assignee assignee1 = map.get(ass.getUserId());
+						if (assignee1 != null && assignee1.getEmail() != null)
+							ass.setEmail(assignee1.getEmail());
+					});
+					capacityKpiDataRepository.save(capacityKpiData1);
+				}
+			});
+		}
+		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
 	}
 
 	@Override
@@ -270,21 +310,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 					capacityMasterKanban.setId(kanbanCapacity.getId());
 					// mutiplying by working days of week
 					capacityMasterKanban.setCapacity(kanbanCapacity.getCapacity() * 5);
-					List<AdditionalFilterCapacity> additionalFilterCapacityList = kanbanCapacity
-							.getAdditionalFilterCapacityList();
-					if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
-						additionalFilterCapacityList.forEach(leafNode -> {
-							List<LeafNodeCapacity> leafNodeCapacity = leafNode.getNodeCapacityList();
-							if (CollectionUtils.isNotEmpty(leafNodeCapacity)) {
-								leafNodeCapacity.stream()
-										.filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
-										.forEach(capacity -> capacity.setAdditionalFilterCapacity(
-												capacity.getAdditionalFilterCapacity() * 5));
-							}
-						});
-					}
+					var additionalFilterCapacityList = kanbanCapacity.getAdditionalFilterCapacityList();
+					calculateAdditinalFilterCapacityForKanban(additionalFilterCapacityList);
 					capacityMasterKanban.setAdditionalFilterCapacityList(additionalFilterCapacityList);
-
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 					capacityMasterKanban.setStartDate(kanbanCapacity.getStartDate().format(formatter));
 					capacityMasterKanban.setEndDate(kanbanCapacity.getEndDate().format(formatter));
@@ -319,6 +347,20 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		return capacityMasterList;
 	}
 
+	private void calculateAdditinalFilterCapacityForKanban(List<AdditionalFilterCapacity> additionalFilterCapacityList) {
+		if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
+			additionalFilterCapacityList.forEach(leafNode -> {
+				var leafNodeCapacity = leafNode.getNodeCapacityList();
+				if (CollectionUtils.isNotEmpty(leafNodeCapacity)) {
+					leafNodeCapacity.stream()
+							.filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
+							.forEach(capacity -> capacity.setAdditionalFilterCapacity(
+									capacity.getAdditionalFilterCapacity() * 5));
+				}
+			});
+		}
+	}
+
 	private void settingFutureAssigneeDetails(List<AssigneeCapacity> assigneeCapacity, CapacityMaster capacityMaster) {
 		if (assigneeCapacity != null && CollectionUtils.isEmpty(capacityMaster.getAssigneeCapacity())) {
 			capacityMaster.setAssigneeCapacity(assigneeCapacity);
@@ -332,6 +374,8 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacity.setUserId(assignee.getUserId());
 			capacity.setUserName(assignee.getUserName());
 			capacity.setRole(assignee.getRole());
+			capacity.setSquad(assignee.getSquad());
+			capacity.setEmail(assignee.getEmail());
 			capacity.setPlannedCapacity(assignee.getPlannedCapacity());
 			capacity.setLeaves(0.0d);
 			capacity.setHappinessRating(0);
@@ -599,17 +643,33 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		}
 	}
 
+	/**
+	 * Helper method to process the additional filter capacity list in the given
+	 * CapacityMaster. If a filter ID and its node capacities are valid, it divides
+	 * each node capacity by 5.
+	 *
+	 * @param capacityMaster
+	 *            the CapacityMaster object containing additional filter capacities
+	 */
 	public void helper(CapacityMaster capacityMaster) {
+		// Retrieve the additional filter hierarchy levels and convert keys to uppercase
+		// for case-insensitive matching
 		Map<String, AdditionalFilterCategory> addFilterCat = filterHelperService.getAdditionalFilterHierarchyLevel();
 		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
 
+		// Check if the additional filter capacity list in CapacityMaster is not empty
 		if (CollectionUtils.isNotEmpty(capacityMaster.getAdditionalFilterCapacityList())) {
+			// Iterate through each additional filter capacity
 			for (AdditionalFilterCapacity category : capacityMaster.getAdditionalFilterCapacityList()) {
+				// Check if the filter ID is not empty, node capacity list is not empty, and the
+				// filter ID exists in additional filter categories
 				if (StringUtils.isNotEmpty(category.getFilterId())
 						&& CollectionUtils.isNotEmpty(category.getNodeCapacityList())
-						&& null != addFilterCategory.get(category.getFilterId().toUpperCase())) {
+						&& addFilterCategory.get(category.getFilterId().toUpperCase()) != null) {
 
+					// For each node capacity, divide the additional filter capacity by 5 if it's
+					// not null
 					category.getNodeCapacityList().forEach(leafNode -> {
 						Double leafNodeCapacity = leafNode.getAdditionalFilterCapacity();
 						if (leafNodeCapacity != null) {

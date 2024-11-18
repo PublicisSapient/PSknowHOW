@@ -28,9 +28,9 @@ public class ConfigDetails {
 	private Double percentile;
 	private int hierarchySelectionCount;
 	private DateRangeFilter dateRangeFilter;
-	private boolean gitlabToolFieldFlag;
-
 	private int noOfDataPoints;
+	private boolean gitlabToolFieldFlag;
+	private int sprintCountForKpiCalculation;
 
 	public boolean isGitlabToolFieldFlag() {
 		return gitlabToolFieldFlag;
@@ -39,6 +39,7 @@ public class ConfigDetails {
 	public void setGitlabToolFieldFlag(boolean gitlabToolFieldFlag) {
 		this.gitlabToolFieldFlag = gitlabToolFieldFlag;
 	}
+
 	public DateRangeFilter getDateRangeFilter() {
 		return dateRangeFilter;
 	}
@@ -95,5 +96,13 @@ public class ConfigDetails {
 
 	public void setNoOfDataPoints(int noOfDataPoints) {
 		this.noOfDataPoints = noOfDataPoints;
+	}
+
+	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {
+		this.sprintCountForKpiCalculation = sprintCountForKpiCalculation;
+	}
+
+	public int getSprintCountForKpiCalculation() {
+		return sprintCountForKpiCalculation;
 	}
 }

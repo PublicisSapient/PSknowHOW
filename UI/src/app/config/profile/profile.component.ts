@@ -20,7 +20,6 @@ import { Component, OnInit } from '@angular/core';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
-import { environment } from 'src/environments/environment';
 
 declare let $: any;
 
@@ -33,8 +32,7 @@ export class ProfileComponent implements OnInit {
     isSuperAdmin = false;
     isProjectAdmin = false;
     changePswdDisabled = false;
-    adLogin = false;
-    ssoLogin = environment.SSO_LOGIN;
+    loginType: string = '';
     constructor(private getAuthorizationService: GetAuthorizationService, public router: Router, private sharedService : SharedService) {}
 
     ngOnInit() {
@@ -52,7 +50,7 @@ export class ProfileComponent implements OnInit {
                 }
           })
 
-        this.adLogin = localStorage.loginType === 'AD';
+        this.loginType = this.sharedService.getCurrentUserDetails('authType');
     }
 
 }

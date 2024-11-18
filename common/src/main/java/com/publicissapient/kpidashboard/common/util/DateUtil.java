@@ -29,8 +29,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
@@ -56,7 +58,6 @@ public class DateUtil {
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
 	public static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
-	public static final String ISO_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	public static final String TIME_FORMAT_WITH_SEC_ZONE = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
@@ -159,13 +160,17 @@ public class DateUtil {
 	 */
 	public static String dateTimeConverterUsingFromAndTo(DateTime dateTime, final String fromFormat,
 			final String toFormat) {
-		try {
-			org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
-			DateTime parsedDateTime = sourceFormatter.parseDateTime(dateTime.toString());
-			org.joda.time.format.DateTimeFormatter targetFormatter = DateTimeFormat.forPattern(toFormat);
-			return parsedDateTime.toString(targetFormatter);
-		} catch (IllegalArgumentException e) {
-			log.error("error while parse date", e);
+		if (dateTime != null) {
+			try {
+				org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
+				DateTime parsedDateTime = sourceFormatter.parseDateTime(dateTime.toString());
+				org.joda.time.format.DateTimeFormatter targetFormatter = DateTimeFormat.forPattern(toFormat);
+				return parsedDateTime.toString(targetFormatter);
+			} catch (IllegalArgumentException e) {
+				log.error("error while parse date", e);
+				return null;
+			}
+		} else {
 			return null;
 		}
 	}
@@ -197,6 +202,30 @@ public class DateUtil {
 	public static boolean isWithinDateTimeRange(LocalDateTime targetDate, LocalDateTime startDate,
 			LocalDateTime endDate) {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
+	}
+
+	public static boolean equalAndAfterTime(LocalDateTime targetDate, LocalDateTime startDate) {
+		return targetDate.isAfter(startDate) || targetDate.isEqual(startDate);
+	}
+
+	public static boolean equalAndBeforTime(LocalDateTime targetDate, LocalDateTime startDate) {
+		return targetDate.isBefore(startDate) || targetDate.isEqual(startDate);
+	}
+
+	/**
+	 * Checks if the target date is equal to or before the end date.
+	 *
+	 * @param targetDate
+	 *            the date to check, not null
+	 * @param endDate
+	 *            the date to compare against, not null
+	 * @return {@code true} if the target date is equal to or before the end date;
+	 *         {@code false} otherwise
+	 * @throws NullPointerException
+	 *             if either targetDate or endDate is null
+	 */
+	public static boolean equalAndBeforeTime(LocalDate targetDate, LocalDate endDate) {
+		return targetDate.isEqual(endDate) || targetDate.isBefore(endDate) ;
 	}
 
 	public static String convertMillisToDateTime(long milliSeconds) {
@@ -279,6 +308,11 @@ public class DateUtil {
 		return new DateTime(instant.toEpochMilli());
 	}
 
+	public static LocalDateTime convertDateTimeToLocalDateTime(DateTime dateTime) {
+		return (ObjectUtils.isNotEmpty(dateTime)) ? LocalDateTime.ofInstant(
+				java.time.Instant.ofEpochMilli(dateTime.getMillis()), ZoneId.of(dateTime.getZone().getID())) : null;
+	}
+
 	public static String getWeekRange(LocalDate currentDate) {
 		LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
@@ -330,6 +364,29 @@ public class DateUtil {
 			result = "NA";
 		}
 		return result;
+	}
+
+	/**
+	 * Calculating total no. of working days between two dates
+	 * 
+	 * @param startDateTime
+	 *            startDateTime
+	 * @param endDateTime
+	 *            endDateTime
+	 * @return no. of days
+	 */
+	public static double calculateWorkingDays(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		LocalDate startDate = startDateTime.toLocalDate();
+		LocalDate endDate = endDateTime.toLocalDate();
+
+		if (startDate.isAfter(endDate)) {
+			throw new IllegalArgumentException("Release Start date must be before release end date");
+		}
+
+		return Stream.iterate(startDate, date -> date.plusDays(1))
+				.limit(ChronoUnit.DAYS.between(startDate, endDate) + 1) // +1 to include endDate
+				.filter(date -> !(date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY))
+				.count();
 	}
 
 }

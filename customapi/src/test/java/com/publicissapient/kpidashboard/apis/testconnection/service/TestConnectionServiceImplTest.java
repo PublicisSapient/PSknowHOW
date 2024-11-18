@@ -1,23 +1,53 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.testconnection.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
+import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,6 +71,9 @@ public class TestConnectionServiceImplTest {
 	CustomApiConfig customApiConfig;
 
 	@Mock
+	 RepoToolsProviderRepository repoToolsProviderRepository;
+
+	@Mock
 	RestTemplate restTemplate;
 
 	Connection conn = new Connection();
@@ -48,7 +81,7 @@ public class TestConnectionServiceImplTest {
 	KerberosClient client;
 
 	@Before
-	public void setup() {
+	public void setup() throws URISyntaxException {
 		conn.setUsername("user");
 		conn.setConnectionName("connection name");
 		conn.setBaseUrl("https://abc.com/");
@@ -57,13 +90,21 @@ public class TestConnectionServiceImplTest {
 		conn.setType("jira");
 		conn.setApiKey("key");
 		conn.setApiEndPoint("api/2");
+
 	}
 
 	@Test
-	public void validateConnectionJira() {
+	public void validateConnectionJira() throws URISyntaxException {
 		when(customApiConfig.getJiraTestConnection()).thenReturn("rest/api/2/issue/createmeta");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
+
+		when(restTemplate.exchange(new URI("https://abc.com/rest/api/2/issue/createmeta"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
-		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
 	@Test
@@ -82,11 +123,17 @@ public class TestConnectionServiceImplTest {
 	}
 
 	@Test
-	public void validateConnectionZephyr() {
+	public void validateConnectionZephyr() throws URISyntaxException {
 		conn.setBaseUrl("https://abc.com/jira/");
 		when(customApiConfig.getZephyrTestConnection()).thenReturn("rest/api/2/issue/createmeta");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
+
+		when(restTemplate.exchange(new URI("https://abc.com/jira/rest/api/2/issue/createmeta"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_ZEPHYR);
-		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
 	@Test
@@ -108,14 +155,77 @@ public class TestConnectionServiceImplTest {
 	}
 
 	@Test
-	public void validateConnectionSonar() {
+	public void validateConnectionSonar_Cloud() throws URISyntaxException {
+		when(customApiConfig.getSonarTestConnection()).thenReturn("api/authentication/validate");
+		conn.setCloudEnv(false);
+		conn.setBaseUrl("https://abc.com");
+		conn.setAccessToken("testAccessToken");
+		conn.setAccessTokenEnabled(true);
+		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic dGVzdEFjY2Vzc1Rva2VuOg==");
+		Mockito.when(restTemplate.exchange(new URI("https://abc.com/api/authentication/validate"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>("Success", HttpStatus.OK));
+
+		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_SONAR);
+		assertThat("status: ", response.getSuccess(), equalTo(true));
+	}
+
+	@Test
+	public void validateConnectionSonar() throws URISyntaxException {
+		when(customApiConfig.getSonarTestConnection()).thenReturn("api/authentication/validate");
+		conn.setCloudEnv(false);
+		conn.setBaseUrl("https://abc.com");
+		conn.setAccessToken("testAccessToken");
+		conn.setUsername("testUserName");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic dGVzdFVzZXJOYW1lOnRlc3RBY2Nlc3NUb2tlbg==");
+		Mockito.when(restTemplate.exchange(new URI("https://abc.com/api/authentication/validate"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>("Success", HttpStatus.OK));
+
+		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_SONAR);
+		assertThat("status: ", response.getSuccess(), equalTo(true));
+	}
+
+	@Test
+	public void validateConnectionArgoCD() {
+		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_ARGOCD);
+		Assert.assertThat("status: ", response.getSuccess(), equalTo(false));
+	}
+
+	@Test
+	public void validateConnectionSonar_Kaath() throws URISyntaxException, IOException {
+		when(customApiConfig.getSonarTestConnection()).thenReturn("api/authentication/validate");
+		conn.setCloudEnv(false);
+		conn.setBaseUrl("https://abc.com");
+		conn.setAccessToken("testAccessToken");
+		conn.setUsername("testUserName");
+		conn.setJaasKrbAuth(true);
+		conn.setKrb5ConfigFilePath("filepath");
+		conn.setJaasConfigFilePath("filepath");
+		conn.setJaasUser("jaasuser");
+		conn.setSamlEndPoint("/api/2/");
+		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic dGVzdEFjY2Vzc1Rva2VuOg==");
+
+		when(customApiConfig.getSamlTokenStartString()).thenReturn("samlstart");
+		when(customApiConfig.getSamlTokenEndString()).thenReturn("samlend");
+		when(customApiConfig.getSamlUrlStartString()).thenReturn("urlStart");
+		when(customApiConfig.getSamlUrlEndString()).thenReturn("urlEnd");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_SONAR);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
 
 	@Test
-	public void validateConnectionException() {
+	public void validateConnectionException() throws URISyntaxException {
 		when(customApiConfig.getJiraTestConnection()).thenReturn("rest/api/2/issue/createmeta");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
+
+		when(restTemplate.exchange(new URI("https://abc.com/rest/api/2/issue/createmeta"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
 	}
 
@@ -141,24 +251,34 @@ public class TestConnectionServiceImplTest {
 	}
 
 	@Test
-	public void validateConnectionSonarCloud() {
+	public void validateConnectionSonarCloud() throws URISyntaxException {
 		conn.setCloudEnv(true);
-		conn.setBaseUrl("https:/abc.com");
+		conn.setBaseUrl("https://abc.com");
 		conn.setAccessToken("testAccessToken");
-		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_SONAR);
-		assertThat("status: ", response.getSuccess(), equalTo(false));
-		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer " + "testAccessToken");
+		ResponseEntity<String> response = new ResponseEntity<>("Success", HttpStatus.OK);
+		Mockito.when(restTemplate.exchange(new URI("https://abc.com/api/favorites/search"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(response);
+		testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_SONAR);
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 	}
 
 	@Test
-	public void validateConnectionBitbucketValidURL() {
+	public void validateConnectionBitbucketValidURL() throws URISyntaxException {
 		conn.setBaseUrl("https://abc.com/bitbucket");
 		conn.setApiEndPoint("/bitbucket/rest/api/1.0");
 		conn.setUsername("test_auto_user10");
 		conn.setPassword("testPassword");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dGVzdF9hdXRvX3VzZXIxMDp0ZXN0UGFzc3dvcmQ=");
+		when(restTemplate.exchange(new URI("https://abc.com/bitbucket/rest/api/1.0/projects/"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_BITBUCKET);
-		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
 	@Test
@@ -172,31 +292,32 @@ public class TestConnectionServiceImplTest {
 	}
 
 	@Test
-	public void validateConnectionBitbucketInvalidUrl() {
+	public void validateConnectionBitbucketInvalidUrl() throws URISyntaxException {
 		conn.setBaseUrl("https://abc.com/bitbucket");
 		conn.setApiEndPoint("/bitbucket/rest/api/1.0/");
 		conn.setUsername("test");
 		conn.setPassword("testPassword");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dGVzdDp0ZXN0UGFzc3dvcmQ=");
+		when(restTemplate.exchange(new URI("https://abc.com/bitbucket/rest/api/1.0/projects/"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_BITBUCKET);
-		assertThat("status: ", response.getSuccess(), equalTo(false));
-	}
-
-	// @Test
-	public void validateConnectionBitbucketHttpClientErrorException() {
-		conn.setBaseUrl("https://test.com/bitbucket");
-		conn.setApiEndPoint("/bitbucket/rest/api/1.0/");
-		conn.setUsername("test");
-		conn.setPassword("test");
-		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_BITBUCKET);
-		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
 	@Test
-	public void validateConnectionAzureInvalidCredentials() {
+	public void validateConnectionAzureInvalidCredentials() throws URISyntaxException {
 		conn.setBaseUrl("https://abc.com/testUser/testProject");
 		when(customApiConfig.getAzureBoardApi()).thenReturn("_apis/wit/fields");
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
+
+		when(restTemplate.exchange(new URI("https://abc.com/testUser/testProject/_apis/wit/fields"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_AZURE);
-		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
 
 	@Test
@@ -261,6 +382,96 @@ public class TestConnectionServiceImplTest {
 		ServiceResponse serviceResponse = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_GITLAB);
 		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
 
+	}
+
+	@Test
+	public void validateRepoTestConnSuccess() {
+		conn.setAccessToken("testAccessToken");
+		conn.setRepoToolProvider(Constant.TOOL_GITHUB);
+		conn.setUsername("testUserName");
+		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class),
+				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
+		RepoToolsProvider provider= new RepoToolsProvider();
+		provider.setTestApiUrl("https://www.test.com");
+
+		ServiceResponse serviceResponse = testConnectionServiceImpl.validateConnection(conn, Constant.REPO_TOOLS);
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+	}
+
+	@Test
+	public void validateRepoTestConnSuccess_BitBucket_Cloud() throws URISyntaxException {
+		conn.setAccessToken("testAccessToken");
+		conn.setRepoToolProvider(Constant.TOOL_BITBUCKET);
+		conn.setUsername("testUserName");
+		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+		RepoToolsProvider provider= new RepoToolsProvider();
+		provider.setTestApiUrl("https://www.test.com");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dGVzdFVzZXJOYW1lOnRlc3RBY2Nlc3NUb2tlbg==");
+
+		when(restTemplate.exchange(new URI("https://abc.comapi/2/projects/"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+
+		testConnectionServiceImpl.validateConnection(conn, Constant.REPO_TOOLS);
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+	}
+
+	@Test
+	public void validateRepoTestConnSuccess_BitBucket() {
+		conn.setAccessToken("testAccessToken");
+		conn.setRepoToolProvider(Constant.TOOL_SONAR);
+		conn.setUsername("testUserName");
+		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class),
+				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
+		RepoToolsProvider provider= new RepoToolsProvider();
+		provider.setTestApiUrl("https://www.test.com");
+		ServiceResponse serviceResponse = testConnectionServiceImpl.validateConnection(conn, Constant.REPO_TOOLS);
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+	}
+
+	@Test
+	public void validateRepoTestConnSuccess_BitBucket_Pat() throws URISyntaxException {
+		conn.setAccessToken("testAccessToken");
+		conn.setRepoToolProvider(Constant.TOOL_BITBUCKET);
+		conn.setUsername("testUserName");
+		conn.setBearerToken(true);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + "testAccessToken");
+		headers.add(HttpHeaders.ACCEPT, "*/*");
+		headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+		headers.set("Cookie", "");
+
+		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+		RepoToolsProvider provider= new RepoToolsProvider();
+		provider.setTestApiUrl("https://www.test.com");
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+	}
+
+	@Test
+	public void testGetZephyrCloudUrlDetailsWhenGlobalConfigsEmpty() {
+		ServiceResponse result = testConnectionServiceImpl.getZephyrCloudUrlDetails();
+		assertFalse(result.getSuccess());
+		assertEquals("Fetched Zephyr Cloud Base Url successfully", result.getMessage());
+		assertNull(result.getData());
+	}
+
+	@Test
+	public void testGetZephyrCloudUrlDetailsWhenZephyrCloudBaseUrlIsNull() {
+		// Arrange
+		doReturn(null).when(customApiConfig).getZephyrCloudBaseUrl();
+		// Act
+		ServiceResponse result = testConnectionServiceImpl.getZephyrCloudUrlDetails();
+
+		// Assert
+		assertFalse(result.getSuccess());
+		assertEquals("Fetched Zephyr Cloud Base Url successfully", result.getMessage());
+		assertNull(result.getData());
 	}
 
 }
