@@ -237,24 +237,23 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		} else if (toolName.equals(Constant.TOOL_SONAR)) {
 			if (connection.isCloudEnv()) {
 				isValid = testConnectionForTools(apiUrl, password);
-			} else if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()) {
+			} else if (connection.isAccessTokenEnabled()) {
 				isValid = testConnection(connection, toolName, apiUrl, password, true);
 			} else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else if (toolName.equalsIgnoreCase(Constant.TOOL_ARGOCD)) {
-			isValid = testConnectionForArgoCD(apiUrl, connection.getUsername(), password);
+			isValid = testConnectionForTools(apiUrl, password);
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
-				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-			} else {
+            } else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
-				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-			}
-		}
+            }
+            statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+        }
 		return statusCode;
 	}
 
@@ -275,23 +274,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	}
 
-	private boolean testConnectionForArgoCD(String apiUrl, String username, String accessToken) {
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.add("Authorization", "Bearer " + accessToken);
-		try {
-			ResponseEntity<String> response = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET,
-					new HttpEntity<>(requestHeaders), String.class);
-			log.debug("ArgoCDClient :: getApplications response :: {}", response.getBody());
-			return response.getStatusCode().is2xxSuccessful();
-		} catch (RestClientException ex) {
-			log.error("ArgoCDClient :: getApplications Exception occurred :: {}", ex.getMessage());
-			throw ex;
-		}
-	}
-
 	private boolean testConnectionForTools(String apiUrl, String accessToken) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Bearer " + accessToken);
+		HttpHeaders headers = createHeadersWithBearer(accessToken);
 		HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 		try {
 			ResponseEntity<String> result = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity,
@@ -392,9 +376,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private HttpHeaders createHeadersWithBearer(String pat) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + pat);
-		headers.add(HttpHeaders.ACCEPT, "*/*");
-		headers.add(HttpHeaders.CONTENT_TYPE, APPICATION_JSON);
-		headers.set("Cookie", "");
 		return headers;
 	}
 

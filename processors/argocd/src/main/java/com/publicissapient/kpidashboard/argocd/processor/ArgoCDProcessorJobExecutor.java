@@ -32,14 +32,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.argocd.dto.Destination;
+import com.publicissapient.kpidashboard.argocd.dto.Specification;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -185,17 +189,24 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				try {
 					processorToolConnectionService.validateConnectionFlag(argoCDJob);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-					// Fetching the list of applications using Bearer token for authentication as Basic Auth is not supported
-					ApplicationsList listOfApplications = argoCDClient.getApplications(baseUrl, cred.getPassword());
-					if (listOfApplications != null && listOfApplications.getItems() != null) {
-						listOfApplications.getItems().stream()
-								.filter(applicationitem -> applicationitem.getMetadata().getName().equalsIgnoreCase(argoCDJob.getJobName()))
-								.forEach(applicationitem -> {
-									Application application = argoCDClient.getApplicationByName(baseUrl,
-											applicationitem.getMetadata().getName(), cred.getPassword());
-									count.addAndGet(saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob, processor.getId()));
-								});
-					}
+					// Fetching the list of applications using Bearer token for authentication as
+					// Basic Auth is not supported
+					// Fetch the cluster name mapping using the base URL and credentials
+					Map<String, String> serverToNameMap = argoCDClient.getClusterName(baseUrl, cred.getPassword());
+
+					// Retrieve the list of applications based on the job name or fetch all
+					// applications if the job name is not specified
+					List<Application> applications = ObjectUtils.isNotEmpty(argoCDJob.getJobName())
+							? List.of(argoCDClient.getApplicationByName(baseUrl, argoCDJob.getJobName(),
+									cred.getPassword()))
+							: Optional.ofNullable(argoCDClient.getApplications(baseUrl, cred.getPassword()))
+									.map(ApplicationsList::getItems).orElse(List.of());
+
+					// Process each application and save the revisions in the database
+					applications.stream().filter(Objects::nonNull).forEach(app -> {
+						count.addAndGet(saveRevisionsInDbAndGetCount(app, deploymentJobs, argoCDJob, processor.getId(),
+								serverToNameMap));
+					});
 					log.info("Finished ArgoCD Job started at :: {}", startTime);
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -231,7 +242,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * @param exception
 	 *            exception
 	 */
-    void isClientException(ProcessorToolConnection argoCDJob, RestClientException exception) {
+	void isClientException(ProcessorToolConnection argoCDJob, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 			String errMsg = ClientErrorMessageEnum
@@ -317,10 +328,10 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 *            processor Id
 	 * @return int
 	 */
-    int saveRevisionsInDbAndGetCount(Application application, List<Deployment> exisitingEntries,
-                                     ProcessorToolConnection argoCDJob, ObjectId processorId) {
+	int saveRevisionsInDbAndGetCount(Application application, List<Deployment> exisitingEntries,
+			ProcessorToolConnection argoCDJob, ObjectId processorId, Map<String, String> serverToNameMap) {
 		Map<Pair<String, String>, Deployment> deployments = mapRevisionsToDeployment(application, argoCDJob,
-				processorId);
+				processorId, serverToNameMap);
 		Map<Pair<String, String>, Deployment> exisitingDeployments = exisitingEntries.stream().collect(Collectors.toMap(
 				deployment -> Pair.of(deployment.getEnvName(), deployment.getNumber()), deployment -> deployment));
 		Set<Deployment> tobeSavedinDB = deployments.entrySet().stream()
@@ -347,7 +358,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * @return Map<Pair<String, String>, Deployment>
 	 */
 	private Map<Pair<String, String>, Deployment> mapRevisionsToDeployment(Application application,
-			ProcessorToolConnection argoCDJob, ObjectId processorId) {
+			ProcessorToolConnection argoCDJob, ObjectId processorId, Map<String, String> serverToNameMap) {
 		Map<Pair<String, String>, Deployment> deployments = new HashMap<>();
 		if (null != application.getStatus() && null != application.getStatus().getHistory()) {
 			for (History history : application.getStatus().getHistory()) {
@@ -358,12 +369,14 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				deployment.setJobId(argoCDJob.getDeploymentProjectId());
 				deployment.setJobName(argoCDJob.getJobName());
 				deployment.setEnvId(history.getRevision());
-				deployment.setEnvName(application.getMetadata().getName());
+				String server = Optional.ofNullable(application.getSpec()).map(Specification::getDestination)
+						.map(Destination::getServer).orElse(null);
+				deployment.setEnvName(server != null ? serverToNameMap.get(server) : null);
 				deployment.setDeploymentStatus(DeploymentStatus.SUCCESS);
 				deployment.setStartTime(DateUtil.formatDate(history.getDeployStartedAt()));
 				deployment.setEndTime(DateUtil.formatDate(history.getDeployedAt()));
-				deployment.setDuration(
-						DateUtil.calculateDuration(history.getDeployStartedAt(), history.getDeployedAt()));
+				deployment
+						.setDuration(DateUtil.calculateDuration(history.getDeployStartedAt(), history.getDeployedAt()));
 				deployment.setNumber(history.getId());
 				deployment.setPipelineName("NA");
 				deployments.put(Pair.of(deployment.getEnvName(), deployment.getNumber()), deployment);

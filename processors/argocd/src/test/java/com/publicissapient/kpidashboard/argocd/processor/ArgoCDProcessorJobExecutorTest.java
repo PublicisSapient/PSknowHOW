@@ -26,8 +26,13 @@ import static org.mockito.Mockito.*;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.publicissapient.kpidashboard.argocd.dto.Destination;
+import com.publicissapient.kpidashboard.argocd.dto.Specification;
+import com.publicissapient.kpidashboard.argocd.dto.UserCredentialsDTO;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import org.bson.types.ObjectId;
@@ -164,12 +169,18 @@ class ArgoCDProcessorJobExecutorTest {
 		application.setMetadata(metaData);
 		Status status = new Status();
 		History history = new History();
+		Specification spec = new Specification();
+		Destination destination = new Destination();
+		destination.setNamespace("dev-auth");
+		destination.setServer("mdgsseunspdaks03");
+		spec.setDestination(destination);
 		history.setDeployedAt("2023-11-13T11:59:25Z");
 		history.setDeployStartedAt("2023-11-05T10:23:45Z");
 		history.setId("10");
 		history.setRevision("6597a6444507c41cbe6191c7");
 		status.setHistory(List.of(history));
 		application.setStatus(status);
+		application.setSpec(spec);
 
 		ApplicationMetadata metaData2 = new ApplicationMetadata();
 		metaData2.setName(APP2);
@@ -177,12 +188,18 @@ class ArgoCDProcessorJobExecutorTest {
 		application2.setMetadata(metaData2);
 		Status status2 = new Status();
 		History history2 = new History();
+		Specification specification = new Specification();
+		Destination dest = new Destination();
+		dest.setNamespace("dev1-auth");
+		dest.setServer("mpgsseunspdaks04");
+		specification.setDestination(dest);
 		history2.setDeployedAt("2024-01-03T11:59:25Z");
 		history2.setDeployStartedAt("2024-01-02T10:23:45Z");
 		history2.setId("14");
 		history2.setRevision("6597a5ea396d3d1a5227c9ea");
 		status2.setHistory(List.of(history2));
 		application2.setStatus(status2);
+		application2.setSpec(specification);
 
 		applicationsList.setItems(List.of(application, application2));
 	}
@@ -272,7 +289,6 @@ class ArgoCDProcessorJobExecutorTest {
 		assertTrue(jobExecutor.execute(processor));
 	}
 
-
 	@Test
 	void testExecuteWithRestClientException() {
 		ArgoCDProcessor processor = new ArgoCDProcessor();
@@ -289,6 +305,7 @@ class ArgoCDProcessorJobExecutorTest {
 
 		assertFalse(jobExecutor.execute(processor));
 	}
+
 	@Test
 	void testSaveRevisionsInDbAndGetCount_NewDeployments() {
 		Application application = new Application();
@@ -300,6 +317,12 @@ class ArgoCDProcessorJobExecutorTest {
 		application.getStatus().setHistory(List.of(history));
 		application.setMetadata(new ApplicationMetadata());
 		application.getMetadata().setName("app1");
+		Specification spec = new Specification();
+		Destination destination = new Destination();
+		destination.setNamespace("dev-auth");
+		destination.setServer("mdgsseunspdaks03");
+		spec.setDestination(destination);
+		application.setSpec(spec);
 
 		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
 		argoCDJob.setId(new ObjectId("6597633d916863f2b4779145"));
@@ -308,7 +331,8 @@ class ArgoCDProcessorJobExecutorTest {
 		argoCDJob.setDeploymentProjectName("deploymentProjectName");
 
 		List<Deployment> existingEntries = new ArrayList<>();
-		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob, new ObjectId("6597633d916863f2b4779145"));
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob,
+				new ObjectId("6597633d916863f2b4779145"), Map.of());
 
 		assertEquals(1, count);
 		verify(deploymentRepository, times(1)).save(any(Deployment.class));
@@ -325,6 +349,12 @@ class ArgoCDProcessorJobExecutorTest {
 		application.getStatus().setHistory(List.of(history));
 		application.setMetadata(new ApplicationMetadata());
 		application.getMetadata().setName("app1");
+		Specification spec = new Specification();
+		Destination destination = new Destination();
+		destination.setNamespace("dev-auth");
+		destination.setServer("mdgsseunspdaks03");
+		spec.setDestination(destination);
+		application.setSpec(spec);
 
 		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
 		argoCDJob.setId(new ObjectId("6597633d916863f2b4779145"));
@@ -336,8 +366,172 @@ class ArgoCDProcessorJobExecutorTest {
 		existingDeployment.setEnvName("app1");
 		existingDeployment.setNumber("1");
 		List<Deployment> existingEntries = List.of(existingDeployment);
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob,
+				new ObjectId("6597633d916863f2b4779145"), Map.of());
+		assertEquals(1, count);
+		verify(deploymentRepository, times(1)).save(any(Deployment.class));
+	}
 
-		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob, new ObjectId("6597633d916863f2b4779145"));
+	@Test
+	void testExecuteWithJobName() {
+		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
+		argoCDJob.setJobName("jobName");
+		argoCDJob.setUrl("http://example.com");
+		argoCDJob.setUsername("user");
+		argoCDJob.setPassword("encryptedPassword");
+		Application application = new Application();
+		application.setStatus(new Status());
+		History history = new History();
+		history.setId("1");
+		history.setDeployStartedAt("2023-11-05T10:23:45Z");
+		history.setDeployedAt("2023-11-13T11:59:25Z");
+		application.getStatus().setHistory(List.of(history));
+		application.setMetadata(new ApplicationMetadata());
+		application.getMetadata().setName("app1");
+		Specification spec = new Specification();
+		Destination destination = new Destination();
+		destination.setNamespace("dev-auth");
+		destination.setServer("mdgsseunspdaks03");
+		spec.setDestination(destination);
+		application.setSpec(spec);
+		UserCredentialsDTO cred = new UserCredentialsDTO(argoCDJob.getUsername(), "decryptedPassword");
+		when(aesEncryptionService.decrypt(argoCDJob.getPassword(), argoCDConfig.getAesEncryptionKey()))
+				.thenReturn("decryptedPassword");
+		when(argoCDClient.getClusterName(argoCDJob.getUrl(), cred.getPassword()))
+				.thenReturn(Map.of("mdgsseunspdaks03", "dev-auth"));
+		when(argoCDClient.getApplicationByName(argoCDJob.getUrl(), argoCDJob.getJobName(), cred.getPassword()))
+				.thenReturn(application);
+
+		List<Deployment> deploymentJobs = new ArrayList<>();
+		when(deploymentRepository.findByProcessorIdIn(anySet())).thenReturn(deploymentJobs);
+
+		ArgoCDProcessor processor = new ArgoCDProcessor();
+		processor.setId(new ObjectId("6597633d916863f2b4779145"));
+		Map<String, String> serverToNameMap = new HashMap<>();
+		serverToNameMap.put("mdgsseunspdaks03", "dev-auth");
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob,
+				processor.getId(), serverToNameMap);
+		assertEquals(1, count);
+	}
+
+	@Test
+	void saveRevisionsInDbAndGetCount_NewDeployment_Success() {
+		Application application = new Application();
+		application.setStatus(new Status());
+		History history = new History();
+		history.setId("1");
+		history.setDeployStartedAt("2023-11-05T10:23:45Z");
+		history.setDeployedAt("2023-11-13T11:59:25Z");
+		application.getStatus().setHistory(List.of(history));
+		application.setMetadata(new ApplicationMetadata());
+		application.getMetadata().setName("app1");
+		Specification spec = new Specification();
+		Destination destination = new Destination();
+		destination.setNamespace("dev-auth");
+		destination.setServer("mdgsseunspdaks03");
+		spec.setDestination(destination);
+		application.setSpec(spec);
+
+		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
+		argoCDJob.setId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setDeploymentProjectId("deploymentProjectId");
+		argoCDJob.setDeploymentProjectName("deploymentProjectName");
+
+		List<Deployment> existingEntries = new ArrayList<>();
+		Map<String, String> serverToNameMap = Map.of("mdgsseunspdaks03", "dev-auth");
+
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob,
+				new ObjectId("6597633d916863f2b4779145"), serverToNameMap);
+
+		assertEquals(1, count);
+		verify(deploymentRepository, times(1)).save(any(Deployment.class));
+	}
+
+	@Test
+	void saveRevisionsInDbAndGetCount_ExistingDeployment_NoSave() {
+		Application application = new Application();
+		application.setStatus(new Status());
+		History history = new History();
+		history.setId("1");
+		history.setDeployStartedAt("2023-11-05T10:23:45Z");
+		history.setDeployedAt("2023-11-13T11:59:25Z");
+		application.getStatus().setHistory(List.of(history));
+		application.setMetadata(new ApplicationMetadata());
+		application.getMetadata().setName("app1");
+		Specification spec = new Specification();
+		Destination destination = new Destination();
+		destination.setNamespace("dev-auth");
+		destination.setServer("mdgsseunspdaks03");
+		spec.setDestination(destination);
+		application.setSpec(spec);
+
+		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
+		argoCDJob.setId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setDeploymentProjectId("deploymentProjectId");
+		argoCDJob.setDeploymentProjectName("deploymentProjectName");
+
+		Deployment existingDeployment = new Deployment();
+		existingDeployment.setEnvName("dev-auth");
+		existingDeployment.setNumber("1");
+		List<Deployment> existingEntries = List.of(existingDeployment);
+		Map<String, String> serverToNameMap = Map.of("mdgsseunspdaks03", "dev-auth");
+
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob,
+				new ObjectId("6597633d916863f2b4779145"), serverToNameMap);
+
+		assertEquals(0, count);
+		verify(deploymentRepository, times(0)).save(any(Deployment.class));
+	}
+
+	@Test
+	void saveRevisionsInDbAndGetCount_EmptyHistory_NoSave() {
+		Application application = new Application();
+		application.setStatus(new Status());
+		application.setMetadata(new ApplicationMetadata());
+		application.getMetadata().setName("app1");
+
+		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
+		argoCDJob.setId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setDeploymentProjectId("deploymentProjectId");
+		argoCDJob.setDeploymentProjectName("deploymentProjectName");
+
+		List<Deployment> existingEntries = new ArrayList<>();
+		Map<String, String> serverToNameMap = Map.of("mdgsseunspdaks03", "dev-auth");
+
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob,
+				new ObjectId("6597633d916863f2b4779145"), serverToNameMap);
+
+		assertEquals(0, count);
+		verify(deploymentRepository, times(0)).save(any(Deployment.class));
+	}
+
+	@Test
+	void saveRevisionsInDbAndGetCount_NullHistory_NoSave() {
+		Application application = new Application();
+		application.setStatus(new Status());
+		application.setMetadata(new ApplicationMetadata());
+		application.getMetadata().setName("app1");
+		Specification spec = new Specification();
+		Destination destination = new Destination();
+		destination.setNamespace("dev-auth");
+		destination.setServer("mdgsseunspdaks03");
+		spec.setDestination(destination);
+		application.setSpec(spec);
+
+		ProcessorToolConnection argoCDJob = new ProcessorToolConnection();
+		argoCDJob.setId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
+		argoCDJob.setDeploymentProjectId("deploymentProjectId");
+		argoCDJob.setDeploymentProjectName("deploymentProjectName");
+
+		List<Deployment> existingEntries = new ArrayList<>();
+		Map<String, String> serverToNameMap = Map.of("mdgsseunspdaks03", "dev-auth");
+
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, existingEntries, argoCDJob,
+				new ObjectId("6597633d916863f2b4779145"), serverToNameMap);
 
 		assertEquals(0, count);
 		verify(deploymentRepository, times(0)).save(any(Deployment.class));

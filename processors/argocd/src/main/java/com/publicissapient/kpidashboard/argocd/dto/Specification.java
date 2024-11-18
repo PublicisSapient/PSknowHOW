@@ -16,17 +16,15 @@
  *
  ******************************************************************************/
 
+
 package com.publicissapient.kpidashboard.argocd.dto;
 
 import lombok.Data;
 
 /**
- * Application represents the information for ArgoCD Application
- *
+ * Specification represents the specification details for an ArgoCD Application.
  */
 @Data
-public class Application {
-	private ApplicationMetadata metadata;
-	private Specification spec;
-	private Status status;
+public class Specification {
+	private Destination destination;
 }
