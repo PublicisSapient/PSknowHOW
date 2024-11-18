@@ -53,11 +53,8 @@ public class NotificationHandler {
 
 	public static final String ROLE_PROJECT_ADMIN = "ROLE_PROJECT_ADMIN";
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
-	private static final String NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
-	private static final String NOTIFICATION_KEY = "Error_In_Jira_Processor";
 	private static final String NOTIFICATION_MSG = "Notification_Msg";
 	private static final String NOTIFICATION_ERROR = "Notification_Error";
-	private static final String ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY = "Error_In_Jira_Processor";
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
 	@Autowired
@@ -80,7 +77,7 @@ public class NotificationHandler {
 	 *            projectBasicConfigId
 	 */
 	public void sendEmailToProjectAdminAndSuperAdmin(String value, String allFailureExceptions,
-			String projectBasicConfigId) {
+			String projectBasicConfigId, String notificationSubjectKey, String mailTemplateKey) {
 		List<String> emailAddresses = getEmailAddressBasedProjectIdAndRole(projectBasicConfigId);
 		if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getDomainNames())) {
 			emailAddresses = emailAddresses.stream().filter(emailAddress -> {
@@ -94,11 +91,11 @@ public class NotificationHandler {
 			Map<String, String> customData = new HashMap<>();
 			customData.put(NOTIFICATION_MSG, value);
 			customData.put(NOTIFICATION_ERROR, allFailureExceptions);
-			String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
-			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
+			String subject = notificationSubjects.get(notificationSubjectKey);
+			log.info("Notification message sent to kafka with key : {}", mailTemplateKey);
 			String templateKey = jiraProcessorConfig.getMailTemplate()
-					.getOrDefault(ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY, "");
-			notificationService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
+					.getOrDefault(mailTemplateKey, "");
+			notificationService.sendNotificationEvent(emailAddresses, customData, subject, mailTemplateKey,
 					jiraProcessorConfig.getKafkaMailTopic(), jiraProcessorConfig.isNotificationSwitch(), kafkaTemplate,
 					templateKey, jiraProcessorConfig.isMailWithoutKafka());
 		} else {
