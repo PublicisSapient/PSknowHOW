@@ -440,7 +440,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			Map<String, JiraIssue> totalDefectList = new HashMap<>();
 			sprintWiseCompAndRejectedList.stream().forEach(bugs -> totalDefectList.putIfAbsent(bugs.getNumber(), bugs));
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, totalDefectList, sprintWiseRejectedDefectList,
-					excelData, KPICode.DEFECT_REJECTION_RATE.getKpiId());
+					excelData, KPICode.DEFECT_REJECTION_RATE.getKpiId(), customApiConfig);
 		}
 	}
 

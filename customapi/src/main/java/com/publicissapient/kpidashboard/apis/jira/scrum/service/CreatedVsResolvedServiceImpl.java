@@ -434,7 +434,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			totalCreatedTickets.stream()
 					.forEach(jiraIssue -> createdTicketMap.putIfAbsent(jiraIssue.getNumber(), jiraIssue));
 			KPIExcelUtility.populateCreatedVsResolvedExcelData(node.getSprintFilter().getName(), createdTicketMap
-					, totalCreatedTicketsSprintStart, closedIssuesWithStatus,excelData);
+					, totalCreatedTicketsSprintStart, closedIssuesWithStatus,excelData, customApiConfig);
 		}
 
 	}
