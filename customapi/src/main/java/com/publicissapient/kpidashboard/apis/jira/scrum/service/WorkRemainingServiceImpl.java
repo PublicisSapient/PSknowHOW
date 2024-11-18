@@ -333,7 +333,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
 		String devDate = DateUtil.dateTimeConverter(
 				devCompletionDate, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
-		jiraIssueModalObject.setDevCompletionDate((devDate != null && !devDate.isEmpty()) ? devDate : Constant.DASH);
+		jiraIssueModalObject.setDevCompletionDate((devDate != null && !StringUtils.isEmpty(devDate)) ? devDate : Constant.DASH);
 		String markerValue = Constant.BLANK;
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());

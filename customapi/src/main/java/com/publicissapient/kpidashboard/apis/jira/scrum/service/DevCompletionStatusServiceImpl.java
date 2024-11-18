@@ -486,7 +486,7 @@ public class DevCompletionStatusServiceImpl extends JiraIterationKPIService {
 		String markerValue = Constant.BLANK;
 		String devDate = DateUtil.dateTimeConverter(
 				(String) jiraIssueData.get(DEV_COMPLETION_DATE), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
-		jiraIssueModalObject.setDevCompletionDate((devDate != null && !devDate.isEmpty()) ? devDate : Constant.DASH);
+		jiraIssueModalObject.setDevCompletionDate((devDate != null && !StringUtils.isEmpty(devDate)) ? devDate : Constant.DASH);
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null)
 			jiraIssueModalObject.setActualCompletionDate(
 					DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString(),
