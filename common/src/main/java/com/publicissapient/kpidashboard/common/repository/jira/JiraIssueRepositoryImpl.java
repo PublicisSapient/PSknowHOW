@@ -46,6 +46,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.LABELS;
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.PARENT_STORY_ID;
 
 /**
@@ -168,11 +169,11 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(DEFECT_STORY_ID);
 		query.fields().include("testAutomated");
 		query.fields().include("isTestAutomated");
-		query.fields().include("defectRaisedBy");
-		query.fields().include("status");
+		query.fields().include(DEFECT_RAISED_BY);
+		query.fields().include(STATUS);
 		query.fields().include(CONFIG_ID);
-		query.fields().include("labels");
-		query.fields().include("resolution");
+		query.fields().include(LABELS);
+		query.fields().include(RESOLUTION);
 		query.fields().include(NAME);
 		query.fields().include(URL);
 		query.fields().include(ADDITIONAL_FILTER);
@@ -579,6 +580,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(URL);
 		query.fields().include(NAME);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(SPRINT_NAME);
+		query.fields().include(LOGGED_WORK_MINUTES);
 
 		return operations.find(query, JiraIssue.class);
 	}
@@ -659,7 +662,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(STORY_POINTS);
 		query.fields().include("name");
 		query.fields().include(STATE);
-		query.fields().include("status");
+		query.fields().include(STATUS);
 		query.fields().include(SPRINT_NAME);
 		query.fields().include(SPRINT_ID);
 		query.fields().include(URL);
@@ -828,6 +831,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(URL);
 		query.fields().include(CONFIG_ID);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(STORY_POINTS);
+		query.fields().include(SPRINT_NAME);
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}
@@ -957,12 +962,12 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		MatchOperation matchStage = Aggregation.match(criteria);
 
-		GroupOperation groupOperation = Aggregation.group(TYPE_NAME, "basicProjectConfigId",
-				"releaseVersions.releaseName");
+		GroupOperation groupOperation = Aggregation.group(TYPE_NAME, CONFIG_ID,
+				RELEASE_VERSION);
 
 		ProjectionOperation projectionOperation = Aggregation.project().andExpression("_id.typeName")
 				.as("uniqueTypeName").andExpression("_id.releaseName").as("releaseName")
-				.andExpression("_id.basicProjectConfigId").as("basicProjectConfigId");
+				.andExpression("_id.basicProjectConfigId").as(CONFIG_ID);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupOperation, projectionOperation);
 		return operations.aggregate(aggregation, JiraIssue.class, ReleaseWisePI.class).getMappedResults();

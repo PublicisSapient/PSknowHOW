@@ -944,4 +944,26 @@ describe('PrimaryFilterComponent', () => {
       });
     });
   });
+
+  describe('PrimaryFilterComponent: isFilterHidden', () => {
+  
+    it('should return true for isFilterHidden when selectedTab is iteration and there are active filters', () => {
+      component.selectedTab = 'iteration';
+      const filterDataSet = [{ sprintState: 'active' }, { sprintState: 'inactive' }];
+      const result = component.isFilterHidden(filterDataSet);
+      expect(result).toBe(true);
+    });
+
+    it('should return false when selectedTab is not iteration', () => {
+      component.selectedTab = 'release';
+      const result = component.isFilterHidden([]);
+      expect(result).toBe(false);
+    });
+
+    it('should return false for isFilterHidden when no active sprints', () => {
+      const result = component.isFilterHidden(component.filters);
+      expect(result).toBe(false);
+    });
+
+  });
 });
