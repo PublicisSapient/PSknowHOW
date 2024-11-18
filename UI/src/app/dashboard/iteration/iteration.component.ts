@@ -33,7 +33,6 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
-import { SortEvent } from 'primeng/api';
 
 declare let require: any;
 
@@ -789,7 +788,15 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.tableHeaders = this.selectedColumns;
         this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
         this.modalDetails['kpiId'] = kpi.kpiId;
-        this.modalDetails['tableValues'] = tableValues;
+        this.modalDetails['tableValues'] = tableValues.map(item => {
+          const formattedItem = { ...item };
+          for (const key in formattedItem) {
+              if (key.toLowerCase().includes('date') && formattedItem[key]) {
+                  formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
+              }
+          }
+           return formattedItem
+      });
         this.generateExcludeColumnsFilterList(tableValues[0]);
         this.generateTableColumnData();
         this.displayModal = true;
