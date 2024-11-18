@@ -1534,6 +1534,8 @@ public class KPIExcelUtility {
 			jiraIssueModalObject
 					.setIssueSize(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/"
 							+ roundingOff(originalEstimateInHours) + " hrs");
+		} else {
+			jiraIssueModalObject.setIssueSize(Constant.DASH);
 		}
 		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
 				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
@@ -1623,6 +1625,8 @@ public class KPIExcelUtility {
 			issueKpiModalValue
 					.setIssueSize(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/"
 							+ roundingOff(originalEstimateInHours) + " hrs");
+		} else {
+			issueKpiModalValue.setIssueSize(Constant.DASH);
 		}
 		issueKpiModalValue.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
 				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
@@ -2151,9 +2155,9 @@ public class KPIExcelUtility {
 				excelData.setLatestReleaseTagDate(DateUtil.dateTimeConverter(
 						String.valueOf(issueWiseReleaseTagDateMap.get(jiraIssue.getNumber())), DateUtil.DATE_FORMAT,
 						DateUtil.DISPLAY_DATE_FORMAT));
-				excelData.setDevCompleteDate(
-						DateUtil.dateTimeConverter(String.valueOf(devCompleteDateIssueMap.get(jiraIssue.getNumber())),
-								DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				String devDate = DateUtil.dateTimeConverter(String.valueOf(devCompleteDateIssueMap.get(jiraIssue.getNumber())),
+						DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+				excelData.setDevCompleteDate((devDate != null && !devDate.isEmpty()) ? devDate : Constant.DASH);
 				excelData.setCompletionDate(
 						DateUtil.dateTimeConverter(String.valueOf(completeDateIssueMap.get(jiraIssue.getNumber())),
 								DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
