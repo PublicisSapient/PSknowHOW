@@ -92,6 +92,8 @@ public class QADDServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiSetting;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	private KpiRequest kpiRequest;
 	private List<KpiElement> kpiElementList;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -165,7 +167,10 @@ public class QADDServiceImplTest {
 		resultListMap.put("storyData", sprintWiseStoryList);
 		resultListMap.put("defectData", defectList);
 		resultListMap.put(SUBGROUPCATEGORY, SPRINT);
-
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		try {
 			assertNotNull(helper(resultListMap));
 		} catch (ApplicationException e) {
@@ -181,7 +186,10 @@ public class QADDServiceImplTest {
 		resultListMap.put("storyData", sprintWiseStoryList);
 		resultListMap.put("defectData", defectList);
 		resultListMap.put(SUBGROUPCATEGORY, SPRINT);
-
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		try {
 			assertNotNull(helper(resultListMap));
 		} catch (ApplicationException e) {
@@ -197,7 +205,10 @@ public class QADDServiceImplTest {
 		resultListMap.put("storyData", sprintWiseStoryList);
 		resultListMap.put("defectData", defectList);
 		resultListMap.put(SUBGROUPCATEGORY, SPRINT);
-
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		try {
 			assertNotNull(helper(resultListMap));
 		} catch (ApplicationException e) {
@@ -213,6 +224,10 @@ public class QADDServiceImplTest {
 		resultListMap.put("storyData", sprintWiseStoryList);
 		resultListMap.put("defectData", defectList);
 		resultListMap.put(SUBGROUPCATEGORY, SPRINT);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 
 		try {
 			assertNotNull(helper(resultListMap));
