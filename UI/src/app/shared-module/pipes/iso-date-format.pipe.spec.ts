@@ -18,12 +18,12 @@ describe('IsoDateFormatPipe', () => {
   it('should transform a valid Date object to the correct ISO date format', () => {
 		const date = new Date('2023-10-01 20:41:9');
 		const result = pipe.transform(date);
-		expect(result).toBe('1-OCT-2023 20:41:9');
+		expect(result).toBe('01-OCT-2023 20:41:9');
 	});
 
   it('should transform a valid date string to ISO format', () => {
 		const inputDate = '2023-10-01';
-		const expectedOutput = '1-OCT-2023 ';
+		const expectedOutput = '01-OCT-2023 ';
 		const result = pipe.transform(inputDate);
 		expect(result).toBe(expectedOutput);
 	});
