@@ -275,10 +275,10 @@ export class PrimaryFilterComponent implements OnChanges {
 
   isFilterHidden(filterDataSet:any): boolean{
     if(this.selectedTab?.toLowerCase() === 'iteration' ){
-      if(filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length){
-        return true;
+      if(filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length>1){
+        return false;
       }
-      return false;
+      return true;
     }else{
       return false;
     }
