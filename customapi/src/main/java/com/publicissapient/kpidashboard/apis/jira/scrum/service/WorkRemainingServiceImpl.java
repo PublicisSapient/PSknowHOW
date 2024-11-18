@@ -356,6 +356,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 		} else {
 			jiraIssueModalObject.setPotentialOverallDelay("-");
 			jiraIssueModalObject.setPredictedCompletionDate("-");
+			jiraIssueModalObject.setPotentialDelay(Constant.DASH);
 		}
 		jiraIssueModalObject.setMarker(markerValue);
 	}

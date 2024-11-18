@@ -1548,12 +1548,12 @@ public class KPIExcelUtility {
 		jiraIssueModalObject.setLabels(jiraIssue.getLabels());
 		jiraIssueModalObject.setRootCauseList(jiraIssue.getRootCauseList());
 		jiraIssueModalObject.setOwnersFullName(jiraIssue.getOwnersFullName());
-		jiraIssueModalObject.setSprintName(jiraIssue.getSprintName());
+		jiraIssueModalObject.setSprintName((jiraIssue.getSprintName() != null && !jiraIssue.getSprintName().isEmpty()) ? jiraIssue.getSprintName() : Constant.DASH);
 		jiraIssueModalObject.setResolution(jiraIssue.getResolution());
 		if (CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())) {
 			List<ReleaseVersion> releaseVersions = jiraIssue.getReleaseVersions();
 			jiraIssueModalObject.setReleaseName(releaseVersions.get(releaseVersions.size() - 1).getReleaseName());
-		}
+		} else jiraIssueModalObject.setReleaseName(Constant.DASH);
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
 			jiraIssueModalObject
 					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
@@ -1566,6 +1566,7 @@ public class KPIExcelUtility {
 			jiraIssueModalObject.setRemainingTimeInDays(remEstimate);
 		} else {
 			jiraIssueModalObject.setRemainingEstimateMinutes(Constant.DASH);
+			jiraIssueModalObject.setRemainingTimeInDays(Constant.DASH);
 		}
 		jiraIssueModalObject.setTimeSpentInMinutes(CommonUtils.convertIntoDays(jiraIssue.getTimeSpentInMinutes()));
 		if (jiraIssue.getDevDueDate() != null)
@@ -1639,12 +1640,12 @@ public class KPIExcelUtility {
 		issueKpiModalValue.setLabels(jiraIssue.getLabels());
 		issueKpiModalValue.setRootCauseList(jiraIssue.getRootCauseList());
 		issueKpiModalValue.setOwnersFullName(jiraIssue.getOwnersFullName());
-		issueKpiModalValue.setSprintName(jiraIssue.getSprintName());
+		issueKpiModalValue.setSprintName((jiraIssue.getSprintName() != null && !jiraIssue.getSprintName().isEmpty()) ? jiraIssue.getSprintName() : Constant.DASH);
 		issueKpiModalValue.setResolution(jiraIssue.getResolution());
 		if (CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())) {
 			List<ReleaseVersion> releaseVersions = jiraIssue.getReleaseVersions();
 			issueKpiModalValue.setReleaseName(releaseVersions.get(releaseVersions.size() - 1).getReleaseName());
-		}
+		} else issueKpiModalValue.setReleaseName(Constant.DASH);
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
 			issueKpiModalValue
 					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
