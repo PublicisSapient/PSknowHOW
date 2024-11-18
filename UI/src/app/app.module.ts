@@ -90,7 +90,6 @@ import { IterationComponent } from './dashboard/iteration/iteration.component';
 import { OverlappedProgressbarComponent } from './component/overlapped-progressbar/overlapped-progressbar.component';
 import { HorizontalStackProgressbarComponent } from './component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
 import { CircularProgressWithLegendsComponent } from './component/circular-progress-with-legends/circular-progress-with-legends.component';
-import { ExternalUrlDirective } from './external-url.directive';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -184,7 +183,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         OverlappedProgressbarComponent,
         HorizontalStackProgressbarComponent,
         CircularProgressWithLegendsComponent,
-        ExternalUrlDirective,
         KpiCardComponent,
         TrendIndicatorComponent,
         TooltipComponent,

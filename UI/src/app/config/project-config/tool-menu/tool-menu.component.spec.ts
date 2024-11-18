@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ToolMenuComponent } from './tool-menu.component';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
@@ -32,15 +32,14 @@ import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { of } from 'rxjs';
 import { ProjectListComponent } from '../project-list/project-list.component';
-import { url } from 'inspector';
 import { ConfigSettingsComponent } from '../config-settings/config-settings.component';
 import { AdvancedSettingsComponent } from '../../advanced-settings/advanced-settings.component';
 
 describe('ToolMenuComponent', () => {
   let component: ToolMenuComponent;
   let fixture: ComponentFixture<ToolMenuComponent>;
-  let httpService: HttpService;
-  let sharedService: SharedService;
+  let httpService: jasmine.SpyObj<HttpService>;
+  let sharedService: jasmine.SpyObj<SharedService>;
   let confirmationService: ConfirmationService;
   let messageService: MessageService;
   let ga: GoogleAnalyticsService;
@@ -89,6 +88,11 @@ describe('ToolMenuComponent', () => {
 
     httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
     sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    // Spy on setSelectedToolConfig explicitly
+    spyOn(sharedService, 'setSelectedToolConfig');
+    // Spy on setSelectedFieldMapping explicitly
+    spyOn(sharedService, 'setSelectedFieldMapping');
+
     localStorage.setItem('completeHierarchyData', JSON.stringify(fakeCompleteHiearchyData));
   });
 
@@ -134,7 +138,6 @@ describe('ToolMenuComponent', () => {
 
     // httpService.getAllToolConfigs.and.returnValue(of(response));
     spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
-    spyOn(sharedService, 'setSelectedToolConfig').and.callThrough();
 
     component.getToolsConfigured();
 
@@ -143,26 +146,6 @@ describe('ToolMenuComponent', () => {
     // expect(component.selectedTools).toEqual(response.data);
     expect(component.setGaData).toHaveBeenCalled();
   });
-
-  // it('should handle jiraOrAzure tools', () => {
-  //   spyOn(component, 'setGaData').and.callThrough();
-  //   spyOn(component, 'projectTypeChange').and.callThrough();
-
-  //   const response = {
-  //     success: true,
-  //     data: [
-  //       { toolName: 'Azure', id: '2', releaseEndDate: '2023-01-02' }
-  //     ]
-  //   };
-
-  //   spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
-  //   // spyOn(httpService, 'getAllToolConfigs').and.callThrough();
-
-  //   component.getToolsConfigured();
-
-  //   expect(component.projectTypeChange).toHaveBeenCalledWith({ value: 'Azure' }, true);
-  //   expect(component.selectedType).toBe(true);
-  // });
 
   it('should filter tools array correctly', () => {
     component.projectTypeChange(null, false);
@@ -205,54 +188,149 @@ describe('ToolMenuComponent', () => {
     expect(component.tools.length).toBe(2);
   });
 
-  xit('should handle the router url and set tools', () => {
-    spyOn(component, 'setGaData');
-    const selectedProjectId = component.selectedProject.id;
-    const tools = [
-      {
-        toolName: 'Jira',
-        category: 'Project Management',
-        description: '-',
-        icon: 'fab fa-atlassian',
-        routerLink: `/dashboard/Config/ConfigSettings/1/JiraConfig`,
-        queryParams1: 'Jira',
-        routerLink2: `/dashboard/Config/ConfigSettings/1/FieldMapping`,
-        index: 0,
-        connectionName: component.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
-        updatedAt: component.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
-      },
-      {
-        toolName: 'JiraTest',
-        category: 'Test Management',
-        description: '-',
-        icon: 'fab fa-atlassian',
-        routerLink: `/dashboard/Config/ConfigSettings/1/JiraConfig`,
-        queryParams1: 'JiraTest',
-        index: 11,
-        connectionName: component.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.connectionName,
-        updatedAt: component.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.updatedAt
-      }
-    ];
-    Object.defineProperty(router, 'url', { value: `/dashboard/Config/ConfigSettings/${selectedProjectId}?tab=2` });
+  // it('should handle the router url and set tools', () => {
+  //   spyOn(component, 'setGaData');
+  //   const selectedProjectId = component.selectedProject.id;
+  //   const tools = [
+  //     {
+  //       toolName: 'Jira',
+  //       category: 'Project Management',
+  //       description: '-',
+  //       icon: 'fab fa-atlassian',
+  //       routerLink: `/dashboard/Config/ConfigSettings/1/JiraConfig`,
+  //       queryParams1: 'Jira',
+  //       routerLink2: `/dashboard/Config/ConfigSettings/1/FieldMapping`,
+  //       index: 0,
+  //       connectionName: component.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.connectionName,
+  //       updatedAt: component.uniqueTools.filter(tool => tool.toolName === 'Jira')[0]?.updatedAt
+  //     },
+  //     {
+  //       toolName: 'JiraTest',
+  //       category: 'Test Management',
+  //       description: '-',
+  //       icon: 'fab fa-atlassian',
+  //       routerLink: `/dashboard/Config/ConfigSettings/1/JiraConfig`,
+  //       queryParams1: 'JiraTest',
+  //       index: 11,
+  //       connectionName: component.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.connectionName,
+  //       updatedAt: component.uniqueTools.filter(tool => tool.toolName === 'JiraTest')[0]?.updatedAt
+  //     }
+  //   ];
+  //   Object.defineProperty(router, 'url', { value: `/dashboard/Config/ConfigSettings/${selectedProjectId}?tab=2` });
 
-    const response = {
+  //   const response = {
+  //     success: true,
+  //     data: [
+  //       { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01', connectionName: 'Connection1', updatedAt: '2023-01-01' }
+  //     ]
+  //   };
+
+  //   spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
+  //   spyOn(component, 'updateProjectSelection');
+  //   component.updateProjectSelection();
+
+  //   component.getToolsConfigured();
+  //   expect(component.buttonText).toBe('');
+  //   expect(tools.length).toBeGreaterThan(0);
+  //   expect(tools[0]?.toolName).toBe('Jira');
+  //   expect(tools[0]?.connectionName).toBe('Jira Connection');
+  //   expect(tools[0]?.updatedAt).toBe('2022-01-01');
+  // });
+
+  it('should set selected tool configurations, update selectedTools and uniqueTools', () => {
+    const mockResponse = {
       success: true,
       data: [
-        { toolName: 'Jira', id: '1', releaseEndDate: '2023-01-01', connectionName: 'Connection1', updatedAt: '2023-01-01' }
+        { toolName: 'Jira', connectionName: 'JiraConn', updatedAt: '2023-01-01' },
+        { toolName: 'GitHub', connectionName: 'GitHubConn', updatedAt: '2023-01-02' },
+        { toolName: 'GitLab', connectionName: 'GitLabConn', updatedAt: '2023-01-03' }
       ]
     };
+    component.selectedProject = { id: '123', type: 'Scrum' };
 
-    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(response));
-    spyOn(component, 'updateProjectSelection');
-    component.updateProjectSelection();
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(mockResponse));
 
     component.getToolsConfigured();
-    expect(component.buttonText).toBe('');
-    expect(tools.length).toBeGreaterThan(0);
-    expect(tools[0]?.toolName).toBe('Jira');
-    expect(tools[0]?.connectionName).toBe('Jira Connection');
-    expect(tools[0]?.updatedAt).toBe('2022-01-01');
+
+    expect(httpService.getAllToolConfigs).toHaveBeenCalledWith('123');
+    expect(sharedService.setSelectedToolConfig).toHaveBeenCalledWith(mockResponse.data);
+    expect(component.selectedTools).toEqual(mockResponse.data);
+    expect(component.uniqueTools.length).toEqual(3);
+    expect(component.dataLoading).toBeFalse();
   });
+
+  it('should set up tools for tab 2 with correct properties', () => {
+    const mockResponse = {
+      success: true,
+      data: [
+        { toolName: 'Jira', connectionName: 'JiraConn', updatedAt: '2023-01-01' },
+        { toolName: 'GitHub', connectionName: 'GitHubConn', updatedAt: '2023-01-02' }
+      ]
+    };
+    component.selectedProject = { id: '123', type: 'Scrum' };
+
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(mockResponse));
+    spyOnProperty(router, 'url', 'get').and.returnValue('/dashboard/Config/ConfigSettings?tab=2');
+
+    component.getToolsConfigured();
+
+    expect(component.buttonText).toBe('Set Up');
+    expect(component.tools).toContain(jasmine.objectContaining({ toolName: 'Jira' }));
+  });
+
+  it('should handle empty or unsuccessful response correctly', () => {
+    const mockResponse = { success: false, data: [] };
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(mockResponse));
+
+    component.getToolsConfigured();
+
+    expect(sharedService.setSelectedToolConfig).not.toHaveBeenCalled();
+    // Ensure selectedTools and uniqueTools are empty
+    expect(component.selectedTools.length).toBe(0);
+    expect(component.uniqueTools.length).toBe(2);
+    expect(component.dataLoading).toBeFalse();
+  });
+
+  it('should call getFieldMappingsWithHistory when Jira or Azure tools are present', () => {
+    const mockResponse = {
+      success: true,
+      data: [
+        { toolName: 'Jira', id: 'tool123' }
+      ]
+    };
+    const mockMappingResponse = { success: true, data: 'Mapping Data' };
+
+    component.selectedProject = { id: '123', type: 'Kanban' };
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(mockResponse));
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of(mockMappingResponse));
+
+    component.getToolsConfigured();
+
+    expect(httpService.getFieldMappingsWithHistory).toHaveBeenCalledWith('tool123', 'kpi1', { releaseNodeId: null });
+    expect(sharedService.setSelectedFieldMapping).toHaveBeenCalledWith(mockMappingResponse.data);
+    expect(component.disableSwitch).toBeTrue();
+  });
+
+  it('should handle failed field mappings gracefully', () => {
+    const mockResponse = {
+      success: true,
+      data: [
+        { toolName: 'Azure', id: 'tool456' }
+      ]
+    };
+    const mockMappingResponse = { success: false };
+
+    component.selectedProject = { id: '123', type: 'Scrum' };
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(mockResponse));
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of(mockMappingResponse));
+
+    component.getToolsConfigured();
+
+    expect(sharedService.setSelectedFieldMapping).toHaveBeenCalledWith(null);
+    expect(component.disableSwitch).toBeFalse();
+  });
+
+  // ------------------------------------------------------------------------------------------------
 
   it('should set release end date and field mappings', () => {
     spyOn(component, 'setGaData');
@@ -274,7 +352,7 @@ describe('ToolMenuComponent', () => {
     component.getToolsConfigured();
 
     expect(httpService.getFieldMappingsWithHistory).toHaveBeenCalled();
-    spyOn(sharedService, 'setSelectedFieldMapping');
+    // spyOn(sharedService, 'setSelectedFieldMapping');
     sharedService.setSelectedFieldMapping([]);
     expect(sharedService.setSelectedFieldMapping).toHaveBeenCalledWith([]);
     expect(component.disableSwitch).toBe(true);
@@ -296,40 +374,10 @@ describe('ToolMenuComponent', () => {
     spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of({ success: false }));
 
     component.getToolsConfigured();
-    spyOn(sharedService, 'setSelectedFieldMapping');
+    // spyOn(sharedService, 'setSelectedFieldMapping');
     sharedService.setSelectedFieldMapping(null);
     expect(sharedService.setSelectedFieldMapping).toHaveBeenCalledWith(null);
     expect(component.disableSwitch).toEqual(false);
-  });
-
-
-  it('should fetch all tool configs', () => {
-    component.isAssigneeSwitchChecked = true;
-    component.selectedProject = {
-      Type: 'Scrum'
-    }
-    // spyOn(httpService, 'getAllToolConfigs').and.callThrough();
-    // spyOn(component, 'setGaData');
-    component.ngOnInit();
-    // expect(httpService.getAllToolConfigs).toHaveBeenCalledTimes(1);
-
-    // const toolsReq = httpMock.expectOne(`${baseUrl}/api/basicconfigs/${sharedService.getSelectedProject().id}/tools`);
-    // expect(toolsReq.request.method).toBe('GET');
-    // toolsReq.flush(toolsData);
-
-    // const jiraOrAzure = toolsData['data'].filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
-    // if (jiraOrAzure.length) {
-    //   let mappingObj = {
-    //     "releaseNodeId": null
-    //   }
-    //   const mappingsReq = httpMock.expectOne(`${baseUrl}/api/tools/fieldMapping/${jiraOrAzure[0].id}/kpi0`, mappingObj);
-    //   expect(mappingsReq.request.method).toBe('POST');
-    //   mappingsReq.flush(mappingData);
-    //   expect(component.disableSwitch).toBeTrue();
-    // }
-    // if (component.isAssigneeSwitchChecked) {
-    //   expect(component.isAssigneeSwitchDisabled).toBeTruthy();
-    // }
   });
 
   it('should set tool data for ga event', () => {
@@ -394,120 +442,6 @@ describe('ToolMenuComponent', () => {
     }
   });
 
-  // it('should call generate token on click of continue on confirmation popup', () => {
-  //   const mockConfirm: any = spyOn<any>(
-  //     confirmationService,
-  //     'confirm',
-  //   ).and.callFake((confirmation: Confirmation) => confirmation.accept());
-  //   const generateTokenSpy = spyOn(component, 'generateToken');
-  //   component.generateTokenConfirmation();
-  //   expect(generateTokenSpy).toHaveBeenCalled();
-  // });
-
-  // it('should not call generate token on click of cancel on confirmation popup', () => {
-  //   const mockConfirm: any = spyOn<any>(
-  //     confirmationService,
-  //     'confirm',
-  //   ).and.callFake((confirmation: Confirmation) => confirmation.reject);
-  //   const generateTokenSpy = spyOn(component, 'generateToken');
-  //   component.generateTokenConfirmation();
-  //   expect(generateTokenSpy).not.toHaveBeenCalled();
-  // });
-
-  // it('should make an api call for generating token and dispaly token on modal', () => {
-  //   const response = {
-  //     message: "API token is updated",
-  //     success: true,
-  //     data: {
-  //       basicProjectConfigId: '6360fefc3fa9e175755f0728',
-  //       projectName: '"KnowHOW"',
-  //       userName: 'TESTADMIN',
-  //       apiToken: 'TestToken',
-  //       expiryDate: '2023-03-10',
-  //       createdAt: '2023-02-10'
-  //     }
-  //   };
-  //   spyOn(sharedService, 'getSelectedProject').and.returnValue({
-  //     id: '6360fefc3fa9e175755f0728',
-  //     Project: 'KnowHOW'
-  //   });
-
-  //   spyOn(httpService, 'generateToken').and.returnValue(of(response));
-  //   component.generateToken();
-  //   fixture.detectChanges();
-  //   expect(component.generatedToken).toEqual(response.data.apiToken);
-  // });
-
-  // it('should show error message if generate token api fails', () => {
-  //   const response = {
-  //     message: "Failed fetching API token",
-  //     success: false,
-  //     data: null
-  //   };
-  //   spyOn(sharedService, 'getSelectedProject').and.returnValue({
-  //     id: '6360fefc3fa9e175755f0728',
-  //     Project: 'KnowHOW'
-  //   });
-
-  //   spyOn(httpService, 'generateToken').and.returnValue(of(response));
-  //   const messageServiceSpy = spyOn(messageService, 'add');
-  //   component.generateToken();
-  //   fixture.detectChanges();
-  //   expect(messageServiceSpy).toHaveBeenCalled();
-  // });
-
-  // xit('should copy token to clipboard', () => {
-  //   component.generatedToken = 'TestToken1';
-  //   component.copyToken();
-  //   expect(component.tokenCopied).toBeTrue();
-  // });
-
-
-  // it("should disable assignee switch once assignee switch is on", () => {
-  //   component.isAssigneeSwitchChecked = true;
-  //   const confirmationService = TestBed.get(ConfirmationService); // grab a handle of confirmationService
-  //   spyOn(component, 'updateProjectDetails');
-  //   spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
-  //     params.accept();
-  //     params.reject();
-  //   });
-  //   component.onAssigneeSwitchChange();
-  //   if (component.isAssigneeSwitchChecked) {
-  //     expect(component.isAssigneeSwitchDisabled).toBeTruthy();
-  //   }
-  // })
-
-  // it("should prepare data for update project", () => {
-  //   const hierarchyData = {
-  //     kanban: [
-  //     {
-  //       level: 1,
-  //       hierarchyLevelId: 'hierarchyLevelOne',
-  //       hierarchyLevelName: 'Level One',
-  //     },
-  //     {
-  //       level: 2,
-  //       hierarchyLevelId: 'hierarchyLevelTwo',
-  //       hierarchyLevelName: 'Level Two',
-  //     },
-  //     {
-  //       level: 3,
-  //       hierarchyLevelId: 'hierarchyLevelThree',
-  //       hierarchyLevelName: 'Level Three',
-  //     },
-  //   ]};
-  //   component.selectedProject = {
-  //     project: "My Project",
-  //     type: 'kanban',
-  //     ["Level One"]: "T1",
-  //     ["Level Two"]: "T2",
-  //     ["Level Three"]: "T3",
-
-  //   }
-  //   localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
-  //   component.updateProjectDetails();
-  // })
-
   it('should check if project is configured when tool selected is AzurePipeline', () => {
     component.selectedTools = [
       {
@@ -561,91 +495,6 @@ describe('ToolMenuComponent', () => {
     ];
     expect(component.isProjectConfigured('GitHub Action')).toBeTruthy();
   })
-
-  // it('should update project details successfully', () => {
-  //   const hierarchyData = {
-  //     kanban: [
-  //     {
-  //       level: 1,
-  //       hierarchyLevelId: 'hierarchyLevelOne',
-  //       hierarchyLevelName: 'Level One',
-  //     },
-  //     {
-  //       level: 2,
-  //       hierarchyLevelId: 'hierarchyLevelTwo',
-  //       hierarchyLevelName: 'Level Two',
-  //     },
-  //     {
-  //       level: 3,
-  //       hierarchyLevelId: 'hierarchyLevelThree',
-  //       hierarchyLevelName: 'Level Three',
-  //     },
-  //   ]};
-  //   component.selectedProject = {
-  //     project: "My Project",
-  //     type: 'kanban',
-  //     ["Level One"]: "T1",
-  //     ["Level Two"]: "T2",
-  //     ["Level Three"]: "T3",
-
-  //   }
-  //   localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
-  //   const response = {
-  //     "serviceResponse": {
-  //         "message": "Updated Successfully.",
-  //         "success": true,
-  //         "data": {
-  //             "id": "63777558175a953a0a49d363",
-  //             "projectName": "VDOS",
-  //         }
-  //     },
-  //     "projectsAccess": []
-  //   }
-  //   spyOn(httpService, 'updateProjectDetails').and.returnValue(of(response));
-  //   component.isAssigneeSwitchDisabled = false;
-  //   spyOn(messageService, 'add');
-  //   component.updateProjectDetails();
-  //   expect(messageService.add).toHaveBeenCalled();
-  //   expect(component.isAssigneeSwitchDisabled).toBeTruthy();
-  // });
-
-  // it('should not update project details', () => {
-  //   const hierarchyData = {
-  //     kanban: [
-  //     {
-  //       level: 1,
-  //       hierarchyLevelId: 'hierarchyLevelOne',
-  //       hierarchyLevelName: 'Level One',
-  //     },
-  //     {
-  //       level: 2,
-  //       hierarchyLevelId: 'hierarchyLevelTwo',
-  //       hierarchyLevelName: 'Level Two',
-  //     },
-  //     {
-  //       level: 3,
-  //       hierarchyLevelId: 'hierarchyLevelThree',
-  //       hierarchyLevelName: 'Level Three',
-  //     },
-  //   ]};
-  //   component.selectedProject = {
-  //     project: "My Project",
-  //     type: 'kanban',
-  //     ["Level One"]: "T1",
-  //     ["Level Two"]: "T2",
-  //     ["Level Three"]: "T3",
-
-  //   }
-  //   localStorage.setItem("completeHierarchyData", JSON.stringify(hierarchyData));
-  //   spyOn(httpService, 'updateProjectDetails').and.returnValue(of('Error'));
-  //   component.isAssigneeSwitchChecked = true;
-  //   component.isAssigneeSwitchDisabled = true;
-  //   spyOn(messageService, 'add');
-  //   component.updateProjectDetails();
-  //   expect(messageService.add).toHaveBeenCalled();
-  //   expect(component.isAssigneeSwitchChecked).toBeFalsy();
-  //   expect(component.isAssigneeSwitchDisabled).toBeFalsy();
-  // });
 
   it('should filter tools based on repo tool config', () => {
     component.tools = [
@@ -754,4 +603,60 @@ describe('ToolMenuComponent', () => {
   });
   // -> end of setSelectedProject
 
+
+  describe('ToolMenuComponent.ngOnInit() ngOnInit method', () => {
+    beforeEach(() => {
+      localStorage.setItem('completeHierarchyData', '{"kanban":[{"id":"6707baa3aad99a5897b55a23","level":1,"hierarchyLevelId":"hierarchyLevelOne","hierarchyLevelName":"Organization"},{"id":"6707baa3aad99a5897b55a24","level":2,"hierarchyLevelId":"hierarchyLevelTwo","hierarchyLevelName":"Business Unit"},{"id":"6707baa3aad99a5897b55a25","level":3,"hierarchyLevelId":"hierarchyLevelThree","hierarchyLevelName":"Portfolio"},{"level":4,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":5,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":6,"hierarchyLevelId":"afOne","hierarchyLevelName":"Teams"}],"scrum":[{"id":"6707baa3aad99a5897b55a23","level":1,"hierarchyLevelId":"hierarchyLevelOne","hierarchyLevelName":"Organization"},{"id":"6707baa3aad99a5897b55a24","level":2,"hierarchyLevelId":"hierarchyLevelTwo","hierarchyLevelName":"Business Unit"},{"id":"6707baa3aad99a5897b55a25","level":3,"hierarchyLevelId":"hierarchyLevelThree","hierarchyLevelName":"Portfolio"},{"level":4,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":5,"hierarchyLevelId":"sprint","hierarchyLevelName":"Sprint"},{"level":5,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":6,"hierarchyLevelId":"afOne","hierarchyLevelName":"Teams"}]}')
+    })
+    describe('Happy Path', () => {
+
+      it('should initialize selectedProject from sharedService', () => {
+        spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: 1, type: 'scrum' });
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({ repoToolFlag: true });
+        spyOn(sharedService, 'getProjectList').and.returnValue([{ id: 1, type: 'scrum', name: 'Project 1' }]);
+        component.ngOnInit();
+        expect(component.selectedProject).toEqual({ id: 1, type: 'scrum', name: 'Project 1' });
+      });
+
+      it('should set projectTypeOptions correctly', () => {
+        spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: 1, type: 'scrum' });
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({ repoToolFlag: true });
+        spyOn(sharedService, 'getProjectList').and.returnValue([{ id: 1, name: 'Project 1' }]);
+        component.ngOnInit();
+        expect(component.projectTypeOptions).toEqual([
+          { name: 'Jira', value: false },
+          { name: 'Azure Boards', value: true },
+        ]);
+      });
+
+      it('should set repoToolsEnabled based on global config', () => {
+        spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: 1, type: 'scrum' });
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({ repoToolFlag: true });
+        spyOn(sharedService, 'getProjectList').and.returnValue([{ id: 1, name: 'Project 1' }]);
+        component.ngOnInit();
+        expect(component.repoToolsEnabled).toBe(true);
+      });
+
+      it('should call getProjects and set userProjects', () => {
+        spyOn(sharedService, 'getSelectedProject').and.returnValue({ id: 1, type: 'scrum' });
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue({ repoToolFlag: true });
+        spyOn(sharedService, 'getProjectList').and.returnValue([{ id: 1, name: 'Project 1' }]);
+        component.ngOnInit();
+        expect(component.userProjects).toEqual([{ id: 1, name: 'Project 1' }]);
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should handle empty project list gracefully', () => {
+        spyOn(sharedService, 'getProjectList').and.returnValue([]);
+        component.ngOnInit();
+        expect(component.userProjects).toEqual([]);
+      });
+
+      it('should handle null global config data', () => {
+        spyOn(sharedService, 'getGlobalConfigData').and.returnValue(null);
+        expect(component.repoToolsEnabled).toBeUndefined();
+      });
+    });
+  });
 });

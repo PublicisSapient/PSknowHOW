@@ -53,6 +53,12 @@ export class MyprofileComponent implements OnInit {
 
 
 
+/**
+ * Initializes the component by checking user roles, setting access permissions,
+ * and configuring forms for user email and notification preferences.
+ * 
+ * @returns {void} - No return value.
+ */
   ngOnInit() {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       // logged in as SuperAdmin

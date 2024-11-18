@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -77,7 +76,6 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI151;
 	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI14;
 	private List<ConfigurationHistoryChangeLog> historyjiraDodQAKPI111;
-	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI127;
 	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI37;
 	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI142;
 	private List<ConfigurationHistoryChangeLog> historyjiraDodKPI144;
@@ -165,7 +163,6 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusNOSK;
 	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusNORK;
 	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusOTA;
-	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI127;
 
 	private List<ConfigurationHistoryChangeLog> historyticketCountIssueType;
 
@@ -223,7 +220,6 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraItrQSIssueTypeKPI133;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraDefectDroppedStatus;
-	private List<ConfigurationHistoryChangeLog> historyjiraDefectDroppedStatusKPI127;
 
 	private List<ConfigurationHistoryChangeLog> historyepicCostOfDelay;
 	private List<ConfigurationHistoryChangeLog> historyepicRiskReduction;
@@ -288,7 +284,6 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraIncludeBlockedStatus;
 	private List<ConfigurationHistoryChangeLog> historyjiraIncludeBlockedStatusKPI131;
 
-	@Builder.Default
 	private List<ConfigurationHistoryChangeLog> historyjiraDueDateField;
 	private List<ConfigurationHistoryChangeLog> historyjiraDueDateCustomField;
 	private List<ConfigurationHistoryChangeLog> historyjiraDevDueDateField;
@@ -485,4 +480,7 @@ public class FieldMappingHistory extends BasicModel {
 
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeExcludeKPI124;
 	private List<ConfigurationHistoryChangeLog> historyjiraIssueTypeExcludeKPI75;
+	private List<ConfigurationHistoryChangeLog> historyjiraStatusToConsiderKPI127;
+	private List<ConfigurationHistoryChangeLog> historyissueTypesToConsiderKpi113;
+	private List<ConfigurationHistoryChangeLog> historyclosedIssueStatusToConsiderKpi113;
 }

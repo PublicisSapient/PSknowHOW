@@ -113,7 +113,7 @@ public class NotificationHandlerTest {
 		when(projectBasicConfigRepository.findById(any())).thenReturn(Optional.of(projectBasicConfig));
 
 		// Call the method under test
-		notificationHandler.sendEmailToProjectAdminAndSuperAdmin(value, allFailureExceptions, projectBasicConfigId);
+		notificationHandler.sendEmailToProjectAdminAndSuperAdmin(value, allFailureExceptions, projectBasicConfigId,"errorInJiraProcessor","Error_In_Jira_Processor");
 		Map<String, String> customData = new HashMap<>();
 		customData.put("Notification_Error", allFailureExceptions);
 		customData.put("Notification_Msg", value);

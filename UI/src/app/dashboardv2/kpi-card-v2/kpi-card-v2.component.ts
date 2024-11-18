@@ -204,6 +204,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
   }
 
+/**
+ * Handles changes in dropdown selections, moving selected options to the top,
+ * emitting the selected option, and triggering a Google Analytics event.
+ * 
+ * @param {string} type - The type of selection (e.g., 'radio', 'single').
+ * @param {object|null} value - The selected value(s), can be an object or null.
+ * @param {number} filterIndex - The index of the dropdown in the array.
+ * @returns {void}
+ */
   handleChange(type, value = null, filterIndex = 0) {
 
     // moving selected option to top
@@ -365,6 +374,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.ga.setKpiData(gaObj);
   }
 
+/**
+ * Checks if data is present based on the provided status code and KPI ID.
+ * Evaluates the trend value list and specific conditions to determine presence.
+ * 
+ * @param {string} data - The status code to check (e.g., '200', '201').
+ * @returns {boolean} - Returns true if data is present, otherwise false.
+ */
   checkIfDataPresent(data) {
     if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
       if (this.trendValueList?.length) {

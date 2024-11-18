@@ -38,6 +38,7 @@ import { GetAuthorizationService } from 'src/app/services/get-authorization.serv
 import { HelperService } from 'src/app/services/helper.service';
 import { DatePipe } from '@angular/common';
 import { ExcelService } from 'src/app/services/excel.service';
+import { IsoDateFormatPipe } from 'src/app/shared-module/pipes/iso-date-format.pipe';
 
 describe('CapacityPlanningComponent', () => {
   let fixture: ComponentFixture<CapacityPlanningComponent>;
@@ -1336,7 +1337,7 @@ describe('CapacityPlanningComponent', () => {
         HttpClientTestingModule,
         NgSelectModule
       ],
-      declarations: [CapacityPlanningComponent, DashboardComponent],
+      declarations: [CapacityPlanningComponent, DashboardComponent, IsoDateFormatPipe],
       providers: [HttpService, SharedService, MessageService, GetAuthService,DatePipe,HelperService,ExcelService
         , { provide: APP_CONFIG, useValue: AppConfig }
 

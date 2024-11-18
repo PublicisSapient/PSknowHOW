@@ -19,8 +19,11 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -32,6 +35,9 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
+import com.publicissapient.kpidashboard.apis.repotools.model.MergeRequests;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolUserDetails;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -39,6 +45,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -57,8 +64,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
-import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -293,23 +298,40 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double userHours = repoToolUserDetails.map(RepoToolUserDetails::getHours).orElse(0.0d);
-			long userMrCount = repoToolUserDetails
-					.map(repoToolUserDetails1 -> {
-						Map<String, Double> mergeRequestsPT = repoToolUserDetails1.getMergeRequestsPT();
-						return mergeRequestsPT != null ? mergeRequestsPT.size() : 0;
-					}).orElse(0);
+			long userMrCount = repoToolUserDetails.map(repoToolUserDetails1 -> {
+				List<MergeRequests> mergeRequestsPT = Optional.ofNullable(repoToolUserDetails1.getMergeRequestList())
+						.orElse(new ArrayList<>()).stream()
+						.filter(mergeRequests -> mergeRequests.getUpdatedAt() != null).toList();
+				return mergeRequestsPT.size();
+			}).orElse(0);
+
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
+			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
+					.optionalStart().appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
+					.optionalEnd().appendPattern("'Z'").toFormatter();
 			if (repoToolUserDetails.isPresent() && repo != null) {
-				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
-				repoToolValidationData.setProjectName(projectName);
-				repoToolValidationData.setBranchName(repo.getBranch());
-				repoToolValidationData.setRepoUrl(repo.getRepositoryName());
-				repoToolValidationData.setDeveloperName(developerName);
-				repoToolValidationData.setDate(date);
-				repoToolValidationData.setPickupTime(userHours);
-				repoToolValidationData.setMrCount(userMrCount);
-				repoToolValidationDataList.add(repoToolValidationData);
+				repoToolUserDetails.get().getMergeRequestList().forEach(mr -> {
+					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
+					repoToolValidationData.setProjectName(projectName);
+					repoToolValidationData.setBranchName(repo.getBranch());
+					repoToolValidationData.setRepoUrl(repo.getRepositoryName());
+					repoToolValidationData.setMergeRequestUrl(mr.getLink());
+					repoToolValidationData.setDeveloperName(developerName);
+					repoToolValidationData.setDate(date);
+					repoToolValidationData.setPrStatus(mr.getMrState());
+					LocalDateTime dateTime = LocalDateTime.parse(mr.getCreatedAt(), formatter);
+					repoToolValidationData.setPrRaisedTime(
+							dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_TIME_FORMAT)));
+					if (mr.getUpdatedAt() != null) {
+						dateTime = LocalDateTime.parse(mr.getUpdatedAt(), formatter);
+						repoToolValidationData.setPrActivityTime(
+								dateTime.format(DateTimeFormatter.ofPattern(DateUtil.DISPLAY_DATE_TIME_FORMAT)));
+						repoToolValidationData.setPickupTime(mr.getFirstReviewedAt());
+					}
+
+					repoToolValidationDataList.add(repoToolValidationData);
+				});
 			}
 			setDataCount(projectName, date, userKpiGroup, userHours, userMrCount, dateUserWiseAverage);
 		});

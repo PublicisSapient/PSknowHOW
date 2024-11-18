@@ -15,8 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<ng-container
-    *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
+  <ng-container *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
     <div *ngIf="!noKpis; else noKpiTemplate">
         <ng-container *ngIf="!noFilterApplyData; else noFilterApplyDataTemplate">
             <div id="message"></div>
@@ -65,10 +64,10 @@
                                                             <ng-container *ngIf="!(showChart === 'table')">
 
                                                                 <ng-container *ngSwitchCase="'stackedColumn'">
-                                                                    <ng-container *ngIf="checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
                                                                         <app-groupstackchartv2 [legendType]="'normal'"
                                                                             [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
-                                                                            [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                                                            [yCaption]="checkYAxis(kpi)"
                                                                             [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                             [filter]="kpiSelectedFilterObj[kpi?.kpiId]"
                                                                             [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -78,7 +77,7 @@
                                                                             [selectedtype]="selectedtype"
                                                                             [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchartv2>
                                                                     </ng-container>
-                                                                    <ng-container *ngIf="!checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
                                                                         <ng-container
                                                                             *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
                                                                         </ng-container>
@@ -93,7 +92,7 @@
                                                                     [showMarkerColumnNumber]="0"></app-table>
 
                                                                 <ng-container *ngSwitchCase="'line'">
-                                                                    <ng-container *ngIf="checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
                                                                         <app-multiline-v2
                                                                             [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                                                             [unit]="kpi?.kpiDetail?.kpiUnit"
@@ -108,31 +107,42 @@
                                                                             [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                                                         </app-multiline-v2>
                                                                     </ng-container>
-                                                                    <ng-container *ngIf="!checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
                                                                         <ng-container
                                                                             *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
                                                                         </ng-container>
                                                                     </ng-container>
                                                                 </ng-container>
 
-                                                                <app-multiline-style-v2 *ngSwitchCase="'multipleline'"
-                                                                    [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                                                    [unit]="kpi?.kpiDetail?.kpiUnit"
-                                                                    [data]="kpiChartData[kpi?.kpiId]"
-                                                                    [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
-                                                                    [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                                                    [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId"
-                                                                    [color]="chartColorList[kpi?.kpiId]"
-                                                                    [selectedtype]="selectedtype"
-                                                                    [viewType]="showChart">
-                                                                </app-multiline-style-v2>
+                                                                <ng-container *ngSwitchCase="'multipleline'">
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
+                                                                        <app-multiline-style-v2
+                                                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                                                            [unit]="kpi?.kpiDetail?.kpiUnit"
+                                                                            [data]="kpiChartData[kpi?.kpiId]"
+                                                                            [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
+                                                                            [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                                                            [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId"
+                                                                            [color]="chartColorList[kpi?.kpiId]"
+                                                                            [selectedtype]="selectedtype"
+                                                                            [viewType]="showChart">
+                                                                        </app-multiline-style-v2>
+                                                                    </ng-container>
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
+                                                                        <ng-container
+                                                                            *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                                                                        </ng-container>
+                                                                    </ng-container>
+                                                                </ng-container>
+
 
                                                                 <ng-container
                                                                     *ngSwitchCase="'grouped_column_plus_line'">
-                                                                    <ng-container *ngIf="checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
                                                                         <app-grouped-column-plus-line-chart-v2
                                                                             [data]="kpiChartData[kpi?.kpiId]"
-                                                                            [lineChart]="true"
+                                                                            [lineChart]="kpi?.kpiDetail?.lineChart"
+                                                                            [isXaxisGroup]="kpi?.kpiDetail?.isXaxisGroup"
                                                                             [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                             [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                                                             [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] : kpi?.kpiDetail?.xaxisLabel"
@@ -147,7 +157,7 @@
                                                                             [board]="selectedTab">
                                                                         </app-grouped-column-plus-line-chart-v2>
                                                                     </ng-container>
-                                                                    <ng-container *ngIf="!checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
                                                                         <ng-container
                                                                             *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
                                                                         </ng-container>
@@ -155,7 +165,7 @@
                                                                 </ng-container>
 
                                                                 <ng-container *ngSwitchCase="'bar-with-y-axis-group'">
-                                                                    <ng-container *ngIf="checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
                                                                         <app-bar-with-y-axis-group
                                                                             [data]="kpiChartData[kpi?.kpiId]"
                                                                             [lineChart]="true"
@@ -173,7 +183,7 @@
                                                                             [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder">
                                                                         </app-bar-with-y-axis-group>
                                                                     </ng-container>
-                                                                    <ng-container *ngIf="!checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
                                                                         <ng-container
                                                                             *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
                                                                         </ng-container>
@@ -184,7 +194,7 @@
                                                                     *ngSwitchCase="'CumulativeMultilineChart'">
                                                                     <app-group-bar-chart
                                                                         [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] :kpi?.kpiDetail?.xaxisLabel"
-                                                                        [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                                                        [yCaption]="checkYAxis(kpi)"
                                                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                                                         [data]="kpiChartData[kpi?.kpiId]"
@@ -197,7 +207,7 @@
 
                                                                 <ng-container
                                                                     *ngSwitchCase="'horizontalPercentBarChart'">
-                                                                    <ng-container *ngIf="checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
                                                                         <app-horizontal-percent-bar-chartv2
                                                                             [kpiId]="kpi?.kpiId"
                                                                             [kpiWidth]="kpi?.kpiDetail?.kpiWidth"
@@ -205,18 +215,18 @@
                                                                             [activeTab]="activeIndex">
                                                                         </app-horizontal-percent-bar-chartv2>
                                                                     </ng-container>
-                                                                    <ng-container *ngIf="!checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
                                                                         <ng-container
                                                                             *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
                                                                         </ng-container>
                                                                     </ng-container>
                                                                 </ng-container>
                                                                 <ng-container *ngSwitchCase="'pieChart'">
-                                                                    <ng-container *ngIf="checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
                                                                         <app-piechart
                                                                             [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                                                     </ng-container>
-                                                                    <ng-container *ngIf="!checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
                                                                         <ng-container
                                                                             *ngTemplateOutlet="partialData; context:  { $implicit: kpi }">
                                                                         </ng-container>
@@ -237,11 +247,11 @@
 
 
                                                                 <ng-container *ngSwitchCase="'stacked-area'">
-                                                                    <ng-container *ngIf="checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
                                                                         <app-stacked-area-chart [kpiId]="kpi?.kpiId"
                                                                             [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
                                                                     </ng-container>
-                                                                    <ng-container *ngIf="!checkIfDataPresent(kpi)">
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
                                                                         <ng-container
                                                                             *ngTemplateOutlet="partialData; context:  { $implicit: kpi }">
                                                                         </ng-container>
@@ -269,7 +279,7 @@
                                                 <ng-container>
                                                     <ng-template #showTable>
                                                         <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
-                                                            *ngIf="checkIfDataPresent(kpi);else noDataAccess">
+                                                            *ngIf="checkIfZeroData(kpi);else noDataAccess">
                                                             <ng-container
                                                                 *ngFor="let item of kpiChartData[kpi.kpiId]; let index=index">
                                                                 <ng-container

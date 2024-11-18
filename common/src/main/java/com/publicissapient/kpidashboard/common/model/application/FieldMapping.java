@@ -94,7 +94,6 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraDodKPI151;
 	private List<String> jiraDodKPI14;
 	private List<String> jiraDodQAKPI111;
-	private List<String> jiraDodKPI127;
 	private List<String> jiraDodKPI37;
 	private List<String> jiraDodKPI142;
 	private List<String> jiraDodKPI144;
@@ -184,7 +183,6 @@ public class FieldMapping extends FieldMappingHistory {
 	private String jiraLiveStatusNOSK;
 	private String jiraLiveStatusNORK;
 	private String jiraLiveStatusOTA;
-	private String jiraLiveStatusKPI127;
 
 	private List<String> ticketCountIssueType;
 
@@ -243,7 +241,6 @@ public class FieldMapping extends FieldMappingHistory {
 	private List<String> jiraItrQSIssueTypeKPI133;
 
 	private List<String> jiraDefectDroppedStatus;
-	private List<String> jiraDefectDroppedStatusKPI127;
 
 	// Epic custom Field mapping
 	private String epicCostOfDelay;
@@ -510,6 +507,12 @@ public class FieldMapping extends FieldMappingHistory {
 
 	private List<String> jiraIssueTypeExcludeKPI124;
 	private List<String> jiraIssueTypeExcludeKPI75;
+
+	private List<String> issueTypesToConsiderKpi113;
+	private List<String> closedIssueStatusToConsiderKpi113;
+
+	//production defect ageing status to consider
+	private List<String> jiraStatusToConsiderKPI127;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

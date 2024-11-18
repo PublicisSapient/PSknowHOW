@@ -35,14 +35,15 @@ export class RecommendationsComponent implements OnInit {
   handleClick() {
     this.selectedSprint = this.service.getSprintForRnR();
     this.displayModal = true;
-    this.filterData['kpiIdList'] = [...this.kpiList];
-    this.filterData['selectedMap']['project'] = [Array.isArray(this.selectedSprint?.['parentId']) ? this.selectedSprint?.['parentId']?.[0] : this.selectedSprint?.['parentId']];
-    this.filterData['selectedMap']['sprint'] = [this.selectedSprint?.['nodeId']];
+    let kpiFilterData = JSON.parse(JSON.stringify(this.filterData));
+    kpiFilterData['kpiIdList'] = [...this.kpiList];
+    kpiFilterData['selectedMap']['project'] = [Array.isArray(this.selectedSprint?.['parentId']) ? this.selectedSprint?.['parentId']?.[0] : this.selectedSprint?.['parentId']];
+    kpiFilterData['selectedMap']['sprint'] = [this.selectedSprint?.['nodeId']];
     this.loading = true;
     this.maturities = [];
     this.tabs = [];
     this.tabsContent = {};
-    this.httpService.getRecommendations(this.filterData).subscribe((response: Array<object>) => {
+    this.httpService.getRecommendations(kpiFilterData).subscribe((response: Array<object>) => {
       if (response?.length > 0) {
         response.forEach((recommendation) => {
           if (this.selectedSprint['nodeId'] == recommendation['sprintId']) {

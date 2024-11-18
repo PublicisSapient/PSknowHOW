@@ -406,8 +406,7 @@
     "fieldCategory": "Issue_Type",
     "tooltip": {
       "definition": "Issue types used to create child sub-tasks"
-    },
-    "mandatory": true
+    }
   },
   {
     "fieldName": "jiraSubTaskDefectType",
@@ -419,8 +418,7 @@
     "sectionOrder": 2,
     "tooltip": {
       "definition": "Issue type used to create sub-task defects for tracking release defects"
-    },
-    "mandatory": true
+    }
   },
   {
     "fieldName": "jiraIssueEpicType",
@@ -499,7 +497,7 @@
   },
   {
     "fieldName": "jiraStoryIdentificationKPI129",
-    "fieldLabel": "Issue types to consider",
+    "fieldLabel": "Issue types to consider as Stories",
     "fieldDisplayOrder": 1,
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -717,14 +715,14 @@
   },
   {
     "fieldName": "jiraIssueTypeKPI3",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue types to consider",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "All issue types that should be included in Lead time calculation"
+      "definition": "All issue types considered for Lead Time calculation"
     },
     "mandatory": true
   },
@@ -768,14 +766,14 @@
   },
   {
     "fieldName": "jiraIssueTypeKPI171",
-    "fieldLabel": "Issue types to consider ‘Completed status’",
+    "fieldLabel": "Issue types to consider",
     "fieldCategory": "Issue_Type",
     "fieldType": "chips",
     "section": "Issue Types Mapping",
     "fieldDisplayOrder": 1,
     "sectionOrder": 2,
     "tooltip": {
-      "definition": "All issue types that should be included in Lead time calculation."
+      "definition": "All issue types considered for Cycle calculation"
     }
   },
   {
@@ -1406,7 +1404,7 @@
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI151",
-    "fieldLabel": "Status to identify rejected defects",
+    "fieldLabel": "Status to identify rejected issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1418,7 +1416,7 @@
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI152",
-    "fieldLabel": "Status to identify rejected defects",
+    "fieldLabel": "Status to identify rejected issues",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1452,18 +1450,6 @@
       "definition": "All workflow statuses used to close issues of issue types in consideration"
     },
     "mandatory": true
-  },
-  {
-    "fieldName": "jiraDodKPI127",
-    "fieldLabel": "Status to identify completed issues",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "fieldDisplayOrder": 8,
-    "sectionOrder": 4,
-    "tooltip": {
-      "definition": "All workflow statuses used to close issues of issue types in consideration"
-    }
   },
   {
     "fieldName": "jiraDodKPI37",
@@ -1843,18 +1829,6 @@
     }
   },
   {
-    "fieldName": "jiraIterationCompletionStatusKPI138",
-    "fieldLabel": "Status to identify completed issues",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "fieldDisplayOrder": 8,
-    "sectionOrder": 4,
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "All workflow statuses used to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered."
-    }
-  },
-  {
     "fieldName": "jiraIterationCompletionStatusKPI154",
     "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
@@ -1984,8 +1958,8 @@
     "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
     "fieldCategory": "workflow",
-    "fieldDisplayOrder": 6,
-    "sectionOrder": 4,
+    "fieldDisplayOrder": 3,
+    "sectionOrder": 2,
     "tooltip": {
       "definition": "All statuses that denote incomplete issues but have advanced from their initial creation status.."
     },
@@ -2630,14 +2604,14 @@
   },
   {
     "fieldName": "jiraDodKPI171",
-    "fieldLabel": "Status to identify completed issues",
+    "fieldLabel": "Status to identify DOD",
     "fieldType": "chips",
     "fieldCategory": "workflow",
-    "fieldDisplayOrder": 8,
+    "fieldDisplayOrder": 3,
     "sectionOrder": 4,
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "All workflow statuses used to identify completed issues based on Definition of Done (DoD)."
+      "definition": "Workflow status/es to identify when an issue is delivered based on Definition of Done (DOD)"
     },
     "mandatory": true
   },
@@ -2716,14 +2690,15 @@
   },
   {
     "fieldName": "jiraLiveStatusKPI171",
-    "fieldLabel": "Live Status - Cycle Time",
+    "fieldLabel": "Status to identify Live issues",
     "fieldCategory": "workflow",
     "fieldType": "chips",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is LIVE in Production'"
+      "definition": "Workflow status/es to identify that an issue is live in Production"
     },
-    "mandatory": true
+    "mandatory": true,
+    "fieldDisplayOrder" : 4
   },
   {
     "fieldName": "jiraSprintVelocityIssueTypeBR",
@@ -2747,12 +2722,12 @@
   },
   {
     "fieldName": "jiraIssueDeliverdStatusKPI138",
-    "fieldLabel": "Issue Delivered Status",
+    "fieldLabel": "Status to identify DOD",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+      "definition": "Workflow statuses to identify when an issue is considered 'Delivered' based on the Definition of Done (DoD), used to measure average velocity. Please list all statuses that mark an issue as 'Delivered'."
     },
     "mandatory": true
   },
@@ -2787,14 +2762,15 @@
   },
   {
     "fieldName": "jiraDorKPI171",
-    "fieldLabel": "DOR status",
+    "fieldLabel": "Status to identify DOR",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is ready to be taken in the sprint"
+      "definition": "Workflow status/es that identify that a backlog item is ready to be taken in a sprint based on Definition of Ready (DOR)"
     },
-    "mandatory": true
+    "mandatory": true,
+    "fieldDisplayOrder" : 2
   },
   {
     "fieldName": "includeRCAForKPI135",
@@ -2871,12 +2847,12 @@
   },
   {
     "fieldName": "jiraLiveStatusKPI3",
-    "fieldLabel": "Live Status - Lead Time",
+    "fieldLabel": "Status to identify Live issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status/es that identify that an issue is LIVE in Production."
+      "definition": "Workflow status/es to identify that an issue is live in Production"
     },
     "mandatory": true
   },
@@ -2928,16 +2904,6 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Provide any status from workflow on which Live is considered."
-    }
-  },
-  {
-    "fieldName": "jiraLiveStatusKPI127",
-    "fieldLabel": "Status to identify live issues",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Status/es that identify that an issue is LIVE in Production."
     }
   },
   {
@@ -3035,14 +3001,15 @@
   },
   {
     "fieldName": "storyFirstStatusKPI171",
-    "fieldLabel": "Status when 'Story' issue type is created",
+    "fieldLabel": "First Status when issue is created",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "All issue types that identify with a Story."
+      "definition": "Default first status of all issue types in consideration"
     },
-    "mandatory": true
+    "mandatory": true,
+    "fieldDisplayOrder" : 1
   },
   {
     "fieldName": "storyFirstStatusKPI148",
@@ -3101,12 +3068,12 @@
   },
   {
     "fieldName": "readyForDevelopmentStatusKPI138",
-    "fieldLabel": "Status to identify issues Ready for Development ",
+    "fieldLabel": "Status to identify DOR",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status to identify Ready for development from the backlog."
+      "definition": "Workflow status/es that identify that a backlog item is ready to be taken in a sprint based on Definition of Ready (DOR)."
     },
     "mandatory": true
   },
@@ -3120,16 +3087,6 @@
       "definition": ""
     },
     "processorCommon": true
-  },
-  {
-    "fieldName": "jiraDefectDroppedStatusKPI127",
-    "fieldLabel": "Defect Dropped Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "All statuses with which defect is linked."
-    }
   },
   {
     "fieldName": "productionDefectIdentifier",
@@ -3190,7 +3147,8 @@
         }
       }
     ],
-    "processorCommon": true
+    "processorCommon": true,
+    "mandatory": true
   },
   {
     "fieldName": "ticketCountIssueType",
@@ -3292,7 +3250,8 @@
     "tooltip": {
       "definition": "Enabled State (Kpi from data on Upload data screen)"
     },
-    "toggleLabelRight": "Upload Data"
+    "toggleLabelRight": "Upload Data",
+    "redirectUrl" : "/dashboard/Config/Upload"
   },
   {
     "fieldName": "uploadDataKPI16",
@@ -3303,7 +3262,8 @@
     "tooltip": {
       "definition": "Enabled State (Kpi from data on Upload data screen)"
     },
-    "toggleLabelRight": "Upload Data"
+    "toggleLabelRight": "Upload Data",
+    "redirectUrl" : "/dashboard/Config/Upload"
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI155",
@@ -3331,6 +3291,8 @@
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "processorCommon": false,
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 1,
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All issue types used by your Jira project"
@@ -3588,6 +3550,8 @@
     "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 2,
+    "sectionOrder": 2,
     "tooltip": {
       "definition": "All statuses that correspond to refined status of Iteration Readiness."
     },
@@ -3599,6 +3563,8 @@
     "section": "WorkFlow Status Mapping",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 2,
     "tooltip": {
       "definition": "All statuses that correspond to not refined status of Iteration Readiness."
     },
@@ -3814,5 +3780,49 @@
     "tooltip" : {
       "definition" : "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
+  },
+  {
+    "fieldName": "jiraStatusToConsiderKPI127",
+    "fieldLabel": "Statuses to be included",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "fieldDisplayOrder": 8,
+    "sectionOrder": 4,
+    "tooltip": {
+      "definition": "workflow statuses to identify ageing production defects in the backlog."
+    },
+    "mandatory": true
+  },
+  {
+    "fieldName" : "issueTypesToConsiderKpi113",
+    "fieldLabel" : "Issue types to consider",
+    "fieldType" : "chips",
+    "fieldCategory" : "Issue_Type",
+    "section" : "Issue Types Mapping",
+    "processorCommon" : false,
+    "tooltip" : {
+      "definition" : "All issue types used for epics or features"
+    },
+    "fieldDisplayOrder" : 1,
+    "sectionOrder" : 1,
+    "mandatory" : true,
+    "nodeSpecific" : false
+  },
+  {
+    "fieldName": "closedIssueStatusToConsiderKpi113",
+    "fieldLabel": "Status to identify completed issues",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "fieldCategory": "workflow",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "All workflow statuses to identify completed issues. If multiple statuses are specified, the first status an issue transitions to will be considered"
+    },
+    "fieldDisplayOrder": 1,
+    "sectionOrder": 1,
+    "mandatory": true,
+    "nodeSpecific": false
   }
+
 ]
