@@ -1,5 +1,6 @@
 <div class="header">
-  <lib-ps-header [showHeaderComments]="true" [showHeaderUserDetails]="true" [showElement]="true" [platformSwitchItems]="platformSwitchItems" [showHeaderNotifications]="true" (logoClick)="onLogoClick($event)" (switchApplicationClick)="onSwitchApplicationClick($event)">
+  <lib-ps-header [showHeaderComments]="true" [showHeaderUserDetails]="true" [showElement]="true" [platformSwitchItems]="platformSwitchItems" [platformLogoInfo]="platformLogoInfo" [showHeaderNotifications]="true" 
+  (logoClick)="onLogoClick($event)" (switchApplicationClick)="onSwitchApplicationClick($event)" [showSwitch]="false">
     <div comments >
       <app-recent-comments></app-recent-comments>
     </div>

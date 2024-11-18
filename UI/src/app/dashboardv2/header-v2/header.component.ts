@@ -35,15 +35,15 @@ export class HeaderComponent implements OnInit {
   userRole: string = '';
   noToolsConfigured: boolean;
 
-  pSLogoInfo= {
-    "imageUrl": "assets/img/PSKnowHowLogo.svg",
-    "altText": "psLogo"
-    }
+  // pSLogoInfo= {
+  //   "imageUrl": "assets/img/PSKnowHowLogo.svg",
+  //   "altText": "psLogo"
+  //   }
 
   platformLogoInfo = {
-       "imageUrl": "assets/img/Switchplatforms.svg",
+       "imageUrl": "assets/img/PSKnowHowLogo.svg",
        "altText": "KnowHow",
-       "width":25
+       "width":150
     }
 
     platformSwitchItems = [
