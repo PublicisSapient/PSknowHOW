@@ -144,7 +144,7 @@
                       [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
                                   (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
                       class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.toolName)"></button>
-                    <div class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue"
+                    <div class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue cursor-pointer "
                       [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.toolName)?.length > 0 && findTraceLogForTool(processor?.toolName)) || findTraceLogForTool(processor?.toolName)?.isDeleteDisable}"
                       *ngIf="!shouldDisableRunProcessor(processor?.toolName)"><i class="far fa-trash-alt"
                         (click)="deleteProcessorData(processor)"></i></div>
