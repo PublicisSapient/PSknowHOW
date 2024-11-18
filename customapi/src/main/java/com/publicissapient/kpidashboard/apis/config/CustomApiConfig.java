@@ -217,6 +217,7 @@ public class CustomApiConfig {// NOPMD
 	private String samlTokenEndString;
 	private String samlUrlStartString;
 	private String samlUrlEndString;
+	private Boolean isGitlabFieldEnable;
 	// repo x axis count days rangeForCheckInsAndMergeRequests
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
 	private String repoToolAPIKey;
@@ -231,7 +232,6 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	private String repoToolUpdateConnectionUrl;
-	private Boolean isGitlabFieldEnable;
 	private String repoToolCodeCommmitsUrl;
 	private String repoToolDeleteProjectUrl;
 	private String repoToolDeleteRepoUrl;

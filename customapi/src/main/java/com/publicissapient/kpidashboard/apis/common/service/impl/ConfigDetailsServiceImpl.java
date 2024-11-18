@@ -50,6 +50,7 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setPercentile(customApiConfig.getPercentileValue());
 		configDetails.setHierarchySelectionCount(customApiConfig.getHierarchySelectionCount());
 		configDetails.setDateRangeFilter(dateRangeFilter);
+		configDetails.setGitlabToolFieldFlag(customApiConfig.getIsGitlabFieldEnable());
 		configDetails.setNoOfDataPoints(customApiConfig.getSprintCountForFilters());
 		configDetails.setGitlabToolFieldFlag(customApiConfig.getIsGitlabFieldEnable());
 		configDetails.setSprintCountForKpiCalculation(customApiConfig.getSprintCountForKpiCalculation());

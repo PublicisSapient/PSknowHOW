@@ -1065,6 +1065,7 @@ const completeHierarchyData = {
     component.filterForm = new UntypedFormGroup({
       sprint: new UntypedFormControl({})
     });
+    component.selectedTab = "value";
 
     const spy = spyOn(component, 'applyChanges');
     component.removeItem('sprint', '38994_DEMO_SONAR_63284960fdd20276d60e4df5');

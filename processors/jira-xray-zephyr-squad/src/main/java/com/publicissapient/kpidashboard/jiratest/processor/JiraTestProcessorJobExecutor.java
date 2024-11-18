@@ -165,14 +165,9 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 					try {
 						MDC.put("project", projectConfigMap.getProjectName());
 						log.info("Data for project : {}", projectConfigMap.getProjectName());
-						processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-
 						if (StringUtils.isNotBlank(projectConfigMap.getProjectKey())) {
 							testCaseCount.updateAndGet(test -> test + collectTestCases(projectConfigMap));
 						}
-						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-						processorExecutionTraceLog.setExecutionSuccess(true);
-						processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					} catch (RestClientException e) {
 						executionStatus = false;
 						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
