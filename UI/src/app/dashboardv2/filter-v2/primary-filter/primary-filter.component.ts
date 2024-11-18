@@ -274,11 +274,18 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   isFilterHidden(filterDataSet:any): boolean{
-    return (this.selectedTab?.toLowerCase() === 'iteration' && filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length) > 1?false:true;
+    if(this.selectedTab?.toLowerCase() === 'iteration' ){
+      if(filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length>1){
+        return false;
+      }
+      return true;
+    }else{
+      return false;
+    }
   }
 
   setDropdownWithMoreActiveOption(selectedLevel){
-    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x=>x.sprintState.toLowerCase() ==='active');
+    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x=>x.sprintState?.toLowerCase() ==='active');
     if(moreThanOneActiveOption.length>1){
       return moreThanOneActiveOption;
     }else{
