@@ -111,4 +111,27 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	@Query(value = "{ 'basicProjectConfigId' : { $in: ?0 }, 'state' : { $in: ?1 } }", fields = "{'sprintName' : 1, 'startDate' : 1, 'sprintID': 1, 'basicProjectConfigId': 1, 'endDate': 1}", sort = "{ 'startDate' : 1 }")
 	List<SprintDetails> findByBasicProjectConfigIdInAndStateInOrderByStartDateASC(List<ObjectId> basicProjectConfigId,
 			List<String> sprintStatusList);
+
+	/**
+	 * Deletes sprint details by sprint IDs and basic project config ID.
+	 *
+	 * @param sprintIDs
+	 *            List of sprint IDs to delete
+	 * @param basicProjectConfigId
+	 *            Basic project configuration ID
+	 */
+	@Query(value = "{ 'sprintID': { $in: ?0 }, 'basicProjectConfigId': ?1 }", delete = true)
+	void deleteBySprintIDInAndBasicProjectConfigId(List<String> sprintIDs, ObjectId basicProjectConfigId);
+
+	/**
+	 * Finds sprint details by basic project configuration ID with specific fields
+	 * sorted by start date.
+	 *
+	 * @param basicProjectConfigId
+	 *            the basic project configuration ID
+	 * @return list of sprint details with specific fields sorted by start date
+	 */
+	@Query(value = "{ 'basicProjectConfigId': ?0 }", fields = "{ 'sprintID': 1, 'startDate': 1, 'endDate': 1, 'sprintName': 1 }", sort = "{ 'startDate': 1 }")
+	List<SprintDetails> findByBasicProjectConfigIdWithFieldsSorted(ObjectId basicProjectConfigId);
+
 }
