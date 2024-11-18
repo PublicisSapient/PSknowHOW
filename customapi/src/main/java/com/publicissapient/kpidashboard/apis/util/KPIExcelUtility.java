@@ -1986,7 +1986,7 @@ public class KPIExcelUtility {
 					date = DateUtil.dateTimeConverter(jiraIssue.getSprintBeginDate(), ITERATION_DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 				}
-				excelData.setSprintStartDate(date);
+				excelData.setSprintStartDate((date != null && !date.isEmpty()) ? date : Constant.DASH);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -2082,7 +2082,7 @@ public class KPIExcelUtility {
 						excelData.setStoryId(issueDetails);
 						excelData.setIssueType(meanTimeRecoverData.getIssueType());
 						excelData.setIssueDesc(meanTimeRecoverData.getDesc());
-						excelData.setCompletionDate(meanTimeRecoverData.getClosedDate());
+						excelData.setCompletionDate((meanTimeRecoverData.getClosedDate() != null && !meanTimeRecoverData.getClosedDate().isEmpty()) ? meanTimeRecoverData.getClosedDate() : Constant.DASH);
 						excelData.setCreatedDate(meanTimeRecoverData.getCreatedDate());
 						excelData.setTimeToRecover(meanTimeRecoverData.getTimeToRecover());
 						kpiExcelData.add(excelData);
@@ -2158,9 +2158,9 @@ public class KPIExcelUtility {
 				String devDate = DateUtil.dateTimeConverter(String.valueOf(devCompleteDateIssueMap.get(jiraIssue.getNumber())),
 						DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 				excelData.setDevCompleteDate((devDate != null && !devDate.isEmpty()) ? devDate : Constant.DASH);
-				excelData.setCompletionDate(
-						DateUtil.dateTimeConverter(String.valueOf(completeDateIssueMap.get(jiraIssue.getNumber())),
-								DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				String completionDate = DateUtil.dateTimeConverter(String.valueOf(completeDateIssueMap.get(jiraIssue.getNumber())),
+						DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+				excelData.setCompletionDate((completionDate != null && !completionDate.isEmpty()) ? completionDate : Constant.DASH);
 				kpiExcelData.add(excelData);
 			});
 		}
