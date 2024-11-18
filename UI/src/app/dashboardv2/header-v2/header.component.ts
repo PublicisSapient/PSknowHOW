@@ -197,12 +197,12 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  emitSwitchPlatformapplicationClick(e){
-    console.log('e',e)
+  onSwitchApplicationClick(e){
+    console.log('onSwitchApplicationClick',e)
   }
 
-  emitLogoClick(e){
-    console.log('e',e);
+  onLogoClick(e){
+    console.log('onLogoClick',e);
     this.navigateToMyKnowHOW()
   }
 }
