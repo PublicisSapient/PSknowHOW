@@ -100,6 +100,8 @@ public class SprintPredictabilityImplTest {
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	CustomApiConfig customApiConfig;
 
 	@Mock
 	private SprintRepository sprintRepository;
@@ -160,8 +162,7 @@ public class SprintPredictabilityImplTest {
 
 		basicProjectConfigObjectIds.add(new ObjectId("6335363749794a18e8a4479b"));
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-		projectConfig.setProjectName("Scrum Project");
+		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));		projectConfig.setProjectName("Scrum Project");
 		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
@@ -240,6 +241,10 @@ public class SprintPredictabilityImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintPredictability.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		try {
 			KpiElement kpiElement = sprintPredictability.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
