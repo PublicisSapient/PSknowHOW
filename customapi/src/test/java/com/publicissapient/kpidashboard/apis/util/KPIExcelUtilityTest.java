@@ -563,6 +563,32 @@ public class KPIExcelUtilityTest {
 	}
 
 	@Test
+	public void populateIterationKPI_ValidData1() {
+
+		IterationKpiModalValue jiraIssueModalObject = new IterationKpiModalValue();
+		IterationKpiModalValue modelValue = new IterationKpiModalValue();
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
+		overAllModalValues.add(iterationKpiModalValue);
+		List<IterationKpiModalValue> modalValues = new ArrayList<>();
+		modalValues.add(modelValue);
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		Map<String, IterationKpiModalValue> modalObjectMap = mock(Map.class);
+		when(modalObjectMap.get(jiraIssues.get(0).getNumber())).thenReturn(jiraIssueModalObject);
+		jiraIssues.get(0).setSprintName("");
+
+		// Act
+		KPIExcelUtility.populateIterationKPI(overAllModalValues, modalValues, jiraIssues.get(0), fieldMapping,
+				modalObjectMap);
+		assertNotNull(modalValues);
+		assertEquals(2, modalValues.size());
+		assertNotNull(overAllModalValues);
+		assertEquals(2, overAllModalValues.size());
+	}
+
+	@Test
 	public void populateIterationKPI_When_Actual_Estimation_ValidData() {
 
 		IterationKpiModalValue jiraIssueModalObject = new IterationKpiModalValue();
