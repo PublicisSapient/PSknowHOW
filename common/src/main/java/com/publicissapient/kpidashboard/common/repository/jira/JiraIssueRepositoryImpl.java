@@ -20,6 +20,9 @@ package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
 //Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
 
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.LABELS;
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.PARENT_STORY_ID;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +48,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-
-import static com.publicissapient.kpidashboard.common.constant.CommonConstant.LABELS;
-import static com.publicissapient.kpidashboard.common.constant.CommonConstant.PARENT_STORY_ID;
 
 /**
  * Repository for {@link JiraIssue} with custom methods implementation.
@@ -233,9 +233,9 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-    @Override
+	@Override
 	public List<JiraIssue> findIssueByNumberOrParentStoryIdAndType(Set<String> storyNumber,
-																   Map<String, Map<String, Object>> uniqueProjectMap, String findBy) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String findBy) {
 		Criteria criteria = new Criteria();
 
 		// Project level storyType filters
@@ -357,6 +357,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include("uatDefectGroup");
 		query.fields().include(SPRINT_ID);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(LOGGED_WORK_MINUTES);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -487,6 +488,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(URL);
 		query.fields().include(NAME);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(LOGGED_WORK_MINUTES);
 
 		return operations.find(query, JiraIssue.class);
 
@@ -585,7 +587,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		return operations.find(query, JiraIssue.class);
 	}
-
 	@Override
 	public List<JiraIssue> findIssueByNumber(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
@@ -634,6 +635,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ASSET_STATE);
 		query.fields().include(SPRINT_END_DATE);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(LOGGED_WORK_MINUTES);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -833,6 +835,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(ADDITIONAL_FILTER);
 		query.fields().include(STORY_POINTS);
 		query.fields().include(SPRINT_NAME);
+		query.fields().include(LOGGED_WORK_MINUTES);
+		query.fields().include(TYPE_NAME);
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}
@@ -962,8 +966,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		MatchOperation matchStage = Aggregation.match(criteria);
 
-		GroupOperation groupOperation = Aggregation.group(TYPE_NAME, CONFIG_ID,
-				RELEASE_VERSION);
+		GroupOperation groupOperation = Aggregation.group(TYPE_NAME, CONFIG_ID, RELEASE_VERSION);
 
 		ProjectionOperation projectionOperation = Aggregation.project().andExpression("_id.typeName")
 				.as("uniqueTypeName").andExpression("_id.releaseName").as("releaseName")
