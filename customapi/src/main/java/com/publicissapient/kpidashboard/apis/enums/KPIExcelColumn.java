@@ -91,18 +91,20 @@ public enum KPIExcelColumn {
 	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID",
 			"Story Description", "Size(story point/hours)", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
-	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Escaped defect identifier", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
+	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Escaped defect identifier",
+			"Story ID", "Story Description","Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
 	DEFECT_REMOVAL_EFFICIENCY("kpi34",
-							  Arrays.asList("Sprint Name", "Defect ID", "Defect Description",
+							  Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID", "Story Description",
 									  "Squad", "Root Cause","Defect Priority","Defect Removed", "Defect Status", "Time Spent (in hours)")),
 
-	DEFECT_REJECTION_RATE("kpi37", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Squad", "Defect Rejected")),
+	DEFECT_REJECTION_RATE("kpi37", Arrays.asList("Sprint Name", "Defect ID", "Defect Description","Story ID", "Story Description",
+			"Squad", "Defect Rejected")),
 
-	DEFECT_COUNT_BY_PRIORITY("kpi28", Arrays.asList("Sprint Name", "Defect ID", "Defect Description",
+	DEFECT_COUNT_BY_PRIORITY("kpi28", Arrays.asList("Sprint Name", "Defect ID", "Defect Description","Story ID", "Story Description",
 			"Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
-	DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Defect Description",
+	DEFECT_COUNT_BY_RCA("kpi36", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID", "Story Description",
 			"Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
 	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", Arrays.asList("Defect ID", "Issue Description", "Squad", "Issue Status",
@@ -111,7 +113,7 @@ public enum KPIExcelColumn {
 	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", Arrays.asList("Defect ID", "Issue Description", "Squad", "Issue Status",
 			"Issue Type", "Size(story point/hours)", "Root Cause", "Priority", "Assignee", "Created during Iteration")),
 
-	CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Defect Description", "Squad",
+	CREATED_VS_RESOLVED_DEFECTS("kpi126", Arrays.asList("Sprint Name", "Created Defect ID", "Defect Description", "Squad", "Story ID", "Story Description",
 			"Root Cause", "Defect Priority", "Time Spent (in hours)", "Defect Status","Defect added after Sprint Start", "Resolved Status")),
 
 	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", Arrays.asList("Defect ID", "Issue Description", "Squad", "Issue Status",
