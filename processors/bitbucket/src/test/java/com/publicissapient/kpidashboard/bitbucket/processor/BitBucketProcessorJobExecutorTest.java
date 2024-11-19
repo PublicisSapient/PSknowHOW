@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.bitbucket.processor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
@@ -192,7 +193,7 @@ class BitBucketProcessorJobExecutorTest {
 		commitDetails.setBranch("master");
 		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
-		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		Mockito.when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail, proBasicConfig))
 				.thenReturn(commitDetailList);
@@ -232,7 +233,7 @@ class BitBucketProcessorJobExecutorTest {
 		commitDetails.setUrl("https://test.com/scm/test/test.git");
 		commitDetailList.add(commitDetails);
 
-		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		Mockito.when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 		Mockito.when(bitBucketClient.fetchAllCommits(bitbucketRepo, true, connectionDetail, proBasicConfig))
 				.thenReturn(commitDetailList);

@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.Lists;
@@ -127,8 +128,21 @@ public class ProjectBasicConfigController {
 	 * @return ResponseEntity
 	 */
 	@GetMapping
-	public ResponseEntity<ServiceResponse> getProjectBasicConfig() {
-		return getProjectBasicConfig(null);
+	public ResponseEntity<ServiceResponse> getProjectBasicConfig(@RequestParam(value = "includeAll", defaultValue = "true") Boolean includeAll) {
+		try {
+			// Call the service layer
+			Object result = projectBasicConfigService.getFilteredProjectsBasicConfigs(includeAll);
+
+			// Return a successful response
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Fetched successfully", result));
+
+		} catch (Exception ex) {
+			// Handle unexpected exceptions
+			String message = "An error occurred while fetching project configurations.";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ServiceResponse(false, message, null));
+		}
 	}
 
 	/**
