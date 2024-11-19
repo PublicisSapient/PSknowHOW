@@ -82,14 +82,14 @@ public enum KPIExcelColumn {
 								   "Squad", "Issue Type", "Priority", "Story Points",
 								   "Original Time Estimate (in hours)", "Time Spent (in hours)")),
 
-	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID",
-			"Story Description", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
+	DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Story Description", "Squad", "Defect ID",
+			"Defect Description","Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
 	FIRST_TIME_PASS_RATE("kpi82", Arrays.asList("Sprint Name", "Story ID", "Story Description","First Time Pass",
 			"Defect ID", "Defect Description", "Squad", "Root Cause", "Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
-	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Story ID",
-			"Story Description", "Size(story point/hours)", "Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
+	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Story Description", "Size(story point/hours)", "Squad",
+			"Defect ID", "Defect Description", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
 
 	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Defect Description", "Escaped defect identifier",
 			"Story ID", "Story Description","Squad", "Root Cause","Defect Priority", "Defect Status", "Time Spent (in hours)")),
