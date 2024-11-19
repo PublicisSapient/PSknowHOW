@@ -276,6 +276,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		long time = System.currentTimeMillis();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 		log.info("IssueCount taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
@@ -338,7 +340,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 				storyCount = ((Integer) totalPresentJiraIssue.size()).doubleValue();
 				totalPresentStoryIssue = sprintWiseStoryCatIssues.get(currentNodeIdentifier);
 				totalPresentTotalIssue = sprintWiseTotalCatIssues.get(currentNodeIdentifier);
-				populateExcelData(requestTrackerId, allJiraIssue, excelData, node, totalPresentJiraIssue);
+				populateExcelData(requestTrackerId, allJiraIssue, excelData, node, totalPresentJiraIssue,fieldMapping);
 
 			}
 
@@ -395,13 +397,14 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 * @param allJiraIssuesList
 	 * @param node
 	 * @param totalPresentJiraIssue
+	 * @param fieldMapping
 	 */
 	private void populateExcelData(String requestTrackerId, List<JiraIssue> allJiraIssuesList,
-			List<KPIExcelData> excelData, Node node, List<String> totalPresentJiraIssue) {
+								   List<KPIExcelData> excelData, Node node, List<String> totalPresentJiraIssue, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String sprintName = node.getSprintFilter().getName();
-			KPIExcelUtility.populateIssueCountExcelData(sprintName, excelData, allJiraIssuesList,
-					totalPresentJiraIssue);
+			KPIExcelUtility.populateSpeedKPIExcelData(sprintName, excelData, allJiraIssuesList,
+					totalPresentJiraIssue, fieldMapping, customApiConfig);
 
 		}
 	}

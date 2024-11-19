@@ -394,7 +394,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, sprintWiseDefectDataList, excelData,
-					KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId(), customApiConfig);
+					 customApiConfig);
 
 		}
 	}

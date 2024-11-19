@@ -63,4 +63,5 @@ public class ProcessorExecutionTraceLog {
 	private List<ErrorDetail> errorDetailList;
 	private boolean executionWarning;
 	private long executionResumesAt;
+	private Object additionalInfo;
 }

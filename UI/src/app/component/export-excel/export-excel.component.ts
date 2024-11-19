@@ -97,7 +97,16 @@ export class ExportExcelComponent implements OnInit {
             this.modalDetails['tableHeadings'] =
               this.kpiExcelData.headerNames.map((column) => column.header);
             // this.modalDetails['tableValues'] = additionalFilterSupport ? this.kpiExcelData.excelData : [];
-            this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
+            this.modalDetails['tableValues'] = this.kpiExcelData.excelData
+            .map(item => {
+              const formattedItem = { ...item };
+              for (const key in formattedItem) {
+                  if (key.toLowerCase().includes('date') && formattedItem[key]) {
+                      formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
+                  }
+              }
+               return formattedItem
+          });
             this.generateTableColumnData();
             this.modalDetails['header'] = kpiName;
             this.displayModal = true;

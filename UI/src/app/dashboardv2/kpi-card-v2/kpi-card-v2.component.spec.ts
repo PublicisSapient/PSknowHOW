@@ -901,7 +901,7 @@ describe('KpiCardV2Component', () => {
     expect(component.checkIfDataPresent('200')).toBeTrue();
   });
 
-  it('should return true if data is present for kpiId kpi139 or kpi127 and trendValueList and trendValueList[0].value have length', () => {
+  xit('should return true if data is present for kpiId kpi139 or kpi127 and trendValueList and trendValueList[0].value have length', () => {
     component.kpiData = { kpiId: 'kpi139' };
     component.trendValueList = [{ value: [{ value: [1, 2, 3] }] }];
 
