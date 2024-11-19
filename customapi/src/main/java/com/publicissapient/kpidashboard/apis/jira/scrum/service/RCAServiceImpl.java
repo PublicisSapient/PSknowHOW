@@ -372,7 +372,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
 			KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
-					KPICode.DEFECT_COUNT_BY_RCA.getKpiId(), customApiConfig);
+					 customApiConfig);
 		}
 
 	}
