@@ -142,11 +142,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      this.globalConfig = globalConfig;
+      this.globalConfig = JSON.parse(JSON.stringify(globalConfig));
       this.setGlobalConfigData(globalConfig);
+      let enabledKPIs = globalConfig['enabledKPIs'] ? globalConfig['enabledKPIs'] : [];
       setTimeout(() => {
         this.processKpiConfigData();
         this.setUpTabs();
+        if(enabledKPIs.length) {
+          enabledKPIs.forEach(element => {
+            this.reloadKPI(element);
+          });
+        }
       }, 500);
     }));
 

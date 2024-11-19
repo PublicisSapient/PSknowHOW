@@ -1223,9 +1223,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    */
   showHideKPIs() {
     const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
+    let enabledKPIs = [];
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
+        enabledKPIs = this.findEnabledKPIs(this.dashConfigData[this.selectedType][i]['kpis'], this.masterDataCopy['kpiList']);
         if (this.dashConfigData[this.selectedType][i]) {
           this.dashConfigData[this.selectedType][i]['kpis'] = JSON.parse(JSON.stringify(this.masterDataCopy['kpiList']));
         } else {
@@ -1237,6 +1239,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     let obj = Object.assign({}, this.dashConfigData);
     delete obj['configDetails'];
+    delete obj['enabledKPIs'];
     this.httpService.submitShowHideOnDashboard(obj).subscribe(
       (response) => {
         if (response.success === true) {
@@ -1245,7 +1248,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             summary: 'Successfully Saved',
             detail: '',
           });
-          this.service.setDashConfigData(this.dashConfigData);
+          if (enabledKPIs?.length) {
+            this.service.setDashConfigData(this.dashConfigData, true, enabledKPIs);
+          } else {
+            this.service.setDashConfigData(this.dashConfigData);
+          }
         } else {
           this.messageService.add({
             severity: 'error',
@@ -1260,6 +1267,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         });
       },
     );
+  }
+
+  findEnabledKPIs(previousDashConfig, newMasterData) {
+    let result = [];
+    previousDashConfig.forEach((element, index) => {
+      if (!element.isEnabled && newMasterData[index].isEnabled) {
+        result.push(newMasterData[index]);
+      }
+    });
+    return result;
   }
 
   assignUserNameForKpiData() {
