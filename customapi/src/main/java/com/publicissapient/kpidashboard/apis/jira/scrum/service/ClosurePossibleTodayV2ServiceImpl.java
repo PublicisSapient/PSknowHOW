@@ -68,8 +68,7 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		DataCount trendValue = new DataCount();
-		projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -89,7 +88,7 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-				// to modify sprintdetails on the basis of configuration for the project
+				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
@@ -125,8 +124,7 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node latestSprintNode, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node latestSprintNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
@@ -204,7 +202,7 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 	}
 
 	/**
-	 * Cretaes data group that tells what kind of data will be shown on chart.
+	 * Creates data group that tells what kind of data will be shown on chart.
 	 * 
 	 * @param fieldMapping
 	 * @return
@@ -253,8 +251,8 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 	}
 
 	/**
-	 * with assignees criteria calculating potential delay for inprogress and open
-	 * issues and without assignees calculating potential delay for inprogress
+	 * with assignees criteria calculating potential delay for in progress and open
+	 * issues and without assignees calculating potential delay for in progress
 	 * stories
 	 * 
 	 * @param sprintDetails

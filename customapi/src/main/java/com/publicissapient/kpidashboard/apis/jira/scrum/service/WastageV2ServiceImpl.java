@@ -39,7 +39,6 @@ import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -71,13 +70,9 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 	 * @return boolean flagStatus
 	 */
 	private static boolean checkFlagIncludedStatus(FieldMapping fieldMapping) {
-		boolean isFlagIncluded = false;
-		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusKPI131())
+		return null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusKPI131())
 				&& fieldMapping.getJiraIncludeBlockedStatusKPI131()
-						.contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE)) {
-			isFlagIncluded = true;
-		}
-		return isFlagIncluded;
+						.contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE);
 	}
 
 	@Override
@@ -88,8 +83,7 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		DataCount trendValue = new DataCount();
-		projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -105,7 +99,7 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-				// to modify sprintdetails on the basis of configuration for the project
+				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
@@ -139,13 +133,11 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 	 * sprint level.
 	 *
 	 * @param sprintLeafNode
-	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
@@ -172,8 +164,7 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
 				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
 				JiraIssueCustomHistory issueCustomHistory = allIssueHistory.stream()
-						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
-								.equals(issue.getNumber()))
+						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(issue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
 				List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory, sprintDetail,
 						blockedStatusList, waitStatusList, flagIncluded);
@@ -192,6 +183,7 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates filter group.
+	 * 
 	 * @return
 	 */
 	private FilterGroup createFilterGroup() {
@@ -207,6 +199,7 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates individual filter object.
+	 * 
 	 * @param type
 	 * @param name
 	 * @param key
@@ -223,7 +216,7 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 	}
 
 	/**
-	 * Cretaes data group that tells what kind of data will be shown on chart.
+	 * Creates data group that tells what kind of data will be shown on chart.
 	 *
 	 * @return
 	 */
@@ -245,6 +238,7 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates kpi data object.
+	 * 
 	 * @param key
 	 * @param name
 	 * @param order
@@ -320,8 +314,8 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 						blockedTime);
 			}
 		}
-		resultList.add(calculateBlockandwaitTimeinMinute(waitedTime));
-		resultList.add(calculateBlockandwaitTimeinMinute(blockedTime));
+		resultList.add(calculateBlockAndWaitTimeInMinute(waitedTime));
+		resultList.add(calculateBlockAndWaitTimeInMinute(blockedTime));
 		return resultList;
 	}
 
@@ -371,7 +365,7 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 		return time;
 	}
 
-	private int calculateBlockandwaitTimeinMinute(int timeInHours) {
+	private int calculateBlockAndWaitTimeInMinute(int timeInHours) {
 		int timeInMin = (timeInHours / 24) * 8 * 60;
 		int remainingTimeInMin = (timeInHours % 24) * 60;
 		if (remainingTimeInMin >= 480) {
@@ -405,8 +399,8 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 			int hours = 0;
 			// Checking for indexOutOfBound in statusUpdationLog list
 			if (statusUpdationLog.size() == index + 1) {
-				hours = Math.toIntExact(hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate, sprintEndDate,
-						entryActivityDate));
+				hours = Math.toIntExact(hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate,
+						sprintEndDate, entryActivityDate));
 			} else {
 				// Find fetch the next element of statusUpdationLog
 				JiraHistoryChangeLog nextEntry = statusUpdationLog.get(index + 1);
@@ -415,8 +409,8 @@ public class WastageV2ServiceImpl extends JiraIterationKPIService {
 				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 						&& !(entryActivityDate.isAfter(sprintEndDate)
 								&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-					hours = Math.toIntExact(hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
-							nextEntryActivityDate));
+					hours = Math.toIntExact(hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate,
+							entryActivityDate, nextEntryActivityDate));
 				}
 			}
 			if (hours != 0)

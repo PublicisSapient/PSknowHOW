@@ -41,13 +41,11 @@ import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -72,13 +70,9 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	@Autowired
-	private SprintRepository sprintRepository;
-
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		DataCount trendValue = new DataCount();
 		projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
@@ -99,7 +93,7 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-				// to modify sprintdetails on the basis of configuration for the project
+				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
@@ -168,8 +162,7 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
 
 				JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
-						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
-								.equals(issue.getNumber()))
+						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(issue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
 				String devCompletionDate = getDevCompletionDate(issueCustomHistory,
 						fieldMapping.getJiraDevDoneStatusKPI119());
@@ -240,6 +233,7 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates filter group.
+	 * 
 	 * @return
 	 */
 	private FilterGroup createFilterGroup() {
@@ -255,6 +249,7 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates individual filter object.
+	 * 
 	 * @param type
 	 * @param name
 	 * @param key
@@ -271,7 +266,8 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 	}
 
 	/**
-	 * Cretaes data group that tells what kind of data will be shown on chart.
+	 * Creates data group that tells what kind of data will be shown on chart.
+	 * 
 	 * @param fieldMapping
 	 * @return
 	 */
@@ -302,12 +298,13 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 		dataGroup.setDataGroup1(dataGroup1);
 		dataGroup.setDataGroup2(dataGroup2);
 		dataGroup.setMarkerInfo(markerInfo);
-		dataGroup.setMetaDataColumns(Arrays.asList("marker"));
+		dataGroup.setMetaDataColumns(List.of("marker"));
 		return dataGroup;
 	}
 
 	/**
 	 * Creates kpi data object.
+	 * 
 	 * @param key
 	 * @param name
 	 * @param order

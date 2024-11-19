@@ -42,13 +42,11 @@ import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -69,14 +67,10 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	@Autowired
-	private SprintRepository sprintRepository;
-
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		DataCount trendValue = new DataCount();
-		projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -97,7 +91,7 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-				// to modify sprintdetails on the basis of configuration for the project
+				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
@@ -129,13 +123,11 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 	 * sprint level.
 	 *
 	 * @param sprintLeafNode
-	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
@@ -161,10 +153,9 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
 				data.setCategory(new ArrayList<>());
 				if (SPRINT_STATE_ACTIVE.equals(sprintState)) {
-					if (isIssueAtRisk(issue, issueWiseDelay, sprintEndDate)
-							|| (issue.getDueDate() != null)
-							&& DateUtil.stringToLocalDate(issue.getDueDate(),
-							DateUtil.TIME_FORMAT_WITH_SEC).isAfter(sprintEndDate)) {
+					if (isIssueAtRisk(issue, issueWiseDelay, sprintEndDate) || (issue.getDueDate() != null)
+							&& DateUtil.stringToLocalDate(issue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+									.isAfter(sprintEndDate)) {
 						data.getCategory().add(ISSUE_AT_RISK);
 					}
 				} else {
@@ -181,7 +172,7 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 
 				if (issueWiseDelay.containsKey(issue.getNumber())) {
 					IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(issue.getNumber());
-					data.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+					data.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
 					data.setPredictedCompletionDate(
 							DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
 									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
@@ -191,7 +182,6 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 					data.setPredictedCompletionDate("-");
 				}
 			});
-
 
 			kpiElement.setSprint(sprintLeafNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.ISSUES_LIKELY_TO_SPILL.getColumns());
@@ -203,6 +193,7 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates filter group.
+	 * 
 	 * @return
 	 */
 	private FilterGroup createFilterGroup() {
@@ -218,6 +209,7 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates individual filter object.
+	 * 
 	 * @param type
 	 * @param name
 	 * @param key
@@ -234,7 +226,7 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 	}
 
 	/**
-	 * Cretaes data group that tells what kind of data will be shown on chart.
+	 * Creates data group that tells what kind of data will be shown on chart.
 	 *
 	 * @param fieldMapping
 	 * @return
@@ -271,7 +263,8 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 	 * @param unit
 	 * @return
 	 */
-	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit, String key1, String value1) {
+	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit, String key1,
+			String value1) {
 		KpiData data = new KpiData();
 		data.setKey(key);
 		data.setName(name);

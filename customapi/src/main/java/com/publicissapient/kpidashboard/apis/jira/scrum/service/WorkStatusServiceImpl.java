@@ -423,7 +423,6 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	 * @param allCompletedIssuesList
 	 * @param issueWiseDelay
 	 * @param data
-	 * @return
 	 */
 	private void setDataForPlanned(JiraIssue issue, Map<String, Object> jiraIssueData, SprintDetails sprintDetails,
 			List<String> allCompletedIssuesList, Map<String, IterationPotentialDelay> issueWiseDelay,
@@ -491,27 +490,6 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		}
 		return devCompletedIssues;
-	}
-
-	/**
-	 * Calculating max delay of each assignee based on max marker
-	 *
-	 * @param jiraIssue
-	 * @param issueWiseDelay
-	 * @param potentialDelay
-	 * @return
-	 */
-	private int checkDelay(JiraIssue jiraIssue, Map<String, IterationPotentialDelay> issueWiseDelay,
-			int potentialDelay) {
-		int finalDelay = 0;
-		if (issueWiseDelay.containsKey(jiraIssue.getNumber())
-				&& issueWiseDelay.get(jiraIssue.getNumber()).isMaxMarker()) {
-			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
-			finalDelay = potentialDelay + KpiDataHelper.getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
-		} else {
-			finalDelay = potentialDelay + finalDelay;
-		}
-		return finalDelay;
 	}
 
 	/**
@@ -604,7 +582,6 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	 */
 	private Map<String, Object> jiraIssueCalculation(FieldMapping fieldMapping, SprintDetails sprintDetails,
 			List<JiraIssueCustomHistory> allIssueHistories, List<String> allCompletedIssuesList, JiraIssue jiraIssue) {
-		int jiraIssueDelay = 0;
 		Map<String, Object> resultList = new HashMap<>();
 
 		JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
@@ -619,7 +596,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null && jiraIssue.getDueDate() != null) {
 			LocalDate actualCompletedDate = (LocalDate) actualCompletionData.get(ACTUAL_COMPLETE_DATE);
-			jiraIssueDelay = getDelay(DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC),
+			int jiraIssueDelay = getDelay(DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC),
 					actualCompletedDate);
 			resultList.put(ISSUE_DELAY, jiraIssueDelay);
 		} else {
@@ -643,7 +620,6 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	private Map<String, Object> jiraIssueCalculationDev(FieldMapping fieldMapping, SprintDetails sprintDetails,
 			List<JiraIssueCustomHistory> allIssueHistories, JiraIssue jiraIssue,
 			Map<JiraIssue, String> completedIssueMap, List<String> allCompletedIssuesList) {
-		int jiraIssueDelay = 0;
 		Map<String, Object> resultList = new HashMap<>();
 
 		JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream()
@@ -657,7 +633,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		if (StringUtils.isNotEmpty(devCompletionDate) && !devCompletionDate.equalsIgnoreCase("-")
 				&& jiraIssue.getDevDueDate() != null) {
 			LocalDate devCompletedDate = LocalDate.parse(devCompletionDate);
-			jiraIssueDelay = getDelay(
+			int jiraIssueDelay = getDelay(
 					DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC),
 					devCompletedDate);
 			resultList.put(ISSUE_DELAY, jiraIssueDelay);

@@ -24,13 +24,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -45,7 +43,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -98,7 +95,7 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 						Optional.ofNullable(fieldMapping.getJiradefecttype()).orElse(Collections.emptyList()));
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
-				sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
+				sprintDetails.getTotalIssues().forEach(sprintIssue -> {
 					if (defectTypes.contains(sprintIssue.getTypeName())) {
 						totalSprintReportDefects.add(sprintIssue.getNumber());
 					} else {
@@ -130,12 +127,12 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 					// filter defects which is issue type not coming in sprint report
 					List<JiraIssue> subTaskDefects = linkedDefects.stream()
 							.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
-							.collect(Collectors.toList());
+							.toList();
 
 					List<JiraIssue> totalSubTaskTaggedToSprint = subTaskDefects.stream()
 							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
 									&& jiraIssue.getSprintIdList().contains(sprintId.split("_")[0]))
-							.collect(Collectors.toList());
+							.toList();
 
 					List<JiraIssue> allIssues = new ArrayList<>();
 					allIssues.addAll(filtersIssuesList);
@@ -233,7 +230,7 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 	}
 
 	/**
-	 * Cretaes data group that tells what kind of data will be shown on chart.
+	 * Creates data group that tells what kind of data will be shown on chart.
 	 *
 	 * @return
 	 */
