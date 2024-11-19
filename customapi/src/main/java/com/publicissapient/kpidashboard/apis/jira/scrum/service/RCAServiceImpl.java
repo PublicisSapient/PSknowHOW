@@ -246,7 +246,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		setDbQueryLogger(storyIdList, null, null, defectListWoDrop);
 		resultListMap.put(SPRINT_WISE_STORY_DATA, sprintWiseStoryList);
 		resultListMap.put(TOTAL_DEFECT_DATA, defectListWoDrop);
-		resultListMap.put(STORY_LIST, jiraIssueRepository.findByNumberIn(storyIdList));
+		resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 
 		return resultListMap;
 

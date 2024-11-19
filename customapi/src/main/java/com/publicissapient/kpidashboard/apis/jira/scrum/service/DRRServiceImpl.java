@@ -254,7 +254,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			resultListMap.put(TOTAL_SPRINT_SUBTASK_DEFECTS, totalSubTaskDefects);
 			resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
 			resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, sprintDetails);
-			resultListMap.put(STORY_LIST, jiraIssueRepository.findByNumberIn(new ArrayList<>(totalIssue)));
+			resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>(totalIssue)));
 		}
 		// Find defect with rejected status. Avoided making dB query
 		if (!defectResolutionRejectionMap.isEmpty()) {

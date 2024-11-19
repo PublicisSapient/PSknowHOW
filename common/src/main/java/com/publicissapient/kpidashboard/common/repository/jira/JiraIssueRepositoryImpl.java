@@ -852,6 +852,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(STORY_POINTS);
 		query.fields().include(SPRINT_NAME);
 		query.fields().include(LOGGED_WORK_MINUTES);
+		query.fields().include(TYPE_NAME);
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}

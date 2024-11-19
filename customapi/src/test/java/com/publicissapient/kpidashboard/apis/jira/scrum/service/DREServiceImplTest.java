@@ -206,7 +206,7 @@ public class DREServiceImplTest {
 		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
 		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(totalIssueList);
-		when(jiraIssueRepository.findByNumberIn(Mockito.any())).thenReturn(totalIssueList);
+		when(jiraIssueRepository.findIssueAndDescByNumber(Mockito.any())).thenReturn(totalIssueList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
 				.thenReturn(new ArrayList<>());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);

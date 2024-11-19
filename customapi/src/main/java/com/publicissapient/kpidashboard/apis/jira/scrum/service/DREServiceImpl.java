@@ -243,7 +243,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			resultListMap.put(DEFECT_HISTORY, defectsCustomHistory);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 			resultListMap.put(PROJECT_WISE_DEFECT_REMOVEL_STATUS, projectWiseDefectRemovelStatus);
-			resultListMap.put(STORY_LIST, jiraIssueRepository.findByNumberIn(new ArrayList<>(totalIssue)));
+			resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>(totalIssue)));
 
 		}
 

@@ -262,7 +262,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, subTaskBugs);
 			resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
-			resultListMap.put(STORY_LIST, jiraIssueRepository.findByNumberIn(new ArrayList<>(totalIssue)));
+			resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>(totalIssue)));
 
 		}
 		setDbQueryLogger((List<JiraIssue>) resultListMap.get(CREATED_VS_RESOLVED_KEY));

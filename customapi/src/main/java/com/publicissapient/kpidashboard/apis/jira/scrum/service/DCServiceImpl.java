@@ -231,7 +231,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		setDbQueryLogger(storyIdList, defectListWoDrop);
 		resultListMap.put(SPRINT_WISE_STORY_DATA, sprintWiseStoryList);
 		resultListMap.put(TOTAL_DEFECT_DATA, defectListWoDrop);
-		resultListMap.put(STORY_LIST, jiraIssueRepository.findByNumberIn(storyIdList));
+		resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 		return resultListMap;
 
 	}
