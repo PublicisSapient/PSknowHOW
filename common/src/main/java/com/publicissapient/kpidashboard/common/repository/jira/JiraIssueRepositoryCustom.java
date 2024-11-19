@@ -223,7 +223,6 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 * @return list of jira issues
 	 */
 	List<JiraIssue> findByTypeNameAndDefectStoryIDIn(String typeName, List<String> defectStoryIds);
-	List<JiraIssue> findByNumberIn(List<String> defectStoryIds);
 
 	List<JiraIssue> findIssueByNumber(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
 			Map<String, Map<String, Object>> uniqueProjectMap);

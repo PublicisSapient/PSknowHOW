@@ -587,22 +587,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		return operations.find(query, JiraIssue.class);
 	}
-
-	@Override
-	public List<JiraIssue> findByNumberIn(List<String> defectStoryIds) {
-
-		Criteria criteria = new Criteria();
-		criteria.and(NUMBER).in(defectStoryIds);
-		Query query = new Query(criteria);
-		query.fields().include(CONFIG_ID);
-		query.fields().include(NUMBER);
-		query.fields().include(URL);
-		query.fields().include(NAME);
-		query.fields().include(TYPE_NAME);
-		query.fields().include(LOGGED_WORK_MINUTES);
-		return operations.find(query, JiraIssue.class);
-	}
-
 	@Override
 	public List<JiraIssue> findIssueByNumber(Map<String, List<String>> mapOfFilters, Set<String> storyNumber,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
