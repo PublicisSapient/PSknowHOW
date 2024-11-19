@@ -1051,37 +1051,6 @@ export class ConnectionListComponent implements OnInit {
   }
 
   enableDisableSwitch(event, field, type?) {
-    // if (field === 'offline') {
-    //   /* Enable/Disable fields on the basis of flag selection at one time */
-    //   if (!!this.enableDisableOnToggle.enableDisableEachTime[field] && this.enableDisableOnToggle.enableDisableEachTime[field].length) {
-    //     this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
-    //       if (event.checked) {
-    //         this.basicConnectionForm.controls[element.field]?.enable();
-    //       } else {
-    //         this.basicConnectionForm.controls[element.field]?.disable();
-    //       }
-    //     });
-    //   }
-    //   /* Enable/Disable fields on the basis of flag selection at second time */
-    //   if (!!this.enableDisableOnToggle.enableDisableAnotherTime[field] && this.enableDisableOnToggle.enableDisableAnotherTime[field].length) {
-    //     this.enableDisableOnToggle.enableDisableAnotherTime[field].forEach(element => {
-    //       if (event.checked) {
-    //         this.basicConnectionForm.controls[element.field]?.disable();
-    //       } else {
-    //         this.basicConnectionForm.controls[element.field]?.enable();
-    //       }
-    //     });
-    //   }
-
-    //   if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === true) {
-    //     this.basicConnectionForm.controls['privateKey'].enable();
-    //     this.basicConnectionForm.controls['consumerKey'].enable();
-    //   } else if (!event.checked && this.basicConnectionForm.controls['isOAuth'].value === false) {
-    //     this.basicConnectionForm.controls['privateKey'].disable();
-    //     this.basicConnectionForm.controls['consumerKey'].disable();
-    //   }
-
-    // } else {
     /* Enable/Disable fields on the basis of flag selection at one time */
     if (this.enableDisableOnToggle.enableDisableEachTime[field]?.length) {
       this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
@@ -1102,8 +1071,6 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(false);
       }
     }
-
-    // }
 
     this.checkBitbucketValue(event.checked, field, type);
     if (type?.toLowerCase() == 'zephyr') {
