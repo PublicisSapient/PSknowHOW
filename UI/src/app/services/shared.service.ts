@@ -187,10 +187,15 @@ export class SharedService {
   }
 
   // setter dash config data
-  setDashConfigData(data, emit = true) {
+  setDashConfigData(data, emit = true, enabledKPIs = null) {
     this.dashConfigData = JSON.parse(JSON.stringify(data));
     if (emit) {
-      this.globalDashConfigData.emit(data);
+      if (enabledKPIs) {
+        data['enabledKPIs'] = enabledKPIs;
+        this.globalDashConfigData.emit(data);
+      } else {
+        this.globalDashConfigData.emit(data);
+      }
     }
   }
 
