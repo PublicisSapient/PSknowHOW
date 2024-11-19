@@ -1171,13 +1171,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           } else {
             this.kpiSelectedFilterObj[kpiId] = [];
           }
-        }  else if (filterPropArr.includes('filter1')
-          && filterPropArr.includes('filter2')) {
-          if (this.kpiDropdowns[kpiId]?.length > 1) {
-            this.kpiSelectedFilterObj[kpiId] = {};
-            for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-              this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
-            }
+        } else if (filterPropArr.includes('filter1') && filterPropArr.includes('filter2') && this.kpiDropdowns[kpiId]?.length > 1) {
+          this.kpiSelectedFilterObj[kpiId] = {};
+          for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
+            this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
           }
         }
       }
@@ -1193,19 +1190,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
         if (filterPropArr.includes('filter')) {
           if(filterType && filterType !== 'multiselectdropdown') {
-              this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-            } else if(!filterType) {
-              this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-            } else {
-              this.kpiSelectedFilterObj[kpiId] = [];
-            }
-        } else if (filterPropArr.includes('filter1')
-          && filterPropArr.includes('filter2')) {
-          if (this.kpiDropdowns[kpiId]?.length > 1) {
-            this.kpiSelectedFilterObj[kpiId] = {};
-            for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-              this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
-            }
+            this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+          } else if(!filterType) {
+            this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+          } else {
+            this.kpiSelectedFilterObj[kpiId] = [];
+          }
+        } else if (filterPropArr.includes('filter1') && filterPropArr.includes('filter2') && this.kpiDropdowns[kpiId]?.length > 1) {
+          this.kpiSelectedFilterObj[kpiId] = {};
+          for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
+            this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
           }
         } else {
           this.kpiSelectedFilterObj[kpiId] = {};
@@ -1227,16 +1221,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (filters && Object.keys(filters).length !== 0) {
         if (this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
           if(filterType && filterType !== 'multiselectdropdown') {
-              this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-            } else if(!filterType) {
-              this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-            } else {
-              this.kpiSelectedFilterObj[kpiId] = [];
-            }
+            this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+          } else if(!filterType) {
+            this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+          } else {
+            this.kpiSelectedFilterObj[kpiId] = [];
+          }
         }
       } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         this.kpiSelectedFilterObj[kpiId] = { filter1: ['Overall'] };
-      } if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+      }
+
+      if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.kpiSelectedFilterObj[kpiId] = {};
         for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
           this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];

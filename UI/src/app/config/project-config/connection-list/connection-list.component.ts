@@ -782,46 +782,28 @@ export class ConnectionListComponent implements OnInit {
   }
 
   renderConnectionList(response) {
-
-    let connectionType;
-
+    // Initialize connection list for all types
     this.connectionTypeCompleteList.forEach(eachConnection => {
       this.connectionListAllType[eachConnection.value.toString()] = [];
     });
-    if (response.data.length) {
-      response.data.forEach(eachConnection => {
-        connectionType = eachConnection.type;
 
-        if (!!eachConnection.password) {
-          eachConnection.password = '';
-        }
+    if (!response.data.length) return;
 
-        if (!!eachConnection.pat) {
-          eachConnection.pat = '';
-        }
+    response.data.forEach(eachConnection => {
+      const connectionType = eachConnection.type;
 
-        if (!!eachConnection.accessToken) {
-          eachConnection.accessToken = '';
-        }
-
-        if (!!eachConnection.privateKey) {
-          eachConnection.privateKey = '';
-        }
-
-        if (!!eachConnection.consumerKey) {
-          eachConnection.consumerKey = '';
-        }
-
-        if (!!eachConnection.apiKey) {
-          eachConnection.apiKey = '';
-        }
-
-        if (!!this.connectionListAllType[connectionType]) {
-          this.connectionListAllType[connectionType].push(eachConnection);
+      // Clear sensitive fields
+      ['password', 'pat', 'accessToken', 'privateKey', 'consumerKey', 'apiKey'].forEach(field => {
+        if (eachConnection[field]) {
+          eachConnection[field] = '';
         }
       });
-    }
 
+      // Add connection to the appropriate type list
+      if (this.connectionListAllType[connectionType]) {
+        this.connectionListAllType[connectionType].push(eachConnection);
+      }
+    });
   }
 
   saveConnection() {
@@ -1054,7 +1036,7 @@ export class ConnectionListComponent implements OnInit {
     /* Enable/Disable fields on the basis of flag selection at one time */
     if (this.enableDisableOnToggle.enableDisableEachTime[field]?.length) {
       this.enableDisableOnToggle.enableDisableEachTime[field].forEach(element => {
-       this.setEnabledOrDisabled(element, event);
+        this.setEnabledOrDisabled(element, event);
       });
     }
     /* Enable/Disable fields on the basis of flag selection at second time */
