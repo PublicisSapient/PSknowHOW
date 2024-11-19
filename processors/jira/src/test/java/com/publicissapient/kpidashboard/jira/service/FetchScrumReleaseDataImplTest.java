@@ -78,6 +78,8 @@ public class FetchScrumReleaseDataImplTest {
 	private FetchScrumReleaseDataImpl fetchScrumReleaseData;
 	@Mock
 	private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Before
 	public void setUp() throws Exception {
@@ -86,7 +88,7 @@ public class FetchScrumReleaseDataImplTest {
 		prepareHierarchyLevel();
         when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
                 .thenReturn(accountHierarchylist);
-        when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchylist);
+        when(accountHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(accountHierarchylist);
         when(hierarchyLevelService.getFullHierarchyLevels(anyBoolean())).thenReturn(hierarchyLevels);
         ProjectVersion version = new ProjectVersion();
         List<ProjectVersion> versionList = new ArrayList<>();
@@ -133,7 +135,7 @@ public class FetchScrumReleaseDataImplTest {
 		prepareAccountHierarchy2();
 		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
 				.thenReturn(accountHierarchylist);
-		when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchylist);
+		when(accountHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(accountHierarchylist);
 		try {
 			fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client);
 		}

@@ -391,7 +391,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			sprintWiseTotaldDefectList.forEach(bugs -> totalDefectList.putIfAbsent(bugs.getNumber(), bugs));
 
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, totalDefectList, sprintWiseClosedDefectList,
-					excelData, KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId());
+					excelData, KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId(), customApiConfig);
 
 		}
 	}

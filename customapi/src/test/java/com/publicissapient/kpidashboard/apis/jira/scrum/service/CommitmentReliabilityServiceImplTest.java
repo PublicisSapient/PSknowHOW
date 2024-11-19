@@ -258,7 +258,10 @@ public class CommitmentReliabilityServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(commitmentReliabilityImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		try {
 			KpiElement kpiElement = commitmentReliabilityImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

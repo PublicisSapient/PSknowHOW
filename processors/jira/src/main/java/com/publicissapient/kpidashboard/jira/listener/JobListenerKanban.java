@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -166,7 +165,8 @@ public class JobListenerKanban implements JobExecutionListener {
 			handler.sendEmailToProjectAdminAndSuperAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
 							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
-					ExceptionUtils.getStackTrace(stepFaliureException), projectId);
+					generateLogMessage(stepFaliureException), projectId,
+					JiraConstants.ERROR_NOTIFICATION_SUBJECT_KEY, JiraConstants.ERROR_MAIL_TEMPLATE_KEY);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}
