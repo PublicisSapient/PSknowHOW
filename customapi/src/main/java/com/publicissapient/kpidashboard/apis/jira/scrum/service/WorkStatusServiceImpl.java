@@ -200,7 +200,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 							.get(ACTUAL_COMPLETION_DATA);
 					setDataForPlanned(issue, jiraIssueData, sprintDetails, allCompletedIssuesList, issueWiseDelay, data,
 							category);
-					setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData);
+					setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, true);
 				}
 				if (allIssuesWithDevDueDate.contains(issue)) {
 					Map<String, Object> jiraIssueData = jiraIssueCalculationDev(fieldMapping, sprintDetails,
@@ -208,7 +208,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 					Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
 							.get(ACTUAL_COMPLETION_DATA);
 					setDataForDevCompletion(issue, sprintDetails, category, jiraIssueData, devCompletedIssues, data);
-					setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData);
+					setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
 				}
 				if (allIssuesWithoutDueDate.contains(issue)) {
 					category.add(UNPLANNED);
@@ -739,7 +739,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 	private void setKpiSpecificData(IssueKpiModalValue jiraIssueModalObject,
 			Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue, Map<String, Object> jiraIssueData,
-			Map<String, Object> actualCompletionData) {
+			Map<String, Object> actualCompletionData, boolean isPlanned) {
 		String markerValue = Constant.BLANK;
 		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateTimeConverter(
 				(String) jiraIssueData.get(DEV_COMPLETION_DATE), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
@@ -760,9 +760,16 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		} else {
 			jiraIssueModalObject.setDelayInDays(" - ");
 		}
-		if (DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-				.isAfter(LocalDate.now().minusDays(1))) {
-			markerValue = Constant.GREEN;
+		if (isPlanned) {
+			if (DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+					.isAfter(LocalDate.now().minusDays(1))) {
+				markerValue = Constant.GREEN;
+			}
+		} else {
+			if (DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+					.isAfter(LocalDate.now().minusDays(1))) {
+				markerValue = Constant.GREEN;
+			}
 		}
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
