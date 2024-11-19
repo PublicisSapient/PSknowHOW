@@ -148,11 +148,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       setTimeout(() => {
         this.processKpiConfigData();
         this.setUpTabs();
-        if(enabledKPIs.length) {
-          enabledKPIs.forEach(element => {
-            this.reloadKPI(element);
-          });
-        }
+        enabledKPIs.forEach(element => {
+          this.reloadKPI(element);
+        });
       }, 500);
     }));
 
