@@ -30,4 +30,5 @@ import java.util.List;
 public class CategoryData {
 	private String categoryKey;
 	private List<KpiDataCategory> categoryGroup;
+	private List<KpiDataCategory> categoryGroup2;
 }
