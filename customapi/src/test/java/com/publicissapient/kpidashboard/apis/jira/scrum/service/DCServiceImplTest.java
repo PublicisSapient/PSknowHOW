@@ -252,7 +252,7 @@ public class DCServiceImplTest {
 		Map<String, Object> defectDataListMap = dcServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Total Defects value :", ((List<JiraIssue>) defectDataListMap.get(TOTAL_DEFECT_DATA)).size(),
-				equalTo(19));
+				equalTo(20));
 		assertThat("Total Story :", ((List<JiraIssue>) defectDataListMap.get(SPRINT_WISE_STORY_DATA)).size(),
 				equalTo(5));
 	}
