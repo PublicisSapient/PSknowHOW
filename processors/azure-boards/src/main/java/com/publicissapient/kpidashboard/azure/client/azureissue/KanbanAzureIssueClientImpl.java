@@ -1161,10 +1161,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 
 	private void setProjectSpecificDetails(ProjectConfFieldMapping projectConfig, KanbanJiraIssue jiraIssue) {
 		String name = projectConfig.getProjectName();
-		String id = new StringBuffer(name).append(CommonConstant.UNDERSCORE)
-				.append(projectConfig.getBasicProjectConfigId().toString()).toString();
-
-		jiraIssue.setProjectID(id);
+		jiraIssue.setProjectID(projectConfig.getProjectBasicConfig().getProjectNodeId());
 		jiraIssue.setProjectName(name);
 		jiraIssue.setProjectKey(projectConfig.getProjectKey());
 		jiraIssue.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
