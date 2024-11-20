@@ -201,7 +201,7 @@ public class SprintVelocityServiceImplTest {
 		Map<String, Object> velocityListMap = sprintVelocityServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertThat("Velocity value :", ((List<JiraIssue>) (velocityListMap.get(SPRINTVELOCITYKEY))).size(),
-				equalTo(19));
+				equalTo(20));
 	}
 
 	@Test

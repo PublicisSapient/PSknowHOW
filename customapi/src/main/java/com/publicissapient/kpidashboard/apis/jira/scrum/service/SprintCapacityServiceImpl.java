@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -87,6 +88,8 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	private CacheService cacheService;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	/**
 	 * Gets Qualifier Type
@@ -379,6 +382,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 			String sprintName = node.getSprintFilter().getName();
 			String sprintId = node.getSprintFilter().getId();
 			String projectConfigId = node.getProjectFilter().getBasicProjectConfigId().toString();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(node.getProjectFilter().getBasicProjectConfigId());
 
 			// Filter loggedTimePerIssueList based on projectConfigId and sprintId
 			List<LoggedTimePerIssue> filteredLoggedTimeList = loggedTimePerIssueList.stream()
@@ -390,7 +394,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 			Map<String, Double> storyIdToLoggedTimeMap = filteredLoggedTimeList.stream().collect(
 					Collectors.toMap(LoggedTimePerIssue::getStoryId, LoggedTimePerIssue::getLoggedTimeInHours,(e1,e2)->e1));
 
-			KPIExcelUtility.populateSprintCapacity(sprintName, sprintCapacityList, excelData, storyIdToLoggedTimeMap);
+			KPIExcelUtility.populateSprintCapacity(sprintName, sprintCapacityList, excelData, storyIdToLoggedTimeMap, fieldMapping, customApiConfig);
 		}
 	}
 

@@ -27,7 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
@@ -75,7 +77,10 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private CacheService cacheService;
 	@Autowired
 	private FilterHelperService flterHelperService;
-
+	@Autowired
+	private ConfigHelperService configHelperService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -211,6 +216,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, sprintWiseDefectList);
 		});
 		List<KPIExcelData> excelData = new ArrayList<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -229,8 +236,9 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 							.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
 					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
-					KPIExcelUtility.populateDirExcelData(node.getSprintFilter().getName(), totalStoryIdList, defectList,
-							excelData, issueMapping);
+
+					KPIExcelUtility.populateDirExcelData(totalStoryIdList, defectList,
+							excelData, issueMapping, fieldMapping, customApiConfig);
 				}
 			} else {
 				defectInjectionRateForCurrentLeaf = 0.0d;

@@ -142,11 +142,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      this.globalConfig = globalConfig;
+      this.globalConfig = JSON.parse(JSON.stringify(globalConfig));
       this.setGlobalConfigData(globalConfig);
+      let enabledKPIs = globalConfig['enabledKPIs'] || [];
       setTimeout(() => {
         this.processKpiConfigData();
         this.setUpTabs();
+        enabledKPIs.forEach(element => {
+          this.reloadKPI(element);
+        });
       }, 500);
     }));
 
@@ -2482,6 +2486,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.kpiLoader.add(event?.kpiDetail?.kpiId);
     if (currentKPIGroup?.kpiList?.length > 0) {
       const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
+      let kpiIdsForCurrentBoard;
       if (this.service.getSelectedType().toLowerCase() === 'kanban') {
         switch (kpiSource) {
           case 'sonar':
@@ -2502,19 +2507,39 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       } else {
         switch (kpiSource) {
           case 'sonar':
-            this.postSonarKpi(currentKPIGroup, 'sonar');
+            /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
+            /** Todo : Need to rework when BE cache issue will be fixed */
+            // this.postSonarKpi(currentKPIGroup, 'sonar');
+            kpiIdsForCurrentBoard = this.configGlobalData?.filter(kpi => kpi.kpiDetail.groupId === event.kpiDetail.groupId).map(kpiDetails => kpiDetails.kpiId);
+            this.groupSonarKpi(kpiIdsForCurrentBoard);
             break;
           case 'jenkins':
-            this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+            /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
+            /** Todo : Need to rework when BE cache issue will be fixed */
+            // this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+            kpiIdsForCurrentBoard = this.configGlobalData?.filter(kpi => kpi.kpiDetail.groupId === event.kpiDetail.groupId).map(kpiDetails => kpiDetails.kpiId);
+            this.groupJenkinsKpi(kpiIdsForCurrentBoard);
             break;
           case 'zypher':
-            this.postZypherKpi(currentKPIGroup, 'zypher');
+            /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
+            /** Todo : Need to rework when BE cache issue will be fixed */
+            // this.postZypherKpi(currentKPIGroup, 'zypher');
+            kpiIdsForCurrentBoard = this.configGlobalData?.filter(kpi => kpi.kpiDetail.groupId === event.kpiDetail.groupId).map(kpiDetails => kpiDetails.kpiId);
+            this.groupZypherKpi(kpiIdsForCurrentBoard);
             break;
           case 'bitbucket':
-            this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
+            /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
+            /** Todo : Need to rework when BE cache issue will be fixed */
+            // this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
+            kpiIdsForCurrentBoard = this.configGlobalData?.filter(kpi => kpi.kpiDetail.groupId === event.kpiDetail.groupId).map(kpiDetails => kpiDetails.kpiId);
+            this.groupBitBucketKpi(kpiIdsForCurrentBoard);
             break;
           default:
-            this.postJiraKpi(currentKPIGroup, 'jira');
+            /** Temporary Fix,  sending all KPI in kpiList when refreshing kpi after field mapping change*/
+            /** Todo : Need to rework when BE cache issue will be fixed */
+            // this.postJiraKpi(currentKPIGroup, 'jira');
+            kpiIdsForCurrentBoard = this.configGlobalData?.filter(kpi => kpi.kpiDetail.groupId === event.kpiDetail.groupId).map(kpiDetails => kpiDetails.kpiId);
+            this.groupJiraKpi(kpiIdsForCurrentBoard);
         }
       }
     }
