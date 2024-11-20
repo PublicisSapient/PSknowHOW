@@ -240,16 +240,24 @@
                                                                         </ng-container>
                                                                     </ng-container>
                                                                 </ng-container>
+
                                                                 <ng-container *ngSwitchCase="'chartWithFilter'">
-                                                                    <ng-container
-                                                                        *ngIf="kpiChartData[kpi?.kpiId]?.[0]?.data?.length; else noDataForChartWithFilters">
-                                                                        <app-chart-with-filters
-                                                                            [data]="kpiChartData[kpi?.kpiId]?.[0]?.data"
-                                                                            [kpiId]="kpi?.kpiId"
-                                                                            [kpiName]="kpi?.kpiName"
-                                                                            [filters]="kpiChartData[kpi?.kpiId]?.[0]?.filters"
-                                                                            [modalHeads]="kpiChartData[kpi?.kpiId]?.[0]?.modalHeads">
-                                                                        </app-chart-with-filters>
+                                                                    <ng-container>
+                                                                        <ng-container
+                                                                            *ngIf="kpiChartData[kpi?.kpiId]?.[0]?.data?.length; else noDataForChartWithFilters">
+                                                                            <app-chart-with-filters
+                                                                                [data]="kpiChartData[kpi?.kpiId]?.[0]?.data"
+                                                                                [kpiId]="kpi?.kpiId"
+                                                                                [kpiName]="kpi?.kpiName"
+                                                                                [filters]="kpiChartData[kpi?.kpiId]?.[0]?.filters"
+                                                                                [modalHeads]="kpiChartData[kpi?.kpiId]?.[0]?.modalHeads">
+                                                                            </app-chart-with-filters>
+                                                                        </ng-container>
+                                                                    </ng-container>
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
+                                                                        <ng-container
+                                                                            *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                                                                        </ng-container>
                                                                     </ng-container>
                                                                 </ng-container>
 
