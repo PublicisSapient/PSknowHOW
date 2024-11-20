@@ -1952,7 +1952,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (processorLastRun == undefined || processorLastRun == null || processorLastRun.executionEndedAt == 0) {
           return true;
         } else if (!processorLastRun?.executionSuccess) {
-          this.kpiStatusCodeArr[kpi.kpiId] = '203';
+          if (this.kpiStatusCodeArr[kpi.kpiId] !== '201') {
+            this.kpiStatusCodeArr[kpi.kpiId] = '203';
+          }
           return true;
         } else if (processorLastRun?.executionSuccess) {
           return true;
