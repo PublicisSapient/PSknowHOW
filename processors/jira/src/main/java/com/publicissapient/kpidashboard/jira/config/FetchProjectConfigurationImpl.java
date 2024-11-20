@@ -47,7 +47,7 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 
 	@Override
 	public List<String> fetchBasicProjConfId(String toolName, boolean queryEnabled, boolean isKanban) {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findByKanban(isKanban);
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findByKanbanAndProjectOnHold(isKanban, false);
 		List<ObjectId> projectConfigsIds = allProjects.stream().map(projConf -> projConf.getId())
 				.collect(Collectors.toList());
 		List<ProjectToolConfig> projectToolConfigs = toolRepository

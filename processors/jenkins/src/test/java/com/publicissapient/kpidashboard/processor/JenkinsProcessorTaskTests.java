@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.processor;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -134,7 +135,7 @@ public class JenkinsProcessorTaskTests {
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
 		Mockito.when(jenkinsConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 	}
 

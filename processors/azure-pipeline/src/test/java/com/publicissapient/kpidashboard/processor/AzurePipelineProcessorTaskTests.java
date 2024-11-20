@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.processor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -191,7 +192,7 @@ public class AzurePipelineProcessorTaskTests {
 	@Test
 	public void collectNoBuildServersNothingAdded() {
 		when(azurePipelineFactory.getAzurePipelineClient("Build")).thenReturn(buildClient);
-		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
+		when(projectBasicConfigRepository.findActiveProjects(anyBoolean())).thenReturn(listProjectBasicConfig);
 		when(buildRepository.findByProjectToolConfigIdAndBuildJob(any(), any())).thenReturn(new ArrayList<Build>());
 		when(buildClient.getInstanceJobs(any(), any(Long.class), any()))
 				.thenReturn(new HashMap<ObjectId, Set<Build>>());
@@ -244,7 +245,7 @@ public class AzurePipelineProcessorTaskTests {
 		config.setId(new ObjectId("63da71facaac4d289c38744d"));
 		basicConfigs.add(config);
 		when(azurePipelineFactory.getAzurePipelineClient("Build")).thenReturn(azurePipelineClient);
-		when(projectConfigRepository.findAll()).thenReturn(basicConfigs);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(basicConfigs);
 		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong(), any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
@@ -270,7 +271,7 @@ public class AzurePipelineProcessorTaskTests {
 		config.setId(new ObjectId("63da71facaac4d289c38744d"));
 		basicConfigs.add(config);
 		when(azurePipelineFactory.getAzurePipelineClient("Build")).thenReturn(azurePipelineClient);
-		when(projectConfigRepository.findAll()).thenReturn(basicConfigs);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(basicConfigs);
 		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong(), any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(

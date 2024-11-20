@@ -189,7 +189,7 @@ class ArgoCDProcessorJobExecutorTest {
 
 	@Test
 	void collectNoBuildServersNothingAdded() {
-		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
+		when(projectBasicConfigRepository.findActiveProjects(anyBoolean())).thenReturn(listProjectBasicConfig);
 		ArgoCDProcessor processor = new ArgoCDProcessor();
 		assertTrue(jobExecutor.execute(processor));
 	}
@@ -204,7 +204,7 @@ class ArgoCDProcessorJobExecutorTest {
 	void collectTwoJobsWithExceptionFromArgoCD() {
 		ArgoCDProcessor processor = new ArgoCDProcessor();
 		processor.setId(new ObjectId("6597633d916863f2b4779145"));
-		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
+		when(projectBasicConfigRepository.findActiveProjects(anyBoolean())).thenReturn(listProjectBasicConfig);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
 				.thenReturn(listProcessorToolConnection);
 		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
@@ -218,7 +218,7 @@ class ArgoCDProcessorJobExecutorTest {
 	void collectEnableJob() {
 		ArgoCDProcessor processor = new ArgoCDProcessor();
 		processor.setId(new ObjectId("6597633d916863f2b4779145"));
-		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
+		when(projectBasicConfigRepository.findActiveProjects(anyBoolean())).thenReturn(listProjectBasicConfig);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.anyString(), Mockito.any()))
 				.thenReturn(listProcessorToolConnection);
 		TokenDTO accessToken = new TokenDTO();
