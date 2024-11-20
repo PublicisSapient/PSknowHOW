@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/customapi/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/customapi/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/kafka-consumers/notification-consumer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/kafka-consumers/notification-consumer/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/argocd/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/azure-boards/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/azure-boards/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/azure-pipeline/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/azure-pipeline/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/azure-repo/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/azure-repo/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/bamboo/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/bamboo/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/bitbucket/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/bitbucket/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/github-action/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/github-action/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/github/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/github/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/gitlab/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/gitlab/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/jenkins/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/jenkins/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/jira-xray-zephyr-squad/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/jira-xray-zephyr-squad/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/jira-zephyr-scale/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/jira-zephyr-scale/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/jira/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/jira/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/sonar/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/sonar/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/teamcity/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/processors/teamcity/src/main/resources" charset="UTF-8" />
+  </component>
+</project>
