@@ -2109,7 +2109,7 @@ describe('FilterNewComponent', () => {
                 } as any;
                 component.selectedType = 'scrum';
                 component.selectedTab = 'iteration';
-                component.masterData = { kpiList: [{ kpiId: 1, shown: true }] } as any;
+                component.masterDataCopy = { kpiList: [{ kpiId: 1, shown: true }] } as any;
                 spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(of({
                     success: true
                 }));
@@ -2142,7 +2142,7 @@ describe('FilterNewComponent', () => {
                 } as any;
                 component.selectedType = 'scrum';
                 component.selectedTab = 'iteration';
-                component.masterData = { kpiList: [{ kpiId: 1, shown: true }] } as any;
+                component.masterDataCopy = { kpiList: [{ kpiId: 1, shown: true }] } as any;
                 spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(of(
                     new Error('Network Error'),
                 ));
@@ -2165,7 +2165,7 @@ describe('FilterNewComponent', () => {
             it('should enable all KPIs when showHideSelectAll is true', () => {
                 // Arrange
                 component.showHideSelectAll = true;
-                component.masterData['kpiList'] = [
+                component.masterDataCopy['kpiList'] = [
                     { isEnabled: false },
                     { isEnabled: false },
                 ] as any;
@@ -2175,14 +2175,14 @@ describe('FilterNewComponent', () => {
 
                 // Assert
                 expect(
-                    component.masterData['kpiList'].every((kpi) => kpi.isEnabled),
+                    component.masterDataCopy['kpiList'].every((kpi) => kpi.isEnabled),
                 ).toBe(true);
             });
 
             it('should disable all KPIs when showHideSelectAll is false', () => {
                 // Arrange
                 component.showHideSelectAll = false;
-                component.masterData['kpiList'] = [
+                component.masterDataCopy['kpiList'] = [
                     { isEnabled: true },
                     { isEnabled: true },
                 ] as any;
@@ -2192,7 +2192,7 @@ describe('FilterNewComponent', () => {
 
                 // Assert
                 expect(
-                    component.masterData['kpiList'].every((kpi) => !kpi.isEnabled),
+                    component.masterDataCopy['kpiList'].every((kpi) => !kpi.isEnabled),
                 ).toBe(true);
             });
         });
@@ -2201,13 +2201,13 @@ describe('FilterNewComponent', () => {
             it('should handle empty kpiList gracefully', () => {
                 // Arrange
                 component.showHideSelectAll = true;
-                component.masterData['kpiList'] = [] as any;
+                component.masterDataCopy['kpiList'] = [] as any;
 
                 // Act
                 component.showHideSelectAllApply();
 
                 // Assert
-                expect(component.masterData['kpiList'].length).toBe(0);
+                expect(component.masterDataCopy['kpiList'].length).toBe(0);
             });
         });
     });

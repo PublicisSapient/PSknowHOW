@@ -83,6 +83,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	public static final String UNCHECKED = "unchecked";
 	private static final String SEPARATOR_ASTERISK = "*************************************";
 	private static final String TOTAL_DEFECT_DATA = "totalBugKey";
+	public static final String STORY_LIST = "storyList";
 	private static final String SPRINT_WISE_STORY_DATA = "storyData";
 	private static final String DEV = "DeveloperKpi";
 
@@ -230,6 +231,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		setDbQueryLogger(storyIdList, defectListWoDrop);
 		resultListMap.put(SPRINT_WISE_STORY_DATA, sprintWiseStoryList);
 		resultListMap.put(TOTAL_DEFECT_DATA, defectListWoDrop);
+		resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 		return resultListMap;
 
 	}
@@ -282,6 +284,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
 
+		List<JiraIssue> storyList = (List<JiraIssue>) storyDefectDataListMap.get(STORY_LIST);
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap
 				.get(SPRINT_WISE_STORY_DATA);
 
@@ -346,7 +349,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 				});
 
 				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
-						sprintWiseDefectDataListMap.get(currentNodeIdentifier), customApiConfig);
+						sprintWiseDefectDataListMap.get(currentNodeIdentifier), customApiConfig, storyList);
 			}
 			log.debug("[DC-SPRINT-WISE][{}]. DC for sprint {}  is {} and trend value is {}", requestTrackerId,
 					node.getSprintFilter().getName(), sprintWiseDCPriorityMap.get(currentNodeIdentifier),
@@ -390,11 +393,11 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,
-			List<JiraIssue> sprintWiseDefectDataList, CustomApiConfig customApiConfig) {
+			List<JiraIssue> sprintWiseDefectDataList, CustomApiConfig customApiConfig, List<JiraIssue> storyList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, sprintWiseDefectDataList, excelData,
-					 customApiConfig);
+					customApiConfig, storyList);
 
 		}
 	}

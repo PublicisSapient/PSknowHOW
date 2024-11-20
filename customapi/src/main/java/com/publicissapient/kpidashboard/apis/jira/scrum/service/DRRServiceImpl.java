@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Feature;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -42,6 +41,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -93,6 +93,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private static final String DEV = "DeveloperKpi";
 	public static final String SPRINT_WISE_SPRINT_DETAILS = "sprintWiseSprintDetails";
 	public static final String TOTAL_DEFECT_LIST = "totalDefectList";
+	public static final String STORY_LIST = "storyList";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -168,7 +169,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_REJECTION_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_REJECTION_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.DEFECT_REJECTION_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		log.debug("[DRR-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
@@ -240,7 +242,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			List<JiraIssue> totalSubTaskDefects = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalSprintReportStories, uniqueProjectMap).stream()
-					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber()))
+					.collect(Collectors.toList());
 
 			List<JiraIssueCustomHistory> subTaskBugsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
@@ -251,7 +254,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			resultListMap.put(TOTAL_SPRINT_SUBTASK_DEFECTS, totalSubTaskDefects);
 			resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
 			resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, sprintDetails);
-
+			resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>(totalIssue)));
 		}
 		// Find defect with rejected status. Avoided making dB query
 		if (!defectResolutionRejectionMap.isEmpty()) {
@@ -300,6 +303,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<String, Object> resultListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 		List<JiraIssue> totalDefectList = (List<JiraIssue>) resultListMap.get(TOTAL_DEFECT_LIST);
 		List<JiraIssue> totalSubtaskList = (List<JiraIssue>) resultListMap.get(TOTAL_SPRINT_SUBTASK_DEFECTS);
+		List<JiraIssue> storyList = (List<JiraIssue>) resultListMap.get(STORY_LIST);
 		List<JiraIssueCustomHistory> totalSubtaskHistory = (List<JiraIssueCustomHistory>) resultListMap
 				.get(SUB_TASK_BUGS_HISTORY);
 		List<JiraIssue> canceledDefectList = (List<JiraIssue>) resultListMap.get(REJECTED_DEFECT_DATA);
@@ -348,10 +352,11 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			List<JiraIssue> sprintCompletedDefects = totalDefectList.stream()
 					.filter(element -> completedSprintIssues.contains(element.getNumber()))
-					.filter(element -> dodAndDefectRejStatus.contains(element.getStatus().toLowerCase())).collect(Collectors.toList());
+					.filter(element -> dodAndDefectRejStatus.contains(element.getStatus().toLowerCase()))
+					.collect(Collectors.toList());
 
-			sprintCompletedDefects.addAll(
-					KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd, dodAndDefectRejStatus, new HashMap<>()));
+			sprintCompletedDefects.addAll(KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask,
+					totalSubtaskHistory, sd, dodAndDefectRejStatus, new HashMap<>()));
 
 			List<JiraIssue> sprintWiseRejectedDefectList = new ArrayList<>();
 			List<JiraIssue> sprintWiseCompletedDefectList = new ArrayList<>();
@@ -397,7 +402,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				List<JiraIssue> sprintWiseCompAndRejectedList = new ArrayList<>(sprintWiseCompletedDefectList);
 				sprintWiseCompAndRejectedList.addAll(sprintWiseRejectedDefectList);
 				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
-						sprintWiseRejectedDefectList, sprintWiseCompAndRejectedList);
+						sprintWiseRejectedDefectList, sprintWiseCompAndRejectedList, storyList);
 
 			} else {
 				drrForCurrentLeaf = 0.0d;
@@ -420,7 +425,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.DEFECT_REJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	/**
@@ -434,13 +440,14 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,
-			List<JiraIssue> sprintWiseRejectedDefectList, List<JiraIssue> sprintWiseCompAndRejectedList) {
+			List<JiraIssue> sprintWiseRejectedDefectList, List<JiraIssue> sprintWiseCompAndRejectedList,
+			List<JiraIssue> storyList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			Map<String, JiraIssue> totalDefectList = new HashMap<>();
 			sprintWiseCompAndRejectedList.stream().forEach(bugs -> totalDefectList.putIfAbsent(bugs.getNumber(), bugs));
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, totalDefectList, sprintWiseRejectedDefectList,
-					excelData, KPICode.DEFECT_REJECTION_RATE.getKpiId(), customApiConfig);
+					excelData, KPICode.DEFECT_REJECTION_RATE.getKpiId(), customApiConfig, storyList);
 		}
 	}
 
@@ -518,8 +525,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI37(),KPICode.DEFECT_REJECTION_RATE.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI37(), KPICode.DEFECT_REJECTION_RATE.getKpiId());
 	}
 
 }

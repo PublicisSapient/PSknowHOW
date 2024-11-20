@@ -883,6 +883,7 @@ describe('KpiCardV2Component', () => {
   });
 
   it('should set the warning message when val is true', () => {
+    component.kpiDataStatusCode = '201';
     component.showWarning(true);
 
     expect(component.warning).toBe('Configure the missing mandatory field mappings in KPI Settings for accurate data display.');
