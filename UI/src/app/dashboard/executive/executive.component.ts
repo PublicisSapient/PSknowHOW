@@ -623,10 +623,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     for (const kpi in localVariable) {
                         this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
                     }
-                    // if (localVariable && localVariable['kpi3'] && localVariable['kpi3'].maturityValue) {
-                    //     this.colorAccToMaturity(localVariable['kpi3'].maturityValue);
-                    // }
-
 
                     this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
                     this.createAllKpiArray(localVariable);
@@ -648,7 +644,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.httpService.postKpi(postData, source)
             .subscribe(getData => {
                 this.loaderBitBucket = false;
-                // getData = require('../../../test/resource/fakeKPI11.json');
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -670,7 +665,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.httpService.postKpiKanban(postData, source)
             .subscribe(getData => {
                 this.loaderBitBucket = false;
-                // getData = require('../../../test/resource/fakeKPI65.json');
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);

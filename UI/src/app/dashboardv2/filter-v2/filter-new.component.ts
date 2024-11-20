@@ -1227,10 +1227,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
-        enabledKPIs = this.findEnabledKPIs(this.dashConfigData[this.selectedType][i]['kpis'], this.masterDataCopy['kpiList']);
         if (this.dashConfigData[this.selectedType][i]) {
+          enabledKPIs = this.findEnabledKPIs(this.dashConfigData[this.selectedType][i]['kpis'], this.masterDataCopy['kpiList']);
           this.dashConfigData[this.selectedType][i]['kpis'] = JSON.parse(JSON.stringify(this.masterDataCopy['kpiList']));
         } else {
+          enabledKPIs = this.findEnabledKPIs(this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'], this.masterDataCopy['kpiList']);
           this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] = JSON.parse(JSON.stringify(this.masterDataCopy['kpiList']));
           break;
         }
