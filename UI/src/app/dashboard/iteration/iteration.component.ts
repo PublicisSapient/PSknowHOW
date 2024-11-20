@@ -111,7 +111,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   kpiThresholdObj = {};
   dailyStandupData: object = {};
   selectedProjectId: string;
-  data = [iterationCommitment];//[wastage,iterationCommitment,Workremaining,EstimateActual];
+  data = [wastage,iterationCommitment,Workremaining,EstimateActual];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
