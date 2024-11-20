@@ -25,6 +25,7 @@ import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.BEARER;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -75,13 +76,6 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<ApplicationsList> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
 					new HttpEntity<>(requestHeaders), ApplicationsList.class);
-			if (response == null || response.getBody() == null) {
-				log.error("ArgoCDClient :: getApplications response is null");
-				return null;
-			}
-			String sanitizedResponseBody = Objects.requireNonNull(response.getBody()).toString().replace("\n", "")
-					.replace("\r", "");
-			log.debug("ArgoCDClient :: getApplications response :: {}", sanitizedResponseBody);
 			return response.getBody();
 		} catch (RestClientException ex) {
 			log.error("ArgoCDClient :: getApplications Exception occurred :: {}", ex.getMessage());
@@ -108,16 +102,9 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<Application> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
 					new HttpEntity<>(requestHeaders), Application.class);
-			if (response == null || response.getBody() == null) {
-				log.error("ArgoCDClient :: getApplicationByName response is null");
-				return null;
-			}
-			String sanitizedResponseBody = Objects.requireNonNull(response.getBody()).toString().replace("\n", "")
-					.replace("\r", "");
-			log.debug("ArgoCDClient :: getApplicationByName response :: {}", sanitizedResponseBody);
 			return response.getBody();
 		} catch (RestClientException ex) {
-			log.error("ArgoCDClient :: getApplicationByName Exception occured :: {}", ex.getMessage());
+			log.error("ArgoCDClient :: getApplicationByName Exception occurred :: {}", ex.getMessage());
 			throw ex;
 		}
 	}
@@ -146,7 +133,7 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
 					new HttpEntity<>(requestHeaders), String.class);
-			if (response != null && response.getBody() != null) {
+			if (response.getBody() != null) {
 				JsonNode root1 = mapper.readTree(response.getBody());
 				StreamSupport.stream(root1.path("items").spliterator(), false)
 						.forEach(item -> serverToNameMap.put(item.path("server").asText(), item.path("name").asText()));
@@ -155,8 +142,9 @@ public class ArgoCDClient {
 		} catch (RestClientException ex) {
 			log.error("ArgoCDClient :: getClusterName Exception occurred :: {}", ex.getMessage());
 			throw ex;
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
+		} catch (JsonProcessingException ex) {
+			log.error("ArgoCDClient :: getClusterName JsonProcessingException occurred :: {}", ex.getMessage());
+			return Collections.emptyMap();
 		}
 	}
 }
