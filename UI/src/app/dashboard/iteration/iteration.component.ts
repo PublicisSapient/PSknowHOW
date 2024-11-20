@@ -34,6 +34,10 @@ import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 import { SortEvent } from 'primeng/api';
+import iterationCommitment from '../../../assets/data/Iteration-committment-v2.json';
+import wastage from '../../../assets/data/Wastage-V2.json';
+import EstimateActual from '../../../assets/data/Estimate-Actual-V2.json';
+import Workremaining from '../../../assets/data/Work-remaining-V2.json';
 
 declare let require: any;
 
@@ -107,9 +111,11 @@ export class IterationComponent implements OnInit, OnDestroy {
   kpiThresholdObj = {};
   dailyStandupData: object = {};
   selectedProjectId: string;
+  data = [iterationCommitment];//[wastage,iterationCommitment,Workremaining,EstimateActual];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService,
     private featureFlagService: FeatureFlagsService) {
+     // console.log(this.data)
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length) {
         this.allKpiArray = [];
