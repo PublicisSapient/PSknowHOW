@@ -29,10 +29,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -88,6 +90,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private KpiHelperService kpiHelperService;
 
 	/**
 	 * Gets Qualifier Type
@@ -171,67 +175,42 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
-		List<String> sprintList = new ArrayList<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			String sprint = leaf.getSprintFilter().getId();
+			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+			projectWiseSprints.get(basicProjectConfigId).add(sprint);
+		});
+
 		// for storing projectWise Total Count type Categories
 		Map<String, List<String>> projectWiseJiraIdentification = new HashMap<>();
 		// for storing projectWise Story Count type Categories
 		Map<String, List<String>> projectWiseStoryCategories = new HashMap<>();
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		List<SprintDetails> sprintDetails = new ArrayList<>();
+		List<JiraIssue> issueList = new ArrayList<>();
 
-			sprintList.add(leaf.getSprintFilter().getId());
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
+			Map<String, Object> result = kpiHelperService.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId,
+					sprintList, KPICode.ISSUE_COUNT.getKpiId());
+			List<JiraIssue> allJiraIssue = (List<JiraIssue>) result.get(STORY_LIST);
+			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.get(SPRINTSDETAILS);
+			Map<String, List<String>> storyCategories = (Map<String, List<String>>) result
+					.get(PROJECT_WISE_STORY_CATEGORIES);
+			Map<String, List<String>> totalCategories = (Map<String, List<String>>) result
+					.get(PROJECT_WISE_TOTAL_CATEGORIES);
 
-			List<String> jiraStoryIdentification = new ArrayList<>();
-			List<String> jiraStoryCategory = new ArrayList<>();
-			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKpi40()).isPresent()) {
-				jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationKpi40().stream()
-						.map(String::toLowerCase).collect(Collectors.toList());
-			}
-			if (Optional.ofNullable(fieldMapping.getJiraStoryCategoryKpi40()).isPresent()) {
-				jiraStoryCategory = fieldMapping.getJiraStoryCategoryKpi40().stream()
-						.map(String::toLowerCase).collect(Collectors.toList());
-			}
-			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
-			projectWiseStoryCategories.put(basicProjectConfigId.toString(), jiraStoryCategory);
-			List<String> categories = new ArrayList<>(jiraStoryIdentification);
-			categories.addAll(jiraStoryCategory);
-			categories = categories.stream().map(String::toLowerCase) // Convert to lowercase for case-insensitive
-																	  // comparison
-					.distinct().collect(Collectors.toList());
-
-			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
-					fieldMapping.getJiradefecttype(), categories, JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			issueList.addAll(allJiraIssue);
+			sprintDetails.addAll(sprintDetailsList);
+			projectWiseStoryCategories.put(basicProjectConfigId.toString(),
+					storyCategories.get(basicProjectConfigId.toString()));
+			projectWiseJiraIdentification.put(basicProjectConfigId.toString(),
+					totalCategories.get(basicProjectConfigId.toString()));
 		});
 
-		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(dbSprintDetail -> {
-			if (CollectionUtils.isNotEmpty(dbSprintDetail.getTotalIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
-						CommonConstant.TOTAL_ISSUES));
-			}
-
-		});
-
-		/** additional filter **/
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
-
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
-		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			resultListMap.put(STORY_LIST,
-					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, uniqueProjectMap));
-			resultListMap.put(SPRINTSDETAILS, sprintDetails);
-		}
+		resultListMap.put(STORY_LIST, issueList);
+		resultListMap.put(SPRINTSDETAILS, sprintDetails);
 		resultListMap.put(PROJECT_WISE_STORY_CATEGORIES, projectWiseStoryCategories);
 		resultListMap.put(PROJECT_WISE_TOTAL_CATEGORIES, projectWiseJiraIdentification);
 		return resultListMap;
@@ -340,7 +319,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 				storyCount = ((Integer) totalPresentJiraIssue.size()).doubleValue();
 				totalPresentStoryIssue = sprintWiseStoryCatIssues.get(currentNodeIdentifier);
 				totalPresentTotalIssue = sprintWiseTotalCatIssues.get(currentNodeIdentifier);
-				populateExcelData(requestTrackerId, allJiraIssue, excelData, node, totalPresentJiraIssue,fieldMapping);
+				populateExcelData(requestTrackerId, allJiraIssue, excelData, node, totalPresentJiraIssue, fieldMapping);
 
 			}
 
@@ -367,7 +346,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		}
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.ISSUE_COUNT.getColumns(sprintLeafNodeList,cacheService, flterHelperService));
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.ISSUE_COUNT.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 
 	}
 
@@ -400,11 +380,11 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 * @param fieldMapping
 	 */
 	private void populateExcelData(String requestTrackerId, List<JiraIssue> allJiraIssuesList,
-								   List<KPIExcelData> excelData, Node node, List<String> totalPresentJiraIssue, FieldMapping fieldMapping) {
+			List<KPIExcelData> excelData, Node node, List<String> totalPresentJiraIssue, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String sprintName = node.getSprintFilter().getName();
-			KPIExcelUtility.populateSpeedKPIExcelData(sprintName, excelData, allJiraIssuesList,
-					totalPresentJiraIssue, fieldMapping, customApiConfig);
+			KPIExcelUtility.populateSpeedKPIExcelData(sprintName, excelData, allJiraIssuesList, totalPresentJiraIssue,
+					fieldMapping, customApiConfig);
 
 		}
 	}

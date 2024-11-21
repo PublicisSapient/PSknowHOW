@@ -47,6 +47,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -2135,4 +2136,66 @@ public class KpiHelperService { // NOPMD
 
 	}
 
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "{#basicProjectConfigId.toString(), #kpiId}")
+	public Map<String, Object> fetchIssueCountDataFromDB(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+														  List<String> sprintList, String kpiId) {
+		log.info("Fetching Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, Object> resultListMap = new HashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		// for storing projectWise Total Count type Categories
+		Map<String, List<String>> projectWiseJiraIdentification = new HashMap<>();
+		// for storing projectWise Story Count type Categories
+		Map<String, List<String>> projectWiseStoryCategories = new HashMap<>();
+
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		List<String> basicProjectConfigIds = List.of(basicProjectConfigId.toString());
+
+		List<String> jiraStoryIdentification = new ArrayList<>();
+		List<String> jiraStoryCategory = new ArrayList<>();
+		if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKpi40()).isPresent()) {
+			jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationKpi40().stream().map(String::toLowerCase)
+					.collect(Collectors.toList());
+		}
+		if (Optional.ofNullable(fieldMapping.getJiraStoryCategoryKpi40()).isPresent()) {
+			jiraStoryCategory = fieldMapping.getJiraStoryCategoryKpi40().stream().map(String::toLowerCase)
+					.collect(Collectors.toList());
+		}
+		projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
+		projectWiseStoryCategories.put(basicProjectConfigId.toString(), jiraStoryCategory);
+		List<String> categories = new ArrayList<>(jiraStoryIdentification);
+		categories.addAll(jiraStoryCategory);
+		categories = categories.stream().map(String::toLowerCase) // Convert to lowercase for case-insensitive
+				// comparison
+				.distinct().collect(Collectors.toList());
+
+		KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
+				categories, JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+
+		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		Set<String> totalIssue = new HashSet<>();
+		sprintDetails.stream().forEach(dbSprintDetail -> {
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getTotalIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
+						CommonConstant.TOTAL_ISSUES));
+			}
+
+		});
+
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
+
+		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(), basicProjectConfigIds);
+
+		if (CollectionUtils.isNotEmpty(totalIssue)) {
+			resultListMap.put(STORY_LIST,
+					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, uniqueProjectMap));
+			resultListMap.put(SPRINTSDETAILS, sprintDetails);
+		}
+		resultListMap.put("projectWiseStoryCategories", projectWiseStoryCategories);
+		resultListMap.put("projectWiseTotalCategories", projectWiseJiraIdentification);
+		return resultListMap;
+	}
 }
