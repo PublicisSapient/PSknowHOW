@@ -149,6 +149,8 @@ import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-h
 import { KpiCardV3Component } from './component/kpi-card-v3/kpi-card-v3.component';
 import { StackedBarChartComponent } from './component/stacked-bar-chart/stacked-bar-chart.component';
 import { PsKpiCardHeaderComponent } from './component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
+import { PsKpiCardFilterComponent } from './component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
+import { PsKpiCardChartRendererComponent } from './component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
 
 
 /******************************************************/
@@ -240,7 +242,9 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         StickyHeaderV2Component,
         KpiCardV3Component,
         StackedBarChartComponent,
-        PsKpiCardHeaderComponent
+        PsKpiCardHeaderComponent,
+        PsKpiCardFilterComponent,
+        PsKpiCardChartRendererComponent
     ],
     imports: [
         DropdownModule,

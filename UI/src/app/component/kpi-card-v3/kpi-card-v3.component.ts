@@ -8,8 +8,8 @@ import * as d3 from 'd3';
 })
 export class KpiCardV3Component implements OnInit {
   @Input() cardData: any;
-  selectedKey: '';
-  dropdownSelected = {};
+  
+
   currentChartData;
   KpiCategory;
 
@@ -18,41 +18,33 @@ export class KpiCardV3Component implements OnInit {
   ngOnInit(): void {
     console.log(this.cardData)
     this.KpiCategory = this.cardData.categoryData.categoryGroup; // filterGroup
-    this.currentChartData =this.generateChartData(this.KpiCategory,this.cardData.issueData);
+    this.currentChartData =this.generateDataForStackedBarChart(this.KpiCategory,this.cardData.issueData);
    
   }
 
-  getOptions(filterKey: string) {
-    const uniqueValues = [
-      ...new Set(this.cardData.issueData.map((issue) => issue[filterKey])),
-    ];
-    return uniqueValues.map((value) => ({ label: value, value: value }));
-  }
-
-  handleChange() {
-    const filterIssues = this.applyDynamicfilter(
+  onFilterChange(event){
+      const filterIssues = this.applyDynamicfilter(
       this.cardData.issueData,
-      this.dropdownSelected,
+      event,
     );
-    this.currentChartData =this.generateChartData(this.KpiCategory,filterIssues);
+    this.currentChartData =this.generateDataForStackedBarChart(this.KpiCategory,filterIssues);
   }
 
   applyDynamicfilter(data: [], filter: { [key: string]: any }) {
-    console.log(this.dropdownSelected);
     return data.filter((item) => {
       return Object.entries(filter).every(([key, value]) => {
         return item[key] === value;
       });
     });
   }
-
-  generateChartData(categoryData, kpiIssueData){
+  
+  generateDataForStackedBarChart(categoryData, kpiIssueData){
     console.log(kpiIssueData);
    
     // Extract category groups
     const categoryGroups = categoryData;
-    const colorPalette = ['#167a26','#4ebb1a','#f53535']; // Use D3's built-in color scheme
-    const colors = categoryGroups.map((_, index) => colorPalette[index % colorPalette.length]);
+    // const colorPalette = ['#167a26','#4ebb1a','#f53535']; // Use D3's built-in color scheme
+    // const colors = categoryGroups.map((_, index) => colorPalette[index % colorPalette.length]);
   
   
     // Map category groups to their respective issue counts
@@ -65,7 +57,7 @@ export class KpiCardV3Component implements OnInit {
       return {
         category: category.categoryName,
         value: filteredIssues.length * (category.categoryValue === '+'?1:-1),
-        color: colors[index] // Assign color from the dynamic palette
+        // color: colors[index] // Assign color from the dynamic palette
       };
     });
 

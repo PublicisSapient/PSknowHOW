@@ -2,22 +2,8 @@
  <app-ps-kpi-card-header [cardHeaderData]="cardData"></app-ps-kpi-card-header>
  
   <div class="kpi-card-body">
-    <div class="kpi-card-filter p-px-5 p-py-2">
-        <div id="">
-             <p-selectButton [options]="cardData.dataGroup.dataGroup1" [(ngModel)]="selectedKey"
-            optionLabel="name" optionValue="key"></p-selectButton> 
-        </div>
-        <div id="">
-            <ng-container class="p-p-1" *ngFor="let filter of cardData.filterGroup.filterGroup1">
-            <p-dropdown [options]="getOptions(filter?.filterKey)" [(ngModel)]="dropdownSelected[filter?.filterKey]" 
-            optionLabel="label" optionValue="value" (onChange)="handleChange()"
-             [filter]="true" [placeholder]="filter?.filterName"></p-dropdown>
-            </ng-container>
-        </div>
-    </div>
-    <div class="p-px-5 p-py-2">
-        <app-stacked-bar-chart [data]="currentChartData" [width]="800" [height]="150"></app-stacked-bar-chart>
-    </div>
+    <app-ps-kpi-card-filter [kpiCardFilter]="cardData" (filterChange)="onFilterChange($event)"></app-ps-kpi-card-filter>
+    <app-ps-kpi-card-chart-renderer [chartData]="currentChartData"></app-ps-kpi-card-chart-renderer>
   </div>
 
   <div class="kpi-card-footer p-pr-5 p-pl-5">
