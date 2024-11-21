@@ -64,7 +64,11 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	@Autowired
 	private JiraCommonService jiraCommonService;
 	@Autowired
+<<<<<<< HEAD
 	private ProjectHierarchyService projectHierarchyService;
+=======
+	private ProjectHierarchySyncService projectHierarchySyncService;
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
@@ -97,6 +101,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		}
 	}
 
+<<<<<<< HEAD
 	private void saveScrumAccountHierarchy(ProjectBasicConfig projectConfig, ProjectRelease projectRelease) {
 
 		Map<String, ProjectHierarchy> existingHierarchy = projectHierarchyService
@@ -106,6 +111,22 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		Set<ProjectHierarchy> setToSave = new HashSet<>();
 		List<ProjectHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease, projectConfig);
 		setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
+=======
+	private void saveScrumAccountHierarchy(AccountHierarchy projectData, ProjectConfFieldMapping projectConfig,
+			ProjectRelease projectRelease) {
+		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository
+				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = accountHierarchyList.stream().collect(Collectors
+				.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p, (existingValue, newValue) -> existingValue));
+		Set<AccountHierarchy> setToSave = new HashSet<>();
+		if (projectData != null) {
+			List<AccountHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease,
+					projectConfig.getProjectBasicConfig(), projectData);
+			setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
+			projectHierarchySyncService.syncScrumReleaseHierarchy(projectConfig.getBasicProjectConfigId(),
+					hierarchyForRelease);
+		}
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			log.info("Updated Hierarchies {}", setToSave.size());
 			projectHierarchyService.saveAll(setToSave);

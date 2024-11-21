@@ -17,6 +17,8 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 export class FilterNewComponent implements OnInit, OnDestroy {
   filterDataArr = {};
   masterData = {};
+  // used for show/Hide only
+  masterDataCopy = {};
   filterApplyData = {};
   selectedTab: string = '';
   previousSelectedTab: string = '';
@@ -58,7 +60,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   dashConfigData: any;
   filterApiData: any = []
   @ViewChild('showHideDdn') showHideDdn: MultiSelect;
-  enableShowHideApply: boolean = true;
+  disableShowHideApply: boolean = true;
   showHideSelectAll: boolean = false;
   showChart: string = 'chart';
   iterationConfigData = {};
@@ -68,6 +70,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   noSprint: boolean = false;
   projectList = null;
   blockUI: boolean = false;
+  isAzureProect: boolean = false;
 
   kanbanProjectsAvailable: boolean = true;
   scrumProjectsAvailable: boolean = true;
@@ -269,6 +272,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList.filter(kpi => kpi.shown);
+
+      this.masterDataCopy['kpiList'] = JSON.parse(JSON.stringify(this.masterData['kpiList']));
+
       this.parentFilterConfig = { ...this.selectedBoard.filters.parentFilter };
       if (!this.parentFilterConfig || !Object.keys(this.parentFilterConfig).length) {
         this.selectedLevel = null;
@@ -329,8 +335,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.service.setNoProjects(true);
           }
         }
-      } else {
-        // error
       }
     });
   }
@@ -427,6 +431,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.dashConfigData = data;
             this.service.setDashConfigData(data, false);
             this.masterData['kpiList'] = [];
+            this.masterDataCopy['kpiList'] = [];
             this.parentFilterConfig = {};
             this.primaryFilterConfig = {};
             this.additionalFilterConfig = [];
@@ -602,9 +607,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (event && !event['additional_level'] && event?.length && Object.keys(event[0])?.length &&
       ((!this.arrayDeepCompare(event, this.previousFilterEvent) || !this.helperService.deepEqual(event, this.previousFilterEvent))
         || this.previousSelectedTab !== this.selectedTab || this.previousSelectedType !== this.selectedType)) {
+
       let previousEventParentNode = ['sprint', 'release'].includes(this.previousFilterEvent[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === this.previousFilterEvent[0].parentId) : [];
       let currentEventParentNode = ['sprint', 'release'].includes(event[0]?.labelName?.toLowerCase()) ? this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === event[0].parentId) : [];
       if (!this.arrayDeepCompare(previousEventParentNode, event)) {
+
+        //event different than before
+        this.previousFilterEvent = event;
+
         if (event[0].labelName.toLowerCase() === 'project') {
           // new project selected => make boardConfig call
           this.getBoardConfig(event.map(x => x.basicProjectConfigId), event);
@@ -690,10 +700,26 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.additionalFiltersArr = [];
     }
-    if (event.length === 1) {
-      this.additionalData = true;
-      this.getProcessorsTraceLogsForProject();
+    if (event.length === 1 && this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
+      this.getProcessorsTraceLogsForProject().then(result => {
+        this.sendDataToDashboard(event);
+      }).catch(error => {
+        console.error("Error:", error);
+        this.sendDataToDashboard(event);
+      });
+    } else {
+      this.sendDataToDashboard(event);
     }
+  }
+
+  /**
+   * Sends the filter data to the dashboard based on the provided event.
+   * Updates various filter states and applies the necessary data transformations.
+   * 
+   * @param {Array} event - An array of event objects containing filter criteria.
+   * @returns {void}
+   */
+  sendDataToDashboard(event) {
     this.previousFilterEvent = event;
     this.previousSelectedTab = this.selectedTab;
     this.previousSelectedType = this.selectedType;
@@ -1035,18 +1061,24 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @throws {Error} - Logs error to the console if the HTTP request fails.
    */
   getProcessorsTraceLogsForProject() {
-    this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
-      if (response.success) {
-        this.service.setProcessorLogDetails(response.data);
-      } else {
-        this.messageService.add({
-          severity: 'error',
-          summary:
-            "Error in fetching processor's execution date. Please try after some time.",
-        });
-      }
-    }, error => {
-      console.log(error);
+    return new Promise((resolve, reject) => {
+      this.httpService.getProcessorsTraceLogsForProject(this.service.getSelectedTrends()[0]?.basicProjectConfigId).subscribe(response => {
+        if (response.success) {
+          this.isAzureProect = response.data.find(de => de.processorName.toLowerCase() === 'azure') ? true : false;
+          this.service.setProcessorLogDetails(response.data);
+          resolve(true);
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary:
+              "Error in fetching processor's execution date. Please try after some time.",
+          });
+          reject("Operation failed.");
+        }
+      }, error => {
+        console.log(error);
+        reject("Operation failed.");
+      });
     });
   }
 
@@ -1191,21 +1223,24 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    */
   showHideKPIs() {
     const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
+    let enabledKPIs = [];
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
         if (this.dashConfigData[this.selectedType][i]) {
-          this.dashConfigData[this.selectedType][i]['kpis'] = this.masterData['kpiList'];
+          enabledKPIs = this.findEnabledKPIs(this.dashConfigData[this.selectedType][i]['kpis'], this.masterDataCopy['kpiList']);
+          this.dashConfigData[this.selectedType][i]['kpis'] = JSON.parse(JSON.stringify(this.masterDataCopy['kpiList']));
         } else {
-          this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] = this.masterData['kpiList'];
+          enabledKPIs = this.findEnabledKPIs(this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'], this.masterDataCopy['kpiList']);
+          this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] = JSON.parse(JSON.stringify(this.masterDataCopy['kpiList']));
           break;
         }
       }
     }
 
-
     let obj = Object.assign({}, this.dashConfigData);
     delete obj['configDetails'];
+    delete obj['enabledKPIs'];
     this.httpService.submitShowHideOnDashboard(obj).subscribe(
       (response) => {
         if (response.success === true) {
@@ -1214,7 +1249,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             summary: 'Successfully Saved',
             detail: '',
           });
-          this.service.setDashConfigData(this.dashConfigData);
+          if (enabledKPIs?.length) {
+            this.service.setDashConfigData(this.dashConfigData, true, enabledKPIs);
+          } else {
+            this.service.setDashConfigData(this.dashConfigData);
+          }
         } else {
           this.messageService.add({
             severity: 'error',
@@ -1231,9 +1270,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     );
   }
 
+  findEnabledKPIs(previousDashConfig, newMasterData) {
+    let result = [];
+    previousDashConfig.forEach((element, index) => {
+      if (!element.isEnabled && newMasterData[index].isEnabled) {
+        result.push(newMasterData[index]);
+      }
+    });
+    return result;
+  }
+
   assignUserNameForKpiData() {
-    delete this.masterData['kpiList'].id;
-    this.masterData['kpiList'] = this.masterData['kpiList'].map(element => {
+    delete this.masterDataCopy['kpiList'].id;
+    this.masterDataCopy['kpiList'] = this.masterDataCopy['kpiList'].map(element => {
       delete element?.kpiDetail?.id;
       return {
         kpiId: element.kpiId,
@@ -1254,7 +1303,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @throws {none} This function does not throw any exceptions.
    */
   showHideSelectAllApply() {
-    this.masterData['kpiList'].forEach(element => {
+    this.masterDataCopy['kpiList'].forEach(element => {
       if (this.showHideSelectAll) {
         element.isEnabled = true;
       } else {
@@ -1284,5 +1333,4 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     return obj;
   }
-
 }

@@ -62,7 +62,11 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 	@Autowired
 	private JiraCommonService jiraCommonService;
 	@Autowired
+<<<<<<< HEAD
 	private ProjectHierarchyService projectHierarchyService;
+=======
+	private ProjectHierarchySyncService projectHierarchySyncService;
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
@@ -101,6 +105,7 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 		}
 	}
 
+<<<<<<< HEAD
 	private void saveKanbanAccountHierarchy(ProjectBasicConfig projectConfig, ProjectRelease projectRelease) {
 		Map<String, ProjectHierarchy> existingHierarchy = projectHierarchyService
 				.getProjectHierarchyMapByConfigIdAndHierarchyLevelId(projectConfig.getId().toString(),
@@ -124,6 +129,39 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 					}
 				}
 			});
+=======
+	private void saveKanbanAccountHierarchy(KanbanAccountHierarchy projectData, ProjectConfFieldMapping projectConfig,
+			ProjectRelease projectRelease) {
+		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo
+				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+		Map<Pair<String, String>, KanbanAccountHierarchy> existingHierarchy = accountHierarchyList.stream()
+				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p,
+						(existingValue, newValue) -> existingValue));
+
+		Set<KanbanAccountHierarchy> setToSave = new HashSet<>();
+		if (projectData != null) {
+			List<KanbanAccountHierarchy> hierarchyForRelease = createKanbanHierarchyForRelease(projectRelease,
+					projectConfig.getProjectBasicConfig(), projectData);
+			if (CollectionUtils.isNotEmpty(hierarchyForRelease)) {
+				hierarchyForRelease.forEach(hierarchy -> {
+					if (StringUtils.isNotBlank(hierarchy.getParentId())) {
+						KanbanAccountHierarchy exHiery = existingHierarchy
+								.get(Pair.of(hierarchy.getNodeId(), hierarchy.getPath()));
+						if (null == exHiery) {
+							hierarchy.setCreatedDate(LocalDateTime.now());
+							setToSave.add(hierarchy);
+						} else if (!exHiery.equals(hierarchy)) {
+							exHiery.setBeginDate(hierarchy.getBeginDate());
+							exHiery.setEndDate(hierarchy.getEndDate());
+							exHiery.setReleaseState(hierarchy.getReleaseState());
+							setToSave.add(exHiery);
+						}
+					}
+				});
+			}
+			projectHierarchySyncService.syncKanbanReleaseHierarchy(projectConfig.getBasicProjectConfigId(),
+					hierarchyForRelease);
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 		}
 
 		if (CollectionUtils.isNotEmpty(setToSave)) {

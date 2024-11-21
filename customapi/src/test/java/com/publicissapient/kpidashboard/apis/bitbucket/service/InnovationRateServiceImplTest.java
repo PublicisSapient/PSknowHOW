@@ -54,6 +54,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -127,6 +128,7 @@ public class InnovationRateServiceImplTest {
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
 		repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
+<<<<<<< HEAD
 		repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().toString());
 
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
@@ -136,6 +138,13 @@ public class InnovationRateServiceImplTest {
 		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
 		projectConfigList.add(projectBasicConfig);
 
+=======
+		LocalDate date = LocalDate.now();
+		while (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			date = date.minusDays(1);
+		}
+		repoToolKpiMetricResponseList.get(0).setDateLabel(date.toString());
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});

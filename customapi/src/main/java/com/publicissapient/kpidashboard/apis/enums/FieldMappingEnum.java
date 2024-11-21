@@ -241,7 +241,8 @@ public enum FieldMappingEnum {
 
 	KPI73("Release Frequency", KPISource.JIRA.name(), Collections.singletonList("thresholdValueKPI73")),
 	KPI149("Happiness Index", KPISource.JIRA.name(), Collections.singletonList("thresholdValueKPI149")),
-	KPI113("Value delivered (Cost of Delay)", KPISource.JIRA.name(), Collections.singletonList("thresholdValueKPI113")),
+	KPI113("Value delivered (Cost of Delay)", KPISource.JIRA.name(), Arrays.asList("thresholdValueKPI113",
+			"issueTypesToConsiderKpi113", "closedIssueStatusToConsiderKpi113")),
 	KPI70("Test Execution and pass percentage", KPISource.ZEPHYR.name(), Collections.singletonList("thresholdValueKPI70")),
 	KPI8("Code Build Time", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI8")),
 	KPI172("Build FREQUENCY", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI172")),

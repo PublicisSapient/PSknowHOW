@@ -302,6 +302,15 @@ describe('PrimaryFilterComponent', () => {
 
       expect(result).toBe(false);
     });
+
+    it('should return true for identical arrays of primitives', () => {
+      const arr1 = [1, 2, 3];
+      const arr2 = [1, 2, 3];
+
+      const result = component.arraysEqual(arr1, arr2);
+
+      expect(result).toBe(true);
+    });
   });
 
 
@@ -934,5 +943,27 @@ describe('PrimaryFilterComponent', () => {
         // expect(service.applyAdditionalFilters).not.toHaveBeenCalled();
       });
     });
+  });
+
+  describe('PrimaryFilterComponent: isFilterHidden', () => {
+  
+    it('should return true for isFilterHidden when selectedTab is iteration and there are active filters', () => {
+      component.selectedTab = 'iteration';
+      const filterDataSet = [{ sprintState: 'active' }, { sprintState: 'inactive' }];
+      const result = component.isFilterHidden(filterDataSet);
+      expect(result).toBe(true);
+    });
+
+    it('should return false when selectedTab is not iteration', () => {
+      component.selectedTab = 'release';
+      const result = component.isFilterHidden([]);
+      expect(result).toBe(false);
+    });
+
+    it('should return false for isFilterHidden when no active sprints', () => {
+      const result = component.isFilterHidden(component.filters);
+      expect(result).toBe(false);
+    });
+
   });
 });

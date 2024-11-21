@@ -79,13 +79,18 @@ public class FetchScrumReleaseDataImplTest {
 	@Mock
 	private JiraProcessorConfig jiraProcessorConfig;
 	@Mock
+<<<<<<< HEAD
 	private ProjectHierarchyService projectHierarchyService;
+=======
+	private ProjectHierarchySyncService projectHierarchySyncService;
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 
 	@Before
 	public void setUp() throws Exception {
 		prepareAccountHierarchy();
 		prepareProjectConfig();
 		prepareHierarchyLevel();
+<<<<<<< HEAD
 		when(hierarchyLevelService.getFullHierarchyLevels(anyBoolean())).thenReturn(hierarchyLevels);
 		ProjectVersion version = new ProjectVersion();
 		List<ProjectVersion> versionList = new ArrayList<>();
@@ -103,6 +108,28 @@ public class FetchScrumReleaseDataImplTest {
 		logList.add(changeLog);
 		jiraIssueCustomHistory.setFixVersionUpdationLog(logList);
 		jiraIssueCustomHistories.add(jiraIssueCustomHistory);
+=======
+        when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
+                .thenReturn(accountHierarchylist);
+        when(accountHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(accountHierarchylist);
+        when(hierarchyLevelService.getFullHierarchyLevels(anyBoolean())).thenReturn(hierarchyLevels);
+        ProjectVersion version = new ProjectVersion();
+        List<ProjectVersion> versionList = new ArrayList<>();
+        version.setId(Long.valueOf("123"));
+        version.setName("V1.0.2");
+        version.setArchived(false);
+        version.setReleased(true);
+        version.setReleaseDate(DateTime.now());
+        versionList.add(version);
+        when(jiraCommonService.getVersion(any(), any())).thenReturn(versionList);
+        List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+        JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
+        JiraHistoryChangeLog changeLog = new JiraHistoryChangeLog("", "V1.0.2", LocalDateTime.now());
+        List<JiraHistoryChangeLog> logList = new ArrayList<>();
+        logList.add(changeLog);
+        jiraIssueCustomHistory.setFixVersionUpdationLog(logList);
+        jiraIssueCustomHistories.add(jiraIssueCustomHistory);
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 
 		when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(anyString()))
 				.thenReturn(jiraIssueCustomHistories);
@@ -129,6 +156,12 @@ public class FetchScrumReleaseDataImplTest {
 	@Test
 	public void processReleaseInfoWhenHierachyExist() throws IOException, ParseException {
 		prepareAccountHierarchy2();
+<<<<<<< HEAD
+=======
+		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
+				.thenReturn(accountHierarchylist);
+		when(accountHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(accountHierarchylist);
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 		try {
 			fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client);
 		} catch (Exception ex) {

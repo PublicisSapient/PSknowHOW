@@ -11,6 +11,7 @@ import { SharedService } from './services/shared.service';
 import { PrimeNGConfig } from 'primeng/api';
 import { of } from 'rxjs';
 import { APP_CONFIG, AppConfig } from './services/app.config';
+import { FeatureFlagsService } from './services/feature-toggle.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -23,13 +24,14 @@ describe('AppComponent', () => {
   let sharedService: SharedService;
   let primengConfig: PrimeNGConfig;
   let originalLocation: Location;
+  let featureFlagsService: FeatureFlagsService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ AppComponent ],
       imports: [ RouterTestingModule, HttpClientTestingModule ],
       providers: [ GoogleAnalyticsService, HttpService, GetAuthorizationService,
-         SharedService, PrimeNGConfig, GetAuthService,
+         SharedService, PrimeNGConfig, GetAuthService, FeatureFlagsService ,
          { provide: APP_CONFIG, useValue: AppConfig }]
     })
     .compileComponents();
@@ -44,6 +46,7 @@ describe('AppComponent', () => {
     authorization = TestBed.inject(GetAuthorizationService);
     sharedService = TestBed.inject(SharedService);
     primengConfig = TestBed.inject(PrimeNGConfig);
+    featureFlagsService = TestBed.inject(FeatureFlagsService)
     spyOn(gaService, 'load').and.returnValue(Promise.resolve(['gaTagManager']));
     jasmine.createSpy('checkAuth').and.returnValue(true);
     spyOn(sharedService, 'setSelectedType');
@@ -71,4 +74,57 @@ describe('AppComponent', () => {
     component.uiSwitch(event);
     expect(localStorage.getItem('newUI')).toBeNull();
   });
+
+  it('should set newUI to true if localStorage has newUI set', () => {
+		localStorage.setItem('newUI', 'true');
+		component.ngOnInit();
+		expect(component.newUI).toBe(true);
+	});
+
+  it('should initialize with authorized set to true when user is authenticated', () => {
+		component.ngOnInit();
+		expect(component.authorized).toBe(true);
+	});
+
+  it('should enable ripple effect in PrimeNGConfig', () => {
+		component.ngOnInit();
+		expect(primengConfig.ripple).toBe(true);
+	});
+
+  it('should add class scrolled to header when window.scrollY is 200', () => {
+		const header = document.createElement('div');
+		header.className = 'header';
+		document.body.appendChild(header);
+		window.scrollY = 200;
+		component.onScroll(new Event('scroll'));
+		expect(header.classList.contains('scrolled')).toBe(false);
+		document.body.removeChild(header);
+	});
+
+  it('should remove the class `scrolled` from header when window.scrollY is 200', () => {
+		const header = document.createElement('div');
+		header.classList.add('scrolled');
+		document.body.appendChild(header);
+		window.scrollY = 200;
+		component.onScroll(new Event('scroll'));
+		expect(header.classList.contains('scrolled')).toBe(true);
+		document.body.removeChild(header);
+	});
+
+
+	it('should set newUI to true when localStorage contains newUI as true', () => {
+		expect(component.newUI).toBe(true);
+	});
+
+
+	it('should set newUI to false when localStorage does not contain newUI', () => {
+		expect(component.newUI).toBe(true);
+	});
+
+  it('should trigger Google Analytics with New type when checked', () => {
+		const gaSpy = spyOn(gaService, 'setUIType');
+		const event = { checked: true };
+		component.uiSwitch(event);
+		expect(gaSpy).toHaveBeenCalledWith({ type: 'New' });
+	});
 });

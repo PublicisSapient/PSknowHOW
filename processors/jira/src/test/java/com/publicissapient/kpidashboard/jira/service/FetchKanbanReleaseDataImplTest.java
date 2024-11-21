@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -73,6 +72,8 @@ public class FetchKanbanReleaseDataImplTest {
 	private JiraCommonService jiraCommonService;
 	@Mock
 	private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private ProjectHierarchySyncService projectHierarchySyncService;
 	@InjectMocks
 	private FetchKanbanReleaseDataImpl fetchKanbanReleaseData;
 	@Mock
@@ -83,6 +84,14 @@ public class FetchKanbanReleaseDataImplTest {
 		prepareKanbanAccountHierarchy();
 		prepareProjectConfig();
 		prepareHierarchyLevel();
+<<<<<<< HEAD
+=======
+		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(), any()))
+				.thenReturn(kanbanAccountHierarchylist);
+		when(kanbanAccountHierarchyRepo.findByBasicProjectConfigId(any())).thenReturn(kanbanAccountHierarchylist);
+		when(hierarchyLevelService.getFullHierarchyLevels(kanbanProjectMapping.isKanban())).thenReturn(hierarchyLevels);
+		when(projectReleaseRepo.findByConfigId(any())).thenReturn(null);
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 		ProjectVersion version = new ProjectVersion();
 		List<ProjectVersion> versionList = new ArrayList<>();
 		version.setId(Long.valueOf("123"));
@@ -117,6 +126,12 @@ public class FetchKanbanReleaseDataImplTest {
 	@Test
 	public void processReleaseInfoWhenHierachyExist() throws IOException, ParseException {
 		prepareKanbanAccountHierarchy2();
+<<<<<<< HEAD
+=======
+		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
+				.thenReturn(kanbanAccountHierarchylist);
+		when(kanbanAccountHierarchyRepo.findByBasicProjectConfigId(any())).thenReturn(kanbanAccountHierarchylist);
+>>>>>>> f32a4d0d93858eb121dd839f27e5f0b5b8240bec
 		try {
 			fetchKanbanReleaseData.processReleaseInfo(kanbanProjectMapping, krb5Client);
 		}

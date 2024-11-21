@@ -69,7 +69,7 @@
                                                 [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
                                             <span
                                                 *ngIf="col.field === 'startDate' || col.field === 'endDate' else otherFieldsTemp">
-                                                {{item[col.field] | date: 'dd/MMM/yyyy'}}
+                                                {{item[col.field] | isoDateFormat}}
                                             </span>
                                             <ng-template #otherFieldsTemp>
                                                 {{item[col.field] ? item[col.field] : '- -'}}
@@ -510,7 +510,7 @@
         *ngIf="selectedView === 'upload_tep' else noToggleCapacityPopups">
         <div class=" form-group p-xl-12 pad-l-0">
             <label class="mr-sm-2" *ngIf="kanban else scrumTemp">
-                <span>For Execution Date {{executionDate | date: 'dd/MMM/yyyy'}}</span>
+                <span>For Execution Date {{executionDate | isoDateFormat}}</span>
             </label>
             <ng-template #scrumTemp>
                 <label class="mr-sm-2">
@@ -557,9 +557,8 @@
         <form [formGroup]="popupForm" class="p-xl-12 p-p-0">
             <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
                 <label for="capacity" class="mr-sm-2 float-left">
-                    <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate | date:
-                        'dd/MMM/yyyy'}}
-                        to {{this.endDate | date: 'dd/MMM/yyyy'}} </span>
+                    <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate | isoDateFormat}}
+                        to {{this.endDate | isoDateFormat}} </span>
                     <span *ngIf="!kanban">Enter "Team capacity for {{selectedSprintName}}"</span>
                 </label>
                 <input type="number" pInputText class="form-control w-100 p-p-2 mb-2 mr-sm-2"

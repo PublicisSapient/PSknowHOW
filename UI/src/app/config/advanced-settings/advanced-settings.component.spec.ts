@@ -508,13 +508,13 @@ describe('AdvancedSettingsComponent', () => {
   it('should disable processor when user is not Super admin', () => {
     const getAuthorizationService = TestBed.inject(GetAuthorizationService);
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);
-    expect(component.shouldDisableRunProcessor()).toBe(false);
+    expect(component.shouldDisableRunProcessor('jira')).toBe(false);
   });
 
   it('should disable processor when user is not Project admin', () => {
     const getAuthorizationService = TestBed.inject(GetAuthorizationService);
     spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true);
-    expect(component.shouldDisableRunProcessor()).toBe(false);
+    expect(component.shouldDisableRunProcessor('jira')).toBe(false);
   });
 
   it('should enable processor when user is Project admin/Super Admin', () => {
@@ -523,7 +523,7 @@ describe('AdvancedSettingsComponent', () => {
       false,
     );
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(false);
-    expect(component.shouldDisableRunProcessor()).toBe(true);
+    expect(component.shouldDisableRunProcessor('jira')).toBe(true);
   });
 
   it('should delete tool when trying to delete for any project', () => {
@@ -919,4 +919,69 @@ describe('AdvancedSettingsComponent', () => {
     const spyobj = component.getToolCategory('testtool');
     expect(spyobj).toBe('');
   })
+
+
+  it('should update toggle Details and get success resonse',()=>{
+    component.selectedProject = {id : 'test'}
+    spyOn(httpService,'editTool').and.returnValue(of({success : true}))
+    component.azureRefreshActiveSprintReportToggleChange({id : 'test'});
+    expect(component.selectedProject).toBeDefined();
+  })
+
+  it('should update toggle Details and get failor resonse',()=>{
+    component.selectedProject = {id : 'test'}
+    spyOn(httpService,'editTool').and.returnValue(of({success : false}))
+    component.azureRefreshActiveSprintReportToggleChange({id : 'test'});
+    expect(component.selectedProject).toBeDefined();
+  })
+
+  it('should return NA when traceLog is undefined', () => {
+		const result = component.getSCMToolTimeDetails('GitHub');
+		expect(result).toBe('NA');
+	});
+
+  it('should return NA when executionResumesAt is 0', () => {
+		// Arrange
+		component.processorsTracelogs = [{ processorName: 'GitHub', executionResumesAt: 0 }];
+		
+		// Act
+		const result = component.getSCMToolTimeDetails('GitHub');
+		
+		// Assert
+		expect(result).toBe('NA');
+	});
+
+  it('should return a formatted date when executionResumesAt is a valid timestamp', () => {
+		const validTimestamp = new Date().getTime();
+		component.processorsTracelogs = [{ processorName: 'GitHub', executionResumesAt: validTimestamp }];
+		const result = component.getSCMToolTimeDetails('GitHub');
+		const expectedDate = new DatePipe('en-US').transform(validTimestamp, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
+		expect(result).toBe(expectedDate);
+	});
+
+  it('should return formatted date when executionResumesAt is valid', () => {
+		const processorName = 'GitHub';
+		const executionResumesAt = new Date('2023-10-01T10:00:00Z').getTime();
+		component.processorsTracelogs = [{ processorName: processorName, executionResumesAt: executionResumesAt }];
+		const result = component.getSCMToolTimeDetails(processorName);
+		expect(result).toBe(new DatePipe('en-US').transform(executionResumesAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa'));
+	});
+
+  it('should return formatted date when valid processor name is provided', () => {
+		const processorName = 'GitHub';
+		component.processorsTracelogs = [{ processorName: 'GitHub', executionResumesAt: new Date().getTime() }];
+		const result = component.getSCMToolTimeDetails(processorName);
+		expect(result).toBe(new DatePipe('en-US').transform(component.processorsTracelogs[0].executionResumesAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa'));
+	});
+
+  it('should return true for GitHub', () => {
+		const result = component.isSCMToolProcessor('GitHub');
+		expect(result).toBe(true);
+	});
+
+  // it('should navigate to the project list', () => {
+	// 	component.backToProjectList();
+	// 	expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Config/ProjectList']);
+	// });
+
 });

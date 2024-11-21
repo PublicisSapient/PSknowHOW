@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.argocd.client;
 
 import java.net.URI;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -33,15 +32,12 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.argocd.dto.Application;
 import com.publicissapient.kpidashboard.argocd.dto.ApplicationsList;
-import com.publicissapient.kpidashboard.argocd.dto.TokenDTO;
-import com.publicissapient.kpidashboard.argocd.dto.UserCredentialsDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_PARAM;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHORIZATION_HEADER;
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHTOKEN_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.BEARER;
 
 /**
@@ -58,9 +54,9 @@ public class ArgoCDClient {
 	 * Get the list of Applications associated to the account
 	 * 
 	 * @param baseUrl
-	 * 				ArgoCD base url
+	 *            ArgoCD base url
 	 * @param accessToken
-	 * 				user access token
+	 *            user access token
 	 * @return ApplicationList
 	 */
 	public ApplicationsList getApplications(String baseUrl, String accessToken) {
@@ -83,11 +79,11 @@ public class ArgoCDClient {
 	 * Get the Application details by name for the account
 	 * 
 	 * @param baseUrl
-	 * 				ArgoCD base url
+	 *            ArgoCD base url
 	 * @param applicationName
-	 * 				name of ArgoCD Application
+	 *            name of ArgoCD Application
 	 * @param accessToken
-	 * 				user access token
+	 *            user access token
 	 * @return Application
 	 */
 	public Application getApplicationByName(String baseUrl, String applicationName, String accessToken) {
@@ -105,30 +101,4 @@ public class ArgoCDClient {
 			throw ex;
 		}
 	}
-
-	/**
-	 * Create a new JWT for authentication
-	 * 
-	 * @param baseUrl
-	 * 				ArgoCD base url
-	 * @param userCredentialsDTO
-	 * 				UserCredentialsDTO
-	 * @return String - user access token
-	 */
-	public String getAuthToken(String baseUrl, UserCredentialsDTO userCredentialsDTO) {
-		String url = baseUrl + AUTHTOKEN_ENDPOINT;
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		try {
-			ResponseEntity<TokenDTO> response = restTemplate.exchange(URI.create(url), HttpMethod.POST,
-					new HttpEntity<>(userCredentialsDTO, requestHeaders), TokenDTO.class);
-			return Optional.ofNullable(response.getBody())
-		            .map(TokenDTO::getToken)
-		            .orElseThrow(() -> new RestClientException("Unable to fetch token for the user"));
-		} catch (RestClientException ex) {
-			log.error("ArgoCDClient :: getAuthToken Exception occured :: {}", ex.getMessage());
-			throw ex;
-		}
-	}
-
 }

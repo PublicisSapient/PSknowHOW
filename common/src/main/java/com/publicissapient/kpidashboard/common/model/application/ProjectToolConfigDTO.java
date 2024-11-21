@@ -117,4 +117,5 @@ public class ProjectToolConfigDTO {
 
 	private Boolean isNew;
 	private String scanningBranch;
+	private Boolean azureRefreshActiveSprintReport =false;
 }

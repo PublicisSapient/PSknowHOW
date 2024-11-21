@@ -253,7 +253,8 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
 			String userKpiGroup = branchName + "#" + developerName;
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
-					.optionalStart().optionalStart().appendPattern("X").optionalEnd().toFormatter();
+					.optionalStart().appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
+					.optionalEnd().appendPattern("'Z'").toFormatter();
 			if (repoToolUserDetails.isPresent() && repo != null) {
 				repoToolUserDetails.get().getMergeRequestList().forEach(mr -> {
 					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
