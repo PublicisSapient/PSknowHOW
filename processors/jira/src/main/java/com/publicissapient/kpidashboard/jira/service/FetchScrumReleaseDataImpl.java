@@ -65,6 +65,8 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	private JiraCommonService jiraCommonService;
 	@Autowired
 	private ProjectHierarchyService projectHierarchyService;
+	@Autowired
+	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
@@ -106,6 +108,8 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		Set<ProjectHierarchy> setToSave = new HashSet<>();
 		List<ProjectHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease, projectConfig);
 		setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
+        projectHierarchySyncService.syncScrumReleaseHierarchy(projectConfig.getBasicProjectConfigId(),
+                hierarchyForRelease);
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			log.info("Updated Hierarchies {}", setToSave.size());
 			projectHierarchyService.saveAll(setToSave);

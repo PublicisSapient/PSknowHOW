@@ -638,6 +638,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		} else {
 			jiraIssueModalObject.setPotentialOverallDelay("-");
 			jiraIssueModalObject.setPredictedCompletionDate("-");
+			jiraIssueModalObject.setPotentialDelay(Constant.DASH);
 		}
 	}
 

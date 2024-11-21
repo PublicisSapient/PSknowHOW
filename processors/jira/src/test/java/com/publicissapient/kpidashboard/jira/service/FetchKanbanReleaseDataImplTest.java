@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -73,6 +72,8 @@ public class FetchKanbanReleaseDataImplTest {
 	private JiraCommonService jiraCommonService;
 	@Mock
 	private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private ProjectHierarchySyncService projectHierarchySyncService;
 	@InjectMocks
 	private FetchKanbanReleaseDataImpl fetchKanbanReleaseData;
 	@Mock

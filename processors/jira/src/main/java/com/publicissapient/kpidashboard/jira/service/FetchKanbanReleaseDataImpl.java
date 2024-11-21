@@ -63,6 +63,8 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 	private JiraCommonService jiraCommonService;
 	@Autowired
 	private ProjectHierarchyService projectHierarchyService;
+	@Autowired
+	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Override
 	public void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
@@ -125,6 +127,8 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 				}
 			});
 		}
+        projectHierarchySyncService.syncKanbanReleaseHierarchy(projectConfig.getBasicProjectConfigId(),
+                hierarchyForRelease);
 
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			projectHierarchyService.saveAll(setToSave);

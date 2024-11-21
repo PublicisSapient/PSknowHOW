@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,13 +132,17 @@ public class PickupTimeServiceImplTest {
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
         RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
         repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
-        repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().minusDays(2).toString());
         ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
         projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
         projectBasicConfig.setIsKanban(true);
         projectBasicConfig.setProjectName("Scrum Project");
         projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
         projectConfigList.add(projectBasicConfig);
+        LocalDate date = LocalDate.now();
+        while (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            date = date.minusDays(1);
+        }
+        repoToolKpiMetricResponseList.get(0).setDateLabel(date.toString());
         projectConfigList.forEach(projectConfig -> {
             projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
         });

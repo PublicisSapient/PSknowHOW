@@ -365,6 +365,9 @@
     "jiraIssueRiskTypeKPI176": ["Risk"],
     "jiraIssueDependencyTypeKPI176": ["Dependency"],
     "jiraLabelsQAKPI111" : ["Java", "UI" ],
-    "jiraLabelsKPI133" : ["Java", "UI" ]
+    "jiraLabelsKPI133" : ["Java", "UI" ],
+    "issueTypesToConsiderKpi113" : ["Epic"],
+    "closedIssueStatusToConsiderKpi113" : ["Closed"]
+
   }
 ]

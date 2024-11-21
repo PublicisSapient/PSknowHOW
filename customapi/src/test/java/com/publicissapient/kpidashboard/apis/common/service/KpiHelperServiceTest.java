@@ -19,11 +19,12 @@
 package com.publicissapient.kpidashboard.apis.common.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -35,18 +36,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.Tool;
-import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.CapacityKpiDataDataFactory;
@@ -84,7 +77,9 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
+import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -600,6 +595,87 @@ public class KpiHelperServiceTest {
 		Map<String, List<Tool>> mapOfListOfTools = new HashMap<>();
 		List<Tool> result = kpiHelperService.populateSCMToolsRepoList(mapOfListOfTools);
 		assertTrue(result.isEmpty());
+	}
+
+
+	@Test
+	public void testIsRequiredTestToolConfigured_JiraConfigured() {
+		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
+		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
+		stringListMap.put("Jira", Arrays.asList());
+		projectConfigMap.put(projectId, stringListMap);
+		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
+		when(fieldMapping.isUploadDataKPI16()).thenReturn(true);
+
+		KpiElement kpiElement = new KpiElement();
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement, projectId));
+	}
+
+
+	@Test
+	public void testIsRequiredTestToolConfigured_JiraConfiguredKanbanRegression() {
+		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
+		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
+		stringListMap.put("Jira", Arrays.asList());
+		projectConfigMap.put(projectId, stringListMap);
+		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
+		when(fieldMapping.isUploadDataKPI42()).thenReturn(true);
+
+		KpiElement kpiElement = new KpiElement();
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.REGRESSION_AUTOMATION_COVERAGE, kpiElement, projectId));
+	}
+
+	@Test
+	public  void testIsRequiredTestToolConfigured_JiraNotConfigured() {
+		// Mock data
+		when(configHelperService.getProjectToolConfigMap()).thenReturn(new HashMap<>());
+
+		KpiElement kpiElement = new KpiElement();
+		assertFalse(kpiHelperService.isRequiredTestToolConfigured(KPICode.REGRESSION_AUTOMATION_COVERAGE, kpiElement,  new ObjectId("6335363749794a18e8a4479c")));
+	}
+
+	@Test
+	public  void testIsZephyrRequiredToolConfigured_JiraConfigured() {
+		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
+		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
+		stringListMap.put("ZEPHYR", Arrays.asList());
+		stringListMap.put("JIRA", Arrays.asList());
+		projectConfigMap.put(projectId, stringListMap);
+		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
+		KpiElement kpiElement = new KpiElement();
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE, kpiElement, projectId));
+	}
+
+	@Test
+	public  void testIsRequiredTestToolConfigured_JiraTestExecutionConfigured() {
+		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
+		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
+		stringListMap.put("ZEPHYR", Arrays.asList());
+		stringListMap.put("JIRA", Arrays.asList());
+		projectConfigMap.put(projectId, stringListMap);
+		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
+		KpiElement kpiElement = new KpiElement();
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE, kpiElement, projectId));
+	}
+
+	@Test
+	public  void testIsZephyrRequiredToolConfigured_AzureConfigured() {
+		ObjectId projectId = new ObjectId("6335363749794a18e8a4479c");
+		Map<String, List<ProjectToolConfig>> stringListMap = new HashMap<>();
+		stringListMap.put("ZEPHYR", Arrays.asList());
+		stringListMap.put("Azure", Arrays.asList());
+		projectConfigMap.put(projectId, stringListMap);
+		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(configHelperService.getFieldMappingMap()).thenReturn(Map.of(projectId, fieldMapping));
+		KpiElement kpiElement = new KpiElement();
+		assertTrue(kpiHelperService.isRequiredTestToolConfigured(KPICode.INSPRINT_AUTOMATION_COVERAGE, kpiElement, projectId));
 	}
 
 	private void setToolMap() {

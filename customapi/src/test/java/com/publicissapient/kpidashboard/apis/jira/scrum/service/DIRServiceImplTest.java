@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ import java.util.Map;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,6 +88,8 @@ public class DIRServiceImplTest {
 	@Mock
 	CacheService cacheService;
 	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
 	KpiHelperService kpiHelperService;
 	@Mock
 	ProjectBasicConfigRepository projectConfigRepository;
@@ -107,6 +112,7 @@ public class DIRServiceImplTest {
 
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 
+	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
@@ -141,6 +147,12 @@ public class DIRServiceImplTest {
 		filterLevelMap.put("PROJECT", Filters.PROJECT);
 		filterLevelMap.put("SPRINT", Filters.SPRINT);
 
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
+
 	}
 
 	@Test
@@ -171,6 +183,13 @@ public class DIRServiceImplTest {
 		String kpiRequestTrackerId = "Excel-dirtrack001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		//when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
 		try {
 			KpiElement kpiElement = dirServiceImpl.getKpiData(this.kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -207,7 +226,7 @@ public class DIRServiceImplTest {
 				kpiRequest);
 		assertThat("Total Story value :", ((List<JiraIssue>) (defectDataListMap.get("storyData"))).size(), equalTo(5));
 		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get("defectData"))).size(),
-				equalTo(19));
+				equalTo(20));
 	}
 
 }

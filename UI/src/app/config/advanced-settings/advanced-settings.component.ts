@@ -51,6 +51,7 @@ export class AdvancedSettingsComponent implements OnInit {
   dataMismatchObj: object = {};
   pid: string;
   configuredToolList: any;
+  azureSnapshotToggleTooltip = 'Enable and click on "Run Now" to capture the initial scope of your active sprint after sprint planning. Subsequent changes will be tracked as scope changes. Applies to active sprints only-use with caution.'; 
 
   constructor(
     private httpService: HttpService,
@@ -274,13 +275,13 @@ export class AdvancedSettingsComponent implements OnInit {
      }
 
 
-  shouldDisableRunProcessor() {
+  shouldDisableRunProcessor(processorName) {
 
     if (this.getAuthorizationService.checkIfSuperUser()) {
       return false;
     }
 
-    if (this.getAuthorizationService.checkIfProjectAdmin()) {
+    if (this.getAuthorizationService.checkIfProjectAdmin() && processorName?.toLowerCase() !== 'azure') {
       return false;
     }
 
@@ -415,6 +416,17 @@ export class AdvancedSettingsComponent implements OnInit {
   isSCMToolProcessor(processorName) {
     const scmTools = ['GitHub','GitLab','Bitbucket','AzureRepository'];
     return scmTools.includes(processorName)
+  }
+
+  azureRefreshActiveSprintReportToggleChange(details) {
+    this.httpService.editTool(this.selectedProject['id'],details['id'],details)
+    .subscribe(response => {
+      if (response['success']) {
+        this.messageService.add({ severity: 'success', summary: 'Configuration updated successfully' });
+      } else {
+        this.messageService.add({ severity: 'error', summary: 'Error in fetching processor\'s data. Please try after some time.' });
+      }
+    });
   }
 
   ngOnDestroy(): void {

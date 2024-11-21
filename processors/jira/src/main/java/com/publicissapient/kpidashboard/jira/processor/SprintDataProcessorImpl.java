@@ -78,6 +78,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 						sprint.setSprintID(
 								sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + projectNodeId);
 						sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+
 					}
 					sprintDetailsSet.addAll(sprints);
 				}

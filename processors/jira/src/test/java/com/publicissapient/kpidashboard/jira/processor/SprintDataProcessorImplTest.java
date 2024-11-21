@@ -46,6 +46,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SprintDataProcessorImplTest {

@@ -480,7 +480,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					data.getInitialIssueNumber().stream()
 							.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
 					KPIExcelUtility.populateCommittmentReliability(sprintName, totalSprintStoryMap, data, excelData,
-							fieldMapping);
+							fieldMapping, customApiConfig);
 
 				});
 

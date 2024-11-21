@@ -80,6 +80,8 @@ public class FetchScrumReleaseDataImplTest {
 	private JiraProcessorConfig jiraProcessorConfig;
 	@Mock
 	private ProjectHierarchyService projectHierarchyService;
+	@Mock
+	private ProjectHierarchySyncService projectHierarchySyncService;
 
 	@Before
 	public void setUp() throws Exception {

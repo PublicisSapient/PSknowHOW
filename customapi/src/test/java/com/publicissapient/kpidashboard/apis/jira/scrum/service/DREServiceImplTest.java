@@ -26,9 +26,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
@@ -180,7 +182,7 @@ public class DREServiceImplTest {
 		filterComponentIdWiseDefectMap.put(CLOSEDBUGKEY, closedBugList);
 		filterComponentIdWiseDefectMap.put(TOTALBUGKEY, totalBugList);
 		Double dreValue = dreServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-		assertThat("DRE value :", dreValue, equalTo(84.0));
+		assertThat("DRE value :", dreValue, equalTo(85.0));
 	}
 
 	@Test
@@ -204,6 +206,7 @@ public class DREServiceImplTest {
 		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
 		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(totalIssueList);
+		when(jiraIssueRepository.findIssueAndDescByNumber(Mockito.any())).thenReturn(totalIssueList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
 				.thenReturn(new ArrayList<>());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);

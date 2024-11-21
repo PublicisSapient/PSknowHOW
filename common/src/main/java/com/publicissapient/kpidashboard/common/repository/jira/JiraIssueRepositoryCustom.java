@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
