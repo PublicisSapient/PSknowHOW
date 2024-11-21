@@ -41,7 +41,7 @@ export class HeaderComponent implements OnInit {
   //   }
 
   platformLogoInfo = {
-       "imageUrl": "assets/img/PSKnowHowLogo.svg",
+       "imageUrl": "assets/img/knowHOW_logo_final.png",
        "altText": "KnowHow",
        "width":150
     }
