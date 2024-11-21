@@ -3,7 +3,7 @@
          <p-selectButton [options]="kpiCardFilter.dataGroup.dataGroup1" [(ngModel)]="selectedKey"
         optionLabel="name" optionValue="key"></p-selectButton> 
     </div>
-    <div id="">
+    <div class="filterSection">
         <ng-container class="p-p-1" *ngFor="let filter of kpiCardFilter.filterGroup.filterGroup1">
         <p-dropdown [options]="getOptions(filter?.filterKey)" [(ngModel)]="dropdownSelected[filter?.filterKey]" 
         optionLabel="label" optionValue="value" (onChange)="handleChange()"

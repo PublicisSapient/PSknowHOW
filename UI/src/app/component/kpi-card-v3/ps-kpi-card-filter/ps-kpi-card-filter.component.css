@@ -1,0 +1,15 @@
+.kpi-card-filter{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .filterSection{
+    display: flex;
+    gap: 10px;
+  }
+
+  :host ::ng-deep .p-selectbutton.p-buttonset.p-component {
+    background-color: #EAEDF0!important;
+    border-radius: 8px !important;
+  }

@@ -1,14 +1,19 @@
 <div class="kpi-card-container">
- <app-ps-kpi-card-header [cardHeaderData]="cardData"></app-ps-kpi-card-header>
- 
+  <app-ps-kpi-card-header [cardHeaderData]="cardData"></app-ps-kpi-card-header>
+
   <div class="kpi-card-body">
-    <app-ps-kpi-card-filter [kpiCardFilter]="cardData" (filterChange)="onFilterChange($event)"></app-ps-kpi-card-filter>
-    <app-ps-kpi-card-chart-renderer [chartData]="currentChartData"></app-ps-kpi-card-chart-renderer>
+    <app-ps-kpi-card-filter
+      [kpiCardFilter]="cardData"
+      (filterChange)="onFilterChange($event)"
+    ></app-ps-kpi-card-filter>
+    <app-ps-kpi-card-chart-renderer
+      [chartData]="currentChartData"
+    ></app-ps-kpi-card-chart-renderer>
   </div>
 
-  <div class="kpi-card-footer p-pr-5 p-pl-5">
-    <ng-container  *ngFor="let footer of KpiCategory">
-        {{footer.categoryName}}
+  <!-- <div class="kpi-card-footer p-pr-5 p-pl-5">
+    <ng-container *ngFor="let footer of KpiCategory">
+      {{ footer.categoryName }}
     </ng-container>
-</div>
+  </div> -->
 </div>
