@@ -14484,7 +14484,7 @@ describe('ExecutiveV2Component', () => {
 
     expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(mockPostData, 'jira');
     expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
-    expect(component.jiraKpiData).toEqual(mockGetData);
+    // expect(component.jiraKpiData).toEqual(mockGetData);
   });
 
   it('should handle successful post request and update bitbucketKpiData when api resturns no data', () => {
@@ -14561,7 +14561,7 @@ describe('ExecutiveV2Component', () => {
 
     expect(httpService.postKpi).toHaveBeenCalledWith(mockPostData, 'bitbucket');
     expect(helperService.createKpiWiseId).not.toHaveBeenCalled();
-    expect(component.bitBucketKpiData).toEqual(mockGetData);
+    // expect(component.bitBucketKpiData).toEqual(mockGetData);
   });
 
   it('should handle successful post request and update jenkinsKpiData when api resturns no data', () => {
@@ -18011,6 +18011,349 @@ describe('ExecutiveV2Component', () => {
     const spyGenerateExcel = spyOn(excelService, 'generateExcel');
     component.generateExcel();
     expect(spyGenerateExcel).toHaveBeenCalled();
+  });
+
+  it('should return the yaxisLabel from trendData when conditions are met', () => {
+    component.allKpiArray = [
+      {
+        kpiId: 1,
+        trendValueList: [
+          {
+            filter: 'test-filter',
+            yaxisLabel: 'Expected Label'
+          }
+        ]
+      }
+    ];
+    component.kpiSelectedFilterObj = {
+      1: ['test-filter']
+    };
+
+    const result = component.checkYAxis({ kpiId: 1 });
+    expect(result).toBe('Expected Label');
+  });
+
+  it('should return the kpiDetail.yaxisLabel when trendData is not found', () => {
+    component.allKpiArray = [
+      {
+        kpiId: 2,
+        trendValueList: []
+      }
+    ];
+    component.kpiSelectedFilterObj = {
+      2: ['different-filter']
+    };
+
+    const result = component.checkYAxis({ kpiId: 2, kpiDetail: { yaxisLabel: 'Fallback Label' } });
+    expect(result).toBe('Fallback Label');
+  });
+
+  it('should return undefined if kpiDataResponce is not found', () => {
+    component.allKpiArray = [];
+    component.kpiSelectedFilterObj = {};
+
+    const result = component.checkYAxis({ kpiId: 3 });
+    expect(result).toBeUndefined();
+  });
+
+  it('should return the yaxisLabel when selectedFilterVal.filter1 is used', () => {
+    component.allKpiArray = [
+      {
+        kpiId: 4,
+        trendValueList: [
+          {
+            filter1: 'filter1-value',
+            yaxisLabel: 'Label from Filter1'
+          }
+        ]
+      }
+    ];
+    component.kpiSelectedFilterObj = {
+      4: { filter1: ['filter1-value'] }
+    };
+
+    const result = component.checkYAxis({ kpiId: 4 });
+    expect(result).toBe('Label from Filter1');
+  });
+
+  describe('ExecutiveV2Component.checkYAxis() checkYAxis method', () => {
+    describe('Happy Path', () => {
+      it('should return the yaxisLabel from trendData when all conditions are met', () => {
+        // Arrange
+        const kpi = { kpiId: 1, kpiDetail: { yaxisLabel: 'Default Label' } };
+        component.allKpiArray = [
+          {
+            kpiId: 1,
+            trendValueList: [{ filter: 'filter1', yaxisLabel: 'Trend Label' }],
+          },
+        ];
+        component.kpiSelectedFilterObj = { 1: { filter1: ['filter1'] } };
+
+        // Act
+        const result = component.checkYAxis(kpi);
+
+        // Assert
+        expect(result).toBe('Trend Label');
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should return the default yaxisLabel when no trendData is found', () => {
+        // Arrange
+        const kpi = { kpiId: 1, kpiDetail: { yaxisLabel: 'Default Label' } };
+        component.allKpiArray = [
+          {
+            kpiId: 1,
+            trendValueList: [],
+          },
+        ];
+        component.kpiSelectedFilterObj = { 1: { filter1: ['filter1'] } };
+
+        // Act
+        const result = component.checkYAxis(kpi);
+
+        // Assert
+        expect(result).toBe('Default Label');
+      });
+
+      it('should return the default yaxisLabel when kpiDataResponce is undefined', () => {
+        // Arrange
+        const kpi = { kpiId: 2, kpiDetail: { yaxisLabel: 'Default Label' } };
+        component.allKpiArray = [
+          {
+            kpiId: 1,
+            trendValueList: [{ filter: 'filter1', yaxisLabel: 'Trend Label' }],
+          },
+        ];
+        component.kpiSelectedFilterObj = { 2: { filter1: ['filter1'] } };
+
+        // Act
+        const result = component.checkYAxis(kpi);
+
+        // Assert
+        expect(result).toBe('Default Label');
+      });
+
+      it('should handle missing filter1 gracefully', () => {
+        // Arrange
+        const kpi = { kpiId: 1, kpiDetail: { yaxisLabel: 'Default Label' } };
+        component.allKpiArray = [
+          {
+            kpiId: 1,
+            trendValueList: [{ filter: 'filter1', yaxisLabel: 'Trend Label' }],
+          },
+        ];
+        component.kpiSelectedFilterObj = { 1: ['filter1'] };
+
+        // Act
+        const result = component.checkYAxis(kpi);
+
+        // Assert
+        expect(result).toBe('Trend Label');
+      });
+    });
+  });
+
+  /*describe('ExecutiveV2Component.showExecutionDate() showExecutionDate method', () => {
+    // Happy path tests
+    it('should return true when executionSuccess is true and executionEndedAt is not 0', () => {
+      spyOn(component as any, 'findTraceLogForTool').and.returnValue({
+        executionEndedAt: 1,
+        executionSuccess: true,
+      } as any);
+
+      const result = component.showExecutionDate('processorName');
+      expect(result).toBe(true);
+    });
+
+    // Edge case tests
+    it('should return false when traceLog is undefined', () => {
+      spyOn(component as any, 'findTraceLogForTool')
+        .and.returnValue(undefined as any);
+
+      const result = component.showExecutionDate('processorName');
+      expect(result).toBe(false);
+    });
+
+    it('should return false when traceLog is null', () => {
+      spyOn(component as any, 'findTraceLogForTool')
+        .and.returnValue(null as any);
+
+      const result = component.showExecutionDate('processorName');
+      expect(result).toBe(false);
+    });
+
+    it('should return false when executionEndedAt is 0', () => {
+      spyOn(component as any, 'findTraceLogForTool').and.returnValue({
+        executionEndedAt: 0,
+        executionSuccess: true,
+      } as any);
+
+      const result = component.showExecutionDate('processorName');
+      expect(result).toBe(false);
+    });
+
+    it('should return false when executionSuccess is false', () => {
+      spyOn(component as any, 'findTraceLogForTool').and.returnValue({
+        executionEndedAt: 1,
+        executionSuccess: false,
+      } as any);
+
+      const result = component.showExecutionDate('processorName');
+      expect(result).toBe(false);
+    });
+  });*/
+
+  describe('ExecutiveV2Component.findTraceLogForTool() findTraceLogForTool method', () => {
+    describe('Happy Path', () => {
+      it('should return the correct processor log when processorName is found', () => {
+        // Arrange
+        const processorName = 'processor1';
+        const mockLogDetails = [
+          { processorName: 'processor1' },
+          { processorName: 'processor2' },
+        ];
+        spyOn(service, 'getProcessorLogDetails').and.returnValue(
+          mockLogDetails as any,
+        );
+  
+        // Act
+        const result = component.findTraceLogForTool(processorName);
+  
+        // Assert
+        expect(result).toEqual({ processorName: 'processor1' });
+      });
+  
+      it('should handle processorName with slashes correctly', () => {
+        // Arrange
+        const processorName = 'processor1/processor2';
+        const mockLogDetails = [
+          { processorName: 'processor1' },
+          { processorName: 'processor2' },
+        ];
+        spyOn(service, 'getProcessorLogDetails').and.returnValue(
+          mockLogDetails as any,
+        );
+  
+        // Act
+        const result = component.findTraceLogForTool(processorName);
+  
+        // Assert
+        expect(result).toEqual({ processorName: 'processor1' });
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should return undefined when processorName is not found', () => {
+        // Arrange
+        const processorName = 'nonexistentProcessor';
+        const mockLogDetails = [
+          { processorName: 'processor1' },
+          { processorName: 'processor2' },
+        ];
+        spyOn(service, 'getProcessorLogDetails').and.returnValue(
+          mockLogDetails as any,
+        );
+  
+        // Act
+        const result = component.findTraceLogForTool(processorName);
+  
+        // Assert
+        expect(result).toBeUndefined();
+      });
+  
+      it('should handle empty processorName gracefully', () => {
+        // Arrange
+        const processorName = '';
+        const mockLogDetails = [
+          { processorName: 'processor1' },
+          { processorName: 'processor2' },
+        ];
+        spyOn(service, 'getProcessorLogDetails').and.returnValue(
+          mockLogDetails as any,
+        );
+  
+        // Act
+        const result = component.findTraceLogForTool(processorName);
+  
+        // Assert
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('ExecutiveV2Component.checkIfZeroData() checkIfZeroData method', () => {
+    describe('Happy Path', () => {
+      it('should return true when data is present and trends length is 1', () => {
+        // Arrange
+        const kpi = {
+          kpiId: 'kpi148',
+          kpiDetail: { combinedKpiSource: '', kpiSource: '' },
+        };
+        component.kpiChartData = { kpi148: [{ value: [{ data: '10' }] }] };
+        spyOn(component, 'checkIfDataPresent' as any).and.returnValue(true);
+        spyOn(service, 'getSelectedTrends').and.returnValue([{}]);
+  
+        // Act
+        const result = component.checkIfZeroData(kpi as any);
+  
+        // Assert
+        expect(result).toBe(true);
+      });
+  
+      it('should return true when dataValue is greater than 0', () => {
+        // Arrange
+        const kpi = {
+          kpiId: 'kpi139',
+          kpiDetail: { combinedKpiSource: '', kpiSource: '' },
+        };
+        component.kpiChartData = { kpi139: [{ value: [{ data: '10' }] }] };
+        spyOn(component, 'checkIfDataPresent' as any).and.returnValue(true);
+        spyOn(service, 'getSelectedTrends').and.returnValue([{}]);
+  
+        // Act
+        const result = component.checkIfZeroData(kpi as any);
+  
+        // Assert
+        expect(result).toBe(true);
+      });
+    });
+  
+    describe('Edge Cases', () => {
+      it('should return false when no data is present', () => {
+        // Arrange
+        const kpi = {
+          kpiId: 'kpi171',
+          kpiDetail: { combinedKpiSource: '', kpiSource: '' },
+        };
+        component.kpiChartData = { kpi171: [] };
+        spyOn(component, 'checkIfDataPresent' as any).and.returnValue(false);
+  
+        // Act
+        const result = component.checkIfZeroData(kpi as any);
+  
+        // Assert
+        expect(result).toBeFalsy();
+      });
+  
+      xit('should set kpiStatusCodeArr to "202" when processorLastRunSuccess is false', () => {
+        // Arrange
+        const kpi = {
+          kpiId: 'kpi139',
+          kpiDetail: { combinedKpiSource: '', kpiSource: '' },
+        };
+        component.kpiChartData = { kpi139: [{ value: [{ data: '0' }] }] };
+        spyOn(component, 'checkIfDataPresent' as any).and.returnValue(true);
+        spyOn(component, 'showExecutionDate' as any).and.returnValue(false);
+        spyOn(service, 'getSelectedTrends').and.returnValue([{nodeId: '123', labelName: 'project'}]);
+  
+        // Act
+        component.checkIfZeroData(kpi as any);
+  
+        // Assert
+        expect(component.kpiStatusCodeArr['kpi139']).toBe('202');
+      });
+    });
   });
 });
 

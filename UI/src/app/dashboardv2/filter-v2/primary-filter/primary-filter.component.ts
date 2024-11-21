@@ -155,7 +155,7 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.filterData[selectedLevel]?.length) {
         if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
           if (this.selectedTab.toLowerCase() === 'iteration') {
-            this.filters = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
+            this.filters = this.setDropdownWithMoreActiveOption(selectedLevel); 
           } else if (this.selectedTab.toLowerCase() === 'release') {
             this.filters = this.helperService.releaseSorting(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId))
           } else {
@@ -266,5 +266,31 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   isString(val): boolean { return typeof val === 'string'; }
+
+  onDropdownChange($event:any){
+    if(this.helperService.isDropdownElementSelected($event)){
+      this.applyPrimaryFilters($event)
+    }
+  }
+
+  isFilterHidden(filterDataSet:any): boolean{
+    if(this.selectedTab?.toLowerCase() === 'iteration' ){
+      if(filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length>1){
+        return false;
+      }
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  setDropdownWithMoreActiveOption(selectedLevel){
+    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x=>x.sprintState?.toLowerCase() ==='active');
+    if(moreThanOneActiveOption.length>1){
+      return moreThanOneActiveOption;
+    }else{
+      return this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate'])
+    }
+  }
 
 }

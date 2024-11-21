@@ -3014,7 +3014,7 @@ describe('IterationComponent', () => {
         expect(component.allKpiArray.length).toBeGreaterThan(0);
     })
 
-    it('should filter table columns', () => {
+    it('should not save filter table columns on apply click ', () => {
         service.selectedTrends = [
             {
                 "nodeId": "aCjCgoFkxh_64218f1f7b8332581c81169d",
@@ -3081,7 +3081,7 @@ describe('IterationComponent', () => {
 
         const spypostKpiColumnConfig = spyOn(httpService, 'postkpiColumnsConfig').and.returnValue(of({}));
         component.applyColumnFilter();
-        expect(spypostKpiColumnConfig).toHaveBeenCalled();
+        expect(spypostKpiColumnConfig).toHaveBeenCalledTimes(0);
     });
 
     it('should reload KPI once mapping saved ', () => {

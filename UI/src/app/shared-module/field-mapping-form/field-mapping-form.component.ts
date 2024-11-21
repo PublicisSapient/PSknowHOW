@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 import { Component, Input, OnInit,Output,EventEmitter } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { MessageService,ConfirmationService } from 'primeng/api';
@@ -148,19 +148,19 @@ private setting = {
       })
     }
     if (fieldMapping && (fieldMapping?.originalValue || fieldMapping?.originalValue === false) || (!isNaN(fieldMapping?.originalValue) && fieldMapping?.originalValue >= 0)) {
-      return new FormControl(fieldMapping.originalValue);
+      return new FormControl(fieldMapping.originalValue,config.mandatory ? Validators.required : []);
     } else {
       switch (config.fieldType) {
         case 'text':
-          return new FormControl('');
+          return new FormControl('',config.mandatory ? Validators.required : []);
         case 'radiobutton':
-          return new FormControl('');
+          return new FormControl('',config.mandatory ? Validators.required : []);
         case 'toggle':
           return new FormControl(false);
         case 'number':
           return new FormControl('');
         default:
-          return new FormControl([]);
+          return new FormControl([],config.mandatory ? Validators.required : []);
       }
     }
   }

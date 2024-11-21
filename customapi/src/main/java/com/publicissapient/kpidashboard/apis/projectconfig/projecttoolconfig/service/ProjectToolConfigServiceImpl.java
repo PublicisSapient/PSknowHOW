@@ -282,6 +282,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setAzureIterationStatusFieldUpdate(projectToolConfig.isAzureIterationStatusFieldUpdate());
 		projectTool.setProjectComponent(projectToolConfig.getProjectComponent());
 		projectTool.setTeam(projectToolConfig.getTeam());
+		projectTool.setAzureRefreshActiveSprintReport(projectToolConfig.getAzureRefreshActiveSprintReport());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
 		projectTool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));

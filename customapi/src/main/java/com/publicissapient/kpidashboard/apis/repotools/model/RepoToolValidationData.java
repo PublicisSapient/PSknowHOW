@@ -57,5 +57,8 @@ public class RepoToolValidationData {
 	private long addedLines;
 	private long changedLines;
 	private long kpiPRs;
+	private String prRaisedTime;
+	private String prActivityTime;
+	private String prStatus;
 
 }

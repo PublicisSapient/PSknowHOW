@@ -52,13 +52,13 @@ public class KpiColumnConfigController {
 			@PathVariable String kpiId) {
 		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(basicProjectConfigId,
 				kpiId);
+
 		ServiceResponse response = new ServiceResponse(false, "No data found", null);
 		if (null != kpiColumnConfigDTO) {
 			response = new ServiceResponse(true, "Fetched successfully", kpiColumnConfigDTO);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
 	/**
 	 * Api to save kpi column config
 	 *

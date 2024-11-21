@@ -31,5 +31,9 @@ public class MergeRequests {
     private String createdAt;
     @JsonProperty("updated_at")
     private String updatedAt;
+    @JsonProperty("pickup_time")
+    private Double firstReviewedAt;
+    @JsonProperty("mr_state")
+    private String mrState;
 
 }

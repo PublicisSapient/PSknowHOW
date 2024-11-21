@@ -29,7 +29,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -90,11 +93,11 @@ public class CostOfDelayServiceImplTest {
 	CustomApiConfig customApiSetting;
 	@Mock
 	FilterHelperService filterHelperService;
+	@Mock
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	private Map<String, Object> filterLevelMap;
-	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private List<JiraIssue> codList = new ArrayList<>();
-	private List<JiraIssue> jiraIssuesList = new ArrayList<>();
+	private List<JiraIssueCustomHistory> codHistoryList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -125,10 +128,14 @@ public class CostOfDelayServiceImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
 		codList = jiraIssueDataFactory.getJiraIssues();
-		codList.stream().forEach(f -> f.setChangeDate(LocalDateTime.now().minusDays(2).toString()));
+		codHistoryList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
+		codHistoryList.stream().map(JiraIssueCustomHistory::getStatusUpdationLog).forEach(f -> {
+			f.forEach(g -> g.setUpdatedOn(LocalDateTime.now().minusDays(2)));
+		});
 
 	}
 
@@ -149,7 +156,7 @@ public class CostOfDelayServiceImplTest {
 
 		Map<String, Object> dataList = costOfDelayServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
-		assertThat("Total Release : ", dataList.size(), equalTo(1));
+		assertThat("Total Release : ", dataList.size(), equalTo(3));
 	}
 
 	@Test
@@ -157,12 +164,14 @@ public class CostOfDelayServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(jiraIssueRepository.findCostOfDelayByType(Mockito.any())).thenReturn(codList);
+		when(jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(Mockito.any(), Mockito.any())).thenReturn(codList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
 		when(costOfDelayServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(codHistoryList);
 
 		try {
 			KpiElement kpiElement = costOfDelayServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -180,7 +189,6 @@ public class CostOfDelayServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(jiraIssueRepository.findCostOfDelayByType(Mockito.any())).thenReturn(codList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);

@@ -97,7 +97,16 @@ export class ExportExcelComponent implements OnInit {
             this.modalDetails['tableHeadings'] =
               this.kpiExcelData.headerNames.map((column) => column.header);
             // this.modalDetails['tableValues'] = additionalFilterSupport ? this.kpiExcelData.excelData : [];
-            this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
+            this.modalDetails['tableValues'] = this.kpiExcelData.excelData
+            .map(item => {
+              const formattedItem = { ...item };
+              for (const key in formattedItem) {
+                  if (key.toLowerCase().includes('date') && formattedItem[key]) {
+                      formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
+                  }
+              }
+               return formattedItem
+          });
             this.generateTableColumnData();
             this.modalDetails['header'] = kpiName;
             this.displayModal = true;
@@ -219,18 +228,24 @@ export class ExportExcelComponent implements OnInit {
     return typeof value === 'object' && value !== null;
   }
 
-  customSort(event: SortEvent) {
-    let result = null;
-    event.data.sort((data1, data2) => {
-      const utcDate1: any = !isNaN(new Date(data1[event.field]).getTime()) && new Date(data1[event.field]).toISOString().slice(0, 10);
-      const utcDate2: any = !isNaN(new Date(data2[event.field]).getTime()) && new Date(data2[event.field]).toISOString().slice(0, 10);
-      if (event.field === 'Created Date' || event.field === 'Closed Date') {
-        result = (utcDate1 < utcDate2) ? -1 : (utcDate1 > utcDate2) ? 1 : 0;
-      }
-      else {
-        result = data1[event.field].localeCompare(data2[event.field])
-      }
-      return event.order * result;
-    });
-  }
+  //custom sort for sorting Range. 
+  // customSort(event: any) {
+  //   let result = null;
+  //   event.data.sort((data1, data2) => {
+  //       let value1 = data1[event.field];
+  //     let value2 = data2[event.field];
+  //     const utcDate1: any = !isNaN(new Date(data1[event.field]).getTime()) && new Date(data1[event.field]).toISOString().slice(0, 10);
+  //     const utcDate2: any = !isNaN(new Date(data2[event.field]).getTime()) && new Date(data2[event.field]).toISOString().slice(0, 10);
+  //     if (event.field.toLowerCase().includes('date')) {
+  //       result = (utcDate1 < utcDate2) ? -1 : (utcDate1 > utcDate2) ? 1 : 0;
+  //     } else if(event.field === 'Weeks'){
+  //       const date1 = new Date(value1.split('to')[0]);
+  //           const date2 = new Date(value2.split('to')[0]);
+  //            result = date1.getTime() - date2.getTime();
+  //     } else {
+  //       result = data1[event.field].localeCompare(data2[event.field])
+  //     }
+  //     return event.order * result;
+  //   });
+  // }
 }

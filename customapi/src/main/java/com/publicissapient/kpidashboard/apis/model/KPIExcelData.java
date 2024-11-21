@@ -52,7 +52,7 @@ public class KPIExcelData {
 	@JsonProperty("Original Time Estimate (in hours)")
 	private String originalTimeEstimate;
 
-	@JsonProperty("Total Time Spent (in hours)")
+	@JsonProperty("Time Spent (in hours)")
 	private String totalTimeSpent;
 
 	@JsonProperty("Closed")
@@ -76,7 +76,10 @@ public class KPIExcelData {
 	@JsonProperty("Issue Description")
 	private String issueDesc;
 
-	@JsonProperty("Story Size(In story point)")
+	@JsonProperty("Story Description")
+	private String storyDesc;
+
+	@JsonProperty("Story Points")
 	private String storyPoints;
 
 	@JsonProperty("Intake to DOR")
@@ -124,6 +127,12 @@ public class KPIExcelData {
 	@JsonProperty("Resolved Status")
 	private String resolvedStatus;
 
+	@JsonProperty("Defect Description")
+	private String defectDesc;
+
+	@JsonProperty("Defect Priority")
+	private String defectPriority;
+
 	@JsonProperty("Defect ID")
 	private Map<String, String> defectId;
 
@@ -141,6 +150,9 @@ public class KPIExcelData {
 
 	@JsonProperty("Job Name")
 	private String jobName;
+
+	@JsonProperty("Pipeline Name")
+	private String pipelineName;
 
 	@JsonProperty("Unit Coverage")
 	private String unitCoverage;
@@ -226,6 +238,9 @@ public class KPIExcelData {
 	@JsonProperty("Issue Status")
 	private String issueStatus;
 
+	@JsonProperty("Defect Status")
+	private String defectStatus;
+
 	@JsonProperty("Execution Date")
 	private String executionDate;
 
@@ -274,8 +289,8 @@ public class KPIExcelData {
 	@JsonProperty("Created Date")
 	private String createdDate;
 
-	@JsonProperty("Closed Date")
-	private String closeDate;
+	@JsonProperty("Live Date")
+	private String liveDate;
 
 	@JsonProperty("Updated Date")
 	private String updatedDate;
@@ -367,7 +382,7 @@ public class KPIExcelData {
 	@JsonProperty("Merge Date")
 	private String mergeDate;
 
-	@JsonProperty("Release Date")
+	@JsonProperty("Change Release Date [B]")
 	private String releaseDate;
 
 	@JsonProperty("Merge Request Id")
@@ -460,6 +475,25 @@ public class KPIExcelData {
 	@JsonProperty("Closed PR")
 	private Long closedPRs;
 
+	@JsonProperty("PR Raised Time")
+	private String prRaisedTime;
 
+	@JsonProperty("PR Merged Time")
+	private String prMergedTime;
+
+	@JsonProperty("Lead Time (In Days) [B-A]")
+	private String leadTimeForChange;
+
+	@JsonProperty("Change Completion Date [A]")
+	private String changeCompletionDate;
+
+	@JsonProperty("Author")
+	private String author;
+
+	@JsonProperty( "PR Review Time")
+	private String prReviewTime;
+
+	@JsonProperty("PR Status")
+	private String prStatus;
 
 }

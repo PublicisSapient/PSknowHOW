@@ -83,7 +83,7 @@ export class GoogleAnalyticsService {
   setProjectData(data) {
     const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
     for (let i = 0; i < data?.length; i++) {
-      dataLayer.push({
+      dataLayer?.push({
         event: 'ProjectViewed',
         ...data[i]
       });

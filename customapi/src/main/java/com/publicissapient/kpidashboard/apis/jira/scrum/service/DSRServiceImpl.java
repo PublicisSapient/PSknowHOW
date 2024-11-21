@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -87,6 +87,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private static final String TOTAL = "Total Defects";
 	private static final String QA = "QaKpi";
 	private static final String PROJFMAPPING = "projectFieldMapping";
+	public static final String STORY_LIST_WO_DROP = "storyList";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -215,6 +216,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		resultListMap.put(SPRINTSTORIES, sprintWiseStoryList);
 		resultListMap.put(TOTALBUGKEY, remainingDefect);
 		resultListMap.put(PROJFMAPPING, projFieldMapping);
+		resultListMap.put(STORY_LIST_WO_DROP, storyListWoDrop);
 		return resultListMap;
 
 	}
@@ -313,7 +315,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
-
+		List<JiraIssue> totalStoryWoDrop = (List<JiraIssue>) defectDataListMap.get(STORY_LIST_WO_DROP);
 		List<JiraIssue> totalDefects = (List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY);
 		Map<Pair<String, String>, List<JiraIssue>> unlinkedDefect = totalDefects.stream()
 				.filter(issue -> CollectionUtils.isEmpty(issue.getDefectStoryID())).collect(Collectors.groupingBy(
@@ -352,7 +354,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			Map<String, Object> overallHowerMap = new HashMap<>();
 			List<DSRValidationData> validationDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(uatLabels)) {
-				for (String label : uatLabels) {
+				for (String lowerCaseLabel : uatLabels) {
+					String label = lowerCaseLabel.toLowerCase();
 					List<JiraIssue> issueList = uatDefect.getOrDefault(label, new ArrayList<>());
 					int totalDefectCount = subCategoryWiseTotalBugList.size();
 					Map<String, Object> howerMap = new HashMap<>();
@@ -367,8 +370,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 						howerMap.put(UAT, 0);
 					}
 					howerMap.put(TOTAL, totalDefectCount);
-					finalMap.put(StringUtils.capitalize(label), dsrPercentage);
-					overallHowerMap.put(StringUtils.capitalize(label), howerMap);
+					finalMap.put(label, dsrPercentage);
+					overallHowerMap.put(label, howerMap);
 				}
 
 				uatLabels.forEach(label -> finalMap.computeIfAbsent(label, val -> 0D));
@@ -384,11 +387,13 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			createDataCount(trendValueList, node, dataCountMap, trendLineName, finalMap, overallHowerMap,
 					subCategoryWiseTotalBugList.size());
 
-			populateExcel(requestTrackerId, subCategoryWiseTotalBugList, validationDataList, excelData, node);
+			populateExcel(requestTrackerId, subCategoryWiseTotalBugList, validationDataList, excelData, node,
+					totalStoryWoDrop);
 			mapTmp.get(node.getId()).setValue(dataCountMap);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_SEEPAGE_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.DEFECT_SEEPAGE_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 
 	}
 
@@ -398,7 +403,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	}
 
 	private void populateExcel(String requestTrackerId, List<JiraIssue> sprintWiseSubCategoryWiseTotalBugListMap,
-			List<DSRValidationData> subCategoryWiseUatBugList, List<KPIExcelData> excelData, Node node) {
+			List<DSRValidationData> subCategoryWiseUatBugList, List<KPIExcelData> excelData, Node node,
+			List<JiraIssue> totalStoryWoDrop) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			Map<String, JiraIssue> totalBugList = new HashMap<>();
@@ -406,7 +412,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					.forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
 
 			KPIExcelUtility.populateDefectSeepageRateExcelData(node.getSprintFilter().getName(), totalBugList,
-					subCategoryWiseUatBugList, excelData);
+					subCategoryWiseUatBugList, excelData, customApiConfig, totalStoryWoDrop);
 		}
 	}
 
@@ -450,14 +456,15 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<String, List<JiraIssue>> uatMap = new HashMap<>();
 		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByIdentification())
 				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByValue())) {
-			List<String> jiraBugRaisedByValue = fieldMapping.getJiraBugRaisedByValue();
-			labels.addAll(new HashSet<>(jiraBugRaisedByValue));
+			Set<String> jiraBugRaisedByValue = new HashSet<>();
+			fieldMapping.getJiraBugRaisedByValue().forEach(value -> jiraBugRaisedByValue.add(value.toLowerCase()));
+			labels.addAll(jiraBugRaisedByValue);
 			if (fieldMapping.getJiraBugRaisedByIdentification().trim().equalsIgnoreCase(Constant.LABELS)) {
 				testCaseList.stream()
-						.filter(jIssue -> CollectionUtils.isNotEmpty(jIssue.getLabels())
-								&& jIssue.getLabels().stream().anyMatch(jiraBugRaisedByValue::contains))
-						.forEach(jIssue -> jIssue.getLabels()
-								.forEach(label -> uatMap.computeIfAbsent(label, k -> new ArrayList<>()).add(jIssue)));
+						.filter(testCase -> CollectionUtils.isNotEmpty(testCase.getLabels()) && testCase.getLabels()
+								.stream().anyMatch(label -> jiraBugRaisedByValue.contains(label.toLowerCase())))
+						.forEach(jIssue -> jIssue.getLabels().forEach(label -> uatMap
+								.computeIfAbsent(label.toLowerCase(), k -> new ArrayList<>()).add(jIssue)));
 
 			} else {
 				testCaseList.stream()
@@ -465,8 +472,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 								.equalsIgnoreCase(f.getDefectRaisedBy()))
 						.collect(Collectors.toList()).stream()
 						.filter(issue -> CollectionUtils.isNotEmpty(issue.getUatDefectGroup()))
-						.forEach(issue -> issue.getUatDefectGroup()
-								.forEach(label -> uatMap.computeIfAbsent(label, k -> new ArrayList<>()).add(issue)));
+						.forEach(issue -> issue.getUatDefectGroup().forEach(label -> uatMap
+								.computeIfAbsent(label.toLowerCase(), k -> new ArrayList<>()).add(issue)));
 			}
 		}
 		// removing for overall filter

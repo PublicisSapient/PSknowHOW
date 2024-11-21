@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.*;
 import org.assertj.core.api.Assertions;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -54,12 +54,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
-import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -185,10 +179,10 @@ public class BacklogEpicProgressServiceImplTest {
 
 	@Test
 	public void testGetStatusWiseCountListPositive() {
-		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
+		EpicMetaData epicMetaData = new EpicMetaData("EPIC", "url", "2024-06-04T13:24:14.2500000");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueArrayList,
-				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
-		assertThat(dataCount.getData()).isEqualTo("45");
+				jiraIssueReleaseStatusList.get(0), epicMetaData, fieldMapping);
+		assertThat(dataCount.getData()).isEqualTo("48");
 		assertThat(dataCount.getSize()).isEqualTo("63.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
 		assertThat(toDoCount.getValue()).isEqualTo(5L);
@@ -200,7 +194,7 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(inProgressCount.getSubFilter()).isEqualTo(IN_PROGRESS);
 
 		DataCount doneCount = ((List<DataCount>) dataCount.getValue()).get(2);
-		assertThat(doneCount.getValue()).isEqualTo(40L);
+		assertThat(doneCount.getValue()).isEqualTo(43L);
 		assertThat(doneCount.getSize()).isEqualTo(59.0);
 		assertThat(doneCount.getSubFilter()).isEqualTo(DONE);
 	}
@@ -211,9 +205,9 @@ public class BacklogEpicProgressServiceImplTest {
 	@Test
 	public void testGetStatusWiseCountListNegative() {
 		List<JiraIssue> jiraIssueList = null;
-		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
+		EpicMetaData epicMetaData = new EpicMetaData("EPIC", "url", "2024-06-04T13:24:14.2500000");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueList,
-				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
+				jiraIssueReleaseStatusList.get(0), epicMetaData, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("0");
 	}
 
@@ -280,6 +274,7 @@ public class BacklogEpicProgressServiceImplTest {
 		fullDataCount1.setData("8");
 		fullDataCount1.setValue(statusWiseDataCount1);
 		fullDataCount1.setKpiGroup("epic1");
+		fullDataCount1.setCreatedDate("2024-06-04T13:24:14.2500000");
 		fullDataCount.add(fullDataCount1);
 
 		List<DataCount> statusWiseDataCount2 = new ArrayList<>();
@@ -293,6 +288,7 @@ public class BacklogEpicProgressServiceImplTest {
 		fullDataCount2.setData("10");
 		fullDataCount2.setValue(statusWiseDataCount2);
 		fullDataCount2.setKpiGroup("epic2");
+		fullDataCount2.setCreatedDate("2024-06-04T13:24:14.2500000");
 		fullDataCount.add(fullDataCount2);
 		return fullDataCount;
 

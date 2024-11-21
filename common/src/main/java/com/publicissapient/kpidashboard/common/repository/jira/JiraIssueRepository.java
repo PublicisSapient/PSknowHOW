@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -200,7 +199,7 @@ public interface JiraIssueRepository
 	 *            typeName
 	 * @return set of jiraIssues
 	 */
-	@Query(value = "{ 'number' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'typeName' : ?2  }", fields = "{ 'number' : 1, 'basicProjectConfigId' : 1,'url':1, 'name':1, 'status':1 }")
+	@Query(value = "{ 'number' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'typeName' : ?2  }", fields = "{ 'number' : 1, 'basicProjectConfigId' : 1,'url':1, 'name':1, 'status':1, 'createdDate':1 }")
 	Set<JiraIssue> findNumberInAndBasicProjectConfigIdAndTypeName(List<String> numberIds, String basicProjectConfigId,
 			String typeName);
 
@@ -209,4 +208,26 @@ public interface JiraIssueRepository
 
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
 	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);
+
+	/**
+	 * Finds distinct sprint IDs by the given basic project configuration ID.
+	 *
+	 * @param basicProjectConfigId
+	 *            the basic project configuration ID
+	 * @return a list of distinct sprint IDs
+	 */
+	@Query(value = "{ 'basicProjectConfigId': ?0 }", fields = "{ 'sprintID': 1 } , '_id':0}")
+	List<JiraIssue> findDistinctSprintIDsByBasicProjectConfigId(String basicProjectConfigId);
+
+	/**
+	 * Finds Jira issues by sprint IDs and basic project configuration ID.
+	 *
+	 * @param sprintIDs
+	 *            the sprint IDs
+	 * @param basicProjectConfigId
+	 *            the basic project configuration ID
+	 * @return a list of Jira issues
+	 */
+	@Query(value = "{ 'sprintID': { $in: ?0 }, 'basicProjectConfigId': ?1 }", fields = "{ 'sprintID': 1, 'number': 1, '_id': 0 }")
+	List<JiraIssue> findBySprintIDInAndBasicProjectConfigId(Set<String> sprintIDs, String basicProjectConfigId);
 }

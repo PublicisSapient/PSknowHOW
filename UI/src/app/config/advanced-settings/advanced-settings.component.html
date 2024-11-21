@@ -18,9 +18,6 @@
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="p-grid p-m-0">
-  <!-- <div class="p-col-2">
-    <p-panelMenu [model]="items" [multiple]="false"></p-panelMenu>
-  </div> -->
   <div class="p-col-12">
     <div class="main">
       <div class="content server-role" *ngIf="selectedView === 'server_role'">
@@ -113,7 +110,6 @@
                     }">
                       {{ showProcessorLastState(processor.toolName)}}
                     </div>
-                    <!-- <span *ngIf="showProcessorLastState(processor.toolName) === 'NA'">NA</span> -->
                   </div>
                   <div class="p-ml-2" *ngIf="processor.toolName === 'Jira'">
                     <i class="pi pi-info-circle"
@@ -128,19 +124,32 @@
                       Reached the API rate limit. Repo scanning will automatically resume after {{getSCMToolTimeDetails(processor.toolName)}}
                     </p-overlayPanel>
                   </div>
+                  
                 </div>
               </td>
               <td class='custom-table-cell p-d-flex p-align-center column-width'>
-               <button pButton pRipple label="Run Now"
-                  icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
-                  [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
-                  (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
-                  class="p-button-sm p-button-success p-button-raised"
-                  (click)="runProcessor(processor.toolName)"></button>
-                <div class="action-btns p-ml-3"
-                  [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.toolName)?.length > 0 && findTraceLogForTool(processor?.toolName)) || findTraceLogForTool(processor?.toolName)?.isDeleteDisable}"
-                  *ngIf="!shouldDisableRunProcessor()"><i class="far fa-trash-alt"
-                    (click)="deleteProcessorData(processor)"></i></div>
+                <div>
+                  <div *ngIf="processor.toolName === 'Azure'" class="p-mb-2">
+                    <p-inputSwitch tooltipPosition="top" [pTooltip]="azureSnapshotToggleTooltip" name="azureRefreshActiveSprintReport"
+                      id="azureRefreshActiveSprintReport" [(ngModel)]="processor.azureRefreshActiveSprintReport"
+                      (onChange)="azureRefreshActiveSprintReportToggleChange(processor)">
+                    </p-inputSwitch>
+                    <label>
+                      Refresh Snapshot
+                    </label>
+                  </div>
+                  <div style="display: flex;">
+                    <button pButton pRipple label="Run Now"
+                      icon="{{findTraceLogForTool(processor.toolName)?.executionOngoing === true ? 'pi pi-spin pi-spinner' : 'pi pi-forward'}}"
+                      [disabled]="(shouldDisableRunProcessor() || findTraceLogForTool(processor.toolName)?.executionOngoing === true) && processor.toolName !== 'Jira' || 
+                                  (isSCMToolProcessor(processor.toolName) && showProcessorLastState(processor.toolName) === 'Warning') "
+                      class="p-button-sm p-button-success p-button-raised" (click)="runProcessor(processor.toolName)"></button>
+                    <div class="p-ml-3 p-d-flex p-jc-center p-align-center color-blue cursor-pointer "
+                      [ngClass]="{'disabled':!(getToolDetailsForProcessor(processor?.toolName)?.length > 0 && findTraceLogForTool(processor?.toolName)) || findTraceLogForTool(processor?.toolName)?.isDeleteDisable}"
+                      *ngIf="!shouldDisableRunProcessor(processor?.toolName)"><i class="far fa-trash-alt"
+                        (click)="deleteProcessorData(processor)"></i></div>
+                  </div>
+                </div>
               </td>
             </tr>
           </ng-template>
@@ -216,7 +225,25 @@
         </ng-template>
       </p-table>
     </section>
-
+    <section *ngIf="findTraceLogForTool('Jira')?.additionalInfo?.length > 0">
+      <h3>  <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
+        src="../../../assets/img/Warning.svg" /> Incorrect Sprint Tagging (Please correct the sprint tagging for the issues listed below.)</h3>
+      <p-table [value]="findTraceLogForTool('Jira')?.additionalInfo" [tableStyle]="{ 'min-width': '40rem' }"
+        [scrollable]="true" scrollHeight="200px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Sprint Name </th>
+            <th>Issue tagged</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>{{item.iterationName}}</td>
+            <td>{{ item.issuesTagged.join(', ') }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
     <ul class="p-pr-1 p-pl-0 list-style-none" *ngIf="dataMismatchObj['Jira']">
       <li class="tooltip-item p-d-flex p-pt-2">
         <div class="icon-container">

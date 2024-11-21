@@ -93,7 +93,8 @@ export class HelperService {
                             kpiRequestObject.kpiList.push(obj)
                         }
                     }
-                } else if (visibleKpis.includes(obj.kpiId)) {
+                } 
+                else if (visibleKpis.includes(obj.kpiId)) {
                     if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
                         kpiRequestObject.kpiList.push(obj)
                     }
@@ -837,7 +838,7 @@ export class HelperService {
                     // dataCount += item?.data;
                     ++dataCount;
                 } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-                    if (item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
+                    if (item.value[0]?.hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
                         if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
                             ++dataCount;
                         } else if (this.checkAllValues(item.value, 'data', chartType)) {
@@ -879,7 +880,7 @@ export class HelperService {
     }
 
     checkIfArrayHasData(item) {
-        return (Array.isArray(item.value) && item.value.length > 0)
+        return (Array.isArray(item?.value) && item.value?.length > 0)
     }
 
     deepEqual(obj1: any, obj2: any): boolean {
@@ -910,4 +911,47 @@ export class HelperService {
 
         return true;
     }
+
+    isDropdownElementSelected($event:any): boolean{
+        try{
+            if($event.originalEvent.type === 'click'){
+                return true;
+            }else{
+                return false;
+            }
+        }catch (ex){
+            console.error(ex,'Not a Browser event');
+        }
+    }
+
+    transformDateToISO(value: Date | string): string {
+        let matches = false
+        if(!value){
+            return '-';
+          }
+      
+          let date:any;
+          let time = ''
+      
+          if(typeof value === 'string'){
+            date = new Date(value);
+            const regex = /^(\d{1,2}-(\d{2}|[a-zA-Z]{3})-\d{4}|\d{4}-\d{2}-\d{2})$/i
+            matches = regex.test(value.trim());
+          } 
+          if(value instanceof Date){
+            date = value;
+          }
+      
+          if(isNaN(date.getTime())){
+            return '-';
+          }else{
+            time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+          }
+          const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+          const year = date.getFullYear();
+          const month = monthNames[date.getMonth()];
+          const day = String(date.getDate()).padStart(2, '0');
+         
+          return `${day}-${month}-${year} ${(matches?'':time)}`;
+      }
 }
