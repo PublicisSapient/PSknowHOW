@@ -1,0 +1,28 @@
+:host .kpi-card-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #c0c0c0;
+    padding: 8px 10px;
+    letter-spacing: 0px;
+    align-items: center;
+  
+    color: #202429;
+    overflow: visible;
+  }
+
+
+  .kpi-card-title-container{
+    display: flex;
+  }
+
+  .kpi-card-title-container h3 {
+    margin-bottom: auto;
+    line-height: 32px;
+    margin-top: 0;
+}
+
+:host .kpi-menu-container {
+  position: absolute;
+  right: 20px;
+}
+  

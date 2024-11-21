@@ -1,17 +1,6 @@
 <div class="kpi-card-container">
-  <div class="kpi-card-header">
-    <div class="kpi-card-title-container">
-        <h3 >{{cardData?.kpiName}}</h3>
-        <span *ngIf="cardData?.kpiInfo" aria-hidden="true" class="info-icon" (mouseover)="showTooltip(true)"
-          (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}">
-          <img alt="info" class="" src="../../../assets/img/Info.svg" />
-          <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="cardData?.kpiInfo?.definition"
-            (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
-            [kpiName]="cardData?.kpiName"></app-tooltip-v2>
-        </span>
-      </div>
-  </div>
-
+ <app-ps-kpi-card-header [cardHeaderData]="cardData"></app-ps-kpi-card-header>
+ 
   <div class="kpi-card-body">
     <div class="kpi-card-filter p-px-5 p-py-2">
         <div id="">
@@ -27,13 +16,13 @@
         </div>
     </div>
     <div class="p-px-5 p-py-2">
-
+        <app-stacked-bar-chart [data]="currentChartData" [width]="800" [height]="150"></app-stacked-bar-chart>
     </div>
   </div>
 
   <div class="kpi-card-footer p-pr-5 p-pl-5">
-  <!-- [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}"<app-trend-indicator-v2 *ngIf="checkIfDataPresent(kpiDataStatusCode)" [trendData]="trendData"
-    [colorObj]="trendBoxColorObj">
-  </app-trend-indicator-v2> -->
+    <ng-container  *ngFor="let footer of KpiCategory">
+        {{footer.categoryName}}
+    </ng-container>
 </div>
 </div>

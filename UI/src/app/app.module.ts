@@ -148,6 +148,7 @@ import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 import { KpiCardV3Component } from './component/kpi-card-v3/kpi-card-v3.component';
 import { StackedBarChartComponent } from './component/stacked-bar-chart/stacked-bar-chart.component';
+import { PsKpiCardHeaderComponent } from './component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
 
 
 /******************************************************/
@@ -238,7 +239,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         KpiAdditionalFilterComponent,
         StickyHeaderV2Component,
         KpiCardV3Component,
-        StackedBarChartComponent
+        StackedBarChartComponent,
+        PsKpiCardHeaderComponent
     ],
     imports: [
         DropdownModule,

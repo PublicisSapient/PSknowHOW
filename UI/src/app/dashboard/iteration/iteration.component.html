@@ -108,7 +108,7 @@
                       <!-- full width kpi render end -->
                       <!-- kpi part 1 render start -->
                       <div class="subKPi p-sm-6 p-pt-0" cdkDropList (cdkDropListDropped)="drop($event,board)" [cdkDropListData]="board.kpiPart1">
-                        <ng-container *ngFor="let kpi of data">
+                        <ng-container class="p-pt-3" *ngFor="let kpi of data">
                           <kpi-card-v3 [cardData]="kpi"></kpi-card-v3>
                         </ng-container>
                       </div>
