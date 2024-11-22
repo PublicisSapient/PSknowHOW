@@ -39,7 +39,6 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public List<String> getAllRolesByResourceName(String resourceName) {
 
-		return roleRepository.findByResource_Name(resourceName).stream().map(Role::getName)
-				.collect(Collectors.toList());
+		return roleRepository.findByResource_Name(resourceName).stream().map(Role::getName).collect(Collectors.toList());
 	}
 }
