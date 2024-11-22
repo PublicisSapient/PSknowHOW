@@ -1888,93 +1888,103 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   checkIfZeroData(kpi) {
     if (this.checkIfDataPresent(kpi) && this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
       if (this.service.getSelectedTrends()?.length === 1) {
-        let data = this.kpiChartData[kpi.kpiId];
-        let dataValue = 0;
+
+        /** 19th Nov, 2024: Decision was taken to bypass all the checks and show a warning in case of failed processor run */
+
+        // let data = this.kpiChartData[kpi.kpiId];
+        // let dataValue = 0;
 
         // flow load and flow distributions KPIs
-        if (kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146') {
-          if (this.kpiChartData[kpi.kpiId]?.length) {
-            return true;
+        // if (kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146') {
+        //   if (this.kpiChartData[kpi.kpiId]?.length) {
+        //     return true;
+        //   }
+        // }
+
+        // // Cycle Time
+        // if (kpi.kpiId === 'kpi171') {
+        //   if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
+        //     return true;
+        //   } else {
+        //     return false;
+        //   }
+        // }
+
+        // // Refinement Rejection Rate and Production Defects Ageing
+        // if (kpi.kpiId === 'kpi139' || kpi.kpiId === 'kpi127') {
+        //   if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length) {
+        //     if (Array.isArray(data[0].value) && data[0].value.length) {
+        //       data[0].value.forEach(element => {
+        //         dataValue += parseInt(element.data);
+        //       });
+        //     }
+        //   }
+        // }
+
+        // // Sonar Code Quality, Test Execution and Pass Percentage KPI , PI Predicatability
+        // else if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
+        //   if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
+        //     if (Array.isArray(data[0].value) && data[0].value) {
+        //       data[0].value.forEach(element => {
+        //         if (kpi.kpiId === 'kpi70') {
+        //           dataValue += element.value;
+        //         } else if (Array.isArray(element.dataValue) && element.dataValue.length) {
+        //           element.dataValue.forEach(subElem => {
+        //             dataValue += subElem.value;
+        //           });
+        //         }
+        //       });
+        //     }
+        //   }
+        // }
+
+        // else if (Array.isArray(data[0].value)) {
+        //   data[0].value.forEach(element => {
+        //     dataValue += element.value;
+        //   });
+        // }
+
+        // if (dataValue > 0) {
+        //   return true;
+        // } else {
+        let processorLastRun = this.findTraceLogForTool(kpi.kpiDetail.combinedKpiSource || kpi.kpiDetail.kpiSource);
+        // processorLastRunSuccess = false;
+        if (processorLastRun == undefined || processorLastRun == null || processorLastRun.executionEndedAt == 0) {
+          return true;
+        } else if (!processorLastRun?.executionSuccess) {
+          if (this.kpiStatusCodeArr[kpi.kpiId] !== '201') {
+            this.kpiStatusCodeArr[kpi.kpiId] = '203';
           }
-        }
-
-        // Cycle Time
-        if (kpi.kpiId === 'kpi171') {
-          if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-
-        // Refinement Rejection Rate and Production Defects Ageing
-        if (kpi.kpiId === 'kpi139' || kpi.kpiId === 'kpi127') {
-          if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length) {
-            if (Array.isArray(data[0].value) && data[0].value.length) {
-              data[0].value.forEach(element => {
-                dataValue += parseInt(element.data);
-              });
-            }
-          }
-        }
-
-        // Sonar Code Quality, Test Execution and Pass Percentage KPI , PI Predicatability
-        else if (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153') {
-          if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
-            if (Array.isArray(data[0].value) && data[0].value) {
-              data[0].value.forEach(element => {
-                if (kpi.kpiId === 'kpi70') {
-                  dataValue += element.value;
-                } else if (Array.isArray(element.dataValue) && element.dataValue.length) {
-                  element.dataValue.forEach(subElem => {
-                    dataValue += subElem.value;
-                  });
-                }
-              });
-            }
-          }
-        }
-
-        else if (Array.isArray(data[0].value)) {
-          data[0].value.forEach(element => {
-            dataValue += element.value;
-          });
-        }
-
-        if (dataValue > 0) {
+          return true;
+        } else if (processorLastRun?.executionSuccess) {
           return true;
         } else {
-          let processorLastRunSuccess = this.showExecutionDate(kpi.kpiDetail.combinedKpiSource || kpi.kpiDetail.kpiSource);
-          // processorLastRunSuccess = false;
-          if (!processorLastRunSuccess) {
-            this.kpiStatusCodeArr[kpi.kpiId] = '202';
-          } else {
-            return true;
-          }
+          return true;
         }
+        // }
       } else {
         return true;
       }
-      return false;
+      // return false;
     } else {
       return this.checkIfDataPresent(kpi);
     }
   }
 
-  /**
-   * Determines if the execution of a specified processor was successful based on its trace log.
-   * @param processorName - The name of the processor to check, case insensitive.
-   * @returns A boolean indicating whether the execution was successful.
-   * @throws No exceptions are thrown by this function.
-   */
-  showExecutionDate(processorName) {
-    const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
-    if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
-      return false;
-    } else {
-      return traceLog?.executionSuccess === true ? true : false;
-    }
-  }
+  // /**
+  //  * Determines if the execution of a specified processor was successful based on its trace log.
+  //  * @param processorName - The name of the processor to check, case insensitive.
+  //  * @returns A boolean indicating whether the execution was successful.
+  //  * @throws No exceptions are thrown by this function.
+  //  */
+  // showExecutionDate(processorName) {
+  //   const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
+  //   if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
+  //     return false;
+  //   } else {
+  //     return traceLog?.executionSuccess === true ? true : false;
+  //   }
+  // }
 
   /**
    * Retrieves the trace log for a specified processor by its name.
@@ -1983,39 +1993,40 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    */
   findTraceLogForTool(processorName) {
     const sourceArray = (processorName.includes('/')) ? processorName.split('/') : [processorName];
-    return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
+    return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName']));
   }
 
 
   checkIfDataPresent(kpi) {
     if (this.kpiStatusCodeArr[kpi.kpiId]) {
-      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146')) {
+      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201' || this.kpiStatusCodeArr[kpi.kpiId] === '203') && (kpi.kpiId === 'kpi148' || kpi.kpiId === 'kpi146')) {
         if (this.kpiChartData[kpi.kpiId]?.length) {
           return true;
         }
       }
 
-      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi139' || kpi.kpiId === 'kpi127')) {
+      else if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201' || this.kpiStatusCodeArr[kpi.kpiId] === '203') && (kpi.kpiId === 'kpi139' || kpi.kpiId === 'kpi127')) {
         if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length) {
           return true;
         }
       }
 
-      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153')) {
+      else if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201' || this.kpiStatusCodeArr[kpi.kpiId] === '203') && (kpi.kpiId === 'kpi168' || kpi.kpiId === 'kpi70' || kpi.kpiId === 'kpi153' || kpi.kpiId === 'kpi135')) {
         if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0].value?.length > 0) {
           return true;
         }
       }
 
-      if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && (kpi.kpiId === 'kpi171')) {
+      else if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201' || this.kpiStatusCodeArr[kpi.kpiId] === '203') && (kpi.kpiId === 'kpi171')) {
         if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
           return true;
         } else {
           return false;
         }
       }
-
-      return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201') && this.helperService.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType, this.selectedTab);
+      else {
+        return (this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201' || this.kpiStatusCodeArr[kpi.kpiId] === '203') && this.helperService.checkDataAtGranularLevel(this.kpiChartData[kpi.kpiId], kpi.kpiDetail.chartType, this.selectedTab);
+      }
     }
     return false;
   }

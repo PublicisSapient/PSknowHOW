@@ -22,5 +22,4 @@ import java.util.List;
 public interface UserRoleService {
 
 	List<String> getRolesNamesByUsername(String username);
-
 }
