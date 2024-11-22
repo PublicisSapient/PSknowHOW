@@ -138,8 +138,8 @@ public class NotificationServiceImpl implements NotificationService {
 				sendNotificationEvent(emailAddresses, customData, subject, notKey, authConfig.getKafkaMailTopic(),
 						kafkaTemplate, templateKey, authConfig.isMailWithoutKafka());
 			} else {
-				log.error(
-						"Notification Event not sent : No email address found " + "or Property - notificationSubject.accessRequest not set in property file ");
+				log.error("Notification Event not sent : No email address found " +
+						"or Property - notificationSubject.accessRequest not set in property file ");
 			}
 		} else {
 			log.info("Notification Switch is Off. If want to send notification set true for notification.switch in property");

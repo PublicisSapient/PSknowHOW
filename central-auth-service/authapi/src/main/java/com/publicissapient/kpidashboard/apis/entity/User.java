@@ -150,6 +150,11 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User{" + "id=" + id + ", username='" + username + '\'' + ", password='" + password + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", displayName='" + displayName + '\'' + ", failedLoginAttemptCount=" + failedLoginAttemptCount + ", lastUnsuccessfulLoginTime=" + lastUnsuccessfulLoginTime + ", email='" + email + '\'' + ", approved=" + approved + ", userVerified=" + userVerified + ", authType='" + authType + '\'' + ", createdDate=" + createdDate + ", modifiedDate=" + modifiedDate + '}';
+		return "User{" + "id=" + id + ", username='" + username + '\'' + ", password='" + password + '\'' +
+				", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", displayName='" + displayName + '\'' +
+				", failedLoginAttemptCount=" + failedLoginAttemptCount + ", lastUnsuccessfulLoginTime=" +
+				lastUnsuccessfulLoginTime + ", email='" + email + '\'' + ", approved=" + approved + ", userVerified=" +
+				userVerified + ", authType='" + authType + '\'' + ", createdDate=" + createdDate + ", modifiedDate=" +
+				modifiedDate + '}';
 	}
 }
