@@ -92,5 +92,4 @@ public class NotificationEventProducer {
 		LOGGER.info(SUCCESS_MESSAGE + " key : {}, value : {}, Partition : {}", key, email.getSubject(),
 				result.getRecordMetadata().partition());
 	}
-
 }

@@ -25,12 +25,11 @@ import com.publicissapient.kpidashboard.apis.entity.GlobalConfig;
 
 /**
  * Interface for global_config collection
- * 
+ *
  * @author Hiren Babariya
  */
 @Repository
 public interface GlobalConfigRepository extends JpaRepository<GlobalConfig, Long> {
 
 	GlobalConfig findByEnv(String env);
-
 }

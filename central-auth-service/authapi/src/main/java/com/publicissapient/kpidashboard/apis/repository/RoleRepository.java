@@ -28,5 +28,4 @@ import com.publicissapient.kpidashboard.apis.entity.Role;
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
 	List<Role> findByResource_Name(String resourceName);
-
 }
