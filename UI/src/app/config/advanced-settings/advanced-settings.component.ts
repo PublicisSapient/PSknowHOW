@@ -97,7 +97,7 @@ export class AdvancedSettingsComponent implements OnInit {
   // used to fetch projects
   getProjects() {
     const that = this;
-    this.httpService.getUserProjects()
+    this.httpService.getUserProjects('includeAll=false')
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {

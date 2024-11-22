@@ -670,8 +670,8 @@ export class HttpService {
     return forkJoin([projectList]);
   }
 
-  getUserProjects(): Observable<any> {
-    return this.http.get(this.basicConfigUrl);
+  getUserProjects(queryParams?): Observable<any> {
+    return this.http.get(`${this.basicConfigUrl}?${queryParams}`);
   }
 
   /** add basic config */
