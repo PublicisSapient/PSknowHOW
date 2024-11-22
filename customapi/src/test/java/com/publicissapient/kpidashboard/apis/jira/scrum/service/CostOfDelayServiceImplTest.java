@@ -107,7 +107,7 @@ public class CostOfDelayServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("");
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi113");
 		kpiRequest.setLabel("PROJECT");
-
+		List<ProjectBasicConfig> projectConfigList=new ArrayList<>();
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectBasicConfig.setIsKanban(true);
