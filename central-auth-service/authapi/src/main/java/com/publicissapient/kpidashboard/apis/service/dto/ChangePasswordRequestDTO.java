@@ -35,5 +35,4 @@ public class ChangePasswordRequestDTO {
 
 	@NotNull
 	private String username;
-
 }

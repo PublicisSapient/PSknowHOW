@@ -75,5 +75,4 @@ public class UserApprovalServiceImpl implements UserApprovalService {
 	public boolean rejectUser(String username) {
 		return userService.deleteByUserName(username);
 	}
-
 }

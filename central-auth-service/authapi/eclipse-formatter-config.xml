@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profiles>
+    <profile>
+        <name>Default Eclipse Formatter</name>
+        <setting id="org.eclipse.jdt.core.formatter.line_split" value="120"/> <!-- Max line width -->
+        <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/> <!-- Use spaces instead of tabs -->
+        <setting id="org.eclipse.jdt.core.formatter.tabulation.size" value="2"/> <!-- Indent size -->
+        <setting id="org.eclipse.jdt.core.formatter.indentation.size" value="2"/>
+
+        <!-- Blank lines -->
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_method" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_after_imports" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_class_declarations" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_between_type_declarations" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_field_declarations" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_between_import_groups" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_closing_brace" value="0"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_method" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_enum_constants" value="1"/>
+
+        <!-- Newline behavior -->
+        <setting id="org.eclipse.jdt.core.formatter.keep_guardian_clause_on_one_line" value="true"/>
+        <setting id="org.eclipse.jdt.core.formatter.keep_annotation_on_one_line" value="false"/>
+        <setting id="org.eclipse.jdt.core.formatter.join_wrapped_lines" value="true"/>
+
+        <!-- Braces placement -->
+        <setting id="org.eclipse.jdt.core.formatter.brace_position_for_type_declaration" value="end_of_line"/>
+        <setting id="org.eclipse.jdt.core.formatter.brace_position_for_method_declaration" value="end_of_line"/>
+        <setting id="org.eclipse.jdt.core.formatter.brace_position_for_constructor_declaration" value="end_of_line"/>
+        <setting id="org.eclipse.jdt.core.formatter.brace_position_for_block" value="end_of_line"/>
+        <setting id="org.eclipse.jdt.core.formatter.brace_position_for_enum_declaration" value="end_of_line"/>
+
+        <!-- Wrapping and splitting -->
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_method_invocation" value="16"/>
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_constructor_declaration" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_binary_expression" value="2"/>
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_compact_if" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.wrap_before_binary_operator" value="do_not_wrap"/>
+    </profile>
+</profiles>
