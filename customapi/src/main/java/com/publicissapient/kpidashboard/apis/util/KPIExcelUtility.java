@@ -1603,6 +1603,7 @@ public class KPIExcelUtility {
 		jiraIssueModalObject.setIssueType(jiraIssue.getTypeName());
 		jiraIssueModalObject.setPriority(jiraIssue.getPriority());
 		KPIExcelUtility.populateAssignee(jiraIssue, jiraIssueModalObject);
+		jiraIssueModalObject.setIssueSize(Constant.DASH);
 		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			jiraIssueModalObject.setIssueSize(df2.format(jiraIssue.getStoryPoints()));
@@ -1614,8 +1615,6 @@ public class KPIExcelUtility {
 			jiraIssueModalObject
 					.setIssueSize(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/"
 							+ roundingOff(originalEstimateInHours) + " hrs");
-		} else {
-			jiraIssueModalObject.setIssueSize(Constant.DASH);
 		}
 		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
 				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");

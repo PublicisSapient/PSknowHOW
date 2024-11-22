@@ -79,22 +79,20 @@ public class WebSecurityConfig {
 	protected SecurityFilterChain filterChain(HttpSecurity http, HttpSecurity httpSecurity) throws Exception {
 		http.csrf(csrf -> csrf.disable());
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-		httpSecurity.headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.httpStrictTransportSecurity(
-				hstsCustomizer -> hstsCustomizer.maxAgeInSeconds(authConfig.getMaxAgeSeconds())
+		httpSecurity.headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer
+				.httpStrictTransportSecurity(hstsCustomizer -> hstsCustomizer.maxAgeInSeconds(authConfig.getMaxAgeSeconds())
 						.includeSubDomains(authConfig.getIncludeSubdomains())));
 		http.headers(httpSecurityHeadersConfigurer -> {
-			httpSecurityHeadersConfigurer
-					.contentSecurityPolicy(contentSecurityPolicyConfig -> contentSecurityPolicyConfig
-							.policyDirectives(authConfig.getContentSecurityPolicy()));
+			httpSecurityHeadersConfigurer.contentSecurityPolicy(contentSecurityPolicyConfig -> contentSecurityPolicyConfig
+					.policyDirectives(authConfig.getContentSecurityPolicy()));
 		});
-		http.authorizeHttpRequests(authz -> authz.requestMatchers(HttpMethod.OPTIONS).permitAll()
-				.requestMatchers("/login").permitAll().requestMatchers("/register-user").permitAll()
-				.requestMatchers("/forgot-password").permitAll().requestMatchers("/reset-password").permitAll()
-				.requestMatchers("/change-password").permitAll().requestMatchers("/validateEmailToken").permitAll()
-				.requestMatchers("/verifyUser").permitAll().requestMatchers("/user-info").permitAll()
-				.requestMatchers("/users/**").permitAll().requestMatchers("/sso-logout").permitAll()
-				.requestMatchers("/user-approvals/pending").permitAll().requestMatchers("/approve").permitAll()
-				.requestMatchers("/reject").permitAll().anyRequest().authenticated())
+		http.authorizeHttpRequests(authz -> authz.requestMatchers(HttpMethod.OPTIONS).permitAll().requestMatchers("/login")
+				.permitAll().requestMatchers("/register-user").permitAll().requestMatchers("/forgot-password").permitAll()
+				.requestMatchers("/reset-password").permitAll().requestMatchers("/change-password").permitAll()
+				.requestMatchers("/validateEmailToken").permitAll().requestMatchers("/verifyUser").permitAll()
+				.requestMatchers("/user-info").permitAll().requestMatchers("/users/**").permitAll()
+				.requestMatchers("/sso-logout").permitAll().requestMatchers("/user-approvals/pending").permitAll()
+				.requestMatchers("/approve").permitAll().requestMatchers("/reject").permitAll().anyRequest().authenticated())
 				.saml2Login((saml2) -> saml2.loginProcessingUrl("/saml/SSO"))
 				.saml2Logout((saml2) -> saml2.logoutRequest((request) -> request.logoutUrl("/saml/logout")))
 				.saml2Logout((saml2) -> saml2.logoutResponse((response) -> response.logoutUrl("/saml/SingleLogout")))
@@ -118,15 +116,13 @@ public class WebSecurityConfig {
 	@Bean
 	InMemoryRelyingPartyRegistrationRepository repository(Saml2RelyingPartyProperties properties,
 			@Value("${auth.rpPrivateKey}") String privateKeyStr, @Value("${auth.rpCertificate}") String certStr) {
-		Saml2X509Credential signing = Saml2X509Credential.signing(rsaPrivateKey(privateKeyStr),
-				x509Certificate(certStr));
+		Saml2X509Credential signing = Saml2X509Credential.signing(rsaPrivateKey(privateKeyStr), x509Certificate(certStr));
 
 		Saml2RelyingPartyProperties.Registration registration = properties.getRegistration().values().iterator().next();
 
 		return new InMemoryRelyingPartyRegistrationRepository(RelyingPartyRegistrations
 				.collectionFromMetadataLocation(registration.getAssertingparty().getMetadataUri()).stream()
-				.map((builder) -> builder.registrationId(UUID.randomUUID().toString())
-						.entityId(registration.getEntityId())
+				.map((builder) -> builder.registrationId(UUID.randomUUID().toString()).entityId(registration.getEntityId())
 						.assertionConsumerServiceLocation(registration.getAcs().getLocation())
 						.singleLogoutServiceLocation(registration.getSinglelogout().getUrl())
 						.singleLogoutServiceResponseLocation(registration.getSinglelogout().getResponseUrl())
