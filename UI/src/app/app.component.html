@@ -43,17 +43,6 @@
     }
   }
 </style>
-<ng-container *featureFlag="'NEW_UI_SWITCH'">
-  <div class="ui-switch-container"
-    *ngIf="router.url.indexOf('authentication') === -1 && router.url.indexOf('config') === -1">
-    <p class="p-my-0 p-py-0"><span class="p-mr-6"> New experience (ON) | Legacy view (OFF)</span>
-    <p-inputSwitch [(ngModel)]="newUI" (onChange)="uiSwitch($event, true)"></p-inputSwitch></p>
-    <p *ngIf="!newUI" class="p-my-0 p-py-0">
-      <span class="red">NOTICE : </span><span>Legacy (old) UI is deprecated in release 11.0 and it will retire in next release!</span>
-    </p>
-  </div>
-  
-</ng-container>
 <router-outlet></router-outlet>
 <ng-container *ngIf="loadingRouteConfig">
   <app-page-loader></app-page-loader>

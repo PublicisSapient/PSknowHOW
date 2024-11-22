@@ -58,10 +58,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.checkNewUIFlag();
-
-    this.newUI = localStorage.getItem('newUI') ? true : false;
-
+    localStorage.removeItem('newUI');
 
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
@@ -103,22 +100,5 @@ export class AppComponent implements OnInit {
 
   async checkNewUIFlag(){
     this.feature.config = this.feature.loadConfig().then((res) => res);
-    this.isNewUISwitch = await this.feature.isFeatureEnabled('NEW_UI_SWITCH');
-  }
-
-  uiSwitch(event, userChange = false) {
-    let isChecked = event.checked;
-    const data = {
-      type: isChecked ? 'New' : 'Old'
-    };
-    this.ga.setUIType(data);
-    if (isChecked) {
-      localStorage.setItem('newUI', 'true');
-    } else {
-      localStorage.removeItem('newUI');
-    }
-    if (userChange) {
-      window.location.reload();
-    }
   }
 }
