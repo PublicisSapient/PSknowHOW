@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.dataFactories.HierachyLevelFactory;
 import org.bson.types.ObjectId;
@@ -58,7 +59,7 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 public class FetchKanbanReleaseDataImplTest {
 
 	@Mock
-	KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
+	ProjectHierarchyRepository kanbanAccountHierarchyRepo;
 	@Mock
 	KerberosClient krb5Client;
 	@Mock

@@ -693,7 +693,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig, Map<String, Object> fieldsMap) {
 
 		azureIssueHistory.setProjectID(azureIssue.getProjectName());
-		azureIssueHistory.setProjectComponentId(azureIssue.getProjectID());
 		azureIssueHistory.setProjectKey(azureIssue.getProjectKey());
 		azureIssueHistory.setStoryType(azureIssue.getTypeName());
 		azureIssueHistory.setAdditionalFilters(azureIssue.getAdditionalFilters());

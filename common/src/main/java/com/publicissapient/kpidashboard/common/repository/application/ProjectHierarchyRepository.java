@@ -19,6 +19,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.application;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -33,4 +34,8 @@ public interface ProjectHierarchyRepository extends MongoRepository<ProjectHiera
 	List<ProjectHierarchy> findByBasicProjectConfigId(ObjectId projectBasicConfig);
 
 	List<ProjectHierarchy> findByBasicProjectConfigIdIn(List<ObjectId> basicProjectConfigIdList);
+
+	List<ProjectHierarchy> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> distinctSprintIDs, String hierarchyLevelIdSprint);
+
+	void deleteByBasicProjectConfigIdAndNodeIdIn(ObjectId basicProjectConfigId, List<String> nodeIdsToBeDeleted, String hierarchyLevelId);
 }

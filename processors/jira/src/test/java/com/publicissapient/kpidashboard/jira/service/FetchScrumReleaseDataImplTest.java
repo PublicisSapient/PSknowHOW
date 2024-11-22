@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
@@ -60,7 +61,7 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 public class FetchScrumReleaseDataImplTest {
 
 	@Mock
-	AccountHierarchyRepository accountHierarchyRepository;
+	ProjectHierarchyRepository accountHierarchyRepository;
 	@Mock
 	KerberosClient krb5Client;
 	@Mock

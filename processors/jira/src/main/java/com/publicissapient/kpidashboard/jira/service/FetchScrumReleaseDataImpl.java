@@ -108,7 +108,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		Set<ProjectHierarchy> setToSave = new HashSet<>();
 		List<ProjectHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease, projectConfig);
 		setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
-        projectHierarchySyncService.syncScrumReleaseHierarchy(projectConfig.getBasicProjectConfigId(),
+        projectHierarchySyncService.syncReleaseHierarchy(projectConfig.getId(),
                 hierarchyForRelease);
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			log.info("Updated Hierarchies {}", setToSave.size());
