@@ -2136,9 +2136,33 @@ public class KpiHelperService { // NOPMD
 
 	}
 
+	/**
+	 * Fetches data from DB for the given project and sprints combination. Data is
+	 * cached. Cache key - project basic config id and kpi id.
+	 * 
+	 * @param kpiRequest
+	 * @param basicProjectConfigId
+	 * @param sprintList
+	 * @param kpiId
+	 * @return
+	 */
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "{#basicProjectConfigId.toString(), #kpiId}")
+	public Map<String, Object> fetchIssueCountData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId) {
+		return fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId, sprintList, kpiId);
+	}
+
+	/**
+	 * Fetches data from DB for the given project and sprints combination.
+	 *
+	 * @param kpiRequest
+	 * @param basicProjectConfigId
+	 * @param sprintList
+	 * @param kpiId
+	 * @return
+	 */
 	public Map<String, Object> fetchIssueCountDataFromDB(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-														  List<String> sprintList, String kpiId) {
+			List<String> sprintList, String kpiId) {
 		log.info("Fetching Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();

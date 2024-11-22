@@ -18,15 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
@@ -190,10 +182,16 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<String, List<String>> projectWiseStoryCategories = new HashMap<>();
 		List<SprintDetails> sprintDetails = new ArrayList<>();
 		List<JiraIssue> issueList = new ArrayList<>();
-
+		boolean fetchCachedData = flterHelperService.isFilterSelectedTillProjectLevel(kpiRequest.getLevel(), false);
 		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
-			Map<String, Object> result = kpiHelperService.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId,
-					sprintList, KPICode.ISSUE_COUNT.getKpiId());
+			Map<String, Object> result;
+			if(fetchCachedData) {
+				result = kpiHelperService.fetchIssueCountData(kpiRequest, basicProjectConfigId,
+						sprintList, KPICode.ISSUE_COUNT.getKpiId());
+			} else {
+				result = kpiHelperService.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId,
+						sprintList, KPICode.ISSUE_COUNT.getKpiId());
+			}
 			List<JiraIssue> allJiraIssue = (List<JiraIssue>) result.get(STORY_LIST);
 			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.get(SPRINTSDETAILS);
 			Map<String, List<String>> storyCategories = (Map<String, List<String>>) result
@@ -246,19 +244,16 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		String requestTrackerId = getRequestTrackerId();
 
-		String startDate;
-		String endDate;
+		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
 
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
-
-		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
-		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
+		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
+		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		long time = System.currentTimeMillis();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
+
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
-		log.info("IssueCount taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
+		log.info("IssueCount taking fetchKPIDataFromDb {}", System.currentTimeMillis() - time);
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(STORY_LIST);
 
