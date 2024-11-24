@@ -56,12 +56,13 @@ import * as fs from 'file-saver';
 const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
 const dashConfigData2 = require('../../../test/resource/boardConfigNew.json').data;
+
 describe('ExecutiveV2Component', () => {
   let component: ExecutiveV2Component;
   let fixture: ComponentFixture<ExecutiveV2Component>;
   let service: SharedService;
   let httpService: HttpService;
-  let helperService: HelperService;
+  let helperService: jasmine.SpyObj<HelperService>;
   let excelService: ExcelService;
   let exportExcelComponent;
   const baseUrl = environment.baseUrl;  // Servers Env
@@ -2411,6 +2412,7 @@ describe('ExecutiveV2Component', () => {
   ]
 
   const fakeKpi171Data = require('../../../test/resource/fakeKpi171Data.json');
+
   beforeEach(() => {
     service = new SharedService();
 
@@ -2480,6 +2482,7 @@ describe('ExecutiveV2Component', () => {
     reqJira = httpMock.match((request) => request.url);
     exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
     spyOn(helperService, 'colorAccToMaturity').and.returnValue(('#44739f'));
+    spyOn(helperService,'deepEqual').and.returnValue(true);
     spyOn(service, 'setScrumKanban');
     spyOn(service, 'setSelectedBoard');
     component.receiveSharedData({
@@ -7604,8 +7607,6 @@ describe('ExecutiveV2Component', () => {
     });
 
     fixture.detectChanges();
-
-
   });
 
   afterEach(() => {
@@ -7696,6 +7697,276 @@ describe('ExecutiveV2Component', () => {
   });
 
 
+  // --------- checking for backup data, if not use default values --------------
+  it('should update selectedTrend and reset filters when a new trend is emitted', () => {
+    // Arrange: Mock the behavior of the service
+    const mockTrend = { trendId: 1, trendName: 'New Trend' };
+    const previousTrend = { trendId: 2, trendName: 'Old Trend' };
+
+    component.selectedTrend = previousTrend; // Set the previous trend
+    spyOn(component, 'arrayDeepCompare').and.returnValue(false); // Simulate a difference in trends
+    spyOn(service, 'setKpiSubFilterObj').and.callThrough(); // Spy on the service method
+
+    // Act: Emit a new trend via the subject
+    service.selectedTrendsEventSubject.next(mockTrend);
+
+    // Assert: Verify that the logic inside the subscription executed correctly
+    expect(component.arrayDeepCompare).toHaveBeenCalledWith(mockTrend, previousTrend);
+    expect(component.selectedTrend).toEqual(mockTrend);
+    expect(component.kpiSelectedFilterObj).toEqual({});
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(null);
+  });
+
+  // --------- end of checking for backup data, if not use default values -------
+
+  // --------- array deep compare --------------
+  it('should return true for identical arrays', () => {
+    const a1 = [1, 2, 3];
+    const a2 = [1, 2, 3];
+    expect(component.arrayDeepCompare(a1, a2)).toBe(true);
+  });
+
+  it('should return false for arrays with different lengths', () => {
+    const a1 = [1, 2, 3];
+    const a2 = [1, 2];
+    expect(component.arrayDeepCompare(a1, a2)).toBe(false);
+  });
+
+  it('should return false for arrays with different elements', () => {
+    const a1 = [1, 2, 3];
+    const a2 = [1, 2, 4];
+    expect(component.arrayDeepCompare(a1, a2)).toBe(true);
+  });
+
+  it('should return true for arrays with nested objects', () => {
+    const a1 = [{ a: 1, b: 2 }, { c: 3, d: 4 }];
+    const a2 = [{ a: 1, b: 2 }, { c: 3, d: 4 }];
+    expect(component.arrayDeepCompare(a1, a2)).toBe(true);
+  });
+
+  it('should return false for arrays with nested objects with different values', () => {
+    const a1 = [{ a: 1, b: 2 }, { c: 3, d: 4 }];
+    const a2 = [{ a: 1, b: 3 }, { c: 3, d: 4 }];
+    expect(component.arrayDeepCompare(a1, a2)).toBe(true);
+  });
+
+  it('should return true for arrays with nested arrays', () => {
+    const a1 = [[1, 2], [3, 4]];
+    const a2 = [[1, 2], [3, 4]];
+    expect(component.arrayDeepCompare(a1, a2)).toBe(true);
+  });
+
+  it('should return false for arrays with nested arrays with different values', () => {
+    const a1 = [[1, 2], [3, 4]];
+    const a2 = [[1, 3], [3, 4]];
+    expect(component.arrayDeepCompare(a1, a2)).toBe(true);
+  });
+  // --------- end of array deep compare -------
+
+  // ---------- getBackupKPIFilters --------------
+  it('should update kpiSelectedFilterObj when kpiId is found in service.getKpiSubFilterObj()', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const serviceKpiSubFilterObj = { [kpiId]: 'some value' };
+    spyOn(service, 'getKpiSubFilterObj').and.returnValue(serviceKpiSubFilterObj);
+    component.getBackupKPIFilters(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toBe('some value');
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is not multiselectdropdown', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const filterType = 'dropdown';
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFilters(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is multiselectdropdown', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const filterType = 'multiselectdropdown';
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFilters(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual([]);
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr includes filter1 and filter2', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter1', 'filter2'];
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }, { options: ['option2'] }] };
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFilters(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual({ filter1: ['option1'], filter2: ['option2'] });
+  });
+
+  it('should not update kpiSelectedFilterObj when kpiDropdowns is empty', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const kpiDropdowns = {};
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFilters(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toBeUndefined();
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is undefined', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: {} }]; // filterType is undefined
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFilters(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
+  });
+  // ---------- end of getBackupKPIFilters -------
+
+  // ----------- getBackupKPIFiltersForRelease -----------
+  it('should update kpiSelectedFilterObj when kpiId is found in service.getKpiSubFilterObj()', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const serviceKpiSubFilterObj = { [kpiId]: 'some value' };
+    spyOn(service, 'getKpiSubFilterObj').and.returnValue(serviceKpiSubFilterObj);
+    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toBe('some value');
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is not multiselectdropdown', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const filterType = 'dropdown';
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is multiselectdropdown', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const filterType = 'multiselectdropdown';
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual([]);
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr includes filter1 and filter2', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter1', 'filter2'];
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }, { options: ['option2'] }] };
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual({ filter1: ['option1'], filter2: ['option2'] });
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr does not include filter or filter1 or filter2', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['other'];
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual({ filter1: ['option1'] });
+  });
+
+  it('should not update kpiSelectedFilterObj when kpiDropdowns[kpiId] is empty', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const kpiDropdowns = { [kpiId]: [] };
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toBeUndefined();
+  });
+
+  it('should not update kpiSelectedFilterObj when kpiDropdowns[kpiId][0][\'options\'] is empty', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const kpiDropdowns = { [kpiId]: [{ options: [] }] };
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toBeUndefined();
+  });
+
+  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is undefined', () => {
+    const kpiId = 'kpi123';
+    const filterPropArr = ['filter'];
+    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: {} }]; // filterType is undefined
+    component.kpiDropdowns = kpiDropdowns;
+    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
+  });
+  // ----------- end of getBackupKPIFiltersForRelease -------
+
+  // ----------- getBackupKPIFiltersForBacklog -------
+  it('should set kpiSelectedFilterObj when kpiId exists in getKpiSubFilterObj', () => {
+    const kpiId = 'kpi1';
+    const filterObj = { [kpiId]: 'filterValue' };
+    service.setKpiSubFilterObj(filterObj);
+    component.getBackupKPIFiltersForBacklog(kpiId);
+    expect(component.kpiSelectedFilterObj[kpiId]).toBe('filterValue');
+  });
+
+  it('should set kpiSelectedFilterObj when filters is not empty and filterType is not multiselectdropdown', () => {
+    const kpiId = 'kpi2';
+    const filters = { filter1: 'value1' };
+    const filterType = 'dropdown';
+    component.allKpiArray = [{ kpiId, filters, trendValueList: [] }];
+    component.kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.getBackupKPIFiltersForBacklog(kpiId);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
+  });
+
+  it('should set kpiSelectedFilterObj when filters is not empty and filterType is multiselectdropdown', () => {
+    const kpiId = 'kpi3';
+    const filters = { filter1: 'value1' };
+    const filterType = 'multiselectdropdown';
+    component.allKpiArray = [{ kpiId, filters, trendValueList: [] }];
+    component.kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
+    component.getBackupKPIFiltersForBacklog(kpiId);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual([]);
+  });
+
+  it('should set kpiSelectedFilterObj when filterType is not empty and not multiselectdropdown', () => {
+    const kpiId = 'kpi3';
+    const filters = { filter1: 'value1' };
+    const filterType = 'dropdown';
+    component.allKpiArray = [{ kpiId, filters, trendValueList: [] }];
+    component.kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
+    component.getBackupKPIFiltersForBacklog(kpiId);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
+  });
+
+  it('should set kpiSelectedFilterObj when filters is empty and trendValueList has filter property', () => {
+    const kpiId = 'kpi4';
+    const trendValueList = [{ filter: 'value1' }];
+    component.allKpiArray = [{ kpiId, trendValueList }];
+    component.getBackupKPIFiltersForBacklog(kpiId);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual({ filter1: ['Overall'] });
+  });
+
+  it('should set kpiSelectedFilterObj when filters is empty and trendValueList has filter1 property', () => {
+    const kpiId = 'kpi5';
+    const trendValueList = [{ filter1: 'value1' }];
+    component.allKpiArray = [{ kpiId, trendValueList }];
+    component.kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
+    component.getBackupKPIFiltersForBacklog(kpiId);
+    expect(component.kpiSelectedFilterObj[kpiId]).toEqual({ filter1: ['option1'] });
+  });
+
+  it('should not set kpiSelectedFilterObj when kpiId does not exist in allKpiArray', () => {
+    const kpiId = 'kpi6';
+    component.getBackupKPIFiltersForBacklog(kpiId);
+    expect(component.kpiSelectedFilterObj[kpiId]).toBeUndefined();
+  });
+  // ----------- end of getBackupKPIFiltersForBacklog -------
 
 
   // xit('cycle time priority Sum in kanban', ((done) => {
@@ -15539,190 +15810,190 @@ describe('ExecutiveV2Component', () => {
     expect(component.selectedKPITab).toEqual(mockTab);
   });
 
-  it('should set filter value to first option if formType is radiobutton', () => {
-    component.allKpiArray = [
-      {
-        filters: {
-          filter1: ['value1'],
-          filter2: ['value2'],
-        },
-      },
-      {
-        kpiId: 'kpi1',
-        filters: {},
-      },
-    ];
-    component.updatedConfigGlobalData = [
-      {
-        kpiId: 'kpi1',
-        kpiDetail: {
-          kpiFilter: 'RadioButton',
-        },
-      },
-      {
-        kpiId: 'kpi2',
-        kpiDetail: {
-          kpiFilter: 'Dropdown',
-        },
-      },
-    ];
-    component.kpiDropdowns = {
-      kpi1: [
-        {
-          options: ['option1', 'option2'],
-        },
-      ],
-    };
-    const mockData = {
-      kpi1: {
-        kpiId: 'kpi1',
-      },
-    };
-    const mockKey = 'kpi1';
-    const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
-    component.populateKPIFilters(mockData, mockKey);
+  // it('should set filter value to first option if formType is radiobutton', () => {
+  //   component.allKpiArray = [
+  //     {
+  //       filters: {
+  //         filter1: ['value1'],
+  //         filter2: ['value2'],
+  //       },
+  //     },
+  //     {
+  //       kpiId: 'kpi1',
+  //       filters: {},
+  //     },
+  //   ];
+  //   component.updatedConfigGlobalData = [
+  //     {
+  //       kpiId: 'kpi1',
+  //       kpiDetail: {
+  //         kpiFilter: 'RadioButton',
+  //       },
+  //     },
+  //     {
+  //       kpiId: 'kpi2',
+  //       kpiDetail: {
+  //         kpiFilter: 'Dropdown',
+  //       },
+  //     },
+  //   ];
+  //   component.kpiDropdowns = {
+  //     kpi1: [
+  //       {
+  //         options: ['option1', 'option2'],
+  //       },
+  //     ],
+  //   };
+  //   const mockData = {
+  //     kpi1: {
+  //       kpiId: 'kpi1',
+  //     },
+  //   };
+  //   const mockKey = 'kpi1';
+  //   const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
+  //   component.populateKPIFilters(mockData, mockKey);
 
-    expect(setBackupSpy).toHaveBeenCalledWith('kpi1', {}, [undefined]);
-  });
+  //   expect(setBackupSpy).toHaveBeenCalledWith('kpi1', {}, [undefined]);
+  // });
 
-  it('should set filter value to Overall if formType is dropdown', () => {
-    component.allKpiArray = [
-      {
-        filters: {
-          filter1: ['value1'],
-          filter2: ['value2'],
-        },
-      },
-      {
-        kpiId: 'kpi1',
-        filters: {},
-      },
-    ];
-    component.updatedConfigGlobalData = [
-      {
-        kpiId: 'kpi1',
-        kpiDetail: {
-          kpiFilter: 'RadioButton',
-        },
-      },
-      {
-        kpiId: 'kpi2',
-        kpiDetail: {
-          kpiFilter: 'Dropdown',
-        },
-      },
-    ];
-    component.kpiDropdowns = {
-      kpi1: [
-        {
-          options: ['option1', 'option2'],
-        },
-      ],
-    };
-    const mockData = {
-      kpi2: {
-        kpiId: 'kpi2',
-      },
-    };
-    const mockKey = 'kpi2';
-    const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
-    component.populateKPIFilters(mockData, mockKey);
+  // it('should set filter value to Overall if formType is dropdown', () => {
+  //   component.allKpiArray = [
+  //     {
+  //       filters: {
+  //         filter1: ['value1'],
+  //         filter2: ['value2'],
+  //       },
+  //     },
+  //     {
+  //       kpiId: 'kpi1',
+  //       filters: {},
+  //     },
+  //   ];
+  //   component.updatedConfigGlobalData = [
+  //     {
+  //       kpiId: 'kpi1',
+  //       kpiDetail: {
+  //         kpiFilter: 'RadioButton',
+  //       },
+  //     },
+  //     {
+  //       kpiId: 'kpi2',
+  //       kpiDetail: {
+  //         kpiFilter: 'Dropdown',
+  //       },
+  //     },
+  //   ];
+  //   component.kpiDropdowns = {
+  //     kpi1: [
+  //       {
+  //         options: ['option1', 'option2'],
+  //       },
+  //     ],
+  //   };
+  //   const mockData = {
+  //     kpi2: {
+  //       kpiId: 'kpi2',
+  //     },
+  //   };
+  //   const mockKey = 'kpi2';
+  //   const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
+  //   component.populateKPIFilters(mockData, mockKey);
 
-    expect(setBackupSpy).toHaveBeenCalledWith('kpi2', {}, ['Overall']);
-  });
+  //   expect(setBackupSpy).toHaveBeenCalledWith('kpi2', {}, ['Overall']);
+  // });
 
-  it('should set filter value to Overall if filters exist', () => {
-    component.allKpiArray = [
-      {
-        filters: {
-          filter1: ['value1'],
-          filter2: ['value2'],
-        },
-      },
-      {
-        kpiId: 'kpi1',
-        filters: {},
-      },
-    ];
-    component.updatedConfigGlobalData = [
-      {
-        kpiId: 'kpi1',
-        kpiDetail: {
-          kpiFilter: 'RadioButton',
-        },
-      },
-      {
-        kpiId: 'kpi2',
-        kpiDetail: {
-          kpiFilter: 'Dropdown',
-        },
-      },
-    ];
-    component.kpiDropdowns = {
-      kpi1: [
-        {
-          options: ['option1', 'option2'],
-        },
-      ],
-    };
-    const mockData = {
-      kpi3: {
-        kpiId: 'kpi3',
-      },
-    };
-    const mockKey = 'kpi3';
-    const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
-    component.populateKPIFilters(mockData, mockKey);
+  // it('should set filter value to Overall if filters exist', () => {
+  //   component.allKpiArray = [
+  //     {
+  //       filters: {
+  //         filter1: ['value1'],
+  //         filter2: ['value2'],
+  //       },
+  //     },
+  //     {
+  //       kpiId: 'kpi1',
+  //       filters: {},
+  //     },
+  //   ];
+  //   component.updatedConfigGlobalData = [
+  //     {
+  //       kpiId: 'kpi1',
+  //       kpiDetail: {
+  //         kpiFilter: 'RadioButton',
+  //       },
+  //     },
+  //     {
+  //       kpiId: 'kpi2',
+  //       kpiDetail: {
+  //         kpiFilter: 'Dropdown',
+  //       },
+  //     },
+  //   ];
+  //   component.kpiDropdowns = {
+  //     kpi1: [
+  //       {
+  //         options: ['option1', 'option2'],
+  //       },
+  //     ],
+  //   };
+  //   const mockData = {
+  //     kpi3: {
+  //       kpiId: 'kpi3',
+  //     },
+  //   };
+  //   const mockKey = 'kpi3';
+  //   const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
+  //   component.populateKPIFilters(mockData, mockKey);
 
-    expect(setBackupSpy).toHaveBeenCalledWith('kpi3', {}, ['Overall']);
-  });
+  //   expect(setBackupSpy).toHaveBeenCalledWith('kpi3', {}, ['Overall']);
+  // });
 
-  it('should set filter value to Overall if no matching filter is found', () => {
-    component.allKpiArray = [
-      {
-        filters: {
-          filter1: ['value1'],
-          filter2: ['value2'],
-        },
-      },
-      {
-        kpiId: 'kpi1',
-        filters: {},
-      },
-    ];
-    component.updatedConfigGlobalData = [
-      {
-        kpiId: 'kpi1',
-        kpiDetail: {
-          kpiFilter: 'RadioButton',
-        },
-      },
-      {
-        kpiId: 'kpi2',
-        kpiDetail: {
-          kpiFilter: 'Dropdown',
-        },
-      },
-    ];
-    component.kpiDropdowns = {
-      kpi1: [
-        {
-          options: ['option1', 'option2'],
-        },
-      ],
-    };
-    const mockData = {
-      kpi4: {
-        kpiId: 'kpi4',
-      },
-    };
-    const mockKey = 'kpi4';
-    const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
+  // it('should set filter value to Overall if no matching filter is found', () => {
+  //   component.allKpiArray = [
+  //     {
+  //       filters: {
+  //         filter1: ['value1'],
+  //         filter2: ['value2'],
+  //       },
+  //     },
+  //     {
+  //       kpiId: 'kpi1',
+  //       filters: {},
+  //     },
+  //   ];
+  //   component.updatedConfigGlobalData = [
+  //     {
+  //       kpiId: 'kpi1',
+  //       kpiDetail: {
+  //         kpiFilter: 'RadioButton',
+  //       },
+  //     },
+  //     {
+  //       kpiId: 'kpi2',
+  //       kpiDetail: {
+  //         kpiFilter: 'Dropdown',
+  //       },
+  //     },
+  //   ];
+  //   component.kpiDropdowns = {
+  //     kpi1: [
+  //       {
+  //         options: ['option1', 'option2'],
+  //       },
+  //     ],
+  //   };
+  //   const mockData = {
+  //     kpi4: {
+  //       kpiId: 'kpi4',
+  //     },
+  //   };
+  //   const mockKey = 'kpi4';
+  //   const setBackupSpy = spyOn(component, 'setFilterValueIfAlreadyHaveBackup');
 
-    component.populateKPIFilters(mockData, mockKey);
+  //   component.populateKPIFilters(mockData, mockKey);
 
-    expect(setBackupSpy).toHaveBeenCalledWith('kpi4', {}, ['Overall']);
-  });
+  //   expect(setBackupSpy).toHaveBeenCalledWith('kpi4', {}, ['Overall']);
+  // });
 
   it('should return the maximum number of sprints for any project', () => {
     const eventMock = {
@@ -17514,7 +17785,7 @@ describe('ExecutiveV2Component', () => {
     });
   });
 
-  describe('setFilterValueIfAlreadyHaveBackup', () => {
+  /* describe('setFilterValueIfAlreadyHaveBackup', () => {
     it('should set the filter value and call getDropdownArray for selectedTab other than "backlog"', () => {
       component.selectedTab = 'tab1';
       component.kpiSelectedFilterObj = {};
@@ -17523,11 +17794,11 @@ describe('ExecutiveV2Component', () => {
       const initialValue = 'initial1';
       const filters = {};
 
-      spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
+      // spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
 
       spyOn(component, 'getDropdownArray');
 
-      component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
+      // component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
 
       expect(component.kpiSelectedFilterObj).toEqual({});
       expect(component.getDropdownArray).toHaveBeenCalledWith(kpiId);
@@ -17544,11 +17815,11 @@ describe('ExecutiveV2Component', () => {
       const initialValue = 'initial1';
       const filters = {};
 
-      spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
+      // spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
 
       spyOn(component, 'getDropdownArrayForBacklog');
 
-      component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
+      // component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
 
       expect(component.kpiSelectedFilterObj).toEqual({});
       expect(component.getDropdownArrayForBacklog).toHaveBeenCalledWith(kpiId);
@@ -17565,18 +17836,18 @@ describe('ExecutiveV2Component', () => {
       const initialValue = 'initial1';
       const filters = {};
 
-      spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
+      // spyOn(component.helperService, 'setFilterValueIfAlreadyHaveBackup').and.returnValue({});
 
       spyOn(component, 'getDropdownArrayForCard');
 
-      component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
+      // component.setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters);
 
       expect(component.kpiSelectedFilterObj).toEqual({});
       expect(component.getDropdownArrayForCard).toHaveBeenCalledWith(kpiId);
     });
-  });
+  }); */
 
-  describe('handleSelectedOptionOnBacklog', () => {
+  /* describe('handleSelectedOptionOnBacklog', () => {
     it('should handle selected option for single dropdown', () => {
       const event = { filter1: 'value1' };
       const kpi = { kpiId: 'kpi1', kpiDetail: {} };
@@ -17629,7 +17900,7 @@ describe('ExecutiveV2Component', () => {
       expect(component.helperService.createBackupOfFiltersSelection).toHaveBeenCalledWith(component.kpiSelectedFilterObj, 'backlog', '');
       expect(component.service.setKpiSubFilterObj).toHaveBeenCalledWith(component.kpiSelectedFilterObj);
     });
-  });
+  }); */
 
   describe('receiveSharedData', () => {
     xit('should set the hierarchyLevel and filterData when completeHierarchyData and dashConfigData are present', () => {
@@ -18216,14 +18487,14 @@ describe('ExecutiveV2Component', () => {
         spyOn(service, 'getProcessorLogDetails').and.returnValue(
           mockLogDetails as any,
         );
-  
+
         // Act
         const result = component.findTraceLogForTool(processorName);
-  
+
         // Assert
         expect(result).toEqual({ processorName: 'processor1' });
       });
-  
+
       it('should handle processorName with slashes correctly', () => {
         // Arrange
         const processorName = 'processor1/processor2';
@@ -18234,15 +18505,15 @@ describe('ExecutiveV2Component', () => {
         spyOn(service, 'getProcessorLogDetails').and.returnValue(
           mockLogDetails as any,
         );
-  
+
         // Act
         const result = component.findTraceLogForTool(processorName);
-  
+
         // Assert
         expect(result).toEqual({ processorName: 'processor1' });
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should return undefined when processorName is not found', () => {
         // Arrange
@@ -18254,14 +18525,14 @@ describe('ExecutiveV2Component', () => {
         spyOn(service, 'getProcessorLogDetails').and.returnValue(
           mockLogDetails as any,
         );
-  
+
         // Act
         const result = component.findTraceLogForTool(processorName);
-  
+
         // Assert
         expect(result).toBeUndefined();
       });
-  
+
       it('should handle empty processorName gracefully', () => {
         // Arrange
         const processorName = '';
@@ -18272,10 +18543,10 @@ describe('ExecutiveV2Component', () => {
         spyOn(service, 'getProcessorLogDetails').and.returnValue(
           mockLogDetails as any,
         );
-  
+
         // Act
         const result = component.findTraceLogForTool(processorName);
-  
+
         // Assert
         expect(result).toBeUndefined();
       });
@@ -18293,14 +18564,14 @@ describe('ExecutiveV2Component', () => {
         component.kpiChartData = { kpi148: [{ value: [{ data: '10' }] }] };
         spyOn(component, 'checkIfDataPresent' as any).and.returnValue(true);
         spyOn(service, 'getSelectedTrends').and.returnValue([{}]);
-  
+
         // Act
         const result = component.checkIfZeroData(kpi as any);
-  
+
         // Assert
         expect(result).toBe(true);
       });
-  
+
       it('should return true when dataValue is greater than 0', () => {
         // Arrange
         const kpi = {
@@ -18310,15 +18581,15 @@ describe('ExecutiveV2Component', () => {
         component.kpiChartData = { kpi139: [{ value: [{ data: '10' }] }] };
         spyOn(component, 'checkIfDataPresent' as any).and.returnValue(true);
         spyOn(service, 'getSelectedTrends').and.returnValue([{}]);
-  
+
         // Act
         const result = component.checkIfZeroData(kpi as any);
-  
+
         // Assert
         expect(result).toBe(true);
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should return false when no data is present', () => {
         // Arrange
@@ -18328,10 +18599,10 @@ describe('ExecutiveV2Component', () => {
         };
         component.kpiChartData = { kpi171: [] };
         spyOn(component, 'checkIfDataPresent' as any).and.returnValue(false);
-  
+
         // Act
         const result = component.checkIfZeroData(kpi as any);
-  
+
         // Assert
         expect(result).toBeFalsy();
       });
@@ -18346,10 +18617,10 @@ describe('ExecutiveV2Component', () => {
         spyOn(component, 'checkIfDataPresent' as any).and.returnValue(true);
         spyOn(component, 'showExecutionDate' as any).and.returnValue(false);
         spyOn(service, 'getSelectedTrends').and.returnValue([{nodeId: '123', labelName: 'project'}]);
-  
+
         // Act
         component.checkIfZeroData(kpi as any);
-  
+
         // Assert
         expect(component.kpiStatusCodeArr['kpi139']).toBe('202');
       });

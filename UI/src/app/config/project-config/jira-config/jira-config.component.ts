@@ -2422,7 +2422,7 @@ export class JiraConfigComponent implements OnInit {
               const fakeEvent = {
                 checked: this.queryEnabled
               };
-              this.jiraMethodChange(fakeEvent, self);
+              this.jiraMethodChange(self, fakeEvent);
             }
           } else if (obj === 'team') {
             if (this.toolForm && this.toolForm.controls[obj]) {
@@ -2462,7 +2462,7 @@ export class JiraConfigComponent implements OnInit {
     self.fetchBoards(self);
   }
 
-  jiraMethodChange(event = null, self) {
+  jiraMethodChange(self, event = null) {
     this.submitted = false;
     const group = {};
     if (self.urlParam === 'Jira') {

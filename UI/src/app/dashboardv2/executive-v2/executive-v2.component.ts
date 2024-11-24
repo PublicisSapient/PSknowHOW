@@ -488,7 +488,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     });
 
-    // sending requests after grouping the the KPIs according to group Id   
+    // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');
@@ -1044,7 +1044,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
         if (filterPropArr.includes('filter')) {
 
-          if (Object.keys(this.kpiSelectedFilterObj[kpiId])?.length > 1) {
+          if (this.kpiSelectedFilterObj[kpiId] && Object.keys(this.kpiSelectedFilterObj[kpiId])?.length > 1) {
             if (kpiId === 'kpi17') {
               this.kpiChartData[kpiId] = [];
               for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
@@ -1070,7 +1070,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
             }
           } else {
-            if (Object.keys(this.kpiSelectedFilterObj[kpiId])?.length > 0) {
+            if (this.kpiSelectedFilterObj[kpiId] && Object.keys(this.kpiSelectedFilterObj[kpiId])?.length > 0) {
               Object.keys(this.kpiSelectedFilterObj[kpiId]).forEach(key => {
                 this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][key])[0]?.value;
               });
@@ -1098,7 +1098,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
           else if (filterPropArr.includes('filter1')
             || filterPropArr.includes('filter2')) {
-            const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+            const filters = this.kpiSelectedFilterObj[kpiId]?.filter1 || this.kpiSelectedFilterObj[kpiId]?.filter2;
             let preAggregatedValues = [];
             for (let i = 0; i < filters?.length; i++) {
               preAggregatedValues = [...preAggregatedValues, ...(trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
@@ -1247,7 +1247,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         this.kpiSelectedFilterObj[kpiId] = { filter1: ['Overall'] };
-      } if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+      }
+
+      if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
         this.kpiSelectedFilterObj[kpiId] = {};
         for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
           this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
@@ -1305,7 +1307,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const filter2 = this.kpiSelectedFilterObj[kpiId]['filter2'];
       let preAggregatedValues = [];
       for (let i = 0; i < filters?.length; i++) {
-        if (Object.keys(this.kpiSelectedFilterObj[kpiId]).length === 1) {
+        if (this.kpiSelectedFilterObj[kpiId] && Object.keys(this.kpiSelectedFilterObj[kpiId]).length === 1) {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList && trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         } else {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList && trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] && x['filter2'] == filter2[i])];
@@ -1862,7 +1864,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       });
 
-      // sending requests after grouping the the KPIs according to group Id   
+      // sending requests after grouping the the KPIs according to group Id
       groupIdSet.forEach((groupId) => {
         if (groupId) {
           this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.updatedConfigGlobalData, this.filterApplyData, this.filterData, kpi171Payload, groupId, 'backlog');
