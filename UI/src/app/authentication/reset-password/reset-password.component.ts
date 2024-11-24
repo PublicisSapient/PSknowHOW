@@ -19,82 +19,96 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { ActivatedRoute } from '@angular/router';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { first } from 'rxjs/operators';
 @Component({
-    selector: 'app-reset-password',
-    templateUrl: './reset-password.component.html',
-    styleUrls: ['../login/login.component.css']
+  selector: 'app-reset-password',
+  templateUrl: './reset-password.component.html',
+  styleUrls: ['../login/login.component.css'],
 })
 export class ResetPasswordComponent implements OnInit {
+  resetPasswordForm: UntypedFormGroup;
+  loading = false;
+  submitted = false;
+  returnUrl: string;
+  error = '';
+  message = '';
+  resetToken = '';
+  isPasswordUpdated = false;
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private route: ActivatedRoute,
+    private httpService: HttpService,
+  ) {}
 
-    resetPasswordForm: UntypedFormGroup;
-    loading = false;
-    submitted = false;
-    returnUrl: string;
-    error = '';
-    message = '';
-    resetToken = '';
-    isPasswordUpdated = false;
-    constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private httpService: HttpService) { }
+  ngOnInit() {
+    // get the token value from url
+    this.route.queryParams.subscribe((params) => {
+      this.resetToken = params['resetToken'];
+    });
 
-    ngOnInit() {
-        // get the token value from url
-        this.route.queryParams.subscribe(params => {
-            this.resetToken = params['resetToken'];
-        });
+    // Set validation for reset-form elements
+    this.resetPasswordForm = this.formBuilder.group(
+      {
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(
+              '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-zd$@$!%*?&].{7,}',
+            ),
+            Validators.maxLength(30),
+          ],
+        ],
+        confirmpassword: ['', Validators.required],
+      },
+      { validator: this.checkPasswords },
+    );
+  }
 
-        // Set validation for reset-form elements
-        this.resetPasswordForm = this.formBuilder.group({
-            password: ['', [
-                Validators.required,
-                Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}'),
-                Validators.maxLength(30)
-            ]],
-            confirmpassword: ['', Validators.required],
-        }, { validator: this.checkPasswords });
+  // Validation for confirm-password
+  checkPasswords(group: UntypedFormGroup) {
+    const pass = group.controls.password.value;
+    const confirmPass = group.controls.confirmpassword.value;
+    return pass === confirmPass ? null : { notSame: true };
+  }
 
+  // convenience getter for easy access to form fields
+  get f() {
+    return this.resetPasswordForm.controls;
+  }
+
+  onSubmit() {
+    this.error = '';
+    this.submitted = true;
+    this.isPasswordUpdated = false;
+
+    // stop here if form is invalid
+    if (this.resetPasswordForm.invalid) {
+      return;
     }
 
-    // Validation for confirm-password
-    checkPasswords(group: UntypedFormGroup) {
-        const pass = group.controls.password.value;
-        const confirmPass = group.controls.confirmpassword.value;
-        return pass === confirmPass ? null : { notSame: true };
-    }
+    // start spinner
+    this.loading = true;
 
-    // convenience getter for easy access to form fields
-    get f() {
- return this.resetPasswordForm.controls;
-}
-
-    onSubmit() {
-        this.error = '';
-        this.submitted = true;
-        this.isPasswordUpdated = false;
-
-        // stop here if form is invalid
-        if (this.resetPasswordForm.invalid) {
-            return;
+    // call resetPassword service
+    this.httpService
+      .updatePassword(this.f.password.value, this.resetToken)
+      .pipe(first())
+      .subscribe((data) => {
+        // stop spinner
+        this.loading = false;
+        // check successfull result else show error message
+        if (data['success']) {
+          this.message = 'Password successfully saved';
+          this.isPasswordUpdated = true;
+        } else if (!data['success']) {
+          this.error = data['message'];
         }
-
-        // start spinner
-        this.loading = true;
-
-        // call resetPassword service
-        this.httpService.updatePassword(this.f.password.value, this.resetToken)
-            .pipe(first())
-            .subscribe(
-                data => {
-                    // stop spinner
-                    this.loading = false;
-                    // check successfull result else show error message
-                    if (data['success']) {
-                        this.message = 'Password successfully saved';
-                        this.isPasswordUpdated = true;
-                    } else if (!data['success']) {
-                        this.error = data['message'];
-                    }
-                });
-    }
+      });
+  }
 }

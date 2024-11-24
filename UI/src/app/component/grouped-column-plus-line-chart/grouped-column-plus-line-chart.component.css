@@ -25,7 +25,8 @@
   z-index: 2;
 }
 
-:host ::ng-deep .xAxis .domain, :host ::ng-deep .yAxis .domain{
+:host ::ng-deep .xAxis .domain,
+:host ::ng-deep .yAxis .domain {
   display: none;
 }
 
@@ -65,7 +66,7 @@
   overflow-y: visible;
 }
 
-:host ::ng-deep.tooltip2{
+:host ::ng-deep.tooltip2 {
   display: none;
   font-size: 0.7rem;
   padding: 2px;
@@ -77,18 +78,18 @@
   width: max-content;
 }
 
-:host ::ng-deep.red-bg{
- color: white;
- background: rgb(210, 22, 22)
+:host ::ng-deep.red-bg {
+  color: white;
+  background: rgb(210, 22, 22);
 }
 
-:host ::ng-deep.white-bg{
+:host ::ng-deep.white-bg {
   color: var(--color-gray-34);
- background: rgba(255, 255, 255, 0.95); 
+  background: rgba(255, 255, 255, 0.95);
 }
 
-:host ::ng-deep.tooltip-container{
-  position: relative
+:host ::ng-deep.tooltip-container {
+  position: relative;
 }
 
 :host ::ng-deep .thresholdlinetext {
@@ -96,7 +97,7 @@
   z-index: 1001;
 }
 
-:host::ng-deep.legend-tooltip{
+:host::ng-deep.legend-tooltip {
   position: absolute;
   text-align: center;
   max-width: inherit;

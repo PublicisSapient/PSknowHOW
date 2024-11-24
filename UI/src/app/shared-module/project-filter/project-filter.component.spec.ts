@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -13,65 +16,65 @@ import { of } from 'rxjs';
 const allProjectsData = require('../../../test/resource/projectFilterAllProjects.json');
 const filteredData = [
   {
-      id: '6335363749794a18e8a4479b',
-      projectName: 'Scrum Project',
-      hierarchy: [
-          {
-              hierarchyLevel: {
-                  level: 1,
-                  hierarchyLevelId: 'hierarchyLevelOne',
-                  hierarchyLevelName: 'Level One'
-              },
-              value: 'Sample One'
-          },
-          {
-              hierarchyLevel: {
-                  level: 2,
-                  hierarchyLevelId: 'hierarchyLevelTwo',
-                  hierarchyLevelName: 'Level Two'
-              },
-              value: 'Sample Two'
-          },
-          {
-              hierarchyLevel: {
-                  level: 3,
-                  hierarchyLevelId: 'hierarchyLevelThree',
-                  hierarchyLevelName: 'Level Three'
-              },
-              value: 'Sample Three'
-          }
-      ]
+    id: '6335363749794a18e8a4479b',
+    projectName: 'Scrum Project',
+    hierarchy: [
+      {
+        hierarchyLevel: {
+          level: 1,
+          hierarchyLevelId: 'hierarchyLevelOne',
+          hierarchyLevelName: 'Level One',
+        },
+        value: 'Sample One',
+      },
+      {
+        hierarchyLevel: {
+          level: 2,
+          hierarchyLevelId: 'hierarchyLevelTwo',
+          hierarchyLevelName: 'Level Two',
+        },
+        value: 'Sample Two',
+      },
+      {
+        hierarchyLevel: {
+          level: 3,
+          hierarchyLevelId: 'hierarchyLevelThree',
+          hierarchyLevelName: 'Level Three',
+        },
+        value: 'Sample Three',
+      },
+    ],
   },
   {
-      id: '6335368249794a18e8a4479f',
-      projectName: 'Kanban Project',
-      hierarchy: [
-          {
-              hierarchyLevel: {
-                  level: 1,
-                  hierarchyLevelId: 'hierarchyLevelOne',
-                  hierarchyLevelName: 'Level One'
-              },
-              value: 'Sample One'
-          },
-          {
-              hierarchyLevel: {
-                  level: 2,
-                  hierarchyLevelId: 'hierarchyLevelTwo',
-                  hierarchyLevelName: 'Level Two'
-              },
-              value: 'Sample Two'
-          },
-          {
-              hierarchyLevel: {
-                  level: 3,
-                  hierarchyLevelId: 'hierarchyLevelThree',
-                  hierarchyLevelName: 'Level Three'
-              },
-              value: 'Sample Three'
-          }
-      ]
-  }
+    id: '6335368249794a18e8a4479f',
+    projectName: 'Kanban Project',
+    hierarchy: [
+      {
+        hierarchyLevel: {
+          level: 1,
+          hierarchyLevelId: 'hierarchyLevelOne',
+          hierarchyLevelName: 'Level One',
+        },
+        value: 'Sample One',
+      },
+      {
+        hierarchyLevel: {
+          level: 2,
+          hierarchyLevelId: 'hierarchyLevelTwo',
+          hierarchyLevelName: 'Level Two',
+        },
+        value: 'Sample Two',
+      },
+      {
+        hierarchyLevel: {
+          level: 3,
+          hierarchyLevelId: 'hierarchyLevelThree',
+          hierarchyLevelName: 'Level Three',
+        },
+        value: 'Sample Three',
+      },
+    ],
+  },
 ];
 
 describe('ProjectFilterComponent', () => {
@@ -86,11 +89,18 @@ describe('ProjectFilterComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ProjectFilterComponent],
-      imports: [RouterTestingModule, HttpClientTestingModule, MultiSelectModule],
-      providers: [HttpService, SharedService, MessageService
-        , { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-      .compileComponents();
+      imports: [
+        RouterTestingModule,
+        HttpClientTestingModule,
+        MultiSelectModule,
+      ],
+      providers: [
+        HttpService,
+        SharedService,
+        MessageService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -110,7 +120,9 @@ describe('ProjectFilterComponent', () => {
     spyOn(httpService, 'getAllProjects').and.callThrough();
     component.getProjects();
     expect(httpService.getAllProjects).toHaveBeenCalledTimes(1);
-    const allProjectsReq = httpMock.expectOne(baseUrl + '/api/basicconfigs/all');
+    const allProjectsReq = httpMock.expectOne(
+      baseUrl + '/api/basicconfigs/all',
+    );
     expect(allProjectsReq.request.method).toBe('GET');
     allProjectsReq.flush(allProjectsData);
     expect(component.data).toEqual(allProjectsData.data);
@@ -129,50 +141,52 @@ describe('ProjectFilterComponent', () => {
     spyOn(httpService, 'getAllProjects').and.callThrough();
     component.getProjects();
     expect(httpService.getAllProjects).toHaveBeenCalledTimes(1);
-    const allProjectsReq = httpMock.expectOne(baseUrl + '/api/basicconfigs/all');
+    const allProjectsReq = httpMock.expectOne(
+      baseUrl + '/api/basicconfigs/all',
+    );
     expect(allProjectsReq.request.method).toBe('GET');
     allProjectsReq.flush(allProjectsData);
     expect(component.data).toEqual(allProjectsData.data);
 
     component.selectedVal = {};
-    component.valueRemoved ={};
+    component.valueRemoved = {};
     fixture.detectChanges();
     const fType = 'hierarchyLevelOne';
     const fValue = 'Sample One';
     const event = {
       isTrusted: true,
-      stopPropagation: () => {}
-  };
+      stopPropagation: () => {},
+    };
     component.filterData(event, fType, fValue);
     fixture.detectChanges();
     expect(component.selectedVal).toEqual({
       hierarchyLevelOne: [
         {
           name: 'Sample One',
-          code: 'Sample One'
-        }
-      ]
+          code: 'Sample One',
+        },
+      ],
     });
     expect(component.filteredData).toEqual(filteredData);
   });
 
-  it('should give error on getting projects',() => {
+  it('should give error on getting projects', () => {
     component.resetDropdowns = true;
     const err = {
       error: {
-        message: 'Error'
-      }
-    }
+        message: 'Error',
+      },
+    };
     spyOn(httpService, 'getAllProjects').and.returnValue(of(err));
     const spy = spyOn(messageService, 'add');
-    component.getProjects()
+    component.getProjects();
     expect(spy).toHaveBeenCalled();
-  })
+  });
 
   it('should filter data when filterType is available', () => {
     component.valueRemoved = {};
     const event = {
-      stopPropagation: jasmine.createSpy('stopPropagation')
+      stopPropagation: jasmine.createSpy('stopPropagation'),
     };
     component.data = allProjectsData.data;
     const filterType = 'hierarchyLevelOne';
@@ -181,5 +195,5 @@ describe('ProjectFilterComponent', () => {
     component.selectedVal = {};
     component.filterData(event, filterType, filterValue);
     expect(component.filteredData).toEqual(component.data);
-  })
+  });
 });

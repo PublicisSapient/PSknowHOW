@@ -342,7 +342,12 @@ small {
   padding: 0;
 }
 
-::ng-deep .p-dataview.p-dataview-list .p-dataview-content > .p-grid > div:first-child .p-card {
+::ng-deep
+  .p-dataview.p-dataview-list
+  .p-dataview-content
+  > .p-grid
+  > div:first-child
+  .p-card {
   border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
 

@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
   notificationCount: number = 0;
@@ -31,7 +31,9 @@ export class HeaderComponent implements OnInit {
   appList: MenuItem[] | undefined;
   ssoLogin = environment.SSO_LOGIN;
   auth_service = environment.AUTHENTICATION_SERVICE;
-  isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
+  isSpeedSuite = environment?.['SPEED_SUITE']
+    ? environment?.['SPEED_SUITE']
+    : false;
   userRole: string = '';
   noToolsConfigured: boolean;
 
@@ -40,13 +42,12 @@ export class HeaderComponent implements OnInit {
     public sharedService: SharedService,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
-    private helperService: HelperService) { }
+    private helperService: HelperService,
+  ) {}
 
   ngOnInit(): void {
     this.getNotification();
-    this.items = [
-      { label: 'Dashboard', icon: '' },
-    ];
+    this.items = [{ label: 'Dashboard', icon: '' }];
     this.activeItem = this.items[0];
 
     this.userDetails = this.sharedService.getCurrentUserDetails();
@@ -58,9 +59,9 @@ export class HeaderComponent implements OnInit {
         icon: 'fas fa-sign-out-alt',
         command: () => {
           this.logout();
-        }
+        },
       },
-    ]
+    ];
     let authoritiesArr;
     if (this.sharedService.getCurrentUserDetails('authorities')) {
       authoritiesArr = this.sharedService.getCurrentUserDetails('authorities');
@@ -74,14 +75,14 @@ export class HeaderComponent implements OnInit {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: () => {
-          if(!window.location.hash.includes('Config')){
+          if (!window.location.hash.includes('Config')) {
             this.lastVisitedFromUrl = window.location.hash.substring(1);
           }
           this.router.navigate(['/dashboard/Config/ProjectList']);
         },
       });
 
-      this.httpService.getAllConnections().subscribe(response => {
+      this.httpService.getAllConnections().subscribe((response) => {
         if (response['data'].length < 1) {
           this.noToolsConfigured = true;
         }
@@ -89,38 +90,31 @@ export class HeaderComponent implements OnInit {
     }
 
     if (!this.ssoLogin) {
-
       this.appList = [
         {
           label: 'KnowHOW',
           icon: '',
-          styleClass: 'p-menuitem-link-active'
+          styleClass: 'p-menuitem-link-active',
         },
         {
           label: 'Assessments',
           icon: '',
           command: () => {
-            window.open(
-              environment['MAP_URL'],
-              '_blank'
-            );
-          }
+            window.open(environment['MAP_URL'], '_blank');
+          },
         },
         {
           label: 'Retros',
           icon: '',
           command: () => {
-            window.open(
-              environment['RETROS_URL'],
-              '_blank'
-            );
-          }
-        }
+            window.open(environment['RETROS_URL'], '_blank');
+          },
+        },
       ];
     }
     this.sharedService.passEventToNav.subscribe(() => {
       this.getNotification();
-    })
+    });
   }
 
   // when user would want to give access on project from notification list
@@ -131,7 +125,9 @@ export class HeaderComponent implements OnInit {
           this.router.navigate(['/dashboard/Config/Profile/GrantRequests']);
           break;
         case 'User Access Request':
-          this.router.navigate(['/dashboard/Config/Profile/GrantNewUserAuthRequests']);
+          this.router.navigate([
+            '/dashboard/Config/Profile/GrantNewUserAuthRequests',
+          ]);
           break;
         default:
       }
@@ -169,7 +165,9 @@ export class HeaderComponent implements OnInit {
 
   // logout is clicked  and removing auth token , username
   logout() {
-    this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+    this.helperService.setBackupOfFilterSelectionState({
+      additional_level: null,
+    });
     this.helperService.logoutHttp();
   }
 

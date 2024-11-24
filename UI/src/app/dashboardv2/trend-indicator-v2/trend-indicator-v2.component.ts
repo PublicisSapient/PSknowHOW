@@ -3,7 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 @Component({
   selector: 'app-trend-indicator-v2',
   templateUrl: './trend-indicator-v2.component.html',
-  styleUrls: ['./trend-indicator-v2.component.css']
+  styleUrls: ['./trend-indicator-v2.component.css'],
 })
 export class TrendIndicatorV2Component implements OnChanges {
   @Input() cols?: Array<object> = [];
@@ -14,15 +14,18 @@ export class TrendIndicatorV2Component implements OnChanges {
   headerObj = [];
 
   ngOnChanges(changes: SimpleChanges) {
-
     if (this.trendData && this.trendData.length) {
       this.dataObj = [];
       this.headerObj = [];
-      this.colorObj = Object.keys((this.colorObj)).map((key) => this.colorObj[key]);
+      this.colorObj = Object.keys(this.colorObj).map(
+        (key) => this.colorObj[key],
+      );
 
       this.trendData.forEach((trend) => {
         this.dataObj.push({
-          'Project': this.colorObj.filter((obj) => obj.nodeName === trend['hierarchyName'])[0].color,
+          Project: this.colorObj.filter(
+            (obj) => obj.nodeName === trend['hierarchyName'],
+          )[0].color,
           'Latest Trend': trend['value'] + ' (' + trend['trend'] + ')',
           'KPI Maturity': this.getMaturityValue(trend),
         });
@@ -43,18 +46,32 @@ export class TrendIndicatorV2Component implements OnChanges {
   generateFlatArray(dataSet) {
     let result = [];
     Object.keys(dataSet[0]).forEach((key) => {
-      let val = dataSet.map((dataObj) => { if (dataObj[key]) { return dataObj[key] } });
+      let val = dataSet.map((dataObj) => {
+        if (dataObj[key]) {
+          return dataObj[key];
+        }
+      });
       result.push(val);
     });
     return result;
   }
 
   getMaturityValue(trend: any): string {
-    if (trend.maturityValue && trend.maturity !== '--' && trend.maturity !== 'NA') {
-      return trend.maturityValue + ' ' + trend.kpiUnit.charAt(0).toUpperCase() + ' (' + trend.maturity + ')';
+    if (
+      trend.maturityValue &&
+      trend.maturity !== '--' &&
+      trend.maturity !== 'NA'
+    ) {
+      return (
+        trend.maturityValue +
+        ' ' +
+        trend.kpiUnit.charAt(0).toUpperCase() +
+        ' (' +
+        trend.maturity +
+        ')'
+      );
     } else {
       return trend.maturity;
     }
   }
-
 }

@@ -10,10 +10,9 @@ describe('DailyScrumTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DailyScrumTabComponent, DailyScrumComponent ],
-      providers: [ SharedService ]
-    })
-    .compileComponents();
+      declarations: [DailyScrumTabComponent, DailyScrumComponent],
+      providers: [SharedService],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -91,5 +90,4 @@ describe('DailyScrumTabComponent', () => {
     component.reloadKPI(event);
     expect(component.reloadKPITab.emit).toHaveBeenCalledWith(event);
   });
-
 });

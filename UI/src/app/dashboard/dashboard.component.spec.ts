@@ -31,7 +31,7 @@ describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let getAuth: GetAuthService;
-  let httpService: HttpService
+  let httpService: HttpService;
   let sharedService: SharedService;
 
   beforeEach(waitForAsync(() => {
@@ -40,12 +40,13 @@ describe('DashboardComponent', () => {
       imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
-      providers: [SharedService, GetAuthService, HttpService,
-        { provide: APP_CONFIG, useValue: AppConfig }
-      ]
-
-    })
-      .compileComponents();
+      providers: [
+        SharedService,
+        GetAuthService,
+        HttpService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -84,7 +85,7 @@ describe('DashboardComponent', () => {
 
     // Assert
     expect(component.isApply).toBe(flag);
-    expect(component.sideNavStyle).toEqual({ 'toggled': component.isApply });
+    expect(component.sideNavStyle).toEqual({ toggled: component.isApply });
   });
 
   it('should set modal details for created project', () => {
@@ -93,7 +94,9 @@ describe('DashboardComponent', () => {
     spyOn(httpService.loadApp, 'subscribe').and.callThrough();
     component.ngOnInit();
     expect(component.modalDetails.header).toBe('Project Created');
-    expect(component.modalDetails.content).toBe(`The project "${projectName}" has been created successfully and you have gained admin rights for it.`);
+    expect(component.modalDetails.content).toBe(
+      `The project "${projectName}" has been created successfully and you have gained admin rights for it.`,
+    );
   });
 
   it('should reload app when reloadApp is called', () => {
@@ -102,5 +105,4 @@ describe('DashboardComponent', () => {
     component.reloadApp();
     expect(component.displayModal).toBe(false);
   });
-
 });

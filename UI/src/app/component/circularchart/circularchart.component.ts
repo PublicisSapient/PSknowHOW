@@ -21,7 +21,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-circularchart',
   templateUrl: './circularchart.component.html',
-  styleUrls: ['./circularchart.component.css']
+  styleUrls: ['./circularchart.component.css'],
 })
 export class CircularchartComponent {
   @Input() kpiName: string;
@@ -35,5 +35,4 @@ export class CircularchartComponent {
   @Input() radius: string;
   @Input() fontSize: string;
   @Input() thickness: string;
-
 }

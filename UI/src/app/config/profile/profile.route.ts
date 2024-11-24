@@ -31,83 +31,82 @@ import { ViewNewUserAuthRequestComponent } from './view-new-user-auth-request/vi
 import { FeatureGuard } from 'src/app/services/feature.guard';
 
 export const ProfileRoutes: Routes = [
-    {
+  {
+    path: '',
+    component: ProfileComponent,
+    canActivateChild: [FeatureGuard],
+    children: [
+      {
         path: '',
-        component: ProfileComponent,
-        canActivateChild: [FeatureGuard],
-        children: [
-            {
-                path: '',
-                redirectTo: 'MyProfile',
-                pathMatch: 'full'
-            },
-            {
-                path: 'MyProfile',
-                component: MyprofileComponent,
-                data: {
-                    feature: "MyProfile"
-                }
-            },
-            {
-                path: 'GrantRequests',
-                component: ViewRequestsComponent,
-                canActivate: [RoleGuard],
-                data: {
-                    feature: "GrantRequests"
-                }
-            },
-            {
-                path: 'GrantNewUserAuthRequests',
-                component: ViewNewUserAuthRequestComponent,
-                canActivate: [RoleGuard],
-                data: {
-                    feature: "GrantNewUserAuthRequests"
-                }
-            },
-            {
-                path: 'RaiseRequest',
-                component: RaiseAccessRequestComponent,
-                data: {
-                    feature: "RaiseRequest"
-                }
-            },
-            {
-                path: 'RequestStatus',
-                component: RequestStatusComponent,
-                data: {
-                    feature: "RequestStatus"
-                }
-            },
-            {
-                path: 'AccessMgmt',
-                component: AccessMgmtComponent,
-                canActivate: [RoleGuard],
-                data: {
-                    feature: "AccessMgmt"
-                }
-            },
-            {
-                path: 'UserSettings',
-                component: UserMgmtComponent,
-                data: {
-                    feature: "UserSettings"
-                }
-            },
-            {
-                path: 'AutoApprove',
-                component: AutoApprovalComponent,
-                data: {
-                    feature: "AutoApprove"
-                }
-            }
-        ]
-    }
+        redirectTo: 'MyProfile',
+        pathMatch: 'full',
+      },
+      {
+        path: 'MyProfile',
+        component: MyprofileComponent,
+        data: {
+          feature: 'MyProfile',
+        },
+      },
+      {
+        path: 'GrantRequests',
+        component: ViewRequestsComponent,
+        canActivate: [RoleGuard],
+        data: {
+          feature: 'GrantRequests',
+        },
+      },
+      {
+        path: 'GrantNewUserAuthRequests',
+        component: ViewNewUserAuthRequestComponent,
+        canActivate: [RoleGuard],
+        data: {
+          feature: 'GrantNewUserAuthRequests',
+        },
+      },
+      {
+        path: 'RaiseRequest',
+        component: RaiseAccessRequestComponent,
+        data: {
+          feature: 'RaiseRequest',
+        },
+      },
+      {
+        path: 'RequestStatus',
+        component: RequestStatusComponent,
+        data: {
+          feature: 'RequestStatus',
+        },
+      },
+      {
+        path: 'AccessMgmt',
+        component: AccessMgmtComponent,
+        canActivate: [RoleGuard],
+        data: {
+          feature: 'AccessMgmt',
+        },
+      },
+      {
+        path: 'UserSettings',
+        component: UserMgmtComponent,
+        data: {
+          feature: 'UserSettings',
+        },
+      },
+      {
+        path: 'AutoApprove',
+        component: AutoApprovalComponent,
+        data: {
+          feature: 'AutoApprove',
+        },
+      },
+    ],
+  },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(ProfileRoutes)],
-    exports: [RouterModule],
-    providers: [RoleGuard]
+  imports: [RouterModule.forChild(ProfileRoutes)],
+  exports: [RouterModule],
+  providers: [RoleGuard],
 })
-
-export class ProfileRoutingModule { }
+export class ProfileRoutingModule {}

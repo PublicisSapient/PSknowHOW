@@ -27,10 +27,9 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-daily-scrum-tab',
   templateUrl: './daily-scrum-tab.component.html',
-  styleUrls: ['./daily-scrum-tab.component.css']
+  styleUrls: ['./daily-scrum-tab.component.css'],
 })
 export class DailyScrumTabComponent implements OnInit {
-
   @Input() filterData;
   @Input() assigneeList = [];
   @Input() columns = [];
@@ -45,7 +44,7 @@ export class DailyScrumTabComponent implements OnInit {
   filters = {};
   @Output() reloadKPITab = new EventEmitter<any>();
   @Output() backToIteration = new EventEmitter<any>();
-  constructor(private sharedService: SharedService) { }
+  constructor(private sharedService: SharedService) {}
 
   ngOnInit(): void {
     this.sharedService.setVisibleSideBar(false);
@@ -66,7 +65,8 @@ export class DailyScrumTabComponent implements OnInit {
   }
 
   onSelectedUserChange(selectedUser) {
-    this.selectedUser = this.selectedUser === selectedUser ? 'Overall' : selectedUser;
+    this.selectedUser =
+      this.selectedUser === selectedUser ? 'Overall' : selectedUser;
   }
 
   /** Reload KPI once field mappoing updated */

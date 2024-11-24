@@ -16,11 +16,7 @@
  *
  ******************************************************************************/
 
-import {
-  Component,
-  ChangeDetectorRef,
-  AfterContentInit,
-} from '@angular/core';
+import { Component, ChangeDetectorRef, AfterContentInit } from '@angular/core';
 import { GetAuthService } from '../../services/getauth.service';
 import { Router } from '@angular/router';
 
@@ -37,7 +33,8 @@ export class DashboardV2Component implements AfterContentInit {
   displayModal = false;
   modalDetails = {
     header: 'User Request Approved',
-    content: 'Click on "Continue" to reflect the changes happened from requested Role change.'
+    content:
+      'Click on "Continue" to reflect the changes happened from requested Role change.',
   };
 
   authorized = true;
@@ -52,13 +49,12 @@ export class DashboardV2Component implements AfterContentInit {
     public router: Router,
     private getAuth: GetAuthService,
   ) {
-    this.sideNavStyle = { 'toggled': this.isApply };
+    this.sideNavStyle = { toggled: this.isApply };
     this.authorized = this.getAuth.checkAuth();
   }
 
   ngAfterContentInit() {
     this.cdRef.detectChanges();
-
   }
 
   ngOnDestroy() {

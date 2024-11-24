@@ -21,16 +21,16 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-   production: false,
-   baseUrl: '//customapi:8080',
-   SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: 'http://localhost:3000',
-   CENTRAL_API_URL: 'http://localhost:8787',
-   RESOURCE: 'PSKnowHOW',
-   AUTHENTICATION_SERVICE: false,
-   SPEED_SUITE: false,
-   MAP_URL:'',
-   RETROS_URL: ''
+  production: false,
+  baseUrl: '//customapi:8080',
+  SSO_LOGIN: false,
+  CENTRAL_LOGIN_URL: 'http://localhost:3000',
+  CENTRAL_API_URL: 'http://localhost:8787',
+  RESOURCE: 'PSKnowHOW',
+  AUTHENTICATION_SERVICE: false,
+  SPEED_SUITE: false,
+  MAP_URL: '',
+  RETROS_URL: '',
 };
 
 /*

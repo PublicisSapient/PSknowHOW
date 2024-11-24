@@ -1,7 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Router, NavigationEnd, RouteConfigLoadStart, RouteConfigLoadEnd } from '@angular/router';
+import {
+  Router,
+  NavigationEnd,
+  RouteConfigLoadStart,
+  RouteConfigLoadEnd,
+} from '@angular/router';
 import { HttpService } from './services/http.service';
 import { AppComponent } from './app.component';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
@@ -28,13 +33,19 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AppComponent ],
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
-      providers: [ GoogleAnalyticsService, HttpService, GetAuthorizationService,
-         SharedService, PrimeNGConfig, GetAuthService, FeatureFlagsService ,
-         { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-    .compileComponents();
+      declarations: [AppComponent],
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        GoogleAnalyticsService,
+        HttpService,
+        GetAuthorizationService,
+        SharedService,
+        PrimeNGConfig,
+        GetAuthService,
+        FeatureFlagsService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -46,7 +57,7 @@ describe('AppComponent', () => {
     authorization = TestBed.inject(GetAuthorizationService);
     sharedService = TestBed.inject(SharedService);
     primengConfig = TestBed.inject(PrimeNGConfig);
-    featureFlagsService = TestBed.inject(FeatureFlagsService)
+    featureFlagsService = TestBed.inject(FeatureFlagsService);
     spyOn(gaService, 'load').and.returnValue(Promise.resolve(['gaTagManager']));
     jasmine.createSpy('checkAuth').and.returnValue(true);
     spyOn(sharedService, 'setSelectedType');
@@ -76,55 +87,53 @@ describe('AppComponent', () => {
   });
 
   it('should set newUI to true if localStorage has newUI set', () => {
-		localStorage.setItem('newUI', 'true');
-		component.ngOnInit();
-		expect(component.newUI).toBe(true);
-	});
+    localStorage.setItem('newUI', 'true');
+    component.ngOnInit();
+    expect(component.newUI).toBe(true);
+  });
 
   it('should initialize with authorized set to true when user is authenticated', () => {
-		component.ngOnInit();
-		expect(component.authorized).toBe(true);
-	});
+    component.ngOnInit();
+    expect(component.authorized).toBe(true);
+  });
 
   it('should enable ripple effect in PrimeNGConfig', () => {
-		component.ngOnInit();
-		expect(primengConfig.ripple).toBe(true);
-	});
+    component.ngOnInit();
+    expect(primengConfig.ripple).toBe(true);
+  });
 
   it('should add class scrolled to header when window.scrollY is 200', () => {
-		const header = document.createElement('div');
-		header.className = 'header';
-		document.body.appendChild(header);
-		window.scrollY = 200;
-		component.onScroll(new Event('scroll'));
-		expect(header.classList.contains('scrolled')).toBe(false);
-		document.body.removeChild(header);
-	});
+    const header = document.createElement('div');
+    header.className = 'header';
+    document.body.appendChild(header);
+    window.scrollY = 200;
+    component.onScroll(new Event('scroll'));
+    expect(header.classList.contains('scrolled')).toBe(false);
+    document.body.removeChild(header);
+  });
 
   it('should remove the class `scrolled` from header when window.scrollY is 200', () => {
-		const header = document.createElement('div');
-		header.classList.add('scrolled');
-		document.body.appendChild(header);
-		window.scrollY = 200;
-		component.onScroll(new Event('scroll'));
-		expect(header.classList.contains('scrolled')).toBe(true);
-		document.body.removeChild(header);
-	});
+    const header = document.createElement('div');
+    header.classList.add('scrolled');
+    document.body.appendChild(header);
+    window.scrollY = 200;
+    component.onScroll(new Event('scroll'));
+    expect(header.classList.contains('scrolled')).toBe(true);
+    document.body.removeChild(header);
+  });
 
+  it('should set newUI to true when localStorage contains newUI as true', () => {
+    expect(component.newUI).toBe(true);
+  });
 
-	it('should set newUI to true when localStorage contains newUI as true', () => {
-		expect(component.newUI).toBe(true);
-	});
-
-
-	it('should set newUI to false when localStorage does not contain newUI', () => {
-		expect(component.newUI).toBe(true);
-	});
+  it('should set newUI to false when localStorage does not contain newUI', () => {
+    expect(component.newUI).toBe(true);
+  });
 
   it('should trigger Google Analytics with New type when checked', () => {
-		const gaSpy = spyOn(gaService, 'setUIType');
-		const event = { checked: true };
-		component.uiSwitch(event);
-		expect(gaSpy).toHaveBeenCalledWith({ type: 'New' });
-	});
+    const gaSpy = spyOn(gaService, 'setUIType');
+    const event = { checked: true };
+    component.uiSwitch(event);
+    expect(gaSpy).toHaveBeenCalledWith({ type: 'New' });
+  });
 });

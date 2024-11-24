@@ -16,13 +16,22 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, fakeAsync, inject, TestBed, waitForAsync } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  inject,
+  TestBed,
+  waitForAsync,
+} from '@angular/core/testing';
 import { ToastModule } from 'primeng/toast';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { RaiseAccessRequestComponent } from './raise-access-request.component';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { HttpService } from '../../../services/http.service';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { MessageService } from 'primeng/api';
@@ -38,7 +47,7 @@ describe('RaiseRequestComponent', () => {
   let httpService: HttpService;
   let httpMock;
   let messageService;
-  const baseUrl = environment.baseUrl;  // Servers Env
+  const baseUrl = environment.baseUrl; // Servers Env
 
   const fakeRoleList = require('../../../../test/resource/fakeRolesList.json');
   const fakeRolesData = require('../../../../test/resource/fakeRolesData.json');
@@ -47,33 +56,43 @@ describe('RaiseRequestComponent', () => {
     username: 'testUser',
     status: 'Pending',
     reviewComments: '',
-    roles: [{
-      _id: '5da03f242afa421ae416cad7',
-      roleName: 'ROLE_PROJECT_VIEWER'
-    }],
-    projects: [{
-      projectId: 'DTI_63102_DTI',
-      projectName: 'DTI'
-    }]
+    roles: [
+      {
+        _id: '5da03f242afa421ae416cad7',
+        roleName: 'ROLE_PROJECT_VIEWER',
+      },
+    ],
+    projects: [
+      {
+        projectId: 'DTI_63102_DTI',
+        projectName: 'DTI',
+      },
+    ],
   };
 
   const fakeRequestResponse = {
     message: 'created new access_request',
     success: true,
-    data: [{
-      _id: '5da47c2ae645ca33dc927bb3',
-      username: 'testUser',
-      status: 'Pending',
-      reviewComments: '',
-      projects: [{
-        projectName: 'DTI',
-        projectId: 'DTI_63102_DTI'
-      }],
-      roles: [{
-        _id: '5da03f242afa421ae416cad7',
-        roleName: 'ROLE_PROJECT_VIEWER'
-      }]
-    }]
+    data: [
+      {
+        _id: '5da47c2ae645ca33dc927bb3',
+        username: 'testUser',
+        status: 'Pending',
+        reviewComments: '',
+        projects: [
+          {
+            projectName: 'DTI',
+            projectId: 'DTI_63102_DTI',
+          },
+        ],
+        roles: [
+          {
+            _id: '5da03f242afa421ae416cad7',
+            roleName: 'ROLE_PROJECT_VIEWER',
+          },
+        ],
+      },
+    ],
   };
 
   const selectedItem = {
@@ -81,7 +100,7 @@ describe('RaiseRequestComponent', () => {
     nodeName: 'DOJO Transformation Internal',
     isSelected: false,
     itemName: 'DOJO Transformation Internal',
-    id: 1
+    id: 1,
   };
 
   const fakeSelectedProject = {
@@ -89,21 +108,25 @@ describe('RaiseRequestComponent', () => {
     nodeName: 'DTI',
     isSelected: false,
     itemName: 'DTI_63102_DTI',
-    id: 4
+    id: 4,
   };
 
-  const fakeSelectedProjectArr = [{
-    nodeId: 'DTI_63102_DTI',
-    nodeName: 'DTI',
-    isSelected: false,
-    itemName: 'DTI_63102_DTI',
-    id: 4
-  }];
+  const fakeSelectedProjectArr = [
+    {
+      nodeId: 'DTI_63102_DTI',
+      nodeName: 'DTI',
+      isSelected: false,
+      itemName: 'DTI_63102_DTI',
+      id: 4,
+    },
+  ];
 
-  const fakeRequestDataProjectsArr = [{
-    projectId: 'DTI_63102_DTI',
-    projectName: 'DTI'
-  }];
+  const fakeRequestDataProjectsArr = [
+    {
+      projectId: 'DTI_63102_DTI',
+      projectName: 'DTI',
+    },
+  ];
 
   const fakeRole = {
     _id: '5da03f242afa421ae416cad7',
@@ -112,16 +135,18 @@ describe('RaiseRequestComponent', () => {
     createdDate: 1570783012645,
     lastModifiedDate: 1570783012646,
     isDeleted: 'False',
-    permissions: [{
-      _id: '5d96dbb1abcd3e3e10b772f6',
-      permissionName: 'View',
-      operationName: 'Read',
-      resourceName: 'resource4',
-      resourceId: '5d932a126c7b0f37981a2cdc',
-      createdDate: 1570167729143,
-      lastModifiedDate: 1570167729143,
-      isDeleted: 'False'
-    }]
+    permissions: [
+      {
+        _id: '5d96dbb1abcd3e3e10b772f6',
+        permissionName: 'View',
+        operationName: 'Read',
+        resourceName: 'resource4',
+        resourceId: '5d932a126c7b0f37981a2cdc',
+        createdDate: 1570167729143,
+        lastModifiedDate: 1570167729143,
+        isDeleted: 'False',
+      },
+    ],
   };
 
   beforeEach(waitForAsync(() => {
@@ -133,12 +158,15 @@ describe('RaiseRequestComponent', () => {
         FormsModule,
         RouterTestingModule.withRoutes([]),
         HttpClientTestingModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
       ],
-      providers: [HttpService, MessageService,SharedService
-        , { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-      .compileComponents();
+      providers: [
+        HttpService,
+        MessageService,
+        SharedService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -175,14 +203,16 @@ describe('RaiseRequestComponent', () => {
 
   it('Should check if request is getting submitted with successfully', () => {
     const submittedResponse = {
-      success: true
+      success: true,
     };
     component.roleList = [
       {
-        active: true
-      }
+        active: true,
+      },
     ];
-    spyOn(httpService, 'saveAccessRequest').and.callFake(() => from([submittedResponse]));
+    spyOn(httpService, 'saveAccessRequest').and.callFake(() =>
+      from([submittedResponse]),
+    );
     spyOn(messageService, 'add');
     component.submitRequest();
     expect(component.roleSelected).toBeFalsy();
@@ -191,14 +221,16 @@ describe('RaiseRequestComponent', () => {
 
   it('Should check if request is getting submitted without successfully', () => {
     const submittedResponse = {
-      error: true
+      error: true,
     };
     component.roleList = [
       {
-        active: true
-      }
+        active: true,
+      },
     ];
-    spyOn(httpService, 'saveAccessRequest').and.callFake(() => from([submittedResponse]));
+    spyOn(httpService, 'saveAccessRequest').and.callFake(() =>
+      from([submittedResponse]),
+    );
     spyOn(messageService, 'add');
     component.submitRequest();
   });
@@ -237,44 +269,42 @@ describe('RaiseRequestComponent', () => {
     expect(component.roleSelected).toBeTruthy();
   });
 
-
-it('should update the roleList and requestData when accessItem is provided', () => {
-  component.roleList = [
-    { roleName: 'ROLE_SUPERADMIN', disabled: false },
-    { roleName: 'ROLE_ADMIN', disabled: false },
-    { roleName: 'ROLE_USER', disabled: false },
-  ];
-  component.roleSelected = true;
-  component.requestData = {
-    role: 'ROLE_ADMIN',
-    accessNode: {
-      accessLevel: 'level-1',
-      accessItems: [
-        { itemId: 'item-1', itemName: 'Item 1' },
-        { itemId: 'item-2', itemName: 'Item 2' },
+  it('should update the roleList and requestData when accessItem is provided', () => {
+    component.roleList = [
+      { roleName: 'ROLE_SUPERADMIN', disabled: false },
+      { roleName: 'ROLE_ADMIN', disabled: false },
+      { roleName: 'ROLE_USER', disabled: false },
+    ];
+    component.roleSelected = true;
+    component.requestData = {
+      role: 'ROLE_ADMIN',
+      accessNode: {
+        accessLevel: 'level-1',
+        accessItems: [
+          { itemId: 'item-1', itemName: 'Item 1' },
+          { itemId: 'item-2', itemName: 'Item 2' },
+        ],
+      },
+    };
+    const accessItem = {
+      value: [
+        { itemId: 'item-3', itemName: 'Item 3' },
+        { itemId: 'item-4', itemName: 'Item 4' },
       ],
-    },
-  };
-  const accessItem = {
-    value: [
-      { itemId: 'item-3', itemName: 'Item 3' },
-      { itemId: 'item-4', itemName: 'Item 4' },
-    ],
-    accessType: 'level-2',
-  };
-  component.projectSelectedEvent(accessItem);
-  expect(component.roleList).toBeDefined();
-});
+      accessType: 'level-2',
+    };
+    component.projectSelectedEvent(accessItem);
+    expect(component.roleList).toBeDefined();
+  });
 
-it('should reset the requestData when accessItem is not provided', () => {
-  component.roleList = [
-    { roleName: 'ROLE_SUPERADMIN', disabled: false },
-    { roleName: 'ROLE_ADMIN', disabled: false },
-    { roleName: 'ROLE_USER', disabled: false },
-  ];
-  const accessItem = null;
-  component.projectSelectedEvent(accessItem);
-  expect(component.roleList).toBeDefined();
-});
-
+  it('should reset the requestData when accessItem is not provided', () => {
+    component.roleList = [
+      { roleName: 'ROLE_SUPERADMIN', disabled: false },
+      { roleName: 'ROLE_ADMIN', disabled: false },
+      { roleName: 'ROLE_USER', disabled: false },
+    ];
+    const accessItem = null;
+    component.projectSelectedEvent(accessItem);
+    expect(component.roleList).toBeDefined();
+  });
 });

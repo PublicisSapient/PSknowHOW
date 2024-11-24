@@ -36,8 +36,6 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   @Input() data: any; // json data
   elem;
 
-
-
   svg: any;
   margin = 50;
   width = 482;
@@ -47,15 +45,14 @@ export class PiechartComponent implements OnChanges, OnDestroy {
   colors;
   pieChartValuesArray = [];
 
-
-
   constructor(private viewContainerRef: ViewContainerRef) {}
 
   createColors(): void {
     this.colors = d3
       .scaleOrdinal()
       .domain(this.pieChartValuesArray.map((d) => d?.value?.toString()))
-      .range(['#FFA193',
+      .range([
+        '#FFA193',
         '#00B1B0',
         '#FEC84D',
         '#E42256',
@@ -74,7 +71,8 @@ export class PiechartComponent implements OnChanges, OnDestroy {
         '#50723C',
         '#F17552',
         '#445E93',
-        '#885053']);
+        '#885053',
+      ]);
   }
   drawChart(): void {
     // Compute the position of each group on the pie:
@@ -86,9 +84,8 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     for (const property in pieChartValues) {
       this.pieChartValuesArray.push({
         ['title']: property,
-        ['value']: pieChartValues[property]
-      }
-      )
+        ['value']: pieChartValues[property],
+      });
     }
     this.pieChartValuesArray.sort((a, b) => {
       if (a.value === b.value) {
@@ -104,15 +101,14 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .attr('width', this.width)
       .attr('height', this.height)
       .append('g')
-      .attr(
-        'transform',
-        'translate(' + 120 + ',' + this.height / 2 + ')',
-      );
+      .attr('transform', 'translate(' + 120 + ',' + this.height / 2 + ')');
     this.createColors();
     const colors = this.colors;
 
-    const totalCount = d3.sum(this.pieChartValuesArray, function (d) { return d.value; });
-    const toPercent = d3.format("0.1%");
+    const totalCount = d3.sum(this.pieChartValuesArray, function (d) {
+      return d.value;
+    });
+    const toPercent = d3.format('0.1%');
     // Build the pie chart
     svg
       .selectAll('pieces')
@@ -124,14 +120,15 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .attr('stroke', '#fff')
       .style('stroke-width', '1px');
 
-    const foreignObject = svg.append("foreignObject")
-      .attr("width", 222)
-      .attr("height", this.height - (2 * this.margin))
+    const foreignObject = svg
+      .append('foreignObject')
+      .attr('width', 222)
+      .attr('height', this.height - 2 * this.margin)
       .style('overflow-y', 'auto')
-      .attr("transform", `translate(140,${-(this.height / 2 - this.margin)})`)
-      .append("xhtml:div")
-      .attr("id", "main-div")
-      .attr("class", "p-text-left")
+      .attr('transform', `translate(140,${-(this.height / 2 - this.margin)})`)
+      .append('xhtml:div')
+      .attr('id', 'main-div')
+      .attr('class', 'p-text-left')
       .style('border', '1px solid #dedede')
       .append('table')
       .style('width', '100%')
@@ -140,21 +137,31 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
     foreignObject
       .append('thead')
-      .html('<th class="p-p-1 font-small">Legend Title</th><th class="p-p-1 font-small">Count</th><th class="p-p-1 font-small p-text-right">%</th>')
+      .html(
+        '<th class="p-p-1 font-small">Legend Title</th><th class="p-p-1 font-small">Count</th><th class="p-p-1 font-small p-text-right">%</th>',
+      )
       .style('border-bottom', '1px solid #dedede')
       .style('text-align', 'left');
 
-    const tbody = foreignObject
-      .append('tbody');
+    const tbody = foreignObject.append('tbody');
 
     this.pieChartValuesArray.forEach((x, i) => {
-      tbody.append('tr')
+      tbody
+        .append('tr')
         .style('border-bottom', '1px solid #dedede')
         .style('padding-top', '2px')
-        .html(`<td class="p-p-1 font-small"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(i)}'></span><span style="text-transform: capitalize;">${x?.title}</span></td><td class="p-p-1 font-small">${x?.value}</td><td class="p-p-1 font-small p-text-right">${toPercent(x?.value / totalCount)}</td>`)
-    })
-
-
+        .html(
+          `<td class="p-p-1 font-small"><span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${colors(
+            i,
+          )}'></span><span style="text-transform: capitalize;">${
+            x?.title
+          }</span></td><td class="p-p-1 font-small">${
+            x?.value
+          }</td><td class="p-p-1 font-small p-text-right">${toPercent(
+            x?.value / totalCount,
+          )}</td>`,
+        );
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -165,7 +172,6 @@ export class PiechartComponent implements OnChanges, OnDestroy {
         this.drawChart();
       }
     }
-
   }
 
   ngOnDestroy() {
@@ -174,6 +180,4 @@ export class PiechartComponent implements OnChanges, OnDestroy {
     this.data = [];
     this.pieChartValuesArray = [];
   }
-
-
 }

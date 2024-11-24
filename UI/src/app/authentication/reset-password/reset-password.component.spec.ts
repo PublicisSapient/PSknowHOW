@@ -27,7 +27,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { HttpService } from '../../services/http.service';
 import { environment } from 'src/environments/environment';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -55,17 +58,20 @@ describe('ResetPasswordComponent', () => {
         ReactiveFormsModule,
         CommonModule,
         RouterTestingModule.withRoutes(routes),
-        HttpClientTestingModule
+        HttpClientTestingModule,
       ],
-      declarations: [ResetPasswordComponent,
-        RegisterComponent, DashboardComponent],
-      providers: [HttpService, SharedService
-        , { provide: APP_CONFIG, useValue: AppConfig }
-
+      declarations: [
+        ResetPasswordComponent,
+        RegisterComponent,
+        DashboardComponent,
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+      providers: [
+        HttpService,
+        SharedService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -87,17 +93,19 @@ describe('ResetPasswordComponent', () => {
   });
 
   it('password and confirm pass word miss match should not call service', waitForAsync(() => {
-    component.resetPasswordForm.controls['confirmpassword'].setValue('User@123');
+    component.resetPasswordForm.controls['confirmpassword'].setValue(
+      'User@123',
+    );
     component.resetPasswordForm.controls['password'].setValue('User@1234');
 
     component.onSubmit();
     expect(component.resetPasswordForm.invalid).toBeTruthy();
   }));
 
-
-
   it('valid epassword and confirm pass word  with error', waitForAsync(() => {
-    component.resetPasswordForm.controls['confirmpassword'].setValue('User@1234');
+    component.resetPasswordForm.controls['confirmpassword'].setValue(
+      'User@1234',
+    );
     component.resetPasswordForm.controls['password'].setValue('User@1234');
     component.onSubmit();
     const httpreq = httpMock.expectOne(baseUrl + '/api/resetPassword');
@@ -105,7 +113,9 @@ describe('ResetPasswordComponent', () => {
     expect(component.error).toBe(fakeError.message);
   }));
   it('valid email id  with success', waitForAsync(() => {
-    component.resetPasswordForm.controls['confirmpassword'].setValue('User@1234');
+    component.resetPasswordForm.controls['confirmpassword'].setValue(
+      'User@1234',
+    );
     component.resetPasswordForm.controls['password'].setValue('User@1234');
     component.onSubmit();
     const httpreq = httpMock.expectOne(baseUrl + '/api/resetPassword');

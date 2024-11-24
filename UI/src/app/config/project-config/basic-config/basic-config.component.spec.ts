@@ -22,9 +22,19 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { FormGroup, ReactiveFormsModule, FormsModule, FormBuilder, UntypedFormGroup, UntypedFormControl } from '@angular/forms';
+import {
+  FormGroup,
+  ReactiveFormsModule,
+  FormsModule,
+  FormBuilder,
+  UntypedFormGroup,
+  UntypedFormControl,
+} from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 
 import { DropdownModule } from 'primeng/dropdown';
@@ -37,7 +47,7 @@ import { TableModule } from 'primeng/table';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 
 import { environment } from 'src/environments/environment';
-import {InputSwitchModule} from 'primeng/inputswitch';
+import { InputSwitchModule } from 'primeng/inputswitch';
 import { of } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 
@@ -60,19 +70,19 @@ describe('BasicConfigComponent', () => {
       suggestions: [
         {
           name: 'Canada',
-          code: 'Canada'
+          code: 'Canada',
         },
         {
           name: 'India',
-          code: 'India'
+          code: 'India',
         },
         {
           name: 'USA',
-          code: 'USA'
-        }
+          code: 'USA',
+        },
       ],
       value: '',
-      required: true
+      required: true,
     },
     {
       level: 2,
@@ -81,27 +91,27 @@ describe('BasicConfigComponent', () => {
       suggestions: [
         {
           name: 'Haryana',
-          code: 'Haryana'
+          code: 'Haryana',
         },
         {
           name: 'Karnataka',
-          code: 'Karnataka'
+          code: 'Karnataka',
         },
         {
           name: 'Ontario',
-          code: 'Ontario'
+          code: 'Ontario',
         },
         {
           name: 'Texas',
-          code: 'Texas'
+          code: 'Texas',
         },
         {
           name: 'Washinton',
-          code: 'Washinton'
-        }
+          code: 'Washinton',
+        },
       ],
       value: '',
-      required: true
+      required: true,
     },
     {
       level: 3,
@@ -110,134 +120,124 @@ describe('BasicConfigComponent', () => {
       suggestions: [
         {
           name: 'Bangalore',
-          code: 'Bangalore'
+          code: 'Bangalore',
         },
         {
           name: 'Gurgaon',
-          code: 'Gurgaon'
+          code: 'Gurgaon',
         },
         {
           name: 'Houston',
-          code: 'Houston'
+          code: 'Houston',
         },
         {
           name: 'Kurukshetra',
-          code: 'Kurukshetra'
+          code: 'Kurukshetra',
         },
         {
           name: 'Ottawa',
-          code: 'Ottawa'
+          code: 'Ottawa',
         },
         {
           name: 'Remond',
-          code: 'Remond'
+          code: 'Remond',
         },
         {
           name: 'Seattle',
-          code: 'Seattle'
-        }
+          code: 'Seattle',
+        },
       ],
       value: '',
-      required: true
-    }
+      required: true,
+    },
   ];
 
   const formValue = {
     kanban: false,
     country: {
       name: 'Canada',
-      code: 'Canada'
+      code: 'Canada',
     },
     state: {
       name: 'Ontario',
-      code: 'Ontario'
+      code: 'Ontario',
     },
     city: {
       name: 'Ottawa',
-      code: 'Ottawa'
+      code: 'Ottawa',
     },
-    projectName: 'Test44'
+    projectName: 'Test44',
   };
 
   const successResponse = {
     serviceResponse: {
-        message: 'Added Successfully.',
-        success: true,
-        data: {
-            id: '6335497f67af3f41656b7b42',
-            projectName: 'Test44',
-            createdAt: '2022-09-29T13:00:07',
-            kanban: false,
-            hierarchy: [
-                {
-                    hierarchyLevel: {
-                        level: 1,
-                        hierarchyLevelId: 'country',
-                        hierarchyLevelName: 'Country'
-                    },
-                    value: 'Canada'
-                },
-                {
-                    hierarchyLevel: {
-                        level: 2,
-                        hierarchyLevelId: 'state',
-                        hierarchyLevelName: 'State'
-                    },
-                    value: 'Ontario'
-                },
-                {
-                    hierarchyLevel: {
-                        level: 3,
-                        hierarchyLevelId: 'city',
-                        hierarchyLevelName: 'City'
-                    },
-                    value: 'Ottawa'
-                }
-            ],
-            isKanban: false
-        }
+      message: 'Added Successfully.',
+      success: true,
+      data: {
+        id: '6335497f67af3f41656b7b42',
+        projectName: 'Test44',
+        createdAt: '2022-09-29T13:00:07',
+        kanban: false,
+        hierarchy: [
+          {
+            hierarchyLevel: {
+              level: 1,
+              hierarchyLevelId: 'country',
+              hierarchyLevelName: 'Country',
+            },
+            value: 'Canada',
+          },
+          {
+            hierarchyLevel: {
+              level: 2,
+              hierarchyLevelId: 'state',
+              hierarchyLevelName: 'State',
+            },
+            value: 'Ontario',
+          },
+          {
+            hierarchyLevel: {
+              level: 3,
+              hierarchyLevelId: 'city',
+              hierarchyLevelName: 'City',
+            },
+            value: 'Ottawa',
+          },
+        ],
+        isKanban: false,
+      },
     },
-    projectsAccess: []
-};
+    projectsAccess: [],
+  };
 
-const formFieldData = [
-  {
-    level: 1,
-    hierarchyLevelId: 'country',
-    hierarchyLevelName: 'Country',
-    suggestions: [
-      'Canada',
-      'India',
-      'USA'
-    ]
-  },
-  {
-    level: 2,
-    hierarchyLevelId: 'state',
-    hierarchyLevelName: 'State',
-    suggestions: [
-      'Haryana',
-      'Karnataka',
-      'Ontario',
-      'Texas',
-      'Washinton'
-    ]
-  },
-  {
-    level: 3,
-    hierarchyLevelId: 'city',
-    hierarchyLevelName: 'City',
-    suggestions: [
-      'Bangalore',
-      'Gurgaon',
-      'Houston',
-      'Kurukshetra',
-      'Ottawa',
-      'Remond',
-      'Seattle'
-    ]
-  }
-];
+  const formFieldData = [
+    {
+      level: 1,
+      hierarchyLevelId: 'country',
+      hierarchyLevelName: 'Country',
+      suggestions: ['Canada', 'India', 'USA'],
+    },
+    {
+      level: 2,
+      hierarchyLevelId: 'state',
+      hierarchyLevelName: 'State',
+      suggestions: ['Haryana', 'Karnataka', 'Ontario', 'Texas', 'Washinton'],
+    },
+    {
+      level: 3,
+      hierarchyLevelId: 'city',
+      hierarchyLevelName: 'City',
+      suggestions: [
+        'Bangalore',
+        'Gurgaon',
+        'Houston',
+        'Kurukshetra',
+        'Ottawa',
+        'Remond',
+        'Seattle',
+      ],
+    },
+  ];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -255,7 +255,7 @@ const formFieldData = [
         ToastModule,
         TableModule,
         AutoCompleteModule,
-        InputSwitchModule
+        InputSwitchModule,
       ],
       providers: [
         HttpService,
@@ -264,10 +264,9 @@ const formFieldData = [
         GetAuthorizationService,
         MessageService,
         GoogleAnalyticsService,
-        { provide: APP_CONFIG, useValue: AppConfig }
-      ]
-    })
-      .compileComponents();
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -282,10 +281,10 @@ const formFieldData = [
     let localStore = {};
 
     spyOn(window.localStorage, 'getItem').and.callFake((key) =>
-      key in localStore ? localStore[key] : null
+      key in localStore ? localStore[key] : null,
     );
     spyOn(window.localStorage, 'setItem').and.callFake(
-      (key, value) => (localStore[key] = value + '')
+      (key, value) => (localStore[key] = value + ''),
     );
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
 
@@ -299,9 +298,9 @@ const formFieldData = [
   it('should filter out and display suggestions', () => {
     const event = {
       originalEvent: {
-        isTrusted: true
+        isTrusted: true,
       },
-      query: 'ca'
+      query: 'ca',
     };
     const field = {
       level: 1,
@@ -310,33 +309,33 @@ const formFieldData = [
       suggestions: [
         {
           name: 'Canada',
-          code: 'Canada'
+          code: 'Canada',
         },
         {
           name: 'India',
-          code: 'India'
+          code: 'India',
         },
         {
           name: 'USA',
-          code: 'USA'
-        }
+          code: 'USA',
+        },
       ],
       value: '',
       required: true,
       filteredSuggestions: [
         {
           name: 'Canada',
-          code: 'Canada'
-        }
-      ]
+          code: 'Canada',
+        },
+      ],
     };
     component.search(event, field);
     fixture.detectChanges();
     const filteredSuggestions = [
       {
         name: 'Canada',
-        code: 'Canada'
-      }
+        code: 'Canada',
+      },
     ];
     expect(field.filteredSuggestions).toEqual(filteredSuggestions);
   });
@@ -348,20 +347,20 @@ const formFieldData = [
       state: new UntypedFormControl('', [component.stringValidator]),
       city: new UntypedFormControl('', [component.stringValidator]),
       kanban: new UntypedFormControl(false),
-      assigneeDetails: new UntypedFormControl(false)
-    }); 
+      assigneeDetails: new UntypedFormControl(false),
+    });
     component.getFieldsResponse = [...hierarchyData];
     Object.keys(formValue).forEach((key) => {
       component.form.controls[key].setValue(formValue[key]);
     });
     component.blocked = true;
     component.selectedProject = {};
-    spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
+    spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse));
     spyOn(sharedService, 'setSelectedProject');
     component.ifSuperUser = true;
     const spy = spyOn(messageService, 'add');
     spyOn(ga, 'createProjectData');
-    spyOn(component, 'getFields');  
+    spyOn(component, 'getFields');
     component.onSubmit();
     expect(component.form.valid).toBeTruthy();
     expect(spy).toHaveBeenCalled();
@@ -375,21 +374,21 @@ const formFieldData = [
       state: new UntypedFormControl('', [component.stringValidator]),
       city: new UntypedFormControl('', [component.stringValidator]),
       kanban: new UntypedFormControl(false),
-      assigneeDetails: new UntypedFormControl(false)
-    }); 
+      assigneeDetails: new UntypedFormControl(false),
+    });
     component.getFieldsResponse = [...hierarchyData];
     Object.keys(formValue).forEach((key) => {
       component.form.controls[key].setValue(formValue[key]);
     });
     component.blocked = true;
     component.selectedProject = {};
-    spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
+    spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse));
     spyOn(sharedService, 'setSelectedProject');
     component.ifSuperUser = false;
     spyOn(sharedService, 'setCurrentUserDetails');
     const spy = spyOn(messageService, 'add');
     spyOn(ga, 'createProjectData');
-    spyOn(component, 'getFields');  
+    spyOn(component, 'getFields');
     component.onSubmit();
     expect(component.form.valid).toBeTruthy();
     expect(spy).toHaveBeenCalled();
@@ -407,8 +406,8 @@ const formFieldData = [
     expect(component.form.controls['projectName'].valid).toBeFalsy();
   });
 
-  it("should get HierarchyLevels",()=>{
-    spyOn(httpService,'getHierarchyLevels').and.returnValue(of(formFieldData));
+  it('should get HierarchyLevels', () => {
+    spyOn(httpService, 'getHierarchyLevels').and.returnValue(of(formFieldData));
     component.getHierarchy();
-  })
+  });
 });

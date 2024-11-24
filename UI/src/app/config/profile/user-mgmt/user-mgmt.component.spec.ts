@@ -32,7 +32,10 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -43,14 +46,16 @@ describe('UserManagementComponent', () => {
   let httpMock;
   let httpreq;
   const baseUrl = environment.baseUrl;
-  const successResponse = '{\"X-Authentication-Token\":\"dummytoken\",\"Success\":\"Success\"}';
+  const successResponse =
+    '{"X-Authentication-Token":"dummytoken","Success":"Success"}';
   // const failure400Response = { 'timestamp': 1567511436517, 'status': 400, 'error': 'Bad request', 'message': 'Bad request Failed', 'path': '/api/changePassword' };
   const failureResponse = 'WrongOldPassword';
   beforeEach(waitForAsync(() => {
     const routes: Routes = [
       {
-        path: 'dashboard/Config/Profile/UserSettings', component: UserMgmtComponent
-      }
+        path: 'dashboard/Config/Profile/UserSettings',
+        component: UserMgmtComponent,
+      },
     ];
 
     TestBed.configureTestingModule({
@@ -60,15 +65,17 @@ describe('UserManagementComponent', () => {
         ReactiveFormsModule,
         CommonModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes(routes)
+        RouterTestingModule.withRoutes(routes),
       ],
       declarations: [UserMgmtComponent],
-      providers: [{ provide: APP_CONFIG, useValue: AppConfig },
-        HttpService, MessageService,SharedService
+      providers: [
+        { provide: APP_CONFIG, useValue: AppConfig },
+        HttpService,
+        MessageService,
+        SharedService,
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -84,30 +91,41 @@ describe('UserManagementComponent', () => {
   });
 
   it('Test happy flow', () => {
-    component.changePasswordForm.controls['oldpassword'].setValue('Test123@123');
+    component.changePasswordForm.controls['oldpassword'].setValue(
+      'Test123@123',
+    );
     component.changePasswordForm.controls['password'].setValue('Qwerty@123');
-    component.changePasswordForm.controls['confirmpassword'].setValue('Qwerty@123');
+    component.changePasswordForm.controls['confirmpassword'].setValue(
+      'Qwerty@123',
+    );
     component.onSubmit();
     fixture.detectChanges();
-    const url = environment['AUTHENTICATION_SERVICE'] == true ? baseUrl + '/api/changePassword/central' : baseUrl + '/api/changePassword';
+    const url =
+      environment['AUTHENTICATION_SERVICE'] == true
+        ? baseUrl + '/api/changePassword/central'
+        : baseUrl + '/api/changePassword';
     httpMock.match(url)[0].flush(successResponse);
     expect(component.changePasswordForm.valid).toBeTruthy();
     // expect(component.success).toBe('Password changed succesfully');
   });
 
-
-
   it('Test password and confirm password are same', () => {
     fixture.detectChanges();
-    component.changePasswordForm.controls['oldpassword'].setValue('somepassword');
+    component.changePasswordForm.controls['oldpassword'].setValue(
+      'somepassword',
+    );
     component.changePasswordForm.controls['password'].setValue('Qwerty@123');
-    component.changePasswordForm.controls['confirmpassword'].setValue('Qwerty@123');
+    component.changePasswordForm.controls['confirmpassword'].setValue(
+      'Qwerty@123',
+    );
     expect(component.checkPasswords(component.changePasswordForm)).toBeNull();
   });
 
   it('Test if new password is empty', () => {
     fixture.detectChanges();
-    component.changePasswordForm.controls['oldpassword'].setValue('somepassword');
+    component.changePasswordForm.controls['oldpassword'].setValue(
+      'somepassword',
+    );
     component.changePasswordForm.controls['password'].setValue('');
     component.changePasswordForm.controls['confirmpassword'].setValue('');
     component.ngOnInit();
@@ -119,7 +137,9 @@ describe('UserManagementComponent', () => {
 
   it('Test if new password is not valid', () => {
     fixture.detectChanges();
-    component.changePasswordForm.controls['oldpassword'].setValue('somepassword');
+    component.changePasswordForm.controls['oldpassword'].setValue(
+      'somepassword',
+    );
     component.changePasswordForm.controls['password'].setValue('abcd');
     component.changePasswordForm.controls['confirmpassword'].setValue('abcd');
     component.ngOnInit();
@@ -131,10 +151,16 @@ describe('UserManagementComponent', () => {
 
   it('Test if new password and confirm password dont match', () => {
     fixture.detectChanges();
-    component.changePasswordForm.controls['oldpassword'].setValue('somepassword');
+    component.changePasswordForm.controls['oldpassword'].setValue(
+      'somepassword',
+    );
     component.changePasswordForm.controls['password'].setValue('Qwerty@123');
-    component.changePasswordForm.controls['confirmpassword'].setValue('Qwerty@1234');
-    expect(component.checkPasswords(component.changePasswordForm) != null).toBeTruthy();
+    component.changePasswordForm.controls['confirmpassword'].setValue(
+      'Qwerty@1234',
+    );
+    expect(
+      component.checkPasswords(component.changePasswordForm) != null,
+    ).toBeTruthy();
   });
 
   it('Test if old password is empty', () => {

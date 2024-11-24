@@ -20,9 +20,9 @@ import { InjectionToken } from '@angular/core';
 export const APP_CONFIG = new InjectionToken('app.config');
 
 export interface IAppConfig {
-    Speedy1PortNo: string;
+  Speedy1PortNo: string;
 }
 
 export const AppConfig: IAppConfig = {
-    Speedy1PortNo: '3000'
+  Speedy1PortNo: '3000',
 };

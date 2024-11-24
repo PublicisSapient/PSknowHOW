@@ -60,7 +60,8 @@ describe('ConfigComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CommonModule,
+      imports: [
+        CommonModule,
         FormsModule,
         ConfigRoutingModule,
         TableModule,
@@ -80,7 +81,8 @@ describe('ConfigComponent', () => {
         RouterTestingModule.withRoutes([]),
         CheckboxModule,
         PanelMenuModule,
-        SharedModuleModule],
+        SharedModuleModule,
+      ],
       declarations: [
         ConfigComponent,
         AutoCompleteComponent,
@@ -90,9 +92,13 @@ describe('ConfigComponent', () => {
         ScrumKanbanPipe,
         // TextMaskPipe,
       ],
-      providers: [MessageService, ConfirmationService, GetAuthorizationService,SharedService]
-    })
-      .compileComponents();
+      providers: [
+        MessageService,
+        ConfirmationService,
+        GetAuthorizationService,
+        SharedService,
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -112,131 +118,139 @@ describe('ConfigComponent', () => {
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true);
     component.ngOnInit();
     expect(component.hasAccess).toBe(true);
-  })
+  });
 
   it('should check if user has access', () => {
     component.hasAccess = false;
     const projectsAccess = [
       {
-          "role": "ROLE_PROJECT_VIEWER",
-          "projects": [
+        role: 'ROLE_PROJECT_VIEWER',
+        projects: [
+          {
+            projectName: 'abc',
+            projectId: '65643593e157cb3b681d2d62',
+            hierarchy: [
               {
-                  "projectName": "abc",
-                  "projectId": "65643593e157cb3b681d2d62",
-                  "hierarchy": [
-                      {
-                          "hierarchyLevel": {
-                              "level": 1,
-                              "hierarchyLevelId": "cat1",
-                              "hierarchyLevelName": "CAT1"
-                          },
-                          "value": "Europe"
-                      },
-                      {
-                          "hierarchyLevel": {
-                              "level": 2,
-                              "hierarchyLevelId": "cat2",
-                              "hierarchyLevelName": "CAT2"
-                          },
-                          "value": "Education"
-                      },
-                      {
-                          "hierarchyLevel": {
-                              "level": 3,
-                              "hierarchyLevelId": "cat3",
-                              "hierarchyLevelName": "CAT3"
-                          },
-                          "value": "ADQ Financial Services LLC"
-                      },
-                      {
-                          "hierarchyLevel": {
-                              "level": 4,
-                              "hierarchyLevelId": "cat4",
-                              "hierarchyLevelName": "CAT4"
-                          },
-                          "value": "3PP - Cross Regional"
-                      }
-                  ]
-              }
-          ]
-      }
+                hierarchyLevel: {
+                  level: 1,
+                  hierarchyLevelId: 'cat1',
+                  hierarchyLevelName: 'CAT1',
+                },
+                value: 'Europe',
+              },
+              {
+                hierarchyLevel: {
+                  level: 2,
+                  hierarchyLevelId: 'cat2',
+                  hierarchyLevelName: 'CAT2',
+                },
+                value: 'Education',
+              },
+              {
+                hierarchyLevel: {
+                  level: 3,
+                  hierarchyLevelId: 'cat3',
+                  hierarchyLevelName: 'CAT3',
+                },
+                value: 'ADQ Financial Services LLC',
+              },
+              {
+                hierarchyLevel: {
+                  level: 4,
+                  hierarchyLevelId: 'cat4',
+                  hierarchyLevelName: 'CAT4',
+                },
+                value: '3PP - Cross Regional',
+              },
+            ],
+          },
+        ],
+      },
     ];
-    spyOn(sharedService, 'getCurrentUserDetails').and.returnValue(projectsAccess);
+    spyOn(sharedService, 'getCurrentUserDetails').and.returnValue(
+      projectsAccess,
+    );
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(false);
     spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true);
     component.ngOnInit();
     expect(component.hasAccess).toBe(true);
-  })
+  });
 
   it('should check if user doesnt have access', () => {
     component.hasAccess = true;
     const projectsAccess = [
       {
-          "role": "ROLE_PROJECT_VIEWER",
-          "projects": [
+        role: 'ROLE_PROJECT_VIEWER',
+        projects: [
+          {
+            projectName: 'abc',
+            projectId: '65643593e157cb3b681d2d62',
+            hierarchy: [
               {
-                  "projectName": "abc",
-                  "projectId": "65643593e157cb3b681d2d62",
-                  "hierarchy": [
-                      {
-                          "hierarchyLevel": {
-                              "level": 1,
-                              "hierarchyLevelId": "cat1",
-                              "hierarchyLevelName": "CAT1"
-                          },
-                          "value": "Europe"
-                      },
-                      {
-                          "hierarchyLevel": {
-                              "level": 2,
-                              "hierarchyLevelId": "cat2",
-                              "hierarchyLevelName": "CAT2"
-                          },
-                          "value": "Education"
-                      },
-                      {
-                          "hierarchyLevel": {
-                              "level": 3,
-                              "hierarchyLevelId": "cat3",
-                              "hierarchyLevelName": "CAT3"
-                          },
-                          "value": "ADQ Financial Services LLC"
-                      },
-                      {
-                          "hierarchyLevel": {
-                              "level": 4,
-                              "hierarchyLevelId": "cat4",
-                              "hierarchyLevelName": "CAT4"
-                          },
-                          "value": "3PP - Cross Regional"
-                      }
-                  ]
-              }
-          ]
-      }
+                hierarchyLevel: {
+                  level: 1,
+                  hierarchyLevelId: 'cat1',
+                  hierarchyLevelName: 'CAT1',
+                },
+                value: 'Europe',
+              },
+              {
+                hierarchyLevel: {
+                  level: 2,
+                  hierarchyLevelId: 'cat2',
+                  hierarchyLevelName: 'CAT2',
+                },
+                value: 'Education',
+              },
+              {
+                hierarchyLevel: {
+                  level: 3,
+                  hierarchyLevelId: 'cat3',
+                  hierarchyLevelName: 'CAT3',
+                },
+                value: 'ADQ Financial Services LLC',
+              },
+              {
+                hierarchyLevel: {
+                  level: 4,
+                  hierarchyLevelId: 'cat4',
+                  hierarchyLevelName: 'CAT4',
+                },
+                value: '3PP - Cross Regional',
+              },
+            ],
+          },
+        ],
+      },
     ];
-    spyOn(sharedService, 'getCurrentUserDetails').and.returnValue(projectsAccess);
+    spyOn(sharedService, 'getCurrentUserDetails').and.returnValue(
+      projectsAccess,
+    );
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(false);
-    spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(false);
+    spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(
+      false,
+    );
     component.ngOnInit();
     expect(component.hasAccess).toBe(false);
-  })
+  });
 
   it('should check if user has access when not superadmin', () => {
     component.hasAccess = true;
     const projectsAccess = [];
-    spyOn(sharedService, 'getCurrentUserDetails').and.returnValue(projectsAccess);
+    spyOn(sharedService, 'getCurrentUserDetails').and.returnValue(
+      projectsAccess,
+    );
     spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(false);
     component.ngOnInit();
     expect(component.hasAccess).toBe(false);
-  })
+  });
 
   it('should call setActiveTabOnClick with the current router url', () => {
     spyOn(component, 'setActiveTabOnClick');
     spyOnProperty(router, 'url', 'get').and.returnValue('/dashboard/Config');
     component.ngOnInit();
     expect(component.setActiveTabOnClick).toHaveBeenCalledWith(
-      '/dashboard/Config'
+      '/dashboard/Config',
     );
   });
 
@@ -248,7 +262,7 @@ describe('ConfigComponent', () => {
     });
     component.ngOnInit();
     expect(component.setActiveTabOnClick).toHaveBeenCalledWith(
-      'urlAfterRedirects'
+      'urlAfterRedirects',
     );
   });
 });

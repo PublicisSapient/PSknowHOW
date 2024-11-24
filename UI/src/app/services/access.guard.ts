@@ -17,22 +17,37 @@
  ******************************************************************************/
 
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  Router,
+  CanActivate,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { GetAuthorizationService } from './get-authorization.service';
 import { SharedService } from './shared.service';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
-    hasAccess = <boolean>false;
-    constructor(private router: Router, private getAuthorization: GetAuthorizationService, private sharedService: SharedService) { }
+  hasAccess = <boolean>false;
+  constructor(
+    private router: Router,
+    private getAuthorization: GetAuthorizationService,
+    private sharedService: SharedService,
+  ) {}
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if (this.getAuthorization.checkIfSuperUser() || (this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
-            this.hasAccess = true;
-            return this.hasAccess;
-        }
-
-        this.router.navigate(['./dashboard/Config/Profile']);
-        return this.hasAccess;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    if (
+      this.getAuthorization.checkIfSuperUser() ||
+      (this.sharedService.getCurrentUserDetails('projectsAccess') &&
+        this.sharedService.getCurrentUserDetails('projectsAccess') !==
+          'undefined' &&
+        this.sharedService.getCurrentUserDetails('projectsAccess').length)
+    ) {
+      this.hasAccess = true;
+      return this.hasAccess;
     }
+
+    this.router.navigate(['./dashboard/Config/Profile']);
+    return this.hasAccess;
+  }
 }

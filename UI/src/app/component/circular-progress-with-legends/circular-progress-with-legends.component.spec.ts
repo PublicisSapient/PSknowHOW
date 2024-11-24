@@ -8,9 +8,8 @@ describe('CircularProgressWithLegendsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CircularProgressWithLegendsComponent ]
-    })
-    .compileComponents();
+      declarations: [CircularProgressWithLegendsComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

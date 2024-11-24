@@ -8,9 +8,8 @@ describe('TooltipV2Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TooltipV2Component ]
-    })
-    .compileComponents();
+      declarations: [TooltipV2Component],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TooltipV2Component);
     component = fixture.componentInstance;

@@ -57,7 +57,10 @@ describe('ConfigSettingsComponent', () => {
     sharedService = TestBed.inject(SharedService);
     router = TestBed.inject(Router);
     activatedRoute = TestBed.inject(ActivatedRoute);
-    spyOn(sharedService, 'getSelectedProject').and.returnValue({ type: 'Agile', id: 1 });
+    spyOn(sharedService, 'getSelectedProject').and.returnValue({
+      type: 'Agile',
+      id: 1,
+    });
     fixture.detectChanges();
   });
 
@@ -122,13 +125,10 @@ describe('ConfigSettingsComponent', () => {
 
     component.onTabChange();
 
-    expect(navigateSpy).toHaveBeenCalledWith(
-      ['.'],
-      {
-        queryParams: { type: 'agile', tab: 2 },
-        relativeTo: activatedRoute,
-      }
-    );
+    expect(navigateSpy).toHaveBeenCalledWith(['.'], {
+      queryParams: { type: 'agile', tab: 2 },
+      relativeTo: activatedRoute,
+    });
   });
 
   it('should navigate with correct queryParams on onTabChange for availableConnections tab', () => {
@@ -137,13 +137,10 @@ describe('ConfigSettingsComponent', () => {
 
     component.onTabChange();
 
-    expect(navigateSpy).toHaveBeenCalledWith(
-      ['.'],
-      {
-        queryParams: { tab: 1 },
-        relativeTo: activatedRoute,
-      }
-    );
+    expect(navigateSpy).toHaveBeenCalledWith(['.'], {
+      queryParams: { tab: 1 },
+      relativeTo: activatedRoute,
+    });
   });
 
   it('should navigate with correct queryParams on onTabChange for projectSettings tab', () => {
@@ -152,12 +149,9 @@ describe('ConfigSettingsComponent', () => {
 
     component.onTabChange();
 
-    expect(navigateSpy).toHaveBeenCalledWith(
-      ['.'],
-      {
-        queryParams: { type: 'agile', tab: 0 },
-        relativeTo: activatedRoute,
-      }
-    );
+    expect(navigateSpy).toHaveBeenCalledWith(['.'], {
+      queryParams: { type: 'agile', tab: 0 },
+      relativeTo: activatedRoute,
+    });
   });
 });

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
- .main {
+.main {
   min-height: calc(100vh - 188px);
   position: relative;
   background-color: var(--color-white);
@@ -24,36 +24,38 @@
   padding: 16px;
   margin: 8px;
   border-radius: 4px;
-  box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 
 .field-title {
-color: #7d7d7d;
-display: block;
+  color: #7d7d7d;
+  display: block;
 }
 
 .p-inputtext.p-component {
-max-width: unset;
+  max-width: unset;
 }
 
 .small-text {
-width: 80px;
+  width: 80px;
 }
 
-input:disabled, textarea:disabled {
-background-color: #dee2e6;
+input:disabled,
+textarea:disabled {
+  background-color: #dee2e6;
 }
 
-.break-word{
-word-break: break-word;
+.break-word {
+  word-break: break-word;
 }
 
 .p-field .p-inputtextarea {
-width: 100%;
+  width: 100%;
 }
 
 ::ng-deep .p-invalid .p-chips ul {
-border-color: #B00020;
+  border-color: #b00020;
 }
 
 /* .search-box-custom-width {
@@ -67,17 +69,16 @@ font-size: 12px
 } */
 
 .tool-form > label {
-display: block !important;
+  display: block !important;
 }
-::ng-deep .field-mapping .p-autocomplete-dd > .p-inputtext{
+::ng-deep .field-mapping .p-autocomplete-dd > .p-inputtext {
   width: 100%;
 }
-::ng-deep .field-mapping .p-autocomplete{
+::ng-deep .field-mapping .p-autocomplete {
   width: 100%;
 }
 
-.link{
-  color : var(--color-secondary-blue);
+.link {
+  color: var(--color-secondary-blue);
   cursor: pointer;
 }
-

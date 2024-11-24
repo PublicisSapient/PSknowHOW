@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { HttpService } from '../services/http.service';
 import { FeedbackComponent } from './feedback.component';
 import { of, throwError } from 'rxjs';
@@ -7,7 +12,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SharedService } from '../services/shared.service';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 
 describe('FeedbackComponent', () => {
   let component: FeedbackComponent;
@@ -18,9 +27,12 @@ describe('FeedbackComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FeedbackComponent],
       imports: [RouterTestingModule, HttpClientModule, HttpClientTestingModule],
-      providers: [HttpService,SharedService,  { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-      .compileComponents();
+      providers: [
+        HttpService,
+        SharedService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -36,15 +48,19 @@ describe('FeedbackComponent', () => {
 
   it('should save feedback successfully', fakeAsync(() => {
     const obj = {
-      "feedback": "test",
+      feedback: 'test',
     };
-    const res = { "message": "Your request has been submitted", "success": true, "data": { "feedback": "test" } }
+    const res = {
+      message: 'Your request has been submitted',
+      success: true,
+      data: { feedback: 'test' },
+    };
     spyOn(httpService, 'submitFeedbackData').and.returnValue(of(res));
     component.save();
     tick(3000);
     expect(component.isFeedbackSubmitted).toBe(true);
     expect(component.formMessage).toEqual('');
-  }))
+  }));
 
   it('should toggle flag value', fakeAsync(() => {
     component.feedback = true;
@@ -53,7 +69,9 @@ describe('FeedbackComponent', () => {
   }));
 
   it('should handle error response and display error message', () => {
-    spyOn(httpService, 'submitFeedbackData').and.returnValue(throwError({ error: { message: 'Test Error' } }));
+    spyOn(httpService, 'submitFeedbackData').and.returnValue(
+      throwError({ error: { message: 'Test Error' } }),
+    );
     component.isFeedbackSubmitted = true;
     component.save();
     expect(component.isFeedbackSubmitted).toBe(false);
@@ -66,9 +84,11 @@ describe('FeedbackComponent', () => {
 
   it('should reset form', () => {
     component.voiceForm = new UntypedFormGroup({
-      feedback: new UntypedFormControl('Test Feedback', { validators: [Validators.required, Validators.maxLength(600)] })
+      feedback: new UntypedFormControl('Test Feedback', {
+        validators: [Validators.required, Validators.maxLength(600)],
+      }),
     });
     component.OnOverlayHide();
     expect(component.voiceForm.get('feedback').value).toBe(null);
-  })
+  });
 });

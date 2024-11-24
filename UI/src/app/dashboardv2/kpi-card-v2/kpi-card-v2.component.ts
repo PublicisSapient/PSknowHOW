@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  Renderer2,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
@@ -13,7 +23,7 @@ import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.c
 @Component({
   selector: 'app-kpi-card-v2',
   templateUrl: './kpi-card-v2.component.html',
-  styleUrls: ['./kpi-card-v2.component.css']
+  styleUrls: ['./kpi-card-v2.component.css'],
 })
 export class KpiCardV2Component implements OnInit, OnChanges {
   isTooltip = false;
@@ -62,8 +72,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Output() downloadExcel = new EventEmitter<boolean>();
   metaDataTemplateCode: any;
   @Input() nodeId: string = '';
-  loadingKPIConfig: boolean = false
-  noDataKPIConfig: boolean = false
+  loadingKPIConfig: boolean = false;
+  noDataKPIConfig: boolean = false;
   displaySprintDetailsModal: boolean = false;
   columnList = [
     { field: 'duration', header: 'Duration' },
@@ -72,63 +82,100 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ];
   sprintDetailsList: Array<any>;
   @Input() colors;
-  colorCssClassArray = ['sprint-hover-project1', 'sprint-hover-project2', 'sprint-hover-project3', 'sprint-hover-project4', 'sprint-hover-project5', 'sprint-hover-project6'];
+  colorCssClassArray = [
+    'sprint-hover-project1',
+    'sprint-hover-project2',
+    'sprint-hover-project3',
+    'sprint-hover-project4',
+    'sprint-hover-project5',
+    'sprint-hover-project6',
+  ];
   commentDialogRef: DynamicDialogRef | undefined;
   disableSettings: boolean = false;
   @Input() immediateLoader: boolean = true;
   @Input() partialData: boolean = false;
   warning = '';
 
-  constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService,
-    private helperService: HelperService) { }
+  constructor(
+    public service: SharedService,
+    private http: HttpService,
+    private authService: GetAuthorizationService,
+    private ga: GoogleAnalyticsService,
+    private renderer: Renderer2,
+    public dialogService: DialogService,
+    private helperService: HelperService,
+  ) {}
 
   ngOnInit(): void {
-    this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
-      this.filterOptions = {};
-      if (Object.keys(x)?.length) {
-        this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
-        for (const key in x[this.kpiData?.kpiId]) {
-          if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
-            if (this.kpiData?.kpiId === "kpi72") {
-              if (key === "filter1") {
-                this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
-              }
-              else if (key === "filter2") {
-                this.filterOptions["filter2"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0];
-              }
-              else {
+    this.subscriptions.push(
+      this.service.selectedFilterOptionObs.subscribe((x) => {
+        this.filterOptions = {};
+        if (Object.keys(x)?.length) {
+          this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
+          for (const key in x[this.kpiData?.kpiId]) {
+            if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
+              if (this.kpiData?.kpiId === 'kpi72') {
+                if (key === 'filter1') {
+                  this.filterOptions['filter1'] =
+                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
+                      'filter1'
+                    ][0];
+                } else if (key === 'filter2') {
+                  this.filterOptions['filter2'] =
+                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
+                      'filter2'
+                    ][0];
+                } else {
+                  this.filterOptions = { ...this.filterOptions };
+                }
+              } else {
                 this.filterOptions = { ...this.filterOptions };
               }
-            }
-            else {
-              this.filterOptions = { ...this.filterOptions };
-            }
-          } else {
-            if (this.kpiData?.kpiId === "kpi72") {
-              if (key === "filter1") {
-                this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
+            } else {
+              if (this.kpiData?.kpiId === 'kpi72') {
+                if (key === 'filter1') {
+                  this.filterOptions['filter1'] =
+                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
+                      'filter1'
+                    ][0];
+                } else if (key === 'filter2') {
+                  this.filterOptions['filter2'] =
+                    this.kpiSelectedFilterObj[this.kpiData?.kpiId][
+                      'filter2'
+                    ][0];
+                }
+              } else {
+                this.filterOptions = Array.isArray(x[this.kpiData?.kpiId])
+                  ? { filter1: x[this.kpiData?.kpiId] }
+                  : { ...x[this.kpiData?.kpiId] };
               }
-              else if (key === "filter2") {
-                this.filterOptions["filter2"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0];
-              }
-
             }
-            else {
-              this.filterOptions = Array.isArray(x[this.kpiData?.kpiId]) ? { 'filter1': x[this.kpiData?.kpiId] } : { ...x[this.kpiData?.kpiId] };
+          }
+          if (
+            this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
+            this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton'
+          ) {
+            if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
+              this.radioOption = this.kpiSelectedFilterObj[
+                this.kpiData?.kpiId
+              ]?.hasOwnProperty('filter1')
+                ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0]
+                : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
             }
           }
         }
-        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {
-          if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
-          }
-        }
-      }
-      this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
-    }));
+        this.selectedTab = this.service.getSelectedTab()
+          ? this.service.getSelectedTab().toLowerCase()
+          : '';
+      }),
+    );
     /** assign 1st value to radio button by default */
-    if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
+    if (
+      this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') &&
+      this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' &&
+      this.dropdownArr?.length &&
+      this.dropdownArr[0]?.options.length
+    ) {
       this.radioOption = this.dropdownArr[0]?.options[0];
     }
   }
@@ -141,7 +188,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.onOpenFieldMappingDialog();
         },
-        disabled: this.disableSettings || this.service.getSelectedType()?.toLowerCase() === 'kanban'
+        disabled:
+          this.disableSettings ||
+          this.service.getSelectedType()?.toLowerCase() === 'kanban',
       },
       {
         label: 'List View',
@@ -149,7 +198,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: ($event) => {
           this.prepareData();
         },
-        disabled: this.selectedTab === 'release' || this.selectedTab === 'backlog'
+        disabled:
+          this.selectedTab === 'release' || this.selectedTab === 'backlog',
       },
       {
         label: 'Explore',
@@ -157,7 +207,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.exportToExcel();
         },
-        disabled: !this.kpiData.kpiDetail.chartType
+        disabled: !this.kpiData.kpiDetail.chartType,
       },
       {
         label: 'Comments',
@@ -166,15 +216,23 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.showComments = true;
           this.openCommentModal();
         },
-      }
+      },
     ];
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
-    this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
-    this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
-      || this.checkIfViewer || !['superAdmin', 'projectAdmin'].includes(this.userRole);
+    this.checkIfViewer = this.authService.checkIfViewer({
+      id: this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+    });
+    this.disableSettings =
+      (this.colors &&
+        (Object.keys(this.colors)?.length > 1 ||
+          (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' &&
+            this.selectedTab !== 'iteration' &&
+            this.selectedTab !== 'release'))) ||
+      this.checkIfViewer ||
+      !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
   }
 
@@ -183,14 +241,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       data: {
         kpiId: this.kpiData?.kpiId,
         kpiName: this.kpiData?.kpiName,
-        selectedTab: this.selectedTab
+        selectedTab: this.selectedTab,
       },
     });
 
     this.commentDialogRef.onClose.subscribe(() => {
-      console.log('on close called')
+      console.log('on close called');
     });
-  }
+  };
 
   showTooltip(val) {
     this.isTooltip = val;
@@ -199,7 +257,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   showWarning(val) {
     if (val) {
       if (this.kpiDataStatusCode === '201') {
-        this.warning = 'Configure the missing mandatory field mappings in KPI Settings for accurate data display.';
+        this.warning =
+          'Configure the missing mandatory field mappings in KPI Settings for accurate data display.';
       } else if (this.kpiDataStatusCode === '203') {
         this.warning = 'Data may be inaccurate due to a failed processor run!';
       }
@@ -211,19 +270,21 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   /**
    * Handles changes in dropdown selections, moving selected options to the top,
    * emitting the selected option, and triggering a Google Analytics event.
-   * 
+   *
    * @param {string} type - The type of selection (e.g., 'radio', 'single').
    * @param {object|null} value - The selected value(s), can be an object or null.
    * @param {number} filterIndex - The index of the dropdown in the array.
    * @returns {void}
    */
   handleChange(type, value = null, filterIndex = 0) {
-
     // moving selected option to top
     if (value && value.value && Array.isArray(value.value)) {
-      value.value.forEach(selectedItem => {
-        this.dropdownArr[filterIndex]?.options.splice(this.dropdownArr[filterIndex]?.options.indexOf(selectedItem), 1) // remove the item from list
-        this.dropdownArr[filterIndex]?.options.unshift(selectedItem)// this will add selected item on the top
+      value.value.forEach((selectedItem) => {
+        this.dropdownArr[filterIndex]?.options.splice(
+          this.dropdownArr[filterIndex]?.options.indexOf(selectedItem),
+          1,
+        ); // remove the item from list
+        this.dropdownArr[filterIndex]?.options.unshift(selectedItem); // this will add selected item on the top
       });
     }
     if (typeof value === 'object') {
@@ -241,11 +302,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     }
     const gaObj = {
-      "kpiName": this.kpiData?.kpiName,
-      "filter1": this.filterOptions?.['filter1'] || [value],
-      "filter2": this.filterOptions?.['filter2'] || null,
-      'kpiSource': this.kpiData?.kpiDetail?.kpiSource
-    }
+      kpiName: this.kpiData?.kpiName,
+      filter1: this.filterOptions?.['filter1'] || [value],
+      filter2: this.filterOptions?.['filter2'] || null,
+      kpiSource: this.kpiData?.kpiDetail?.kpiSource,
+    };
     this.triggerGaEvent(gaObj);
   }
 
@@ -284,74 +345,114 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const selectedTab = this.service.getSelectedTab()?.toLowerCase();
     const selectedType = this.service.getSelectedType()?.toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedType === 'scrum' && selectedTrend.length == 1 || selectedTab === 'release') {
+    if (
+      (selectedType === 'scrum' && selectedTrend.length == 1) ||
+      selectedTab === 'release'
+    ) {
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
-      this.lastSyncTime = this.showExecutionDate(this.kpiData.kpiDetail.combinedKpiSource || this.kpiData.kpiDetail.kpiSource);
-      this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
-        if (data?.success) {
-          this.fieldMappingConfig = data?.data['fieldConfiguration'];
-          const kpiSource = data?.data['kpiSource']?.toLowerCase();
-          const toolConfigID = data?.data['projectToolConfigId'];
-          this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
-          if (this.fieldMappingConfig.length > 0) {
-            this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
-            this.getFieldMapping();
-            const metaDataList = this.service.getFieldMappingMetaData();
-            if (metaDataList.length && this.kpiData.kpiId !== 'kpi150') {
-              const metaData = metaDataList.find(data => data.projectID === selectedTrend[0]?.basicProjectConfigId && data.kpiSource === kpiSource);
-              if (metaData?.metaData) {
-                this.fieldMappingMetaData = metaData.metaData;
+      this.lastSyncTime = this.showExecutionDate(
+        this.kpiData.kpiDetail.combinedKpiSource ||
+          this.kpiData.kpiDetail.kpiSource,
+      );
+      this.http
+        .getKPIFieldMappingConfig(
+          `${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`,
+        )
+        .subscribe((data) => {
+          if (data?.success) {
+            this.fieldMappingConfig = data?.data['fieldConfiguration'];
+            const kpiSource = data?.data['kpiSource']?.toLowerCase();
+            const toolConfigID = data?.data['projectToolConfigId'];
+            this.selectedToolConfig = [
+              { id: toolConfigID, toolName: kpiSource },
+            ];
+            if (this.fieldMappingConfig.length > 0) {
+              this.selectedConfig = {
+                ...selectedTrend[0],
+                id: selectedTrend[0]?.basicProjectConfigId,
+              };
+              this.getFieldMapping();
+              const metaDataList = this.service.getFieldMappingMetaData();
+              if (metaDataList.length && this.kpiData.kpiId !== 'kpi150') {
+                const metaData = metaDataList.find(
+                  (data) =>
+                    data.projectID === selectedTrend[0]?.basicProjectConfigId &&
+                    data.kpiSource === kpiSource,
+                );
+                if (metaData?.metaData) {
+                  this.fieldMappingMetaData = metaData.metaData;
+                } else {
+                  this.getFieldMappingMetaData(kpiSource);
+                }
               } else {
                 this.getFieldMappingMetaData(kpiSource);
               }
             } else {
-              this.getFieldMappingMetaData(kpiSource);
+              this.loadingKPIConfig = false;
+              this.noDataKPIConfig = true;
             }
-          } else {
-            this.loadingKPIConfig = false;
-            this.noDataKPIConfig = true;
           }
-        }
-      })
+        });
     }
   }
 
   getFieldMapping() {
     let obj = {
-      "releaseNodeId": this.nodeId || null
-    }
-    this.http.getFieldMappingsWithHistory(this.selectedToolConfig[0].id, this.kpiData.kpiId, obj).subscribe(mappings => {
-      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 1) {
-        this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
-        this.metaDataTemplateCode = mappings['data']?.metaTemplateCode
-        this.displayConfigModel = true;
-        this.loadingKPIConfig = false;
-
-      } else {
-        this.loadingKPIConfig = false;
-      }
-    }, error => {
-      console.log(error);
-    });
+      releaseNodeId: this.nodeId || null,
+    };
+    this.http
+      .getFieldMappingsWithHistory(
+        this.selectedToolConfig[0].id,
+        this.kpiData.kpiId,
+        obj,
+      )
+      .subscribe(
+        (mappings) => {
+          if (
+            mappings &&
+            mappings['success'] &&
+            Object.keys(mappings['data']).length >= 1
+          ) {
+            this.selectedFieldMapping = mappings['data'].fieldMappingResponses;
+            this.metaDataTemplateCode = mappings['data']?.metaTemplateCode;
+            this.displayConfigModel = true;
+            this.loadingKPIConfig = false;
+          } else {
+            this.loadingKPIConfig = false;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
   }
 
   getFieldMappingMetaData(kpiSource) {
-    this.http.getKPIConfigMetadata(this.service.getSelectedTrends()[0]?.basicProjectConfigId, this.kpiData?.kpiId).subscribe(Response => {
-      if (Response.success) {
-        this.fieldMappingMetaData = Response.data;
-        this.service.setFieldMappingMetaData({
-          projectID: this.service.getSelectedTrends()[0]?.basicProjectConfigId,
-          kpiSource: kpiSource,
-          metaData: Response.data
-        })
-      } else {
-        this.fieldMappingMetaData = [];
-      }
-    }, error => {
-      console.log(error);
-    });
+    this.http
+      .getKPIConfigMetadata(
+        this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+        this.kpiData?.kpiId,
+      )
+      .subscribe(
+        (Response) => {
+          if (Response.success) {
+            this.fieldMappingMetaData = Response.data;
+            this.service.setFieldMappingMetaData({
+              projectID:
+                this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+              kpiSource: kpiSource,
+              metaData: Response.data,
+            });
+          } else {
+            this.fieldMappingMetaData = [];
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
   }
 
   reloadKPI() {
@@ -361,13 +462,25 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   showExecutionDate(processorName) {
     const traceLog = this.findTraceLogForTool(processorName.toLowerCase());
-    this.isSyncPassedOrFailed = traceLog?.executionSuccess === true ? true : false;
-    return (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionEndedAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
+    this.isSyncPassedOrFailed =
+      traceLog?.executionSuccess === true ? true : false;
+    return traceLog == undefined ||
+      traceLog == null ||
+      traceLog.executionEndedAt == 0
+      ? 'NA'
+      : new DatePipe('en-US').transform(
+          traceLog.executionEndedAt,
+          'dd-MMM-yyyy (EEE) - hh:mmaaa',
+        );
   }
 
   findTraceLogForTool(processorName) {
-    const sourceArray = (processorName.includes('/')) ? processorName.split('/') : [processorName];
-    return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
+    const sourceArray = processorName.includes('/')
+      ? processorName.split('/')
+      : [processorName];
+    return this.service
+      .getProcessorLogDetails()
+      .find((ptl) => sourceArray.includes(ptl['processorName'].toLowerCase()));
   }
 
   exportToExcel() {
@@ -381,35 +494,59 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   /**
    * Checks if data is present based on the provided status code and KPI ID.
    * Evaluates the trend value list and specific conditions to determine presence.
-   * 
+   *
    * @param {string} data - The status code to check (e.g., '200', '201').
    * @returns {boolean} - Returns true if data is present, otherwise false.
    */
   checkIfDataPresent(data) {
-    if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
+    if (
+      (data === '200' || data === '201' || data === '203') &&
+      (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')
+    ) {
       if (this.trendValueList?.length) {
         return true;
       }
-    }
-    else if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')) {
+    } else if (
+      (data === '200' || data === '201' || data === '203') &&
+      (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')
+    ) {
       if (this.trendValueList?.length && this.trendValueList[0].value?.length) {
         return true;
       }
-    }
-    else if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi168' || this.kpiData?.kpiId === 'kpi70' || this.kpiData?.kpiId === 'kpi153' || this.kpiData?.kpiId === 'kpi35')) {
-      if (this.trendValueList?.length && this.trendValueList[0]?.value?.length > 0) {
+    } else if (
+      (data === '200' || data === '201' || data === '203') &&
+      (this.kpiData?.kpiId === 'kpi168' ||
+        this.kpiData?.kpiId === 'kpi70' ||
+        this.kpiData?.kpiId === 'kpi153' ||
+        this.kpiData?.kpiId === 'kpi35')
+    ) {
+      if (
+        this.trendValueList?.length &&
+        this.trendValueList[0]?.value?.length > 0
+      ) {
         return true;
       }
-    }
-
-    else if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi171')) {
-      if (this.trendValueList?.length && this.trendValueList[0]?.data?.length > 0) {
+    } else if (
+      (data === '200' || data === '201' || data === '203') &&
+      this.kpiData?.kpiId === 'kpi171'
+    ) {
+      if (
+        this.trendValueList?.length &&
+        this.trendValueList[0]?.data?.length > 0
+      ) {
         return true;
       } else {
         return false;
       }
     } else {
-      return (data === '200' || data === '201' || data === '203') && this.helperService.checkDataAtGranularLevel(this.trendValueList, this.kpiData.kpiDetail.chartType, this.selectedTab);
+      return (
+        (data === '200' || data === '201' || data === '203') &&
+        this.helperService.checkDataAtGranularLevel(
+          this.trendValueList,
+          this.kpiData.kpiDetail.chartType,
+          this.selectedTab,
+        )
+      );
     }
   }
 
@@ -418,17 +555,23 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   hasData(field: string): boolean {
-    return this.sprintDetailsList[this.selectedTabIndex]['hoverList'].some(rowData => rowData[field] !== null && rowData[field] !== undefined);
+    return this.sprintDetailsList[this.selectedTabIndex]['hoverList'].some(
+      (rowData) => rowData[field] !== null && rowData[field] !== undefined,
+    );
   }
 
   prepareData() {
     this.projectList = [];
     this.sprintDetailsList = [];
     this.selectedTabIndex = 0;
-    this.projectList = Object.values(this.colors).map(obj => obj['nodeName']);
+    this.projectList = Object.values(this.colors).map((obj) => obj['nodeName']);
     this.projectList.forEach((project, index) => {
-      const selectedProjectTrend = this.trendValueList.find(obj => obj.data === project);
-      const tempColorObjArray = Object.values(this.colors).find(obj => obj['nodeName'] === project)['color'];
+      const selectedProjectTrend = this.trendValueList.find(
+        (obj) => obj.data === project,
+      );
+      const tempColorObjArray = Object.values(this.colors).find(
+        (obj) => obj['nodeName'] === project,
+      )['color'];
       if (selectedProjectTrend?.value) {
         let hoverObjectListTemp = [];
 
@@ -455,13 +598,21 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         //   });
         // } else
         {
-          selectedProjectTrend.value.forEach(element => {
+          selectedProjectTrend.value.forEach((element) => {
             let tempObj = {};
             tempObj['duration'] = element['sSprintName'] || element['date'];
-            tempObj['value'] = element['lineValue'] !== undefined ? element['lineValue'] : (Math.round(element['value'] * 100) / 100);
-            tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
-            if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
-              tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
+            tempObj['value'] =
+              element['lineValue'] !== undefined
+                ? element['lineValue']
+                : Math.round(element['value'] * 100) / 100;
+            tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit;
+            if (
+              element['hoverValue'] &&
+              Object.keys(element['hoverValue'])?.length > 0
+            ) {
+              tempObj['params'] = Object.entries(element['hoverValue'])
+                .map(([key, value]) => `${key} : ${value}`)
+                .join(', ');
             }
             hoverObjectListTemp.push(tempObj);
           });
@@ -469,13 +620,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.sprintDetailsList.push({
           ['project']: selectedProjectTrend['data'],
           ['hoverList']: hoverObjectListTemp,
-          ['color']: tempColorObjArray
+          ['color']: tempColorObjArray,
         });
       } else {
         this.sprintDetailsList.push({
           ['project']: project,
           ['hoverList']: [],
-          ['color']: tempColorObjArray
+          ['color']: tempColorObjArray,
         });
       }
     });

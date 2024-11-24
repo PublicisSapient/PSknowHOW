@@ -16,17 +16,22 @@
  *
  ******************************************************************************/
 
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-manage-assignee',
   templateUrl: './manage-assignee.component.html',
-  styleUrls: ['./manage-assignee.component.css']
+  styleUrls: ['./manage-assignee.component.css'],
 })
 export class ManageAssigneeComponent {
-
   @ViewChild('dt') table: Table;
   @Input() assigneeList = [];
   @Output() onAssigneeSave = new EventEmitter();

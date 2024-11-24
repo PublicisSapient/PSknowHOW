@@ -16,29 +16,26 @@
  *
  ******************************************************************************/
 
- label {
-   font-size: 18px;
-   display: block;
-   line-height: 15px;
+label {
+  font-size: 18px;
+  display: block;
+  line-height: 15px;
+}
 
- }
+.actual::before {
+  content: '';
+  width: 15px;
+  height: 14px;
+  background-color: #96cde0;
+  margin-right: 15px;
+  display: inline-block;
+}
 
- .actual::before {
-   content: '';
-   width: 15px;
-   height: 14px;
-   background-color: #96cde0;
-   margin-right: 15px;
-   display: inline-block;
-
- }
-
- .remaining::before {
-   content: '';
-   width: 15px;
-   height: 14px;
-   background-color: #e4e4e4;
-   margin-right: 15px;
-   display: inline-block;
-
- }
+.remaining::before {
+  content: '';
+  width: 15px;
+  height: 14px;
+  background-color: #e4e4e4;
+  margin-right: 15px;
+  display: inline-block;
+}

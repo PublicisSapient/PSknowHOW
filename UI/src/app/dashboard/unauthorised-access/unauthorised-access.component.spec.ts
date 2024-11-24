@@ -11,16 +11,20 @@ import { DatePipe } from '@angular/common';
 describe('UnauthorisedAccessComponent', () => {
   let component: UnauthorisedAccessComponent;
   let fixture: ComponentFixture<UnauthorisedAccessComponent>;
-  let helperService 
+  let helperService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UnauthorisedAccessComponent ],
-      imports : [HttpClientTestingModule],
-      providers : [HelperService,SharedService,ExcelService,DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-    .compileComponents();
+      declarations: [UnauthorisedAccessComponent],
+      imports: [HttpClientTestingModule],
+      providers: [
+        HelperService,
+        SharedService,
+        ExcelService,
+        DatePipe,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UnauthorisedAccessComponent);
     component = fixture.componentInstance;
@@ -31,9 +35,9 @@ describe('UnauthorisedAccessComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should reload window',()=>{
-    const spyObj = spyOn(helperService,'windowReload')
+  it('should reload window', () => {
+    const spyObj = spyOn(helperService, 'windowReload');
     component.reloadApp();
     expect(spyObj).toHaveBeenCalled();
-  })
+  });
 });

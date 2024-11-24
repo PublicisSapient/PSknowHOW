@@ -30,10 +30,11 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-grouped-column-plus-line-chart-v2',
   templateUrl: './grouped-column-plus-line-chart-v2.component.html',
-  styleUrls: ['./grouped-column-plus-line-chart-v2.component.css']
+  styleUrls: ['./grouped-column-plus-line-chart-v2.component.css'],
 })
-
-export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges {
+export class GroupedColumnPlusLineChartV2Component
+  implements OnInit, OnChanges
+{
   @Input() data: any;
   @Input() lineChart: boolean = true; // Decide whether a line is needed in the bar+line chart
   @Input() thresholdValue: number;
@@ -44,7 +45,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
   @Input() barLegend: string;
   @Input() lineLegend: string;
   @Input() selectedtype: string;
-  @Input() isXaxisGroup : boolean = false; // Decide whether the x-axis should be numeric or non-numeric
+  @Input() isXaxisGroup: boolean = false; // Decide whether the x-axis should be numeric or non-numeric
   elem: any;
   drillDownLevel: number;
   lastLevel: any;
@@ -54,24 +55,30 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
   unmodifiedData: any = [];
   sprintList: Array<any> = [];
   height: number = 0;
-  @Input() viewType: string = 'chart'
+  @Input() viewType: string = 'chart';
   @Input() lowerThresholdBG: string;
   @Input() upperThresholdBG: string;
-  resizeObserver = new ResizeObserver(entries => {
+  resizeObserver = new ResizeObserver((entries) => {
     const data = this.transform2(this.data);
     this.draw2(data);
   });
 
-  constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
+  constructor(
+    private viewContainerRef: ViewContainerRef,
+    private service: SharedService,
+  ) {}
 
   ngOnInit(): void {
-    this.service.showTableViewObs.subscribe(view => {
+    this.service.showTableViewObs.subscribe((view) => {
       this.viewType = view;
     });
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer') {
+    if (
+      this.selectedtype?.toLowerCase() === 'kanban' ||
+      this.service.getSelectedTab().toLowerCase() === 'developer'
+    ) {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     this.elem = this.viewContainerRef.element.nativeElement;
@@ -95,7 +102,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           hoverValue: data[0].value[i].hoverValue,
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
-          date: data[0].value[i].date
+          date: data[0].value[i].date,
         });
       } else {
         newObj['value'].push({
@@ -103,7 +110,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           lineValue: data[0].value[i].lineValue,
           sSprintName: data[0].value[i].sSprintName,
           rate: data[0].data,
-          date: data[0].value[i].date
+          date: data[0].value[i].date,
         });
       }
     }
@@ -120,7 +127,11 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const newObj = {};
         newObj['value'] = [];
-        if (result[j] && result[j]['categorie'] && j + 1 === result[j]['categorie']) {
+        if (
+          result[j] &&
+          result[j]['categorie'] &&
+          j + 1 === result[j]['categorie']
+        ) {
           if (data[i].value[j].hoverValue) {
             result[j].value.push({
               value: data[i].value[j].value,
@@ -146,15 +157,15 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
   draw2(data) {
     const unitAbbs = {
-      'hours': 'Hrs',
-      'sp': 'SP',
-      'days': 'Day',
-      'mrs': 'MRs',
-      'min': 'Min',
+      hours: 'Hrs',
+      sp: 'SP',
+      days: 'Day',
+      mrs: 'MRs',
+      min: 'Min',
       '%': '%',
       'check-ins': 'CI',
-      'tickets': 'T'
-    }
+      tickets: 'T',
+    };
     let sprintList = [];
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
@@ -165,17 +176,22 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
     d3.select(this.elem).select('#legendIndicator').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
     if (this.isXaxisGroup === true && selectedProjectCount === 1) {
-      data = data.map(details => {
+      data = data.map((details) => {
         let finalResult = {};
         const XValue = details.value[0].sSprintName || details.value[0].date;
         const sortValue = XValue;
-        finalResult = { ...details, sortName: sortValue, value: [{ ...details.value[0], sortSprint: sortValue }] }
-        sprintList.push(sortValue)
-        return finalResult
-      })
+        finalResult = {
+          ...details,
+          sortName: sortValue,
+          value: [{ ...details.value[0], sortSprint: sortValue }],
+        };
+        sprintList.push(sortValue);
+        return finalResult;
+      });
     }
-    const isAllBelowFromThreshold = data.every(details => (details.value[0].lineValue < this.thresholdValue))
-
+    const isAllBelowFromThreshold = data.every(
+      (details) => details.value[0].lineValue < this.thresholdValue,
+    );
 
     const self = this;
 
@@ -185,10 +201,13 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
 
-    const containerWidth = d3.select(this.elem).select('#chart').node().offsetWidth || window.innerWidth;
+    const containerWidth =
+      d3.select(this.elem).select('#chart').node().offsetWidth ||
+      window.innerWidth;
     // const resizeWidth = (containerWidth > (data.length * barWidth * 10) ? containerWidth : (data.length * barWidth * 10))
     const width = containerWidth - 40;
-    const height = (this.isXaxisGroup === true && selectedProjectCount === 1) ? 250 : 210;
+    const height =
+      this.isXaxisGroup === true && selectedProjectCount === 1 ? 250 : 210;
     this.height = height;
     const paddingFactor = 0;
 
@@ -196,16 +215,14 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
     const x1 = d3.scaleBand();
 
-
-
     let xScale;
     try {
       const unFormatedData = JSON.parse(JSON.stringify(self.unmodifiedData));
-      unFormatedData[0].value = unFormatedData[0].value.map(details => {
+      unFormatedData[0].value = unFormatedData[0].value.map((details) => {
         const XValue = details.sSprintName || details.date;
         const sortValue = XValue;
         return { ...details, sortSprint: sortValue };
-      })
+      });
       const newRawData = unFormatedData;
       let maxObjectNo = 0;
       let maxXValueCount = 0;
@@ -218,14 +235,13 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
       }
 
       if (this.isXaxisGroup === true && selectedProjectCount === 1) {
-        xScale = d3.scaleBand()
-          .rangeRound([0, width])
-          .domain(sprintList)
+        xScale = d3.scaleBand().rangeRound([0, width]).domain(sprintList);
         // .padding([((6 + self.dataPoints) / (3 * self.dataPoints)) * paddingFactor]);
       } else {
-        xScale = d3.scaleBand()
+        xScale = d3
+          .scaleBand()
           .rangeRound([0, width])
-          .domain(newRawData[maxObjectNo].value.map((d, i) => i + 1))
+          .domain(newRawData[maxObjectNo].value.map((d, i) => i + 1));
         // .padding([((6 + self.dataPoints) / (3 * self.dataPoints)) * paddingFactor]);
       }
 
@@ -233,19 +249,25 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
       let tempAxis;
       if (this.isXaxisGroup === true && selectedProjectCount === 1) {
         /** Temporary axis for wrapping text only */
-        tempAxis = d3.scaleBand().rangeRound([0, width - margin.left]).domain(sprintList)
+        tempAxis = d3
+          .scaleBand()
+          .rangeRound([0, width - margin.left])
+          .domain(sprintList);
         x0.domain(sprintList).padding(0.5);
       } else {
         x0.domain(categoriesNames).padding(0.5);
       }
-      x1.domain(rateNames)
-        .range([0, x0.bandwidth()]);
+      x1.domain(rateNames).range([0, x0.bandwidth()]);
 
       const barWidth = x1.bandwidth();
 
-      const maxBarValue = d3.max(data, (categorie) => d3.max(categorie.value, (d) => d.value));
+      const maxBarValue = d3.max(data, (categorie) =>
+        d3.max(categorie.value, (d) => d.value),
+      );
 
-      const maxLineValue = d3.max(data, (categorie) => d3.max(categorie.value, (d) => d.lineValue));
+      const maxLineValue = d3.max(data, (categorie) =>
+        d3.max(categorie.value, (d) => d.lineValue),
+      );
 
       let divisor = 10;
       let power = 1;
@@ -260,9 +282,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
       }
       divisor = Math.pow(10, power > 1 ? power - 1 : 1);
 
-
       let maxYValue = maxVal;
-
 
       if (maxYValue > 0 && maxYValue <= 49) {
         maxYValue = 50;
@@ -289,8 +309,9 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
       const yAxis = d3
         .axisLeft(y)
         .ticks(5)
-        .tickSize(-height, 0, 0).tickFormat(function (tickval) {
-          return tickval >= 1000 ? tickval / 1000 + "k" : tickval;
+        .tickSize(-height, 0, 0)
+        .tickFormat(function (tickval) {
+          return tickval >= 1000 ? tickval / 1000 + 'k' : tickval;
         });
 
       const color = d3.scaleOrdinal().range(this.color);
@@ -299,15 +320,23 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
       let tooltipContainer;
       if (selectedProjectCount === 1) {
         d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-        d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
-        tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
-          append('div')
+        d3.select(this.elem)
+          .select('#horizontalSVG')
+          .select('tooltip-container')
+          .remove();
+        tooltipContainer = d3
+          .select(this.elem)
+          .select('#horizontalSVG')
+          .append('div')
           .attr('class', 'tooltip-container')
           .attr('height', height + 35 + 'px')
-          .attr('width', width + 'px')
+          .attr('width', width + 'px');
       } else {
         d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-        d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+        d3.select(this.elem)
+          .select('#horizontalSVG')
+          .select('tooltip-container')
+          .remove();
       }
 
       const svgX = d3
@@ -336,7 +365,9 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const XCaption = d3
-        .select(this.elem).select('#xCaptionContainer').append('text');
+        .select(this.elem)
+        .select('#xCaptionContainer')
+        .append('text');
 
       if (this.xCaption) {
         XCaption.text(this.xCaption);
@@ -344,8 +375,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         XCaption.text('Sprints');
       }
 
-      XCaption.style('fill', '#49535E')
-        .style('font-size', '12px');
+      XCaption.style('fill', '#49535E').style('font-size', '12px');
 
       svgY
         .append('g')
@@ -362,7 +392,10 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .text(self.yCaption);
 
       // gridlines
-      svgX.selectAll('line.gridline').data(y.ticks(4)).enter()
+      svgX
+        .selectAll('line.gridline')
+        .data(y.ticks(4))
+        .enter()
         .append('svg:line')
         .attr('x1', 0)
         .attr('x2', width)
@@ -372,28 +405,36 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .style('fill', 'none')
         .attr('class', 'gridline');
 
-      const xAxisGrid = d3.axisBottom(x0).tickSize(-(height - 30)).ticks(5);
-      svgX.append('g')
+      const xAxisGrid = d3
+        .axisBottom(x0)
+        .tickSize(-(height - 30))
+        .ticks(5);
+      svgX
+        .append('g')
         .attr('class', 'y-axis-grid')
         .call(xAxisGrid)
         .attr('transform', `translate(${0}, ${height - 35})`);
 
-      d3.select(this.elem).select('.y-axis-grid')
+      d3.select(this.elem)
+        .select('.y-axis-grid')
         .selectAll('line')
         .style('stroke', '#EAEDF0')
         .style('fill', 'none');
 
-      d3.select(this.elem).select('#horizontalSVG')
+      d3.select(this.elem)
+        .select('#horizontalSVG')
         .select('.x-axis')
         .selectAll('.tick line')
         .style('display', 'none');
 
-      d3.select(this.elem).select('#verticalSVG')
+      d3.select(this.elem)
+        .select('#verticalSVG')
         .select('.y.axis')
         .selectAll('.tick line')
         .style('display', 'none');
 
-      d3.select(this.elem).select('#horizontalSVG')
+      d3.select(this.elem)
+        .select('#horizontalSVG')
         .select('.x-axis')
         .select('.domain')
         .style('display', 'none');
@@ -412,56 +453,62 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .enter()
         .append('g')
         .attr('class', 'rounded-bar')
-        .attr('transform', (d) => this.isXaxisGroup === true ? 'translate(' + x0(d.sortName) + ',0)' : 'translate(' + x0(d.categorie) + ',0)')
-        
+        .attr('transform', (d) =>
+          this.isXaxisGroup === true
+            ? 'translate(' + x0(d.sortName) + ',0)'
+            : 'translate(' + x0(d.categorie) + ',0)',
+        );
+
       // Applying Bar tooltip for bar chart only.Bar tooltip is not required for bar+line chart.
       if (this.lineChart === false) {
-        d3.selectAll('.rounded-bar').on('mouseover', function (event, d) {
-          if (d?.value[0]?.hoverValue) {
+        d3.selectAll('.rounded-bar')
+          .on('mouseover', function (event, d) {
+            if (d?.value[0]?.hoverValue) {
+              const circle = event.target;
+              const { top: yPosition, left: xPosition } =
+                circle.getBoundingClientRect();
 
-            const circle = event.target;
-            const {
-              top: yPosition,
-              left: xPosition
-            } = circle.getBoundingClientRect();
+              div
+                .transition()
+                .duration(200)
+                .style('display', 'block')
+                .style('opacity', 0.9);
 
-            div.transition()
-              .duration(200)
-              .style('display', 'block')
-              .style('opacity', .9);
+              let dataString = '';
+              let htmlString = '';
 
-            let dataString = '';
-            let htmlString = '';
+              for (let key in d.value[0].hoverValue) {
+                dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
+              }
 
-            for (let key in d.value[0].hoverValue) {
-              dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.value[0].hoverValue[key]}</div></div>`;
-
+              htmlString =
+                "<div class='toolTip'> " + `${dataString}` + '</div>';
+              div
+                .html(htmlString)
+                .style('left', xPosition + 20 + 'px')
+                .style('top', yPosition + 'px')
+                .style('position', 'fixed')
+                .style('align', 'left');
             }
-
-            htmlString = '<div class=\'toolTip\'> ' + `${dataString}` + '</div>';
-            div.html(htmlString)
-              .style('left', xPosition + 20 + 'px')
-              .style('top', yPosition + 'px')
-              .style('position', 'fixed')
-              .style('align', 'left');
-          }
-        }).on('mouseout', function (e, d) {
-          div.transition()
-            .duration(500)
-            .style('display', 'none')
-            .style('opacity', 0);
-
-        });
+          })
+          .on('mouseout', function (e, d) {
+            div
+              .transition()
+              .duration(500)
+              .style('display', 'none')
+              .style('opacity', 0);
+          });
       }
-
 
       const rx = x1.bandwidth() / 2;
       const ry = x1.bandwidth() / 2;
-      slice.selectAll("arc")
+      slice
+        .selectAll('arc')
         .data((d) => d.value)
-        .enter().append("path")
-        .style("fill", (d) => color(d.rate))
-        .attr("d", d => {
+        .enter()
+        .append('path')
+        .style('fill', (d) => color(d.rate))
+        .attr('d', (d) => {
           if (height - margin.top - y(d.value) >= rx) {
             return `
               M${x1(d.rate)},${y(d.value) + ry}
@@ -469,17 +516,23 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
               h${x1.bandwidth() - 2 * rx}
               a${rx},${ry} 0 0 1 ${rx},${ry}
               v${height - margin.top - y(d.value) - ry}
-              h${-(x1.bandwidth())}Z`;
+              h${-x1.bandwidth()}Z`;
           } else {
             return `
-              M${x1(d.rate)},${Math.min(height - margin.top - y(d.value) - ry), y(0)}
-              a${rx},${ry - (height - margin.top - y(d.value) + rx)} 0 0 1 ${rx},${ry - (height - margin.top - y(d.value) + rx)}
+              M${x1(d.rate)},${
+              (Math.min(height - margin.top - y(d.value) - ry), y(0))
+            }
+              a${rx},${
+              ry - (height - margin.top - y(d.value) + rx)
+            } 0 0 1 ${rx},${ry - (height - margin.top - y(d.value) + rx)}
 
               v${height - margin.top - y(d.value) - rx}
               h${x1.bandwidth() - 2 * rx}
               v${-(height - margin.top - y(d.value)) + rx}
-              a${rx},${ry - (height - margin.top - y(d.value) + rx)} 0 0 1 ${rx},${-ry + (height - margin.top - y(d.value) + rx)}
-              h${-(x1.bandwidth())}Z`;
+              a${rx},${
+              ry - (height - margin.top - y(d.value) + rx)
+            } 0 0 1 ${rx},${-ry + (height - margin.top - y(d.value) + rx)}
+              h${-x1.bandwidth()}Z`;
           }
         });
 
@@ -509,40 +562,49 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
       }
 
       // Define the div for the tooltip
-      const div = d3.select(this.elem).select('#chart').append('div')
+      const div = d3
+        .select(this.elem)
+        .select('#chart')
+        .append('div')
         .attr('class', 'tooltip')
         .style('display', 'none')
         .style('opacity', 0);
 
       // bar legend
       const prevLength = -40;
-      let legend = svgLegend.selectAll('.d3-legend')
+      let legend = svgLegend
+        .selectAll('.d3-legend')
         .data(data[0].value)
         .enter()
         .append('g')
         .attr('class', 'd3-legend')
         .attr('transform', (d, i) => {
-          const len = ((i + 1) * 160) + prevLength;
-          return 'translate(' + (len) + ', 0)';
+          const len = (i + 1) * 160 + prevLength;
+          return 'translate(' + len + ', 0)';
         });
 
       // Legend indicator  .attr("x", width/2)
-      legend.append('rect')
+      legend
+        .append('rect')
         .attr('width', 12)
         .attr('height', 12)
         .style('fill', (d, i) => color(i));
 
       //Legend text /.attr("x", width/2 + 20)
-      legend.append('text')
+      legend
+        .append('text')
         .attr('x', 24)
         .attr('y', 2)
         .attr('dy', '.85em')
         .style('text-anchor', 'start')
         .style('font-size', 10)
-        .text((d) => d.rate.length > 15 ? d.rate.substring(0, 12) + '...' : d.rate);
+        .text((d) =>
+          d.rate.length > 15 ? d.rate.substring(0, 12) + '...' : d.rate,
+        );
 
       // bar legend text
-      svgLegend.append('text')
+      svgLegend
+        .append('text')
         .attr('x', 0)
         .attr('y', 0)
         .attr('dy', '.85em')
@@ -562,33 +624,38 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         const circleRadiusHover = 4;
         const duration = 250;
 
-
         const colorArr = this.color;
         /* Add line into SVG acoording to data */
 
-        const yScale = d3.scaleLinear()
+        const yScale = d3
+          .scaleLinear()
           .domain([0, maxYValue])
           .range([height - margin.top, 0]);
 
         const elem = this.elem;
 
-        const lines = svgX.append('g')
-          .attr('class', 'lines');
+        const lines = svgX.append('g').attr('class', 'lines');
 
-        const line = d3.line()
+        const line = d3
+          .line()
           .x((d, i) => {
-            const xValue = (this.isXaxisGroup === true && selectedProjectCount === 1) ? (d.date || d.sortSprint) : (i + 1);
+            const xValue =
+              this.isXaxisGroup === true && selectedProjectCount === 1
+                ? d.date || d.sortSprint
+                : i + 1;
             return x0(xValue);
           })
-          .y(d => yScale(d.lineValue))
+          .y((d) => yScale(d.lineValue));
 
-        lines.selectAll('.line-group')
+        lines
+          .selectAll('.line-group')
           .data(newRawData)
           .enter()
           .append('g')
           .attr('class', (d, i) => 'line-group' + i)
           .on('mouseover', (d, i) => {
-            svgX.append('text')
+            svgX
+              .append('text')
               .attr('class', 'title-text')
               .style('fill', colorArr[i])
               .text(d.data)
@@ -610,9 +677,11 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           .style('fill', 'none')
           .style('stroke-width', '2')
           .on('mouseover', function (d) {
-            d3.select(elem).selectAll('.line')
+            d3.select(elem)
+              .selectAll('.line')
               .style('opacity', otherLinesOpacityHover);
-            d3.select(elem).selectAll('.circle')
+            d3.select(elem)
+              .selectAll('.circle')
               .style('opacity', circleOpacityOnLineHover);
             d3.select(this)
               .style('opacity', lineOpacityHover)
@@ -620,18 +689,18 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
               .style('cursor', 'pointer');
           })
           .on('mouseout', function (d) {
-            d3.selectAll('.line')
-              .style('opacity', lineOpacity);
-            d3.selectAll('.circle')
-              .style('opacity', circleOpacity);
+            d3.selectAll('.line').style('opacity', lineOpacity);
+            d3.selectAll('.circle').style('opacity', circleOpacity);
             d3.select(this)
               .style('stroke-width', lineStroke)
               .style('cursor', 'none');
           });
 
         /* Add circles (data) on the line */
-        lines.selectAll('circle-group')
-          .data(newRawData).enter()
+        lines
+          .selectAll('circle-group')
+          .data(newRawData)
+          .enter()
           .append('g')
           .attr('class', (d, i) => 'circlegroup' + i)
           .style('fill', (d, i) => d3.hsl([colorArr[i]]))
@@ -644,39 +713,56 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           .on('mouseover', (event, d) => {
             const topValue = 80;
             if (d.hoverValue) {
-              div.transition()
+              div
+                .transition()
                 .duration(200)
                 .style('display', 'block')
                 .style('position', 'fixed')
-                .style('opacity', .9);
+                .style('opacity', 0.9);
 
               const circle = event.target;
-              const {
-                top: yPosition,
-                left: xPosition
-              } = circle.getBoundingClientRect();
+              const { top: yPosition, left: xPosition } =
+                circle.getBoundingClientRect();
 
-              div.html(`${ d.date || d.sSprintName } ` + ' : ' + '<span class=\'toolTipValue\'> ' + `${ d.lineValue + ' ' + showUnit } ` + '</span>')
-                .style('left', (xPosition - 50) + 'px')
+              div
+                .html(
+                  `${d.date || d.sSprintName} ` +
+                    ' : ' +
+                    "<span class='toolTipValue'> " +
+                    `${d.lineValue + ' ' + showUnit} ` +
+                    '</span>',
+                )
+                .style('left', xPosition - 50 + 'px')
                 .style('top', yPosition + 20 + 'px');
               for (const hoverData in d.hoverValue) {
-                div.append('p').html(`${ hoverData } ` + ' : ' + '<span class=\'toolTipValue\'> ' + `${ d.hoverValue[hoverData] } ` + ' </span>');
+                div
+                  .append('p')
+                  .html(
+                    `${hoverData} ` +
+                      ' : ' +
+                      "<span class='toolTipValue'> " +
+                      `${d.hoverValue[hoverData]} ` +
+                      ' </span>',
+                  );
               }
             }
           })
           .on('mouseout', (d) => {
-            div.transition()
+            div
+              .transition()
               .duration(500)
               .style('display', 'none')
               .style('opacity', 0);
-
           })
           .append('circle')
           .attr('cx', (d, i) => {
-            const xValue = (this.isXaxisGroup === true && selectedProjectCount === 1) ? (d.date || d.sortSprint) : (i + 1);
+            const xValue =
+              this.isXaxisGroup === true && selectedProjectCount === 1
+                ? d.date || d.sortSprint
+                : i + 1;
             return x0(xValue);
           })
-          .attr('cy', d => yScale(d.lineValue))
+          .attr('cy', (d) => yScale(d.lineValue))
           .attr('r', circleRadius)
           .style('stroke-width', 1)
           .style('opacity', circleOpacity)
@@ -699,13 +785,21 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
             .selectAll('div')
             .data(newRawData[0]['value'])
             .join('div')
-            .attr('class', d => {
+            .attr('class', (d) => {
               let cssClass = 'tooltip2';
               let value = d.lineValue;
-              if (this.thresholdValue && this.thresholdValue !== 0 && value < this.thresholdValue) {
-                cssClass += this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
+              if (
+                this.thresholdValue &&
+                this.thresholdValue !== 0 &&
+                value < this.thresholdValue
+              ) {
+                cssClass +=
+                  this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
               } else {
-                cssClass += (this.upperThresholdBG === 'red' && this.thresholdValue) ? ' red-bg' : ' white-bg';
+                cssClass +=
+                  this.upperThresholdBG === 'red' && this.thresholdValue
+                    ? ' red-bg'
+                    : ' white-bg';
               }
               return cssClass;
             })
@@ -717,41 +811,59 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
                 return x0(i + 1) + x0.bandwidth() / 2 + 'px';
               }
             })
-            .style('top', d => {
-              return yScale(d.lineValue) - 25 + 'px'
+            .style('top', (d) => {
+              return yScale(d.lineValue) - 25 + 'px';
             })
-            .text(d => d.lineValue + ` ${ showUnit ? unitAbbs[showUnit?.toLowerCase()] : '' } `)
+            .text(
+              (d) =>
+                d.lineValue +
+                ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''} `,
+            )
             .transition()
             .duration(500)
             .style('display', 'block')
             .style('opacity', 1);
         } else {
           d3.select(this.elem).select('#horizontalSVG').select('div').remove();
-          d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+          d3.select(this.elem)
+            .select('#horizontalSVG')
+            .select('tooltip-container')
+            .remove();
         }
 
         newRawData.forEach((element, index) => {
-          d3.select(this.elem).selectAll('.circlegroup' + index).selectAll('circle').each(function (dataObj, idx) {
-            const tick = d3.select(this);
-            tick.attr('transform', () => 'translate(' + (x1(element.data) + barWidth / 2) + ',0)');
-          });
+          d3.select(this.elem)
+            .selectAll('.circlegroup' + index)
+            .selectAll('circle')
+            .each(function (dataObj, idx) {
+              const tick = d3.select(this);
+              tick.attr(
+                'transform',
+                () => 'translate(' + (x1(element.data) + barWidth / 2) + ',0)',
+              );
+            });
 
-          d3.select(this.elem).selectAll('.line-group' + index).each(function (dataObj, idx) {
-            const tick = d3.select(this);
-            tick.attr('transform', () => 'translate(' + (x1(element.data) + barWidth / 2) + ',0)');
-          });
+          d3.select(this.elem)
+            .selectAll('.line-group' + index)
+            .each(function (dataObj, idx) {
+              const tick = d3.select(this);
+              tick.attr(
+                'transform',
+                () => 'translate(' + (x1(element.data) + barWidth / 2) + ',0)',
+              );
+            });
         });
 
-
         // line legend
-        legend = svgLegend.selectAll('.d3-lineLegend')
+        legend = svgLegend
+          .selectAll('.d3-lineLegend')
           .data(data[0].value)
           .enter()
           .append('g')
           .attr('class', 'd3-lineLegend')
           .attr('transform', (d, i) => {
-            const len = ((i + 1) * 160) + prevLength;
-            return 'translate(' + (len) + ', 12)';
+            const len = (i + 1) * 160 + prevLength;
+            return 'translate(' + len + ', 12)';
           });
 
         const legendLine = legend
@@ -764,8 +876,8 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           .attr('stroke-width', '2')
           .attr('class', 'legendLine');
 
-
-        legend.append('circle')
+        legend
+          .append('circle')
           .style('stroke', 'gray')
           .style('fill', (d, i) => color(i))
           .attr('r', 4)
@@ -773,22 +885,25 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           .attr('cy', 8);
 
         //Legend text /.attr("x", width/2 + 20)
-        legend.append('text')
+        legend
+          .append('text')
           .attr('x', 24)
           .attr('y', 2)
           .attr('dy', '.85em')
           .style('text-anchor', 'start')
           .style('font-size', 10)
-          .text((d) => d.rate.length > 15 ? d.rate.substring(0, 12) + '...' : d.rate);
+          .text((d) =>
+            d.rate.length > 15 ? d.rate.substring(0, 12) + '...' : d.rate,
+          );
 
-        svgLegend.append('text')
+        svgLegend
+          .append('text')
           .attr('x', 0)
           .attr('y', 15)
           .attr('dy', '.85em')
           .style('text-anchor', 'start')
           .style('font-size', 10)
           .text(self.lineLegend);
-
 
         const content = this.elem.querySelector('#horizontalSVG');
         content.scrollLeft += width;
@@ -803,14 +918,16 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           .append('g')
           .attr('class', 'd3-legend');
 
-        legendIndicator.append('rect')
+        legendIndicator
+          .append('rect')
           .attr('width', 12)
           .attr('height', 12)
           .attr('x', 32)
           .attr('y', 7)
           .style('fill', (d, i) => '#DF9292');
 
-        legendIndicator.append('text')
+        legendIndicator
+          .append('text')
           .attr('x', 52)
           .attr('y', 8)
           .attr('dy', '.85em')
@@ -818,12 +935,12 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
           .style('font-size', 10)
           .text((d) => 'Legend');
 
-
         legendIndicator
           .on('mouseover', () => {
             const topValue = 30;
 
-            div.transition()
+            div
+              .transition()
               .duration(200)
               .style('display', 'block')
               .style('opacity', 1)
@@ -833,19 +950,20 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
 
             const htmlString = self.elem.querySelector('#svgLegend').innerHTML;
 
-            div.html(htmlString)
+            div
+              .html(htmlString)
               .style('left', 70 + 'px')
               .style('top', y[0] - topValue + 'px');
           })
           .on('mouseout', () => {
-            div.transition()
+            div
+              .transition()
               .duration(500)
               .style('display', 'none')
               .style('opacity', 0)
               .style('padding', '5px')
               .style('max-width', '220px')
               .style('width', 'auto');
-
           });
       }
     } catch (ex) {
@@ -861,24 +979,33 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         line = [],
         lineNumber = 0,
         lineHeight = 1.1, // ems
-        y = text.attr("y"),
-        dy = parseFloat(text.attr("dy")),
-        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
-      while (word = words.pop()) {
-        line.push(word)
-        tspan.text(line.join(" "))
-        if (tspan.node().getComputedTextLength() > (width - 5)) {
-          line.pop()
-          tspan.text(line.join(" "))
-          line = [word]
-          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${ ++lineNumber * lineHeight + dy } em`).text(word)
+        y = text.attr('y'),
+        dy = parseFloat(text.attr('dy')),
+        tspan = text
+          .text(null)
+          .append('tspan')
+          .attr('x', 0)
+          .attr('y', y)
+          .attr('dy', dy + 'em');
+      while ((word = words.pop())) {
+        line.push(word);
+        tspan.text(line.join(' '));
+        if (tspan.node().getComputedTextLength() > width - 5) {
+          line.pop();
+          tspan.text(line.join(' '));
+          line = [word];
+          tspan = text
+            .append('tspan')
+            .attr('x', 0)
+            .attr('y', y)
+            .attr('dy', `${++lineNumber * lineHeight + dy} em`)
+            .text(word);
         }
       }
-    })
+    });
   }
 
   ngAfterViewInit() {
     this.resizeObserver.observe(d3.select(this.elem).select('#chart').node());
   }
 }
-

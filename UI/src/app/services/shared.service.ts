@@ -27,8 +27,6 @@ user click on tab or type(scrum , kanban).
 @author anuj
 **************/
 
-
-
 @Injectable()
 export class SharedService {
   public passDataToDashboard;
@@ -63,7 +61,8 @@ export class SharedService {
   private masterdata = {};
   private chartColorList = {};
   changedMainDashboardValueSub = new Subject<any>();
-  changedMainDashboardValueObs = this.changedMainDashboardValueSub.asObservable();
+  changedMainDashboardValueObs =
+    this.changedMainDashboardValueSub.asObservable();
   currentSelectedSprintSub = new Subject<any>();
   currentSelectedSprint;
   mapColorToProject = new BehaviorSubject<any>({});
@@ -87,15 +86,18 @@ export class SharedService {
   currentUserDetails = null;
   currentUserDetailsSubject = new BehaviorSubject<any>(null);
   currentUserDetailsObs = this.currentUserDetailsSubject.asObservable();
-  public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
+  public onTypeOrTabRefresh = new Subject<{
+    selectedTab: string;
+    selectedType: string;
+  }>();
   public onScrumKanbanSwitch = new Subject<{ selectedType: string }>();
   public onTabSwitch = new Subject<{ selectedBoard: string }>();
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
-  fieldMappingOptionsMetaData: any = []
-  kpiCardView: string = "chart";
+  fieldMappingOptionsMetaData: any = [];
+  kpiCardView: string = 'chart';
   maturityTableLoader = new Subject<boolean>();
-  globalConfigData: any
+  globalConfigData: any;
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
   addtionalFilterBackup = {};
@@ -119,7 +121,8 @@ export class SharedService {
   boardNamesListObs = this.boardNamesListSubject.asObservable();
 
   isRecommendationsEnabledSubject = new BehaviorSubject<boolean>(false);
-  isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
+  isRecommendationsEnabledObs =
+    this.isRecommendationsEnabledSubject.asObservable();
 
   selectedMap = {};
 
@@ -282,13 +285,23 @@ export class SharedService {
     return this.setNoData.asObservable();
   }
 
-
   raiseError(error) {
     this.passErrorToErrorPage.emit(error);
   }
 
   // calls when user select different Tab (executive , quality etc)
-  select(masterData, filterData, filterApplyData, selectedTab, isAdditionalFilters?, makeAPICall = true, configDetails = null, loading = false, dashConfigData = null, selectedType = null) {
+  select(
+    masterData,
+    filterData,
+    filterApplyData,
+    selectedTab,
+    isAdditionalFilters?,
+    makeAPICall = true,
+    configDetails = null,
+    loading = false,
+    dashConfigData = null,
+    selectedType = null,
+  ) {
     this.sharedObject = {};
     this.sharedObject.masterData = masterData;
     this.sharedObject.filterData = filterData;
@@ -419,26 +432,34 @@ export class SharedService {
     return this.selectedTrends;
   }
 
-
   // calls when sidenav refresh
   setSideNav(flag) {
     this.isSideNav.emit(flag);
   }
 
   setCurrentUserDetails(details) {
-
-    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
+    if (
+      !this.currentUserDetails ||
+      !details ||
+      Object.keys(details).length === 0
+    ) {
       this.currentUserDetails = details;
     } else {
       this.currentUserDetails = { ...this.currentUserDetails, ...details };
     }
-    localStorage.setItem('currentUserDetails', JSON.stringify(this.currentUserDetails));
+    localStorage.setItem(
+      'currentUserDetails',
+      JSON.stringify(this.currentUserDetails),
+    );
     this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
   getCurrentUserDetails(key = null) {
     if (key) {
-      if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
+      if (
+        this.currentUserDetails &&
+        this.currentUserDetails.hasOwnProperty(key)
+      ) {
         return this.currentUserDetails[key];
       }
     } else if (this.currentUserDetails) {
@@ -448,11 +469,14 @@ export class SharedService {
   }
 
   setNoRelease(value) {
-    this.noRelease.next(value)
+    this.noRelease.next(value);
   }
 
   setFieldMappingMetaData(metaDataObj) {
-    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData, metaDataObj];
+    this.fieldMappingOptionsMetaData = [
+      ...this.fieldMappingOptionsMetaData,
+      metaDataObj,
+    ];
   }
 
   getFieldMappingMetaData() {
@@ -460,7 +484,7 @@ export class SharedService {
   }
 
   setMaturiyTableLoader(value) {
-    this.maturityTableLoader.next(value)
+    this.maturityTableLoader.next(value);
   }
 
   setGlobalConfigData(data) {
@@ -507,15 +531,12 @@ export class SharedService {
   }
 
   getProcessorLogDetails() {
-    return this.processorTraceLogs
+    return this.processorTraceLogs;
   }
 
   setUpdatedBoardList(kpiListData, selectedType) {
     const boardNameArr = [];
-    if (
-      kpiListData[selectedType] &&
-      Array.isArray(kpiListData[selectedType])
-    ) {
+    if (kpiListData[selectedType] && Array.isArray(kpiListData[selectedType])) {
       for (let i = 0; i < kpiListData[selectedType]?.length; i++) {
         let kpiShownCount = 0;
         let board = kpiListData[selectedType][i];
@@ -533,11 +554,10 @@ export class SharedService {
         if (kpiShownCount > 0) {
           boardNameArr.push({
             boardName: board?.boardName,
-            link: board?.boardSlug
+            link: board?.boardSlug,
           });
         }
       }
-
     }
 
     for (let i = 0; i < kpiListData['others']?.length; i++) {
@@ -550,8 +570,7 @@ export class SharedService {
       if (kpiShownCount > 0) {
         boardNameArr.push({
           boardName: kpiListData['others'][i].boardName,
-          link:
-            kpiListData['others'][i].boardSlug
+          link: kpiListData['others'][i].boardSlug,
         });
       }
     }
@@ -570,5 +589,3 @@ export class SharedService {
     this.isRecommendationsEnabledSubject.next(value);
   }
 }
-
-

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 .notfound1 {
   position: relative;
   height: 80vh;
@@ -82,11 +81,11 @@
   margin-top: 164px;
 
   -webkit-animation: bounceIn 1s;
-    animation: bounceIn 1s;
-    -webkit-transform: scale(0, 0);
-    transform: scale(0, 0);
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  animation: bounceIn 1s;
+  -webkit-transform: scale(0, 0);
+  transform: scale(0, 0);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .notfound a {
@@ -99,15 +98,15 @@
   padding: 13px 23px;
   background: #fe414d;
   font-size: 18px;
-  -webkit-transition: .2s all;
-  transition: .2s all;
+  -webkit-transition: 0.2s all;
+  transition: 0.2s all;
 
-  -webkit-animation: zoomOut .5s;
-    animation: zoomOut .5s;
-    -webkit-transform: scale(0, 0);
-    transform: scale(0, 0);
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  -webkit-animation: zoomOut 0.5s;
+  animation: zoomOut 0.5s;
+  -webkit-transform: scale(0, 0);
+  transform: scale(0, 0);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .notfound a:hover {
@@ -118,5 +117,3 @@
 .redirect-timer {
   font-size: 16px;
 }
-
-

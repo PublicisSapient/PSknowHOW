@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
- #groupstackchart {
+#groupstackchart {
   height: 290;
 }
 
@@ -99,8 +99,8 @@
 }
 
 ::ng-deep .legend_color_indicator.current_day {
-   height: 5px;
-   width: 30px
+  height: 5px;
+  width: 30px;
 }
 
 ::ng-deep div.legend-tooltip {
@@ -147,39 +147,40 @@
   max-width: 100%;
 }
 
-  #svgLegend{
-    height: 20px;
-  }
-  :host::ng-deep div.normal-legend{
-    font-size: 10px;
-    color: var(--color-gray-34);
-    position: absolute;
-    bottom: 20px;
-  }
-  .tooltip-container, .current-week-tooltip{
-      position: relative;
-  }
+#svgLegend {
+  height: 20px;
+}
+:host::ng-deep div.normal-legend {
+  font-size: 10px;
+  color: var(--color-gray-34);
+  position: absolute;
+  bottom: 20px;
+}
+.tooltip-container,
+.current-week-tooltip {
+  position: relative;
+}
 
-  ::ng-deep .legend_color_indicator.line-indicator{
-    height: 5px;
-    width: 30px;
-  }
+::ng-deep .legend_color_indicator.line-indicator {
+  height: 5px;
+  width: 30px;
+}
 
-  :host ::ng-deep .xAxis .tick.minor line {
-    stroke: #777;
-    stroke-width: 1px;
-    stroke-dasharray: 6,4;
-  }
+:host ::ng-deep .xAxis .tick.minor line {
+  stroke: #777;
+  stroke-width: 1px;
+  stroke-dasharray: 6, 4;
+}
 
-  :host ::ng-deep .xAxis .tick line {
-    shape-rendering: crispEdges;
-    stroke: #000;
-    stroke-width: 3px;
-  }
+:host ::ng-deep .xAxis .tick line {
+  shape-rendering: crispEdges;
+  stroke: #000;
+  stroke-width: 3px;
+}
 
-  :host #date-container{
-    position: absolute;
-    right: 10px;
-    font-size: 13px;
-    font-weight: 600;
+:host #date-container {
+  position: absolute;
+  right: 10px;
+  font-size: 13px;
+  font-weight: 600;
 }

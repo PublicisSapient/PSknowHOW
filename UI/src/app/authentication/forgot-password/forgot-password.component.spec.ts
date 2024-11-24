@@ -26,7 +26,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { HttpService } from '../../services/http.service';
 import { environment } from 'src/environments/environment';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
@@ -43,7 +46,7 @@ describe('ForgotPasswordComponent', () => {
   let sharedService;
   const fakeError = { message: 'logError', success: false };
   const fakeSuccess = { message: 'success', success: true };
-  const fakeHttp0 = { status : 0};
+  const fakeHttp0 = { status: 0 };
 
   beforeEach(waitForAsync(() => {
     const routes: Routes = [
@@ -57,17 +60,20 @@ describe('ForgotPasswordComponent', () => {
         ReactiveFormsModule,
         CommonModule,
         RouterTestingModule.withRoutes(routes),
-        HttpClientTestingModule
+        HttpClientTestingModule,
       ],
-      declarations: [ForgotPasswordComponent,
-        RegisterComponent, DashboardComponent],
-      providers: [HttpService,SharedService
-        , { provide: APP_CONFIG, useValue: AppConfig }
-
+      declarations: [
+        ForgotPasswordComponent,
+        RegisterComponent,
+        DashboardComponent,
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+      providers: [
+        HttpService,
+        SharedService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -82,7 +88,6 @@ describe('ForgotPasswordComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
   it('Invalid email id  should not call service', waitForAsync(() => {
     component.emailForm.controls['email'].setValue('user');
     component.onSubmit();
@@ -94,7 +99,9 @@ describe('ForgotPasswordComponent', () => {
     component.onSubmit();
     const httpreq = httpMock.expectOne(baseUrl + '/api/forgotPassword');
     httpreq.flush(fakeError);
-    expect(component.error).toBe('Link could not be sent to the entered email id. Please check if the email id is valid and registered.');
+    expect(component.error).toBe(
+      'Link could not be sent to the entered email id. Please check if the email id is valid and registered.',
+    );
   }));
 
   it('valid email id  with success', waitForAsync(() => {
@@ -102,27 +109,33 @@ describe('ForgotPasswordComponent', () => {
     component.onSubmit();
     const httpreq = httpMock.expectOne(baseUrl + '/api/forgotPassword');
     httpreq.flush(fakeSuccess);
-    expect(component.success).toBe('Link to reset password has been sent to your registered email address');
+    expect(component.success).toBe(
+      'Link to reset password has been sent to your registered email address',
+    );
   }));
 
   it('should throw error while getting forgot password call and status is not 0', waitForAsync(() => {
     component.emailForm.controls['email'].setValue('user@gmail.com');
-    spyOn(httpService,'forgotPassword').and.returnValue(throwError('Error'))
+    spyOn(httpService, 'forgotPassword').and.returnValue(throwError('Error'));
     component.onSubmit();
-    expect(component.error).toBe('Please check your email/notification setup')
+    expect(component.error).toBe('Please check your email/notification setup');
   }));
 
   it('should throw error while getting forgot password call and status is 0', waitForAsync(() => {
     component.emailForm.controls['email'].setValue('user@gmail.com');
-    spyOn(httpService,'forgotPassword').and.returnValue(throwError({status : 0}))
+    spyOn(httpService, 'forgotPassword').and.returnValue(
+      throwError({ status: 0 }),
+    );
     component.onSubmit();
-    expect(component.error).toBe('Could not send email, connection timed out!')
+    expect(component.error).toBe('Could not send email, connection timed out!');
   }));
 
   it('should get forgot pass success response', waitForAsync(() => {
     component.emailForm.controls['email'].setValue('user@gmail.com');
-    spyOn(httpService,'forgotPassword').and.returnValue(of({success : false}))
+    spyOn(httpService, 'forgotPassword').and.returnValue(
+      of({ success: false }),
+    );
     component.onSubmit();
     expect(component.error).toBeDefined();
-   }));
+  }));
 });

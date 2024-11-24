@@ -16,31 +16,28 @@
  *
  ******************************************************************************/
 
-
 import { Injectable } from '@angular/core';
 import { SharedService } from './shared.service';
 
 @Injectable()
 export class GetAuthService {
-    stopListening: Function;
-    private authenthicate;
+  stopListening: Function;
+  private authenthicate;
 
-    constructor(private sharedService : SharedService){}
+  constructor(private sharedService: SharedService) {}
 
-    checkAuth() {
-        const user_name = this.getToken();
-        if (user_name !== 'null' && user_name !== null && user_name !== undefined) {
-            this.authenthicate = true;
-        } else {
-            // redirect to login page
-            this.authenthicate = false;
-        }
-        return this.authenthicate;
-
+  checkAuth() {
+    const user_name = this.getToken();
+    if (user_name !== 'null' && user_name !== null && user_name !== undefined) {
+      this.authenthicate = true;
+    } else {
+      // redirect to login page
+      this.authenthicate = false;
     }
+    return this.authenthicate;
+  }
 
-    getToken() {
-        return this.sharedService.getCurrentUserDetails('authorities');
-    }
+  getToken() {
+    return this.sharedService.getCurrentUserDetails('authorities');
+  }
 }
-

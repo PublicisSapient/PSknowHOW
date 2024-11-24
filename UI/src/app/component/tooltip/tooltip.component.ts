@@ -16,55 +16,62 @@
  *
  ******************************************************************************/
 
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 
 @Component({
-    selector: 'app-tooltip',
-    templateUrl: './tooltip.component.html',
-    styleUrls: ['./tooltip.component.css']
+  selector: 'app-tooltip',
+  templateUrl: './tooltip.component.html',
+  styleUrls: ['./tooltip.component.css'],
 })
 export class TooltipComponent implements OnChanges {
-    @Input() data: any = {};
-    @Input() showChartView = 'chart';
-    @Input() filterNo?: string = '';
-    @Input() kpiName;
-    @Input() showingMaturityRange: boolean = false;
-    @Input() toolTipTop = 0;
-    relativeTooltipTop = 400;
-    show: boolean = true;
-    bottomArrow: boolean = false;
+  @Input() data: any = {};
+  @Input() showChartView = 'chart';
+  @Input() filterNo?: string = '';
+  @Input() kpiName;
+  @Input() showingMaturityRange: boolean = false;
+  @Input() toolTipTop = 0;
+  relativeTooltipTop = 400;
+  show: boolean = true;
+  bottomArrow: boolean = false;
 
+  constructor(private elementRef: ElementRef) {}
 
-    constructor(private elementRef: ElementRef) {
+  ngOnChanges(changes: SimpleChanges) {
+    this.show = true;
+  }
+
+  hideTooltip(event) {
+    if (this.showingMaturityRange) {
+      this.show = false;
     }
+  }
 
-    ngOnChanges(changes: SimpleChanges) {
+  ngAfterViewInit() {
+    const element =
+      this.elementRef.nativeElement.querySelector('.tooltip-wrapper');
+    const rect = element.getBoundingClientRect();
+    const bottomVisible = rect.bottom <= window.innerHeight;
+    if (!bottomVisible) {
+      setTimeout(() => {
+        this.relativeTooltipTop -= 400 + rect.height + 25;
         this.show = true;
+        this.bottomArrow = true;
+      }, 0);
+    } else {
+      setTimeout(() => {
+        this.relativeTooltipTop = 400;
+        this.show = true;
+        this.bottomArrow = false;
+      }, 0);
     }
-
-    hideTooltip(event) {
-        if (this.showingMaturityRange) {
-            this.show = false;
-        }
-    }
-
-    ngAfterViewInit() {
-        const element = this.elementRef.nativeElement.querySelector('.tooltip-wrapper');
-        const rect = element.getBoundingClientRect();
-        const bottomVisible = rect.bottom <= window.innerHeight;
-        if (!bottomVisible) {
-            setTimeout(() => {
-                this.relativeTooltipTop -= (400 + rect.height + 25);
-                this.show = true;
-                this.bottomArrow = true;
-            }, 0);
-        } else {
-            setTimeout(() => {
-                this.relativeTooltipTop = 400;
-                this.show = true;
-                this.bottomArrow = false;
-            }, 0);
-        }
-    }
+  }
 }
-

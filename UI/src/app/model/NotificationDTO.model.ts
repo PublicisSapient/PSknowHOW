@@ -17,12 +17,12 @@
  ******************************************************************************/
 
 export interface NotificationResponseDTO {
-    message: string;
-    success: boolean;
-    data: NotificationDTO[];
+  message: string;
+  success: boolean;
+  data: NotificationDTO[];
 }
 
 export interface NotificationDTO {
-    type: string;
-    count: number;
+  type: string;
+  count: number;
 }

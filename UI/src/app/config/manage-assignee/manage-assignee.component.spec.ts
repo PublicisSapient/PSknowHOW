@@ -27,9 +27,8 @@ describe('ManageAssigneeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ManageAssigneeComponent ]
-    })
-    .compileComponents();
+      declarations: [ManageAssigneeComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ManageAssigneeComponent);
     component = fixture.componentInstance;
@@ -42,20 +41,20 @@ describe('ManageAssigneeComponent', () => {
 
   it('should update assignee selected status', () => {
     const assignee = {
-      "name": "testDisplayName",
-      "displayName": "testDisplayName",
-      "checked": true
+      name: 'testDisplayName',
+      displayName: 'testDisplayName',
+      checked: true,
     };
     const event = {
       target: {
-        checked: true
-      }
+        checked: true,
+      },
     };
     component.onUserSelectionChange(event, assignee);
     expect(assignee.checked).toBeTrue();
   });
 
-  it('should reset table filter and Search field',()=>{
+  it('should reset table filter and Search field', () => {
     component.table = TestBed.createComponent(Table).componentInstance;
     component.reset();
     expect(component.searchText.value).toBeFalsy();

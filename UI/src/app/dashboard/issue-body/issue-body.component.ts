@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-issue-body',
   templateUrl: './issue-body.component.html',
-  styleUrls: ['./issue-body.component.css']
+  styleUrls: ['./issue-body.component.css'],
 })
 export class IssueBodyComponent {
   @Input() issueData;
@@ -14,7 +14,7 @@ export class IssueBodyComponent {
     }
     const isLessThanZero = val < 0;
     val = Math.abs(val);
-    const hours = (val / (60 * 60));
+    const hours = val / (60 * 60);
     const rhours = Math.floor(hours);
     const minutes = (hours - rhours) * 60;
     const rminutes = Math.round(minutes);
@@ -28,8 +28,8 @@ export class IssueBodyComponent {
     if (isLessThanZero) {
       val = '-' + val;
     }
-    if(val === '') {
-      val = '0d'
+    if (val === '') {
+      val = '0d';
     }
     return val;
   }
@@ -38,7 +38,8 @@ export class IssueBodyComponent {
     const days = rhours / 8;
     const rdays = Math.floor(days);
     rhours = (days - rdays) * 8;
-    return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}`;
+    return `${rdays !== 0 ? rdays + 'd ' : ''}${
+      rhours !== 0 ? rhours + 'h ' : ''
+    }`;
   }
-
 }

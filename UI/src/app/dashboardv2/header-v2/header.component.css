@@ -62,7 +62,7 @@ header {
   border-right: 3px solid var(--color-secondary-blue);
 }
 
-::ng-deep p-menu.app-switch .p-menu .p-menuitem-link-active .p-menuitem-text{
+::ng-deep p-menu.app-switch .p-menu .p-menuitem-link-active .p-menuitem-text {
   color: var(--color-secondary-blue);
 }
 

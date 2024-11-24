@@ -21,26 +21,27 @@ import { FormControl, FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-rating',
   templateUrl: './rating.component.html',
-  styleUrls: ['./rating.component.css']
+  styleUrls: ['./rating.component.css'],
 })
-export class RatingComponent implements OnChanges{
-  @Input() editable=false;
+export class RatingComponent implements OnChanges {
+  @Input() editable = false;
   @Input() currentAssignee;
-  form= new FormGroup({
-    happinessRating: new FormControl()
+  form = new FormGroup({
+    happinessRating: new FormControl(),
   });
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.form.controls['happinessRating'].setValue(String(this.currentAssignee.happinessRating));
-      if(changes.editable?.currentValue){
-        this.form.controls['happinessRating'].enable();
-      }else{
-        this.form.controls['happinessRating'].disable();
-      }
+    this.form.controls['happinessRating'].setValue(
+      String(this.currentAssignee.happinessRating),
+    );
+    if (changes.editable?.currentValue) {
+      this.form.controls['happinessRating'].enable();
+    } else {
+      this.form.controls['happinessRating'].disable();
+    }
   }
 
-  onChange(){
+  onChange() {
     this.currentAssignee.happinessRating = +this.form.value['happinessRating'];
   }
-
 }

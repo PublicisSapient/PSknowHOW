@@ -21,16 +21,23 @@ File contains code for assignee board component.
 @author bhagyashree, rishabh
 *******************************/
 
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-assignee-board',
   templateUrl: './assignee-board.component.html',
-  styleUrls: ['./assignee-board.component.css']
+  styleUrls: ['./assignee-board.component.css'],
 })
 export class AssigneeBoardComponent implements OnInit, OnChanges {
-
   @Input() issueDataList = [];
   @Input() standUpStatusFilter = [];
   @Input() onFullScreen;
@@ -44,11 +51,10 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   @Output() reloadKPITab = new EventEmitter<any>();
   filteredIssueDataList: any[];
 
-  constructor(private sharedService: SharedService) {
-  }
+  constructor(private sharedService: SharedService) {}
 
   ngOnInit(): void {
-    this.sharedService.currentData.subscribe(data => {
+    this.sharedService.currentData.subscribe((data) => {
       if (data && Object.keys(data).length) {
         this.showIssueDetails = true;
         this.graphWidth = 75;
@@ -63,21 +69,27 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.currentIssueIndex = 0;
     if (changes['issueDataList']) {
-      this.filteredIssueDataList = JSON.parse(JSON.stringify(changes['issueDataList'].currentValue));
+      this.filteredIssueDataList = JSON.parse(
+        JSON.stringify(changes['issueDataList'].currentValue),
+      );
     }
   }
 
   onPreviousIssue() {
     if (this.currentIssueIndex > 0) {
       this.currentIssueIndex = this.currentIssueIndex - 1;
-      this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
+      this.sharedService.setIssueData(
+        this.filteredIssueDataList[this.currentIssueIndex],
+      );
     }
   }
 
   onNextIssue() {
     if (this.currentIssueIndex < this.filteredIssueDataList?.length - 1) {
       this.currentIssueIndex = this.currentIssueIndex + 1;
-      this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
+      this.sharedService.setIssueData(
+        this.filteredIssueDataList[this.currentIssueIndex],
+      );
     }
   }
 
@@ -91,13 +103,28 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   }
 
   filterTasksByStatus() {
-    if (this.selectedTaskStatusFilter && this.selectedTaskStatusFilter?.length) {
-      this.filteredIssueDataList = this.issueDataList.filter((d) => this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === this.selectedTaskStatusFilter.toLowerCase())?.options.includes(d['Issue Status']));
+    if (
+      this.selectedTaskStatusFilter &&
+      this.selectedTaskStatusFilter?.length
+    ) {
+      this.filteredIssueDataList = this.issueDataList.filter((d) =>
+        this.standUpStatusFilter
+          .find(
+            (item) =>
+              item['filterName'].toLowerCase() ===
+              this.selectedTaskStatusFilter.toLowerCase(),
+          )
+          ?.options.includes(d['Issue Status']),
+      );
     } else {
-      this.filteredIssueDataList = JSON.parse(JSON.stringify(this.issueDataList));
+      this.filteredIssueDataList = JSON.parse(
+        JSON.stringify(this.issueDataList),
+      );
     }
     this.currentIssueIndex = 0;
-    this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
+    this.sharedService.setIssueData(
+      this.filteredIssueDataList[this.currentIssueIndex],
+    );
   }
 
   /** Reload KPI once field mappoing updated */

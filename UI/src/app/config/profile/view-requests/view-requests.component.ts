@@ -25,7 +25,7 @@ import { GetAuthorizationService } from 'src/app/services/get-authorization.serv
 @Component({
   selector: 'app-view-requests',
   templateUrl: './view-requests.component.html',
-  styleUrls: ['./view-requests.component.css', '../profile.component.css']
+  styleUrls: ['./view-requests.component.css', '../profile.component.css'],
 })
 export class ViewRequestsComponent implements OnInit {
   accessRequestsRequest = <any>'';
@@ -36,9 +36,12 @@ export class ViewRequestsComponent implements OnInit {
   rolesData: any;
   roleList: any;
   dataLoading = <any>[];
-  constructor(private httpService: HttpService, private messageService: MessageService, private sharedService: SharedService, private authService: GetAuthorizationService) {
-
-  }
+  constructor(
+    private httpService: HttpService,
+    private messageService: MessageService,
+    private sharedService: SharedService,
+    private authService: GetAuthorizationService,
+  ) {}
 
   ngOnInit() {
     this.getRequests();
@@ -46,56 +49,81 @@ export class ViewRequestsComponent implements OnInit {
   }
 
   getRequests() {
-    this.accessRequestsRequest = this.httpService.getAccessRequests('Pending')
-      .subscribe(requests => {
+    this.accessRequestsRequest = this.httpService
+      .getAccessRequests('Pending')
+      .subscribe((requests) => {
         this.accessRequestData = requests;
         if (this.accessRequestData['success']) {
           this.accessRequestList = requests.data;
         } else {
-          this.messageService.add({ severity: 'error', summary: 'Error in fetching requests. Please try after some time.' });
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error in fetching requests. Please try after some time.',
+          });
         }
         this.dataLoading.push('allRequests');
       });
   }
 
   getRolesList() {
-    this.rolesRequest = this.httpService.getRolesList()
-      .subscribe(roles => {
-        this.rolesData = roles;
-        if (this.rolesData['success']) {
-          this.roleList = roles.data.map((role) => ({
-              label: role.roleName,
-              value: role.roleName
-            }));
-          if(this.authService.checkIfProjectAdmin()) {
-            this.roleList = this.roleList.filter((role) => role.value !== 'ROLE_SUPERADMIN');
-          }
-        } else {
-          // show error message
-          this.messageService.add({ severity: 'error', summary: 'Error in fetching roles. Please try after some time.' });
+    this.rolesRequest = this.httpService.getRolesList().subscribe((roles) => {
+      this.rolesData = roles;
+      if (this.rolesData['success']) {
+        this.roleList = roles.data.map((role) => ({
+          label: role.roleName,
+          value: role.roleName,
+        }));
+        if (this.authService.checkIfProjectAdmin()) {
+          this.roleList = this.roleList.filter(
+            (role) => role.value !== 'ROLE_SUPERADMIN',
+          );
         }
-        this.dataLoading.push('allRoles');
-      });
+      } else {
+        // show error message
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error in fetching roles. Please try after some time.',
+        });
+      }
+      this.dataLoading.push('allRoles');
+    });
   }
 
   approveRejectRequest(requestData, approved) {
     const obj = {};
-    approved ? obj['status'] = 'Approved' : obj['status'] = 'Rejected';
+    approved ? (obj['status'] = 'Approved') : (obj['status'] = 'Rejected');
     obj['role'] = requestData.role;
     obj['message'] = requestData.reviewComments;
 
-    if (requestData.role !== 'ROLE_SUPERADMIN' && (!requestData.accessNode || !requestData.accessNode.accessItems || !requestData.accessNode.accessItems.length)) {
-      this.messageService.add({ severity: 'error', summary: 'You cannot modify the role for SUPERADMIN requests as there is no project. You can only accept or reject this request.' });
+    if (
+      requestData.role !== 'ROLE_SUPERADMIN' &&
+      (!requestData.accessNode ||
+        !requestData.accessNode.accessItems ||
+        !requestData.accessNode.accessItems.length)
+    ) {
+      this.messageService.add({
+        severity: 'error',
+        summary:
+          'You cannot modify the role for SUPERADMIN requests as there is no project. You can only accept or reject this request.',
+      });
     } else {
-      this.accessRequestsRequest = this.httpService.updateAccessRequest(obj, requestData['id'])
-        .subscribe(requests => {
+      this.accessRequestsRequest = this.httpService
+        .updateAccessRequest(obj, requestData['id'])
+        .subscribe((requests) => {
           this.acceptRequestData = requests;
           if (this.acceptRequestData['success']) {
-            this.messageService.add({ severity: 'success', summary: `Request ${obj['status']}`, detail: '' });
+            this.messageService.add({
+              severity: 'success',
+              summary: `Request ${obj['status']}`,
+              detail: '',
+            });
             this.getRequests();
             this.sharedService.notificationUpdate();
           } else {
-            this.messageService.add({ severity: 'error', summary: 'Error in updating request. Please try after some time.' });
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error in updating request. Please try after some time.',
+            });
           }
         });
     }

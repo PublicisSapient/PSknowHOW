@@ -24,64 +24,114 @@ import { SharedService } from '../services/shared.service';
 declare let $: any;
 
 @Component({
-    selector: 'app-config',
-    templateUrl: './config.component.html',
-    styleUrls: ['./config.component.css']
+  selector: 'app-config',
+  templateUrl: './config.component.html',
+  styleUrls: ['./config.component.css'],
 })
 export class ConfigComponent implements OnInit {
-    items = [];
-    hasAccess = <boolean>false;
-    activeTab: any;
+  items = [];
+  hasAccess = <boolean>false;
+  activeTab: any;
 
-    constructor(private getAuthorizationService: GetAuthorizationService, private router: Router,private sharedService: SharedService) {
-    }
+  constructor(
+    private getAuthorizationService: GetAuthorizationService,
+    private router: Router,
+    private sharedService: SharedService,
+  ) {}
 
-    ngOnInit() {
-        if (this.getAuthorizationService.checkIfSuperUser() || (this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
-            if (!this.getAuthorizationService.checkIfSuperUser()) {
-                if (!this.getAuthorizationService.checkIfProjectAdmin()) {
-                    this.hasAccess = false;
-                } else {
-                    this.hasAccess = true;
-                }
-            } else {
-                this.hasAccess = true;
-            }
+  ngOnInit() {
+    if (
+      this.getAuthorizationService.checkIfSuperUser() ||
+      (this.sharedService.getCurrentUserDetails('projectsAccess') &&
+        this.sharedService.getCurrentUserDetails('projectsAccess') !==
+          'undefined' &&
+        this.sharedService.getCurrentUserDetails('projectsAccess').length)
+    ) {
+      if (!this.getAuthorizationService.checkIfSuperUser()) {
+        if (!this.getAuthorizationService.checkIfProjectAdmin()) {
+          this.hasAccess = false;
         } else {
-            this.hasAccess = false;
+          this.hasAccess = true;
         }
-
-        this.router.events.subscribe(event => {
-            if (event instanceof NavigationEnd) {
-                this.setActiveTabOnClick(event.urlAfterRedirects);
-            }
-        });
-
-        this.items = [
-         { label: 'Manage Access', icon: 'fas fa-user-circle', routerLink: '/dashboard/Config/Profile/MyProfile', id: 'Layout-ProfileMgmt', routerLinkActiveOptions: '{ exact: true }' },
-            { label: 'Projects', icon: 'fas fa-wrench', routerLink: '/dashboard/Config/ProjectList', id: 'Layout-KPIConfig', routerLinkActiveOptions: '{ exact: true }' },
-            { label: 'Manage Tools', icon: 'fas fa-plug', routerLink: '/dashboard/Config/ConfigSettings', id: 'Layout-ConnectionsConfig', routerLinkActiveOptions: '{ exact: true }' },
-        ];
-
-        if (this.hasAccess) {
-            // logged in as SuperAdmin or ProjectAdmin
-            this.items.push(
-                { label: 'Processor', icon: 'fa fa-fw fa-cog', routerLink: '/dashboard/Config/AdvancedSettings', id: 'Layout-AdvanceSettings', routerLinkActiveOptions: '{ exact: true }' },
-                { label: 'Dashboard Config.', icon: 'fas fa-life-ring', routerLink: '/dashboard/Config/Dashboardconfig', id: 'Layout-DashboardConfig', routerLinkActiveOptions: '{ exact: true }' },
-                { label: 'Capacity Planning', icon: 'fa fa-regular fa-users', routerLink: '/dashboard/Config/Capacity', id: 'Layout-Capacity', routerLinkActiveOptions: '{ exact: true }' },
-                { label: 'Misc Data Upload', icon: 'fa fa-fw fa-upload', routerLink: '/dashboard/Config/Upload', id: 'Layout-Upload', routerLinkActiveOptions: '{ exact: true }' },
-
-            );
-        }
-
-        this.setActiveTabOnClick(this.router.url);
+      } else {
+        this.hasAccess = true;
+      }
+    } else {
+      this.hasAccess = false;
     }
 
-    setActiveTabOnClick(url) {
-        this.activeTab = this.items.filter((item) => item.routerLink === url)[0];
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.setActiveTabOnClick(event.urlAfterRedirects);
+      }
+    });
+
+    this.items = [
+      {
+        label: 'Manage Access',
+        icon: 'fas fa-user-circle',
+        routerLink: '/dashboard/Config/Profile/MyProfile',
+        id: 'Layout-ProfileMgmt',
+        routerLinkActiveOptions: '{ exact: true }',
+      },
+      {
+        label: 'Projects',
+        icon: 'fas fa-wrench',
+        routerLink: '/dashboard/Config/ProjectList',
+        id: 'Layout-KPIConfig',
+        routerLinkActiveOptions: '{ exact: true }',
+      },
+      {
+        label: 'Manage Tools',
+        icon: 'fas fa-plug',
+        routerLink: '/dashboard/Config/ConfigSettings',
+        id: 'Layout-ConnectionsConfig',
+        routerLinkActiveOptions: '{ exact: true }',
+      },
+    ];
+
+    if (this.hasAccess) {
+      // logged in as SuperAdmin or ProjectAdmin
+      this.items.push(
+        {
+          label: 'Processor',
+          icon: 'fa fa-fw fa-cog',
+          routerLink: '/dashboard/Config/AdvancedSettings',
+          id: 'Layout-AdvanceSettings',
+          routerLinkActiveOptions: '{ exact: true }',
+        },
+        {
+          label: 'Dashboard Config.',
+          icon: 'fas fa-life-ring',
+          routerLink: '/dashboard/Config/Dashboardconfig',
+          id: 'Layout-DashboardConfig',
+          routerLinkActiveOptions: '{ exact: true }',
+        },
+        {
+          label: 'Capacity Planning',
+          icon: 'fa fa-regular fa-users',
+          routerLink: '/dashboard/Config/Capacity',
+          id: 'Layout-Capacity',
+          routerLinkActiveOptions: '{ exact: true }',
+        },
+        {
+          label: 'Misc Data Upload',
+          icon: 'fa fa-fw fa-upload',
+          routerLink: '/dashboard/Config/Upload',
+          id: 'Layout-Upload',
+          routerLinkActiveOptions: '{ exact: true }',
+        },
+      );
     }
 
-    ngOnDestroy() {
-        this.sharedService.setSideNav(false);
-    }
+    this.setActiveTabOnClick(this.router.url);
+  }
+
+  setActiveTabOnClick(url) {
+    this.activeTab = this.items.filter((item) => item.routerLink === url)[0];
+  }
+
+  ngOnDestroy() {
+    this.sharedService.setSideNav(false);
+  }
 }

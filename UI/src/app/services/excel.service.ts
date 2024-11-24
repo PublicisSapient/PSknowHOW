@@ -22,12 +22,10 @@ import * as fs from 'file-saver';
 import { DatePipe } from '../../../node_modules/@angular/common';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class ExcelService {
-  constructor(private datePipe: DatePipe) {
-  }
+  constructor(private datePipe: DatePipe) {}
 
   generateExcelModalData(kpiData) {
     const headerNames = [];
@@ -40,7 +38,7 @@ export class ExcelService {
       for (const data of kpiData.excelData) {
         const rowData = {};
         for (const key in data) {
-          if (!(typeof (data[key]) == 'object')) {
+          if (!(typeof data[key] == 'object')) {
             rowData[key] = data[key];
           } else {
             const appendedRowData = [];
@@ -51,9 +49,12 @@ export class ExcelService {
             } else {
               for (const datakey in data[key]) {
                 if (data[key][datakey]) {
-                  appendedRowData.push({ text: datakey, hyperlink: data[key][datakey] });
+                  appendedRowData.push({
+                    text: datakey,
+                    hyperlink: data[key][datakey],
+                  });
                 } else {
-                  console.log(datakey)
+                  console.log(datakey);
                   appendedRowData.push(datakey);
                 }
               }
@@ -66,7 +67,6 @@ export class ExcelService {
               rowData['rowSpan'] = appendedRowData.length;
               rowData[key] = appendedRowData;
             }
-
           }
         }
         excelData.push(rowData);
@@ -95,7 +95,7 @@ export class ExcelService {
         family: 4,
         size: 16,
         underline: 'double',
-        bold: true
+        bold: true,
       };
       worksheet.mergeCells(1, 1, 1, 5); // top,left,bottom,right
     } else {
@@ -109,89 +109,109 @@ export class ExcelService {
           delete excelData['rowSpan'];
           for (let j = 0; j < kpiData.headerNames.length; j++) {
             if (!Array.isArray(excelData[worksheet.getColumn(j + 1).key])) {
-              worksheet.mergeCells(lastRow + 1, j + 1, lastRow + rowSpan, j + 1);
-              worksheet.getCell(worksheet.getColumn(j + 1).letter + (lastRow + 1)).value = excelData[worksheet.getColumn(j + 1).key];
+              worksheet.mergeCells(
+                lastRow + 1,
+                j + 1,
+                lastRow + rowSpan,
+                j + 1,
+              );
+              worksheet.getCell(
+                worksheet.getColumn(j + 1).letter + (lastRow + 1),
+              ).value = excelData[worksheet.getColumn(j + 1).key];
             } else {
-              for (let k = 0; k < excelData[worksheet.getColumn(j + 1).key].length; k++) {
-                worksheet.getCell(worksheet.getColumn(j + 1).letter + (lastRow + 1 + k)).value = excelData[worksheet.getColumn(j + 1).key][k];
+              for (
+                let k = 0;
+                k < excelData[worksheet.getColumn(j + 1).key].length;
+                k++
+              ) {
+                worksheet.getCell(
+                  worksheet.getColumn(j + 1).letter + (lastRow + 1 + k),
+                ).value = excelData[worksheet.getColumn(j + 1).key][k];
               }
             }
-
           }
         }
       }
 
       worksheet.eachRow((row, rowNumber) => {
         if (rowNumber === 1) {
-          row.eachCell({
-            includeEmpty: true
-          }, (cell) => {
+          row.eachCell(
+            {
+              includeEmpty: true,
+            },
+            (cell) => {
+              cell.font = {
+                name: 'Arial Rounded MT Bold',
+              };
 
-            cell.font = {
-              name: 'Arial Rounded MT Bold'
-            };
-
-            cell.fill = {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: {
-                argb: 'FFFFFF00'
-              },
-              bgColor: {
-                argb: 'FF0000FF'
-              }
-            };
-
-          });
+              cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: {
+                  argb: 'FFFFFF00',
+                },
+                bgColor: {
+                  argb: 'FF0000FF',
+                },
+              };
+            },
+          );
         }
-        row.eachCell({
-          includeEmpty: true
-        }, (cell) => {
-
-          const linkStyle = {
-            underline: true,
-            color: { argb: 'FF0000FF' },
-          };
-          if (cell.hyperlink) {
-            cell.font = linkStyle;
-          }
-
-          cell.border = {
-            top: {
-              style: 'thin'
-            },
-            left: {
-              style: 'thin'
-            },
-            bottom: {
-              style: 'thin'
-            },
-            right: {
-              style: 'thin'
+        row.eachCell(
+          {
+            includeEmpty: true,
+          },
+          (cell) => {
+            const linkStyle = {
+              underline: true,
+              color: { argb: 'FF0000FF' },
+            };
+            if (cell.hyperlink) {
+              cell.font = linkStyle;
             }
-          };
-        });
+
+            cell.border = {
+              top: {
+                style: 'thin',
+              },
+              left: {
+                style: 'thin',
+              },
+              bottom: {
+                style: 'thin',
+              },
+              right: {
+                style: 'thin',
+              },
+            };
+          },
+        );
       });
     }
 
     worksheet.addRow([]);
     // Iterate over all cells in a all row (including empty cells)
     worksheet.eachRow((row) => {
-      row.eachCell({
-        includeEmpty: true
-      }, (cell) => {
-        cell.alignment = {
-          vertical: 'middle',
-          horizontal: 'left',
-          wrapText: true
-        };
-      });
+      row.eachCell(
+        {
+          includeEmpty: true,
+        },
+        (cell) => {
+          cell.alignment = {
+            vertical: 'middle',
+            horizontal: 'left',
+            wrapText: true,
+          };
+        },
+      );
     });
 
     // Footer Row
     let footerRow;
     if (kpiName === 'Engineering Maturity') {
-      footerRow = worksheet.addRow(['* Data extracted from Engineering Maturity']);
+      footerRow = worksheet.addRow([
+        '* Data extracted from Engineering Maturity',
+      ]);
     } else {
       footerRow = worksheet.addRow(['* Data extracted from KPI tool']);
     }
@@ -199,24 +219,23 @@ export class ExcelService {
       type: 'pattern',
       pattern: 'solid',
       fgColor: {
-        argb: 'FFCCFFE5'
-      }
+        argb: 'FFCCFFE5',
+      },
     };
     footerRow.getCell(1).border = {
       top: {
-        style: 'thin'
+        style: 'thin',
       },
       left: {
-        style: 'thin'
+        style: 'thin',
       },
       bottom: {
-        style: 'thin'
+        style: 'thin',
       },
       right: {
-        style: 'thin'
-      }
+        style: 'thin',
+      },
     };
-
 
     // Merge Cells
     worksheet.mergeCells(`A${footerRow.number}:F${footerRow.number}`);
@@ -240,7 +259,6 @@ export class ExcelService {
     }
 
     let filename = '';
-
 
     // for individual download
     if (kpiName) {
@@ -273,7 +291,7 @@ export class ExcelService {
         family: 4,
         size: 16,
         underline: 'double',
-        bold: true
+        bold: true,
       };
       worksheet.mergeCells(1, 1, 1, 5); // top,left,bottom,right
     } else if (kpiName === 'Engineering Maturity') {
@@ -284,14 +302,13 @@ export class ExcelService {
           family: 4,
           size: 16,
           underline: 'double',
-          bold: true
+          bold: true,
         };
         worksheet.mergeCells(1, 1, 1, 5); // top,left,bottom,right
       } else {
         const headerNames = [];
         const newFormatArray = [];
         let maxCell = 0;
-
 
         // finding max no of cell
         for (const firstData in kpiData) {
@@ -312,8 +329,11 @@ export class ExcelService {
           }
         }
 
-
-        for (let mergeCellIndex = 0; mergeCellIndex < maxCell; mergeCellIndex++) {
+        for (
+          let mergeCellIndex = 0;
+          mergeCellIndex < maxCell;
+          mergeCellIndex++
+        ) {
           newFormatArray.push([]);
         }
         for (const data in kpiData) {
@@ -328,7 +348,10 @@ export class ExcelService {
 
           for (const dataChildName in dataName) {
             for (let i = 0; i < max; i++) {
-              if (dataName[dataChildName][i] === undefined && dataName[dataChildName][i] !== null) {
+              if (
+                dataName[dataChildName][i] === undefined &&
+                dataName[dataChildName][i] !== null
+              ) {
                 dataName[dataChildName].push('');
               }
             }
@@ -337,12 +360,21 @@ export class ExcelService {
           let j = 0;
           for (const dataChildName in dataName) {
             if (kpiName === 'Engineering Maturity') {
-              for (let index = 0; index < dataName[dataChildName].length; index++) {
+              for (
+                let index = 0;
+                index < dataName[dataChildName].length;
+                index++
+              ) {
                 let newValue = '';
-                if (dataName[dataChildName][index] != null && dataName[dataChildName][index] && typeof dataName[dataChildName][index] === 'object') {
+                if (
+                  dataName[dataChildName][index] != null &&
+                  dataName[dataChildName][index] &&
+                  typeof dataName[dataChildName][index] === 'object'
+                ) {
                   for (const newobjKey in dataName[dataChildName][index]) {
                     const value = dataName[dataChildName][index][newobjKey];
-                    newValue = newValue + newobjKey + ': ' + value + ',' + '\r\n';
+                    newValue =
+                      newValue + newobjKey + ': ' + value + ',' + '\r\n';
                   }
                 } else {
                   newValue = dataName[dataChildName][index];
@@ -368,67 +400,78 @@ export class ExcelService {
 
         worksheet.eachRow(function (row, rowNumber) {
           if (rowNumber === 1) {
-            row.eachCell({
-              includeEmpty: true
-            }, function (cell) {
+            row.eachCell(
+              {
+                includeEmpty: true,
+              },
+              function (cell) {
+                cell.font = {
+                  name: 'Arial Rounded MT Bold',
+                };
 
-              cell.font = {
-                name: 'Arial Rounded MT Bold'
-              };
-
-              cell.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: {
-                  argb: 'FFFFFF00'
-                },
-                bgColor: {
-                  argb: 'FF0000FF'
-                }
-              };
-
-            });
+                cell.fill = {
+                  type: 'pattern',
+                  pattern: 'solid',
+                  fgColor: {
+                    argb: 'FFFFFF00',
+                  },
+                  bgColor: {
+                    argb: 'FF0000FF',
+                  },
+                };
+              },
+            );
           }
-          row.eachCell({
-            includeEmpty: true
-          }, function (cell) {
-
-            cell.border = {
-              top: {
-                style: 'thin'
-              },
-              left: {
-                style: 'thin'
-              },
-              bottom: {
-                style: 'thin'
-              },
-              right: {
-                style: 'thin'
-              }
-            };
-          });
+          row.eachCell(
+            {
+              includeEmpty: true,
+            },
+            function (cell) {
+              cell.border = {
+                top: {
+                  style: 'thin',
+                },
+                left: {
+                  style: 'thin',
+                },
+                bottom: {
+                  style: 'thin',
+                },
+                right: {
+                  style: 'thin',
+                },
+              };
+            },
+          );
         });
-
       }
-
     } else {
       const headerNames = [];
       const newFormatArray = [];
       let mergeCell = 0;
-      if (kpiName === 'Total Defect Aging' || kpiName === 'Total Defect Count' || kpiName === 'Total Ticket Aging' || kpiName === 'Total Ticket Count') {
-        if (kpiName === 'Total Defect Aging' || kpiName === 'Total Ticket Aging') {
+      if (
+        kpiName === 'Total Defect Aging' ||
+        kpiName === 'Total Defect Count' ||
+        kpiName === 'Total Ticket Aging' ||
+        kpiName === 'Total Ticket Count'
+      ) {
+        if (
+          kpiName === 'Total Defect Aging' ||
+          kpiName === 'Total Ticket Aging'
+        ) {
           headerNames.push('Age');
         } else {
           if (isKanban) {
             headerNames.push('Date');
           } else {
             headerNames.push('Sprint');
-
           }
         }
 
-        if (isKanban && (kpiName === 'Total Ticket Aging' || kpiName === 'Total Ticket Count')) {
+        if (
+          isKanban &&
+          (kpiName === 'Total Ticket Aging' || kpiName === 'Total Ticket Count')
+        ) {
           headerNames.push('Tickets');
         } else {
           headerNames.push('Defects');
@@ -439,13 +482,11 @@ export class ExcelService {
         for (const data in kpiData) {
           let maxLength = 0;
           if (kpiName === 'In-Sprint Automation Coverage') {
-
             newFormatArray[1].push(...kpiData[data]['Total Test']);
 
             if (kpiData[data]['Total Test']) {
               maxLength = kpiData[data]['Total Test'].length;
             }
-
           } else {
             newFormatArray[1].push(...kpiData[data]);
             maxLength = kpiData[data].length;
@@ -456,13 +497,24 @@ export class ExcelService {
           }
         }
       } else {
-
-        if (kpiName === 'Release Frequency' || kpiName === 'Test Case Without Story Link'
-          || kpiName === 'Code Commits' || kpiName === 'Defect Count Without Story Link'
-          || kpiName === 'Code Build Time' || kpiName === 'Cost of Delay' || kpiName === 'Sonar Tech Debt'
-          || kpiName === 'Sonar Violations' || kpiName === 'Unit Test Coverage' || kpiName === 'Value delivered (Cost of Delay)'
-          || kpiName === 'Change Failure Rate' || kpiName === 'Number of Check-Ins & Merge Requests'
-          || kpiName === 'Mean Time To Merge' || kpiName === 'Deployment Frequency' || kpiName === 'Total Ticket Count by Priority' || kpiName === 'Total Ticket Count By RCA') {
+        if (
+          kpiName === 'Release Frequency' ||
+          kpiName === 'Test Case Without Story Link' ||
+          kpiName === 'Code Commits' ||
+          kpiName === 'Defect Count Without Story Link' ||
+          kpiName === 'Code Build Time' ||
+          kpiName === 'Cost of Delay' ||
+          kpiName === 'Sonar Tech Debt' ||
+          kpiName === 'Sonar Violations' ||
+          kpiName === 'Unit Test Coverage' ||
+          kpiName === 'Value delivered (Cost of Delay)' ||
+          kpiName === 'Change Failure Rate' ||
+          kpiName === 'Number of Check-Ins & Merge Requests' ||
+          kpiName === 'Mean Time To Merge' ||
+          kpiName === 'Deployment Frequency' ||
+          kpiName === 'Total Ticket Count by Priority' ||
+          kpiName === 'Total Ticket Count By RCA'
+        ) {
           headerNames.push('Project');
         } else {
           if (isKanban) {
@@ -493,8 +545,11 @@ export class ExcelService {
           }
         }
 
-
-        for (let mergeCellIndex = 0; mergeCellIndex <= maxCell; mergeCellIndex++) {
+        for (
+          let mergeCellIndex = 0;
+          mergeCellIndex <= maxCell;
+          mergeCellIndex++
+        ) {
           newFormatArray.push([]);
         }
         for (const data in kpiData) {
@@ -509,25 +564,37 @@ export class ExcelService {
 
           for (const dataChildName in dataName) {
             for (let i = 0; i < max; i++) {
-              if (dataName[dataChildName][i] === undefined && dataName[dataChildName][i] !== null) {
+              if (
+                dataName[dataChildName][i] === undefined &&
+                dataName[dataChildName][i] !== null
+              ) {
                 dataName[dataChildName].push('');
               }
             }
           }
 
-          mergeCell += (max + 1);
+          mergeCell += max + 1;
           for (let index = 0; index < max; index++) {
             newFormatArray[0].push(data);
           }
           let j = 1;
           for (const dataChildName in dataName) {
             if (kpiName === 'Cycle Time' || kpiName === 'Code Commits') {
-              for (let index = 0; index < dataName[dataChildName].length; index++) {
+              for (
+                let index = 0;
+                index < dataName[dataChildName].length;
+                index++
+              ) {
                 let newValue = '';
-                if (dataName[dataChildName][index] != null && dataName[dataChildName][index] && typeof dataName[dataChildName][index] === 'object') {
+                if (
+                  dataName[dataChildName][index] != null &&
+                  dataName[dataChildName][index] &&
+                  typeof dataName[dataChildName][index] === 'object'
+                ) {
                   for (const newobjKey in dataName[dataChildName][index]) {
                     const value = dataName[dataChildName][index][newobjKey];
-                    newValue = newValue + newobjKey + ': ' + value + ',' + '\r\n';
+                    newValue =
+                      newValue + newobjKey + ': ' + value + ',' + '\r\n';
                   }
                 } else {
                   newValue = dataName[dataChildName][index];
@@ -544,7 +611,6 @@ export class ExcelService {
             j++;
           }
         }
-
       }
       for (let i = 0; i < newFormatArray.length; i++) {
         newFormatArray[i].unshift(headerNames[i]);
@@ -554,68 +620,75 @@ export class ExcelService {
 
       worksheet.eachRow(function (row, rowNumber) {
         if (rowNumber === 1) {
-          row.eachCell({
-            includeEmpty: true
-          }, function (cell) {
+          row.eachCell(
+            {
+              includeEmpty: true,
+            },
+            function (cell) {
+              cell.font = {
+                name: 'Arial Rounded MT Bold',
+              };
 
-            cell.font = {
-              name: 'Arial Rounded MT Bold'
-            };
-
-            cell.fill = {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: {
-                argb: 'FFFFFF00'
-              },
-              bgColor: {
-                argb: 'FF0000FF'
-              }
-            };
-
-          });
+              cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: {
+                  argb: 'FFFFFF00',
+                },
+                bgColor: {
+                  argb: 'FF0000FF',
+                },
+              };
+            },
+          );
         }
-        row.eachCell({
-          includeEmpty: true
-        }, function (cell) {
-
-          cell.border = {
-            top: {
-              style: 'thin'
-            },
-            left: {
-              style: 'thin'
-            },
-            bottom: {
-              style: 'thin'
-            },
-            right: {
-              style: 'thin'
-            }
-          };
-        });
+        row.eachCell(
+          {
+            includeEmpty: true,
+          },
+          function (cell) {
+            cell.border = {
+              top: {
+                style: 'thin',
+              },
+              left: {
+                style: 'thin',
+              },
+              bottom: {
+                style: 'thin',
+              },
+              right: {
+                style: 'thin',
+              },
+            };
+          },
+        );
       });
     }
-
 
     worksheet.addRow([]);
     // Iterate over all cells in a all row (including empty cells)
     worksheet.eachRow(function (row) {
-      row.eachCell({
-        includeEmpty: true
-      }, function (cell) {
-        cell.alignment = {
-          vertical: 'middle',
-          horizontal: 'left',
-          wrapText: true
-        };
-      });
+      row.eachCell(
+        {
+          includeEmpty: true,
+        },
+        function (cell) {
+          cell.alignment = {
+            vertical: 'middle',
+            horizontal: 'left',
+            wrapText: true,
+          };
+        },
+      );
     });
 
     // Footer Row
     let footerRow;
     if (kpiName === 'Engineering Maturity') {
-      footerRow = worksheet.addRow(['* Data extracted from Engineering Maturity']);
+      footerRow = worksheet.addRow([
+        '* Data extracted from Engineering Maturity',
+      ]);
     } else {
       footerRow = worksheet.addRow(['* Data extracted from KPI tool']);
     }
@@ -623,24 +696,23 @@ export class ExcelService {
       type: 'pattern',
       pattern: 'solid',
       fgColor: {
-        argb: 'FFCCFFE5'
-      }
+        argb: 'FFCCFFE5',
+      },
     };
     footerRow.getCell(1).border = {
       top: {
-        style: 'thin'
+        style: 'thin',
       },
       left: {
-        style: 'thin'
+        style: 'thin',
       },
       bottom: {
-        style: 'thin'
+        style: 'thin',
       },
       right: {
-        style: 'thin'
-      }
+        style: 'thin',
+      },
     };
-
 
     // Merge Cells
     worksheet.mergeCells(`A${footerRow.number}:F${footerRow.number}`);

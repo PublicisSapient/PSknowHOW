@@ -27,7 +27,7 @@ import { ProfileComponent } from './profile.component';
 import { ViewRequestsComponent } from './view-requests/view-requests.component';
 import { TableModule } from 'primeng/table';
 import { RequestStatusComponent } from './request-status/request-status.component';
-import { MessageService,ConfirmationService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
 import { UserMgmtComponent } from './user-mgmt/user-mgmt.component';
@@ -41,9 +41,8 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { SharedModuleModule } from '../../shared-module/shared-module.module';
 import { TooltipModule } from 'primeng/tooltip';
 import { AutoApprovalComponent } from './auto-approval/auto-approval.component';
-import {CheckboxModule} from 'primeng/checkbox';
+import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-
 
 @NgModule({
   imports: [
@@ -64,10 +63,19 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     ConfirmPopupModule,
     TooltipModule,
     CheckboxModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
   ],
-  declarations: [RaiseAccessRequestComponent, ProfileComponent, ViewRequestsComponent, RequestStatusComponent, UserMgmtComponent, MyprofileComponent, AccessMgmtComponent, AutoApprovalComponent],
+  declarations: [
+    RaiseAccessRequestComponent,
+    ProfileComponent,
+    ViewRequestsComponent,
+    RequestStatusComponent,
+    UserMgmtComponent,
+    MyprofileComponent,
+    AccessMgmtComponent,
+    AutoApprovalComponent,
+  ],
   providers: [MessageService, ConfirmationService],
-  exports: [RaiseAccessRequestComponent]
+  exports: [RaiseAccessRequestComponent],
 })
-export class ProfileModule { }
+export class ProfileModule {}

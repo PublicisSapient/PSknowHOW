@@ -1,10 +1,9 @@
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'comparedates'
+  name: 'comparedates',
 })
 export class CompareStartEndWithCurrentDatePipe implements PipeTransform {
-
   transform(item): any {
     const currentDate = new Date();
     const start = new Date(item?.startDate);
@@ -14,5 +13,4 @@ export class CompareStartEndWithCurrentDatePipe implements PipeTransform {
     }
     return false;
   }
-
 }
