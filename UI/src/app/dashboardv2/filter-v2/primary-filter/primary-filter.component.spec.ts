@@ -378,31 +378,27 @@ describe('PrimaryFilterComponent', () => {
       expect(component.selectedFilters).toEqual([{ labelName: 'Label 1', nodeId: 'node-1' }]);
     }));
 
-    it('should reset selectedFilters and call setBackupOfFilterSelectionState, applyPrimaryFilters, and setProjectAndLevelBackupBasedOnSelectedLevel when filters do not match primaryFilterConfig', fakeAsync(() => {
+    it('should reset selectedFilters and call setBackupOfFilterSelectionState, applyPrimaryFilters when filters do not match primaryFilterConfig', fakeAsync(() => {
 
       spyOn(helperService, 'getBackupOfFilterSelectionState' as any).and.returnValue(null);
       spyOn(component, 'applyPrimaryFilters');
-      spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
       spyOn(helperService, 'setBackupOfFilterSelectionState');
       component.applyDefaultFilters();
       tick(100);
       expect(component.selectedFilters).toEqual([{ labelName: 'Label 1', nodeId: 'node-1' }]);
       expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ primary_level: null });
       expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
-      expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
     }));
 
-    it('should reset selectedFilters and call setBackupOfFilterSelectionState, applyPrimaryFilters, and setProjectAndLevelBackupBasedOnSelectedLevel when stateFilters are not set', fakeAsync(() => {
+    it('should reset selectedFilters and call setBackupOfFilterSelectionState, applyPrimaryFilters when stateFilters are not set', fakeAsync(() => {
       spyOn(helperService, 'getBackupOfFilterSelectionState' as any).and.returnValue({});
       spyOn(component, 'applyPrimaryFilters');
-      spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
 
       component.applyDefaultFilters();
       tick(100);
       expect(component.selectedFilters).toEqual([{ labelName: 'Label 1', nodeId: 'node-1' }]);
       expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalled();
       expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
-      expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
     }));
 
     it('should set selectedFilters when stateFilters has parent_level', fakeAsync(() => {
@@ -877,7 +873,6 @@ describe('PrimaryFilterComponent', () => {
     component.filters = ['filter1', 'filter2'];
     component.selectedFilters = ['filter3'];
     spyOn(component, 'applyPrimaryFilters');
-    spyOn(component, 'setProjectAndLevelBackupBasedOnSelectedLevel');
     spyOn(helperService, 'setBackupOfFilterSelectionState');
 
     component.reset();
@@ -885,7 +880,6 @@ describe('PrimaryFilterComponent', () => {
     expect(component.selectedFilters).toEqual(['filter1']);
     expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
-    expect(component.setProjectAndLevelBackupBasedOnSelectedLevel).toHaveBeenCalled();
   });
 
   describe('AdditionalFilterComponent.onDropDownChange() onDropDownChange method', () => {

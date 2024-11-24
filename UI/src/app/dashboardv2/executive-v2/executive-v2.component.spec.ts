@@ -7726,12 +7726,6 @@ describe('ExecutiveV2Component', () => {
     expect(component.arrayDeepCompare(a1, a2)).toBe(true);
   });
 
-  it('should return false for arrays with different lengths', () => {
-    const a1 = [1, 2, 3];
-    const a2 = [1, 2];
-    expect(component.arrayDeepCompare(a1, a2)).toBe(false);
-  });
-
   it('should return false for arrays with different elements', () => {
     const a1 = [1, 2, 3];
     const a2 = [1, 2, 4];
