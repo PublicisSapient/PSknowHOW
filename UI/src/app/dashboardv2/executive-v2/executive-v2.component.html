@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-  <ng-container *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
+<ng-container *ngIf="(!noProjects[selectedtype]); else noProjectsTemplate">
     <div *ngIf="!noKpis; else noKpiTemplate">
         <ng-container *ngIf="!noFilterApplyData; else noFilterApplyDataTemplate">
             <div id="message"></div>
@@ -192,17 +192,25 @@
 
                                                                 <ng-container
                                                                     *ngSwitchCase="'CumulativeMultilineChart'">
-                                                                    <app-group-bar-chart
-                                                                        [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] :kpi?.kpiDetail?.xaxisLabel"
-                                                                        [yCaption]="checkYAxis(kpi)"
-                                                                        [unit]="kpi?.kpiDetail?.kpiUnit"
-                                                                        [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
-                                                                        [data]="kpiChartData[kpi?.kpiId]"
-                                                                        [color]="chartColorList"
-                                                                        [releaseEndDate]="releaseEndDate"
-                                                                        [selectedtype]="selectedtype"
-                                                                        [kpiId]="kpi?.kpiId" [legendType]="'normal'">
-                                                                    </app-group-bar-chart>
+                                                                    <ng-container *ngIf="checkIfZeroData(kpi)">
+                                                                        <app-group-bar-chart
+                                                                            [xCaption]="this.filterApplyData.selectedMap['date'] && this.filterApplyData.selectedMap['date'][0] ? this.filterApplyData.selectedMap['date'][0] :kpi?.kpiDetail?.xaxisLabel"
+                                                                            [yCaption]="checkYAxis(kpi)"
+                                                                            [unit]="kpi?.kpiDetail?.kpiUnit"
+                                                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                                                                            [data]="kpiChartData[kpi?.kpiId]"
+                                                                            [color]="chartColorList"
+                                                                            [releaseEndDate]="releaseEndDate"
+                                                                            [selectedtype]="selectedtype"
+                                                                            [kpiId]="kpi?.kpiId"
+                                                                            [legendType]="'normal'">
+                                                                        </app-group-bar-chart>
+                                                                    </ng-container>
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
+                                                                        <ng-container
+                                                                            *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                                                                        </ng-container>
+                                                                    </ng-container>
                                                                 </ng-container>
 
                                                                 <ng-container
@@ -232,16 +240,24 @@
                                                                         </ng-container>
                                                                     </ng-container>
                                                                 </ng-container>
+
                                                                 <ng-container *ngSwitchCase="'chartWithFilter'">
-                                                                    <ng-container
-                                                                        *ngIf="kpiChartData[kpi?.kpiId]?.[0]?.data?.length; else noDataForChartWithFilters">
-                                                                        <app-chart-with-filters
-                                                                            [data]="kpiChartData[kpi?.kpiId]?.[0]?.data"
-                                                                            [kpiId]="kpi?.kpiId"
-                                                                            [kpiName]="kpi?.kpiName"
-                                                                            [filters]="kpiChartData[kpi?.kpiId]?.[0]?.filters"
-                                                                            [modalHeads]="kpiChartData[kpi?.kpiId]?.[0]?.modalHeads">
-                                                                        </app-chart-with-filters>
+                                                                    <ng-container>
+                                                                        <ng-container
+                                                                            *ngIf="kpiChartData[kpi?.kpiId]?.[0]?.data?.length; else noDataForChartWithFilters">
+                                                                            <app-chart-with-filters
+                                                                                [data]="kpiChartData[kpi?.kpiId]?.[0]?.data"
+                                                                                [kpiId]="kpi?.kpiId"
+                                                                                [kpiName]="kpi?.kpiName"
+                                                                                [filters]="kpiChartData[kpi?.kpiId]?.[0]?.filters"
+                                                                                [modalHeads]="kpiChartData[kpi?.kpiId]?.[0]?.modalHeads">
+                                                                            </app-chart-with-filters>
+                                                                        </ng-container>
+                                                                    </ng-container>
+                                                                    <ng-container *ngIf="!checkIfZeroData(kpi)">
+                                                                        <ng-container
+                                                                            *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                                                                        </ng-container>
                                                                     </ng-container>
                                                                 </ng-container>
 

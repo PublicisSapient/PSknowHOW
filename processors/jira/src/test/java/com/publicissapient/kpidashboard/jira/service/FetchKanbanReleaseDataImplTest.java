@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -71,6 +70,8 @@ public class FetchKanbanReleaseDataImplTest {
 	private JiraCommonService jiraCommonService;
 	@Mock
 	private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private ProjectHierarchySyncService projectHierarchySyncService;
 	@InjectMocks
 	private FetchKanbanReleaseDataImpl fetchKanbanReleaseData;
 
@@ -81,7 +82,7 @@ public class FetchKanbanReleaseDataImplTest {
 		prepareHierarchyLevel();
 		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(), any()))
 				.thenReturn(kanbanAccountHierarchylist);
-		when(kanbanAccountHierarchyRepo.findAll()).thenReturn(kanbanAccountHierarchylist);
+		when(kanbanAccountHierarchyRepo.findByBasicProjectConfigId(any())).thenReturn(kanbanAccountHierarchylist);
 		when(hierarchyLevelService.getFullHierarchyLevels(kanbanProjectMapping.isKanban())).thenReturn(hierarchyLevels);
 		when(projectReleaseRepo.findByConfigId(any())).thenReturn(null);
 		ProjectVersion version = new ProjectVersion();
@@ -119,7 +120,7 @@ public class FetchKanbanReleaseDataImplTest {
 		prepareKanbanAccountHierarchy2();
 		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
 				.thenReturn(kanbanAccountHierarchylist);
-		when(kanbanAccountHierarchyRepo.findAll()).thenReturn(kanbanAccountHierarchylist);
+		when(kanbanAccountHierarchyRepo.findByBasicProjectConfigId(any())).thenReturn(kanbanAccountHierarchylist);
 		try {
 			fetchKanbanReleaseData.processReleaseInfo(kanbanProjectMapping, krb5Client);
 		}
