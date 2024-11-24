@@ -203,17 +203,24 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.showChart = view;
     }));
 
+    this.selectedTrend = JSON.parse(JSON.stringify(this.service.getSelectedTrends()));
+
     this.subscriptions.push(this.service.selectedTrendsEventSubject.subscribe(trend => {
-      if(!this.arrayDeepCompare(trend, this.selectedTrend)) {
-      this.selectedTrend = trend;
-      this.kpiSelectedFilterObj = {};
-      this.service.setKpiSubFilterObj(null);
+      if (trend.length !== this.selectedTrend.length || !this.arrayDeepCompare(trend, this.selectedTrend)) {
+        this.selectedTrend = trend;
+        this.kpiSelectedFilterObj = {};
+        this.service.setKpiSubFilterObj(null);
       }
     }));
   }
 
   arrayDeepCompare(a1, a2) {
-    return a1.length === a2.length && a1.every((o, idx) => typeof o !== 'string' ? this.helperService.deepEqual(o, a2[idx]) : o === a2[idx]);
+    for (let idx = 0; idx < a1.length; idx++) {
+      if(!this.helperService.deepEqual(a1[idx], a2[idx])) {
+        return false;
+      }
+    }
+    return true;
   }
 
   resetToDefaults() {
@@ -1168,14 +1175,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
         if (filterPropArr.includes('filter')) {
-          if(filterType && filterType !== 'multiselectdropdown') {
-          this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-          } else if(!filterType) {
+          if (filterType && filterType !== 'multiselectdropdown') {
+            this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+          } else if (!filterType) {
             this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
           } else {
             this.kpiSelectedFilterObj[kpiId] = [];
           }
-        }  else if (filterPropArr.includes('filter1')
+        } else if (filterPropArr.includes('filter1')
           && filterPropArr.includes('filter2')) {
           if (this.kpiDropdowns[kpiId]?.length > 1) {
             this.kpiSelectedFilterObj[kpiId] = {};
@@ -1196,13 +1203,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
         if (filterPropArr.includes('filter')) {
-          if(filterType && filterType !== 'multiselectdropdown') {
+          if (filterType && filterType !== 'multiselectdropdown') {
             this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-            } else if(!filterType) {
-              this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-            } else {
-              this.kpiSelectedFilterObj[kpiId] = [];
-            }
+          } else if (!filterType) {
+            this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+          } else {
+            this.kpiSelectedFilterObj[kpiId] = [];
+          }
         } else if (filterPropArr.includes('filter1')
           && filterPropArr.includes('filter2')) {
           if (this.kpiDropdowns[kpiId]?.length > 1) {
@@ -1230,13 +1237,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       if (filters && Object.keys(filters).length !== 0) {
         if (this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
-          if(filterType && filterType !== 'multiselectdropdown') {
+          if (filterType && filterType !== 'multiselectdropdown') {
             this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-            } else if(!filterType) {
-              this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-            } else {
-              this.kpiSelectedFilterObj[kpiId] = [];
-            }
+          } else if (!filterType) {
+            this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+          } else {
+            this.kpiSelectedFilterObj[kpiId] = [];
+          }
         }
       } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         this.kpiSelectedFilterObj[kpiId] = { filter1: ['Overall'] };
@@ -2417,7 +2424,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
-    
+
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
     this.getChartDataforRelease(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), true);

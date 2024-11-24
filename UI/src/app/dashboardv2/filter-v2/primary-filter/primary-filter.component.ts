@@ -101,7 +101,6 @@ export class PrimaryFilterComponent implements OnChanges {
                 this.selectedFilters.push(this.filters[0]);
                 this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
                 this.applyPrimaryFilters({});
-                this.setProjectAndLevelBackupBasedOnSelectedLevel();
                 return;
               } else {
                 this.service.setNoSprints(true);
@@ -120,7 +119,6 @@ export class PrimaryFilterComponent implements OnChanges {
         }
         // PROBLEM AREA END
         this.applyPrimaryFilters({});
-        this.setProjectAndLevelBackupBasedOnSelectedLevel();
       }
     }, 100);
   }
@@ -131,7 +129,6 @@ export class PrimaryFilterComponent implements OnChanges {
     this.selectedFilters.push(this.filters[0]);
     this.helperService.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
     this.applyPrimaryFilters({});
-    this.setProjectAndLevelBackupBasedOnSelectedLevel();
   }
 
   populateFilters() {
@@ -211,8 +208,6 @@ export class PrimaryFilterComponent implements OnChanges {
         if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
           this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
         }
-        this.setProjectAndLevelBackupBasedOnSelectedLevel();
-
       }
 
       if (this.multiSelect?.overlayVisible) {
@@ -223,16 +218,6 @@ export class PrimaryFilterComponent implements OnChanges {
 
   compareObjects(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
-  }
-
-  setProjectAndLevelBackupBasedOnSelectedLevel() {
-    if (typeof this.selectedLevel === 'string') {
-      this.service.setSelectedTrends(this.selectedFilters);
-      this.service.setSelectedLevel({ hierarchyLevelName: this.selectedLevel?.toLowerCase() })
-    } else {
-      this.service.setSelectedTrends(this.selectedLevel['fullNodeDetails'])
-      this.service.setSelectedLevel({ hierarchyLevelName: this.selectedLevel['nodeType']?.toLowerCase() })
-    }
   }
 
   moveSelectedOptionToTop() {
