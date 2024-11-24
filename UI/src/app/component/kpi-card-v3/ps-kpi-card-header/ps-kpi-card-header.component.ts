@@ -16,7 +16,6 @@ export class PsKpiCardHeaderComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.cardHeaderData);
     this.initializeMenu()
   }
 
