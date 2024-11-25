@@ -93,7 +93,8 @@ export class HelperService {
                             kpiRequestObject.kpiList.push(obj)
                         }
                     }
-                } else if (visibleKpis.includes(obj.kpiId)) {
+                } 
+                else if (visibleKpis.includes(obj.kpiId)) {
                     if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
                         kpiRequestObject.kpiList.push(obj)
                     }
@@ -837,7 +838,7 @@ export class HelperService {
                     // dataCount += item?.data;
                     ++dataCount;
                 } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
-                    if (item.value[0].hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
+                    if (item.value[0]?.hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
                         if (chartType !== 'pieChart' && chartType !== 'horizontalPercentBarChart') {
                             ++dataCount;
                         } else if (this.checkAllValues(item.value, 'data', chartType)) {
@@ -879,7 +880,7 @@ export class HelperService {
     }
 
     checkIfArrayHasData(item) {
-        return (Array.isArray(item.value) && item.value.length > 0)
+        return (Array.isArray(item?.value) && item.value?.length > 0)
     }
 
     deepEqual(obj1: any, obj2: any): boolean {

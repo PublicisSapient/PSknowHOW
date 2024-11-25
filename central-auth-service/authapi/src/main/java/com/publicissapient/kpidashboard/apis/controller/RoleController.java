@@ -42,5 +42,4 @@ public class RoleController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ServiceResponseDTO<>(true, "", roleService.getAllRolesByResourceName(resourceName)));
 	}
-
 }

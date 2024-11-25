@@ -22,10 +22,6 @@
   <div class="toolsconfig-content">
     <p-toolbar *ngIf="isConnectionAddEditAccess" styleClass="p-mb-5 bg-grey">
       <ng-template pTemplate="left">
-        <!-- <p-dropdown [options]="addEditConnectionFieldsNlabels" class="connectionDdwn"
-          [(ngModel)]="selectedConnectionType" placeholder="Select a Connection" (onChange)="onChangeConnection()"
-          optionValue="connectionType" optionLabel="connectionLabel">
-        </p-dropdown> -->
         <p-dropdown [options]="groupedToolsGroup" class="connectionDdwn"
             [(ngModel)]="selectedConnectionType" placeholder="Select a Connection" (onChange)="onChangeConnection()"
             [group]="true">

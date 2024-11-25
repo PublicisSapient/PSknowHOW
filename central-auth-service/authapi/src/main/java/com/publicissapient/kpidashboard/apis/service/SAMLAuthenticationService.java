@@ -7,5 +7,4 @@ import jakarta.servlet.http.HttpServletResponse;
 public interface SAMLAuthenticationService {
 
 	void saveSamlData(Saml2AuthenticatedPrincipal principal, HttpServletResponse response);
-
 }

@@ -54,7 +54,9 @@ public class AuthConfig {
 
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
+
 	private Map<String, String> notificationSubject;
+
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 
@@ -68,5 +70,4 @@ public class AuthConfig {
 	private String verifyUserTokenExpiryDays;
 
 	private String serverApiKey;
-
 }

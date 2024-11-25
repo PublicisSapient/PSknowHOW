@@ -27,7 +27,6 @@ import java.util.Arrays;
  * @author Hiren Babariya
  */
 public enum NotificationCustomDataEnum {
-
 	USER_NAME("User_Name"),
 
 	USER_EMAIL("User_Email"),
