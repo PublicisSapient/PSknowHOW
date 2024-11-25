@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.jira.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -227,4 +228,24 @@ public class OutlierSprintStrategyImplTest {
 		assertEquals(expectedTable, result);
 	}
 
+	@Test
+	public void execute_withOverlappingPreviousSprint_logsOutlier() {
+		SprintDetails sprint1 = new SprintDetails();
+		sprint1.setSprintID("sprint1");
+		sprint1.setSprintName("Sprint 1");
+		sprint1.setEndDate("2024-02-06T03:30:00.000Z");
+
+		SprintDetails sprint2 = new SprintDetails();
+		sprint2.setSprintID("sprint2");
+		sprint2.setSprintName("Sprint 2");
+		sprint2.setStartDate("2024-01-25T07:19:07.551Z");
+
+		when(sprintDetailsRepository.findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId))
+				.thenReturn(Arrays.asList(sprint1, sprint2));
+
+		Map<String, List<String>> result = outlierSprintChecker.execute(basicProjectConfigId);
+
+		assertFalse(result.isEmpty());
+		verify(sprintDetailsRepository).findByBasicProjectConfigIdWithFieldsSorted(basicProjectConfigId);
+	}
 }
