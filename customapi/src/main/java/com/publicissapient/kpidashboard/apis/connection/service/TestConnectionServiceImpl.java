@@ -543,6 +543,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) && StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
 		}
+		if (Constant.TOOL_ARGOCD.equalsIgnoreCase(toolName)) {
+			return connection.getAccessToken();
+		}
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
 	}
 

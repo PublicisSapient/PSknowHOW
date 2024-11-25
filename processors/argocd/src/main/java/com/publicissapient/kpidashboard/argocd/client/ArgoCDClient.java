@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -133,7 +134,7 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
 					new HttpEntity<>(requestHeaders), String.class);
-			if (response.getBody() != null) {
+			if (StringUtils.isNotEmpty(response.getBody())) {
 				JsonNode root1 = mapper.readTree(response.getBody());
 				StreamSupport.stream(root1.path("items").spliterator(), false)
 						.forEach(item -> serverToNameMap.put(item.path("server").asText(), item.path("name").asText()));

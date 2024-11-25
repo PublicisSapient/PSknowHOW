@@ -696,7 +696,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
 		case ProcessorConstants.ARGOCD:
-			setEncryptedPasswordFieldForDb(conn);
+			setEncryptedAccessTokenForDb(conn);
 			break;
 		case ProcessorConstants.GITLAB:
 		case ProcessorConstants.GITHUB:
