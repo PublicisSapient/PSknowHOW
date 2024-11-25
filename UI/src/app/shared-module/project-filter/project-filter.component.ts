@@ -90,7 +90,7 @@ export class ProjectFilterComponent implements OnInit {
 
               this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId].push({
                 name: hierarchyElem.value,
-                code: hierarchyElem.value
+                code: hierarchyElem.orgHierarchyNodeId
               });
             } else {
 
@@ -103,7 +103,7 @@ export class ProjectFilterComponent implements OnInit {
 
                 this.hierarchyData[hierarchyElem.hierarchyLevel.hierarchyLevelId].push({
                   name: hierarchyElem.value,
-                  code: hierarchyElem.value
+                  code: hierarchyElem.orgHierarchyNodeId
                 });
               }
             }
@@ -193,21 +193,21 @@ export class ProjectFilterComponent implements OnInit {
     });
   }
 
-  filterData(event, filterType, filterValue) {
+  filterData(event, filterType, filterValueCode, filterValueName) {
     this.valueRemoved = {};
     event.stopPropagation();
     this.filteredData = JSON.parse(JSON.stringify(this.data));
     if (!this.selectedVal[filterType]) {
       this.selectedVal[filterType] = [];
     }
-    if (!this.selectedVal[filterType] || !this.selectedVal[filterType].filter(f => f.code === filterValue).length) {
+    if (!this.selectedVal[filterType] || !this.selectedVal[filterType].filter(f => f.code === filterValueCode).length) {
       const obj = {
-        name: filterValue,
-        code: filterValue
+        name: filterValueName,
+        code: filterValueCode
       };
       this.selectedVal[filterType].push(obj);
     } else {
-      this.valueRemoved['val'] = this.selectedVal[filterType].splice(this.selectedVal[filterType].indexOf(this.selectedVal[filterType].filter(f => f.code === filterValue)[0]), 1);
+      this.valueRemoved['val'] = this.selectedVal[filterType].splice(this.selectedVal[filterType].indexOf(this.selectedVal[filterType].filter(f => f.code === filterValueCode)[0]), 1);
       if (!this.selectedVal[filterType].length) {
         delete this.selectedVal[filterType];
       }
@@ -219,7 +219,7 @@ export class ProjectFilterComponent implements OnInit {
     if (Object.keys(this.selectedVal).length) {
       Object.keys(this.selectedVal).forEach((filter) => {
         if (this.selectedVal[filter] && this.selectedVal[filter].length) {
-          this.selectedValTemplateValue[filter] = this.selectedVal[filter]?.map(s => s.code).join(', ');
+          this.selectedValTemplateValue[filter] = this.selectedVal[filter]?.map(s => s.name).join(', ');
           this.filteredData.forEach(proj => {
             if (proj.hierarchy.length) {
               if (this.hierarchyMatch(proj)) {
@@ -312,7 +312,7 @@ export class ProjectFilterComponent implements OnInit {
           obj['accessType'] = hierarchy;
           obj['value'] = [];
           const selectedHierarchyArr = this.selectedVal[hierarchy].map((item) => ({
-              itemId: item.name,
+              itemId: item.code,
               itemName: item.name
             }));
           obj['value'] = [...selectedHierarchyArr];
@@ -332,6 +332,6 @@ export class ProjectFilterComponent implements OnInit {
   }
 
   getSelectedValTemplateValue(hierarchyLevelId) {
-    return this.selectedVal[hierarchyLevelId]?.map(s => s.code).join(', ');
+    return this.selectedVal[hierarchyLevelId]?.map(s => s.name).join(', ');
   }
 }
