@@ -169,6 +169,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(DEFECT_STORY_ID);
 		query.fields().include("testAutomated");
 		query.fields().include("isTestAutomated");
+		query.fields().include(PROJECT_NAME);
 		query.fields().include(DEFECT_RAISED_BY);
 		query.fields().include(STATUS);
 		query.fields().include(CONFIG_ID);
@@ -358,6 +359,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ID);
 		query.fields().include(ADDITIONAL_FILTER);
 		query.fields().include(LOGGED_WORK_MINUTES);
+		query.fields().include(PROJECT_NAME);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -386,6 +388,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NAME);
 		query.fields().include(PRIORITY);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(PROJECT_NAME);
 		return operations.find(query, JiraIssue.class);
 	}
 
@@ -489,7 +492,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NAME);
 		query.fields().include(ADDITIONAL_FILTER);
 		query.fields().include(LOGGED_WORK_MINUTES);
-
+		query.fields().include(PROJECT_NAME);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -636,6 +639,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_END_DATE);
 		query.fields().include(ADDITIONAL_FILTER);
 		query.fields().include(LOGGED_WORK_MINUTES);
+		query.fields().include(PROJECT_NAME);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -669,6 +673,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ID);
 		query.fields().include(URL);
 		query.fields().include(ADDITIONAL_FILTER);
+		query.fields().include(PROJECT_NAME);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -837,6 +842,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_NAME);
 		query.fields().include(LOGGED_WORK_MINUTES);
 		query.fields().include(TYPE_NAME);
+		query.fields().include(PROJECT_NAME);
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}
