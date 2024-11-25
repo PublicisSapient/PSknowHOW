@@ -2,7 +2,7 @@
   "kpiId": "kpi131",
   "kpiName": "Wastage",
   "unit": "Hours",
-  "chartType": "",
+  "chartType": "stacked-bar-chart",
   "id": "65793ddb127be336160bc0f7",
   "isDeleted": "False",
   "kpiCategory": "Iteration",

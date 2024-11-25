@@ -8,6 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 export class PsKpiCardChartRendererComponent implements OnInit {
 
    @Input() chartData:any;
+   @Input() chartType:string;
   constructor() { }
 
   ngOnInit(): void {

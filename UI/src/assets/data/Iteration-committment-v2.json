@@ -2,7 +2,7 @@
   "kpiId": "kpi120",
   "kpiName": "Iteration Commitment",
   "unit": "Count",
-  "chartType": "",
+  "chartType": "stacked-bar-chart",
   "id": "65793ddb127be336160bc0f1",
   "isDeleted": "False",
   "kpiCategory": "Iteration",

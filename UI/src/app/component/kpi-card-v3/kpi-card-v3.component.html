@@ -1,20 +1,28 @@
 <div class="kpi-card-container">
-  <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"></app-ps-kpi-card-header>
+  <app-ps-kpi-card-header
+    [cardHeaderData]="kpiHeaderData"
+  ></app-ps-kpi-card-header>
 
   <div class="kpi-card-body">
     <app-ps-kpi-card-filter
       [kpiCardFilter]="kpiFilterData"
       (filterChange)="onFilterChange($event)"
     ></app-ps-kpi-card-filter>
-    <div class="p-pr-5 p-pl-5"> {{cardData.dataGroup.summary.name}} {{test}}</div>
+    <div class="p-pr-5 p-pl-5">
+      {{ cardData.dataGroup.summary.name }} {{ currentChartData.totalCount }}
+    </div>
     <app-ps-kpi-card-chart-renderer
-      [chartData]="currentChartData"
+      [chartData]="currentChartData.chartData"
+      [chartType]="cardData.chartType"
     ></app-ps-kpi-card-chart-renderer>
   </div>
 
   <div class="kpi-card-footer p-pr-5 p-pl-5">
-    <ul class="legend" *ngFor="let footer of currentChartData">
-     <li class="p-p-3"> <span [ngStyle]="{'background-color': footer.color}"></span>{{footer.category}}</li>
+    <ul class="legend" *ngFor="let footer of currentChartData.chartData">
+      <li class="p-p-3">
+        <span [ngStyle]="{ 'background-color': footer.color }"></span
+        >{{ footer.category }}
+      </li>
     </ul>
   </div>
 </div>

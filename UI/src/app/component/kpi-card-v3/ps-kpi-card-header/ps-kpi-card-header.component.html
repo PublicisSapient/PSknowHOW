@@ -18,7 +18,7 @@
         <app-tooltip-v2
           *ngIf="isTooltip"
           class="p-mt-3"
-          [data]="cardHeaderData?.kpiInfo?.definition"
+          [data]="cardHeaderData?.kpiInfo"
           (mouseleave)="showTooltip(false)"
           [kpiName]="cardHeaderData?.kpiName"
         ></app-tooltip-v2>

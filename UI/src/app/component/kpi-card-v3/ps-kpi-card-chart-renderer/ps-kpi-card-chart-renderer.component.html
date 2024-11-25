@@ -1,3 +1,21 @@
-<div class="p-px-5 p-py-2">
-    <app-stacked-bar-chart [data]="chartData" [width]="800" [height]="150"></app-stacked-bar-chart>
+<div class="p-px-5 p-py-2" [ngSwitch]="chartType">
+  <app-stacked-bar-chart
+    *ngSwitchCase="'stacked-bar-chart'"
+    [data]="chartData"
+    [width]="800"
+    [height]="150"
+  ></app-stacked-bar-chart>
+  <app-line-chart
+    *ngSwitchCase="'line'"
+    [data]="chartData"
+    [width]="800"
+    [height]="150"
+  ></app-line-chart>
+  <app-pie-chart
+    *ngSwitchCase="'pie'"
+    [data]="chartData"
+    [width]="800"
+    [height]="150"
+  ></app-pie-chart>
+  <div *ngSwitchDefault>Select a chart type</div>
 </div>
