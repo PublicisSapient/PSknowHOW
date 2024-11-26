@@ -131,7 +131,8 @@ public class KPIExcelUtility {
 
 		JiraIssue defect = defectIssueMap.get(defectNumber);
 		if (jiraIssue != null) {
-			excelData.setSprintName(jiraIssue.getSprintName());
+			String sprintName = jiraIssue.getSprintName() +"_"+ jiraIssue.getProjectName();
+			excelData.setSprintName(sprintName);
 			excelData.setStoryDesc(checkEmptyName(jiraIssue));
 			excelData.setStoryId(Collections.singletonMap(story, checkEmptyURL(jiraIssue)));
 			setSquads(excelData, jiraIssue);
