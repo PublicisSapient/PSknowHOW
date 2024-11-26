@@ -275,12 +275,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       this.masterDataCopy['kpiList'] = JSON.parse(JSON.stringify(this.masterData['kpiList']));
 
-      let visibleKPIs = this.masterDataCopy['kpiList'].filter(kpi => kpi.isEnabled);
-      if (visibleKPIs.length < this.masterDataCopy['kpiList'].length) {
-        this.showHideSelectAll = false;
-      } else if (visibleKPIs.length === this.masterDataCopy['kpiList'].length) {
-        this.showHideSelectAll = true;
-      }
+      this.setSelectAll();
+      
       this.cdr.detectChanges();
       this.parentFilterConfig = { ...this.selectedBoard.filters.parentFilter };
       if (!this.parentFilterConfig || !Object.keys(this.parentFilterConfig).length) {
