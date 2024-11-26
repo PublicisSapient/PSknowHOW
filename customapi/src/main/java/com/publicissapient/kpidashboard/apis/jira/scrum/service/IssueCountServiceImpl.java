@@ -21,6 +21,8 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -83,7 +85,9 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@Autowired
 	private CacheService cacheService;
 	@Autowired
-	private KpiHelperService kpiHelperService;
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
 
 	/**
 	 * Gets Qualifier Type
@@ -185,12 +189,12 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		boolean fetchCachedData = flterHelperService.isFilterSelectedTillProjectLevel(kpiRequest.getLevel(), false);
 		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
 			Map<String, Object> result;
-			if(fetchCachedData) {
-				result = kpiHelperService.fetchIssueCountData(kpiRequest, basicProjectConfigId,
-						sprintList, KPICode.ISSUE_COUNT.getKpiId());
+			if (fetchCachedData) {
+				result = kpiDataCacheService.fetchIssueCountData(kpiRequest, basicProjectConfigId, sprintList,
+						KPICode.ISSUE_COUNT.getKpiId());
 			} else {
-				result = kpiHelperService.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId,
-						sprintList, KPICode.ISSUE_COUNT.getKpiId());
+				result = kpiDataProvider.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId, sprintList,
+						KPICode.ISSUE_COUNT.getKpiId());
 			}
 			List<JiraIssue> allJiraIssue = (List<JiraIssue>) result.get(STORY_LIST);
 			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.get(SPRINTSDETAILS);
