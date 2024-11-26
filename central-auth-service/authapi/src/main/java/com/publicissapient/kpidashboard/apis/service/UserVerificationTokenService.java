@@ -1,7 +1,6 @@
 package com.publicissapient.kpidashboard.apis.service;
 
 import java.util.UUID;
-
 import javax.validation.Valid;
 
 import com.publicissapient.kpidashboard.apis.entity.UserVerificationToken;
