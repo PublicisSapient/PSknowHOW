@@ -1,21 +1,25 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
   selector: 'app-stacked-bar-chart',
   templateUrl: './stacked-bar-chart.component.html',
-  styleUrls: ['./stacked-bar-chart.component.css']
+  styleUrls: ['./stacked-bar-chart.component.css'],
 })
-export class StackedBarChartComponent implements OnInit,OnChanges {
-
+export class StackedBarChartComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
   @Input() width: number = 800; // Chart width
   @Input() height: number = 100; // Chart height
-  
-  
 
   private svg: any;
-  private tooltip:any;
+  private tooltip: any;
 
   constructor(private elRef: ElementRef) {}
 
@@ -33,7 +37,7 @@ export class StackedBarChartComponent implements OnInit,OnChanges {
 
   private createChart(): void {
     const element = this.elRef.nativeElement;
-    const margin = { top:10, right: 10, bottom: 10, left: 10 };
+    const margin = { top: 10, right: 10, bottom: 10, left: 10 };
     const chartWidth = this.width - margin.left - margin.right;
     const chartHeight = this.height - margin.top - margin.bottom;
 
@@ -52,7 +56,7 @@ export class StackedBarChartComponent implements OnInit,OnChanges {
       .scaleLinear()
       .domain([
         d3.min(this.data, (d: any) => d.value) || 0,
-        d3.sum(this.data, (d: any) => Math.abs(d.value)) || 0
+        d3.sum(this.data, (d: any) => Math.abs(d.value)) || 0,
       ])
       .range([0, chartWidth]);
 
@@ -92,6 +96,8 @@ export class StackedBarChartComponent implements OnInit,OnChanges {
       .attr('width', (d) => Math.abs(xScale(d.end) - xScale(d.start)))
       .attr('height', chartHeight / 3)
       .attr('fill', (d) => colorScale(d.category))
+      // .attr('rx', 10) // Rounded corners
+      // .attr('ry', 10) // Rounded corners
       .on('mouseover', (event, d) => {
         this.tooltip
           .style('display', 'block')
@@ -99,7 +105,7 @@ export class StackedBarChartComponent implements OnInit,OnChanges {
       })
       .on('mousemove', (event) => {
         this.tooltip
-          .style('top', `${event.pageY - 30}px`)
+          .style('transform', 'translate(-50%, -500%)')
           .style('left', `${event.pageX + 10}px`);
       })
       .on('mouseout', () => {
@@ -126,16 +132,10 @@ export class StackedBarChartComponent implements OnInit,OnChanges {
       .attr('transform', `translate(0, ${chartHeight})`)
       .call(xAxis);
   }
-
-
+  
   private updateChart(): void {
     // Clear previous chart
     d3.select(this.elRef.nativeElement).select('.chart-container').html('');
     this.createChart();
   }
-
-
 }
-
-
-

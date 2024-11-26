@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, Input } from '@angular/core';
 import * as d3 from 'd3';
+import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 
 @Component({
   selector: 'kpi-card-v3',
@@ -15,7 +16,7 @@ export class KpiCardV3Component implements OnInit {
   KpiCategory;
   colorPalette = ['#167a26', '#4ebb1a', '#f53535'];
 
-  constructor(private elRef: ElementRef) {}
+  constructor( private kpihelper:KpiHelperService) {}
 
   ngOnInit(): void {
     const {
@@ -31,7 +32,7 @@ export class KpiCardV3Component implements OnInit {
     this.kpiHeaderData = { responseCode, issueData, kpiName, kpiInfo, kpiId };
     this.kpiFilterData = { dataGroup, filterGroup, issueData,kpiFilters };
     this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
-    this.currentChartData = this.prepareStackedBarChartData(
+    this.currentChartData = this.prepareChartData(
       this.cardData,
       this.colorPalette,
     );
@@ -43,7 +44,7 @@ export class KpiCardV3Component implements OnInit {
       event,
     );
     this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
-    this.currentChartData = this.prepareStackedBarChartData(
+    this.currentChartData = this.prepareChartData(
       this.copyCardData,
       this.colorPalette,
     );
@@ -57,51 +58,50 @@ export class KpiCardV3Component implements OnInit {
     });
   }
 
-  prepareStackedBarChartData(inputData: any, color: any) {
-    const dataGroup1 = inputData.dataGroup?.dataGroup1;
-    const issueData = inputData.issueData;
-    const categoryGroup = inputData.categoryData?.categoryGroup;
-
-    if (!dataGroup1 || dataGroup1.length === 0) {
-      throw new Error('Invalid data: Missing dataGroup1');
+  prepareChartData(inputData: any, color: any) {
+    let chartData:any;
+    switch (this.cardData.chartType) {
+      case 'stacked-bar-chart':
+        chartData = this.kpihelper.stackedBarChartData(inputData,color)
+        break;
+      case 'bar-chart':
+        chartData = this.prepareSampleData(inputData)
+        break;
+    
+      default:
+        break;
     }
-
-    const chartData: any = [];
-
-    // Handle categoryGroup if present
-    if (categoryGroup && dataGroup1[0]?.showAsLegend === false) {
-      categoryGroup.forEach((category: any, index) => {
-        // Filter issues matching the categoryName
-        const filteredIssues = issueData.filter(
-          (issue: any) => issue.Category[0] === category.categoryName,
-        );
-
-        chartData.push({
-          category: category.categoryName,
-          value: filteredIssues.length, // Count of issues for this category
-          color: color[index % color.length],
-        });
-      });
-    } else {
-      // Handle dataGroup1 when categoryGroup is not available or showAsLegend is true
-      dataGroup1.forEach((group: any, index) => {
-        const filteredIssues = issueData.filter(
-          (issue: any) => issue[group.key] !== undefined,
-        );
-
-        chartData.push({
-          category: group.name,
-          value: filteredIssues.reduce((sum: any, issue: any) => {
-            return sum + (issue[group.key] || 0); // Sum up the values for the key
-          }, 0),
-          color: color[index % color.length],
-        });
-      });
-    }
-
-    const totalCount = chartData.reduce((sum: any, issue: any) => {
-      return sum + (issue.value || 0); // Sum up the values for the key
-    }, 0);
-    return { chartData, totalCount };
+    console.log(chartData)
+   return chartData;
   }
+
+  prepareSampleData(json: any) {
+    let chartData=[];
+    const issueData = json.issueData || [];
+    const dataGroup = json.dataGroup; // Access the dataGroup from kpiFilterData
+
+    // Loop through each data group entry to calculate the sums
+    for (const groupKey in dataGroup) {
+        if (dataGroup.hasOwnProperty(groupKey)) {
+            const groupItems = dataGroup[groupKey];
+
+            groupItems.forEach((item) => {
+                const key = item.key; // Get the key from the dataGroup
+                const name = item.name; // Get the name for display
+                const aggregation = item.aggregation; // Get aggregation type (not used here, but can be useful)
+
+                // Calculate the sum based on the key
+                const sum = issueData.reduce((acc: number, issue: any) => {
+                    return acc + (issue[key] || 0); // Use the key from the data group
+                }, 0);
+
+                // Push the result into chartData array
+                chartData.push({ category: name, value: sum, color: item.color || "#000000" }); // Default color if not specified
+            });
+        }
+    }
+
+    return {chartData} ;
+}
+  
 }

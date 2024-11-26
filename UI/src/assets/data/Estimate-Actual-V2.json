@@ -2,7 +2,7 @@
   "kpiId": "kpi75",
   "kpiName": "Estimate vs Actual",
   "unit": "Hours",
-  "chartType": "",
+  "chartType": "bar-chart",
   "id": "65793ddb127be336160bc0ee",
   "isDeleted": "False",
   "kpiCategory": "Iteration",

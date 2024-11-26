@@ -5,12 +5,7 @@
     [width]="800"
     [height]="150"
   ></app-stacked-bar-chart>
-  <app-line-chart
-    *ngSwitchCase="'line'"
-    [data]="chartData"
-    [width]="800"
-    [height]="150"
-  ></app-line-chart>
+  <app-barchart [data]="chartData" *ngSwitchCase="'bar-chart'" ></app-barchart>
   <app-pie-chart
     *ngSwitchCase="'pie'"
     [data]="chartData"

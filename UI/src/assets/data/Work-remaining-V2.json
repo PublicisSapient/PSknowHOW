@@ -2,7 +2,7 @@
   "kpiId": "kpi119",
   "kpiName": "Work Remaining",
   "unit": "Hours",
-  "chartType": "",
+  "chartType": "bar-chart",
   "id": "65793ddb127be336160bc0ec",
   "isDeleted": "False",
   "kpiCategory": "Iteration",

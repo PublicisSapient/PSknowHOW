@@ -25,4 +25,12 @@
   position: absolute;
   right: 20px;
 }
+
+:host ::ng-deep .p-menu.p-menu-overlay {
+  top: 40px !important;
+}
   
+:host ::ng-deep .p-menu.p-component.p-menu-overlay {
+  left: unset !important;
+  right: 10px !important;
+}

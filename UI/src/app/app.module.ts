@@ -151,6 +151,7 @@ import { StackedBarChartComponent } from './component/stacked-bar-chart/stacked-
 import { PsKpiCardHeaderComponent } from './component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
 import { PsKpiCardFilterComponent } from './component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
 import { PsKpiCardChartRendererComponent } from './component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
+import { KpiHelperService } from './services/kpi-helper.service';
 
 
 /******************************************************/
@@ -296,6 +297,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         FeatureFlagsService,
         AuthGuard,
         DialogService,
+        KpiHelperService,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,
