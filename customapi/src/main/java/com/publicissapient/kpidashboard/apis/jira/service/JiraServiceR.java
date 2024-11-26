@@ -127,8 +127,11 @@ public class JiraServiceR {
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
-						groupId, kpiRequest.getSprintIncluded());
+				Object cachedData = null;
+				if(!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+					cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
+							groupId, kpiRequest.getSprintIncluded());
+				}
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
 					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));

@@ -54,6 +54,7 @@ public interface KpiDataCacheService {
 	/**
 	 * Fetches data from DB for the given project and sprints combination. Data is
 	 * cached. Cache key - project basic config id and kpi id.
+	 * Note: Data will be cached only if Filter is selected till Sprint level.
 	 *
 	 * @param kpiRequest
 	 * @param basicProjectConfigId

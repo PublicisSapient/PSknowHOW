@@ -23,20 +23,16 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -56,8 +52,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,15 +65,11 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	private static final String TOTAL_COUNT = "Total Count";
 	private static final String STORY_LIST = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
-	private static final String DEV = "DeveloperKpi";
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
+
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private FilterHelperService flterHelperService;
-	@Autowired
-	private SprintRepository sprintRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -88,6 +78,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	private KpiDataCacheService kpiDataCacheService;
 	@Autowired
 	private KpiDataProvider kpiDataProvider;
+
+	List<String> sprintIdList = new ArrayList<>();
 
 	/**
 	 * Gets Qualifier Type
@@ -114,7 +106,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			Filters filters = Filters.getFilter(k);
@@ -186,13 +179,13 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<String, List<String>> projectWiseStoryCategories = new HashMap<>();
 		List<SprintDetails> sprintDetails = new ArrayList<>();
 		List<JiraIssue> issueList = new ArrayList<>();
-		boolean fetchCachedData = flterHelperService.isFilterSelectedTillProjectLevel(kpiRequest.getLevel(), false);
+		boolean fetchCachedData = flterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
 		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
 			Map<String, Object> result;
-			if (fetchCachedData) {
-				result = kpiDataCacheService.fetchIssueCountData(kpiRequest, basicProjectConfigId, sprintList,
+			if (fetchCachedData) {// fetch data from cache only if Filter is selected till Sprint level.
+				result = kpiDataCacheService.fetchIssueCountData(kpiRequest, basicProjectConfigId, sprintIdList,
 						KPICode.ISSUE_COUNT.getKpiId());
-			} else {
+			} else {// fetch data from DB if filters below Sprint level (i.e. additional filters)
 				result = kpiDataProvider.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId, sprintList,
 						KPICode.ISSUE_COUNT.getKpiId());
 			}
@@ -204,7 +197,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 					.get(PROJECT_WISE_TOTAL_CATEGORIES);
 
 			issueList.addAll(allJiraIssue);
-			sprintDetails.addAll(sprintDetailsList);
+			sprintDetails.addAll(sprintDetailsList.stream().filter(sprint -> sprintList.contains(sprint.getSprintID()))
+					.collect(Collectors.toSet()));
 			projectWiseStoryCategories.put(basicProjectConfigId.toString(),
 					storyCategories.get(basicProjectConfigId.toString()));
 			projectWiseJiraIdentification.put(basicProjectConfigId.toString(),

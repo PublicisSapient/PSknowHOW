@@ -270,6 +270,8 @@ public final class KPIHelperUtil {
 
 		Map<String, List<Node>> result = leafNodeList.stream().distinct()
 				.collect(Collectors.groupingBy(Node::getGroupName, Collectors.toList()));
+		List<Node> nodeList = new ArrayList<>(result.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT));
+		result.put(CommonConstant.SPRINT_MASTER, nodeList);
 		Map<String, List<Node>> projectMap = projectNodeList.stream().distinct()
 				.collect(Collectors.groupingBy(Node::getGroupName, Collectors.toList()));
 		return new TreeAggregatorDetail(root, result, mapTmp, projectMap);

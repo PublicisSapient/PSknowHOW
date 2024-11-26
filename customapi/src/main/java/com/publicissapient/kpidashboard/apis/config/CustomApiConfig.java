@@ -291,6 +291,8 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolMembersUrl;
 	private String defectRateUrl;
 
+	private List<Integer> groupIdsToExcludeFromCache;
+
 	public String getDefectRateUrl() {
 		return defectRateUrl;
 	}
@@ -1311,5 +1313,13 @@ public class CustomApiConfig {// NOPMD
 
     public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
         this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
+    }
+
+    public List<Integer> getGroupIdsToExcludeFromCache() {
+        return groupIdsToExcludeFromCache;
+    }
+
+    public void setGroupIdsToExcludeFromCache(List<Integer> groupIdsToExcludeFromCache) {
+        this.groupIdsToExcludeFromCache = groupIdsToExcludeFromCache;
     }
 }

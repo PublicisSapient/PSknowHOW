@@ -2136,7 +2136,4 @@ public class KpiHelperService { // NOPMD
 
 	}
 
-
-
-
 }
