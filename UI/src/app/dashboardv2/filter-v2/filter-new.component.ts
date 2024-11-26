@@ -75,6 +75,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   kanbanProjectsAvailable: boolean = true;
   scrumProjectsAvailable: boolean = true;
   squadLevel: any;
+  noFilterApplyData: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -162,6 +163,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.service.setScrumKanban(this.selectedType);
     this.service.setSelectedBoard(this.selectedTab);
+
+    this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
+      this.noFilterApplyData = res;
+    }));
   }
 
   setDateFilter() {
@@ -276,7 +281,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.masterDataCopy['kpiList'] = JSON.parse(JSON.stringify(this.masterData['kpiList']));
 
       this.setSelectAll();
-      
+
       this.cdr.detectChanges();
       this.parentFilterConfig = { ...this.selectedBoard.filters.parentFilter };
       if (!this.parentFilterConfig || !Object.keys(this.parentFilterConfig).length) {
