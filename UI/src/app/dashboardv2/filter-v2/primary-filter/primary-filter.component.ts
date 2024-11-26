@@ -69,7 +69,7 @@ export class PrimaryFilterComponent implements OnChanges {
                 });
 
                 // in case project in state filters has been deleted
-                if(!this.selectedFilters?.length || !this.selectedFilters[0]) {
+                if (!this.selectedFilters?.length || !this.selectedFilters[0]) {
                   this.selectedFilters = [this.filters[0]];
                   this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
                 }
@@ -155,7 +155,7 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.filterData[selectedLevel]?.length) {
         if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
           if (this.selectedTab.toLowerCase() === 'iteration') {
-            this.filters = this.setDropdownWithMoreActiveOption(selectedLevel); 
+            this.filters = this.setDropdownWithMoreActiveOption(selectedLevel);
           } else if (this.selectedTab.toLowerCase() === 'release') {
             this.filters = this.helperService.releaseSorting(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId))
           } else {
@@ -177,6 +177,17 @@ export class PrimaryFilterComponent implements OnChanges {
     }
   }
 
+  getParentDisplayName(parentId: string, data: Record<string, any[]>): string | undefined {
+    // Iterate through the data structure to find the matching node
+    for (const category of Object.values(data)) {
+      const parentNode = category.find(node => node.nodeId === parentId);
+      if (parentNode) {
+        return parentNode.nodeDisplayName;
+      }
+    }
+    return undefined; // Return undefined if not found
+  }
+
   applyPrimaryFilters(event) {
     if (this.primaryFilterConfig && Object.keys(this.primaryFilterConfig).length) {
       if (!Array.isArray(this.selectedFilters)) {
@@ -193,7 +204,7 @@ export class PrimaryFilterComponent implements OnChanges {
             combinedEvent['primary_level'] = [...this.selectedFilters];
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit(combinedEvent);
-          } else if(this.selectedFilters?.length){
+          } else if (this.selectedFilters?.length) {
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit([...this.selectedFilters]);
             // project selection changed, reset addtnl. filters
@@ -267,28 +278,28 @@ export class PrimaryFilterComponent implements OnChanges {
 
   isString(val): boolean { return typeof val === 'string'; }
 
-  onDropdownChange($event:any){
-    if(this.helperService.isDropdownElementSelected($event)){
+  onDropdownChange($event: any) {
+    if (this.helperService.isDropdownElementSelected($event)) {
       this.applyPrimaryFilters($event)
     }
   }
 
-  isFilterHidden(filterDataSet:any): boolean{
-    if(this.selectedTab?.toLowerCase() === 'iteration' ){
-      if(filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length>1){
+  isFilterHidden(filterDataSet: any): boolean {
+    if (this.selectedTab?.toLowerCase() === 'iteration') {
+      if (filterDataSet.filter(x => x.sprintState?.toLowerCase() === 'active').length > 1) {
         return false;
       }
       return true;
-    }else{
+    } else {
       return false;
     }
   }
 
-  setDropdownWithMoreActiveOption(selectedLevel){
-    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x=>x.sprintState?.toLowerCase() ==='active');
-    if(moreThanOneActiveOption.length>1){
+  setDropdownWithMoreActiveOption(selectedLevel) {
+    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x => x.sprintState?.toLowerCase() === 'active');
+    if (moreThanOneActiveOption.length > 1) {
       return moreThanOneActiveOption;
-    }else{
+    } else {
       return this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate'])
     }
   }
