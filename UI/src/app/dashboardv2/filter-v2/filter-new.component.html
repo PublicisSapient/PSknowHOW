@@ -101,7 +101,7 @@
     </div>
     <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover"
       tooltipStyleClass="tooltiptext"
-      *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity'">
+      *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
       <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
         <i class="pi pi-pause" style="font-size: 1rem"></i>
       </span>
@@ -113,7 +113,7 @@
         <ng-template let-option pTemplate="item">
           <div class="filter-item">
             <p-checkbox name="{{ option.kpiId }}" [(ngModel)]="option.isEnabled" [binary]="true"
-              (onChange)="disableShowHideApply = false; showHideSelectAll = false;"></p-checkbox>
+              (onChange)="setSelectAll(); disableShowHideApply = false;"></p-checkbox>
             <span>{{option.kpiName}}</span>
           </div>
         </ng-template>
