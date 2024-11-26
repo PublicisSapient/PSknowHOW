@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.argocd.processor;
 
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_PARAM;
+import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.ARGOCD_CLUSTER_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHTOKEN_ENDPOINT;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -32,8 +33,6 @@ import java.util.Map;
 
 import com.publicissapient.kpidashboard.argocd.dto.Destination;
 import com.publicissapient.kpidashboard.argocd.dto.Specification;
-import com.publicissapient.kpidashboard.argocd.dto.UserCredentialsDTO;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +50,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -241,6 +241,10 @@ class ArgoCDProcessorJobExecutorTest {
 		when(restClient.exchange(ArgumentMatchers.any(String.class), Mockito.eq(HttpMethod.GET),
 				Mockito.any(HttpEntity.class), Mockito.<Class<String>>any()))
 				.thenReturn(new ResponseEntity<String>("Success", HttpStatus.OK));
+		String jsonResponse = "{\"items\":[{\"server\":\"mdgsseunspdaks03\",\"name\":\"dev-auth\"}]}";
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + ARGOCD_CLUSTER_ENDPOINT)),
+				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
+				.thenReturn(new ResponseEntity<>(jsonResponse, HttpStatus.OK));
 		assertTrue(jobExecutor.execute(processor));
 	}
 
@@ -268,6 +272,10 @@ class ArgoCDProcessorJobExecutorTest {
 		when(restClient.exchange(ArgumentMatchers.any(String.class), Mockito.eq(HttpMethod.GET),
 				Mockito.any(HttpEntity.class), Mockito.<Class<String>>any()))
 				.thenReturn(new ResponseEntity<String>("Success", HttpStatus.OK));
+		String jsonResponse = "{\"items\":[{\"server\":\"mdgsseunspdaks03\",\"name\":\"dev-auth\"}]}";
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + ARGOCD_CLUSTER_ENDPOINT)),
+				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
+				.thenReturn(new ResponseEntity<>(jsonResponse, HttpStatus.OK));
 		assertTrue(jobExecutor.execute(processor));
 	}
 
@@ -302,7 +310,10 @@ class ArgoCDProcessorJobExecutorTest {
 		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + APPLICATIONS_ENDPOINT + "?" + APPLICATIONS_PARAM)),
 				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.<Class<ApplicationsList>>any()))
 				.thenThrow(new RestClientException("Test Exception"));
-
+		String jsonResponse = "{\"items\":[{\"server\":\"mdgsseunspdaks03\",\"name\":\"dev-auth\"}]}";
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + ARGOCD_CLUSTER_ENDPOINT)),
+				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
+				.thenReturn(new ResponseEntity<>(jsonResponse, HttpStatus.OK));
 		assertFalse(jobExecutor.execute(processor));
 	}
 
@@ -394,23 +405,18 @@ class ArgoCDProcessorJobExecutorTest {
 		destination.setServer("mdgsseunspdaks03");
 		spec.setDestination(destination);
 		application.setSpec(spec);
-		UserCredentialsDTO cred = new UserCredentialsDTO(argoCDJob.getUsername(), "decryptedPassword");
-		when(aesEncryptionService.decrypt(argoCDJob.getPassword(), argoCDConfig.getAesEncryptionKey()))
-				.thenReturn("decryptedPassword");
-		when(argoCDClient.getClusterName(argoCDJob.getUrl(), cred.getPassword()))
-				.thenReturn(Map.of("mdgsseunspdaks03", "dev-auth"));
-		when(argoCDClient.getApplicationByName(argoCDJob.getUrl(), argoCDJob.getJobName(), cred.getPassword()))
-				.thenReturn(application);
-
 		List<Deployment> deploymentJobs = new ArrayList<>();
 		when(deploymentRepository.findByProcessorIdIn(anySet())).thenReturn(deploymentJobs);
-
+		String jsonResponse = "{\"items\":[{\"server\":\"mdgsseunspdaks03\",\"name\":\"dev-auth\"}]}";
+		when(restClient.exchange(Mockito.eq(URI.create(ARGOCD_URL + ARGOCD_CLUSTER_ENDPOINT)),
+				Mockito.eq(HttpMethod.GET), Mockito.any(HttpEntity.class), Mockito.eq(String.class)))
+				.thenReturn(new ResponseEntity<>(jsonResponse, HttpStatus.OK));
 		ArgoCDProcessor processor = new ArgoCDProcessor();
 		processor.setId(new ObjectId("6597633d916863f2b4779145"));
 		Map<String, String> serverToNameMap = new HashMap<>();
 		serverToNameMap.put("mdgsseunspdaks03", "dev-auth");
-		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob,
-				processor.getId(), serverToNameMap);
+		int count = jobExecutor.saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob, processor.getId(),
+				serverToNameMap);
 		assertEquals(1, count);
 	}
 
@@ -471,10 +477,12 @@ class ArgoCDProcessorJobExecutorTest {
 		argoCDJob.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
 		argoCDJob.setDeploymentProjectId("deploymentProjectId");
 		argoCDJob.setDeploymentProjectName("deploymentProjectName");
-
+		argoCDJob.setJobName("dev-auth");
 		Deployment existingDeployment = new Deployment();
 		existingDeployment.setEnvName("dev-auth");
 		existingDeployment.setNumber("1");
+		existingDeployment.setJobName("dev-auth");
+		existingDeployment.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
 		List<Deployment> existingEntries = List.of(existingDeployment);
 		Map<String, String> serverToNameMap = Map.of("mdgsseunspdaks03", "dev-auth");
 
