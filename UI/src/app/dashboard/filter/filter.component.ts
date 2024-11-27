@@ -1031,7 +1031,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   checkIfMaturityTabHidden() {
     const maturityBoard = this.kpiListData['others']?.find(
-      (board) => board.boardName === 'Kpi Maturity',
+      (board) => board.boardName === 'KPI Maturity',
     );
     return maturityBoard && maturityBoard.kpis[0].shown ? false : true;
   }
