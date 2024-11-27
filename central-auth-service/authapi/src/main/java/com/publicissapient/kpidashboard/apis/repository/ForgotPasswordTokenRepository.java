@@ -29,5 +29,4 @@ import com.publicissapient.kpidashboard.apis.entity.ForgotPasswordToken;
 public interface ForgotPasswordTokenRepository extends JpaRepository<ForgotPasswordToken, Long> {
 
 	Optional<ForgotPasswordToken> findByToken(String token);
-
 }

@@ -18,5 +18,4 @@ public class UserTokenAuthenticationDTO {
 	private String username;
 	private String email;
 	private String authToken;
-
 }
