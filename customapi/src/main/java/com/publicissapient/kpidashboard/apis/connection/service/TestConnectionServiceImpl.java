@@ -526,7 +526,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
                 if (connection.isCloudEnv() || connection.isBearerToken()) {
                     yield connection.getAccessToken();
                 }
-                yield connection.getPatOAuthToken();
+                yield connection.getApiKey();
             }
             case Constant.TOOL_SONAR -> {
                 if (connection.isCloudEnv() || StringUtils.isNotEmpty(connection.getAccessToken())) {
