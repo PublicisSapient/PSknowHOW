@@ -427,7 +427,6 @@ public class ProjectBasicConfigServiceImplTest {
 		userInfo.setAuthorities(Lists.newArrayList("ROLE_GUEST"));
 		when(projectAccessManager.getUserInfo(any())).thenReturn(userInfo);
 		listProjectTool.setToolName("Jenkins");
-		when(toolRepository.findByBasicProjectConfigId(any())).thenReturn(Arrays.asList(listProjectTool));
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}

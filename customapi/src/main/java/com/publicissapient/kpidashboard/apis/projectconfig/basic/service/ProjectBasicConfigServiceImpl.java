@@ -215,9 +215,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				tool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				tool.setProjectId(savedProjectBasicConfig.getId().toString());
 			});
-			projectToolConfigService.saveProjectToolConfigs(toolConfig);
+			List<ProjectToolConfig> projectToolConfigs=projectToolConfigService.saveProjectToolConfigs(toolConfig);
 			FieldMapping fieldMapping = fieldMappingService.getFieldMapping(savedProjectBasicConfig.getClonedFrom().toString());
-			Optional<ProjectToolConfig> optionalToolConfig = toolConfig.stream()
+			Optional<ProjectToolConfig> optionalToolConfig = projectToolConfigs.stream()
 					.filter(tool -> tool.getToolName().equals(Constant.TOOL_JIRA) || tool.getToolName().equals(Constant.TOOL_AZURE))
 					.findFirst();
 			if (fieldMapping != null && optionalToolConfig.isPresent()) {
