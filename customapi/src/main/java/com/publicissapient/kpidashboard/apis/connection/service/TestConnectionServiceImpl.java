@@ -534,7 +534,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
                 }
                 yield connection.getPassword();
             }
-            case Constant.TOOL_JIRA -> connection.getPatOAuthToken();
+            case Constant.TOOL_JIRA -> {
+				if(connection.isBearerToken()){
+					yield connection.getPatOAuthToken();
+				}
+				yield connection.getApiKey();
+			}
             default -> connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
         };
 	}
