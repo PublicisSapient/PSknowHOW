@@ -128,9 +128,9 @@ public class JiraServiceR {
 					return responseList;
 				}
 				Object cachedData = null;
-				if(!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
-					cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
-							groupId, kpiRequest.getSprintIncluded());
+				if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+					cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
+							kpiRequest.getSprintIncluded());
 				}
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
@@ -162,7 +162,9 @@ public class JiraServiceR {
 						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId()))).toList();
 				responseList.addAll(missingKpis);
 
-				kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+				if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+					kpiHelperService.setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+				}
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}
