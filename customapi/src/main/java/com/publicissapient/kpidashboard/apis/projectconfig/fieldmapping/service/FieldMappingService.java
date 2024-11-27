@@ -89,4 +89,6 @@ public interface FieldMappingService {
 	 *             IllegalAccessException
 	 */
 	boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList, FieldMapping fieldMapping) throws IllegalAccessException;
+
+	void saveFieldMapping(FieldMapping fieldMapping);
 }

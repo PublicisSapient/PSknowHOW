@@ -32,6 +32,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -151,6 +153,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Autowired
 	private HappinessKpiDataRepository happinessKpiDataRepository;
 
+	@Autowired
+	private ProjectToolConfigServiceImpl projectToolConfigService;
+
 	/**
 	 * method to save basic configuration
 	 *
@@ -177,6 +182,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			if (accessRoleOfParent == null) {
 
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
+				cloningToolConfigAndFieldmappingForClonedProject(savedProjectBasicConfig);
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
@@ -186,6 +192,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
+				cloningToolConfigAndFieldmappingForClonedProject(savedProjectBasicConfig);
 				performFilterOperation(basicConfigDtoCreation(savedProjectBasicConfig, mapper), false);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
@@ -196,6 +203,32 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			}
 		}
 		return response;
+	}
+
+	private void cloningToolConfigAndFieldmappingForClonedProject(ProjectBasicConfig savedProjectBasicConfig) {
+		if(savedProjectBasicConfig.getClonedFrom()!=null){
+			List<ProjectToolConfig> toolConfig = projectToolConfigService.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
+			toolConfig.forEach(tool -> {
+				tool.setBasicProjectConfigId(savedProjectBasicConfig.getId());
+				tool.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				tool.setCreatedBy(authenticationService.getLoggedInUser());
+				tool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				tool.setProjectId(savedProjectBasicConfig.getId().toString());
+			});
+			projectToolConfigService.saveProjectToolConfigs(toolConfig);
+			FieldMapping fieldMapping = fieldMappingService.getFieldMapping(savedProjectBasicConfig.getClonedFrom().toString());
+			Optional<ProjectToolConfig> optionalToolConfig = toolConfig.stream()
+					.filter(tool -> tool.getToolName().equals(Constant.TOOL_JIRA) || tool.getToolName().equals(Constant.TOOL_AZURE))
+					.findFirst();
+			if (fieldMapping != null && optionalToolConfig.isPresent()) {
+				fieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
+				fieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
+				fieldMapping.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				fieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
+				fieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
+				fieldMappingService.saveFieldMapping(fieldMapping);
+			}
+		}
 	}
 
 	private void addNewProjectIntoUserInfo(ProjectBasicConfig basicConfig, String username) {

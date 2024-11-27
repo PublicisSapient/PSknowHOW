@@ -327,6 +327,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		return allfieldFound;
 	}
 
+	@Override
+	public void saveFieldMapping(FieldMapping fieldMapping) {
+		fieldMappingRepository.save(fieldMapping);
+	}
+
 	/**
 	 * Checks if fields are updated and then unset changeDate in jira collections.
 	 *
