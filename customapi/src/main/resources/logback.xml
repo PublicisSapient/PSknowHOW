@@ -17,6 +17,9 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <configuration>
+<!--suppress the cache size warning org.ehcache.sizeof.ObjectGraphWalker-->
+<logger name="org.ehcache.sizeof.ObjectGraphWalker" level="ERROR" />
+
 <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
