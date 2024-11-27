@@ -231,7 +231,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			isValid = testConnectionForGitHub(apiUrl, connection.getUsername(), password);
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else if ((toolName.equals(Constant.TOOL_ZEPHYR) && connection.isCloudEnv())
-				|| toolName.equals(Constant.TOOL_GITLAB)) {
+				|| toolName.equals(Constant.TOOL_GITLAB) || toolName.equalsIgnoreCase(Constant.TOOL_ARGOCD)) {
 			isValid = testConnectionForTools(apiUrl, password);
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else if (toolName.equals(Constant.TOOL_SONAR)) {
@@ -243,10 +243,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		} else if (toolName.equalsIgnoreCase(Constant.TOOL_ARGOCD)) {
-			isValid = testConnectionForTools(apiUrl, password);
-			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		} else {
+		}  else {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
             } else {
@@ -519,34 +516,27 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	}
 
 	private String getPassword(Connection connection, String toolName) {
-		if (Constant.TOOL_GITHUB.equalsIgnoreCase(toolName)) {
-			return connection.getAccessToken();
+		if (connection == null || toolName == null) {
+			return null;
 		}
-		if (Constant.TOOL_ZEPHYR.equalsIgnoreCase(toolName) && connection.isCloudEnv()) {
-			return connection.getAccessToken();
-		}
-		if (Constant.TOOL_GITLAB.equalsIgnoreCase(toolName)) {
-			return connection.getAccessToken();
-		}
-		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) && connection.isCloudEnv()) {
-			return connection.getAccessToken();
-		}
-		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) && StringUtils.isNotEmpty(connection.getAccessToken())) {
-			return connection.getAccessToken();
-		}
-		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
-			return connection.getPatOAuthToken();
-		}
-		if (Constant.TOOL_ZEPHYR.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
-			return connection.getPatOAuthToken();
-		}
-		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) && StringUtils.isNotEmpty(connection.getAccessToken())) {
-			return connection.getAccessToken();
-		}
-		if (Constant.TOOL_ARGOCD.equalsIgnoreCase(toolName)) {
-			return connection.getAccessToken();
-		}
-		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
+        return switch (toolName) {
+            case Constant.TOOL_GITHUB, Constant.TOOL_GITLAB, Constant.TOOL_ARGOCD, Constant.REPO_TOOLS ->
+                    connection.getAccessToken();
+            case Constant.TOOL_ZEPHYR -> {
+                if (connection.isCloudEnv() || connection.isBearerToken()) {
+                    yield connection.getAccessToken();
+                }
+                yield connection.getPatOAuthToken();
+            }
+            case Constant.TOOL_SONAR -> {
+                if (connection.isCloudEnv() || StringUtils.isNotEmpty(connection.getAccessToken())) {
+                    yield connection.getAccessToken();
+                }
+                yield connection.getPassword();
+            }
+            case Constant.TOOL_JIRA -> connection.getPatOAuthToken();
+            default -> connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
+        };
 	}
 
 	@Override
