@@ -8,8 +8,9 @@
       [kpiCardFilter]="kpiFilterData"
       (filterChange)="onFilterChange($event)"
     ></app-ps-kpi-card-filter>
-    <div *ngIf="cardData?.chartType === 'stacked-bar-chart'" class="p-pr-5 p-pl-5">
-      {{ cardData.dataGroup.summary.name }} {{ currentChartData.totalCount }}
+    <div *ngIf="cardData?.chartType === 'stacked-bar-chart' ||  cardData?.chartType ===  'stacked-bar'" class="p-pr-5 p-pl-5">
+      <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
+      <h3>{{ currentChartData.totalCount }}</h3>
     </div>
     <app-ps-kpi-card-chart-renderer
       [chartData]="currentChartData.chartData"

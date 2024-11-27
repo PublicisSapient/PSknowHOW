@@ -16,123 +16,141 @@
  *
  ******************************************************************************/
 
-
-import { Component, Input, ViewContainerRef, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  ViewContainerRef,
+  OnChanges,
+  SimpleChanges,
+  OnInit,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import * as d3 from 'd3';
 @Component({
-    selector: 'app-barchart',
-    templateUrl: './barchart.component.html',
-    styleUrls: ['./barchart.component.css']
+  selector: 'app-barchart',
+  templateUrl: './barchart.component.html',
+  styleUrls: ['./barchart.component.css'],
 })
-export class BarchartComponent implements OnChanges {
-    @Input() data: any;
-    elem;
-    fields = [];
+export class BarchartComponent implements OnInit {
+  @Input() data: any[] = []; // Input dataset
+  @Input() width: number = 300; // Chart width
+  @Input() height: number = 300; // Chart height
 
-    constructor(private viewContainerRef: ViewContainerRef) {
+  private svg: any;
+  private tooltip: any;
 
+  constructor(private elRef: ElementRef) {}
+
+  ngOnInit(): void {
+    if (this.data && this.data.length) {
+      this.createChart();
     }
-    ngOnChanges(changes: SimpleChanges) {
-        // only run when property "data" changed
-        if (changes['data']) {
-            this.elem = this.viewContainerRef.element.nativeElement;
-            if (!changes['data'].firstChange) {
-                this.draw('update');
-            } else {
-                this.draw('new');
-            }
-        }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.data && !changes.data.firstChange) {
+      this.updateChart();
     }
+  }
 
 
-    draw(status) {
-        if (this.data) {
-            let data = this.data;
-            // sort bars based on value
-            data = data.sort(function(a, b) {
-                return d3.ascending(a.count, b.count);
-            });
-            // set up svg using margin conventions - we'll need plenty of room on the left for labels
-            const margin = {
-                top: 15,
-                right: 25,
-                bottom: 15,
-                left: 60
-            };
 
-            const width = 80;
-                const height = 100;
+  private createChart(): void {
+    const element = this.elRef.nativeElement.querySelector('.chart-container');
+    const margin = { top: 10, right: 20, bottom: 10, left: 50 };
+    const chartWidth = this.width - margin.left - margin.right;
+    const chartHeight = this.height - margin.top - margin.bottom;
 
-            if (status !== 'new') {
-                d3.select(this.elem).select('svg').remove();
-            }
+    // Append SVG container
+    this.svg = d3
+      .select(element)
+      .append('svg')
+      .attr('width', this.width)
+      .attr('height', this.height)
+      .append('g')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-            const svg = d3.select(this.elem).select('.graphic').append('svg').attr('class', 'barChart').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom)
-                .append('g')
-                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    // Define scales
+    const xScale = d3
+      .scaleBand()
+      .domain(this.data.map((d) => d.category))
+      .range([0, chartWidth])
+      .padding(0.1);
+
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, d3.max(this.data, (d) => d.value)])
+      .nice()
+      .range([chartHeight, 0]);
+
+    const colorScale = d3
+      .scaleOrdinal()
+      .domain(this.data.map((d) => d.category))
+      .range(this.data.map((d) => d.color));
+
+    // Add axes
+    this.svg
+      .append('g')
+      .attr('transform', `translate(0, ${chartHeight})`)
+      .call(d3.axisBottom(xScale));
+
+    this.svg.append('g').call(d3.axisLeft(yScale).ticks(5).tickFormat((d) => `${d}hr`));
+
+    // Tooltip
+    this.tooltip = d3
+      .select(element)
+      .append('div')
+      .attr('class', 'tooltip');
+
+    // Add bars
+    this.svg
+      .selectAll('.bar')
+      .data(this.data)
+      .enter()
+      .append('rect')
+      .attr('class', 'bar')
+      .attr('x', (d) => xScale(d.category))
+      .attr('y', (d) => yScale(d.value))
+      .attr('width', xScale.bandwidth()/10)
+      .attr('height', (d) => chartHeight - yScale(d.value))
+      .attr('fill', (d) => colorScale(d.category))
+      .attr('rx', 5) // Rounded corners
+      .attr('ry', 5)
+      .on('mouseover', (event, d) => {
+        this.tooltip
+          .style('display', 'block')
+          .html(`<strong>${d.value}hr</strong>`);
+      })
+      .on('mousemove', (event) => {
+        this.tooltip
+          .style('top', `${event.pageY - 40}px`)
+          .style('left', `${event.pageX + 10}px`);
+      })
+      .on('mouseout', () => {
+        this.tooltip.style('display', 'none');
+      });
+
+    // Add labels inside bars
+    this.svg
+      .selectAll('.label')
+      .data(this.data)
+      .enter()
+      .append('text')
+      .attr('class', 'label')
+      .attr('x', (d) => xScale(d.category) + xScale.bandwidth() / 2)
+      .attr('y', (d) => yScale(d.value) - 10)
+      .attr('text-anchor', 'middle')
+      .attr('fill', 'black')
+      .style('font-size', '12px')
+      .text((d) => `${d.value}hr`);
+  }
 
 
-            const x = d3.scaleLinear()
-                .range([0, width - 20])
-                .domain([0, d3.max(data, function(d) {
-                    return parseInt(d.count);
-                })]);
-            const y = d3.scaleBand()
-                .rangeRound([height, 0], .1)
-                .domain(data.map(function(d) {
-                    return d.data;
-                }));
-
-            // make y axis to show bar names
-            const yAxis = d3.axisLeft(y);
-
-            // no tick marks
-            svg.append('g')
-                .attr('class', 'y axis')
-                .call(yAxis);
-            const bars = svg.selectAll('.bar').exit().remove()
-                .data(data)
-                .enter()
-                .append('g');
-
-            // append rects
-            bars.append('rect')
-                .attr('class', 'bar')
-                .attr('y', function(d) {
-
-                    return y(d.data) + 8;
-                })
-                .attr('height', 10)
-                .attr('x', 2)
-                .style('fill', function(d, i) {
- return '#ffc001';
-})
-                .attr('width', function(d) {
-
-                    return (x(d.count));
-                });
-
-            // add a value label to the right of each bar
-            bars.append('text')
-                .attr('class', 'label')
-                // y position of the label is halfway down the bar
-                .attr('y', function(d) {
-                    return y(d.data) + y.bandwidth() / 2 + 6;
-                })
-                // x position is 3 pixels to the right of the bar
-                .attr('x', function(d) {
-                    return width - 15;
-                })
-                .text(function(d) {
-                    return d.count;
-                })
-                .style('color', '#7d7d7d')
-                .style('font-size', '12px');
-
-            svg.selectAll('.domain').style('display', 'none');
-            svg.selectAll('.tick line').style('display', 'none');
-        }
-
-    }
+  private updateChart(): void {
+    // Clear previous chart
+    d3.select(this.elRef.nativeElement).select('.chart-container').html('');
+    this.createChart();
+  }
 
 }

@@ -1,19 +1,13 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+
 import * as d3 from 'd3';
 
 @Component({
-  selector: 'app-stacked-bar-chart',
-  templateUrl: './stacked-bar-chart.component.html',
-  styleUrls: ['./stacked-bar-chart.component.css'],
+  selector: 'app-stacked-bar',
+  templateUrl: './stacked-bar.component.html',
+  styleUrls: ['./stacked-bar.component.css']
 })
-export class StackedBarChartComponent implements OnInit, OnChanges {
+export class StackedBarComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
   @Input() width: number = 800; // Chart width
   @Input() height: number = 100; // Chart height
@@ -24,6 +18,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
   constructor(private elRef: ElementRef) {}
 
   ngOnInit(): void {
+    console.log(this.data)
     if (this.data && this.data.length) {
       this.createChart();
     }
@@ -55,7 +50,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
     const xScale = d3
       .scaleLinear()
       .domain([
-        d3.min(this.data, (d: any) => d.value) || 0,
+        d3.min(this.data, (d: any) => d.value)  || 0,
         d3.sum(this.data, (d: any) => Math.abs(d.value)) || 0,
       ])
       .range([0, chartWidth]);
@@ -125,12 +120,12 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .style('font-size', '12px')
       .text((d) => d.value);
 
-    // Add x-axis
-    const xAxis = d3.axisBottom(xScale).ticks(10);
-    this.svg
-      .append('g')
-      .attr('transform', `translate(0, ${chartHeight})`)
-      .call(xAxis);
+    // // Add x-axis
+    // const xAxis = d3.axisBottom(xScale).ticks(10);
+    // this.svg
+    //   .append('g')
+    //   .attr('transform', `translate(0, ${chartHeight})`)
+    //   .call(xAxis);
   }
   
   private updateChart(): void {

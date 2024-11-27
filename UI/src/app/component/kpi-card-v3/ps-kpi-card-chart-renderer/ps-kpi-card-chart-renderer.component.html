@@ -6,11 +6,11 @@
     [height]="150"
   ></app-stacked-bar-chart>
   <app-barchart [data]="chartData" *ngSwitchCase="'bar-chart'" ></app-barchart>
-  <app-pie-chart
-    *ngSwitchCase="'pie'"
+  <app-stacked-bar
+    *ngSwitchCase="'stacked-bar'"
     [data]="chartData"
     [width]="800"
     [height]="150"
-  ></app-pie-chart>
+  ></app-stacked-bar>
   <div *ngSwitchDefault>Select a chart type</div>
 </div>

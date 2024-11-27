@@ -37,7 +37,7 @@ export class KpiHelperService {
     const chartData: any = [];
 
     // Handle categoryGroup if present
-    if (categoryGroup && dataGroup1[0]?.showAsLegend === false) {
+   // if (categoryGroup && dataGroup1[0]?.showAsLegend === false) {
       categoryGroup.forEach((category: any, index) => {
         // Filter issues matching the categoryName
         const filteredIssues = issueData.filter(
@@ -46,11 +46,28 @@ export class KpiHelperService {
 
         chartData.push({
           category: category.categoryName,
-          value: filteredIssues.length, // Count of issues for this category
+          value: filteredIssues.length * (category.categoryValue === '+'?1:-1), // Count of issues for this category  filteredIssues.length * (category.categoryValue === '+'?1:-1),
           color: color[index % color.length],
         });
       });
-    } else {
+      chartData.sort((a,b)=> a.value - b.value)
+
+    const totalCount = chartData.reduce((sum: any, issue: any) => {
+      return sum + (issue.value || 0); // Sum up the values for the key
+    }, 0);
+    return { chartData, totalCount };
+  }
+
+  stackedChartData(inputData: any, color: any) {
+    const dataGroup1 = inputData.dataGroup?.dataGroup1;
+    const issueData = inputData.issueData;
+    const categoryGroup = inputData.categoryData?.categoryGroup;
+
+    if (!dataGroup1 || dataGroup1.length === 0) {
+      throw new Error('Invalid data: Missing dataGroup1');
+    }
+
+    const chartData: any = [];
       // Handle dataGroup1 when categoryGroup is not available or showAsLegend is true
       dataGroup1.forEach((group: any, index) => {
         const filteredIssues = issueData.filter(
@@ -65,11 +82,85 @@ export class KpiHelperService {
           color: color[index % color.length],
         });
       });
-    }
+
 
     const totalCount = chartData.reduce((sum: any, issue: any) => {
       return sum + (issue.value || 0); // Sum up the values for the key
     }, 0);
     return { chartData, totalCount };
+  }
+
+  barChartData(json: any,color:any) {
+    let chartData=[];
+    const issueData = json.issueData || [];
+    const dataGroup = json.dataGroup.dataGroup1; // Access the dataGroup from kpiFilterData
+
+    // Loop through each data group entry to calculate the sums
+    for (const groupKey in dataGroup) {
+        if (dataGroup.hasOwnProperty(groupKey)) {
+            const groupItems = dataGroup[groupKey];
+
+           
+                const key = groupItems.key; 
+                const name = groupItems.name; 
+                const aggregation = groupItems.aggregation; 
+
+                // Calculate the sum based on the key
+                let sum; 
+                if(key){
+                  sum= issueData.reduce((acc: number, issue: any) => {
+                    return acc + (issue[key] || 0); // Use the key from the data group
+                }, 0);
+                }else{
+                  sum = issueData.length;
+                }
+               
+
+                // Push the result into chartData array
+                chartData.push({ category: name, value: sum, color:color[groupKey] }); // Default color if not specified
+         //   });
+        }
+    }
+
+    return {chartData} ;
+}
+
+  convertToHoursIfTime(val, unit) {
+    const isLessThanZero = val < 0;
+    val = Math.abs(val);
+    const hours = (val / 60);
+    const rhours = Math.floor(hours);
+    const minutes = (hours - rhours) * 60;
+    const rminutes = Math.round(minutes);
+    if (unit?.toLowerCase() === 'hours') {
+      val = this.convertToHours(rminutes, rhours);
+    } else if (unit?.toLowerCase() === 'day') {
+      if (val !== 0) {
+        val = this.convertToDays(rminutes, rhours);
+      } else {
+        val = '0d';
+      }
+    }
+    if (isLessThanZero) {
+      val = '-' + val;
+    }
+    return val;
+  }
+
+  convertToHours(rminutes, rhours) {
+    if (rminutes === 0) {
+      return rhours + 'h';
+    } else if (rhours === 0) {
+      return rminutes + 'm';
+    } else {
+      return rhours + 'h ' + rminutes + 'm';
+    }
+  }
+
+  convertToDays(rminutes, rhours) {
+    const days = rhours / 8;
+    const rdays = Math.floor(days);
+    rhours = (days - rdays) * 8;
+    return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}${(rminutes !== 0) ? rminutes + 'm' : ''}`;
   }
 }
