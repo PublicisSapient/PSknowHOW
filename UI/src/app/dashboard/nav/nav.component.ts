@@ -171,7 +171,7 @@ export class NavComponent implements OnInit {
 
   processKPIListData() {
     this.configOthersData = this.kpiListData['others'].find(
-      (boardDetails) => boardDetails.boardName === 'Kpi Maturity',
+      (boardDetails) => boardDetails.boardName === 'KPI Maturity',
     )?.kpis;
     this.service.setUpdatedBoardList(this.kpiListData, this.selectedType);
 

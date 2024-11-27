@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently \"prettier --write src/**/*.{ts,css}\" \"node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve --configuration=local --proxy-config proxy.conf.json\" \"onchange \"src/**/*.{ts,css}\" -- prettier --write --ignore-unknown {{changed}}\"",
+    "start": "concurrently \"node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve --configuration=local --proxy-config proxy.conf.json\" \"onchange \"src/**/*.{ts,css}\" -- prettier --write --ignore-unknown {{changed}}\"",
     "build": "ng build --configuration=docker --aot --output-hashing=all",
     "test": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng test --code-coverage",
     "lint": "ng lint dashboard",
