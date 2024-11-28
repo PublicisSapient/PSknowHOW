@@ -44,7 +44,6 @@ export class DashboardV2Component implements AfterContentInit {
   isApply = false;
   headerStyle;
   sideNavStyle;
-  newUI = false;
   goToTopButton: HTMLElement;
 
   constructor(
