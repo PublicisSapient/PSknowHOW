@@ -409,7 +409,8 @@ public class ProjectBasicConfigServiceImplTest {
 		userInfo.setAuthType(AuthType.STANDARD);
 		userInfo.setAuthorities(Lists.newArrayList("ROLE_GUEST"));
 		when(projectAccessManager.getUserInfo(any())).thenReturn(userInfo);
-		when(toolRepository.findByBasicProjectConfigId(any())).thenReturn(Arrays.asList(listProjectTool));
+		when(projectToolConfigService.getProjectToolConfigsByProjectId(any())).thenReturn(Arrays.asList(listProjectTool));
+		when(projectToolConfigService.saveProjectToolConfigs(any())).thenReturn(Arrays.asList(listProjectTool));
 		when(fieldMappingService.getFieldMapping(anyString())).thenReturn(fieldMapping);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
