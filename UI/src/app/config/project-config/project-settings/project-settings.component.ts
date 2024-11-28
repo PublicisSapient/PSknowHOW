@@ -33,9 +33,8 @@ interface Control {
 @Component({
   selector: 'app-project-settings',
   templateUrl: './project-settings.component.html',
-  styleUrls: ['./project-settings.component.css']
+  styleUrls: ['./project-settings.component.css'],
 })
-
 export class ProjectSettingsComponent implements OnInit {
   userProjects = [];
   selectedProject: any;
@@ -67,19 +66,21 @@ export class ProjectSettingsComponent implements OnInit {
     private httpService: HttpService,
     private messageService: MessageService,
     public getAuthorizationService: GetAuthorizationService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getData();
     this.generalControls = [
       {
         name: 'Pause data collection',
-        description: 'Pause data collection through tool connections to control when data is gathered from your integrated tools',
+        description:
+          'Pause data collection through tool connections to control when data is gathered from your integrated tools',
         actionItem: 'switch',
       },
       {
         name: 'Delete project',
-        description: 'Delete all project data - collected tools data, user permissions, uploaded data, etc',
+        description:
+          'Delete all project data - collected tools data, user permissions, uploaded data, etc',
         actionItem: 'cta',
       },
     ];
@@ -87,25 +88,28 @@ export class ProjectSettingsComponent implements OnInit {
     this.oneTimeControls = [
       {
         name: 'Enable People performance KPIs',
-        description: 'Enable fetching people info from Agile PM tool or Repo tool connection',
+        description:
+          'Enable fetching people info from Agile PM tool or Repo tool connection',
         actionItem: 'switch-people-kpi',
       },
       {
         name: 'Enable Developer KPIs',
-        description: 'Provide consent to clone your code repositories (BitBucket, GitLab, GitHub, Azure Repository) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to valuable KPIs on the Developer dashboard.',
+        description:
+          'Provide consent to clone your code repositories (BitBucket, GitLab, GitHub, Azure Repository) to avoid API rate-limiting issues. The repository for this project will be cloned on the KH Server. This will grant access to valuable KPIs on the Developer dashboard.',
         actionItem: 'switch-developer-kpi',
-      }
+      },
     ];
 
     this.apiControls = [
       {
         name: 'Generate API token',
-        description: 'You can generate KnowHOW POST API token to upload tools data directly',
+        description:
+          'You can generate KnowHOW POST API token to upload tools data directly',
         actionItem: 'button',
       },
     ];
 
-    this.sharedService.currentUserDetailsObs.subscribe(details => {
+    this.sharedService.currentUserDetailsObs.subscribe((details) => {
       if (details) {
         this.userName = details['user_name'];
       }
@@ -126,7 +130,7 @@ export class ProjectSettingsComponent implements OnInit {
         },
         reject: () => {
           this.projectOnHold = false;
-        }
+        },
       });
     } else {
       this.confirmationService.confirm({
@@ -138,7 +142,7 @@ export class ProjectSettingsComponent implements OnInit {
         },
         reject: () => {
           this.projectOnHold = true;
-        }
+        },
       });
     }
   }
@@ -153,7 +157,7 @@ export class ProjectSettingsComponent implements OnInit {
       },
       reject: () => {
         this.developerKpiEnabled = false;
-      }
+      },
     });
   }
 
@@ -161,7 +165,7 @@ export class ProjectSettingsComponent implements OnInit {
     this.cols = [];
     this.allProjectList = [];
     this.loading = true;
-    this.httpService.getProjectListData().subscribe(responseList => {
+    this.httpService.getProjectListData().subscribe((responseList) => {
       if (responseList[0].success) {
         this.projectList = responseList[0]?.data;
         this.fillColumns();
@@ -172,7 +176,7 @@ export class ProjectSettingsComponent implements OnInit {
         this.loading = false;
         this.messageService.add({
           severity: 'error',
-          summary: 'Some error occurred. Please try again later.'
+          summary: 'Some error occurred. Please try again later.',
         });
       }
     });
@@ -182,22 +186,32 @@ export class ProjectSettingsComponent implements OnInit {
     if (this.projectList?.length > 0) {
       for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
         const obj = {
-          id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
-          heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
+          id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel[
+            'hierarchyLevelId'
+          ],
+          heading:
+            this.projectList[0]?.hierarchy[i]?.hierarchyLevel[
+              'hierarchyLevelName'
+            ],
         };
         this.cols?.push(obj);
       }
 
       for (let i = this.projectList[0]?.hierarchy?.length - 1; i >= 0; i--) {
         const obj = {
-          id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelId'],
-          heading: this.projectList[0]?.hierarchy[i]?.hierarchyLevel['hierarchyLevelName']
+          id: this.projectList[0]?.hierarchy[i]?.hierarchyLevel[
+            'hierarchyLevelId'
+          ],
+          heading:
+            this.projectList[0]?.hierarchy[i]?.hierarchyLevel[
+              'hierarchyLevelName'
+            ],
         };
         this.cols?.push(obj);
       }
       const projectObj = {
         id: 'name',
-        heading: 'Project'
+        heading: 'Project',
       };
       this.cols?.unshift(projectObj);
       this.setProjectType();
@@ -207,7 +221,7 @@ export class ProjectSettingsComponent implements OnInit {
   setProjectType() {
     const typeObj = {
       id: 'type',
-      heading: 'Type'
+      heading: 'Type',
     };
     this.cols?.push(typeObj);
     for (let i = 0; i < this.cols?.length; i++) {
@@ -224,7 +238,9 @@ export class ProjectSettingsComponent implements OnInit {
         projectOnHold: this.projectList[i]?.projectOnHold,
       };
       for (let j = 0; j < this.projectList[i]?.hierarchy?.length; j++) {
-        obj[this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']] = this.projectList[i]?.hierarchy[j]?.value;
+        obj[
+          this.projectList[i]?.hierarchy[j]?.hierarchyLevel['hierarchyLevelId']
+        ] = this.projectList[i]?.hierarchy[j]?.value;
       }
       this.allProjectList?.push(obj);
     }
@@ -233,11 +249,19 @@ export class ProjectSettingsComponent implements OnInit {
   getProjects() {
     this.userProjects = this.sharedService.getProjectList();
     if (this.userProjects != null && this.userProjects.length > 0) {
-      this.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+      this.userProjects.sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { numeric: true }),
+      );
     }
     this.selectedProject = this.sharedService.getSelectedProject();
-    if (this.selectedProject && this.router.url?.includes(this.selectedProject['id']) && !this.isDeleteClicked) {
-      this.selectedProject = this.userProjects.filter((x) => x.id == this.selectedProject?.id)[0]
+    if (
+      this.selectedProject &&
+      this.router.url?.includes(this.selectedProject['id']) &&
+      !this.isDeleteClicked
+    ) {
+      this.selectedProject = this.userProjects.filter(
+        (x) => x.id == this.selectedProject?.id,
+      )[0];
     } else {
       this.selectedProject = this.userProjects[0];
     }
@@ -246,12 +270,16 @@ export class ProjectSettingsComponent implements OnInit {
     this.projectOnHold = this.selectedProject?.projectOnHold;
 
     this.hierarchyLabelNameChange();
-
   }
 
   updateProjectSelection() {
     this.sharedService.setSelectedProject(this.selectedProject);
-    this.router.navigate([`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`], { queryParams: { 'type': this.selectedProject.type.toLowerCase(), tab: 0 } });
+    this.router.navigate(
+      [`/dashboard/Config/ConfigSettings/${this.selectedProject?.id}`],
+      {
+        queryParams: { type: this.selectedProject.type.toLowerCase(), tab: 0 },
+      },
+    );
     this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
     this.developerKpiEnabled = this.selectedProject?.developerKpiEnabled;
     this.projectOnHold = this.selectedProject?.projectOnHold;
@@ -260,19 +288,22 @@ export class ProjectSettingsComponent implements OnInit {
   }
 
   hierarchyLabelNameChange() {
-    const selectedType = this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
-    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType]?.map((x) => {
+    const selectedType =
+      this.selectedProject?.type !== 'Scrum' ? 'kanban' : 'scrum';
+    const levelDetails = JSON.parse(
+      localStorage.getItem('completeHierarchyData'),
+    )[selectedType]?.map((x) => {
       return {
         id: x['hierarchyLevelId'],
-        name: x['hierarchyLevelName']
-      }
+        name: x['hierarchyLevelName'],
+      };
     });
 
     setTimeout(() => {
       if (this.selectedProject && Object.keys(this.selectedProject)?.length) {
-        Object.keys(this.selectedProject).forEach(key => {
-          if (levelDetails?.map(x => x.id).includes(key)) {
-            let propertyName = levelDetails.filter(x => x.id === key)[0].name;
+        Object.keys(this.selectedProject).forEach((key) => {
+          if (levelDetails?.map((x) => x.id).includes(key)) {
+            let propertyName = levelDetails.filter((x) => x.id === key)[0].name;
             this.selectedProject[propertyName] = this.selectedProject[key];
             delete this.selectedProject[key];
           }
@@ -281,14 +312,14 @@ export class ProjectSettingsComponent implements OnInit {
     });
   }
 
-/**
- * Deletes a specified project after user confirmation.
- * It updates the project access list and navigates to the configuration settings of the first user project.
- * 
- * @param {Project} project - The project object to be deleted.
- * @returns {void}
- * @throws {HttpErrorResponse} If the deletion request fails.
- */
+  /**
+   * Deletes a specified project after user confirmation.
+   * It updates the project access list and navigates to the configuration settings of the first user project.
+   *
+   * @param {Project} project - The project object to be deleted.
+   * @returns {void}
+   * @throws {HttpErrorResponse} If the deletion request fails.
+   */
   deleteProject(project) {
     this.isDeleteClicked = true;
     this.projectConfirm = true;
@@ -297,26 +328,38 @@ export class ProjectSettingsComponent implements OnInit {
       header: `Delete ${project.name}?`,
       icon: 'pi pi-info-circle',
       accept: () => {
-        this.httpService.deleteProject(project).subscribe(response => {
-          this.projectDeletionStatus(response);
-          this.router.navigate([`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`], { queryParams: { 'type': this.selectedProject?.type?.toLowerCase(), tab: 0 } });
-          this.selectedProject = this.userProjects[0];
-          let arr = this.sharedService.getCurrentUserDetails('projectsAccess');
-          if (arr?.length) {
-            arr?.map((item) => {
-              item.projects = item.projects.filter(x => x.projectId != project.id);
-            });
-            arr = arr?.filter(item => item.projects?.length > 0);
+        this.httpService.deleteProject(project).subscribe(
+          (response) => {
+            this.projectDeletionStatus(response);
+            this.router.navigate(
+              [`/dashboard/Config/ConfigSettings/${this.userProjects[0]?.id}`],
+              {
+                queryParams: {
+                  type: this.selectedProject?.type?.toLowerCase(),
+                  tab: 0,
+                },
+              },
+            );
+            this.selectedProject = this.userProjects[0];
+            let arr =
+              this.sharedService.getCurrentUserDetails('projectsAccess');
+            if (arr?.length) {
+              arr?.map((item) => {
+                item.projects = item.projects.filter(
+                  (x) => x.projectId != project.id,
+                );
+              });
+              arr = arr?.filter((item) => item.projects?.length > 0);
 
-            this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
-          }
-        }, error => {
-          this.projectDeletionStatus(error);
-        });
+              this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
+            }
+          },
+          (error) => {
+            this.projectDeletionStatus(error);
+          },
+        );
       },
-      reject: () => {
-
-      }
+      reject: () => {},
     });
   }
 
@@ -329,11 +372,11 @@ export class ProjectSettingsComponent implements OnInit {
         header: 'Project Deletion Status',
         icon: 'fa fa-check-circle alert-success',
         accept: () => {
-          console.log('accept')
+          console.log('accept');
         },
         reject: () => {
-          console.log('reject')
-        }
+          console.log('reject');
+        },
       });
     } else {
       this.confirmationService.confirm({
@@ -341,17 +384,18 @@ export class ProjectSettingsComponent implements OnInit {
         header: 'Project Deletion Status',
         icon: 'fa fa-times-circle alert-danger',
         accept: () => {
-          console.log('accept')
+          console.log('accept');
         },
         reject: () => {
-          console.log('reject')
-        }
+          console.log('reject');
+        },
       });
     }
   }
 
   getAlertMessageOnClickDelete() {
-    const commonMsg = 'Project and related data will be deleted forever, are you sure you want to delete it?';
+    const commonMsg =
+      'Project and related data will be deleted forever, are you sure you want to delete it?';
     return commonMsg;
   }
 
@@ -365,23 +409,26 @@ export class ProjectSettingsComponent implements OnInit {
       },
       reject: () => {
         this.isAssigneeSwitchChecked = false;
-      }
+      },
     });
   }
 
   updateProjectDetails(successMsg) {
-
-    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject?.type?.toLowerCase()];
+    let hierarchyData = JSON.parse(
+      localStorage.getItem('completeHierarchyData'),
+    )[this.selectedProject?.type?.toLowerCase()];
 
     const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject?.name || this.selectedProject?.Project;
-    updatedDetails['kanban'] = this.selectedProject?.type === 'Kanban' ? true : false;
+    updatedDetails['projectName'] =
+      this.selectedProject?.name || this.selectedProject?.Project;
+    updatedDetails['kanban'] =
+      this.selectedProject?.type === 'Kanban' ? true : false;
     updatedDetails['hierarchy'] = [];
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
     updatedDetails['id'] = this.selectedProject?.id;
-    updatedDetails["createdAt"] = new Date().toISOString();
-    updatedDetails["developerKpiEnabled"] = this.developerKpiEnabled;
-    updatedDetails["projectOnHold"] = this.projectOnHold;
+    updatedDetails['createdAt'] = new Date().toISOString();
+    updatedDetails['developerKpiEnabled'] = this.developerKpiEnabled;
+    updatedDetails['projectOnHold'] = this.projectOnHold;
 
     for (let element of hierarchyData) {
       if (element.hierarchyLevelId == 'project') {
@@ -392,32 +439,34 @@ export class ProjectSettingsComponent implements OnInit {
         hierarchyLevel: {
           level: element.level,
           hierarchyLevelId: element.hierarchyLevelId,
-          hierarchyLevelName: element.hierarchyLevelName
+          hierarchyLevelName: element.hierarchyLevelName,
         },
-        value: this.selectedProject[element.hierarchyLevelName]
+        value: this.selectedProject[element.hierarchyLevelName],
       });
     }
 
-    this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
-
-      if (response && response.serviceResponse && response.serviceResponse.success) {
-        this.selectedProject.projectOnHold = this.projectOnHold;
-        this.messageService.add({
-          severity: 'success',
-          summary: successMsg
-        });
-      } else {
-        this.isAssigneeSwitchChecked = false;
-        this.projectOnHold = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Some error occurred. Please try again later.'
-        });
-
-      }
-
-    })
-
+    this.httpService
+      .updateProjectDetails(updatedDetails, this.selectedProject.id)
+      .subscribe((response) => {
+        if (
+          response &&
+          response.serviceResponse &&
+          response.serviceResponse.success
+        ) {
+          this.selectedProject.projectOnHold = this.projectOnHold;
+          this.messageService.add({
+            severity: 'success',
+            summary: successMsg,
+          });
+        } else {
+          this.isAssigneeSwitchChecked = false;
+          this.projectOnHold = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Some error occurred. Please try again later.',
+          });
+        }
+      });
   }
 
   generateTokenConfirmation() {
@@ -429,7 +478,7 @@ export class ProjectSettingsComponent implements OnInit {
       accept: () => {
         this.generateToken();
       },
-      reject: null
+      reject: null,
     });
   }
 
@@ -440,18 +489,24 @@ export class ProjectSettingsComponent implements OnInit {
     const postData = {
       basicProjectConfigId: projectDetails?.id,
       projectName: projectDetails?.name,
-      userName: this.userName
+      userName: this.userName,
     };
 
-
-    this.httpService.generateToken(postData).subscribe(response => {
+    this.httpService.generateToken(postData).subscribe((response) => {
       this.generateTokenLoader = false;
       this.displayGeneratedToken = true;
       if (response['success'] && response['data']) {
         this.generatedToken = response['data'].apiToken;
-        this.messageService.add({ severity: 'success', summary: 'Token generated!' });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Token generated!',
+        });
       } else {
-        this.messageService.add({ severity: 'error', summary: 'Error occured while generating token. Please try after some time' });
+        this.messageService.add({
+          severity: 'error',
+          summary:
+            'Error occured while generating token. Please try after some time',
+        });
       }
     });
   }
@@ -460,10 +515,15 @@ export class ProjectSettingsComponent implements OnInit {
     if (this.generatedToken) {
       this.tokenCopied = true;
       navigator.clipboard.writeText(this.generatedToken);
-      this.messageService.add({ severity: 'success', summary: 'Token copied!' });
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Token copied!',
+      });
     }
   }
 
-  originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;
-
+  originalOrder = (
+    a: KeyValue<number, string>,
+    b: KeyValue<number, string>,
+  ): number => 0;
 }

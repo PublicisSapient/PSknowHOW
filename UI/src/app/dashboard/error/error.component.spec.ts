@@ -16,7 +16,15 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, fakeAsync, inject, getTestBed, waitForAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  inject,
+  getTestBed,
+  waitForAsync,
+  tick,
+} from '@angular/core/testing';
 import { ErrorComponent } from './error.component';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
@@ -27,7 +35,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { Subscription, timer } from 'rxjs';
 import { ExecutiveV2Component } from 'src/app/dashboardv2/executive-v2/executive-v2.component';
-
 
 describe('ErrorComponent', () => {
   const routes: Routes = [
@@ -45,16 +52,14 @@ describe('ErrorComponent', () => {
         FormsModule,
         CommonModule,
         RouterTestingModule.withRoutes(routes),
-
       ],
-      providers: [HttpService, SharedService,
+      providers: [
+        HttpService,
+        SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },
-      ]
-    })
-      .compileComponents();
+      ],
+    }).compileComponents();
   }));
-
-
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ErrorComponent);
@@ -63,9 +68,7 @@ describe('ErrorComponent', () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-
-  });
+  afterEach(() => {});
 
   const error0 = { status: 0, message: 'Internal Server Error' };
   const error401 = { status: 401, message: 'Session Expired' };
@@ -126,10 +129,8 @@ describe('ErrorComponent', () => {
     expect(component.errorMsg).toEqual('Some error occurred');
   });
 
-
   describe('ErrorComponent.pollForAvailability() pollForAvailability method', () => {
     describe('Happy Path', () => {
-
       it('should initialize the timer and decrement timeLeft every second', fakeAsync(() => {
         component.timeLeft = 10;
 
@@ -177,7 +178,9 @@ describe('ErrorComponent', () => {
         tick(61000);
 
         // Ensure button text and navigation are triggered
-        expect(component.router.navigate).toHaveBeenCalledWith([redirectButtonRoute]);
+        expect(component.router.navigate).toHaveBeenCalledWith([
+          redirectButtonRoute,
+        ]);
 
         // Clean up subscription
         component.source.unsubscribe();
@@ -185,7 +188,6 @@ describe('ErrorComponent', () => {
     });
 
     describe('Edge Cases', () => {
-
       it('should not reinitialize the timer if already subscribed', fakeAsync(() => {
         component.source = new Subscription();
         spyOn(component.router, 'navigate');
@@ -230,8 +232,6 @@ describe('ErrorComponent', () => {
         // Clean up subscription
         component.source.unsubscribe();
       }));
-
     });
-
   });
 });

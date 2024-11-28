@@ -2,13 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpService } from '../../../services/http.service';
 import { ViewNewUserAuthRequestComponent } from './view-new-user-auth-request.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { SharedService } from '../../../services/shared.service';
 import { MessageService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
-
 
 describe('ViewNewUserAuthRequestComponent', () => {
   let component: ViewNewUserAuthRequestComponent;
@@ -25,9 +27,9 @@ describe('ViewNewUserAuthRequestComponent', () => {
         username: 'testuser8',
         email: 'test8@gmail.com',
         approved: false,
-        whitelistDomainEmail: false
-      }
-    ]
+        whitelistDomainEmail: false,
+      },
+    ],
   };
 
   beforeEach(async () => {
@@ -37,14 +39,10 @@ describe('ViewNewUserAuthRequestComponent', () => {
         HttpService,
         MessageService,
         SharedService,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
       ],
-      imports: [
-        HttpClientTestingModule,
-        RouterTestingModule.withRoutes([]),
-      ],
-    })
-      .compileComponents();
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -63,9 +61,9 @@ describe('ViewNewUserAuthRequestComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
     let url = '';
-    if(environment['AUTHENTICATION_SERVICE']){
+    if (environment['AUTHENTICATION_SERVICE']) {
       url = baseUrl + '/api/userapprovals/central';
-    }else{
+    } else {
       url = baseUrl + '/api/userapprovals';
     }
     httpMock.match(url)[0].flush(fakeRequestsData);
@@ -78,19 +76,19 @@ describe('ViewNewUserAuthRequestComponent', () => {
       username: 'testuser8',
       email: 'test8@gmail.com',
       approved: false,
-      whitelistDomainEmail:false
+      whitelistDomainEmail: false,
     };
     const fakeResponse = {
       message: 'Unapproved User details',
       success: true,
-      data: []
+      data: [],
     };
     component.updateRequestStatus(fakeRequest, true);
     fixture.detectChanges();
     let url = '';
-    if(environment['AUTHENTICATION_SERVICE']){
+    if (environment['AUTHENTICATION_SERVICE']) {
       url = baseUrl + '/api/userapprovals/central';
-    }else{
+    } else {
       url = baseUrl + '/api/userapprovals';
     }
     httpMock.match(url)[0].flush(fakeResponse);
@@ -104,17 +102,18 @@ describe('ViewNewUserAuthRequestComponent', () => {
       username: 'testuser8',
       email: 'test8@gmail.com',
       approved: false,
-      whitelistDomainEmail: false
+      whitelistDomainEmail: false,
     };
     const fakeResponse = {
       message: 'Unapproved User details',
       success: true,
-      data: []
+      data: [],
     };
-    spyOn(httpService , "updateNewUserAccessRequest").and.returnValue(of(fakeResponse));
+    spyOn(httpService, 'updateNewUserAccessRequest').and.returnValue(
+      of(fakeResponse),
+    );
     component.updateRequestStatus(fakeRequest, true);
     fixture.detectChanges();
     expect(component.showLoader).toBeFalse();
   });
-
 });

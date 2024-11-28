@@ -18,23 +18,26 @@
 
 /* modal css */
 
-:host ::ng-deep .expandCollapseModal .p-dialog-header{
-    display: none;
+:host ::ng-deep .expandCollapseModal .p-dialog-header {
+  display: none;
 }
 
-:host ::ng-deep .expandCollapseModal .p-dialog-content{
-    padding: 0;
-    overflow-y: hidden;
+:host ::ng-deep .expandCollapseModal .p-dialog-content {
+  padding: 0;
+  overflow-y: hidden;
 }
 
-:host ::ng-deep .expandCollapseModal .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable{
-    max-width: 100vw !important;
-    max-height: 100vh;
-    height: 100vh;
-    width: 100vw !important;
+:host
+  ::ng-deep
+  .expandCollapseModal
+  .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable {
+  max-width: 100vw !important;
+  max-height: 100vh;
+  height: 100vh;
+  width: 100vw !important;
 }
 
 :host ::ng-deep .expandCollapseModal .container {
-    max-height: calc(100vh);
-    height: calc(100vh);
+  max-height: calc(100vh);
+  height: calc(100vh);
 }

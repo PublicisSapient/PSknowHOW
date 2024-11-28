@@ -40,10 +40,10 @@ export class ExportExcelComponent implements OnInit {
     private excelService: ExcelService,
     private helperService: HelperService,
     private sharedService: SharedService,
-    private httpService: HttpService
-  ) { }
+    private httpService: HttpService,
+  ) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   // download excel functionality
   downloadExcel(
@@ -72,8 +72,8 @@ export class ExportExcelComponent implements OnInit {
         )
         .subscribe((getData) => {
           if (
-            getData['excelData'] 
-            || !getData?.hasOwnProperty('validationData')
+            getData['excelData'] ||
+            !getData?.hasOwnProperty('validationData')
           ) {
             if (chartType == 'stacked-area') {
               let kpiObj = JSON.parse(JSON.stringify(getData));
@@ -97,16 +97,22 @@ export class ExportExcelComponent implements OnInit {
             this.modalDetails['tableHeadings'] =
               this.kpiExcelData.headerNames.map((column) => column.header);
             // this.modalDetails['tableValues'] = additionalFilterSupport ? this.kpiExcelData.excelData : [];
-            this.modalDetails['tableValues'] = this.kpiExcelData.excelData
-            .map(item => {
-              const formattedItem = { ...item };
-              for (const key in formattedItem) {
-                  if (key.toLowerCase().includes('date') && formattedItem[key]) {
-                      formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
+            this.modalDetails['tableValues'] = this.kpiExcelData.excelData.map(
+              (item) => {
+                const formattedItem = { ...item };
+                for (const key in formattedItem) {
+                  if (
+                    key.toLowerCase().includes('date') &&
+                    formattedItem[key]
+                  ) {
+                    formattedItem[key] = this.helperService.transformDateToISO(
+                      formattedItem[key],
+                    );
                   }
-              }
-               return formattedItem
-          });
+                }
+                return formattedItem;
+              },
+            );
             this.generateTableColumnData();
             this.modalDetails['header'] = kpiName;
             this.displayModal = true;
@@ -154,8 +160,8 @@ export class ExportExcelComponent implements OnInit {
 
   clearModalDataOnClose() {
     this.excludeColumnFilter = [];
-    this.tableColumnData = {}
-    this.tableColumnForm = {}
+    this.tableColumnData = {};
+    this.tableColumnForm = {};
     this.displayModal = false;
     this.modalDetails = {
       header: '',
@@ -173,20 +179,25 @@ export class ExportExcelComponent implements OnInit {
   }
 
   onFilterBlur(columnName) {
-    this.filteredColumn = this.filteredColumn === columnName ? '' : this.filteredColumn;
+    this.filteredColumn =
+      this.filteredColumn === columnName ? '' : this.filteredColumn;
   }
 
   generateTableColumnData() {
-    if(this.modalDetails['tableValues'].length > 0) {
-      this.modalDetails['tableHeadings'].forEach(colName => {
-        this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
+    if (this.modalDetails['tableValues'].length > 0) {
+      this.modalDetails['tableHeadings'].forEach((colName) => {
+        this.tableColumnData[colName] = [
+          ...new Set(
+            this.modalDetails['tableValues'].map((item) => item[colName]),
+          ),
+        ].map((colData) => {
           if (this.typeOf(colData)) {
             if (!this.excludeColumnFilter.includes(colName)) {
-              this.excludeColumnFilter.push(colName)
+              this.excludeColumnFilter.push(colName);
             }
-            return { name: colData.text, value: colData.text }
+            return { name: colData.text, value: colData.text };
           } else {
-            return { name: colData, value: colData }
+            return { name: colData, value: colData };
           }
         });
         this.tableColumnForm[colName] = [];
@@ -197,23 +208,31 @@ export class ExportExcelComponent implements OnInit {
   generateExcel(exportMode) {
     const tableData = {
       columns: [],
-      excelData: []
+      excelData: [],
     };
     let excelData = [];
     let columns = [];
     if (exportMode === 'all') {
-      this.excelService.generateExcel(this.kpiExcelData, this.modalDetails['header']);
+      this.excelService.generateExcel(
+        this.kpiExcelData,
+        this.modalDetails['header'],
+      );
     } else {
-      excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
-      tableData.columns = this.modalDetails['tableHeadings']
+      excelData = this.tableComponent?.filteredValue
+        ? this.tableComponent?.filteredValue
+        : this.modalDetails['tableValues'];
+      tableData.columns = this.modalDetails['tableHeadings'];
 
-      excelData.forEach(colData => {
+      excelData.forEach((colData) => {
         let obj = {};
         for (let key in colData) {
-          if (this.typeOf(colData[key]) && colData[key].hasOwnProperty('hyperlink')) {
-            obj[key] = { [colData[key]['text']]: colData[key]['hyperlink'] }
+          if (
+            this.typeOf(colData[key]) &&
+            colData[key].hasOwnProperty('hyperlink')
+          ) {
+            obj[key] = { [colData[key]['text']]: colData[key]['hyperlink'] };
           } else {
-            obj[key] = colData[key]
+            obj[key] = colData[key];
           }
         }
         tableData.excelData.push(obj);
@@ -228,7 +247,7 @@ export class ExportExcelComponent implements OnInit {
     return typeof value === 'object' && value !== null;
   }
 
-  //custom sort for sorting Range. 
+  //custom sort for sorting Range.
   // customSort(event: any) {
   //   let result = null;
   //   event.data.sort((data1, data2) => {

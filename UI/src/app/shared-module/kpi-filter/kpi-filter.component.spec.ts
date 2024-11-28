@@ -16,39 +16,38 @@
  *
  ******************************************************************************/
 
- import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { KpiFilterComponent } from './kpi-filter.component';
 
- describe('KpiFilterComponent', () => {
-   let component: KpiFilterComponent;
-   let fixture: ComponentFixture<KpiFilterComponent>;
+describe('KpiFilterComponent', () => {
+  let component: KpiFilterComponent;
+  let fixture: ComponentFixture<KpiFilterComponent>;
 
-   beforeEach(waitForAsync(() => {
-     TestBed.configureTestingModule({
-       declarations: [ KpiFilterComponent ]
-     })
-     .compileComponents();
-   }));
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [KpiFilterComponent],
+    }).compileComponents();
+  }));
 
-   beforeEach(() => {
-     fixture = TestBed.createComponent(KpiFilterComponent);
-     component = fixture.componentInstance;
-     fixture.detectChanges();
-   });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(KpiFilterComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-   it('should create', () => {
-     expect(component).toBeTruthy();
-   });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-   it('should emit seleted kpi on dropdown selection',()=>{
+  it('should emit seleted kpi on dropdown selection', () => {
     const spyFieldsToShow = spyOn(component.fieldsToShow, 'emit');
     component.showFieldsPopup();
     expect(spyFieldsToShow).toHaveBeenCalled();
-   });
+  });
 
-   it('should emit empty string on dropdown clear',()=>{
-    component.selectedKpi ='Defect Injection Rate';
+  it('should emit empty string on dropdown clear', () => {
+    component.selectedKpi = 'Defect Injection Rate';
     component.onClear();
     expect(component.selectedKpi).toBeFalsy();
-   });
- });
+  });
+});

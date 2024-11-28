@@ -21,7 +21,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FooterComponent } from './footer.component';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  HttpClientTestingModule,
+} from '@angular/common/http/testing';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { CommonModule } from '@angular/common';
 // import { Router } from '@angular/router';
@@ -31,15 +34,18 @@ import { of } from 'rxjs';
 describe('FooterComponent', () => {
   let component: FooterComponent;
   let fixture: ComponentFixture<FooterComponent>;
-  let httpService ;
+  let httpService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FooterComponent],
-      imports : [HttpClientTestingModule,CommonModule,RouterTestingModule],
-      providers : [HttpService,SharedService,  { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-    .compileComponents();
+      declarations: [FooterComponent],
+      imports: [HttpClientTestingModule, CommonModule, RouterTestingModule],
+      providers: [
+        HttpService,
+        SharedService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,14 +59,14 @@ describe('FooterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should App version response come',()=>{
+  it('should App version response come', () => {
     const fakeRespose = {
-      versionDetailsMap :{
-        currentVersion : "6.3-SNAPSHOT"
-      }
-    }
-    spyOn(httpService,'getMatchVersions').and.returnValue(of(fakeRespose));
+      versionDetailsMap: {
+        currentVersion: '6.3-SNAPSHOT',
+      },
+    };
+    spyOn(httpService, 'getMatchVersions').and.returnValue(of(fakeRespose));
     component.getMatchVersions();
     expect(component.currentversion).not.toBe('');
-  })
+  });
 });

@@ -19,13 +19,17 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-user-mgmt',
   templateUrl: './user-mgmt.component.html',
-  styleUrls: ['./user-mgmt.component.css', '../profile.component.css']
+  styleUrls: ['./user-mgmt.component.css', '../profile.component.css'],
 })
 export class UserMgmtComponent implements OnInit {
   changePasswordForm: UntypedFormGroup;
@@ -37,23 +41,33 @@ export class UserMgmtComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private httpService: HttpService,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+  ) {}
 
   ngOnInit() {
     // Set validation for registration-form elements
-    this.changePasswordForm = this.formBuilder.group({
-      password: ['', [
-        Validators.required,
-        Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}'),
-        Validators.maxLength(30)
-      ]],
-      confirmpassword: ['', Validators.required],
-      oldpassword: ['', Validators.required]
-    }, {
-      validator: [this.checkPasswords
-        // ,this.checkOldPassword
-      ]
-    });
+    this.changePasswordForm = this.formBuilder.group(
+      {
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(
+              '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-zd$@$!%*?&].{7,}',
+            ),
+            Validators.maxLength(30),
+          ],
+        ],
+        confirmpassword: ['', Validators.required],
+        oldpassword: ['', Validators.required],
+      },
+      {
+        validator: [
+          this.checkPasswords,
+          // ,this.checkOldPassword
+        ],
+      },
+    );
   }
 
   // Validation for confirm-password
@@ -65,8 +79,8 @@ export class UserMgmtComponent implements OnInit {
 
   // convenience getter for easy access to form fields
   get f() {
- return this.changePasswordForm.controls;
-}
+    return this.changePasswordForm.controls;
+  }
 
   onSubmit() {
     this.submitted = true;
@@ -75,17 +89,25 @@ export class UserMgmtComponent implements OnInit {
       return;
     }
     // call service
-    this.httpService.changePassword(this.f.oldpassword.value, this.f.password.value)
-      .subscribe(
-        response => {
-          if (response.success) {
-            this.success = 'Password changed successfully';
-            this.messageService.add({ severity: 'success', summary: `Password changed successfully` });
-          } else {
-            this.error = 'Change password request failed!';
-            this.messageService.add({ severity: 'error', summary: response.message && response.message.length ? response.message : `Change password request failed! Please try again with valid password` });
-          }
+    this.httpService
+      .changePassword(this.f.oldpassword.value, this.f.password.value)
+      .subscribe((response) => {
+        if (response.success) {
+          this.success = 'Password changed successfully';
+          this.messageService.add({
+            severity: 'success',
+            summary: `Password changed successfully`,
+          });
+        } else {
+          this.error = 'Change password request failed!';
+          this.messageService.add({
+            severity: 'error',
+            summary:
+              response.message && response.message.length
+                ? response.message
+                : `Change password request failed! Please try again with valid password`,
+          });
         }
-      );
+      });
   }
 }

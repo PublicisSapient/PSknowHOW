@@ -83,7 +83,8 @@ export class HttpService {
   private getRolesUrl = this.baseUrl + '/api/roles';
   private raiseAccessRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getAccessRequestsUrl = this.baseUrl + '/api/accessrequests/status';
-  private getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification';
+  private getAccessRequestNotificationsUrl =
+    this.baseUrl + '/api/accessrequests/Pending/notification';
   private updateRequestsUrl = this.baseUrl + '/api/accessrequests';
   private getUserAccessRequestsUrl = this.baseUrl + '/api/accessrequests/user';
   private getScenariosUrl = this.baseUrl + '/api/scenario';
@@ -100,7 +101,8 @@ export class HttpService {
   private getAllUsersUrl = this.baseUrl + '/api/userinfo';
   private updateAccessUrl = this.baseUrl + '/api/userinfo/updateUserRole';
   private deleteAccessUrl = this.baseUrl + '/api/userinfo/deleteUser';
-  private notificationPreferencesUrl = this.baseUrl + '/api/userinfo/notificationPreferences';
+  private notificationPreferencesUrl =
+    this.baseUrl + '/api/userinfo/notificationPreferences';
   private getKPIConfigMetadataUrl =
     this.baseUrl + '/api/editConfig/jira/editKpi/';
   /** KnowHOW Lite */
@@ -131,14 +133,14 @@ export class HttpService {
     this.baseUrl + `/api/landingpage/dojo/projectsummary`;
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
-  private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
+  private saveShowHideKpiUrl =
+    this.baseUrl + '/api/user-board-config/saveAdmin';
   private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
   private branchListRequestUrl = this.baseUrl + '/api/sonar/branch';
   private processorTraceLogsUrl = this.baseUrl + '/api/processor/tracelog';
-  private zephyrCloudUrl =
-    this.baseUrl + '/api/testconnection/zephyrcloudurl';
+  private zephyrCloudUrl = this.baseUrl + '/api/testconnection/zephyrcloudurl';
   private bambooPlanUrl = this.baseUrl + '/api/bamboo/plans';
   private bambooBranchUrl = this.baseUrl + '/api/bamboo/branches';
   private bambooDeploymentProjectsUrl = this.baseUrl + '/api/bamboo/deploy';
@@ -155,7 +157,8 @@ export class HttpService {
   private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
-  private getAssingeeEmailsUrl = this.baseUrl + '/api/repotool/assignees/email/';
+  private getAssingeeEmailsUrl =
+    this.baseUrl + '/api/repotool/assignees/email/';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
   private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
@@ -170,11 +173,13 @@ export class HttpService {
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
   userEmail: string;
-  private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
-  private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
+  private activeIterationUrl = this.baseUrl + '/api/processor/fetchSprint';
+  private activeIterationfetchStatusUrl =
+    this.baseUrl + '/api/activeIteration/fetchStatus';
   private fetchUserDetailsUrl = this.baseUrl + '/api/fetchUserDetails';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
-  private getShowHideKpiNewUIUrl = this.baseUrl + '/api/user-board-config/getBoardConfig';
+  private getShowHideKpiNewUIUrl =
+    this.baseUrl + '/api/user-board-config/getBoardConfig';
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
   constructor(
     private router: Router,
@@ -194,7 +199,6 @@ export class HttpService {
   getFilterData(filterRequestData): Observable<object> {
     return this.http.post<object>(this.filterDataUrl, filterRequestData);
   }
-
 
   getAssigneeEmails(basicConfigId): Observable<any> {
     return this.http.get(this.getAssingeeEmailsUrl + basicConfigId);
@@ -282,7 +286,7 @@ export class HttpService {
 
   /**  logout from the server */
   logout(): Observable<any> {
-    if(environment?.['AUTHENTICATION_SERVICE']){
+    if (environment?.['AUTHENTICATION_SERVICE']) {
       this.logoutUrl = environment?.['CENTRAL_API_URL'] + '/api/sso-logout';
     }
     return this.http.get(this.logoutUrl);
@@ -367,7 +371,7 @@ export class HttpService {
       email: this.userEmail,
       user: this.userName,
     };
-    if(environment?.['AUTHENTICATION_SERVICE']){
+    if (environment?.['AUTHENTICATION_SERVICE']) {
       this.changePasswordUrl = this.baseUrl + '/api/changePassword/central';
     }
     return this.http
@@ -383,10 +387,10 @@ export class HttpService {
       .pipe(tap((res) => {}));
   }
 
-   /** POST: This make kpi call of scrum */
-   postKpi(data, source): Observable<any> {
+  /** POST: This make kpi call of scrum */
+  postKpi(data, source): Observable<any> {
     return this.http
-    .post<any>(this.getDataUrl + source + '/kpi', data)
+      .post<any>(this.getDataUrl + source + '/kpi', data)
       .pipe(catchError(this.handleKpiError));
   }
 
@@ -552,9 +556,12 @@ export class HttpService {
   }
 
   /** Change Notification Preferences toggle  */
-   notificationEmailToggleChange(notificationEmailObj): Observable<any> {
-      return this.http.post<any>(this.notificationPreferencesUrl, notificationEmailObj);
-    }
+  notificationEmailToggleChange(notificationEmailObj): Observable<any> {
+    return this.http.post<any>(
+      this.notificationPreferencesUrl,
+      notificationEmailObj,
+    );
+  }
 
   /** get all requests for access (RBAC) */
   getAccessRequests(status) {
@@ -565,8 +572,9 @@ export class HttpService {
 
   /** get pending request notifications */
   getAccessRequestsNotifications() {
-    if(environment?.['AUTHENTICATION_SERVICE']){
-      this.getAccessRequestNotificationsUrl = this.baseUrl + '/api/accessrequests/Pending/notification/central';
+    if (environment?.['AUTHENTICATION_SERVICE']) {
+      this.getAccessRequestNotificationsUrl =
+        this.baseUrl + '/api/accessrequests/Pending/notification/central';
     }
     return this.http
       .get<NotificationResponseDTO>(this.getAccessRequestNotificationsUrl)
@@ -584,8 +592,8 @@ export class HttpService {
   }
 
   /** Delete User */
-  deleteAccess(userNameRequestPayload:UserNameRequestDTO) {
-    if(environment?.['AUTHENTICATION_SERVICE']){
+  deleteAccess(userNameRequestPayload: UserNameRequestDTO) {
+    if (environment?.['AUTHENTICATION_SERVICE']) {
       this.deleteAccessUrl = this.baseUrl + '/api/userinfo/central/deleteUser';
     }
     return this.http.post(this.deleteAccessUrl, userNameRequestPayload);
@@ -658,8 +666,10 @@ export class HttpService {
   }
 
   /** Get KPI Config metadata */
-  getKPIConfigMetadata(basicConfigID,kpiid): Observable<any> {
-    return this.http.get<any>(this.getKPIConfigMetadataUrl + basicConfigID+'/'+kpiid);
+  getKPIConfigMetadata(basicConfigID, kpiid): Observable<any> {
+    return this.http.get<any>(
+      this.getKPIConfigMetadataUrl + basicConfigID + '/' + kpiid,
+    );
   }
 
   /** KnowHow Lite */
@@ -773,21 +783,22 @@ export class HttpService {
     );
   }
 
-    /** Get all Field Mappings with history */
-    getFieldMappingsWithHistory(toolId,kpiId, data): Observable<any> {
-      return this.http.post(
-        this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/'+ kpiId, data
-      );
-    }
+  /** Get all Field Mappings with history */
+  getFieldMappingsWithHistory(toolId, kpiId, data): Observable<any> {
+    return this.http.post(
+      this.fieldMappingsUrl + '/fieldMapping/' + toolId + '/' + kpiId,
+      data,
+    );
+  }
 
   /** Save all Field Mappings */
-  setFieldMappings(toolId, mappingConfig,kpiid,isImport?) {
-    if(isImport && isImport === true){
+  setFieldMappings(toolId, mappingConfig, kpiid, isImport?) {
+    if (isImport && isImport === true) {
       return this.http.post(
         this.fieldMappingsUrl + '/' + toolId + '/fieldMapping',
         mappingConfig,
       );
-    }else{
+    } else {
       return this.http.post(
         this.fieldMappingsUrl + '/saveMapping/' + toolId + '/' + kpiid,
         mappingConfig,
@@ -839,7 +850,7 @@ export class HttpService {
           projectsAccess: authDetails['projectsAccess'],
         });
         this.sharedService.setCurrentUserDetails({
-           notificationEmail: authDetails['notificationEmail'],
+          notificationEmail: authDetails['notificationEmail'],
         });
         this.sharedService.setCurrentUserDetails({
           authorities: authDetails['authorities'],
@@ -956,29 +967,33 @@ export class HttpService {
 
   /** show-Hide for dashboard config component  */
   getShowHideKpi(projectID) {
-    return this.http.get<any>(this.getShowHideKpiUrl+ '/' + projectID);
+    return this.http.get<any>(this.getShowHideKpiUrl + '/' + projectID);
   }
-  submitShowHideKpiData(data,projectID): Observable<any> {
-    return this.http.post<object>(this.saveShowHideKpiUrl + '/' + projectID , data);
+  submitShowHideKpiData(data, projectID): Observable<any> {
+    return this.http.post<object>(
+      this.saveShowHideKpiUrl + '/' + projectID,
+      data,
+    );
   }
 
   /** show-Hide for other nav, filter component */
-  getShowHideOnDashboard(payload){
-    return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig',payload);
+  getShowHideOnDashboard(payload) {
+    return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig', payload);
   }
 
-   /** show-Hide for other nav, filter component in New UI */
-   getShowHideOnDashboardNewUI(payload){
-    return this.http.post<any>(this.getShowHideKpiNewUIUrl,payload);
+  /** show-Hide for other nav, filter component in New UI */
+  getShowHideOnDashboardNewUI(payload) {
+    return this.http.post<any>(this.getShowHideKpiNewUIUrl, payload);
   }
 
-  submitShowHideOnDashboard(data){
-    return this.http.post<any>(this.getShowHideKpiUrl,data);
+  submitShowHideOnDashboard(data) {
+    return this.http.post<any>(this.getShowHideKpiUrl, data);
   }
 
   getNewUserAccessRequestFromAPI() {
-    if(environment?.['AUTHENTICATION_SERVICE']){
-      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+    if (environment?.['AUTHENTICATION_SERVICE']) {
+      this.newUserAccessRequestUrl =
+        this.baseUrl + '/api/userapprovals/central';
     }
     return this.http.get<UserAccessApprovalResponseDTO>(
       this.newUserAccessRequestUrl,
@@ -986,13 +1001,11 @@ export class HttpService {
   }
 
   updateNewUserAccessRequest(reqBody: UserAccessReqPayload) {
-    if(environment?.['AUTHENTICATION_SERVICE']){
-      this.newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals/central';
+    if (environment?.['AUTHENTICATION_SERVICE']) {
+      this.newUserAccessRequestUrl =
+        this.baseUrl + '/api/userapprovals/central';
     }
-    return this.http.put<any>(
-      `${this.newUserAccessRequestUrl}`,
-      reqBody,
-    );
+    return this.http.put<any>(`${this.newUserAccessRequestUrl}`, reqBody);
   }
 
   getProcessorsTraceLogsForProject(basicProjectConfigId) {
@@ -1089,10 +1102,10 @@ export class HttpService {
   }
 
   deleteComment(id): Observable<any> {
-    return this.http.delete<object>(this.deleteCommentUrl+ '/' + id);
+    return this.http.delete<object>(this.deleteCommentUrl + '/' + id);
   }
 
-  getCommentCount(data): Observable<any>{
+  getCommentCount(data): Observable<any> {
     return this.http.post<object>(this.getCommentCountUrl, data);
   }
 
@@ -1131,12 +1144,15 @@ export class HttpService {
     );
   }
 
-  getActiveIterationStatus(postData){
-    return this.http.post(this.activeIterationUrl + '/'+ postData.sprintId,{});
+  getActiveIterationStatus(postData) {
+    return this.http.post(
+      this.activeIterationUrl + '/' + postData.sprintId,
+      {},
+    );
   }
 
-  getactiveIterationfetchStatus(sprintId){
-    return this.http.get(this.activeIterationfetchStatusUrl+'/' + sprintId);
+  getactiveIterationfetchStatus(sprintId) {
+    return this.http.get(this.activeIterationfetchStatusUrl + '/' + sprintId);
   }
   getCommentSummary(data) {
     return this.http.post<object>(this.commentsSummaryUrl, data);
@@ -1144,26 +1160,34 @@ export class HttpService {
 
   /** This method is responsible for getting field mapping configuration for specfic KPI and processor */
   getKPIFieldMappingConfig(KPIID) {
-    return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
+    return this.http.get<any>(
+      `${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`,
+    );
   }
 
-  getUserDetailsForCentral(){
+  getUserDetailsForCentral() {
     return this.http.get<object>(this.fetchUserDetailsUrl);
   }
 
   getFeatureFlags() {
-    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
+    return this.http
+      .get<any>(`${this.baseUrl}/api/actuator/togglz`)
+      .toPromise();
   }
 
   getAzureTeams(connectionId) {
-      return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
-    }
-
-  getProgressStatusOfProcessors(data){
-    return this.http.get<any>(`${this.processorTraceLogsUrl}?processorName=${data.processor}&basicProjectConfigId=${data.projects[0]}`);
+    return this.http.get<any>(
+      `${this.baseUrl}/api/azure/teams/${connectionId}`,
+    );
   }
 
-  getRecommendations(data){
+  getProgressStatusOfProcessors(data) {
+    return this.http.get<any>(
+      `${this.processorTraceLogsUrl}?processorName=${data.processor}&basicProjectConfigId=${data.projects[0]}`,
+    );
+  }
+
+  getRecommendations(data) {
     return this.http.post<object>(this.recommendationsUrl, data);
   }
 }

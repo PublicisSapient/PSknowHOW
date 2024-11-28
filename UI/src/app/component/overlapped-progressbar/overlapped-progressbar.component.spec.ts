@@ -8,9 +8,8 @@ describe('OverlappedProgressbarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OverlappedProgressbarComponent ]
-    })
-    .compileComponents();
+      declarations: [OverlappedProgressbarComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

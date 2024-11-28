@@ -16,9 +16,8 @@
  *
  ******************************************************************************/
 
-// This file contains the feature flag configuration 
+// This file contains the feature flag configuration
 // Available roles are 'superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'
 // Available personas are none as of now
 
-export const features = [
-];
+export const features = [];

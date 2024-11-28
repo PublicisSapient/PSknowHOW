@@ -16,7 +16,13 @@
  *
  ******************************************************************************/
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormGroup,UntypedFormControl } from '@angular/forms';
+import {
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormGroup,
+  UntypedFormControl,
+} from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -28,78 +34,78 @@ const completeHierarchyData = {
       id: '63244d35d1d9f4caf85056f7',
       level: 1,
       hierarchyLevelId: 'corporate',
-      hierarchyLevelName: 'Corporate Name'
+      hierarchyLevelName: 'Corporate Name',
     },
     {
       id: '63244d35d1d9f4caf85056f8',
       level: 2,
       hierarchyLevelId: 'business',
-      hierarchyLevelName: 'Business Name'
+      hierarchyLevelName: 'Business Name',
     },
     {
       id: '63244d35d1d9f4caf85056f9',
       level: 3,
       hierarchyLevelId: 'dummy',
-      hierarchyLevelName: 'dummy Name'
+      hierarchyLevelName: 'dummy Name',
     },
     {
       id: '63244d35d1d9f4caf85056fa',
       level: 4,
       hierarchyLevelId: 'subdummy',
-      hierarchyLevelName: 'Subdummy'
+      hierarchyLevelName: 'Subdummy',
     },
     {
       level: 5,
       hierarchyLevelId: 'project',
-      hierarchyLevelName: 'Project'
+      hierarchyLevelName: 'Project',
     },
     {
       level: 6,
       hierarchyLevelId: 'sqd',
-      hierarchyLevelName: 'Squad'
-    }
+      hierarchyLevelName: 'Squad',
+    },
   ],
   scrum: [
     {
       id: '63244d35d1d9f4caf85056f7',
       level: 1,
       hierarchyLevelId: 'corporate',
-      hierarchyLevelName: 'Corporate Name'
+      hierarchyLevelName: 'Corporate Name',
     },
     {
       id: '63244d35d1d9f4caf85056f8',
       level: 2,
       hierarchyLevelId: 'business',
-      hierarchyLevelName: 'Business Name'
+      hierarchyLevelName: 'Business Name',
     },
     {
       id: '63244d35d1d9f4caf85056f9',
       level: 3,
       hierarchyLevelId: 'dummy',
-      hierarchyLevelName: 'dummy Name'
+      hierarchyLevelName: 'dummy Name',
     },
     {
       id: '63244d35d1d9f4caf85056fa',
       level: 4,
       hierarchyLevelId: 'subdummy',
-      hierarchyLevelName: 'Subdummy'
+      hierarchyLevelName: 'Subdummy',
     },
     {
       level: 5,
       hierarchyLevelId: 'project',
-      hierarchyLevelName: 'Project'
+      hierarchyLevelName: 'Project',
     },
     {
       level: 6,
       hierarchyLevelId: 'sprint',
-      hierarchyLevelName: 'Sprint'
+      hierarchyLevelName: 'Sprint',
     },
     {
       level: 7,
       hierarchyLevelId: 'sqd',
-      hierarchyLevelName: 'Squad'
-    }
-  ]
+      hierarchyLevelName: 'Squad',
+    },
+  ],
 };
 
 describe('AdditionalFilterFieldComponent', () => {
@@ -109,109 +115,132 @@ describe('AdditionalFilterFieldComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AdditionalFilterFieldComponent ],
-      imports:[ReactiveFormsModule, FormsModule],
-      providers:[MessageService, SharedService]
-    })
-    .compileComponents();
+      declarations: [AdditionalFilterFieldComponent],
+      imports: [ReactiveFormsModule, FormsModule],
+      providers: [MessageService, SharedService],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AdditionalFilterFieldComponent);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
-    localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
+    localStorage.setItem(
+      'completeHierarchyData',
+      JSON.stringify(completeHierarchyData),
+    );
     fixture.detectChanges();
   });
 
-  beforeEach(()=>{
+  beforeEach(() => {
     let localStore = {};
 
     spyOn(window.localStorage, 'getItem').and.callFake((key) =>
-      key in localStore ? localStore[key] : null
+      key in localStore ? localStore[key] : null,
     );
     spyOn(window.localStorage, 'setItem').and.callFake(
-      (key, value) => (localStore[key] = value + '')
+      (key, value) => (localStore[key] = value + ''),
     );
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
 
-    localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
+    localStorage.setItem(
+      'completeHierarchyData',
+      JSON.stringify(completeHierarchyData),
+    );
   });
 
   it('should create', () => {
-    spyOn(component,'generateAdditionalFilterMappings');
+    spyOn(component, 'generateAdditionalFilterMappings');
     expect(component).toBeTruthy();
   });
 
-  it('should add AdditionalFilterOptions',()=>{
+  it('should add AdditionalFilterOptions', () => {
     component.filterHierarchy = completeHierarchyData.scrum;
     component.addAdditionalFilterOptions();
     expect(component.additionalFilterOptions.length).toEqual(1);
   });
 
-  it('should generate additional filter mappings',()=>{
+  it('should generate additional filter mappings', () => {
     component.filterHierarchy = completeHierarchyData.scrum;
     spyOn(sharedService, 'getSelectedFieldMapping').and.returnValue({
       fieldMappingResponses: [
-       { fieldName: 'additionalFilterConfig',
-        originalValue: [
-          {
-            "filterId": "sqd",
-            "identifyFrom": "Component",
-            "identificationField": "",
-            "values": []
-          }
-        ]}
-      ]
+        {
+          fieldName: 'additionalFilterConfig',
+          originalValue: [
+            {
+              filterId: 'sqd',
+              identifyFrom: 'Component',
+              identificationField: '',
+              values: [],
+            },
+          ],
+        },
+      ],
     });
-    spyOn(component,'addAdditionalFilterOptions');
+    spyOn(component, 'addAdditionalFilterOptions');
     component.generateAdditionalFilterMappings();
     expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
-    expect(component.fieldMappingForm.controls[ 'sqdIdentMultiValue']).toBeTruthy();
+    expect(
+      component.fieldMappingForm.controls['sqdIdentMultiValue'],
+    ).toBeTruthy();
   });
 
-  it('should add Additional Filter Mappings',()=>{
-    component.additionalFiltersArray=[{
-      "name": "Squad",
-      "code": "sqd"
-  }];
-  component.additionalFilterIdentifier = [{
-    "name": "Squad",
-    "code": "sqd"
-}];
+  it('should add Additional Filter Mappings', () => {
+    component.additionalFiltersArray = [
+      {
+        name: 'Squad',
+        code: 'sqd',
+      },
+    ];
+    component.additionalFilterIdentifier = [
+      {
+        name: 'Squad',
+        code: 'sqd',
+      },
+    ];
 
-component.addAdditionalFilterMappings();
-expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
+    component.addAdditionalFilterMappings();
+    expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
   });
 
-  it('should change control based on selection',()=>{
+  it('should change control based on selection', () => {
     const event = {
-      value:"Labels"
+      value: 'Labels',
     };
     const additionalFilterIdentifier = {
-      "name": "Squad",
-      "code": "sqd"
-  };
-  const handleAdditionalFiltersSpy = spyOn(component,'handleAdditionalFilters');
-  component.changeControl(event,additionalFilterIdentifier);
-  expect(component.fieldMappingForm.controls[ 'sqdIdentMultiValue']).toBeTruthy();
-  expect(handleAdditionalFiltersSpy).toHaveBeenCalled();
+      name: 'Squad',
+      code: 'sqd',
+    };
+    const handleAdditionalFiltersSpy = spyOn(
+      component,
+      'handleAdditionalFilters',
+    );
+    component.changeControl(event, additionalFilterIdentifier);
+    expect(
+      component.fieldMappingForm.controls['sqdIdentMultiValue'],
+    ).toBeTruthy();
+    expect(handleAdditionalFiltersSpy).toHaveBeenCalled();
   });
 
-  it('should remove additional filter mapping',()=>{
-    component.additionalFiltersArray=[{
-      "name": "Squad",
-      "code": "sqd"
-  }];
-    const handleAdditionalFiltersSpy = spyOn(component,'handleAdditionalFilters');
-    component.removeAdditionFilterMapping({ "name": "Squad","code": "sqd"});
+  it('should remove additional filter mapping', () => {
+    component.additionalFiltersArray = [
+      {
+        name: 'Squad',
+        code: 'sqd',
+      },
+    ];
+    const handleAdditionalFiltersSpy = spyOn(
+      component,
+      'handleAdditionalFilters',
+    );
+    component.removeAdditionFilterMapping({ name: 'Squad', code: 'sqd' });
     expect(component.additionalFiltersArray.length).toEqual(0);
     expect(handleAdditionalFiltersSpy).toHaveBeenCalled();
   });
 
-  it('should handle additional filter',()=>{
+  it('should handle additional filter', () => {
     component.filterHierarchy = completeHierarchyData.scrum;
     component.fieldMappingForm = new UntypedFormGroup({
-      sqdIdentifier : new FormControl('Labels'),
-      sqdIdentMultiValue:new FormControl(['UI'])
+      sqdIdentifier: new FormControl('Labels'),
+      sqdIdentMultiValue: new FormControl(['UI']),
     });
     component.handleAdditionalFilters();
     expect(component.additionalFilterConfig.length).toEqual(1);
@@ -220,79 +249,127 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
   it('should open/close the dropdown dialog and set values', () => {
     component.selectedField = 'jiraDefectRejectionStatusDIR';
     component.fieldMappingForm = new UntypedFormGroup({
-      'jiraDefectRejectionStatusDIR' : new UntypedFormControl()
+      jiraDefectRejectionStatusDIR: new UntypedFormControl(),
     });
     const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
-    component.fieldMappingForm.controls['jiraDefectRejectionStatusDIR']?.setValue("fake value")
+    component.fieldMappingForm.controls[
+      'jiraDefectRejectionStatusDIR'
+    ]?.setValue('fake value');
     component.fieldMappingMetaData = dropDownMetaData.data;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','fields');
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'fields',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
     component.fieldMappingMetaData = dropDownMetaData;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','fields');
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'fields',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
     component.fieldMappingMetaData = dropDownMetaData.data;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','workflow');
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'workflow',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
+
     component.fieldMappingMetaData = dropDownMetaData;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','workflow');
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'workflow',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
     component.fieldMappingMetaData = dropDownMetaData.data;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Link');
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'Issue_Link',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
+
     component.fieldMappingMetaData = dropDownMetaData;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Link');
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'Issue_Link',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
     component.fieldMappingMetaData = dropDownMetaData.data;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Type');
-    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
-    component.fieldMappingMetaData = dropDownMetaData;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Type');
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'Issue_Type',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
     component.fieldMappingMetaData = dropDownMetaData;
-    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','default');
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'Issue_Type',
+    );
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue(
+      true,
+      'jiraDefectRejectionStatusDIR',
+      'default',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
 
     component.fieldMappingMetaData = dropDownMetaData.data;
-    component.showDialogToAddValue(false,'jiraDefectRejectionStatusDIR','fields');
+    component.showDialogToAddValue(
+      false,
+      'jiraDefectRejectionStatusDIR',
+      'fields',
+    );
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
   });
 
-  it('should close dialog',()=>{
-    component.cancelDialog()
-   expect(component.displayDialog).toBeFalsy();
-  })
+  it('should close dialog', () => {
+    component.cancelDialog();
+    expect(component.displayDialog).toBeFalsy();
+  });
 
   it('should select values from popup', () => {
     component.singleSelectionDropdown = false;
     component.selectedField = 'jiraDefectRejectionStatusDIR';
-    spyOn(component,'handleAdditionalFilters');
+    spyOn(component, 'handleAdditionalFilters');
     component.fieldMappingForm = new UntypedFormGroup({
-      'jiraDefectRejectionStatusDIR' : new UntypedFormControl()
+      jiraDefectRejectionStatusDIR: new UntypedFormControl(),
     });
-    component.fieldMappingMultiSelectValues = [{
-      key: 'New',
-      data: 'New'
-    }, {
-      key: 'Active',
-      data: 'Active'
-    }, {
-      key: 'Resolved',
-      data: 'Resolved'
-    }, {
-      key: 'Closed',
-      data: 'Closed'
-    }, {
-      key: 'Removed',
-      data: 'Removed'
-    }];
+    component.fieldMappingMultiSelectValues = [
+      {
+        key: 'New',
+        data: 'New',
+      },
+      {
+        key: 'Active',
+        data: 'Active',
+      },
+      {
+        key: 'Resolved',
+        data: 'Resolved',
+      },
+      {
+        key: 'Closed',
+        data: 'Closed',
+      },
+      {
+        key: 'Removed',
+        data: 'Removed',
+      },
+    ];
     component.saveDialog();
     expect(component.populateDropdowns).toBeFalsy();
     expect(component.displayDialog).toBeFalsy();
@@ -300,7 +377,7 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
 
   it('should reset radio button', () => {
     component.fieldMappingForm = new UntypedFormGroup({
-      'fieldName': new UntypedFormControl('')
+      fieldName: new UntypedFormControl(''),
     });
     const spy = spyOn(component, 'handleAdditionalFilters');
     component.resetRadioButton('fieldName');
@@ -309,10 +386,12 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
 
   it('should record scroll position', () => {
     const scrollPosition = 100;
-    spyOnProperty(document.documentElement, 'scrollTop', 'get').and.returnValue(scrollPosition);
-  
+    spyOnProperty(document.documentElement, 'scrollTop', 'get').and.returnValue(
+      scrollPosition,
+    );
+
     component.recordScrollPosition();
-  
+
     expect(component.bodyScrollPosition).toEqual(scrollPosition);
   });
 
@@ -322,25 +401,25 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     component.selectedValue = ['selectedValue'];
     spyOn(component, 'handleAdditionalFilters');
     component.fieldMappingForm = new UntypedFormGroup({
-      'fieldName': new UntypedFormControl()
+      fieldName: new UntypedFormControl(),
     });
-  
+
     component.saveDialog();
 
     expect(component.handleAdditionalFilters).toHaveBeenCalled();
     expect(component.populateDropdowns).toBeFalsy();
     expect(component.displayDialog).toBeFalsy();
   });
-  
+
   it('should save dialog without single selection dropdown', () => {
     component.singleSelectionDropdown = false;
     spyOn(component, 'handleAdditionalFilters');
     component.fieldMappingForm = new UntypedFormGroup({
-      'fieldName': new UntypedFormControl()
+      fieldName: new UntypedFormControl(),
     });
-  
+
     component.saveDialog();
-  
+
     expect(component.handleAdditionalFilters).toHaveBeenCalled();
     expect(component.populateDropdowns).toBeFalsy();
     expect(component.displayDialog).toBeFalsy();
@@ -348,44 +427,49 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
 
   it('should change control based on selection', () => {
     const event = {
-      value: "Labels"
+      value: 'Labels',
     };
     const additionalFilterIdentifier = {
-      "name": "Squad",
-      "code": "sqd"
+      name: 'Squad',
+      code: 'sqd',
     };
     const spy = spyOn(component, 'handleAdditionalFilters');
     component.changeControl(event, additionalFilterIdentifier);
-    expect(component.fieldMappingForm.controls['sqdIdentMultiValue']).toBeTruthy();
+    expect(
+      component.fieldMappingForm.controls['sqdIdentMultiValue'],
+    ).toBeTruthy();
     expect(spy).toHaveBeenCalled();
   });
-  
+
   it('should add control for multi-value selection', () => {
     const event = {
-      value: "Component"
+      value: 'Component',
     };
     const additionalFilterIdentifier = {
-      "name": "Squad",
-      "code": "sqd"
+      name: 'Squad',
+      code: 'sqd',
     };
     const spy = spyOn(component, 'handleAdditionalFilters');
     component.changeControl(event, additionalFilterIdentifier);
-    expect(component.fieldMappingForm.controls['sqdIdentMultiValue']).toBeTruthy();
+    expect(
+      component.fieldMappingForm.controls['sqdIdentMultiValue'],
+    ).toBeTruthy();
     expect(spy).toHaveBeenCalled();
   });
-  
+
   it('should add control for single-value selection', () => {
     const event = {
-      value: "Other"
+      value: 'Other',
     };
     const additionalFilterIdentifier = {
-      "name": "Squad",
-      "code": "sqd"
+      name: 'Squad',
+      code: 'sqd',
     };
     const spy = spyOn(component, 'handleAdditionalFilters');
     component.changeControl(event, additionalFilterIdentifier);
-    expect(component.fieldMappingForm.controls['sqdIdentSingleValue']).toBeTruthy();
+    expect(
+      component.fieldMappingForm.controls['sqdIdentSingleValue'],
+    ).toBeTruthy();
     expect(spy).toHaveBeenCalled();
   });
-  
 });

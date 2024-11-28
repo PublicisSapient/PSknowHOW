@@ -1,4 +1,4 @@
-  /*******************************************************************************
+/*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -16,12 +16,12 @@
  *
  ******************************************************************************/
 
- .overlay {
+.overlay {
   z-index: 999;
   width: 100%;
   height: 100%;
   background-color: black;
-  opacity: .6;
+  opacity: 0.6;
 }
 
 .popup {
@@ -49,7 +49,7 @@
   background: var(--color-white);
   border-radius: 7px;
   border: 3px solid #eee;
-  transition: all .2s ease;
+  transition: all 0.2s ease;
   user-select: none;
 }
 
@@ -59,8 +59,8 @@
 }
 
 .uploader label.hover i.fa {
-  transform: scale(.8);
-  opacity: .3;
+  transform: scale(0.8);
+  opacity: 0.3;
 }
 
 .uploader .start.hidden {
@@ -70,13 +70,12 @@
 .uploader .start i.fa {
   font-size: 50px;
   margin-bottom: 1rem;
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
-
 
 .uploader .file-image {
   display: inline-block;
-  margin: 0 auto .5rem auto;
+  margin: 0 auto 0.5rem auto;
   max-width: 180px;
 }
 
@@ -111,18 +110,18 @@
   border-radius: 4px;
 }
 
-.uploader  input[type='file'] {
+.uploader input[type='file'] {
   display: none;
 }
 
 .uploader div {
-  margin: 0 0 .5rem 0;
+  margin: 0 0 0.5rem 0;
   color: #5f6982;
 }
 
 .uploader .btn {
   display: inline-block;
-  margin: .5rem .5rem 1rem .5rem;
+  margin: 0.5rem 0.5rem 1rem 0.5rem;
   clear: both;
   font-family: inherit;
   font-weight: 700;
@@ -130,13 +129,13 @@
   text-decoration: none;
   text-transform: initial;
   border: none;
-  border-radius: .2rem;
+  border-radius: 0.2rem;
   outline: none;
   padding: 0 1rem;
   height: 36px;
   line-height: 36px;
   color: var(--color-white);
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   box-sizing: border-box;
   background: #06a0ff;
   border-color: #06a0ff;
@@ -154,19 +153,19 @@
 
 .uploader .invalid-text {
   width: 100%;
-  margin-top: .01rem;
+  margin-top: 0.01rem;
   color: #dc3545;
 }
 
 .uploader .success {
   width: 100%;
-  margin-top: .01rem;
+  margin-top: 0.01rem;
   color: #55d436;
 }
 
 .uploader .warning-text {
   width: 100%;
-  margin-top: .01rem;
+  margin-top: 0.01rem;
   font-size: 80%;
   color: #ffc107;
 }
@@ -179,13 +178,14 @@
 }
 
 div.main {
-    min-height: calc(100vh - 188px);
-    background-color: var(--color-white);
-    width: calc(100% - 4px);
-    padding: 16px;
-    border-radius: 4px;
-    box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-    /* width: calc(100% - 16px);
+  min-height: calc(100vh - 188px);
+  background-color: var(--color-white);
+  width: calc(100% - 4px);
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  /* width: calc(100% - 16px);
     margin: 8px; */
 }
 
@@ -246,7 +246,6 @@ div.main {
   font-size: 14px;
 }
 
-
 /* Hide the browser's default checkbox */
 
 .filter-nav .checkbox-modified input {
@@ -254,7 +253,6 @@ div.main {
   opacity: 0;
   cursor: pointer;
 }
-
 
 /* Create a custom checkbox */
 
@@ -267,20 +265,17 @@ div.main {
   background-color: #eee;
 }
 
-
 /* On mouse-over, add a grey background color */
 
-.checkbox-modified:hover input~.checkmark {
+.checkbox-modified:hover input ~ .checkmark {
   background-color: #ccc;
 }
 
-
 /* When the checkbox is checked, add a blue background */
 
-.checkbox-modified input:checked~.checkmark {
+.checkbox-modified input:checked ~ .checkmark {
   background-color: #2196f3;
 }
-
 
 /* Create the checkmark/indicator (hidden when not checked) */
 
@@ -290,13 +285,11 @@ div.main {
   display: none;
 }
 
-
 /* Show the checkmark when checked */
 
-.checkbox-modified input:checked~.checkmark:after {
+.checkbox-modified input:checked ~ .checkmark:after {
   display: block;
 }
-
 
 /* Style the checkmark/indicator */
 
@@ -312,7 +305,6 @@ div.main {
   -moz-transform: rotate(45deg);
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
-
 }
 
 .filter-nav .form-check {
@@ -324,11 +316,11 @@ div.main {
   display: inline-block;
   font-size: 14px;
   background-color: #e0e0e0;
-  box-shadow: 0 2px 4px 0 rgba(255, 255, 255, .5);
+  box-shadow: 0 2px 4px 0 rgba(255, 255, 255, 0.5);
   border-radius: 3px;
   margin: 2px 4px;
   overflow: hidden;
-  transition: background-color .1s;
+  transition: background-color 0.1s;
   max-width: 200px;
   padding: 2px 4px;
 }
@@ -366,7 +358,7 @@ div.main {
   max-width: 900px;
   overflow-x: auto;
 }
-.no-data-available{
+.no-data-available {
   font-size: 20px;
   color: #333 !important;
 }
@@ -376,7 +368,7 @@ div.main {
 }
 .tabs-container {
   margin-bottom: 15px;
-} 
+}
 .tabs-container p-button:last-child {
   margin-left: 15px !important;
 }
@@ -387,7 +379,7 @@ div.main {
 }
 
 .table-overlay {
-  background:none;
+  background: none;
   opacity: 0.7;
 }
 .no-projects {
@@ -400,7 +392,7 @@ div.main {
 }
 .error-msg {
   text-align: center;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   left: 50%;
   top: 50%;
   position: relative;
@@ -408,7 +400,7 @@ div.main {
 }
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 :host ::ng-deep .p-button.p-button-secondary.edit-button {
-  background: #6B6B6B;
+  background: #6b6b6b;
   color: white;
 }
 
@@ -431,11 +423,10 @@ div.main {
   border: none;
 }
 
-
 :host ::ng-deep .custom-grid .p-datatable thead.sprint,
 :host ::ng-deep .p-datatable thead tr {
   display: block;
-  background: #0175BE;
+  background: #0175be;
   color: #fff;
 }
 
@@ -457,10 +448,8 @@ div.main {
   box-shadow: -1px -1px 1px 0.5px rgb(0 0 0 / 20%);
 }
 
-
 :host ::ng-deep .custom-grid .p-datatable thead tr th,
 :host ::ng-deep .p-datatable tbody tr.sprint td {
-
   display: inline-block;
   border: none;
   padding-left: 0px;
@@ -495,7 +484,13 @@ div.main {
   border-radius: 5px;
 }
 
-:host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell {
+:host
+  ::ng-deep
+  .custom-grid
+  .p-datatable
+  .p-datatable-thead
+  > tr
+  > th.expanded-table-header-cell {
   display: table-cell;
   background-color: var(--color-gray-c6);
   color: rgba(0, 0, 0, 0.6);
@@ -505,24 +500,49 @@ div.main {
   border: 1px solid var(--color-gray-c6);
 }
 
-:host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell div{
+:host
+  ::ng-deep
+  .custom-grid
+  .p-datatable
+  .p-datatable-thead
+  > tr
+  > th.expanded-table-header-cell
+  div {
   display: flex;
   align-items: center;
 }
 
-:host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell span.editable{
+:host
+  ::ng-deep
+  .custom-grid
+  .p-datatable
+  .p-datatable-thead
+  > tr
+  > th.expanded-table-header-cell
+  span.editable {
   display: inline-flex;
   max-width: 90%;
   white-space: break-spaces;
 }
 
-
-:host ::ng-deep .custom-grid .p-datatable .p-datatable-tbody>tr>td.expanded-table-body-cell {
+:host
+  ::ng-deep
+  .custom-grid
+  .p-datatable
+  .p-datatable-tbody
+  > tr
+  > td.expanded-table-body-cell {
   padding: 1rem;
   text-align: left;
 }
 
-:host ::ng-deep .custom-grid .p-datatable .p-datatable-tbody>tr>td.expanded-table-body-cell.no-assignee {
+:host
+  ::ng-deep
+  .custom-grid
+  .p-datatable
+  .p-datatable-tbody
+  > tr
+  > td.expanded-table-body-cell.no-assignee {
   text-align: center;
 }
 
@@ -547,12 +567,11 @@ div.main {
   width: calc(100% / 9);
 }
 
-
 .upload_sprint_capacity {
   width: calc(100% / 4);
 }
 
-.p-error-block{
+.p-error-block {
   color: red;
   font-size: 0.7rem;
   position: absolute;
@@ -569,7 +588,7 @@ div.main {
   margin: 0 !important;
 }
 
-:host ::ng-deep .custom-grid .p-datatable .p-datatable-thead > tr > th{
+:host ::ng-deep .custom-grid .p-datatable .p-datatable-thead > tr > th {
   text-align: center;
   vertical-align: text-top;
 }

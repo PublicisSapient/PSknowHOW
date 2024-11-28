@@ -16,38 +16,38 @@
  *
  ******************************************************************************/
 
-.status-container{
-    display: inline-block;
-    background-color: #dcb239;
-    color: #fff;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 12px;
-    padding: 4px 8px 4px 8px;
-    border-radius: 2px;
-    margin-right: 4px;
-    margin-top: 2px;
-    position: relative;
+.status-container {
+  display: inline-block;
+  background-color: #dcb239;
+  color: #fff;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  padding: 4px 8px 4px 8px;
+  border-radius: 2px;
+  margin-right: 4px;
+  margin-top: 2px;
+  position: relative;
 }
 
 .status-container.rejected {
-    background-color: #ea6a47;
-    border: 1px solid #ea6a47;
+  background-color: #ea6a47;
+  border: 1px solid #ea6a47;
 }
 
 .status-container.approved {
-    background-color: #6ab187;
-    border: 1px solid #6ab187;
+  background-color: #6ab187;
+  border: 1px solid #6ab187;
 }
 
 #recall {
-    width: 80px;
+  width: 80px;
 }
 
 #acceptReject {
-    width: 120px;
+  width: 120px;
 }
 
 #role {
-   width: 220px; 
+  width: 220px;
 }

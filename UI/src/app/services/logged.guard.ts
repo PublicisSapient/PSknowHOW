@@ -17,24 +17,26 @@
  ******************************************************************************/
 
 import { Injectable } from '@angular/core';
-import { Router, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  Router,
+  Resolve,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { HttpService } from './http.service';
 import { SharedService } from './shared.service';
 
-
 @Injectable()
 export class Logged implements Resolve<any> {
-
   constructor(
     private router: Router,
-    private sharedService : SharedService,
-    private httpService: HttpService
-  ) { }
+    private sharedService: SharedService,
+    private httpService: HttpService,
+  ) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-
     const currentUserDetails = this.sharedService.currentUserDetails;
-    if(currentUserDetails && currentUserDetails['authorities']){
+    if (currentUserDetails && currentUserDetails['authorities']) {
       this.router.navigate(['/dashboard']);
     }
     return false;

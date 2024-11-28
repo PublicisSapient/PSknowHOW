@@ -1,4 +1,4 @@
-  /*******************************************************************************
+/*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -15,80 +15,81 @@
  * limitations under the License.
  *
  ******************************************************************************/
- 
-.color-grey{
-    color: rgba(0, 0, 0, 0.6);
+
+.color-grey {
+  color: rgba(0, 0, 0, 0.6);
 }
 
-:host ::ng-deep .p-datatable table{
-    margin-top: 1rem;
-    /* border:1px solid black; */
+:host ::ng-deep .p-datatable table {
+  margin-top: 1rem;
+  /* border:1px solid black; */
 }
 
-:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td,:host ::ng-deep .p-datatable .p-datatable-thead > tr > th{
-    padding: 0.5rem 1rem;
-    border-width: 1px;
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  padding: 0.5rem 1rem;
+  border-width: 1px;
 }
 
-:host ::ng-deep .p-datatable .p-datatable-thead > tr , :host ::ng-deep .p-datatable .p-datatable-thead > tr > th{
-    background: #0175BE;
-    color: #fff;
+:host ::ng-deep .p-datatable .p-datatable-thead > tr,
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  background: #0175be;
+  color: #fff;
 }
 
-:host ::ng-deep .p-datatable .p-datatable-tbody > tr{
-    border: 1px solid rgba(0, 0, 0, 0.2);
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr {
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-:host ::ng-deep .p-datatable .p-datatable-thead > tr > th{
-    padding: 1rem 1rem;
-    border: none;
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  padding: 1rem 1rem;
+  border: none;
 }
 
-
-:host ::ng-deep .p-datatable .p-paginator-bottom{
-    border-width: 0px;
+:host ::ng-deep .p-datatable .p-paginator-bottom {
+  border-width: 0px;
 }
 
-.filter-container{
-    position: relative;
+.filter-container {
+  position: relative;
 }
 
-.filter-list{
-    z-index: 1001;
-    position: absolute;
-    width: 200px;
-    top: 18px;
-    left: -182px;
-    background: #ffffff;
-    color: #495057;
-    border: 0 none;
-    border-radius: 6px;
-    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
-    min-width: 12.5rem;
+.filter-list {
+  z-index: 1001;
+  position: absolute;
+  width: 200px;
+  top: 18px;
+  left: -182px;
+  background: #ffffff;
+  color: #495057;
+  border: 0 none;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
+  min-width: 12.5rem;
 }
 
-.save-container{
-    margin-top: 1rem;
-    display: flex;
-    justify-content: flex-end;
+.save-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
-:host ::ng-deep.save-button button{
-    width: 80px;
-    /* height: 40px; */
+:host ::ng-deep.save-button button {
+  width: 80px;
+  /* height: 40px; */
 }
 
-.checkbox{
-    width: 1.25rem;
-    height: 1.25rem;
+.checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
-.label-name{
-    font-size: 1.2rem;
+.label-name {
+  font-size: 1.2rem;
 }
 
-.filter-icon{
-    width: 1.25rem;
-    height: 1.25rem;
-    cursor: pointer;
+.filter-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
 }

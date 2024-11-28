@@ -16,47 +16,48 @@
  *
  ******************************************************************************/
 
- ul.project-list{
-    padding-inline-start: 0;
+ul.project-list {
+  padding-inline-start: 0;
 }
 
-ul.project-list li{
-    display: inline-block;
-    background-color: #0af;
-    color: #fff;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 12px;
-    padding: 4px 8px 4px 8px;
-    border-radius: 2px;
-    margin-right: 4px;
-    margin-top: 2px;
-    position: relative;
+ul.project-list li {
+  display: inline-block;
+  background-color: #0af;
+  color: #fff;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  padding: 4px 8px 4px 8px;
+  border-radius: 2px;
+  margin-right: 4px;
+  margin-top: 2px;
+  position: relative;
 }
 
 .accept-reject-container button.ui-button {
-    margin-right: 12px;
-    font-size: 12px;
+  margin-right: 12px;
+  font-size: 12px;
 }
 
 .accept-reject-container button.ui-button:last-child {
-    margin-right: 0;
+  margin-right: 0;
 }
 
-::ng-deep body .content .ui-widget, ::ng-deep body .content .ui-inputtext {
-    font-size: 12px;
+::ng-deep body .content .ui-widget,
+::ng-deep body .content .ui-inputtext {
+  font-size: 12px;
 }
 
 .border-color-dark-grey {
-    border-color: #6c757d !important;
+  border-color: #6c757d !important;
 }
 
 .form_title {
-    margin: 24px 0px;
-    color: #585858;
+  margin: 24px 0px;
+  color: #585858;
 }
 
-.white-list-email-row{
-  background-color: #FFECD7 !important;
-  color : black !important;
+.white-list-email-row {
+  background-color: #ffecd7 !important;
+  color: black !important;
 }

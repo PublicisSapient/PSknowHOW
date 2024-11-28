@@ -21,18 +21,16 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-sso-auth-failure',
   templateUrl: './sso-auth-failure.component.html',
-  styleUrls: ['./sso-auth-failure.component.css']
+  styleUrls: ['./sso-auth-failure.component.css'],
 })
 export class SsoAuthFailureComponent implements OnInit {
+  constructor(private router: Router) {}
 
-  constructor(private router: Router) { }
-
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   reloadApp() {
     console.log('Reload App Called');
-    this.router.navigate(['./dashboard/my-knowhow']).then(success => {
+    this.router.navigate(['./dashboard/my-knowhow']).then((success) => {
       this.clearAllCookies();
       window.location.reload();
     });
@@ -46,5 +44,4 @@ export class SsoAuthFailureComponent implements OnInit {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
-
 }

@@ -19,18 +19,14 @@
 import { Injectable } from '@angular/core';
 import * as fs from 'file-saver';
 
-
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class JsonExportImportService {
-
-exportJson(json, fileName){
+  exportJson(json, fileName) {
     const blob = new Blob([JSON.stringify(json)], {
-        type: 'text/plain;charset=utf-8'
+      type: 'text/plain;charset=utf-8',
     });
     fs.saveAs(blob, fileName + '.json');
-}
-
+  }
 }

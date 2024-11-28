@@ -16,29 +16,28 @@
  *
  ******************************************************************************/
 
-
- .z-index-10 {
-    z-index: 10;
+.z-index-10 {
+  z-index: 10;
 }
 
 #cycle-time-priority-days .bs-wizard-dot {
-    top: 19px !important;
+  top: 19px !important;
 }
 
 #cycle-time-priority-days .progress {
-    height: 18px !important;
-}   
-.Exec-Scrum-Checkins{
-    z-index: 9;
+  height: 18px !important;
+}
+.Exec-Scrum-Checkins {
+  z-index: 9;
 }
 
-.no-projects{
-    height: calc(100vh - 138px);
-    margin: 20px;
-    border-radius: 7px;
-    background-color: white;
+.no-projects {
+  height: calc(100vh - 138px);
+  margin: 20px;
+  border-radius: 7px;
+  background-color: white;
 }
 
-.no-projects h2{
-    color: var(--color-black);
+.no-projects h2 {
+  color: var(--color-black);
 }

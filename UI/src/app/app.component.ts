@@ -22,19 +22,21 @@ import { GetAuthService } from './services/getauth.service';
 import { HttpService } from './services/http.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
-import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
+import {
+  Router,
+  RouteConfigLoadStart,
+  RouteConfigLoadEnd,
+  NavigationEnd,
+  ActivatedRoute,
+} from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
 import { FeatureFlagsService } from './services/feature-toggle.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
-
-
-
 export class AppComponent implements OnInit {
-
   loadingRouteConfig: boolean;
 
   authorized = <boolean>true;
@@ -45,15 +47,25 @@ export class AppComponent implements OnInit {
   @HostListener('window:scroll', ['$event'])
   onScroll(event) {
     const header = document.querySelector('.header');
-    if (window.scrollY > 200) { // adjust the scroll position threshold as needed
+    if (window.scrollY > 200) {
+      // adjust the scroll position threshold as needed
       header?.classList.add('scrolled');
     } else {
       header?.classList.remove('scrolled');
     }
   }
 
-  constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
+  constructor(
+    private router: Router,
+    private service: SharedService,
+    private getAuth: GetAuthService,
+    private httpService: HttpService,
+    private primengConfig: PrimeNGConfig,
+    public ga: GoogleAnalyticsService,
+    private authorisation: GetAuthorizationService,
+    private route: ActivatedRoute,
+    private feature: FeatureFlagsService,
+  ) {
     this.authorized = this.getAuth.checkAuth();
   }
 
@@ -62,24 +74,21 @@ export class AppComponent implements OnInit {
 
     this.newUI = localStorage.getItem('newUI') ? true : false;
 
-
     /** Fetch projectId and sprintId from query param and save it to global object */
-    this.route.queryParams
-      .subscribe(params => {
-        let nodeId = params.projectId;
-        let sprintId = params.sprintId;
-        if (nodeId) {
-          this.service.setProjectQueryParamInFilters(nodeId)
-        }
-        if (sprintId) {
-          this.service.setSprintQueryParamInFilters(sprintId)
-        }
+    this.route.queryParams.subscribe((params) => {
+      let nodeId = params.projectId;
+      let sprintId = params.sprintId;
+      if (nodeId) {
+        this.service.setProjectQueryParamInFilters(nodeId);
       }
-      );
+      if (sprintId) {
+        this.service.setSprintQueryParamInFilters(sprintId);
+      }
+    });
 
     this.primengConfig.ripple = true;
     this.authorized = this.getAuth.checkAuth();
-    this.router.events.subscribe(event => {
+    this.router.events.subscribe((event) => {
       if (event instanceof RouteConfigLoadStart) {
         this.loadingRouteConfig = true;
       } else if (event instanceof RouteConfigLoadEnd) {
@@ -90,18 +99,21 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         this.loadingRouteConfig = false;
         const data = {
-          url: event.urlAfterRedirects + '/' + (this.service.getSelectedType() || 'Scrum'),
+          url:
+            event.urlAfterRedirects +
+            '/' +
+            (this.service.getSelectedType() || 'Scrum'),
           userRole: this.authorisation.getRole(),
           version: this.httpService.currentVersion,
-          uiType: JSON.parse(localStorage.getItem('newUI')) === true ? 'New' : 'Old'
+          uiType:
+            JSON.parse(localStorage.getItem('newUI')) === true ? 'New' : 'Old',
         };
         this.ga.setPageLoad(data);
       }
-
     });
   }
 
-  async checkNewUIFlag(){
+  async checkNewUIFlag() {
     this.feature.config = this.feature.loadConfig().then((res) => res);
     this.isNewUISwitch = await this.feature.isFeatureEnabled('NEW_UI_SWITCH');
   }
@@ -109,7 +121,7 @@ export class AppComponent implements OnInit {
   uiSwitch(event, userChange = false) {
     let isChecked = event.checked;
     const data = {
-      type: isChecked ? 'New' : 'Old'
+      type: isChecked ? 'New' : 'Old',
     };
     this.ga.setUIType(data);
     if (isChecked) {

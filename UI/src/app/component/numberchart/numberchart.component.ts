@@ -21,13 +21,9 @@ import * as d3 from 'd3';
 @Component({
   selector: 'app-numberchart',
   templateUrl: './numberchart.component.html',
-  styleUrls: ['./numberchart.component.css']
+  styleUrls: ['./numberchart.component.css'],
 })
-
-
-
 export class NumberchartComponent implements OnInit {
-
   @Input() kpiName: string;
   @Input() value: string;
   @Input() unit: string;
@@ -38,21 +34,21 @@ export class NumberchartComponent implements OnInit {
 
   elem;
 
-  constructor(private viewContainerRef: ViewContainerRef) { }
+  constructor(private viewContainerRef: ViewContainerRef) {}
 
   ngOnInit() {
-
-
     this.elem = this.viewContainerRef.element.nativeElement;
     this.draw();
-
-
   }
 
   draw() {
-    d3.select(this.elem).select('.number-chart').style('height', this.height + 'px').style('margin-top', '60px').style('background-color', this.backgroundColor);
-    d3.select(this.elem).select('.value').style('font-size', this.fontSize + 'em');
-
+    d3.select(this.elem)
+      .select('.number-chart')
+      .style('height', this.height + 'px')
+      .style('margin-top', '60px')
+      .style('background-color', this.backgroundColor);
+    d3.select(this.elem)
+      .select('.value')
+      .style('font-size', this.fontSize + 'em');
   }
-
 }

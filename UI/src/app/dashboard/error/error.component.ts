@@ -24,7 +24,7 @@ import { timer } from 'rxjs/internal/observable/timer';
 @Component({
   selector: 'app-error',
   templateUrl: './error.component.html',
-  styleUrls: ['./error.component.css']
+  styleUrls: ['./error.component.css'],
 })
 export class ErrorComponent implements OnInit, OnDestroy {
   errorMsg = '';
@@ -34,14 +34,14 @@ export class ErrorComponent implements OnInit, OnDestroy {
   interval = null;
   source = null;
 
-  constructor(private service: SharedService, public router: Router) {
-  }
+  constructor(private service: SharedService, public router: Router) {}
 
   ngOnInit() {
     // for getting error from Shared service
     this.service.passErrorToErrorPage.subscribe((error) => {
       switch (error.status) {
-        case 0: this.errorMsg = 'Server not available';
+        case 0:
+          this.errorMsg = 'Server not available';
           this.redirectButtonText = 'Go to homepage';
           this.redirectButtonRoute = '/';
           this.pollForAvailability(this.redirectButtonRoute);
@@ -52,28 +52,31 @@ export class ErrorComponent implements OnInit, OnDestroy {
           this.redirectButtonText = 'Go to Login';
           this.redirectButtonRoute = './authentication/login';
           break;
-        case 403: this.errorMsg = 'Unauthorised action';
+        case 403:
+          this.errorMsg = 'Unauthorised action';
           this.redirectButtonText = 'Go to homepage';
           this.redirectButtonRoute = '/';
           this.pollForAvailability(this.redirectButtonRoute);
           break;
-        case 404: this.errorMsg = 'API Not Found';
+        case 404:
+          this.errorMsg = 'API Not Found';
           this.redirectButtonText = 'Go to homepage';
           this.redirectButtonRoute = '/';
           this.pollForAvailability(this.redirectButtonRoute);
           break;
-        case 500: this.errorMsg = 'Internal Server error';
+        case 500:
+          this.errorMsg = 'Internal Server error';
           this.redirectButtonText = 'Go to homepage';
           this.redirectButtonRoute = '/';
           this.pollForAvailability(this.redirectButtonRoute);
           break;
-        default: this.errorMsg = 'Some error occurred';
+        default:
+          this.errorMsg = 'Some error occurred';
           this.redirectButtonText = 'Go to homepage';
           this.redirectButtonRoute = '/';
           this.pollForAvailability(this.redirectButtonRoute);
           break;
       }
-
     });
   }
 
@@ -87,7 +90,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
   pollForAvailability(redirectButtonRoute) {
     if (!this.source) {
-      this.source = timer(1000, 1000).subscribe(val => {
+      this.source = timer(1000, 1000).subscribe((val) => {
         if (this.timeLeft > 0) {
           this.timeLeft--;
         } else {
@@ -97,8 +100,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
           this.redirectButtonText = 'Redirecting';
           this.router.navigate([redirectButtonRoute]);
         }
-      }
-      );
+      });
     }
   }
 }

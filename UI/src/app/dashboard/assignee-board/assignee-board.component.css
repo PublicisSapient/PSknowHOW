@@ -16,62 +16,63 @@
  *
  ******************************************************************************/
 
-.container{
-    min-height: 400px;
-    display: flex;
-    padding: 0.25rem;
-    box-sizing: border-box;
-    position: relative;
+.container {
+  min-height: 400px;
+  display: flex;
+  padding: 0.25rem;
+  box-sizing: border-box;
+  position: relative;
 }
 
-.graph-container{
-    border: 1px solid #c0c0c0;
-    margin-right: 0.25rem;
-    flex: 1 1 auto;
-    flex-basis: 75%;
-    height: calc(100vh - 220px);
-    overflow: hidden;
-    margin-top: 50px;
+.graph-container {
+  border: 1px solid #c0c0c0;
+  margin-right: 0.25rem;
+  flex: 1 1 auto;
+  flex-basis: 75%;
+  height: calc(100vh - 220px);
+  overflow: hidden;
+  margin-top: 50px;
 }
 
 .noFullScreen .graph-container {
-    max-height: unset;
-    height: calc(100vh - 455px);
+  max-height: unset;
+  height: calc(100vh - 455px);
 }
 
-.issue-card-container{
-    flex-basis: 24%;
-    border: 1px solid #c0c0c0;
-    height: calc(100vh - 220px);
-    overflow-y: auto;
-    margin-top: 50px;
+.issue-card-container {
+  flex-basis: 24%;
+  border: 1px solid #c0c0c0;
+  height: calc(100vh - 220px);
+  overflow-y: auto;
+  margin-top: 50px;
 }
 
-.issue-nav{
-    display: flex;
-    justify-content: space-between;
+.issue-nav {
+  display: flex;
+  justify-content: space-between;
 }
 
-:host::ng-deep .prev .p-button,:host::ng-deep .next .p-button{
-    color: black;
-    background: #EFEFEF;
+:host::ng-deep .prev .p-button,
+:host::ng-deep .next .p-button {
+  color: black;
+  background: #efefef;
 }
 
-.noFullScreen, .container.noFullScreen #scroller {
-    height: calc(100vh - 395px);
-    overflow-y: auto;
-    min-height: unset;
-    max-height: unset;
+.noFullScreen,
+.container.noFullScreen #scroller {
+  height: calc(100vh - 395px);
+  overflow-y: auto;
+  min-height: unset;
+  max-height: unset;
 }
 
 .noFullScreen .issue-card-container {
-    height: fit-content;
-    overflow-y: unset;
+  height: fit-content;
+  overflow-y: unset;
 }
 
 @media only screen and (min-width: 1321px) {
-
-    .noFullScreen .graph-container {
-        height: calc(100vh - 470px);
-    }
+  .noFullScreen .graph-container {
+    height: calc(100vh - 470px);
+  }
 }

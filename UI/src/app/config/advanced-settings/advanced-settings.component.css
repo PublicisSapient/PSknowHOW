@@ -22,12 +22,13 @@ div.main {
   width: calc(100% - 4px);
   padding: 16px;
   border-radius: 4px;
-  box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
   /* width: calc(100% - 16px);
   margin: 8px; */
 }
 
-.status-container{
+.status-container {
   display: inline-block;
   background-color: #dcb239;
   color: #fff;
@@ -48,8 +49,8 @@ div.main {
 }
 
 .status-container.pending {
-  background-color: #FFBF00;
-  border: 1px solid #FFBF00;
+  background-color: #ffbf00;
+  border: 1px solid #ffbf00;
 }
 
 .status-container.active {
@@ -58,8 +59,8 @@ div.main {
 }
 
 ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-	position: relative;
-	top: unset;
+  position: relative;
+  top: unset;
 }
 
 ::ng-deep .project-table-cell p-multiselect {
@@ -78,11 +79,11 @@ div.main {
   width: 200px;
 }
 
-.column-width{
+.column-width {
   width: max-content;
 }
-.disabled{
-  color: #B4B4B4;
+.disabled {
+  color: #b4b4b4;
   pointer-events: none;
 }
 
@@ -90,20 +91,21 @@ div.main {
   font-size: 12px;
   font-style: italic;
 }
-.error-text{
-  color: red;max-width: 600px;
+.error-text {
+  color: red;
+  max-width: 600px;
 }
-.tooltip-item{
+.tooltip-item {
   word-break: break-word;
 }
-.icon-container{
+.icon-container {
   min-width: 35px;
   text-align: center;
 }
-.icon-list{
+.icon-list {
   font-size: 1.5rem;
 }
-::ng-deep .progress-dialog-body{
+::ng-deep .progress-dialog-body {
   min-width: 300px;
   max-width: 600px;
 }

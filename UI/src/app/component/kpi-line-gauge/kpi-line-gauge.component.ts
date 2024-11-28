@@ -22,7 +22,7 @@ import { ExecutiveComponent } from '../../dashboard/executive/executive.componen
 @Component({
   selector: 'app-kpi-line-gauge',
   templateUrl: './kpi-line-gauge.component.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class KpiComponent implements OnInit {
   @Input('title') title: string;
@@ -38,12 +38,12 @@ export class KpiComponent implements OnInit {
   @Input() loaderArray: string[];
   constructor(
     private helperService: HelperService,
-    private executive: ExecutiveComponent
-  ) { }
+    private executive: ExecutiveComponent,
+  ) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   downloadExcel(kpiId, kpiName, isKanban) {
-    this.executive.downloadExcel(kpiId, kpiName, isKanban,false);
+    this.executive.downloadExcel(kpiId, kpiName, isKanban, false);
   }
 }

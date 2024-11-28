@@ -1,4 +1,4 @@
-  /*******************************************************************************
+/*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -17,58 +17,56 @@
  ******************************************************************************/
 
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Smiley css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
-form#ratingForm{
-    width: max-content;
-  }
-  
-  form#ratingForm input[type=radio] {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border: none;
-    cursor: pointer;
-    filter: opacity(0.3);
-    margin: 0 5px;
-    transition: all 0.2s ease;
-  }
-  
-  form#ratingForm input[type=radio]:hover,
-  
-  form#ratingForm input[type=radio]:checked {
-    filter: grayscale(0);
-  }
-  
-  form#ratingForm input[type=radio]:focus {
-    outline: 0;
-  }
-  
-  form#ratingForm input[type=radio].ecstatic {
-    background: url("../../../assets/img/smiley-5.svg") center;
-    background-size: cover;
-  }
-  
-  form#ratingForm input[type=radio].happy {
-    background: url("../../../assets/img/smiley-4.svg") center;
-    background-size: cover;
-  }
-  
-  form#ratingForm input[type=radio].neutral {
-    background: url("../../../assets/img/smiley-3.svg") center;
-    background-size: cover;
-  }
-  
-  form#ratingForm input[type=radio].sad {
-    background: url("../../../assets/img/smiley-2.svg") center;
-    background-size: cover;
-  }
-  
-  form#ratingForm input[type=radio].disappointed {
-    background: url("../../../assets/img/smiley-1.svg") center;
-    background-size: cover;
-  }
+form#ratingForm {
+  width: max-content;
+}
 
-  .rating-input-container {
-    word-break: break-all;
-    max-width: 90px;
-  }
-  
+form#ratingForm input[type='radio'] {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: none;
+  cursor: pointer;
+  filter: opacity(0.3);
+  margin: 0 5px;
+  transition: all 0.2s ease;
+}
+
+form#ratingForm input[type='radio']:hover,
+form#ratingForm input[type='radio']:checked {
+  filter: grayscale(0);
+}
+
+form#ratingForm input[type='radio']:focus {
+  outline: 0;
+}
+
+form#ratingForm input[type='radio'].ecstatic {
+  background: url('../../../assets/img/smiley-5.svg') center;
+  background-size: cover;
+}
+
+form#ratingForm input[type='radio'].happy {
+  background: url('../../../assets/img/smiley-4.svg') center;
+  background-size: cover;
+}
+
+form#ratingForm input[type='radio'].neutral {
+  background: url('../../../assets/img/smiley-3.svg') center;
+  background-size: cover;
+}
+
+form#ratingForm input[type='radio'].sad {
+  background: url('../../../assets/img/smiley-2.svg') center;
+  background-size: cover;
+}
+
+form#ratingForm input[type='radio'].disappointed {
+  background: url('../../../assets/img/smiley-1.svg') center;
+  background-size: cover;
+}
+
+.rating-input-container {
+  word-break: break-all;
+  max-width: 90px;
+}

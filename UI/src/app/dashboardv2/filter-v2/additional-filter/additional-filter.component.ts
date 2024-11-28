@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { MultiSelect } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -7,7 +15,7 @@ import { TooltipModule } from 'primeng/tooltip';
 @Component({
   selector: 'app-additional-filter',
   templateUrl: './additional-filter.component.html',
-  styleUrls: ['./additional-filter.component.css']
+  styleUrls: ['./additional-filter.component.css'],
 })
 export class AdditionalFilterComponent implements OnChanges {
   @Input() selectedLevel: any = '';
@@ -29,105 +37,140 @@ export class AdditionalFilterComponent implements OnChanges {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   stateFilters: any;
 
-  constructor(public service: SharedService, public helperService: HelperService) {
-  }
+  constructor(
+    public service: SharedService,
+    public helperService: HelperService,
+  ) {}
 
   ngOnInit() {
-    this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
-      if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
-        this.selectedFilters = [];
-        this.selectedTrends = this.service.getSelectedTrends();
+    this.subscriptions.push(
+      this.service.populateAdditionalFilters.subscribe((data) => {
+        if (
+          data &&
+          Object.keys(data)?.length &&
+          data[Object.keys(data)[0]]?.length
+        ) {
+          this.selectedFilters = [];
+          this.selectedTrends = this.service.getSelectedTrends();
 
-        if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
-          this.filterData = [];
-          this.previousSelectedTrends = [...this.selectedTrends];
-          // project changed, reset addtnl. filters
-          // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
-        }
+          if (
+            !this.arrayCompare(
+              this.selectedTrends.map((x) => x.nodeId).sort(),
+              this.previousSelectedTrends.map((x) => x.nodeId).sort(),
+            )
+          ) {
+            this.filterData = [];
+            this.previousSelectedTrends = [...this.selectedTrends];
+            // project changed, reset addtnl. filters
+            // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+          }
 
-        Object.keys(data).forEach((f, index) => {
-          if (this.filterData[index]) {
-            if (this.selectedTab === 'developer') {
-              data[f].forEach(element => {
-
-                if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                  if (this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
-                    this.filterData[index] = [];
+          Object.keys(data).forEach((f, index) => {
+            if (this.filterData[index]) {
+              if (this.selectedTab === 'developer') {
+                data[f].forEach((element) => {
+                  if (
+                    !this.filterData[index]
+                      .map((x) => x.nodeId)
+                      .includes(element.nodeId)
+                  ) {
+                    if (
+                      this.filterData[index]?.length &&
+                      this.filterData[index][0].labelName !==
+                        this.additionalFilterConfig[index]?.defaultLevel
+                          ?.labelName
+                    ) {
+                      this.filterData[index] = [];
+                    }
+                    this.filterData[index].push(element);
                   }
-                  this.filterData[index].push(element);
-                }
-              });
+                });
 
-              this.filterData.forEach((filterSet, index) => {
-                if (!data[Object.keys(data)[index]]) {
-                  this.filterData.splice(index, 1);
-                }
-              });
-
+                this.filterData.forEach((filterSet, index) => {
+                  if (!data[Object.keys(data)[index]]) {
+                    this.filterData.splice(index, 1);
+                  }
+                });
+              } else {
+                this.filterData[index] = data[f];
+              }
             } else {
               this.filterData[index] = data[f];
             }
-
-
-          } else {
-            this.filterData[index] = data[f];
-          }
-        });
-
-        if (this.selectedTab !== 'developer') {
-          this.filterData.forEach(filterGroup => {
-            if (filterGroup) {
-              filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
-            }
           });
 
-          this.setCorrectLevel();
+          if (this.selectedTab !== 'developer') {
+            this.filterData.forEach((filterGroup) => {
+              if (filterGroup) {
+                filterGroup = this.helperService.sortByField(filterGroup, [
+                  'nodeName',
+                  'parentId',
+                ]);
+              }
+            });
+
+            this.setCorrectLevel();
+          } else {
+            this.applyDefaultFilter();
+          }
         } else {
-          this.applyDefaultFilter();
+          this.resetFilterData();
         }
-      }
-      else {
-        this.resetFilterData();
-      }
-    }));
+      }),
+    );
   }
 
-
-/**
- * Resets the filter data based on the currently selected tab and trends.
- * If the selected tab is not 'developer', filterData is cleared; otherwise, 
- * it checks if the selected trends have changed and resets filterData accordingly.
- * 
- * @returns {void} - No return value.
- */
+  /**
+   * Resets the filter data based on the currently selected tab and trends.
+   * If the selected tab is not 'developer', filterData is cleared; otherwise,
+   * it checks if the selected trends have changed and resets filterData accordingly.
+   *
+   * @returns {void} - No return value.
+   */
   resetFilterData() {
     if (this.selectedTab !== 'developer') {
       this.filterData = [];
     } else {
-      if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
+      if (
+        !this.arrayCompare(
+          this.selectedTrends.map((x) => x.nodeId).sort(),
+          this.previousSelectedTrends.map((x) => x.nodeId).sort(),
+        )
+      ) {
         this.filterData = [];
         this.previousSelectedTrends = [...this.selectedTrends];
       }
     }
   }
 
-/**
- * Sets the correct level for filters based on the additional filter levels,
- * excluding 'release' and 'sprint' levels, and restores the filter selection state
- * after a brief delay.
- * 
- * @returns {void} - This function does not return a value.
- */
+  /**
+   * Sets the correct level for filters based on the additional filter levels,
+   * excluding 'release' and 'sprint' levels, and restores the filter selection state
+   * after a brief delay.
+   *
+   * @returns {void} - This function does not return a value.
+   */
   setCorrectLevel() {
-    let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release');
-    this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
+    let correctLevelMapping = this.additionalFilterLevelArr.filter(
+      (f) => f.hierarchyLevelId.toLowerCase() !== 'release',
+    );
+    this.squadLevel = correctLevelMapping.filter(
+      (x) => x['hierarchyLevelId'].toLowerCase() !== 'sprint',
+    )[0];
     setTimeout(() => {
-      this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+      this.stateFilters =
+        this.helperService.getBackupOfFilterSelectionState('additional_level');
       if (this.stateFilters && Object.keys(this.stateFilters)) {
         Object.keys(this.stateFilters).forEach((key) => {
           let correctIndex = 0;
           for (let i = 0; i < this.additionalFilterConfig.length; i++) {
-            let level = correctLevelMapping.filter(f => f.hierarchyLevelName.toLowerCase() === this.additionalFilterConfig[i].defaultLevel.labelName.toLowerCase())[0];
+            let level = correctLevelMapping.filter(
+              (f) =>
+                f.hierarchyLevelName.toLowerCase() ===
+                this.additionalFilterConfig[
+                  i
+                ].defaultLevel.labelName.toLowerCase(),
+            )[0];
             if (level.hierarchyLevelId.toLowerCase() === key.toLowerCase()) {
               correctIndex = i;
               break;
@@ -140,7 +183,6 @@ export class AdditionalFilterComponent implements OnChanges {
       }
     }, 100);
   }
-
 
   arrayCompare(arr1, arr2) {
     if (arr1.length !== arr2.length) {
@@ -160,11 +202,11 @@ export class AdditionalFilterComponent implements OnChanges {
     let fakeEvent = {};
 
     this.filterData.forEach((filter, index) => {
-      if (filter.map(f => f.nodeName).includes('Overall')) {
-
+      if (filter.map((f) => f.nodeName).includes('Overall')) {
         fakeEvent['value'] = 'Overall';
 
-        this.selectedFilters[index] = filter[filter.findIndex(x => x.nodeName === 'Overall')];
+        this.selectedFilters[index] =
+          filter[filter.findIndex((x) => x.nodeName === 'Overall')];
       } else {
         if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
           fakeEvent['value'] = this.filterData[0][0].nodeId;
@@ -177,13 +219,18 @@ export class AdditionalFilterComponent implements OnChanges {
       Promise.resolve().then(() => {
         this.applyAdditionalFilter(fakeEvent, index + 1);
       });
-
     });
-
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['additionalFilterConfig'] && changes['additionalFilterConfig'].previousValue && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
+    if (
+      changes['additionalFilterConfig'] &&
+      changes['additionalFilterConfig'].previousValue &&
+      !this.compareObjects(
+        changes['additionalFilterConfig'].previousValue,
+        changes['additionalFilterConfig'].currentValue,
+      )
+    ) {
       this.filterSet = new Set();
       this.filterData = [];
       this.selectedFilters = [];
@@ -195,7 +242,8 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   applyAdditionalFilter(e, index, multi = false, fromBackup = false) {
-    const filterKey = this.filterData.length === 1 ? 'filter' : 'filter' + index;
+    const filterKey =
+      this.filterData.length === 1 ? 'filter' : 'filter' + index;
     const isDeveloper = this.selectedTab.toLowerCase() === 'developer';
 
     if (!isDeveloper) {
@@ -203,16 +251,30 @@ export class AdditionalFilterComponent implements OnChanges {
         let obj = {};
         for (let i = 0; i <= Object.keys(e)?.length; i++) {
           if (e[i]) {
-            this.selectedAdditionalFilterLevel[i] = e && e[i] && e[i][0] ? e[i][0]['labelName'] : localStorage.getItem('selectedAdditionalFilterLevel_' + i);
-            localStorage.setItem('selectedAdditionalFilterLevel_' + i, this.selectedAdditionalFilterLevel[i]);
-            obj[this.selectedAdditionalFilterLevel[i]] = e[i] ? e[i] : this.stateFilters[Object.keys(this.stateFilters)[i]];
-            this.onAdditionalFilterChange.emit({ [this.selectedAdditionalFilterLevel[i]]: e[i] });
+            this.selectedAdditionalFilterLevel[i] =
+              e && e[i] && e[i][0]
+                ? e[i][0]['labelName']
+                : localStorage.getItem('selectedAdditionalFilterLevel_' + i);
+            localStorage.setItem(
+              'selectedAdditionalFilterLevel_' + i,
+              this.selectedAdditionalFilterLevel[i],
+            );
+            obj[this.selectedAdditionalFilterLevel[i]] = e[i]
+              ? e[i]
+              : this.stateFilters[Object.keys(this.stateFilters)[i]];
+            this.onAdditionalFilterChange.emit({
+              [this.selectedAdditionalFilterLevel[i]]: e[i],
+            });
           }
         }
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
+        this.helperService.setBackupOfFilterSelectionState({
+          additional_level: obj,
+        });
       } else {
         this.onAdditionalFilterChange.emit(e);
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
+        this.helperService.setBackupOfFilterSelectionState({
+          additional_level: e,
+        });
       }
     } else {
       this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
@@ -227,8 +289,8 @@ export class AdditionalFilterComponent implements OnChanges {
 
     if (this.multiSelect?.overlayVisible) {
       if (!e.hasOwnProperty('preventDefault')) {
-        e.preventDefault = () => { };
-        e.stopPropagation = () => { };
+        e.preventDefault = () => {};
+        e.stopPropagation = () => {};
       }
       this.multiSelect.close(e);
     }
@@ -237,13 +299,19 @@ export class AdditionalFilterComponent implements OnChanges {
   moveSelectedOptionToTop(event, index) {
     if (this.selectedFilters.length > 0) {
       // Get the selected options based on a particular property
-      const selected = this.filterData[index]?.filter(option =>
-        this.selectedFilters[index]?.some(selected => selected?.nodeName === option?.nodeName) // Match by 'nodeName'
+      const selected = this.filterData[index]?.filter(
+        (option) =>
+          this.selectedFilters[index]?.some(
+            (selected) => selected?.nodeName === option?.nodeName,
+          ), // Match by 'nodeName'
       );
 
       // Get the unselected options
-      const unselected = this.filterData[index]?.filter(option =>
-        !this.selectedFilters[index]?.some(selected => selected?.nodeName === option?.nodeName) // Match by 'id'
+      const unselected = this.filterData[index]?.filter(
+        (option) =>
+          !this.selectedFilters[index]?.some(
+            (selected) => selected?.nodeName === option?.nodeName,
+          ), // Match by 'id'
       );
 
       // Combine selected and unselected, with selected on top
@@ -254,23 +322,21 @@ export class AdditionalFilterComponent implements OnChanges {
 
   onSelectionChange(event: any, index) {
     if (event?.value.length > 0) {
-      this.moveSelectedOptionToTop(event, index)
+      this.moveSelectedOptionToTop(event, index);
     }
   }
 
-/**
- * Handles the change event of a dropdown element. 
- * If the selected element is valid, it applies an additional filter based on the event and index provided.
- * 
- * @param {any} $event - The event object from the dropdown change.
- * @param {number} index - The index of the dropdown element being changed.
- * @returns {void}
- */
-  onDropDownChange($event:any,index){
-    if(this.helperService.isDropdownElementSelected($event)){
-      this.applyAdditionalFilter($event, index)
+  /**
+   * Handles the change event of a dropdown element.
+   * If the selected element is valid, it applies an additional filter based on the event and index provided.
+   *
+   * @param {any} $event - The event object from the dropdown change.
+   * @param {number} index - The index of the dropdown element being changed.
+   * @returns {void}
+   */
+  onDropDownChange($event: any, index) {
+    if (this.helperService.isDropdownElementSelected($event)) {
+      this.applyAdditionalFilter($event, index);
     }
   }
-
-
 }

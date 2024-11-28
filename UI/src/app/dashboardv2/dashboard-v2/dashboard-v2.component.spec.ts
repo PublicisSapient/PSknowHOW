@@ -33,20 +33,24 @@ describe('DashboardV2Component', () => {
   let component: DashboardV2Component;
   let fixture: ComponentFixture<DashboardV2Component>;
   let getAuth: GetAuthService;
-  let httpService: HttpService
+  let httpService: HttpService;
   let sharedService: SharedService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DashboardV2Component ],
+      declarations: [DashboardV2Component],
       imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
-      providers: [SharedService, GetAuthService, HttpService, CommonModule, DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig }
-      ]
-    })
-    .compileComponents();
+      providers: [
+        SharedService,
+        GetAuthService,
+        HttpService,
+        CommonModule,
+        DatePipe,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DashboardV2Component);
     component = fixture.componentInstance;

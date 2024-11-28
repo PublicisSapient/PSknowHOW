@@ -17,210 +17,208 @@
  ******************************************************************************/
 
 ::ng-deep svg {
-	font: 10px sans-serif;
-	display: inline-block;
+  font: 10px sans-serif;
+  display: inline-block;
 }
-.chart123{
-	display: flex;
-	margin:0 10px 10px 0px;
-	align-items: center;
+.chart123 {
+  display: flex;
+  margin: 0 10px 10px 0px;
+  align-items: center;
 }
-.min-ht{
-	position: unset;
+.min-ht {
+  position: unset;
 }
-.min-ht .err{
-	top: 0;
+.min-ht .err {
+  top: 0;
 }
-::ng-deep  .tooltip_{
-	background-color: white;
-    padding: 1rem;
-    border: 1px solid lightgrey;
-    height: max-content;
-	width: 40%;
-    color: rgba(0, 0, 0, 0.54);
+::ng-deep .tooltip_ {
+  background-color: white;
+  padding: 1rem;
+  border: 1px solid lightgrey;
+  height: max-content;
+  width: 40%;
+  color: rgba(0, 0, 0, 0.54);
 }
 ::ng-deep .maturity-level-header {
-	margin: 0;
+  margin: 0;
 }
 
 ::ng-deep .maturity-level-column {
-	padding: 0;
+  padding: 0;
 }
 
 ::ng-deep .group-1-off {
-	fill: #E2E2E2;
+  fill: #e2e2e2;
 }
 
 ::ng-deep .group-1-on {
-	fill: #18519d;
+  fill: #18519d;
 }
 
 ::ng-deep .group-2-off {
-	fill: #E2E2E2;
+  fill: #e2e2e2;
 }
 
 ::ng-deep .group-2-on {
-	fill: #ff953b;
+  fill: #ff953b;
 }
 
 ::ng-deep .group-3-off {
-	fill: #E2E2E2;
+  fill: #e2e2e2;
 }
 
 ::ng-deep .group-3-on {
-	fill: #295098;
+  fill: #295098;
 }
 
 ::ng-deep .group-4-off {
-	fill: #E2E2E2;
+  fill: #e2e2e2;
 }
 
 ::ng-deep .group-4-on {
-	fill: #0B7A75;
+  fill: #0b7a75;
 }
 
 ::ng-deep .group-5-off {
-	fill: #E2E2E2;
+  fill: #e2e2e2;
 }
 
 ::ng-deep .group-5-on {
-	fill: #800000;
+  fill: #800000;
 }
 
 ::ng-deep .labelText {
-	font-size: 12px;
-	fill: white;
+  font-size: 12px;
+  fill: white;
 }
 
 ::ng-deep .labelTextBackground {
-	fill: white;
+  fill: white;
 }
 
 ::ng-deep .highlight {
-	fill: white;
+  fill: white;
 }
 
-
-
 ::ng-deep .outerLabelText {
-	font-size: 1.5em;
-	fill: var(--color-white);
+  font-size: 1.5em;
+  fill: var(--color-white);
 }
 
 ::ng-deep .nodesBorder {
-	stroke: var(--color-white);
+  stroke: var(--color-white);
 }
 
 ::ng-deep .outerCircleBorder {
-	stroke: var(--color-white);
-	stroke-width: 2px;
+  stroke: var(--color-white);
+  stroke-width: 2px;
 }
 
 ::ng-deep .centerLabelText {
-	font-size: 2em;
-	fill: #000;
+  font-size: 2em;
+  fill: #000;
 }
 
 .maturity-container {
-	margin: 1rem;
+  margin: 1rem;
 }
 
-:host .maturity-container ::ng-deep.p-button{
-	background-color: #079fff;;
-	font-weight: bold;
+:host .maturity-container ::ng-deep.p-button {
+  background-color: #079fff;
+  font-weight: bold;
 }
 
-:host .maturity-container ::ng-deep.p-button:nth-child(2){
-	background-color: #ff953b;
-	font-weight: bold;
+:host .maturity-container ::ng-deep.p-button:nth-child(2) {
+  background-color: #ff953b;
+  font-weight: bold;
 }
 
-:host .maturity-container ::ng-deep.p-button:nth-child(3){
-	background-color: #295098;
-	font-weight: bold;
+:host .maturity-container ::ng-deep.p-button:nth-child(3) {
+  background-color: #295098;
+  font-weight: bold;
 }
 
-:host .maturity-container ::ng-deep.p-button:nth-child(4){
-	background-color: #0B7A75;
-	font-weight: bold;
+:host .maturity-container ::ng-deep.p-button:nth-child(4) {
+  background-color: #0b7a75;
+  font-weight: bold;
 }
 
-:host .maturity-container ::ng-deep.p-button.p-button-outlined{
-	color: #079fff;
-	background-color: white;
-	font-weight: bold;
+:host .maturity-container ::ng-deep.p-button.p-button-outlined {
+  color: #079fff;
+  background-color: white;
+  font-weight: bold;
 }
 
-:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(2){
-	color: #ff953b;
-	background-color: white;
-	font-weight: bold;
+:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(2) {
+  color: #ff953b;
+  background-color: white;
+  font-weight: bold;
 }
 
-:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(3){
-	color: #295098;
-	background-color: white;
-	font-weight: bold;
+:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(3) {
+  color: #295098;
+  background-color: white;
+  font-weight: bold;
 }
 
-:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(4){
-	color: #0B7A75;
-	background-color: white;
-	font-weight: bold;
+:host .maturity-container ::ng-deep.p-button.p-button-outlined:nth-child(4) {
+  color: #0b7a75;
+  background-color: white;
+  font-weight: bold;
 }
 
-::ng-deep .tooltip-group-2{
-	color:#ff953b;
+::ng-deep .tooltip-group-2 {
+  color: #ff953b;
 }
 
-::ng-deep .tooltip-group-3{
-	color:#295098;
+::ng-deep .tooltip-group-3 {
+  color: #295098;
 }
 
-::ng-deep .tooltip-group-4{
-	color:#0B7A75;
+::ng-deep .tooltip-group-4 {
+  color: #0b7a75;
 }
 
-::ng-deep .tooltipForCategory{
-	position: absolute;
-	font-size: 14px;
-	font-weight: bold;
-	font-family: inherit;
-	background: rgba(250, 250, 250, 0.95);
-	opacity: 1;
-	box-shadow: 0px 0px 6px #b9b9bb;
-	border-radius: 3px;
-	max-width: 550px;
-	min-width: 50px;
-	color: rgba(0, 0, 0, 0.54);
-	margin-left: -14px;
-	text-align: center;
-	box-sizing: border-box;
-	padding:8px;
-	pointer-events: none;
+::ng-deep .tooltipForCategory {
+  position: absolute;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: inherit;
+  background: rgba(250, 250, 250, 0.95);
+  opacity: 1;
+  box-shadow: 0px 0px 6px #b9b9bb;
+  border-radius: 3px;
+  max-width: 550px;
+  min-width: 50px;
+  color: rgba(0, 0, 0, 0.54);
+  margin-left: -14px;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 8px;
+  pointer-events: none;
 }
 
 ::ng-deep .tooltipForCategory::after {
-	content: '';
-	width: 0;
-	height: 0;
-	border-left: 8px solid transparent;
-	border-right: 8px solid transparent;
-	border-top: 8px solid #fafafaf2;
-	position: absolute;
-	top: 32px;
-	-webkit-filter:  drop-shadow(0px 2px 1px #b9b9bb);
-	filter:  drop-shadow(0px 2px 1px #b9b9bb);
-	left: 40%;
-	pointer-events: none;
-  }
-
-  .no-projects{
-    height: calc(100vh - 138px);
-    margin: 20px;
-    border-radius: 7px;
-	background-color: white;
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #fafafaf2;
+  position: absolute;
+  top: 32px;
+  -webkit-filter: drop-shadow(0px 2px 1px #b9b9bb);
+  filter: drop-shadow(0px 2px 1px #b9b9bb);
+  left: 40%;
+  pointer-events: none;
 }
-.no-projects h2{
-    color: var(--color-black);
+
+.no-projects {
+  height: calc(100vh - 138px);
+  margin: 20px;
+  border-radius: 7px;
+  background-color: white;
+}
+.no-projects h2 {
+  color: var(--color-black);
 }

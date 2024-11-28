@@ -32,9 +32,8 @@ export class KpiFilterComponent {
     this.fieldsToShow.emit(this.selectedKpi);
   }
 
-  onClear(){
-    this.selectedKpi='';
+  onClear() {
+    this.selectedKpi = '';
     this.fieldsToShow.emit(this.selectedKpi);
   }
-
 }

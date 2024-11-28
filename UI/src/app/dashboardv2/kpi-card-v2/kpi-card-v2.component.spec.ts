@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  tick,
+  fakeAsync,
+} from '@angular/core/testing';
 import { KpiCardV2Component } from './kpi-card-v2.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,7 +23,7 @@ describe('KpiCardV2Component', () => {
   let component: KpiCardV2Component;
   let fixture: ComponentFixture<KpiCardV2Component>;
   let getAuth: GetAuthService;
-  let httpService: HttpService
+  let httpService: HttpService;
   let sharedService: SharedService;
   let helperService: HelperService;
   let dialogService: DialogService;
@@ -26,28 +31,25 @@ describe('KpiCardV2Component', () => {
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
-    "id": "63282cbaf5c740241aff32a1",
-    "projectToolConfigId": "63282ca6487eff1e8b70b1bb",
-    "basicProjectConfigId": "63282c82487eff1e8b70b1b9",
-    "sprintName": "customfield_12700",
-    "jiradefecttype": [
-      "Defect"
+    id: '63282cbaf5c740241aff32a1',
+    projectToolConfigId: '63282ca6487eff1e8b70b1bb',
+    basicProjectConfigId: '63282c82487eff1e8b70b1b9',
+    sprintName: 'customfield_12700',
+    jiradefecttype: ['Defect'],
+    defectPriority: [],
+    jiraIssueTypeNames: [
+      'Story',
+      'Enabler Story',
+      'Change request',
+      'Defect',
+      'Epic',
     ],
-    "defectPriority": [],
-    "jiraIssueTypeNames": [
-      "Story",
-      "Enabler Story",
-      "Change request",
-      "Defect",
-      "Epic"
-    ],
-    "jiraBugRaisedByQACustomField": "",
-    "jiraBugRaisedByQAIdentification": "",
-    "jiraBugRaisedByQAValue": [],
-    "jiraDefectDroppedStatus": [],
-    "epicCostOfDelay": "customfield_58102",
-    "epicRiskReduction": "customfield_58101",
-
+    jiraBugRaisedByQACustomField: '',
+    jiraBugRaisedByQAIdentification: '',
+    jiraBugRaisedByQAValue: [],
+    jiraDefectDroppedStatus: [],
+    epicCostOfDelay: 'customfield_58102',
+    epicRiskReduction: 'customfield_58101',
   };
 
   beforeEach(async () => {
@@ -56,11 +58,17 @@ describe('KpiCardV2Component', () => {
       imports: [RouterTestingModule, HttpClientModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
-      providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, DialogService,
-        { provide: APP_CONFIG, useValue: AppConfig }
-      ]
-    })
-      .compileComponents();
+      providers: [
+        SharedService,
+        GetAuthService,
+        HttpService,
+        HelperService,
+        CommonModule,
+        DatePipe,
+        DialogService,
+        { provide: APP_CONFIG, useValue: AppConfig },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(KpiCardV2Component);
     component = fixture.componentInstance;
@@ -69,11 +77,14 @@ describe('KpiCardV2Component', () => {
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
     dialogService = TestBed.inject(DialogService);
-    mockService = jasmine.createSpyObj(SharedService, ['selectedFilterOptionObs', 'getSelectedTab']);
+    mockService = jasmine.createSpyObj(SharedService, [
+      'selectedFilterOptionObs',
+      'getSelectedTab',
+    ]);
 
     component.kpiData = {
       kpiId: 'kpi72',
-      kpiDetail: { kpiFilter: 'radioButton' }
+      kpiDetail: { kpiFilter: 'radioButton' },
     };
     component.dropdownArr = [{ options: ['option1', 'option2'] }];
     fixture.detectChanges();
@@ -124,211 +135,189 @@ describe('KpiCardV2Component', () => {
   it('should prepare Data for display', () => {
     component.colors = {
       'API POD 1 - Core_6524a7677c8bb73cd0c3fe67': {
-        "nodeName": "API POD 1 - Core",
-        "color": "#6079C5",
-        "nodeId": "API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-      }
-    }
+        nodeName: 'API POD 1 - Core',
+        color: '#6079C5',
+        nodeId: 'API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+      },
+    };
 
-    component.trendValueList = [{
-      "data": "API POD 1 - Core",
-      "maturity": "4",
-      "value": [
-        {
-          "data": "29",
-          "sSprintID": "55039_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 16_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 5,
-            "Stories": 17
+    component.trendValueList = [
+      {
+        data: 'API POD 1 - Core',
+        maturity: '4',
+        value: [
+          {
+            data: '29',
+            sSprintID: '55039_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 16_API POD 1 - Core',
+            hoverValue: {
+              Defects: 5,
+              Stories: 17,
+            },
+            sprintIds: ['55039_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 16_API POD 1 - Core'],
+            value: 29.411764705882355,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 16',
+            xName: 1,
           },
-          "sprintIds": [
-            "55039_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 16_API POD 1 - Core"
-          ],
-          "value": 29.411764705882355,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 16",
-          "xName": 1
-        },
-        {
-          "data": "40",
-          "sSprintID": "55040_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 17_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 4,
-            "Stories": 10
+          {
+            data: '40',
+            sSprintID: '55040_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 17_API POD 1 - Core',
+            hoverValue: {
+              Defects: 4,
+              Stories: 10,
+            },
+            sprintIds: ['55040_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 17_API POD 1 - Core'],
+            value: 40,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 17',
+            xName: 2,
           },
-          "sprintIds": [
-            "55040_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 17_API POD 1 - Core"
-          ],
-          "value": 40,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 17",
-          "xName": 2
-        },
-        {
-          "data": "109",
-          "sSprintID": "55041_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 18_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 12,
-            "Stories": 11
+          {
+            data: '109',
+            sSprintID: '55041_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 18_API POD 1 - Core',
+            hoverValue: {
+              Defects: 12,
+              Stories: 11,
+            },
+            sprintIds: ['55041_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 18_API POD 1 - Core'],
+            value: 109.09090909090908,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 18',
+            xName: 3,
           },
-          "sprintIds": [
-            "55041_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 18_API POD 1 - Core"
-          ],
-          "value": 109.09090909090908,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 18",
-          "xName": 3
-        },
-        {
-          "data": "80",
-          "sSprintID": "55042_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 19_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 8,
-            "Stories": 10
+          {
+            data: '80',
+            sSprintID: '55042_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 19_API POD 1 - Core',
+            hoverValue: {
+              Defects: 8,
+              Stories: 10,
+            },
+            sprintIds: ['55042_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 19_API POD 1 - Core'],
+            value: 80,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 19',
+            xName: 4,
           },
-          "sprintIds": [
-            "55042_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 19_API POD 1 - Core"
-          ],
-          "value": 80,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 19",
-          "xName": 4
-        },
-        {
-          "data": "67",
-          "sSprintID": "55043_API POD 1 - Core_6524a7677c8bb73cd0c3fe67",
-          "sSprintName": "Sprint 20_API POD 1 - Core",
-          "hoverValue": {
-            "Defects": 4,
-            "Stories": 6
+          {
+            data: '67',
+            sSprintID: '55043_API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+            sSprintName: 'Sprint 20_API POD 1 - Core',
+            hoverValue: {
+              Defects: 4,
+              Stories: 6,
+            },
+            sprintIds: ['55043_API POD 1 - Core_6524a7677c8bb73cd0c3fe67'],
+            sprintNames: ['Sprint 20_API POD 1 - Core'],
+            value: 66.66666666666666,
+            sprojectName: 'API POD 1 - Core',
+            sortSprint: 'Sprint 20',
+            xName: 5,
           },
-          "sprintIds": [
-            "55043_API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-          ],
-          "sprintNames": [
-            "Sprint 20_API POD 1 - Core"
-          ],
-          "value": 66.66666666666666,
-          "sprojectName": "API POD 1 - Core",
-          "sortSprint": "Sprint 20",
-          "xName": 5
-        }
-      ],
-      "maturityValue": "65.03"
-    }]
+        ],
+        maturityValue: '65.03',
+      },
+    ];
 
     component.kpiData = {
       kpiDetail: {
-        "id": "64b4ed7acba3c12de16472ec",
-        "kpiId": "kpi14",
-        "kpiName": "Defect Injection Rate",
-        "isDeleted": "False",
-        "defaultOrder": 1,
-        "kpiUnit": "%",
-        "chartType": "line",
-        "upperThresholdBG": "red",
-        "lowerThresholdBG": "white",
-        "showTrend": true,
-        "isPositiveTrend": false,
-        "calculateMaturity": true,
-        "hideOverallFilter": false,
-        "kpiSource": "Jira",
-        "maxValue": "200",
-        "thresholdValue": 10,
-        "kanban": false,
-        "groupId": 3,
-        "kpiInfo": {
-          "definition": "Meausures the Percentage of Defect created and linked to stories in a sprint against the number of stories in the same sprint",
-          "formula": [
+        id: '64b4ed7acba3c12de16472ec',
+        kpiId: 'kpi14',
+        kpiName: 'Defect Injection Rate',
+        isDeleted: 'False',
+        defaultOrder: 1,
+        kpiUnit: '%',
+        chartType: 'line',
+        upperThresholdBG: 'red',
+        lowerThresholdBG: 'white',
+        showTrend: true,
+        isPositiveTrend: false,
+        calculateMaturity: true,
+        hideOverallFilter: false,
+        kpiSource: 'Jira',
+        maxValue: '200',
+        thresholdValue: 10,
+        kanban: false,
+        groupId: 3,
+        kpiInfo: {
+          definition:
+            'Meausures the Percentage of Defect created and linked to stories in a sprint against the number of stories in the same sprint',
+          formula: [
             {
-              "lhs": "DIR for a sprint",
-              "operator": "division",
-              "operands": [
-                "No. of defects tagged to all stories closed in a sprint",
-                "Total no. of stories closed in the sprint"
-              ]
-            }
+              lhs: 'DIR for a sprint',
+              operator: 'division',
+              operands: [
+                'No. of defects tagged to all stories closed in a sprint',
+                'Total no. of stories closed in the sprint',
+              ],
+            },
           ],
-          "details": [
+          details: [
             {
-              "type": "link",
-              "kpiLinkDetail": {
-                "text": "Detailed Information at",
-                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Injection-Rate"
-              }
-            }
-          ]
+              type: 'link',
+              kpiLinkDetail: {
+                text: 'Detailed Information at',
+                link: 'https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Injection-Rate',
+              },
+            },
+          ],
         },
-        "aggregationCriteria": "average",
-        "maturityRange": [
-          "-175",
-          "175-125",
-          "125-75",
-          "75-25",
-          "25-"
-        ],
-        "trendCalculative": false,
-        "xaxisLabel": "Sprints",
-        "yaxisLabel": "Percentage",
-        "isAdditionalFilterSupport": true
-      }
-    }
+        aggregationCriteria: 'average',
+        maturityRange: ['-175', '175-125', '125-75', '75-25', '25-'],
+        trendCalculative: false,
+        xaxisLabel: 'Sprints',
+        yaxisLabel: 'Percentage',
+        isAdditionalFilterSupport: true,
+      },
+    };
 
     component.prepareData();
 
-    expect(component.sprintDetailsList).toEqual(
-      [{
-        "project": "API POD 1 - Core",
-        "hoverList": [
+    expect(component.sprintDetailsList).toEqual([
+      {
+        project: 'API POD 1 - Core',
+        hoverList: [
           {
-            "duration": "Sprint 16_API POD 1 - Core",
-            "value": 29.41,
-            "unit": " %",
-            "params": "Defects : 5, Stories : 17"
+            duration: 'Sprint 16_API POD 1 - Core',
+            value: 29.41,
+            unit: ' %',
+            params: 'Defects : 5, Stories : 17',
           },
           {
-            "duration": "Sprint 17_API POD 1 - Core",
-            "value": 40,
-            "unit": " %",
-            "params": "Defects : 4, Stories : 10"
+            duration: 'Sprint 17_API POD 1 - Core',
+            value: 40,
+            unit: ' %',
+            params: 'Defects : 4, Stories : 10',
           },
           {
-            "duration": "Sprint 18_API POD 1 - Core",
-            "value": 109.09,
-            "unit": " %",
-            "params": "Defects : 12, Stories : 11"
+            duration: 'Sprint 18_API POD 1 - Core',
+            value: 109.09,
+            unit: ' %',
+            params: 'Defects : 12, Stories : 11',
           },
           {
-            "duration": "Sprint 19_API POD 1 - Core",
-            "value": 80,
-            "unit": " %",
-            "params": "Defects : 8, Stories : 10"
+            duration: 'Sprint 19_API POD 1 - Core',
+            value: 80,
+            unit: ' %',
+            params: 'Defects : 8, Stories : 10',
           },
           {
-            "duration": "Sprint 20_API POD 1 - Core",
-            "value": 66.67,
-            "unit": " %",
-            "params": "Defects : 4, Stories : 6"
-          }
+            duration: 'Sprint 20_API POD 1 - Core',
+            value: 66.67,
+            unit: ' %',
+            params: 'Defects : 4, Stories : 6',
+          },
         ],
-        "color": "#6079C5"
-      }])
+        color: '#6079C5',
+      },
+    ]);
   });
 
   it('should get Mapping configuration', () => {
@@ -337,44 +326,59 @@ describe('KpiCardV2Component', () => {
       kpiDetail: {
         kpiId: 'kpi3',
         kpiSource: 'Jira',
-        combinedKpiSource: 'Jira/Azure'
-      }
+        combinedKpiSource: 'Jira/Azure',
+      },
     };
     spyOn(sharedService, 'getSelectedTab').and.returnValue('My Dashboard');
     spyOn(sharedService, 'getSelectedType').and.returnValue('scrum');
-    spyOn(sharedService, 'getSelectedTrends').and.returnValue([{ basicProjectConfigId: '123' }]);
-    spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(of(fakeKpiFieldMappingList));
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([
+      { basicProjectConfigId: '123' },
+    ]);
+    spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(
+      of(fakeKpiFieldMappingList),
+    );
 
     const fakeMetaDataList = [
       {
         projectID: '123',
         kpiSource: 'jira',
-        metaData: dropDownMetaData.data
-      }
-    ]
-    spyOn(sharedService, 'getFieldMappingMetaData').and.returnValue(fakeMetaDataList);
+        metaData: dropDownMetaData.data,
+      },
+    ];
+    spyOn(sharedService, 'getFieldMappingMetaData').and.returnValue(
+      fakeMetaDataList,
+    );
     component.getKPIFieldMappingConfig();
-    expect(component.fieldMappingConfig.length).toEqual(fakeKpiFieldMappingList.data.fieldConfiguration.length);
-  })
+    expect(component.fieldMappingConfig.length).toEqual(
+      fakeKpiFieldMappingList.data.fieldConfiguration.length,
+    );
+  });
 
   it('should get FieldMapping', () => {
     component.selectedToolConfig = [{ id: '123' }];
     component.kpiData = {
-      kpiId: 'pi123'
-    }
-    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(of({
-      success: true, data: {
-        fieldMappingResponses: fakeSelectedFieldMapping,
-        metaTemplateCode: '10'
-      }
-    }));
+      kpiId: 'pi123',
+    };
+    spyOn(httpService, 'getFieldMappingsWithHistory').and.returnValue(
+      of({
+        success: true,
+        data: {
+          fieldMappingResponses: fakeSelectedFieldMapping,
+          metaTemplateCode: '10',
+        },
+      }),
+    );
     component.getFieldMapping();
-    expect(Object.keys(component.selectedFieldMapping).length).toBeGreaterThan(0);
-  })
+    expect(Object.keys(component.selectedFieldMapping).length).toBeGreaterThan(
+      0,
+    );
+  });
 
   it('should get getFieldMappingMetaData', () => {
     component.selectedToolConfig = [{ id: '123' }];
-    spyOn(httpService, 'getKPIConfigMetadata').and.returnValue(of(dropDownMetaData));
+    spyOn(httpService, 'getKPIConfigMetadata').and.returnValue(
+      of(dropDownMetaData),
+    );
     component.getFieldMappingMetaData('jira');
     expect(component.fieldMappingMetaData).not.toBeNull();
   });
@@ -387,7 +391,7 @@ describe('KpiCardV2Component', () => {
 
   it('should handle filter change for single select', () => {
     const filterOptionsingle = {
-      filter1: [{}]
+      filter1: [{}],
     };
     component.filterOptions = {};
     const spy = spyOn(component.optionSelected, 'emit');
@@ -405,9 +409,7 @@ describe('KpiCardV2Component', () => {
 
   it('should set filter default option', fakeAsync(() => {
     const response = {
-      kpi113: [
-        'Overall'
-      ]
+      kpi113: ['Overall'],
     };
 
     component.kpiData = {
@@ -419,7 +421,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi113',
       },
-      shown: true
+      shown: true,
     };
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
@@ -428,9 +430,7 @@ describe('KpiCardV2Component', () => {
 
   it('should set filter default option', fakeAsync(() => {
     const response = {
-      kpi113: [
-        'Overall'
-      ]
+      kpi113: ['Overall'],
     };
 
     component.kpiData = {
@@ -442,7 +442,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi113',
       },
-      shown: true
+      shown: true,
     };
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
@@ -450,7 +450,6 @@ describe('KpiCardV2Component', () => {
   }));
 
   it('should set menuItems correctly', () => {
-
     component.selectedTab = 'release';
     component.colors = {};
     component.ngOnChanges({});
@@ -459,19 +458,19 @@ describe('KpiCardV2Component', () => {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: jasmine.any(Function),
-        disabled: true
+        disabled: true,
       },
       {
         label: 'List View',
         icon: 'pi pi-align-justify',
         command: jasmine.any(Function),
-        disabled: true
+        disabled: true,
       },
       {
         label: 'Explore',
         icon: 'pi pi-table',
         command: jasmine.any(Function),
-        disabled: true
+        disabled: true,
       },
       {
         label: 'Comments',
@@ -498,7 +497,7 @@ describe('KpiCardV2Component', () => {
     const filterOptions = {
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
-      'Event 3': 'Option 3'
+      'Event 3': 'Option 3',
     };
 
     component.handleClearAll(event);
@@ -511,7 +510,7 @@ describe('KpiCardV2Component', () => {
     const filterOptions = {
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
-      'Event 3': 'Option 3'
+      'Event 3': 'Option 3',
     };
 
     const emitSpy = spyOn(component.optionSelected, 'emit');
@@ -526,7 +525,7 @@ describe('KpiCardV2Component', () => {
     const filterOptions = {
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
-      'Event 3': 'Option 3'
+      'Event 3': 'Option 3',
     };
 
     component.handleClearAll(event);
@@ -534,7 +533,7 @@ describe('KpiCardV2Component', () => {
     expect(filterOptions).toEqual({
       'Event 1': 'Option 1',
       'Event 2': 'Option 2',
-      'Event 3': 'Option 3'
+      'Event 3': 'Option 3',
     });
   });
 
@@ -542,8 +541,8 @@ describe('KpiCardV2Component', () => {
     const filterData = {
       kpi72: {
         filter1: ['Overall'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     mockService.selectedFilterOptionObs = of(filterData);
@@ -559,12 +558,12 @@ describe('KpiCardV2Component', () => {
     const filterData = {
       kpi72: {
         filter1: ['Specific'],
-        filter2: ['Other']
+        filter2: ['Other'],
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -576,7 +575,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi72',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -584,8 +583,8 @@ describe('KpiCardV2Component', () => {
     component.ngOnInit();
 
     expect(component.kpiSelectedFilterObj).toEqual(filterData);
-    expect(component.filterOptions["filter1"]).toBe('Specific');
-    expect(component.filterOptions["filter2"]).toBe('Other');
+    expect(component.filterOptions['filter1']).toBe('Specific');
+    expect(component.filterOptions['filter2']).toBe('Other');
   });
 
   it('should handle Overall values correctly for kpi72', () => {
@@ -593,12 +592,12 @@ describe('KpiCardV2Component', () => {
       kpi72: {
         filter2: ['Overall'],
         filter3: ['Other'],
-        filter4: ['OtherFilters']
+        filter4: ['OtherFilters'],
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -610,7 +609,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi72',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -619,21 +618,20 @@ describe('KpiCardV2Component', () => {
 
     expect(component.kpiSelectedFilterObj).toEqual(filterData);
     // expect(component.filterOptions["filter1"]).toEqual('Overall');
-    expect(component.filterOptions["filter2"]).toEqual('Overall');
+    expect(component.filterOptions['filter2']).toEqual('Overall');
   });
-
 
   it('should handle Overall values in filter1 correctly for kpi72', () => {
     const filterData = {
       kpi72: {
         filter1: ['Overall'],
         filter2: ['Other'],
-        filter3: ['OtherFilters']
+        filter3: ['OtherFilters'],
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -645,7 +643,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi72',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -653,7 +651,7 @@ describe('KpiCardV2Component', () => {
     component.ngOnInit();
 
     expect(component.kpiSelectedFilterObj).toEqual(filterData);
-    expect(component.filterOptions["filter1"]).toEqual('Overall');
+    expect(component.filterOptions['filter1']).toEqual('Overall');
     // expect(component.filterOptions["filter2"]).toEqual('Overall');
   });
 
@@ -661,12 +659,12 @@ describe('KpiCardV2Component', () => {
     const filterData = {
       kpi72: {
         filter3: ['option3'],
-        filter: ['Overall']
+        filter: ['Overall'],
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -678,7 +676,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi72',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -693,11 +691,11 @@ describe('KpiCardV2Component', () => {
   it('should handle kpiFilter radio button logic', fakeAsync(() => {
     const filterData = {
       kpi72: {
-        filter1: ['option2']
+        filter1: ['option2'],
       },
       kpi113: {
-        filter1: ['option2']
-      }
+        filter1: ['option2'],
+      },
     };
 
     component.kpiData = {
@@ -708,9 +706,9 @@ describe('KpiCardV2Component', () => {
       kpiDetail: {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi113',
-        kpiFilter: 'radiobutton'
+        kpiFilter: 'radiobutton',
       },
-      shown: true
+      shown: true,
     };
     component.dropdownArr = [];
     sharedService.setKpiSubFilterObj(filterData);
@@ -719,8 +717,7 @@ describe('KpiCardV2Component', () => {
     tick(100);
     fixture.detectChanges();
     expect(component.radioOption).toEqual('option2');
-  })
-  );
+  }));
 
   it('should set displayConfigModel to false and emit reloadKPITab event', () => {
     component.displayConfigModel = true;
@@ -733,7 +730,6 @@ describe('KpiCardV2Component', () => {
     expect(reloadKPISpy).toHaveBeenCalledWith({ id: 1, name: 'KPI 1' });
   });
 
-
   it('should emit downloadExcel event with true value', () => {
     component.downloadExcel = new EventEmitter();
     const exportSpy = spyOn(component.downloadExcel, 'emit');
@@ -741,7 +737,6 @@ describe('KpiCardV2Component', () => {
 
     expect(exportSpy).toHaveBeenCalledWith(true);
   });
-
 
   it('should call getKPIFieldMappingConfig function', () => {
     mockService.getSelectedTab.and.returnValue('Tab1');
@@ -760,47 +755,50 @@ describe('KpiCardV2Component', () => {
     expect(component.getColorCssClasses(2)).toBe('color3');
   });
 
-
   it('should return true if any rowData has a non-null and non-undefined value for the specified field', () => {
     component.sprintDetailsList = [
       {
         hoverList: [
           { field1: null, field2: 'value2' },
-          { field1: 'value1', field2: 'value2' }
-        ]
+          { field1: 'value1', field2: 'value2' },
+        ],
       },
       {
         hoverList: [
           { field1: 'value1', field2: null },
-          { field1: null, field2: null }
-        ]
-      }
+          { field1: null, field2: null },
+        ],
+      },
     ];
     component.selectedTabIndex = 0;
     expect(component.hasData('field1')).toBe(true);
     expect(component.hasData('field2')).toBe(true);
   });
 
-  it("should return execution date of processor", () => {
-    const tracelog = [{
-      processorName: 'Jira',
-      executionSuccess: false,
-      executionEndedAt: '2023-01-04T06:02:20'
-    }]
+  it('should return execution date of processor', () => {
+    const tracelog = [
+      {
+        processorName: 'Jira',
+        executionSuccess: false,
+        executionEndedAt: '2023-01-04T06:02:20',
+      },
+    ];
     spyOn(component, 'findTraceLogForTool').and.returnValue(tracelog);
-    const resp = component.showExecutionDate('Jira')
-    expect(resp).not.toBe("NA")
-  })
+    const resp = component.showExecutionDate('Jira');
+    expect(resp).not.toBe('NA');
+  });
 
   it('should find tracelog for specfic tool', () => {
-    spyOn(sharedService, 'getProcessorLogDetails').and.returnValue([{
-      processorName: 'jira',
-      executionSuccess: false,
-      executionEndedAt: '2023-01-04T06:02:20'
-    }])
-    const toolDetails = component.findTraceLogForTool("jira");
+    spyOn(sharedService, 'getProcessorLogDetails').and.returnValue([
+      {
+        processorName: 'jira',
+        executionSuccess: false,
+        executionEndedAt: '2023-01-04T06:02:20',
+      },
+    ]);
+    const toolDetails = component.findTraceLogForTool('jira');
     expect(toolDetails).toBeDefined();
-  })
+  });
 
   it('should handle Overall values in filter1 correctly for non kpi72', () => {
     const filterData = {
@@ -808,12 +806,11 @@ describe('KpiCardV2Component', () => {
         filter: ['OtherFilters', 'Overall'],
         filter1: ['Overall'],
         filter2: ['Other'],
-
       },
       kpi113: {
         filter1: ['Specific'],
-        filter2: ['Other']
-      }
+        filter2: ['Other'],
+      },
     };
 
     component.kpiData = {
@@ -825,7 +822,7 @@ describe('KpiCardV2Component', () => {
         id: '633ed17f2c2d5abef2451ff3',
         kpiId: 'kpi7',
       },
-      shown: true
+      shown: true,
     };
 
     sharedService.setKpiSubFilterObj(filterData);
@@ -833,7 +830,7 @@ describe('KpiCardV2Component', () => {
     component.ngOnInit();
 
     expect(component.kpiSelectedFilterObj).toEqual(filterData);
-    expect(component.filterOptions["filter1"]).toEqual(['Overall']);
+    expect(component.filterOptions['filter1']).toEqual(['Overall']);
   });
 
   it('should show tooltip', () => {
@@ -846,7 +843,7 @@ describe('KpiCardV2Component', () => {
       component.filterOptions = {
         key1: 'value1',
         key2: 'value2',
-        Key3: 'value3'
+        Key3: 'value3',
       };
       component.optionSelected = jasmine.createSpyObj('EventEmitter', ['emit']);
     });
@@ -855,7 +852,7 @@ describe('KpiCardV2Component', () => {
       component.handleClearAll('key2');
       expect(component.filterOptions).toEqual({
         key1: 'value1',
-        Key3: 'value3'
+        Key3: 'value3',
       });
     });
 
@@ -863,7 +860,7 @@ describe('KpiCardV2Component', () => {
       component.handleClearAll('KEY3');
       expect(component.filterOptions).toEqual({
         key1: 'value1',
-        key2: 'value2'
+        key2: 'value2',
       });
     });
 
@@ -872,7 +869,7 @@ describe('KpiCardV2Component', () => {
       expect(component.filterOptions).toEqual({
         key1: 'value1',
         key2: 'value2',
-        Key3: 'value3'
+        Key3: 'value3',
       });
     });
 
@@ -886,7 +883,9 @@ describe('KpiCardV2Component', () => {
     component.kpiDataStatusCode = '201';
     component.showWarning(true);
 
-    expect(component.warning).toBe('Configure the missing mandatory field mappings in KPI Settings for accurate data display.');
+    expect(component.warning).toBe(
+      'Configure the missing mandatory field mappings in KPI Settings for accurate data display.',
+    );
   });
 
   it('should clear the warning message when val is false', () => {
@@ -922,44 +921,47 @@ describe('KpiCardV2Component', () => {
         component.dropdownArr = [{}];
         component.filterOptions = { filter1: 'value1' };
         const emitSpy = spyOn(component.optionSelected, 'emit');
-  
+
         component.handleClearAll('filter1');
-  
+
         expect(component.filterOptions).toEqual({});
         expect(emitSpy).toHaveBeenCalledWith(['Overall']);
       });
-  
+
       it('should clear the specific filter and emit filterOptions when dropdownArr length is greater than 1', () => {
         component.dropdownArr = [{}, {}];
         component.filterOptions = { filter1: 'value1', filter2: 'value2' };
         const emitSpy = spyOn(component.optionSelected, 'emit');
-  
+
         component.handleClearAll('filter1');
-  
-        expect(component.filterOptions).toEqual({ filter1: [], filter2: 'value2' });
+
+        expect(component.filterOptions).toEqual({
+          filter1: [],
+          filter2: 'value2',
+        });
         expect(emitSpy).toHaveBeenCalledWith(component.filterOptions);
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should handle case when filterOptions is empty and dropdownArr length is greater than 1', () => {
         component.dropdownArr = [{}, {}];
         component.filterOptions = {};
         const emitSpy = spyOn(component.optionSelected, 'emit');
-  
+
         component.handleClearAll('filter1');
-  
+
         expect(component.filterOptions).toEqual({});
         expect(emitSpy).toHaveBeenCalledWith({});
       });
-  
+
       it('should handle case when event is not present in filterOptions', () => {
         component.dropdownArr = [{}, {}];
         component.filterOptions = { filter2: 'value2' };
         const emitSpy = spyOn(component.optionSelected, 'emit');
-  
+
         component.handleClearAll('filter2');
-  
+
         expect(component.filterOptions).toEqual({ filter2: [] });
         expect(emitSpy).toHaveBeenCalledWith(component.filterOptions);
       });
@@ -974,47 +976,47 @@ describe('KpiCardV2Component', () => {
         const result = component.checkIfDataPresent('200');
         expect(result).toBe(true);
       });
-  
+
       it('should return true when data is 200 and kpiId is kpi139 with trendValueList having value', () => {
         component.kpiData = { kpiId: 'kpi139' };
         component.trendValueList = [{ value: [{}] }];
         const result = component.checkIfDataPresent('200');
         expect(result).toBe(true);
       });
-  
+
       it('should return true when data is 200 and kpiId is kpi171 with trendValueList having data', () => {
         component.kpiData = { kpiId: 'kpi171' };
         component.trendValueList = [{ data: [{}] }];
         const result = component.checkIfDataPresent('200');
         expect(result).toBe(true);
       });
-  
+
       it('should return true when data is 200 and helperService returns true', () => {
         component.kpiData = { kpiDetail: { chartType: 'someType' } };
         component.selectedTab = 'someTab';
-        spyOn(helperService,'checkDataAtGranularLevel').and.returnValue(true);
+        spyOn(helperService, 'checkDataAtGranularLevel').and.returnValue(true);
         const result = component.checkIfDataPresent('200');
         expect(result).toBe(true);
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should return false when data is not 200 or 201', () => {
         const result = component.checkIfDataPresent('404');
         expect(result).toBe(false);
       });
-  
+
       it('should return false when kpiId is kpi171 but trendValueList is empty', () => {
         component.kpiData = { kpiId: 'kpi171' };
         component.trendValueList = [];
         const result = component.checkIfDataPresent('200');
         expect(result).toBe(false);
       });
-  
+
       it('should return false when helperService returns false', () => {
         component.kpiData = { kpiDetail: { chartType: 'someType' } };
         component.selectedTab = 'someTab';
-        spyOn(helperService,'checkDataAtGranularLevel').and.returnValue(false);
+        spyOn(helperService, 'checkDataAtGranularLevel').and.returnValue(false);
         const result = component.checkIfDataPresent('200');
         expect(result).toBe(false);
       });
@@ -1026,44 +1028,44 @@ describe('KpiCardV2Component', () => {
       it('should emit the selected value when type is radio', () => {
         const emitSpy = spyOn(component.optionSelected, 'emit');
         const value = { value: 'someValue' };
-  
+
         component.handleChange('radio', value);
-  
+
         expect(emitSpy).toHaveBeenCalledWith('someValue');
       });
-  
+
       it('should emit filterOptions when type is single', () => {
         const emitSpy = spyOn(component.optionSelected, 'emit');
         component.filterOptions = { filter1: 'value1' };
-  
+
         component.handleChange('single');
-  
+
         expect(emitSpy).toHaveBeenCalledWith({ filter1: 'value1' });
       });
-  
+
       it('should emit Overall when filterOptions is empty', () => {
         const emitSpy = spyOn(component.optionSelected, 'emit');
         component.filterOptions = {};
-  
+
         component.handleChange('multi');
-  
+
         expect(emitSpy).toHaveBeenCalledWith(['Overall']);
       });
-  
+
       it('should emit filterOptions when filterOptions is not empty', () => {
         const emitSpy = spyOn(component.optionSelected, 'emit');
         component.filterOptions = { filter1: 'value1' };
-  
+
         component.handleChange('multi');
-  
+
         expect(emitSpy).toHaveBeenCalledWith({ filter1: 'value1' });
       });
     });
 
     it('should move selected option to top', () => {
       component.dropdownArr[0].options = ['option1', 'option2'];
-      component.handleChange('multi', {value : ['option2']});
-      expect(component.dropdownArr[0].options).toEqual(['option2', 'option1'])
+      component.handleChange('multi', { value: ['option2'] });
+      expect(component.dropdownArr[0].options).toEqual(['option2', 'option1']);
     });
   });
 });

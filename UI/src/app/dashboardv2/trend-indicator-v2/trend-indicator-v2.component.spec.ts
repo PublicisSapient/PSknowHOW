@@ -8,9 +8,8 @@ describe('TrendIndicatorV2Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TrendIndicatorV2Component]
-    })
-      .compileComponents();
+      declarations: [TrendIndicatorV2Component],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TrendIndicatorV2Component);
     component = fixture.componentInstance;
@@ -22,22 +21,24 @@ describe('TrendIndicatorV2Component', () => {
   });
 
   it('should generate the dataObj and headerObj correctly when trendData is not empty', () => {
-    const trendData = [{
-      "hierarchyName": "API POD 1 - Core",
-      "value": "66.7 %",
-      "trend": "+ve",
-      "maturity": "M4",
-      "maturityValue": "65.03",
-      "kpiUnit": "%"
-  }]
+    const trendData = [
+      {
+        hierarchyName: 'API POD 1 - Core',
+        value: '66.7 %',
+        trend: '+ve',
+        maturity: 'M4',
+        maturityValue: '65.03',
+        kpiUnit: '%',
+      },
+    ];
 
     component.trendData = trendData;
     component.colorObj = {
-      "API POD 1 - Core": {
-        "nodeName": "API POD 1 - Core",
-        "color": "#6079C5",
-        "nodeId": "API POD 1 - Core_6524a7677c8bb73cd0c3fe67"
-      }
+      'API POD 1 - Core': {
+        nodeName: 'API POD 1 - Core',
+        color: '#6079C5',
+        nodeId: 'API POD 1 - Core_6524a7677c8bb73cd0c3fe67',
+      },
     };
 
     const changes: SimpleChanges = {
@@ -52,9 +53,15 @@ describe('TrendIndicatorV2Component', () => {
     component.ngOnChanges(changes);
 
     expect(component.dataObj).toEqual([
-      ["#6079C5"], ["66.7 % (+ve)"], ["65.03 % (M4)"]
+      ['#6079C5'],
+      ['66.7 % (+ve)'],
+      ['65.03 % (M4)'],
     ]);
-    expect(component.headerObj).toEqual(['Project', 'Latest Trend', 'KPI Maturity']);
+    expect(component.headerObj).toEqual([
+      'Project',
+      'Latest Trend',
+      'KPI Maturity',
+    ]);
   });
 
   it('should not generate the dataObj and headerObj when trendData is empty', () => {

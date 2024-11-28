@@ -1,9 +1,16 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 
 @Component({
   selector: 'app-conditional-input',
   templateUrl: './conditional-input.component.html',
-  styleUrls: ['./conditional-input.component.css']
+  styleUrls: ['./conditional-input.component.css'],
 })
 export class ConditionalInputComponent implements OnChanges {
   @Input() id;
@@ -16,11 +23,17 @@ export class ConditionalInputComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.valueObj && this.valueObj.length) {
-      this.templateLabels = this.templateLabelToLowercase(this.valueObj.map((val) => val.labelValue));
-      this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
+      this.templateLabels = this.templateLabelToLowercase(
+        this.valueObj.map((val) => val.labelValue),
+      );
+      this.templateData = this.fieldConfig.options.filter((opt) =>
+        this.templateLabels.includes(opt.labelValue),
+      );
       this.finalValue = [...this.templateData];
-      this.valueObj.forEach(element => {
-        let opt = this.fieldConfig.options.filter((opt) => opt.labelValue === element.labelValue.toLowerCase())[0];
+      this.valueObj.forEach((element) => {
+        let opt = this.fieldConfig.options.filter(
+          (opt) => opt.labelValue === element.labelValue.toLowerCase(),
+        )[0];
         if (opt) {
           opt['countValue'] = element.countValue;
         }
@@ -28,12 +41,19 @@ export class ConditionalInputComponent implements OnChanges {
     }
   }
 
-  templateLabelToLowercase = (arr: []) => arr.map((val: any) => val.toLowerCase());
+  templateLabelToLowercase = (arr: []) =>
+    arr.map((val: any) => val.toLowerCase());
 
   setValue(event) {
-    this.templateLabels = this.templateLabelToLowercase(event.value.map((val) => val.labelValue));
-    this.templateData = this.fieldConfig.options.filter((opt) => this.templateLabels.includes(opt.labelValue));
-    let selectedOption = this.templateData.filter((opt) => opt.labelValue === event.itemValue.labelValue)[0];
+    this.templateLabels = this.templateLabelToLowercase(
+      event.value.map((val) => val.labelValue),
+    );
+    this.templateData = this.fieldConfig.options.filter((opt) =>
+      this.templateLabels.includes(opt.labelValue),
+    );
+    let selectedOption = this.templateData.filter(
+      (opt) => opt.labelValue === event.itemValue.labelValue,
+    )[0];
     if (selectedOption) {
       selectedOption['countValue'] = selectedOption['minValue'];
     }
@@ -41,12 +61,17 @@ export class ConditionalInputComponent implements OnChanges {
   }
 
   setCounter(event, option) {
-    if (!this.templateData.filter((opt) => opt.labelValue === option.labelValue).length) {
+    if (
+      !this.templateData.filter((opt) => opt.labelValue === option.labelValue)
+        .length
+    ) {
       let newOption = JSON.parse(JSON.stringify(option));
       newOption.countValue = event.value;
       this.templateData.push(newOption);
     } else {
-      this.templateData.filter((opt) => opt.labelValue === option.labelValue)[0].countValue = event.value;
+      this.templateData.filter(
+        (opt) => opt.labelValue === option.labelValue,
+      )[0].countValue = event.value;
     }
     this.setOutput();
   }
@@ -58,5 +83,4 @@ export class ConditionalInputComponent implements OnChanges {
   setOutput() {
     this.conditionalInputChange.emit(this.finalValue);
   }
-
 }

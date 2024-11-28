@@ -17,7 +17,13 @@
  ******************************************************************************/
 
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, UrlTree, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  Router,
+  CanActivate,
+  UrlTree,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { GetAuthService } from './getauth.service';
 import { SharedService } from './shared.service';
 import { HttpService } from './http.service';
@@ -27,44 +33,57 @@ import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  constructor(
+    private router: Router,
+    private getAuth: GetAuthService,
+    private sharedService: SharedService,
+    private httpService: HttpService,
+  ) {}
 
-    constructor(private router: Router, private getAuth: GetAuthService,private sharedService : SharedService, private httpService: HttpService) { }
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+  ):
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree>
+    | boolean
+    | UrlTree {
+    const currentUserDetails = this.sharedService.currentUserDetails;
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const currentUserDetails = this.sharedService.currentUserDetails;
-
-        if (currentUserDetails) {
-            if (currentUserDetails['authorities']) {
-                return true;
-            } else {
-                if (environment.AUTHENTICATION_SERVICE) {
-                    /** redirect to central login url*/
-                    if (environment.CENTRAL_LOGIN_URL) {
-                        window.location.href = environment.CENTRAL_LOGIN_URL;
-                    }
-                } else {
-                    this.router.navigate(['./authentication/register']);
-                }
-                return false;
-            }
+    if (currentUserDetails) {
+      if (currentUserDetails['authorities']) {
+        return true;
+      } else {
+        if (environment.AUTHENTICATION_SERVICE) {
+          /** redirect to central login url*/
+          if (environment.CENTRAL_LOGIN_URL) {
+            window.location.href = environment.CENTRAL_LOGIN_URL;
+          }
         } else {
-            return this.httpService.getCurrentUserDetails().pipe(map(details => {
-                if (details['success']) {
-                    this.sharedService.setCurrentUserDetails(details['data']);
-                    if (details['data']['authorities']) {
-                        return true;
-                    }
-                    if (environment.AUTHENTICATION_SERVICE) {
-                        /** redirect to central login url*/
-                        if (environment.CENTRAL_LOGIN_URL) {
-                            window.location.href = environment.CENTRAL_LOGIN_URL;
-                        }
-                    } else {
-                        this.router.navigate(['./authentication/register']);
-                    }
-                    return false;
-                }
-            }));
+          this.router.navigate(['./authentication/register']);
         }
+        return false;
+      }
+    } else {
+      return this.httpService.getCurrentUserDetails().pipe(
+        map((details) => {
+          if (details['success']) {
+            this.sharedService.setCurrentUserDetails(details['data']);
+            if (details['data']['authorities']) {
+              return true;
+            }
+            if (environment.AUTHENTICATION_SERVICE) {
+              /** redirect to central login url*/
+              if (environment.CENTRAL_LOGIN_URL) {
+                window.location.href = environment.CENTRAL_LOGIN_URL;
+              }
+            } else {
+              this.router.navigate(['./authentication/register']);
+            }
+            return false;
+          }
+        }),
+      );
     }
+  }
 }

@@ -71,7 +71,7 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     InputSwitchModule,
     CarouselModule,
     InputNumberModule,
-    OverlayPanelModule
+    OverlayPanelModule,
   ],
   exports: [
     NgSelectModule,
@@ -85,7 +85,7 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     FeatureFlagDirective,
     CarouselModule,
     ConditionalInputComponent,
-    IsoDateFormatPipe
+    IsoDateFormatPipe,
   ],
   declarations: [
     ProjectFilterComponent,
@@ -98,8 +98,8 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     AdditionalFilterFieldComponent,
     FeatureFlagDirective,
     ConditionalInputComponent,
-    IsoDateFormatPipe
+    IsoDateFormatPipe,
   ],
-  providers: [ConfirmationService]
+  providers: [ConfirmationService],
 })
-export class SharedModuleModule { }
+export class SharedModuleModule {}

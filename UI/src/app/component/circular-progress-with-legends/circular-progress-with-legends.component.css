@@ -16,55 +16,54 @@
  *
  ******************************************************************************/
 
- .arcclock {
-    border: 1px solid;
-    width: 370px;
-    height: 436px;
-    background-color: white;
-  }
-  
-  .pad-l-20 {
-    padding-left: 20px;
-  }
-  
-  h5 {
-    font-size: 15px;
-    color: #7d7d7d;
-    height: 40px;
-  }
-  
-  .path--foreground:hover {
-    color: black;
-  }
-  
-  .content {
-    text-align: center;
-    /* margin-top: 20px; */
-    width: 100%;
-    height: 150px;
-    top: 0;
-    display: inline-block;
-    bottom: 0;
-    margin: auto;
-    position: absolute;
-    left: 0;
-    right: 0;
-  }
+.arcclock {
+  border: 1px solid;
+  width: 370px;
+  height: 436px;
+  background-color: white;
+}
 
-  .legends {
-    position: relative;
-    z-index: 1000;
-  }
+.pad-l-20 {
+  padding-left: 20px;
+}
 
-  ::ng-deep .projectNameTooltip {
-    position: absolute;                      
-    width: 200px;                  
-    height: auto;                 
-    padding: 10px;             
-    /* font: 12px sans-serif;         */
-    background: #dedede;   
-    border: 0px;                 
-    pointer-events: none;
-    word-break: break-all;
-  }
-  
+h5 {
+  font-size: 15px;
+  color: #7d7d7d;
+  height: 40px;
+}
+
+.path--foreground:hover {
+  color: black;
+}
+
+.content {
+  text-align: center;
+  /* margin-top: 20px; */
+  width: 100%;
+  height: 150px;
+  top: 0;
+  display: inline-block;
+  bottom: 0;
+  margin: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.legends {
+  position: relative;
+  z-index: 1000;
+}
+
+::ng-deep .projectNameTooltip {
+  position: absolute;
+  width: 200px;
+  height: auto;
+  padding: 10px;
+  /* font: 12px sans-serif;         */
+  background: #dedede;
+  border: 0px;
+  pointer-events: none;
+  word-break: break-all;
+}
