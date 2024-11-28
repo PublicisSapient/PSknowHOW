@@ -222,7 +222,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
                 } catch (CloneNotSupportedException e) {
 					log.error("Error in Cloning of ProjectToolConfig");
 				}
-				clonedToolConfig.setId(null);
+                assert clonedToolConfig != null;
+                clonedToolConfig.setId(null);
                 clonedToolConfig.setBasicProjectConfigId(savedProjectBasicConfig.getId());
 				clonedToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				clonedToolConfig.setCreatedBy(authenticationService.getLoggedInUser());
@@ -242,7 +243,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				} catch (CloneNotSupportedException e) {
 					log.error("Error in Cloning of fieldmapping");
 				}
-				newFieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
+                assert newFieldMapping != null;
+                newFieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
 				newFieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
 				newFieldMapping.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				newFieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
