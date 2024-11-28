@@ -1694,23 +1694,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       /** if: for graphs, else: for other than graphs */
       if (this.updatedConfigGlobalData.filter(kpi => kpi?.kpiId == key)[0]?.kpiDetail?.chartType) {
         this.getDropdownArrayForBacklog(data[key]?.kpiId);
-        // if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
-        //   this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, [], 'Overall')
-        // } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-        //   this.getDropdownArrayForBacklog(data[key]?.kpiId);
-        //   const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
-        //   if (formType?.toLowerCase() == 'radiobutton') {
-        //     this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]])
-        //   }
-        //   else if (formType?.toLowerCase() == 'dropdown' && (!filters)) {
-        //     this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
-        //   }
-        //   else if (filters && Object.keys(filters)?.length > 0) {
-        //     this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'], filters)
-        //   } else {
-        //     this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId, {}, ['Overall'])
-        //   }
-        // }
 
         const agType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.aggregationCriteria;
         this.getChartDataForBacklog(data[key]?.kpiId, (this.allKpiArray?.length - 1), agType);
