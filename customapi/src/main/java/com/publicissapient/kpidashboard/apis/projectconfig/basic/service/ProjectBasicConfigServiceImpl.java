@@ -205,6 +205,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return response;
 	}
 
+	/**
+	 * cloning Tool Config And Fieldmapping For Cloned Project
+	 *
+	 * @param savedProjectBasicConfig
+	 * 		  savedProjectBasicConfig
+	 */
 	private void cloningToolConfigAndFieldmappingForClonedProject(ProjectBasicConfig savedProjectBasicConfig) {
 		if(savedProjectBasicConfig.getClonedFrom()!=null){
 			List<ProjectToolConfig> toolConfig = projectToolConfigService.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
