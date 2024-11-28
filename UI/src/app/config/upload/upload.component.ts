@@ -653,7 +653,6 @@ export class UploadComponent implements OnInit {
             this.selectedFilterData.filterDataList[i].level > currentSelection
           ) {
             this.selectedFilterData.filterDataList[i].filterData.splice(j, 1);
-            // j = -1;
           }
         }
       }
@@ -684,8 +683,7 @@ export class UploadComponent implements OnInit {
     this.selectedFilterData.filterDataList = this.filterData;
     this.enableDisableSubmitButton();
     this.checkdisabled();
-    if (hitApply && this.selectedFilterCount !== 0) {
-    } else if (hitApply && this.selectedFilterCount === 0) {
+    if (hitApply && this.selectedFilterCount === 0) {
       this.filterApplyData = {};
     }
   }
