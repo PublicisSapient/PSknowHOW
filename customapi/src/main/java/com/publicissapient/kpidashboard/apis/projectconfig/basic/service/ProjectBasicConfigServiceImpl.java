@@ -93,6 +93,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService {
 
+	ModelMapper mapper = new ModelMapper();
+
 	@Autowired
 	private ProjectBasicConfigRepository basicConfigRepository;
 
@@ -172,7 +174,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		if (basicConfig != null) {
 			response = new ServiceResponse(false, "Try with different Project name.", null);
 		} else {
-			ModelMapper mapper = new ModelMapper();
 			basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 			basicConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 			basicConfig.setCreatedBy(authenticationService.getLoggedInUser());
@@ -214,25 +215,29 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	private void cloningToolConfigAndFieldmappingForClonedProject(ProjectBasicConfig savedProjectBasicConfig) {
 		if(savedProjectBasicConfig.getClonedFrom()!=null){
 			List<ProjectToolConfig> toolConfig = projectToolConfigService.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
+			List<ProjectToolConfig> projectToolConfigList=new ArrayList<>();
 			toolConfig.forEach(tool -> {
-				tool.setBasicProjectConfigId(savedProjectBasicConfig.getId());
-				tool.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
-				tool.setCreatedBy(authenticationService.getLoggedInUser());
-				tool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
-				tool.setProjectId(savedProjectBasicConfig.getId().toString());
+                ProjectToolConfig clonedToolConfig = mapper.map(tool, ProjectToolConfig.class);
+				clonedToolConfig.setBasicProjectConfigId(savedProjectBasicConfig.getId());
+				clonedToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedToolConfig.setCreatedBy(authenticationService.getLoggedInUser());
+				clonedToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedToolConfig.setProjectId(savedProjectBasicConfig.getId().toString());
+				projectToolConfigList.add(clonedToolConfig);
 			});
-			List<ProjectToolConfig> projectToolConfigs=projectToolConfigService.saveProjectToolConfigs(toolConfig);
-			FieldMapping fieldMapping = fieldMappingService.getFieldMapping(savedProjectBasicConfig.getClonedFrom().toString());
+			List<ProjectToolConfig> projectToolConfigs=projectToolConfigService.saveProjectToolConfigs(projectToolConfigList);
+			FieldMapping fieldMapping = fieldMappingService.getFieldMappingByBasicconfigId(savedProjectBasicConfig.getClonedFrom().toString());
 			Optional<ProjectToolConfig> optionalToolConfig = projectToolConfigs.stream()
 					.filter(tool -> tool.getToolName().equals(Constant.TOOL_JIRA) || tool.getToolName().equals(Constant.TOOL_AZURE))
 					.findFirst();
 			if (fieldMapping != null && optionalToolConfig.isPresent()) {
-				fieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
-				fieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
-				fieldMapping.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
-				fieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
-				fieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
-				fieldMappingService.saveFieldMapping(fieldMapping);
+				FieldMapping newFieldMapping=mapper.map(fieldMapping, FieldMapping.class);
+				newFieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
+				newFieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
+				newFieldMapping.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				newFieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
+				newFieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
+				fieldMappingService.saveFieldMapping(newFieldMapping);
 			}
 		}
 	}
@@ -261,7 +266,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		if (savedConfigOpt.isPresent()) {
 			if (!Optional.ofNullable(diffIdSameName).isPresent()) {
 				ProjectBasicConfig savedConfig = savedConfigOpt.get();
-				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
 				if (isAssigneeUpdated(basicConfig, savedConfig)) {
 					List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
@@ -543,7 +547,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 		if (MapUtils.isNotEmpty(basicConfigMap)) {
 			List<ProjectBasicConfig> projectList = new ArrayList<>(basicConfigMap.values());
-			ModelMapper mapper = new ModelMapper();
 			projectBasicList = projectList.stream().map(pbc -> mapper.map(pbc, ProjectBasicConfigDTO.class))
 					.collect(Collectors.toList());
 		}

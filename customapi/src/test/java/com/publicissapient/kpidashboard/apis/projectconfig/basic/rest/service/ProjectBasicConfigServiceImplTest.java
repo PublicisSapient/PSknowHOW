@@ -411,7 +411,7 @@ public class ProjectBasicConfigServiceImplTest {
 		when(projectAccessManager.getUserInfo(any())).thenReturn(userInfo);
 		when(projectToolConfigService.getProjectToolConfigsByProjectId(any())).thenReturn(Arrays.asList(listProjectTool));
 		when(projectToolConfigService.saveProjectToolConfigs(any())).thenReturn(Arrays.asList(listProjectTool));
-		when(fieldMappingService.getFieldMapping(anyString())).thenReturn(fieldMapping);
+		when(fieldMappingService.getFieldMappingByBasicconfigId(anyString())).thenReturn(fieldMapping);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
