@@ -16,37 +16,25 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.rbac;
-
-import java.time.LocalDateTime;
+package com.publicissapient.kpidashboard.common.repository.rbac;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.repository.CrudRepository;
 
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
-import com.publicissapient.kpidashboard.common.constant.Status;
+import com.publicissapient.kpidashboard.common.model.rbac.UsersSession;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public interface UsersSessionRepository extends CrudRepository<UsersSession, ObjectId> {
 
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "users_login_history")
-public class UsersLoginHistory {
-
-	private ObjectId userId;
-	private String userName;
-	private String emailId;
-	private AuthType authType;
-	private LocalDateTime timeStamp;
-	private AuthenticationEvent event;
-	private Status status;
+	/**
+	 * Find the latest login history for a user
+	 * 
+	 * @param userName
+	 *            username
+	 * @param event
+	 *            {@link AuthenticationEvent}
+	 * @return most recent logout of user
+	 */
+	UsersSession findTopByUserNameAndEventOrderByTimeStampDesc(String userName, AuthenticationEvent event);
 
 }
