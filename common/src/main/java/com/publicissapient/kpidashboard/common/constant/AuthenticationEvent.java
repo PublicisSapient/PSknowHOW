@@ -16,25 +16,13 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.rbac;
+package com.publicissapient.kpidashboard.common.constant;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.repository.CrudRepository;
-
-import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
-import com.publicissapient.kpidashboard.common.model.rbac.UsersLoginHistory;
-
-public interface UserLoginHistoryRepository extends CrudRepository<UsersLoginHistory, ObjectId> {
-
-	/**
-	 * Find the latest login history for a user
-	 * 
-	 * @param userName
-	 *            username
-	 * @param event
-	 *            {@link AuthenticationEvent}
-	 * @return most recent logout of user
-	 */
-	UsersLoginHistory findTopByUserNameAndEventOrderByTimeStampDesc(String userName, AuthenticationEvent event);
-
+/**
+ * Enumerates the possible Auth Event.
+ *
+ * @author shunaray
+ */
+public enum AuthenticationEvent {
+	LOGIN, LOGOUT
 }

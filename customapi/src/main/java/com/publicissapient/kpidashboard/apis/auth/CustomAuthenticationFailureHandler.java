@@ -30,6 +30,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
+import com.publicissapient.kpidashboard.common.constant.Status;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
@@ -46,7 +48,6 @@ import jakarta.servlet.http.HttpServletResponse;
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 	private static final String WRONGCREDENTIALS = "Login Failed: The username or password entered is incorrect";
 	public static final String USERNAME = "username";
-	public static final String FAIL = "FAIL";
 	@Autowired
 	private UserLoginHistoryService userLoginHistoryService;
 	@Autowired
@@ -73,7 +74,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		String username = httpServletRequest.getParameter(USERNAME);
 		UserInfo userinfo = userInfoRepository.findByUsername(username);
 		if(userinfo != null) {
-			userLoginHistoryService.createUserLoginHistoryInfo(userinfo, FAIL);
+			userLoginHistoryService.createUserLoginHistoryInfo(userinfo, AuthenticationEvent.LOGIN, Status.FAIL);
 		}
 
 		ObjectMapper objectMapper = new ObjectMapper();

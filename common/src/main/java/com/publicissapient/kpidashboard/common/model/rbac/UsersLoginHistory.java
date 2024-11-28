@@ -18,8 +18,14 @@
 
 package com.publicissapient.kpidashboard.common.model.rbac;
 
+import java.time.LocalDateTime;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
+import com.publicissapient.kpidashboard.common.constant.Status;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,8 +44,9 @@ public class UsersLoginHistory {
 	private ObjectId userId;
 	private String userName;
 	private String emailId;
-	private String loginType;
-	private String dateTime;
-	private String status;
+	private AuthType authType;
+	private LocalDateTime timeStamp;
+	private AuthenticationEvent event;
+	private Status status;
 
 }
