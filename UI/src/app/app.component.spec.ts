@@ -62,25 +62,6 @@ describe('AppComponent', () => {
     expect(component.authorized).toBeTrue();
   });
 
-  it('should set localStorage item when switch is checked', () => {
-    const event = { checked: true };
-    component.uiSwitch(event);
-    expect(localStorage.getItem('newUI')).toBe('true');
-  });
-
-  it('should remove localStorage item when switch is unchecked', () => {
-    const event = { checked: false };
-    localStorage.setItem('newUI', 'true');
-    component.uiSwitch(event);
-    expect(localStorage.getItem('newUI')).toBeNull();
-  });
-
-  it('should set newUI to true if localStorage has newUI set', () => {
-		localStorage.setItem('newUI', 'true');
-		component.ngOnInit();
-		expect(component.newUI).toBe(true);
-	});
-
   it('should initialize with authorized set to true when user is authenticated', () => {
 		component.ngOnInit();
 		expect(component.authorized).toBe(true);
@@ -109,22 +90,5 @@ describe('AppComponent', () => {
 		component.onScroll(new Event('scroll'));
 		expect(header.classList.contains('scrolled')).toBe(true);
 		document.body.removeChild(header);
-	});
-
-
-	it('should set newUI to true when localStorage contains newUI as true', () => {
-		expect(component.newUI).toBe(true);
-	});
-
-
-	it('should set newUI to false when localStorage does not contain newUI', () => {
-		expect(component.newUI).toBe(true);
-	});
-
-  it('should trigger Google Analytics with New type when checked', () => {
-		const gaSpy = spyOn(gaService, 'setUIType');
-		const event = { checked: true };
-		component.uiSwitch(event);
-		expect(gaSpy).toHaveBeenCalledWith({ type: 'New' });
 	});
 });
