@@ -2464,7 +2464,6 @@ export class JiraConfigComponent implements OnInit {
 
   jiraMethodChange(self, event = null) {
     this.submitted = false;
-    const group = {};
     if (self.urlParam === 'Jira') {
       if (event && event.checked) {
         self.toolForm.controls['boards'].setValue([]);
@@ -2480,6 +2479,10 @@ export class JiraConfigComponent implements OnInit {
       }
     }
 
+    this.fillToolForm(self);
+  }
+
+  fillToolForm(self) {
     const formData = {};
     for (const obj in self.tool) {
       formData[obj] = self.tool[obj].value;
@@ -2503,6 +2506,7 @@ export class JiraConfigComponent implements OnInit {
       }
     }
   }
+
   // convenience getter for easy access to form fields
   get tool() {
     return this.toolForm.controls;
