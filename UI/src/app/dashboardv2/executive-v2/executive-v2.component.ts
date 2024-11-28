@@ -23,7 +23,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
-import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
 
@@ -1256,9 +1256,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   getDefaultKPIFiltersForBacklog(kpiId, trendValueList, filters, filterType) {
     if (filters && Object.keys(filters).length !== 0) {
       if (this.kpiDropdowns[kpiId][0]['options']?.length) {
-        if (filterType && filterType !== 'multiselectdropdown') {
-          this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-        } else if (!filterType) {
+        if (filterType && filterType !== 'multiselectdropdown' || !filterType) {
           this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
         }
       }
