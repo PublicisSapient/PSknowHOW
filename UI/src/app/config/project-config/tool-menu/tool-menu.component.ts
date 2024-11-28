@@ -117,7 +117,7 @@ export class ToolMenuComponent implements OnInit {
         this.uniqueTools = Array.from(
           this.selectedTools.reduce((map, item) => map.set(item.toolName, item), new Map()).values()
         );
-
+        
         if(this.router.url.includes('tab=2')){
         this.buttonText = 'Set Up';
           this.tools = [
@@ -167,15 +167,15 @@ export class ToolMenuComponent implements OnInit {
               updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jenkins')[0]?.updatedAt
             },
             {
-              toolName: 'BitBucket',
+              toolName: 'Bitbucket',
               category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-bitbucket',
               routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Bitbucket',
               index: 3,
-              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'BitBucket')[0]?.connectionName,
-              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'BitBucket')[0]?.updatedAt
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Bitbucket')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Bitbucket')[0]?.updatedAt
             },
             {
               toolName: 'GitLab',
