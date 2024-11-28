@@ -54,7 +54,7 @@ import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import com.publicissapient.kpidashboard.apis.common.service.UsersSessionService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
@@ -107,7 +107,7 @@ public class TokenAuthenticationServiceImplTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
-	UserLoginHistoryService userLoginHistoryService;
+    UsersSessionService usersSessionService;
 
 	@Mock
 	UserTokenAuthenticationDTO userTokenAuthenticationDTO;

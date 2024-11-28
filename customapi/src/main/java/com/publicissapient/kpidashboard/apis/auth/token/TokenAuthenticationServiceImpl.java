@@ -19,6 +19,8 @@
 package com.publicissapient.kpidashboard.apis.auth.token;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
@@ -48,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.common.service.UsersSessionService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
@@ -95,6 +98,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private ProjectAccessManager projectAccessManager;
 	@Autowired
 	private CookieUtil cookieUtil;
+	@Autowired
+	private UsersSessionService usersSessionService;
 
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
@@ -191,9 +196,15 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
 					authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
+			Date tokenCreationDate = new Date(
+					claims.getExpiration().getTime() - tokenAuthProperties.getExpirationTime());
 			Date tokenExpiration = claims.getExpiration();
 			boolean isJWTTokenExpired = new Date().after(tokenExpiration);
-			if (isJWTTokenExpired) {
+			LocalDateTime lastLogout = usersSessionService.getLastLogoutTimeOfUser(username);
+			ZonedDateTime tokenCreationZonedDateTime = tokenCreationDate.toInstant().atZone(ZoneId.systemDefault());
+			ZonedDateTime lastLogoutZonedDateTime = lastLogout != null ? lastLogout.atZone(ZoneId.systemDefault()) : null;
+			boolean isJWTTokenValid = lastLogoutZonedDateTime == null || tokenCreationZonedDateTime.isAfter(lastLogoutZonedDateTime);
+			if (isJWTTokenExpired || !isJWTTokenValid) {
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 				return null;
 			}
