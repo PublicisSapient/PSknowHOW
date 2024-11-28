@@ -390,6 +390,7 @@ class ArgoCDProcessorJobExecutorTest {
 		argoCDJob.setUrl("http://example.com");
 		argoCDJob.setUsername("user");
 		argoCDJob.setPassword("encryptedPassword");
+		argoCDJob.setBasicProjectConfigId(new ObjectId("6597633d916863f2b4779145"));
 		Application application = new Application();
 		application.setStatus(new Status());
 		History history = new History();

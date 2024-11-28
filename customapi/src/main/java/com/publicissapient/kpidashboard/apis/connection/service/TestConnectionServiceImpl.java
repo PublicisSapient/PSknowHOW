@@ -164,18 +164,20 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return isValidConnection;
 	}
 
-	private boolean checkDetails(String apiUrl, String password, Connection connection) {
-		boolean b = false;
-		if (apiUrl != null && isUrlValid(apiUrl) && (StringUtils.isNotEmpty(password) || connection.isJaasKrbAuth())
-				&& StringUtils.isNotEmpty(connection.getUsername())) {
-			b = true;
+	private boolean checkDetails(String apiUrl, String password, Connection connection, String toolName) {
+		if (toolName.equals(Constant.TOOL_SONAR) || toolName.equals(Constant.TOOL_ZEPHYR)
+				|| toolName.equals(Constant.TOOL_GITLAB)) {
+			return checkDetailsForTool(apiUrl, password);
+		} else {
+			return apiUrl != null && isUrlValid(apiUrl)
+					&& (StringUtils.isNotEmpty(password) || connection.isJaasKrbAuth())
+					&& StringUtils.isNotEmpty(connection.getUsername());
 		}
-		return b;
 	}
 
 	private int testConnectionDetails(Connection connection, String apiUrl, String password, String toolName) {
 		int status = 0;
-		if (checkDetails(apiUrl, password, connection)) {
+		if (checkDetails(apiUrl, password, connection, toolName)) {
 			status = validateTestConn(connection, apiUrl, password, toolName);
 		}
 		return status;
@@ -494,7 +496,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			if (connection.isBearerToken()) {
 				yield connection.getPatOAuthToken();
 			}
-			yield connection.getApiKey();
+			yield connection.getPassword();
 		}
 		default -> connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
 		};
@@ -511,4 +513,11 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(success, "Fetched Zephyr Cloud Base Url successfully", zephyrCloudUrl);
 	}
 
+	private boolean checkDetailsForTool(String apiUrl, String password) {
+		boolean b = false;
+		if (apiUrl != null && isUrlValid(apiUrl) && StringUtils.isNotEmpty(password)) {
+			b = true;
+		}
+		return b;
+	}
 }

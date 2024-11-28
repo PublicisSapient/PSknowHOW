@@ -97,10 +97,11 @@ public class TestConnectionServiceImplTest {
 	public void validateConnectionJira() throws URISyntaxException {
 		when(customApiConfig.getJiraTestConnection()).thenReturn("rest/api/2/issue/createmeta");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
-
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpkWE5sY2pwclpYaz0=");
 		when(restTemplate.exchange(new URI("https://abc.com/rest/api/2/issue/createmeta"),
 				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+		conn.setPassword("dXNlcjprZXk=");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
@@ -120,17 +121,19 @@ public class TestConnectionServiceImplTest {
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
 
-//	@Test
-//	public void validateConnectionZephyr() throws URISyntaxException {
-//		HttpHeaders headers = new HttpHeaders();
-//		when(customApiConfig.getZephyrTestConnection()).thenReturn("rest/api/2/issue/createmeta");
-//		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
-//
-//		when(restTemplate.exchange(new URI("https://abc.com/rest/api/2/issue/createmeta"),
-//				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-//		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_ZEPHYR);
-//		assertThat("status: ", response.getSuccess(), equalTo(true));
-//	}
+	@Test
+	public void validateConnectionZephyr() throws URISyntaxException {
+		conn.setBaseUrl("https://abc.com/jira/");
+		when(customApiConfig.getZephyrTestConnection()).thenReturn("rest/api/2/issue/createmeta");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer key");
+
+		when(restTemplate.exchange(new URI("https://abc.com/jira/rest/api/2/issue/createmeta"),
+				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_ZEPHYR);
+		assertThat("status: ", response.getSuccess(), equalTo(true));
+	}
 
 	@Test
 	public void validateConnectionTeamCity() {
@@ -218,10 +221,6 @@ public class TestConnectionServiceImplTest {
 		when(customApiConfig.getJiraTestConnection()).thenReturn("rest/api/2/issue/createmeta");
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
-
-		when(restTemplate.exchange(new URI("https://abc.com/rest/api/2/issue/createmeta"),
-				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
 	}
 
