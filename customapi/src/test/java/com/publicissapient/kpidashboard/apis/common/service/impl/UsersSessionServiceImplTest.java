@@ -40,27 +40,30 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
 import com.publicissapient.kpidashboard.common.constant.Status;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UsersLoginHistory;
+import com.publicissapient.kpidashboard.common.model.rbac.UsersSession;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserLoginHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UsersSessionRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserLoginHistoryServiceImplTest {
+public class UsersSessionServiceImplTest {
 
 	@Mock
-	private UserLoginHistoryRepository userLoginHistoryRepository;
+	private UsersSessionRepository usersSessionRepository;
 
 	@InjectMocks
-	private UserLoginHistoryServiceImpl userLoginHistoryService;
+	private UsersSessionServiceImpl usersSessionService;
 
 	@Mock
 	private HttpServletRequest request;
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	@Mock
 	private UserInfoRepository userInfoRepository;
@@ -75,16 +78,16 @@ public class UserLoginHistoryServiceImplTest {
 	}
 
 	@Test
-	public void testCreateUserLoginHistoryInfo_ValidInput_Success() {
+	public void testCreateUsersSessionInfo_ValidInput_Success() {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setId(new ObjectId());
 		userInfo.setUsername("username");
 		userInfo.setEmailAddress("emailAdd");
 		userInfo.setAuthType(AuthType.STANDARD);
 
-		when(userLoginHistoryRepository.save(any(UsersLoginHistory.class))).thenReturn(new UsersLoginHistory());
+		when(usersSessionRepository.save(any(UsersSession.class))).thenReturn(new UsersSession());
 
-		UsersLoginHistory result = userLoginHistoryService.createUserLoginHistoryInfo(userInfo,
+		UsersSession result = usersSessionService.createUsersSessionInfo(userInfo,
 				AuthenticationEvent.LOGIN, Status.SUCCESS);
 
 		assertNotNull(result);
@@ -93,23 +96,23 @@ public class UserLoginHistoryServiceImplTest {
 	@Test
 	public void testGetLastLogoutTimeOfUser_UserHasLogoutHistory_ReturnsLastLogoutTime() {
 		LocalDateTime expectedLogoutTime = LocalDateTime.now().minusDays(1);
-		UsersLoginHistory lastLogout = new UsersLoginHistory();
+		UsersSession lastLogout = new UsersSession();
 		lastLogout.setTimeStamp(expectedLogoutTime);
 
-		when(userLoginHistoryRepository.findTopByUserNameAndEventOrderByTimeStampDesc(anyString(),
+		when(usersSessionRepository.findTopByUserNameAndEventOrderByTimeStampDesc(anyString(),
 				any(AuthenticationEvent.class))).thenReturn(lastLogout);
 
-		LocalDateTime actualLogoutTime = userLoginHistoryService.getLastLogoutTimeOfUser("username");
+		LocalDateTime actualLogoutTime = usersSessionService.getLastLogoutTimeOfUser("username");
 
 		assertEquals(expectedLogoutTime, actualLogoutTime);
 	}
 
 	@Test
 	public void testGetLastLogoutTimeOfUser_UserHasNoLogoutHistory_ReturnsNull() {
-		when(userLoginHistoryRepository.findTopByUserNameAndEventOrderByTimeStampDesc(anyString(),
+		when(usersSessionRepository.findTopByUserNameAndEventOrderByTimeStampDesc(anyString(),
 				any(AuthenticationEvent.class))).thenReturn(null);
 
-		LocalDateTime actualLogoutTime = userLoginHistoryService.getLastLogoutTimeOfUser("username");
+		LocalDateTime actualLogoutTime = usersSessionService.getLastLogoutTimeOfUser("username");
 
 		assertNull(actualLogoutTime);
 	}
@@ -120,14 +123,14 @@ public class UserLoginHistoryServiceImplTest {
 		String userName = "testUser";
 		UserInfo userInfo = new UserInfo();
 		when(userInfoRepository.findByUsername(userName)).thenReturn(userInfo);
-		when(userLoginHistoryRepository.save(any())).thenReturn(new UsersLoginHistory());
+		when(usersSessionRepository.save(any())).thenReturn(new UsersSession());
 
 		// Act
-		userLoginHistoryService.auditLogout(userName, Status.SUCCESS);
+		usersSessionService.auditLogout(userName, Status.SUCCESS);
 
 		// Assert
 		verify(userInfoRepository, times(1)).findByUsername(userName);
-		verify(userLoginHistoryRepository, times(1)).save(any());
+		verify(usersSessionRepository, times(1)).save(any());
 	}
 
 	@Test
@@ -136,13 +139,13 @@ public class UserLoginHistoryServiceImplTest {
 		String userName = "testUser";
 		UserInfo userInfo = new UserInfo();
 		when(userInfoRepository.findByUsername(userName)).thenReturn(userInfo);
-		when(userLoginHistoryRepository.save(any())).thenReturn(new UsersLoginHistory());
+		when(usersSessionRepository.save(any())).thenReturn(new UsersSession());
 		// Act
-		userLoginHistoryService.auditLogout("testUser", Status.SUCCESS);
+		usersSessionService.auditLogout("testUser", Status.SUCCESS);
 
 		// Assert
 		verify(userInfoRepository, times(1)).findByUsername(userName);
-		verify(userLoginHistoryRepository, times(1)).save(any());
+		verify(usersSessionRepository, times(1)).save(any());
 	}
 
 	@Test
@@ -151,11 +154,11 @@ public class UserLoginHistoryServiceImplTest {
 		String userName = "testUser";
 		when(userInfoRepository.findByUsername(userName)).thenReturn(null);
 		// Act
-		userLoginHistoryService.auditLogout("testUser", Status.SUCCESS);
+		usersSessionService.auditLogout("testUser", Status.SUCCESS);
 
 		// Assert
 		verify(userInfoRepository, times(1)).findByUsername(userName);
-		verify(userLoginHistoryRepository, times(0)).save(any());
+		verify(usersSessionRepository, times(0)).save(any());
 	}
 
 	@Test
@@ -164,12 +167,12 @@ public class UserLoginHistoryServiceImplTest {
 		String userName = "testUser";
 		UserInfo userInfo = new UserInfo();
 		when(userInfoRepository.findByUsername(userName)).thenReturn(userInfo);
-		when(userLoginHistoryRepository.save(any())).thenReturn(new UsersLoginHistory());
+		when(usersSessionRepository.save(any())).thenReturn(new UsersSession());
 		// Act
-		userLoginHistoryService.auditLogout("testUser", Status.SUCCESS);
+		usersSessionService.auditLogout("testUser", Status.SUCCESS);
 
 		// Assert
 		verify(userInfoRepository, times(1)).findByUsername(userName);
-		verify(userLoginHistoryRepository, times(1)).save(any());
+		verify(usersSessionRepository, times(1)).save(any());
 	}
 }

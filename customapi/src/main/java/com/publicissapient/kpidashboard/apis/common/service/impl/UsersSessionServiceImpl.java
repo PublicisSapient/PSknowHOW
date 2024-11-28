@@ -23,24 +23,27 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import com.publicissapient.kpidashboard.apis.common.service.UsersSessionService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
 import com.publicissapient.kpidashboard.common.constant.Status;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UsersLoginHistory;
+import com.publicissapient.kpidashboard.common.model.rbac.UsersSession;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserLoginHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UsersSessionRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class UserLoginHistoryServiceImpl implements UserLoginHistoryService {
+public class UsersSessionServiceImpl implements UsersSessionService {
 
 	@Autowired
-	private UserLoginHistoryRepository userLoginHistoryRepository;
+	private UsersSessionRepository usersSessionRepository;
 	@Autowired
 	private UserInfoRepository userInfoRepository;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * Method to create user login history info
@@ -54,16 +57,17 @@ public class UserLoginHistoryServiceImpl implements UserLoginHistoryService {
 	 * @return user login history
 	 */
 	@Override
-	public UsersLoginHistory createUserLoginHistoryInfo(UserInfo userInfo, AuthenticationEvent event, Status status) {
-		UsersLoginHistory usersLoginHistoryInfo = new UsersLoginHistory();
-		usersLoginHistoryInfo.setUserId(userInfo.getId());
-		usersLoginHistoryInfo.setUserName(userInfo.getUsername());
-		usersLoginHistoryInfo.setEmailId(userInfo.getEmailAddress());
-		usersLoginHistoryInfo.setAuthType(userInfo.getAuthType());
-		usersLoginHistoryInfo.setEvent(event);
-		usersLoginHistoryInfo.setStatus(status);
-		usersLoginHistoryInfo.setTimeStamp(LocalDateTime.now());
-		return userLoginHistoryRepository.save(usersLoginHistoryInfo);
+	public UsersSession createUsersSessionInfo(UserInfo userInfo, AuthenticationEvent event, Status status) {
+		UsersSession usersSessionInfo = new UsersSession();
+		usersSessionInfo.setUserId(userInfo.getId());
+		usersSessionInfo.setUserName(userInfo.getUsername());
+		usersSessionInfo.setEmailId(userInfo.getEmailAddress());
+		usersSessionInfo.setAuthType(userInfo.getAuthType());
+		usersSessionInfo.setEvent(event);
+		usersSessionInfo.setStatus(status);
+		usersSessionInfo.setTimeStamp(LocalDateTime.now());
+		usersSessionInfo.setExpiresOn(LocalDateTime.now().plusMonths(customApiConfig.getUserSessionsExpiresOn()));
+		return usersSessionRepository.save(usersSessionInfo);
 	}
 
 	/**
@@ -75,7 +79,7 @@ public class UserLoginHistoryServiceImpl implements UserLoginHistoryService {
 	 */
 	@Override
 	public LocalDateTime getLastLogoutTimeOfUser(String username) {
-		UsersLoginHistory lastLogout = userLoginHistoryRepository
+		UsersSession lastLogout = usersSessionRepository
 				.findTopByUserNameAndEventOrderByTimeStampDesc(username, AuthenticationEvent.LOGOUT);
 		return lastLogout != null ? lastLogout.getTimeStamp() : null;
 	}
@@ -93,7 +97,7 @@ public class UserLoginHistoryServiceImpl implements UserLoginHistoryService {
 		UserInfo userinfo = userInfoRepository.findByUsername(userName);
 
 		if (userinfo != null) {
-			this.createUserLoginHistoryInfo(userinfo, AuthenticationEvent.LOGOUT, status);
+			this.createUsersSessionInfo(userinfo, AuthenticationEvent.LOGOUT, status);
 		}
 	}
 

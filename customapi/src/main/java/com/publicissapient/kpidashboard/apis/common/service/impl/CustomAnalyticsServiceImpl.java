@@ -42,7 +42,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import com.publicissapient.kpidashboard.apis.common.service.UsersSessionService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
@@ -88,7 +88,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
 	@Autowired
-	private UserLoginHistoryService userLoginHistoryService;
+	private UsersSessionService usersSessionService;
 
 	@Autowired
 	private UserTokenReopository userTokenReopository;
@@ -116,7 +116,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		json.put(NOTIFICATION_EMAIL, userinfo.getNotificationEmail());
 		Gson gson = new Gson();
 
-		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, AuthenticationEvent.LOGIN, Status.SUCCESS);
+		usersSessionService.createUsersSessionInfo(userinfo, AuthenticationEvent.LOGIN, Status.SUCCESS);
 
 		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
@@ -168,7 +168,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			} else {
 				userMap.put(PROJECTS_ACCESS, new JSONArray());
 			}
-			userLoginHistoryService.createUserLoginHistoryInfo(userinfoKnowHow, AuthenticationEvent.LOGIN,
+			usersSessionService.createUsersSessionInfo(userinfoKnowHow, AuthenticationEvent.LOGIN,
 					Status.SUCCESS);
 		}
 		userMap.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));

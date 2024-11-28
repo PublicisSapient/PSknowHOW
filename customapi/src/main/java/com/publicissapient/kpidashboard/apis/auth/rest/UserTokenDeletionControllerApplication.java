@@ -37,7 +37,7 @@ import com.publicissapient.kpidashboard.apis.auth.AuthenticationUtil;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import com.publicissapient.kpidashboard.apis.common.service.UsersSessionService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.Status;
 
@@ -64,7 +64,7 @@ public class UserTokenDeletionControllerApplication {
 	@Autowired
 	private UserInfoService userInfoService;
 	@Autowired
-	private UserLoginHistoryService userLoginHistoryService;
+	private UsersSessionService usersSessionService;
 
 	private final UserTokenDeletionService userTokenDeletionService;
 
@@ -100,10 +100,10 @@ public class UserTokenDeletionControllerApplication {
 		boolean cookieClear = userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken);
 		cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
 		if (cookieClear) {
-			userLoginHistoryService.auditLogout(userName, Status.SUCCESS);
+			usersSessionService.auditLogout(userName, Status.SUCCESS);
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Logout Successfully", true));
 		} else {
-			userLoginHistoryService.auditLogout(userName, Status.FAIL);
+			usersSessionService.auditLogout(userName, Status.FAIL);
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(false, "Error while Logout from Central Auth", false));
 		}
@@ -126,11 +126,11 @@ public class UserTokenDeletionControllerApplication {
 		log.info("UserTokenDeletionController::deleteUserToken end");
 		cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
 		if (Objects.nonNull(authCookie)) {
-			userLoginHistoryService.auditLogout(userName, Status.SUCCESS);
+			usersSessionService.auditLogout(userName, Status.SUCCESS);
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "local auth Logout Successfully", true));
 		} else {
-			userLoginHistoryService.auditLogout(userName, Status.FAIL);
+			usersSessionService.auditLogout(userName, Status.FAIL);
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(false, "Error while Logout from local auth", false));
 		}

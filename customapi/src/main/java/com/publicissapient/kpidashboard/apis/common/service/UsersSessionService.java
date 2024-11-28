@@ -23,9 +23,9 @@ import java.time.LocalDateTime;
 import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
 import com.publicissapient.kpidashboard.common.constant.Status;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UsersLoginHistory;
+import com.publicissapient.kpidashboard.common.model.rbac.UsersSession;
 
-public interface UserLoginHistoryService {
+public interface UsersSessionService {
 
 	/**
 	 * Method to create user login history info
@@ -38,7 +38,7 @@ public interface UserLoginHistoryService {
 	 *            authentication event {@link AuthenticationEvent}
 	 * @return user login history
 	 */
-	UsersLoginHistory createUserLoginHistoryInfo(UserInfo userInfo, AuthenticationEvent event, Status status);
+	UsersSession createUsersSessionInfo(UserInfo userInfo, AuthenticationEvent event, Status status);
 
 	/**
 	 * Method to get last logout of user

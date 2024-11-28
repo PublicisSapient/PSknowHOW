@@ -39,7 +39,7 @@ import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
-import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import com.publicissapient.kpidashboard.apis.common.service.UsersSessionService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 
 import jakarta.servlet.http.Cookie;
@@ -63,7 +63,7 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 	@Mock
 	AuthProperties authProperties;
 	@Mock
-	UserLoginHistoryService userLoginHistoryService;
+	UsersSessionService usersSessionService;
 
 	@InjectMocks
 	private UserTokenDeletionControllerApplication userTokenDeletionControllerApplication;
