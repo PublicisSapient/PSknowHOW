@@ -318,8 +318,8 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				processorId, serverToNameMap);
 		Map<Pair<String, String>, Deployment> existingDeployments = existingEntries.stream()
 				.collect(Collectors.toMap(deployment -> Pair.of(
-						(deployment.getBasicProjectConfigId() != null ? deployment.getBasicProjectConfigId().toHexString() : "") + deployment.getJobName(),
-						deployment.getNumber()), deployment -> deployment));
+						deployment.getBasicProjectConfigId().toHexString() + "-" + deployment.getJobName(),
+						deployment.getNumber()), deployment -> deployment, (existing, replacement) -> existing));
 		Set<Deployment> toBeSavedInDB = deployments.entrySet().stream()
 				.filter(entry -> !existingDeployments.containsKey(entry.getKey())).map(Map.Entry::getValue)
 				.collect(Collectors.toSet());
@@ -365,7 +365,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 						.setDuration(DateUtil.calculateDuration(history.getDeployStartedAt(), history.getDeployedAt()));
 				deployment.setNumber(history.getId());
 				deployment.setPipelineName("NA");
-				deployments.put(Pair.of((deployment.getBasicProjectConfigId() != null ? deployment.getBasicProjectConfigId().toHexString() : "")+ deployment.getJobName(),
+				deployments.put(Pair.of(deployment.getBasicProjectConfigId().toHexString() +"-" + deployment.getJobName(),
 						deployment.getNumber()), deployment);
 			}
 		}
