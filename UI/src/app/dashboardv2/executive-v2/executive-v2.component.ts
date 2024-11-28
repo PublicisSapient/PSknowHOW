@@ -68,7 +68,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedJobFilter = 'Select';
   selectedBranchFilter = 'Select';
   processedKPI11Value = {};
-  kanbanActivated = false;
   serviceObject = {};
   isChartView = true;
   allKpiArray: any = [];
@@ -132,7 +131,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.resetToDefaults();
       this.selectedtype = data.selectedType;
       this.kpiTrendObject = {}
-      this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
       this.noProjects = this.service.noProjectsObj;
     }));
 
@@ -235,7 +233,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setGlobalConfigData(globalConfig) {
-    this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
     this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     if (!this.configGlobalData) {
       this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
@@ -1258,13 +1255,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   getDefaultKPIFiltersForBacklog(kpiId, trendValueList, filters, filterType) {
     if (filters && Object.keys(filters).length !== 0) {
-      if (this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
+      if (this.kpiDropdowns[kpiId][0]['options']?.length) {
         if (filterType && filterType !== 'multiselectdropdown') {
           this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
         } else if (!filterType) {
           this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-        } else {
-          this.kpiSelectedFilterObj[kpiId] = [];
         }
       }
     } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {

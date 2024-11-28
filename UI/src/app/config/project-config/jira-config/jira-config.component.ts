@@ -2479,10 +2479,6 @@ export class JiraConfigComponent implements OnInit {
       }
     }
 
-    this.fillToolForm(self);
-  }
-
-  fillToolForm(self) {
     const formData = {};
     for (const obj in self.tool) {
       formData[obj] = self.tool[obj].value;
@@ -2494,6 +2490,10 @@ export class JiraConfigComponent implements OnInit {
       }
     }
 
+    this.fillToolForm(self);
+  }
+
+  fillToolForm(self) {
     if (self.selectedToolConfig && self.selectedToolConfig.length) {
       for (const obj in self.selectedToolConfig[0]) {
         if (obj !== 'queryEnabled') {
