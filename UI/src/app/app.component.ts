@@ -39,9 +39,6 @@ export class AppComponent implements OnInit {
 
   authorized = <boolean>true;
 
-  newUI: boolean = false;
-  isNewUISwitch: boolean = false;
-
   @HostListener('window:scroll', ['$event'])
   onScroll(event) {
     const header = document.querySelector('.header');
@@ -90,15 +87,11 @@ export class AppComponent implements OnInit {
           url: event.urlAfterRedirects + '/' + (this.service.getSelectedType() || 'Scrum'),
           userRole: this.authorisation.getRole(),
           version: this.httpService.currentVersion,
-          uiType: JSON.parse(localStorage.getItem('newUI')) === true ? 'New' : 'Old'
+          uiType: 'New'
         };
         this.ga.setPageLoad(data);
       }
 
     });
-  }
-
-  async checkNewUIFlag(){
-    this.feature.config = this.feature.loadConfig().then((res) => res);
   }
 }
