@@ -244,12 +244,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					log.error("Error in Cloning of fieldmapping");
 				}
                 assert newFieldMapping != null;
+				newFieldMapping.setId(null);
                 newFieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
 				newFieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
 				newFieldMapping.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				newFieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
 				newFieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
-				newFieldMapping.setId(null);
 				fieldMappingService.saveFieldMapping(newFieldMapping);
 			}
 		}
@@ -350,6 +350,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		}
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_BASIC_TREE);
+		if (basicConfig.getClonedFrom()!=null) {
+			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
+			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
+		}
 	}
 
 	/**
