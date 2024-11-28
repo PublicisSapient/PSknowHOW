@@ -39,7 +39,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Document(collection = "field_mapping")
-public class FieldMapping extends FieldMappingHistory {
+public class FieldMapping extends FieldMappingHistory implements Cloneable {
 
 	public static final String READY_FOR_TESTING = "Ready For Testing";
 	public static final String IN_TESTING = "In Testing";
@@ -543,5 +543,10 @@ public class FieldMapping extends FieldMappingHistory {
 	public void setJiraStatusForInProgressKPI119(List<String> status) {
 		this.jiraStatusForInProgressKPI154 = status;
 		this.jiraStatusForInProgressKPI119 = status;
+	}
+
+	@Override
+	public FieldMapping clone() throws CloneNotSupportedException {
+		return (FieldMapping) super.clone();
 	}
 }
