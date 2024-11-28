@@ -7924,7 +7924,7 @@ describe('ExecutiveV2Component', () => {
     component.kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
     component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
     component.getBackupKPIFiltersForBacklog(kpiId);
-    expect(component.kpiSelectedFilterObj[kpiId]).toEqual([]);
+    expect(component.kpiSelectedFilterObj[kpiId]).toBeFalsy();
   });
 
   it('should set kpiSelectedFilterObj when filterType is not empty and not multiselectdropdown', () => {
@@ -8127,14 +8127,12 @@ describe('ExecutiveV2Component', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     const spy = spyOn(component, 'processKpiConfigData');
     service.onTypeOrTabRefresh.next({ selectedTab: 'Caterory One', selectedType: 'Scrum' });
-    component.kanbanActivated = false;
     fixture.detectChanges();
     expect(component.selectedBranchFilter).toBe('Select');
   });
 
   it('should set noTabAccess to true when no filterData', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
-    component.kanbanActivated = false;
     component.filterApplyData = {};
     const event = {
       masterData: {
@@ -8271,7 +8269,6 @@ describe('ExecutiveV2Component', () => {
       shown: true
     }];
     component.configGlobalData = component.updatedConfigGlobalData;
-    component.kanbanActivated = false;
     component.selectedtype = 'Scrum';
     component.timeRemaining = 0;
     const spy = spyOn(component, 'calcBusinessDays').and.callThrough();
@@ -12894,7 +12891,6 @@ describe('ExecutiveV2Component', () => {
 
   it('should set the hierarchyLevel to the value of the selected type in the completeHierarchyData from localStorage', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
-    component.kanbanActivated = false;
     component.filterApplyData = {};
     const event = {
       masterData: {
@@ -12963,7 +12959,6 @@ describe('ExecutiveV2Component', () => {
       scrum: "test1",
       kanban: "test2"
     }
-    component.kanbanActivated = false;
     component.selectedtype = 'scrum';
     localStorage.setItem("completeHierarchyData", JSON.stringify(localDate))
     component.receiveSharedData(event);
@@ -13741,7 +13736,6 @@ describe('ExecutiveV2Component', () => {
         ]
       }
     }
-    component.kanbanActivated = false;
     component.globalConfig = {
       "username": "SUPERADMIN",
       "scrum": [
@@ -17725,7 +17719,6 @@ describe('ExecutiveV2Component', () => {
       expect(component.selectedBranchFilter).toBe('Select');
       expect(component.serviceObject).toEqual({});
       expect(component.kpiTrendObject).toEqual({});
-      expect(component.kanbanActivated).toBe(false);
     });
   });
 
@@ -17900,7 +17893,6 @@ describe('ExecutiveV2Component', () => {
     xit('should set the hierarchyLevel and filterData when completeHierarchyData and dashConfigData are present', () => {
       component.service.setSelectedType('scrum');
       component.selectedtype = 'scrum';
-      component.kanbanActivated = false;
       component.selectedtype = 'Type1';
       component.filterApplyData = {};
       component.globalConfig = {};
@@ -17965,7 +17957,6 @@ describe('ExecutiveV2Component', () => {
     it('should call the necessary group functions and set showCommentIcon to true', () => {
       component.service.setSelectedType('scrum');
       component.selectedtype = 'scrum';
-      component.kanbanActivated = false;
       component.filterData = [];
       component.filterApplyData = { level: 'level1' };
       component.configGlobalData = [{ boardName: 'Tab1', kpis: [] }];
@@ -18008,7 +17999,6 @@ describe('ExecutiveV2Component', () => {
     component.filterApplyData = { level: 'level1' };
     component.configGlobalData = [{ boardName: 'Tab1', kpis: [] }];
     component.selectedtype = 'kanban';
-    component.kanbanActivated = true;
     component.hierarchyLevel = [{ hierarchyLevelId: 'level1' }];
 
     spyOn(component, 'groupJiraKanbanKpi');
@@ -18155,7 +18145,6 @@ describe('ExecutiveV2Component', () => {
     describe('Happy Path', () => {
       it('should set configGlobalData correctly when kanban is activated', () => {
         // Test description: Ensure that configGlobalData is set correctly when kanban is activated.
-        component.kanbanActivated = true;
         component.selectedtype = 'kanban';
         component.selectedTab = 'test-board';
 
@@ -18175,7 +18164,6 @@ describe('ExecutiveV2Component', () => {
 
       it('should set configGlobalData correctly when scrum is activated', () => {
         // Test description: Ensure that configGlobalData is set correctly when scrum is activated.
-        component.kanbanActivated = false;
         component.selectedTab = 'test-board';
 
         const globalConfig = {
@@ -18196,7 +18184,6 @@ describe('ExecutiveV2Component', () => {
     describe('Edge Cases', () => {
       it('should handle case where no matching board is found', () => {
         // Test description: Ensure that configGlobalData is set to undefined when no matching board is found.
-        component.kanbanActivated = true;
         component.selectedTab = 'non-existent-board';
 
         const globalConfig = {
@@ -18212,7 +18199,6 @@ describe('ExecutiveV2Component', () => {
 
       it('should fallback to "others" when no kanban or scrum match is found', () => {
         // Test description: Ensure that configGlobalData falls back to "others" when no kanban or scrum match is found.
-        component.kanbanActivated = true;
         component.selectedTab = 'other-board';
 
         const globalConfig = {
@@ -18228,7 +18214,6 @@ describe('ExecutiveV2Component', () => {
 
       it('should filter updatedConfigGlobalData to only shown items', () => {
         // Test description: Ensure that updatedConfigGlobalData only includes items that are shown.
-        component.kanbanActivated = true;
         component.selectedtype = 'kanban';
         component.selectedTab = 'test-board';
 
