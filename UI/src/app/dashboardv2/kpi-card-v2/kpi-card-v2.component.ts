@@ -86,7 +86,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
       this.filterOptions = {};
-      if (Object.keys(x)?.length) {
+      if (x && Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
