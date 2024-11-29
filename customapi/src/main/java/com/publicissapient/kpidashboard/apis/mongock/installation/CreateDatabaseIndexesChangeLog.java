@@ -17,7 +17,10 @@
 package com.publicissapient.kpidashboard.apis.mongock.installation;
 
 import org.bson.Document;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.index.IndexOperations;
 
 import com.mongodb.client.model.IndexOptions;
 
@@ -74,6 +77,7 @@ public class CreateDatabaseIndexesChangeLog {
 		clearAndExecuteUserTokenDataIndexes();
 		clearAndExecuteMergeRequestsIndexes();
 		clearAndExecuteProcessorItemsIndexes();
+		usersSessionTTLIndex();
 	}
 
 	public void clearAndExecuteJiraIssueIndexes() {
@@ -347,6 +351,10 @@ public class CreateDatabaseIndexesChangeLog {
 				new IndexOptions().name("toolConfigId_1"));
 	}
 
+	public void usersSessionTTLIndex() {
+		IndexOperations indexOps = mongoTemplate.indexOps("users_session");
+		indexOps.ensureIndex(new Index().on("expiresOn", Sort.Direction.ASC).expire(0));
+	}
 	@RollbackExecution
 	public void rollback() {
 		// We are inserting the documents through DDL, no rollback to any collections.

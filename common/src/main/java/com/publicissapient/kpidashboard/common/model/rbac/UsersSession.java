@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.common.model.rbac;
 import java.time.LocalDateTime;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.constant.AuthType;
@@ -47,7 +46,6 @@ public class UsersSession {
 	private String emailId;
 	private AuthType authType;
 	private LocalDateTime timeStamp;
-	@Indexed(expireAfterSeconds = 0)
 	private LocalDateTime expiresOn;
 	private AuthenticationEvent event;
 	private Status status;
