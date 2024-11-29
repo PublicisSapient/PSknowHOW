@@ -307,13 +307,11 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	@Override
 	public List<ProjectToolConfig> getProjectToolConfigsByProjectId(ObjectId basicProjectConfigId) {
-		return toolRepository
-				.findByBasicProjectConfigId(basicProjectConfigId);
+		return toolRepository.findByBasicProjectConfigId(basicProjectConfigId);
 	}
 
 	public List<ProjectToolConfig> saveProjectToolConfigs(List<ProjectToolConfig> projectToolConfigs) {
-		return toolRepository
-				.saveAll(projectToolConfigs);
+		return toolRepository.saveAll(projectToolConfigs);
 	}
 
 	@Override
