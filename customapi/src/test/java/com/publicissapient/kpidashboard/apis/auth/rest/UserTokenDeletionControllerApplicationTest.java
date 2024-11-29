@@ -18,13 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.auth.rest;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
-import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
-import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +35,15 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
+import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
+import com.publicissapient.kpidashboard.apis.common.service.UsersSessionService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 @WebMvcTest(UserTokenDeletionControllerApplication.class)
@@ -59,6 +62,8 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 
 	@Mock
 	AuthProperties authProperties;
+	@Mock
+	UsersSessionService usersSessionService;
 
 	@InjectMocks
 	private UserTokenDeletionControllerApplication userTokenDeletionControllerApplication;
