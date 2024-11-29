@@ -53,7 +53,7 @@ export class ExportExcelComponent implements OnInit {
   // download excel functionality
   downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?,) {
     const sprintIncluded = filterApplyData.sprintIncluded.length > 0 ? filterApplyData.sprintIncluded : ['CLOSED'];
-    if((filterApplyData.selectedMap.project.length == 0 && filterApplyData.selectedMap.project.release.length !== 0 )|| filterApplyData.selectedMap.project.length > 1){
+    if((filterApplyData?.selectedMap?.project?.length == 0 && filterApplyData.selectedMap?.release.length === 0 )|| filterApplyData.selectedMap.project.length > 1){
       this.isDisableSaveCOnfigurationBtn = true;
     }
     this.modalDetails['kpiId'] = kpiId;
