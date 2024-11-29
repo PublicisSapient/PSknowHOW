@@ -150,6 +150,7 @@ public class KanbanJiraIssue extends BasicModel {
 	private String release;
 	private String releaseId;
 	private String releaseDate;
+	private List<ReleaseVersion> releaseVersions;
 	private String buildId;
 	private String assigneeId;
 	private String assigneeName;

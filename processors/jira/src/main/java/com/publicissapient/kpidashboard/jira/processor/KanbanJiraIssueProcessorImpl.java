@@ -38,6 +38,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.atlassian.jira.rest.client.api.domain.Version;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -159,6 +161,16 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 			// Affected Version
 			jiraIssue.setAffectedVersions(getAffectedVersions(issue));
+			if (issue.getFixVersions() != null) {
+				List<ReleaseVersion> releaseVersions = new ArrayList<>();
+				for (Version fixVersionName : issue.getFixVersions()) {
+					ReleaseVersion release = new ReleaseVersion();
+					release.setReleaseDate(fixVersionName.getReleaseDate());
+					release.setReleaseName(fixVersionName.getName());
+					releaseVersions.add(release);
+				}
+				jiraIssue.setReleaseVersions(releaseVersions);
+			}
 
 			setJiraIssuuefields(issue, jiraIssue, fieldMapping, fields, epic, issueEpics);
 

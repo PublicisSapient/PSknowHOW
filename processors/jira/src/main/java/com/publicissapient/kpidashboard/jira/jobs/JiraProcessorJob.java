@@ -207,7 +207,7 @@ public class JiraProcessorJob {
 	public Job fetchIssueKanbanBoardJob() {
 		return builderFactory.getJobBuilder("FetchIssueKanban Job", jobRepository).incrementer(new RunIdIncrementer())
 				.start(metaDataStep()).next(fetchIssueKanbanBoardChunkStep()).next(kanbanReleaseDataStep())
-				.listener(jobListenerKanban).build();
+				.next(processProjectStatusStep()).listener(jobListenerKanban).build();
 
 	}
 
@@ -235,7 +235,7 @@ public class JiraProcessorJob {
 	public Job fetchIssueKanbanJqlJob() {
 		return builderFactory.getJobBuilder("FetchIssueKanban JQL Job", jobRepository)
 				.incrementer(new RunIdIncrementer()).start(metaDataStep()).next(fetchIssueKanbanJqlChunkStep())
-				.next(kanbanReleaseDataStep()).listener(jobListenerKanban).build();
+				.next(kanbanReleaseDataStep()).next(processProjectStatusStep()).listener(jobListenerKanban).build();
 	}
 
 	@TrackExecutionTime
