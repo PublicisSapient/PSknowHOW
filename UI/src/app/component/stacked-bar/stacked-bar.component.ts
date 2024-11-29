@@ -18,7 +18,6 @@ export class StackedBarComponent implements OnInit, OnChanges {
   constructor(private elRef: ElementRef) {}
 
   ngOnInit(): void {
-    console.log(this.data)
     if (this.data && this.data.length) {
       this.createChart();
     }
@@ -32,101 +31,73 @@ export class StackedBarComponent implements OnInit, OnChanges {
 
   private createChart(): void {
     const element = this.elRef.nativeElement;
-    const margin = { top: 10, right: 10, bottom: 10, left: 10 };
-    const chartWidth = this.width - margin.left - margin.right;
-    const chartHeight = this.height - margin.top - margin.bottom;
-
-    // Append SVG
-    this.svg = d3
+    const chartWidth = 600; // Total width of the chart
+    const chartHeight = 50; // Height of the bar
+    const margin = { top: 40, right: 20, bottom: 20, left: 20 };
+    const totalValue = this.data.reduce((sum, d) => sum + d.value, 0); // Total value of all sections
+  
+    // Normalize data for percentage
+    const normalizedData = this.data.map(d => ({
+      ...d,
+      percentage: (d.value / totalValue) * 100,
+    }));
+  
+    // Clear any previous SVG content
+    d3.select(element).selectAll('*').remove();
+  
+    // Create the SVG container
+    const svg = d3
       .select(element)
-      .select('.chart-container')
       .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height + margin.top + margin.bottom)
+      .attr('width', chartWidth + margin.left + margin.right)
+      .attr('height', chartHeight + margin.top + margin.bottom);
+
+  
+    // Draw the main bar (stacked sections)
+    const g = svg
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-    // Define scales
-    const xScale = d3
-      .scaleLinear()
-      .domain([
-        d3.min(this.data, (d: any) => d.value)  || 0,
-        d3.sum(this.data, (d: any) => Math.abs(d.value)) || 0,
-      ])
-      .range([0, chartWidth]);
-
-    const colorScale = d3
-      .scaleOrdinal()
-      .domain(this.data.map((d) => d.category))
-      .range(this.data.map((d) => d.color));
-
-    // Create tooltip
-    this.tooltip = d3
-      .select(element)
-      .append('div')
-      .style('position', 'absolute')
-      .style('background', 'rgba(0, 0, 0, 0.7)')
-      .style('color', '#fff')
-      .style('padding', '5px 10px')
-      .style('border-radius', '5px')
-      .style('display', 'none')
-      .style('pointer-events', 'none');
-
-    // Compute cumulative positions
-    let cumulative = 0;
-    const positions = this.data.map((d) => {
-      const start = cumulative;
-      cumulative += d.value;
-      return { ...d, start, end: cumulative };
-    });
-
-    // Add bars
-    this.svg
-      .selectAll('rect')
-      .data(positions)
+  
+    let cumulativeWidth = 0;
+  
+    g.selectAll('rect')
+      .data(normalizedData)
       .enter()
       .append('rect')
-      .attr('x', (d) => xScale(Math.min(d.start, d.end)))
-      .attr('y', chartHeight / 3)
-      .attr('width', (d) => Math.abs(xScale(d.end) - xScale(d.start)))
-      .attr('height', chartHeight / 5)
-      .attr('fill', (d) => colorScale(d.category))
-      // .attr('rx', 10) // Rounded corners
-      // .attr('ry', 10) // Rounded corners
-      .on('mouseover', (event, d) => {
-        this.tooltip
-          .style('display', 'block')
-          .html(`<strong>${d.category}</strong>`);
+      .attr('x', d => {
+        const x = cumulativeWidth;
+        cumulativeWidth += (chartWidth * d.percentage) / 100;
+        return x;
       })
-      .on('mousemove', (event) => {
-        this.tooltip
-          .style('transform', 'translate(-50%, -500%)')
-          .style('left', `${event.pageX + 10}px`);
-      })
-      .on('mouseout', () => {
-        this.tooltip.style('display', 'none');
-      });
-
-    // Add labels inside the bars
-    this.svg
-      .selectAll('text')
-      .data(positions)
+      .attr('y', 0)
+      .attr('width', d => (chartWidth * d.percentage) / 100) // Proportional width
+      .attr('height', chartHeight)
+      .attr('fill', d => d.color) // Dynamic fill color
+      // .attr('rx', 25) // Rounded corners
+      // .attr('ry', 25); // Rounded corners
+  
+    // Add labels inside each section
+    cumulativeWidth = 0; // Reset cumulativeWidth for labels
+    g.selectAll('text')
+      .data(normalizedData)
       .enter()
       .append('text')
-      .attr('x', (d) => xScale(d.start) + (xScale(d.end) - xScale(d.start)) / 2)
-      .attr('y', chartHeight / 2.2)
+      .attr('x', d => {
+        const x = cumulativeWidth + (chartWidth * d.percentage) / 200;
+        cumulativeWidth += (chartWidth * d.percentage) / 100;
+        return x;
+      })
+      .attr('y', chartHeight / 2)
+      .style('fill', 'white')
+      .style('font-size', '14px')
+      .style('font-weight', 'bold')
       .attr('text-anchor', 'middle')
-      .attr('fill', 'white')
-      .style('font-size', '12px')
-      .text((d) => d.value);
-
-    // // Add x-axis
-    // const xAxis = d3.axisBottom(xScale).ticks(10);
-    // this.svg
-    //   .append('g')
-    //   .attr('transform', `translate(0, ${chartHeight})`)
-    //   .call(xAxis);
+      .attr('dominant-baseline', 'middle')
+      .text(d => `${d.value}d`);
   }
+  
+  
+  
   
   private updateChart(): void {
     // Clear previous chart

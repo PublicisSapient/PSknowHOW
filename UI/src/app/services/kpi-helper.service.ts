@@ -93,10 +93,15 @@ export class KpiHelperService {
         return sum + (issue.value || 0); // Sum up the values for the key
       }, 0);
 
-    //   const test = chartData.map((item: any) => {item.value = this.convertToHoursIfTime(item.value,'day')})
-
-    // console.log(test)
-    return { chartData,totalCount };
+   // console.log(convertToHoursIfTime(,'day'))
+   const test = chartData.map((item: any) => {
+    return {
+        ...item,
+        tooltipValue: this.convertToHoursIfTime(item.value, 'day'),
+        value:Math.floor(Math.floor((Math.abs(item.value) / 60))/8)
+    }
+   });
+    return { chartData:test,totalCount };
   }
 
   barChartData(json: any,color:any) {
