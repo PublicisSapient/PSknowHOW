@@ -5,6 +5,7 @@ import { Table } from 'primeng/table';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { SortEvent } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-export-excel',
@@ -35,117 +36,101 @@ export class ExportExcelComponent implements OnInit {
   tableColumnForm = {};
   filteredColumn;
   excludeColumnFilter = [];
+  selectedColumns = [] // store all columns which is default or shown in table 
+  tableColumns = []; // store all table coumns with configurations
+  isDisableSaveCOnfigurationBtn : boolean = false ;
 
   constructor(
     private excelService: ExcelService,
     private helperService: HelperService,
     private sharedService: SharedService,
-    private httpService: HttpService
+    private httpService: HttpService,
+    private messageService : MessageService
   ) { }
 
   ngOnInit(): void { }
 
   // download excel functionality
-  downloadExcel(
-    kpiId,
-    kpiName,
-    isKanban,
-    additionalFilterSupport,
-    filterApplyData,
-    filterData,
-    iSAdditionalFilterSelected,
-    chartType?,
-  ) {
-    const sprintIncluded =
-      filterApplyData.sprintIncluded.length > 0
-        ? filterApplyData.sprintIncluded
-        : ['CLOSED'];
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?,) {
+    const sprintIncluded = filterApplyData.sprintIncluded.length > 0 ? filterApplyData.sprintIncluded : ['CLOSED'];
+    if((filterApplyData.selectedMap.project.length == 0 && filterApplyData.selectedMap.project.release.length !== 0 )|| filterApplyData.selectedMap.project.length > 1){
+      this.isDisableSaveCOnfigurationBtn = true;
+    }
+    this.modalDetails['kpiId'] = kpiId;
     if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
-      this.helperService
-        .downloadExcel(
-          kpiId,
-          kpiName,
-          isKanban,
-          filterApplyData,
-          filterData,
-          sprintIncluded,
-        )
-        .subscribe((getData) => {
-          if (
-            getData['excelData'] 
-            || !getData?.hasOwnProperty('validationData')
-          ) {
-            if (chartType == 'stacked-area') {
-              let kpiObj = JSON.parse(JSON.stringify(getData));
-              kpiObj['excelData'] = kpiObj['excelData'].map((item) => {
-                for (let key in item['Count']) {
-                  if (!kpiObj['columns']?.includes(key)) {
-                    kpiObj['columns'] = [...kpiObj['columns'], key];
-                  }
-                }
-                let obj = { ...item, ...item['Count'] };
-                delete obj['Count'];
-                return obj;
-              });
-              this.kpiExcelData =
-                this.excelService.generateExcelModalData(kpiObj);
-            } else {
-              this.kpiExcelData =
-                this.excelService.generateExcelModalData(getData);
-            }
+      this.helperService.downloadExcel(kpiId, kpiName, isKanban, filterApplyData, filterData, sprintIncluded,).subscribe((getData) => {
+        getData['columns'] = [...getData['kpiColumnList']];
+        this.tableColumns = getData['columns']
+        this.generateAddRemoveData(Object.keys(getData['excelData'][0]))
 
-            this.modalDetails['tableHeadings'] =
-              this.kpiExcelData.headerNames.map((column) => column.header);
-            // this.modalDetails['tableValues'] = additionalFilterSupport ? this.kpiExcelData.excelData : [];
-            this.modalDetails['tableValues'] = this.kpiExcelData.excelData
-            .map(item => {
-              const formattedItem = { ...item };
-              for (const key in formattedItem) {
-                  if (key.toLowerCase().includes('date') && formattedItem[key]) {
-                      formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
-                  }
-              }
-               return formattedItem
-          });
-            this.generateTableColumnData();
-            this.modalDetails['header'] = kpiName;
-            this.displayModal = true;
+          if (chartType == 'stacked-area') {
+            this.dataTransformForStackedAreaChart(getData);
           } else {
-            if (getData['kpiId'] === 'kpi83') {
-              let dynamicKeys = [];
-              for (const key in getData['validationData']) {
-                if (dynamicKeys.length === 0) {
-                  dynamicKeys = Object.keys(
-                    getData['validationData'][key][kpiName][0],
-                  );
-                }
-                for (const x in dynamicKeys) {
-                  getData['validationData'][key][dynamicKeys[x]] = [];
-                }
-
-                const arr = getData['validationData'][key][kpiName];
-                // eslint-disable-next-line @typescript-eslint/prefer-for-of
-                for (let i = 0; i < arr.length; i++) {
-                  for (const item in arr[i]) {
-                    getData['validationData'][key][item].push(arr[i][item]);
-                  }
-                }
-                delete getData['validationData'][key][kpiName];
-              }
-            }
-
-            this.excelService.exportExcel(
-              getData,
-              'individual',
-              kpiName,
-              isKanban,
-            );
+            const re = {}
+            re['excelData'] = getData['excelData'];
+            re['columns'] = getData['columns'].map(con=>con.columnName);
+            this.kpiExcelData = this.excelService.generateExcelModalData(re);
           }
-        });
+          
+          this.formatDate();
+         
+          this.selectedColumns = getData['columns'].filter(colDetails => colDetails.isDefault || colDetails.isShown).map(config=>config.columnName);
+          this.generateColumnFilterData();
+          this.modalDetails['header'] = kpiName;
+          this.displayModal = true;
+       
+      });
     } else {
       this.modalDetails['header'] = kpiName;
       this.displayModal = true;
     }
+  }
+
+  dataTransformForStackedAreaChart(getData){
+    let kpiObj = JSON.parse(JSON.stringify(getData));
+    kpiObj['excelData'] = kpiObj['excelData'].map((item) => {
+      for (let key in item['Count']) {
+        if (!kpiObj['columns']?.includes(key)) {
+          kpiObj['columns'] = [...kpiObj['columns'], key];
+        }
+      }
+      let obj = { ...item, ...item['Count'] };
+      delete obj['Count'];
+      return obj;
+    });
+    this.kpiExcelData = this.excelService.generateExcelModalData(kpiObj);
+  }
+
+  generateAddRemoveData(tableValue) {
+    const unSelectedColumn = [];
+    const defaultAndSelectedColumns = this.tableColumns.map(col => col.columnName);
+    this.modalDetails['tableHeadings'] = [...new Set([...tableValue, ...defaultAndSelectedColumns])];
+    this.modalDetails['tableHeadings'].forEach(col => {
+      if (!defaultAndSelectedColumns.includes(col)) {
+        unSelectedColumn.push({
+          columnName: col,
+          isDefault: false,
+          isShown: false,
+          order: 0
+        });
+      }
+    });
+
+    this.tableColumns.push(...unSelectedColumn);
+    this.modalDetails['tableHeadings'] = this.tableColumns.filter(config=>config.isShown === true || config.isDefault).map(config=>config.columnName);
+
+  }
+
+  formatDate(){
+    this.modalDetails['tableValues'] = this.kpiExcelData.excelData.map(item => {
+      const formattedItem = { ...item };
+      for (const key in formattedItem) {
+        if (key.toLowerCase().includes('date') && formattedItem[key]) {
+          formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
+        }
+      }
+      return formattedItem
+    });
   }
 
   exportExcel(kpiName) {
@@ -162,6 +147,8 @@ export class ExportExcelComponent implements OnInit {
       tableHeadings: [],
       tableValues: [],
     };
+    this.selectedColumns = [] 
+    this.tableColumns = []; 
   }
 
   checkIfArray(arr) {
@@ -176,7 +163,7 @@ export class ExportExcelComponent implements OnInit {
     this.filteredColumn = this.filteredColumn === columnName ? '' : this.filteredColumn;
   }
 
-  generateTableColumnData() {
+  generateColumnFilterData() {
     if(this.modalDetails['tableValues'].length > 0) {
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
@@ -195,32 +182,23 @@ export class ExportExcelComponent implements OnInit {
   }
 
   generateExcel(exportMode) {
-    const tableData = {
-      columns: [],
-      excelData: []
-    };
-    let excelData = [];
-    let columns = [];
+    const tableData = {};
+
     if (exportMode === 'all') {
       this.excelService.generateExcel(this.kpiExcelData, this.modalDetails['header']);
     } else {
-      excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
-      tableData.columns = this.modalDetails['tableHeadings']
+      let filteredData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+      let filteredColumns = this.tableComponent.columns;
 
-      excelData.forEach(colData => {
-        let obj = {};
-        for (let key in colData) {
-          if (this.typeOf(colData[key]) && colData[key].hasOwnProperty('hyperlink')) {
-            obj[key] = { [colData[key]['text']]: colData[key]['hyperlink'] }
-          } else {
-            obj[key] = colData[key]
-          }
-        }
-        tableData.excelData.push(obj);
-      });
+      const headerNames = [];
+      for (const column of filteredColumns) {
+        headerNames.push({ header: column, key: column, width: 25 });
+      }
 
-      let kpiData = this.excelService.generateExcelModalData(tableData);
-      this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+      tableData['headerNames'] = headerNames;
+      tableData['excelData'] = filteredData;
+
+      this.excelService.generateExcel(tableData, this.modalDetails['header']);
     }
   }
 
@@ -248,4 +226,51 @@ export class ExportExcelComponent implements OnInit {
   //     return event.order * result;
   //   });
   // }
+
+  applyColumnFilter() {
+    this.saveKpiColumnsConfig(this.selectedColumns,'APPLY');
+  }
+
+  saveTableColumnOrder() {
+    if (this.tableComponent.columns.length > 0) {
+      this.saveKpiColumnsConfig(this.tableComponent.columns,'SAVE');
+    }
+  }
+
+  saveKpiColumnsConfig(selectedColumns: any[],action:string) {
+    const postData = {
+      kpiId: '',
+      basicProjectConfigId: '',
+      kpiColumnDetails: []
+    };
+    postData.kpiId = this.modalDetails['kpiId'];
+    postData['basicProjectConfigId'] = this.sharedService.selectedTrends[0].basicProjectConfigId;
+    postData['kpiColumnDetails'] = this.tableColumns.filter(col => {
+      const selectedColIndex = selectedColumns.findIndex(colName => colName === col.columnName);
+      if (selectedColIndex !== -1) {
+        col.isShown = true;
+        col.order = selectedColIndex;
+        return true;
+      } else {
+        col.isShown = false;
+        return false;
+      }
+    });
+    postData['kpiColumnDetails'].sort((a, b) => a.order - b.order);
+    this.modalDetails['tableHeadings'] = postData['kpiColumnDetails'].map(col => col.columnName);
+    if(action === 'SAVE'){
+      this.httpService.postkpiColumnsConfig(postData).subscribe(response => {
+        if (response && response['success'] && response['data']) {
+          this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
+        }
+      });
+      
+    }else{
+      this.generateColumnFilterData();
+      this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations applied successfully!' });
+    }
+
+  }
 }

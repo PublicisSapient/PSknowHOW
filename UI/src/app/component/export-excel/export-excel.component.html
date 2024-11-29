@@ -1,21 +1,38 @@
 <p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true"
   (onHide)="clearModalDataOnClose()">
   <p-header>
-      <div>
-        {{modalDetails['header']}}
-        <div class="export-button">
-          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export View"
-            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
-          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
-            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
-        </div>
+    <div>
+      {{modalDetails['header']}}
+      <div class="export-button">
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save" class="p-p-2 p-mr-2" [disabled] = "disableSaveCOnfiguration"
+          (click)="saveTableColumnOrder()"></button>
+        <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.3" pButton pRipple label="Export View"
+          class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
+        <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.3" pButton pRipple label="Export All"
+          class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
       </div>
+    </div>
     </p-header>
 
   <div class="dialog-body p-mb-4">
-    <p-table #table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage"
-      [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
+    <p-table #table *ngIf="modalDetails['tableValues'].length > 0 ; else showNoDataMessage" [reorderableColumns]="true"
+      [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img" [columns]="modalDetails['tableHeadings']"
       [scrollable]="true" scrollHeight="65vh" >
+      <ng-template pTemplate="caption">
+        <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
+          selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
+          optionDisabled="isDefault" [style]="{minWidth: '220px', 'border':'none'}" placeholder="Choose Columns">
+          <ng-template pTemplate="selectedItems">
+            <p-button styleClass="p-button-outlined column-btn">Column &nbsp; <img
+                src="../../../assets/img/column-triple-svgrepo-com.svg" alt="Column filter icon" /></p-button>
+          </ng-template>
+          <ng-template pTemplate="footer">
+            <hr>
+            <p-button label="Apply" class="p-mb-2 p-mr-2 columns-btn" (click)="applyColumnFilter()"></p-button>
+          </ng-template>
+
+        </p-multiSelect>
+      </ng-template>
       <ng-template pTemplate="header">
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
