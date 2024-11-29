@@ -45,6 +45,7 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl;
 import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.bson.types.ObjectId;
@@ -210,6 +211,7 @@ public class ProjectBasicConfigServiceImplTest {
 
 	ProjectToolConfig listProjectTool = new ProjectToolConfig();
 	FieldMapping fieldMapping;
+	BoardMetadata boardMetadata;
 
 
 	/**
@@ -221,6 +223,10 @@ public class ProjectBasicConfigServiceImplTest {
 		basicConfigDTO = new ProjectBasicConfigDTO();
 		basicConfig = ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json")
 				.getProjectBasicConfigs().get(0);
+		boardMetadata=new BoardMetadata();
+		boardMetadata.setProjectBasicConfigId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
+		boardMetadata.setProjectToolConfigId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
+		boardMetadata.setMetadataTemplateCode("10");
 		basicConfig.setId(new ObjectId("5f855dec29cf840345f2d111"));
 		basicConfigDTO = modelMapper.map(basicConfig, ProjectBasicConfigDTO.class);
 		listProjectTool.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
@@ -412,6 +418,7 @@ public class ProjectBasicConfigServiceImplTest {
 		when(projectToolConfigService.getProjectToolConfigsByProjectId(any())).thenReturn(Arrays.asList(listProjectTool));
 		when(projectToolConfigService.saveProjectToolConfigs(any())).thenReturn(Arrays.asList(listProjectTool));
 		when(fieldMappingService.getFieldMappingByBasicconfigId(anyString())).thenReturn(fieldMapping);
+		when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(boardMetadata);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}

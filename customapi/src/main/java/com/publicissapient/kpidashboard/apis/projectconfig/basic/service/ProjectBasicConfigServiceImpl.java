@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -182,7 +183,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			if (accessRoleOfParent == null) {
 
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
-				cloningToolConfigAndFieldmappingForClonedProject(savedProjectBasicConfig);
+				cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
@@ -192,7 +193,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
-				cloningToolConfigAndFieldmappingForClonedProject(savedProjectBasicConfig);
+				cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
 				performFilterOperation(basicConfigDtoCreation(savedProjectBasicConfig, mapper), false);
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
@@ -206,24 +207,35 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	/**
-	 * cloning Tool Config And Fieldmapping For Cloned Project
+	 * Clone Tool Configurations, Field Mappings, and Board Metadata for Cloned
+	 * Project
 	 *
 	 * @param savedProjectBasicConfig
 	 *            savedProjectBasicConfig
 	 */
-	private void cloningToolConfigAndFieldmappingForClonedProject(ProjectBasicConfig savedProjectBasicConfig) {
-		if (savedProjectBasicConfig.getClonedFrom() != null) {
-			List<ProjectToolConfig> toolConfig = projectToolConfigService
-					.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
-			List<ProjectToolConfig> projectToolConfigList = new ArrayList<>();
-			toolConfig.forEach(tool -> {
-				ProjectToolConfig clonedToolConfig = null;
-				try {
-					clonedToolConfig = tool.clone();
-				} catch (CloneNotSupportedException e) {
-					log.error("Error in Cloning of ProjectToolConfig");
-				}
-				assert clonedToolConfig != null;
+	private void cloneProjectToolConfigAndDependencies(ProjectBasicConfig savedProjectBasicConfig) {
+		if (savedProjectBasicConfig.getClonedFrom() == null) {
+			return;
+		}
+
+		// Step 1: Clone tool configurations
+		List<ProjectToolConfig> clonedToolConfigs = cloneToolConfigurations(savedProjectBasicConfig);
+
+		// Step 2: Clone field mappings
+		cloneFieldMapping(savedProjectBasicConfig, clonedToolConfigs);
+
+		// Step 3: Clone board metadata
+		cloneBoardMetadata(savedProjectBasicConfig, clonedToolConfigs);
+	}
+
+	private List<ProjectToolConfig> cloneToolConfigurations(ProjectBasicConfig savedProjectBasicConfig) {
+		List<ProjectToolConfig> toolConfigList = projectToolConfigService
+				.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
+		List<ProjectToolConfig> clonedToolConfigs = new ArrayList<>();
+
+		for (ProjectToolConfig toolConfig : toolConfigList) {
+			try {
+				ProjectToolConfig clonedToolConfig = toolConfig.clone();
 				clonedToolConfig.setId(null);
 				clonedToolConfig.setBasicProjectConfigId(savedProjectBasicConfig.getId());
 				clonedToolConfig
@@ -232,32 +244,57 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				clonedToolConfig
 						.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				clonedToolConfig.setProjectId(savedProjectBasicConfig.getId().toString());
-				projectToolConfigList.add(clonedToolConfig);
-			});
-			List<ProjectToolConfig> projectToolConfigs = projectToolConfigService
-					.saveProjectToolConfigs(projectToolConfigList);
-			FieldMapping fieldMapping = fieldMappingService
-					.getFieldMappingByBasicconfigId(savedProjectBasicConfig.getClonedFrom().toString());
-			Optional<ProjectToolConfig> optionalToolConfig = projectToolConfigs.stream()
-					.filter(tool -> tool.getToolName().equals(Constant.TOOL_JIRA)
-							|| tool.getToolName().equals(Constant.TOOL_AZURE))
-					.findFirst();
-			if (fieldMapping != null && optionalToolConfig.isPresent()) {
-				FieldMapping newFieldMapping = null;
-				try {
-					newFieldMapping = fieldMapping.clone();
-				} catch (CloneNotSupportedException e) {
-					log.error("Error in Cloning of fieldmapping");
-				}
-				assert newFieldMapping != null;
-				newFieldMapping.setId(null);
-				newFieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
-				newFieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
-				newFieldMapping
+				clonedToolConfigs.add(clonedToolConfig);
+			} catch (CloneNotSupportedException e) {
+				log.error("Error in cloning ProjectToolConfig", e);
+			}
+		}
+
+		return projectToolConfigService.saveProjectToolConfigs(clonedToolConfigs);
+	}
+
+	private void cloneFieldMapping(ProjectBasicConfig savedProjectBasicConfig,
+			List<ProjectToolConfig> clonedToolConfigs) {
+		FieldMapping originalFieldMapping = fieldMappingService
+				.getFieldMappingByBasicconfigId(savedProjectBasicConfig.getClonedFrom().toString());
+		Optional<ProjectToolConfig> toolConfigOptional = clonedToolConfigs.stream().filter(
+				tool -> Constant.TOOL_JIRA.equals(tool.getToolName()) || Constant.TOOL_AZURE.equals(tool.getToolName()))
+				.findFirst();
+
+		if (originalFieldMapping != null && toolConfigOptional.isPresent()) {
+			try {
+				FieldMapping clonedFieldMapping = originalFieldMapping.clone();
+				clonedFieldMapping.setId(null);
+				clonedFieldMapping.setProjectToolConfigId(toolConfigOptional.get().getId());
+				clonedFieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
+				clonedFieldMapping
 						.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
-				newFieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
-				newFieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
-				fieldMappingService.saveFieldMapping(newFieldMapping);
+				clonedFieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
+				clonedFieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
+				fieldMappingService.saveFieldMapping(clonedFieldMapping);
+			} catch (CloneNotSupportedException e) {
+				log.error("Error in cloning FieldMapping", e);
+			}
+		}
+	}
+
+	private void cloneBoardMetadata(ProjectBasicConfig savedProjectBasicConfig,
+			List<ProjectToolConfig> clonedToolConfigs) {
+		BoardMetadata originalBoardMetadata = boardMetadataRepository
+				.findByProjectBasicConfigId(savedProjectBasicConfig.getClonedFrom());
+		Optional<ProjectToolConfig> toolConfigOptional = clonedToolConfigs.stream().filter(
+				tool -> Constant.TOOL_JIRA.equals(tool.getToolName()) || Constant.TOOL_AZURE.equals(tool.getToolName()))
+				.findFirst();
+
+		if (originalBoardMetadata != null && toolConfigOptional.isPresent()) {
+			try {
+				BoardMetadata clonedBoardMetadata = originalBoardMetadata.clone();
+				clonedBoardMetadata.setId(null);
+				clonedBoardMetadata.setProjectToolConfigId(toolConfigOptional.get().getId());
+				clonedBoardMetadata.setProjectBasicConfigId(savedProjectBasicConfig.getId());
+				boardMetadataRepository.save(clonedBoardMetadata);
+			} catch (CloneNotSupportedException e) {
+				log.error("Error in cloning BoardMetadata", e);
 			}
 		}
 	}
@@ -361,6 +398,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
+			cacheService.clearCache(CommonConstant.CACHE_BOARD_META_DATA_MAP);
 		}
 	}
 
