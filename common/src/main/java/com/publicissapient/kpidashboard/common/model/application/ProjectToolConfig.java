@@ -45,7 +45,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "project_tool_configs")
-public class ProjectToolConfig extends BasicModel implements Cloneable, Serializable {
+public class ProjectToolConfig extends BasicModel implements Cloneable {
 
 	private String toolName;
 	private ObjectId basicProjectConfigId;

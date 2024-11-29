@@ -209,45 +209,52 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * cloning Tool Config And Fieldmapping For Cloned Project
 	 *
 	 * @param savedProjectBasicConfig
-	 * 		  savedProjectBasicConfig
+	 *            savedProjectBasicConfig
 	 */
 	private void cloningToolConfigAndFieldmappingForClonedProject(ProjectBasicConfig savedProjectBasicConfig) {
-		if(savedProjectBasicConfig.getClonedFrom()!=null){
-			List<ProjectToolConfig> toolConfig = projectToolConfigService.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
-			List<ProjectToolConfig> projectToolConfigList=new ArrayList<>();
+		if (savedProjectBasicConfig.getClonedFrom() != null) {
+			List<ProjectToolConfig> toolConfig = projectToolConfigService
+					.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
+			List<ProjectToolConfig> projectToolConfigList = new ArrayList<>();
 			toolConfig.forEach(tool -> {
-                ProjectToolConfig clonedToolConfig = null;
-                try {
-                    clonedToolConfig = tool.clone();
-                } catch (CloneNotSupportedException e) {
+				ProjectToolConfig clonedToolConfig = null;
+				try {
+					clonedToolConfig = tool.clone();
+				} catch (CloneNotSupportedException e) {
 					log.error("Error in Cloning of ProjectToolConfig");
 				}
-                assert clonedToolConfig != null;
-                clonedToolConfig.setId(null);
-                clonedToolConfig.setBasicProjectConfigId(savedProjectBasicConfig.getId());
-				clonedToolConfig.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				assert clonedToolConfig != null;
+				clonedToolConfig.setId(null);
+				clonedToolConfig.setBasicProjectConfigId(savedProjectBasicConfig.getId());
+				clonedToolConfig
+						.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				clonedToolConfig.setCreatedBy(authenticationService.getLoggedInUser());
-				clonedToolConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedToolConfig
+						.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				clonedToolConfig.setProjectId(savedProjectBasicConfig.getId().toString());
 				projectToolConfigList.add(clonedToolConfig);
 			});
-			List<ProjectToolConfig> projectToolConfigs=projectToolConfigService.saveProjectToolConfigs(projectToolConfigList);
-			FieldMapping fieldMapping = fieldMappingService.getFieldMappingByBasicconfigId(savedProjectBasicConfig.getClonedFrom().toString());
+			List<ProjectToolConfig> projectToolConfigs = projectToolConfigService
+					.saveProjectToolConfigs(projectToolConfigList);
+			FieldMapping fieldMapping = fieldMappingService
+					.getFieldMappingByBasicconfigId(savedProjectBasicConfig.getClonedFrom().toString());
 			Optional<ProjectToolConfig> optionalToolConfig = projectToolConfigs.stream()
-					.filter(tool -> tool.getToolName().equals(Constant.TOOL_JIRA) || tool.getToolName().equals(Constant.TOOL_AZURE))
+					.filter(tool -> tool.getToolName().equals(Constant.TOOL_JIRA)
+							|| tool.getToolName().equals(Constant.TOOL_AZURE))
 					.findFirst();
 			if (fieldMapping != null && optionalToolConfig.isPresent()) {
 				FieldMapping newFieldMapping = null;
 				try {
-					newFieldMapping=fieldMapping.clone();
+					newFieldMapping = fieldMapping.clone();
 				} catch (CloneNotSupportedException e) {
 					log.error("Error in Cloning of fieldmapping");
 				}
-                assert newFieldMapping != null;
+				assert newFieldMapping != null;
 				newFieldMapping.setId(null);
-                newFieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
+				newFieldMapping.setProjectToolConfigId(optionalToolConfig.get().getId());
 				newFieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
-				newFieldMapping.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				newFieldMapping
+						.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
 				newFieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
 				newFieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
 				fieldMappingService.saveFieldMapping(newFieldMapping);
@@ -350,7 +357,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		}
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_BASIC_TREE);
-		if (basicConfig.getClonedFrom()!=null) {
+		if (basicConfig.getClonedFrom() != null) {
 			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
