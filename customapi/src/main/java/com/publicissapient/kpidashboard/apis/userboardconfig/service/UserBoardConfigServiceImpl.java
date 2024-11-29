@@ -79,7 +79,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	private static final String ITERATION = "Iteration";
-	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
+	private static final String DEFAULT_BOARD_NAME = "My KnowHOW";
 	public static final String SUPER_ADMIN_ALL_PROJ_SELECTED = "all";
 	private boolean handleDeveloperKpi = false;
 	@Autowired

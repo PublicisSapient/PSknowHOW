@@ -66,7 +66,7 @@ export class ToolMenuComponent implements OnInit {
 /**
  * Initializes the component by retrieving the selected project, configuring project type options,
  * and processing hierarchy level details. It also navigates to the project list if no project is selected.
- * 
+ *
  * @returns {void} - No return value.
  */
   ngOnInit() {
@@ -175,15 +175,15 @@ export class ToolMenuComponent implements OnInit {
               updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Jenkins')[0]?.updatedAt
             },
             {
-              toolName: 'BitBucket',
+              toolName: 'Bitbucket',
               category: 'Source Code Management',
               description: '-',
               icon: 'fab fa-bitbucket',
               routerLink: `/dashboard/Config/ConfigSettings/${this.selectedProject.id}/JiraConfig`,
               queryParams1: 'Bitbucket',
               index: 3,
-              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'BitBucket')[0]?.connectionName,
-              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'BitBucket')[0]?.updatedAt
+              connectionName: this.uniqueTools.filter(tool => tool.toolName === 'Bitbucket')[0]?.connectionName,
+              updatedAt: this.uniqueTools.filter(tool => tool.toolName === 'Bitbucket')[0]?.updatedAt
             },
             {
               toolName: 'GitLab',

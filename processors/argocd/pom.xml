@@ -23,7 +23,7 @@
 	<description>ArgoCD Processor</description>
 	<packaging>jar</packaging>
 	<artifactId>argocd-processor</artifactId>
-	<version>11.0.0-SNAPSHOT</version>
+	<version>11.1.0-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

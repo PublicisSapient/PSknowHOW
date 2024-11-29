@@ -229,12 +229,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+    let visibleKpis = this.configGlobalData?.filter(item => item.isEnabled);
     this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
-    if (this.updatedConfigGlobalData?.length === 0) {
+    if (this.updatedConfigGlobalData?.length === 0 || visibleKpis?.length === 0) {
       this.noKpis = true;
+      if(this.updatedConfigGlobalData?.length && visibleKpis?.length === 0) {
+        this.enableByUser = true;
+      } else {
+        this.enableByUser = false;
+      }
     } else {
       this.noKpis = false;
+      this.enableByUser = false;
     }
+
     this.maturityTableKpiList = []
     this.configGlobalData?.forEach(element => {
       if (element.shown && element.isEnabled) {
