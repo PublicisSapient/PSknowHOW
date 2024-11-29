@@ -52,6 +52,7 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
+import { MessageService } from 'primeng/api';
 
 const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
@@ -2446,7 +2447,7 @@ describe('ExecutiveV2Component', () => {
         ExportExcelComponent
       ],
       providers: [
-        HelperService,
+        HelperService,MessageService,
         { provide: APP_CONFIG, useValue: AppConfig },
         HttpService,
         { provide: SharedService, useValue: service }

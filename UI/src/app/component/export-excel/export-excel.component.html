@@ -36,7 +36,7 @@
       <ng-template pTemplate="header">
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
-            <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width" [ngClass]="{'overlap': filteredColumn === item }">
+            <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width" [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn>
               <div class="table-head">
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
