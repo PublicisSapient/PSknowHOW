@@ -95,7 +95,7 @@ export class BarchartComponent implements OnInit {
       .attr('transform', `translate(0, ${chartHeight})`)
       .call(d3.axisBottom(xScale));
 
-    this.svg.append('g').call(d3.axisLeft(yScale).ticks(5).tickFormat((d) => `${d}hr`));
+    this.svg.append('g').call(d3.axisLeft(yScale).ticks(5).tickFormat((d) => `${d}`));
 
     // Tooltip
     this.tooltip = d3

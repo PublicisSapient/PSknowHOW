@@ -74,6 +74,12 @@ export class KpiHelperService {
           (issue: any) => issue[group.key] !== undefined,
         );
 
+        const value = filteredIssues.reduce((sum: any, issue: any) => {
+            return sum + (issue[group.key] || 0); // Sum up the values for the key
+        }, 0);
+        const convertedValue = this.convertToHoursIfTime(value, 'day'); // or 'day' depending on your requirement
+
+        console.log(convertedValue)
         chartData.push({
           category: group.name,
           value: filteredIssues.reduce((sum: any, issue: any) => {
@@ -83,11 +89,12 @@ export class KpiHelperService {
         });
       });
 
+      const totalCount = chartData.reduce((sum: any, issue: any) => {
+        return sum + (issue.value || 0); // Sum up the values for the key
+      }, 0);
 
-    const totalCount = chartData.reduce((sum: any, issue: any) => {
-      return sum + (issue.value || 0); // Sum up the values for the key
-    }, 0);
-    return { chartData, totalCount };
+   // console.log(convertToHoursIfTime(,'day'))
+    return { chartData,totalCount };
   }
 
   barChartData(json: any,color:any) {
