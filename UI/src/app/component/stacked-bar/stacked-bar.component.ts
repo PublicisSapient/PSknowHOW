@@ -96,9 +96,6 @@ export class StackedBarComponent implements OnInit, OnChanges {
       .text(d => `${d.value}d`);
   }
   
-  
-  
-  
   private updateChart(): void {
     // Clear previous chart
     d3.select(this.elRef.nativeElement).select('.chart-container').html('');

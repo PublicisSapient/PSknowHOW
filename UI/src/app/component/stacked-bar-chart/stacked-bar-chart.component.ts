@@ -36,101 +36,96 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
   }
 
   private createChart(): void {
-    const element = this.elRef.nativeElement;
-    const margin = { top: 10, right: 10, bottom: 10, left: 10 };
-    const chartWidth = this.width - margin.left - margin.right;
-    const chartHeight = this.height - margin.top - margin.bottom;
-
-    // Append SVG
-    this.svg = d3
-      .select(element)
-      .select('.chart-container')
-      .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-    // Define scales
+    const chartWidth = 700; // Adjusted width to fit within the card
+    const chartHeight = 50; // Height of the bar
+    const margin = { top: 50, right: 20, bottom: 50, left: 20 };
+  
+    // Calculate total value for scaling
+    const totalNegative = Math.abs(
+      this.data.filter(d => d.value < 0).reduce((sum, d) => sum + d.value, 0)
+    );
+    const totalPositive = this.data
+      .filter(d => d.value > 0)
+      .reduce((sum, d) => sum + d.value, 0);
+    const total = totalNegative + totalPositive;
+  
+    // X scale for proportional widths
     const xScale = d3
       .scaleLinear()
-      .domain([
-        d3.min(this.data, (d: any) => d.value) || 0,
-        d3.sum(this.data, (d: any) => Math.abs(d.value)) || 0,
-      ])
+      .domain([-totalNegative, totalPositive])
       .range([0, chartWidth]);
-
-    const colorScale = d3
-      .scaleOrdinal()
-      .domain(this.data.map((d) => d.category))
-      .range(this.data.map((d) => d.color));
-
-    // Create tooltip
-    this.tooltip = d3
-      .select(element)
-      .append('div')
-      .style('position', 'absolute')
-      .style('background', 'rgba(0, 0, 0, 0.7)')
-      .style('color', '#fff')
-      .style('padding', '5px 10px')
-      .style('border-radius', '5px')
-      .style('display', 'none')
-      .style('pointer-events', 'none');
-
-    // Compute cumulative positions
-    let cumulative = 0;
-    const positions = this.data.map((d) => {
-      const start = cumulative;
-      cumulative += d.value;
-      return { ...d, start, end: cumulative };
-    });
-
-    // Add bars
-    this.svg
-      .selectAll('rect')
-      .data(positions)
+  
+    // Clear any existing SVG content
+    d3.select(this.elRef.nativeElement).selectAll('*').remove();
+  
+    // Create the SVG container
+    const svg = d3
+      .select(this.elRef.nativeElement)
+      .append('svg')
+      .attr('width', chartWidth + margin.left + margin.right)
+      .attr('height', chartHeight + margin.top + margin.bottom);
+  
+    // Add axis for context
+    const xAxis = d3.axisBottom(xScale).ticks(10);
+    svg
+      .append('g')
+      .attr('transform', `translate(${margin.left}, ${chartHeight + margin.top})`)
+      .call(xAxis)
+      .selectAll('text')
+      .style('font-size', '12px');
+  
+    // Add title
+    svg
+      .append('text')
+      .attr('x', margin.left)
+      .attr('y', margin.top / 2)
+      .style('font-size', '16px')
+      .style('font-weight', 'bold')
+      .text('Overall Commitment: ' + total); // Show total value
+  
+    // Draw the stacked bar chart
+    let cumulativeOffset = 0;
+  
+    const g = svg
+      .append('g')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
+  
+    g.selectAll('rect')
+      .data(this.data)
       .enter()
       .append('rect')
-      .attr('x', (d) => xScale(Math.min(d.start, d.end)))
-      .attr('y', chartHeight / 3)
-      .attr('width', (d) => Math.abs(xScale(d.end) - xScale(d.start)))
-      .attr('height', chartHeight / 5)
-      .attr('fill', (d) => colorScale(d.category))
-      // .attr('rx', 10) // Rounded corners
-      // .attr('ry', 10) // Rounded corners
-      .on('mouseover', (event, d) => {
-        this.tooltip
-          .style('display', 'block')
-          .html(`<strong>${d.category}</strong>`);
+      .attr('x', d => {
+        const offset = cumulativeOffset;
+        cumulativeOffset += Math.abs(xScale(d.value) - xScale(0));
+        return Math.abs(offset);
       })
-      .on('mousemove', (event) => {
-        this.tooltip
-          .style('transform', 'translate(-50%, -500%)')
-          .style('left', `${event.pageX + 10}px`);
-      })
-      .on('mouseout', () => {
-        this.tooltip.style('display', 'none');
-      });
-
-    // Add labels inside the bars
-    this.svg
-      .selectAll('text')
-      .data(positions)
+      .attr('y', 0)
+      .attr('width', d => Math.abs(xScale(d.value) - xScale(0)))
+      .attr('height', chartHeight)
+      .attr('fill', d => d.color)
+      .attr('rx', 10) // Rounded corners
+      .attr('ry', 10); // Rounded corners
+  
+    // Reset cumulative offset for labels
+    cumulativeOffset = 0;
+  
+    // Add labels inside each section
+    g.selectAll('text')
+      .data(this.data)
       .enter()
       .append('text')
-      .attr('x', (d) => xScale(d.start) + (xScale(d.end) - xScale(d.start)) / 2)
-      .attr('y', chartHeight / 2.2)
+      .attr('x', d => {
+        const offset = cumulativeOffset + Math.abs(xScale(d.value) - xScale(0)) / 2;
+        cumulativeOffset += xScale(d.value) - xScale(0);
+        return offset;
+      })
+      .attr('y', chartHeight / 2)
+      .style('fill', 'white')
+      .style('font-size', '14px')
+      .style('font-weight', 'bold')
       .attr('text-anchor', 'middle')
-      .attr('fill', 'white')
-      .style('font-size', '12px')
-      .text((d) => d.value);
-
-    // Add x-axis
-    const xAxis = d3.axisBottom(xScale).ticks(10);
-    this.svg
-      .append('g')
-      .attr('transform', `translate(0, ${chartHeight})`)
-      .call(xAxis);
+      .attr('dominant-baseline', 'middle')
+      .text(d => d.value);
   }
   
   private updateChart(): void {
