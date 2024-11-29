@@ -1020,9 +1020,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (!this.additionalFiltersArr[filterProp]?.size) {
             this.additionalFiltersArr[filterProp] = new Set();
           }
-          trendValueList.map((x) => x[filterProp]).forEach((f) => this.additionalFiltersArr[filterProp].add(f));
+          trendValueList.map((x) => x[filterProp]).forEach((f) =>
+            this.additionalFiltersArr[filterProp].add(f)
+          );
           this.additionalFiltersArr[filterProp] = Array.from(this.additionalFiltersArr[filterProp]).map((item: string) => (item));
         });
+
+
 
         if (!kpiFilterChange) {
           Object.keys(this.additionalFiltersArr).forEach((filterProp) => {
@@ -1034,6 +1038,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               }
             })
           });
+
           this.service.setAdditionalFilters(this.additionalFiltersArr);
         }
       }
@@ -2377,11 +2382,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           }
         } else if (this.selectedTab.toLowerCase() === 'developer') {
-          if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
-            this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
+          const trendValueList = this.allKpiArray[this.ifKpiExist(kpi.kpiId)]?.trendValueList;
+          if (trendValueList?.length && (trendValueList[0].hasOwnProperty('filter1') || trendValueList[0].hasOwnProperty('filter2'))) {
+            if (this.kpiSelectedFilterObj[kpi?.kpiId]) {
+              this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
+            } else {
+              this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+              this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
+            }
           } else {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = {};
-            this.kpiSelectedFilterObj[kpi?.kpiId]['filter' + event.index] = [event.value];
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [event.value];
           }
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId] = [];
