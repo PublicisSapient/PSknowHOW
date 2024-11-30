@@ -18,7 +18,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { HelperService } from '../../services/helper.service';
-import { ExecutiveComponent } from '../../dashboard/executive/executive.component';
+// import { ExecutiveComponent } from '../../dashboard/executive/executive.component';
 @Component({
   selector: 'app-kpi-line-gauge',
   templateUrl: './kpi-line-gauge.component.html',
@@ -38,12 +38,12 @@ export class KpiComponent implements OnInit {
   @Input() loaderArray: string[];
   constructor(
     private helperService: HelperService,
-    private executive: ExecutiveComponent
+    // private executive: ExecutiveComponent
   ) { }
 
   ngOnInit() { }
 
-  downloadExcel(kpiId, kpiName, isKanban) {
-    this.executive.downloadExcel(kpiId, kpiName, isKanban,false);
-  }
+  // downloadExcel(kpiId, kpiName, isKanban) {
+  //   this.executive.downloadExcel(kpiId, kpiName, isKanban,false);
+  // }
 }
