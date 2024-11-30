@@ -23,6 +23,7 @@ import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.jira.service.CreateKanbanJiraIssueReleaseStatusImpl;
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class KanbanJiraIssueReleaseStatusTaskletTest {
     private JiraClientService jiraClientService;
 
     @Mock
-    private CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
+    private CreateKanbanJiraIssueReleaseStatusImpl createJiraIssueReleaseStatus;
 
     @Mock
     private JiraProcessorConfig jiraProcessorConfig;
