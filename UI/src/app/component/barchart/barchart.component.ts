@@ -54,14 +54,12 @@ export class BarchartComponent implements OnInit {
     }
   }
 
-
-
   private createChart(): void {
     const element = this.elRef.nativeElement.querySelector('.chart-container');
-    const margin = { top: 10, right: 20, bottom: 10, left: 50 };
+    const margin = { top: 20, right: 20, bottom: 40, left: 50 };
     const chartWidth = this.width - margin.left - margin.right;
     const chartHeight = this.height - margin.top - margin.bottom;
-
+  
     // Append SVG container
     this.svg = d3
       .select(element)
@@ -70,39 +68,48 @@ export class BarchartComponent implements OnInit {
       .attr('height', this.height)
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
+  
     // Define scales
     const xScale = d3
       .scaleBand()
       .domain(this.data.map((d) => d.category))
       .range([0, chartWidth])
-      .padding(0.1);
-
+      .padding(0.3);
+  
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(this.data, (d) => d.value)])
+      .domain([0, d3.max(this.data, (d) => d.value) || 0])
       .nice()
       .range([chartHeight, 0]);
-
+  
     const colorScale = d3
       .scaleOrdinal()
       .domain(this.data.map((d) => d.category))
       .range(this.data.map((d) => d.color));
-
+  
     // Add axes
     this.svg
       .append('g')
       .attr('transform', `translate(0, ${chartHeight})`)
       .call(d3.axisBottom(xScale));
-
-    this.svg.append('g').call(d3.axisLeft(yScale).ticks(5).tickFormat((d) => `${d}`));
-
+  
+    this.svg
+      .append('g')
+      .call(d3.axisLeft(yScale).ticks(5).tickFormat((d) => `${d}hr`));
+  
     // Tooltip
     this.tooltip = d3
       .select(element)
       .append('div')
-      .attr('class', 'tooltip');
-
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('display', 'none')
+      .style('background', '#333')
+      .style('color', '#fff')
+      .style('padding', '5px 10px')
+      .style('border-radius', '5px')
+      .style('pointer-events', 'none');
+  
     // Add bars
     this.svg
       .selectAll('.bar')
@@ -110,9 +117,9 @@ export class BarchartComponent implements OnInit {
       .enter()
       .append('rect')
       .attr('class', 'bar')
-      .attr('x', (d) => xScale(d.category))
+      .attr('x', (d) => xScale(d.category)!)
       .attr('y', (d) => yScale(d.value))
-      .attr('width', xScale.bandwidth()/10)
+      .attr('width', xScale.bandwidth())
       .attr('height', (d) => chartHeight - yScale(d.value))
       .attr('fill', (d) => colorScale(d.category))
       .attr('rx', 5) // Rounded corners
@@ -130,22 +137,22 @@ export class BarchartComponent implements OnInit {
       .on('mouseout', () => {
         this.tooltip.style('display', 'none');
       });
-
-    // Add labels inside bars
+  
+    // Add labels above bars
     this.svg
       .selectAll('.label')
       .data(this.data)
       .enter()
       .append('text')
       .attr('class', 'label')
-      .attr('x', (d) => xScale(d.category) + xScale.bandwidth() / 2)
+      .attr('x', (d) => xScale(d.category)! + xScale.bandwidth() / 2)
       .attr('y', (d) => yScale(d.value) - 10)
       .attr('text-anchor', 'middle')
-      .attr('fill', 'black')
       .style('font-size', '12px')
+      .style('font-weight', 'bold')
+      .style('fill', 'black')
       .text((d) => `${d.value}hr`);
   }
-
 
   private updateChart(): void {
     // Clear previous chart

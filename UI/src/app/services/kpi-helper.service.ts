@@ -136,7 +136,16 @@ export class KpiHelperService {
         }
     }
 
-    return {chartData} ;
+    const test = chartData.map((item: any) => {
+        return {
+            ...item,
+            tooltipValue: this.convertToHoursIfTime(item.value, json.unit),
+            value:Math.floor((item.value / 60)),
+            unit:json.unit
+        }
+       });
+
+    return {chartData:test} ;
 }
 
   convertToHoursIfTime(val, unit) {

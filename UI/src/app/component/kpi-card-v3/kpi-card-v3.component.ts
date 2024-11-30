@@ -1,5 +1,4 @@
-import { Component, OnInit, ElementRef, Input } from '@angular/core';
-import * as d3 from 'd3';
+import { Component, OnInit, Input } from '@angular/core';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 
 @Component({
@@ -28,7 +27,8 @@ export class KpiCardV3Component implements OnInit {
       dataGroup,
       filterGroup,
       kpiFilters,
-      chartType
+      chartType,
+      unit
     } = this.cardData;
     this.kpiHeaderData = { responseCode, issueData, kpiName, kpiInfo, kpiId };
     this.kpiFilterData = { dataGroup, filterGroup, issueData, kpiFilters,chartType };
@@ -77,4 +77,27 @@ export class KpiCardV3Component implements OnInit {
     }
     return chartData;
   }
+
+  calculateValue(issueData,key: string): string {
+    const total = issueData.reduce((sum, issue) => {
+      const value = issue[key];
+      return sum + (typeof value === 'number' ? value : 0); // Only add numeric values
+    }, 0);
+  
+    return total.toString(); // Convert to string for display
+  }
+
+  convertToHoursIfTime(val,unit){
+    return this.kpihelper.convertToHoursIfTime(val,unit)  
+  }
+
+  showCummalative(){
+    if(this.cardData?.chartType === 'stacked-bar'){
+    return  this.kpihelper.convertToHoursIfTime(this.currentChartData.totalCount,this.cardData.unit)
+    }else{
+     return this.currentChartData.totalCount 
+    }
+  }
+
+  
 }
