@@ -74,15 +74,6 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .selectAll('text')
       .style('font-size', '12px');
   
-    // Add title
-    svg
-      .append('text')
-      .attr('x', margin.left)
-      .attr('y', margin.top / 2)
-      .style('font-size', '16px')
-      .style('font-weight', 'bold')
-      .text('Overall Commitment: ' + total); // Show total value
-  
     // Draw the stacked bar chart
     let cumulativeOffset = 0;
   
@@ -103,8 +94,8 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .attr('width', d => Math.abs(xScale(d.value) - xScale(0)))
       .attr('height', chartHeight)
       .attr('fill', d => d.color)
-      .attr('rx', 10) // Rounded corners
-      .attr('ry', 10); // Rounded corners
+      // .attr('rx', 10) // Rounded corners
+      // .attr('ry', 10); // Rounded corners
   
     // Reset cumulative offset for labels
     cumulativeOffset = 0;
