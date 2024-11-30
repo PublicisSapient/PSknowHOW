@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
+import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatusImpl;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -47,7 +48,7 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 	FetchProjectConfiguration fetchProjectConfiguration;
 
 	@Autowired
-	CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
+	CreateJiraIssueReleaseStatusImpl createJiraIssueReleaseStatus;
 
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
