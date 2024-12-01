@@ -142,3 +142,20 @@
 :host ::ng-deep .p-datatable-scrollable .p-datatable-wrapper{
     min-height: 300px;
 }
+
+.markerInfo{
+    font-size: 0.75rem;
+}
+
+:host ::ng-deep.column-filter.p-multiselect{
+    border: none;
+    background-color: transparent;
+}
+
+:host ::ng-deep.column-filter .p-multiselect-label{
+    padding: 0px;
+}
+
+:host ::ng-deep.column-filter .p-multiselect-trigger{
+    display: none;
+}

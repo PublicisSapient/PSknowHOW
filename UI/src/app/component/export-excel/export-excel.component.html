@@ -4,13 +4,17 @@
     <div>
       {{modalDetails['header']}}
       <div class="export-button">
-        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save" class="p-p-2 p-mr-2" [disabled] = "disableSaveCOnfiguration"
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save" class="p-p-2 p-mr-2" [disabled] = "isDisableSaveCOnfigurationBtn"
           (click)="saveTableColumnOrder()"></button>
         <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.3" pButton pRipple label="Export View"
           class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
         <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.3" pButton pRipple label="Export All"
           class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
       </div>
+    </div>
+    <div *ngIf="markerInfo?.length > 0" class="p-d-flex  p-flex-wrap">
+      <span *ngFor="let marker of markerInfo" class="p-m-2 markerInfo"> <i class='fas fa-square'
+          [ngStyle]="{'color': marker?.color}"></i> {{marker?.info}}</span>
     </div>
     </p-header>
 
@@ -36,7 +40,7 @@
       <ng-template pTemplate="header">
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
-            <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width" [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn>
+            <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width">
               <div class="table-head">
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
