@@ -40,7 +40,7 @@
       <ng-template pTemplate="header">
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
-            <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width">
+            <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width" pReorderableColumn>
               <div class="table-head">
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
@@ -65,8 +65,8 @@
           </ng-container>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-rowData>
-        <tr>
+      <ng-template pTemplate="body" let-rowData let-index="rowIndex">
+        <tr [pReorderableRow]="index">
           <td class="font-small min-max-width multidata-col" *ngFor="let column of modalDetails['tableHeadings']">
             <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date'))?'date': 'other'))">
               <ng-container *ngSwitchCase="'array'">
