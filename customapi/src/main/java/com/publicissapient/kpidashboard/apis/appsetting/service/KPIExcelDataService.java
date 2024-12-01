@@ -85,6 +85,7 @@ public class KPIExcelDataService {
 	private static final String EXCEL_JENKINSKANBAN = "EXCEL-JENKINSKANBAN";
 	private static final String EXCEL_BIBUCKETKANBAN = "EXCEL-BITBUCKETKANBAN";
 	public static final String PROJECT = "project";
+	public static final String RELEASE = "release";
 
 	@Autowired
 	private JiraServiceR jiraServiceR;
@@ -225,10 +226,10 @@ public class KPIExcelDataService {
 				KpiRequest kpiRequest = pair.getValue();
 				label = kpiRequest.getLabel();
 
-				if(kpiRequest.getSelectedMap().get(PROJECT).stream().toList() != null) {
+				if(CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(PROJECT).stream().toList())) {
 					projectIds = kpiRequest.getSelectedMap().get(PROJECT).stream().toList();
 				} else {
-					projectIds = kpiRequest.getSelectedMap().get("release").stream().toList();
+					projectIds = kpiRequest.getSelectedMap().get(RELEASE).stream().toList();
 				}
 
 
