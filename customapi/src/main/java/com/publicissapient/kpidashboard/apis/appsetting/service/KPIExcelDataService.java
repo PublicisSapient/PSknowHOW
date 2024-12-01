@@ -377,14 +377,18 @@ public class KPIExcelDataService {
 			List<String> projectIds) {
 		KPIExcelValidationDataResponse kpiExcelValidationDataResponse = new KPIExcelValidationDataResponse();
 		KpiColumnConfigDTO kpiColumnConfigDTO;
+
 		if ((label.equalsIgnoreCase("Project") || label.equalsIgnoreCase("SQD") || label.equalsIgnoreCase("Sprint")
 				|| label.equalsIgnoreCase("Release")) && projectIds.size() < 2) {
 			String projectBasicConfigID = projectIds.get(0).substring(projectIds.get(0).lastIndexOf("_") + 1);
 			kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(projectBasicConfigID,
 					totalKpiElementList.get(0).getKpiId());
+			kpiColumnConfigDTO.setSaveFlag(true);
+
 		} else {
 			kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(null,
 					totalKpiElementList.get(0).getKpiId());
+			kpiColumnConfigDTO.setSaveFlag(false);
 		}
 		prepareKpiExcelValidationDataResponse(kpiExcelValidationDataResponse, totalKpiElementList, kpiColumnConfigDTO);
 		return kpiExcelValidationDataResponse;
@@ -661,6 +665,7 @@ public class KPIExcelDataService {
 			kpiExcelValidationDataResponse.setExcelData(element.getExcelData());
 			kpiExcelValidationDataResponse.setExcelColumns(element.getExcelColumns());
 			kpiExcelValidationDataResponse.setKpiColumnDetails(kpiColumnConfigDTO.getKpiColumnDetails());
+			kpiExcelValidationDataResponse.setSaveDisplay(kpiColumnConfigDTO.isSaveFlag());
 		});
 
 	}

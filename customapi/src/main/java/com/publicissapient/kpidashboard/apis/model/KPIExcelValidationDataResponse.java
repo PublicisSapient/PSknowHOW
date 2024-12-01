@@ -42,6 +42,7 @@ public class KPIExcelValidationDataResponse {
 	@JsonProperty("validationData")
 	/* package */ Map<String, ValidationData> mapOfSprintAndData;
 	private String kpiName;
+	private boolean saveDisplay;
 	private String kpiId;
 	@JsonProperty("columns")
 	private List<String> excelColumns;
@@ -94,6 +95,14 @@ public class KPIExcelValidationDataResponse {
 	 */
 	public void setKpiName(String kpiName) {
 		this.kpiName = kpiName;
+	}
+
+	public boolean getSaveDisplay() {
+		return saveDisplay;
+	}
+
+	public void setSaveDisplay(boolean saveDisplay) {
+		this.saveDisplay = saveDisplay;
 	}
 
 	/**
