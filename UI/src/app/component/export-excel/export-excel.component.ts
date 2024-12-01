@@ -39,7 +39,7 @@ export class ExportExcelComponent implements OnInit {
   tableColumns = []; // store all table coumns with configurations
   isDisableSaveCOnfigurationBtn: boolean = false;
   markerInfo = [];
-  forzenColumns = [];
+  forzenColumns = ['issue id','issue description'];
 
   constructor(
     private excelService: ExcelService,
