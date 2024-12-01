@@ -84,6 +84,7 @@ public class KPIExcelDataService {
 	private static final String EXCEL_SONARKANBAN = "EXCEL-SONARKANBAN";
 	private static final String EXCEL_JENKINSKANBAN = "EXCEL-JENKINSKANBAN";
 	private static final String EXCEL_BIBUCKETKANBAN = "EXCEL-BITBUCKETKANBAN";
+	public static final String PROJECT = "project";
 
 	@Autowired
 	private JiraServiceR jiraServiceR;
@@ -207,7 +208,7 @@ public class KPIExcelDataService {
 
 		long startTime = System.currentTimeMillis();
 		String label = null;
-		String[] projectIds = new String[0];
+		List<String> projectIds = new ArrayList<>();
 
 		try {
 			Future<List<KpiElement>> jiraKpiDataFuture = null;
@@ -223,7 +224,13 @@ public class KPIExcelDataService {
 
 				KpiRequest kpiRequest = pair.getValue();
 				label = kpiRequest.getLabel();
-				projectIds = kpiRequest.getIds();
+
+				if(kpiRequest.getSelectedMap().get(PROJECT).stream().toList() != null) {
+					projectIds = kpiRequest.getSelectedMap().get(PROJECT).stream().toList();
+				} else {
+					projectIds = kpiRequest.getSelectedMap().get("release").stream().toList();
+				}
+
 
 				switch (pair.getKey()) {
 				case EXCEL_JIRA:
@@ -290,7 +297,7 @@ public class KPIExcelDataService {
 		ExecutorService executor = Executors.newFixedThreadPool(10);
 		long startTime = System.currentTimeMillis();
 		String label = null;
-		String[] projectIds = new String[0];
+		List<String> projectIds = new ArrayList<>();
 
 		try {
 			Future<List<KpiElement>> jiraKanbanKpiDataFuture = null;
@@ -306,7 +313,7 @@ public class KPIExcelDataService {
 
 				KpiRequest kpiRequest = pair.getValue();
 				label = kpiRequest.getLabel();
-				projectIds = kpiRequest.getIds();
+				projectIds = kpiRequest.getSelectedMap().get(PROJECT).stream().toList();
 
 				switch (pair.getKey()) {
 				case EXCEL_JIRAKANBAN:
@@ -364,18 +371,18 @@ public class KPIExcelDataService {
 	 * @return Excel validation data response
 	 */
 	private Object createKpiExcelValidationDataResponse(List<KpiElement> totalKpiElementList, String label,
-			String[] projectIds) {
+			List<String> projectIds) {
 		KPIExcelValidationDataResponse kpiExcelValidationDataResponse = new KPIExcelValidationDataResponse();
 		KpiColumnConfigDTO kpiColumnConfigDTO;
-		if (label.equalsIgnoreCase("Project") && projectIds.length < 2) {
-			String projectBasicConfigID = projectIds[0].substring(projectIds[0].lastIndexOf("_") + 1);
+		if ((label.equalsIgnoreCase("Project") || label.equalsIgnoreCase("SQD") || label.equalsIgnoreCase("Sprint")
+				|| label.equalsIgnoreCase("Release")) && projectIds.size() < 2) {
+			String projectBasicConfigID = projectIds.get(0).substring(projectIds.get(0).lastIndexOf("_") + 1);
 			kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(projectBasicConfigID,
 					totalKpiElementList.get(0).getKpiId());
 		} else {
 			kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(null,
 					totalKpiElementList.get(0).getKpiId());
 		}
-
 		prepareKpiExcelValidationDataResponse(kpiExcelValidationDataResponse, totalKpiElementList, kpiColumnConfigDTO);
 		return kpiExcelValidationDataResponse;
 	}
@@ -639,7 +646,7 @@ public class KPIExcelDataService {
 	 * @param kpiColumnConfigDTO
 	 */
 	private void prepareKpiExcelValidationDataResponse(KPIExcelValidationDataResponse kpiExcelValidationDataResponse,
-													   List<KpiElement> totalKpiElementList, KpiColumnConfigDTO kpiColumnConfigDTO) {
+			List<KpiElement> totalKpiElementList, KpiColumnConfigDTO kpiColumnConfigDTO) {
 
 		// totalKpiElementList will have only one KPI data at any given time
 		totalKpiElementList.forEach(element -> {
