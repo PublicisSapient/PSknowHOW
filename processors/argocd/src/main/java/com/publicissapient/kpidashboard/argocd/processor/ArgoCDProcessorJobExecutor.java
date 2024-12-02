@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.argocd.processor;
 
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.EXECUTION_STATUS;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.EXECUTION_TIME;
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.INSTANCE_URL;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.PROCESSOR_END_TIME;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.PROCESSOR_EXECUTION_UID;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.PROCESSOR_START_TIME;
@@ -32,14 +31,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.argocd.dto.Destination;
+import com.publicissapient.kpidashboard.argocd.dto.Specification;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
@@ -61,7 +65,6 @@ import com.publicissapient.kpidashboard.argocd.config.ArgoCDConfig;
 import com.publicissapient.kpidashboard.argocd.dto.Application;
 import com.publicissapient.kpidashboard.argocd.dto.ApplicationsList;
 import com.publicissapient.kpidashboard.argocd.dto.History;
-import com.publicissapient.kpidashboard.argocd.dto.UserCredentialsDTO;
 import com.publicissapient.kpidashboard.argocd.model.ArgoCDProcessor;
 import com.publicissapient.kpidashboard.argocd.repository.ArgoCDProcessorRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -177,25 +180,28 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 			count.set(argoCDJobList.size());
 			for (ProcessorToolConnection argoCDJob : argoCDJobList) {
 				String baseUrl = argoCDJob.getUrl();
-				UserCredentialsDTO cred = new UserCredentialsDTO(argoCDJob.getUsername(),
-						decryptPassword(argoCDJob.getPassword()));
-				MDC.put(INSTANCE_URL, baseUrl);
+				String accessToken = decryptAccessToken(argoCDJob.getAccessToken());
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						proBasicConfig.getId().toHexString());
 				try {
 					processorToolConnectionService.validateConnectionFlag(argoCDJob);
 					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-					// Fetching the list of applications using Bearer token for authentication as Basic Auth is not supported
-					ApplicationsList listOfApplications = argoCDClient.getApplications(baseUrl, cred.getPassword());
-					if (listOfApplications != null && listOfApplications.getItems() != null) {
-						listOfApplications.getItems().stream()
-								.filter(applicationitem -> applicationitem.getMetadata().getName().equalsIgnoreCase(argoCDJob.getJobName()))
-								.forEach(applicationitem -> {
-									Application application = argoCDClient.getApplicationByName(baseUrl,
-											applicationitem.getMetadata().getName(), cred.getPassword());
-									count.addAndGet(saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob, processor.getId()));
-								});
-					}
+					// Fetching the list of applications using access token for authentication as
+					// Basic Auth is not supported
+					// Fetch the cluster name mapping using the base URL and credentials
+					Map<String, String> serverToNameMap = argoCDClient.getClusterName(baseUrl, accessToken);
+
+					// Retrieve the list of applications based on the job name or fetch all
+					// applications if the job name is not specified
+					List<Application> applications = ObjectUtils.isNotEmpty(argoCDJob.getJobName())
+							? List.of(argoCDClient.getApplicationByName(baseUrl, argoCDJob.getJobName(), accessToken))
+							: Optional.ofNullable(argoCDClient.getApplications(baseUrl, accessToken))
+									.map(ApplicationsList::getItems).orElse(List.of());
+
+					// Process each application and save the revisions in the database
+					applications.stream().filter(Objects::nonNull)
+							.forEach(app -> count.addAndGet(saveRevisionsInDbAndGetCount(app, deploymentJobs, argoCDJob,
+									processor.getId(), serverToNameMap)));
 					log.info("Finished ArgoCD Job started at :: {}", startTime);
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -231,7 +237,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * @param exception
 	 *            exception
 	 */
-    void isClientException(ProcessorToolConnection argoCDJob, RestClientException exception) {
+	void isClientException(ProcessorToolConnection argoCDJob, RestClientException exception) {
 		if (exception instanceof HttpClientErrorException
 				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 			String errMsg = ClientErrorMessageEnum
@@ -248,17 +254,6 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	@Override
 	public boolean executeSprint(String sprintId) {
 		return false;
-	}
-
-	/**
-	 * Returns the Decrypted value of String
-	 * 
-	 * @param encryptedValue
-	 *            encrypted value of String
-	 * @return String
-	 */
-	private String decryptPassword(String encryptedValue) {
-		return aesEncryptionService.decrypt(encryptedValue, argoCDConfig.getAesEncryptionKey());
 	}
 
 	/**
@@ -309,7 +304,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * 
 	 * @param application
 	 *            ArgoCD Application
-	 * @param exisitingEntries
+	 * @param existingEntries
 	 *            Existing entries in Database
 	 * @param argoCDJob
 	 *            argoCD process tool connection
@@ -317,21 +312,25 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 *            processor Id
 	 * @return int
 	 */
-    int saveRevisionsInDbAndGetCount(Application application, List<Deployment> exisitingEntries,
-                                     ProcessorToolConnection argoCDJob, ObjectId processorId) {
+	int saveRevisionsInDbAndGetCount(Application application, List<Deployment> existingEntries,
+			ProcessorToolConnection argoCDJob, ObjectId processorId, Map<String, String> serverToNameMap) {
 		Map<Pair<String, String>, Deployment> deployments = mapRevisionsToDeployment(application, argoCDJob,
-				processorId);
-		Map<Pair<String, String>, Deployment> exisitingDeployments = exisitingEntries.stream().collect(Collectors.toMap(
-				deployment -> Pair.of(deployment.getEnvName(), deployment.getNumber()), deployment -> deployment));
-		Set<Deployment> tobeSavedinDB = deployments.entrySet().stream()
-				.filter(entry -> !exisitingDeployments.containsKey(entry.getKey())).map(Map.Entry::getValue)
+				processorId, serverToNameMap);
+		Map<Pair<String, String>, Deployment> existingDeployments = existingEntries.stream()
+				.filter(deployment -> deployment.getBasicProjectConfigId() != null).collect(
+						Collectors.toMap(
+								deployment -> Pair.of(deployment.getBasicProjectConfigId().toHexString() + "-"
+										+ deployment.getJobName(), deployment.getNumber()),
+								deployment -> deployment, (existing, replacement) -> existing));
+		Set<Deployment> toBeSavedInDB = deployments.entrySet().stream()
+				.filter(entry -> !existingDeployments.containsKey(entry.getKey())).map(Map.Entry::getValue)
 				.collect(Collectors.toSet());
-		tobeSavedinDB.forEach(deployment -> {
+		toBeSavedInDB.forEach(deployment -> {
 			deploymentRepository.save(deployment);
-			log.info("Saving ArgoCD deployment info for application {} deployment number {}", deployment.getEnvName(),
+			log.info("Saving ArgoCD deployment info for application {} deployment number {}", deployment.getJobName(),
 					deployment.getNumber());
 		});
-		return tobeSavedinDB.size();
+		return toBeSavedInDB.size();
 	}
 
 	/**
@@ -347,7 +346,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * @return Map<Pair<String, String>, Deployment>
 	 */
 	private Map<Pair<String, String>, Deployment> mapRevisionsToDeployment(Application application,
-			ProcessorToolConnection argoCDJob, ObjectId processorId) {
+			ProcessorToolConnection argoCDJob, ObjectId processorId, Map<String, String> serverToNameMap) {
 		Map<Pair<String, String>, Deployment> deployments = new HashMap<>();
 		if (null != application.getStatus() && null != application.getStatus().getHistory()) {
 			for (History history : application.getStatus().getHistory()) {
@@ -358,15 +357,22 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				deployment.setJobId(argoCDJob.getDeploymentProjectId());
 				deployment.setJobName(argoCDJob.getJobName());
 				deployment.setEnvId(history.getRevision());
-				deployment.setEnvName(application.getMetadata().getName());
+				String server = Optional.ofNullable(application.getSpec()).map(Specification::getDestination)
+						.map(Destination::getServer).orElse(null);
+				deployment.setEnvName(server != null ? serverToNameMap.get(server) : null);
 				deployment.setDeploymentStatus(DeploymentStatus.SUCCESS);
 				deployment.setStartTime(DateUtil.formatDate(history.getDeployStartedAt()));
 				deployment.setEndTime(DateUtil.formatDate(history.getDeployedAt()));
-				deployment.setDuration(
-						DateUtil.calculateDuration(history.getDeployStartedAt(), history.getDeployedAt()));
+				deployment
+						.setDuration(DateUtil.calculateDuration(history.getDeployStartedAt(), history.getDeployedAt()));
 				deployment.setNumber(history.getId());
 				deployment.setPipelineName("NA");
-				deployments.put(Pair.of(deployment.getEnvName(), deployment.getNumber()), deployment);
+				if (deployment.getBasicProjectConfigId() != null) {
+					deployments.put(
+							Pair.of(deployment.getBasicProjectConfigId().toHexString() + "-" + deployment.getJobName(),
+									deployment.getNumber()),
+							deployment);
+				}
 			}
 		}
 		return deployments;
@@ -380,7 +386,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * @param cacheName
 	 *            the cache name
 	 */
-	private void cacheRestClient(String cacheEndPoint, String cacheName) {
+	public void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
@@ -405,6 +411,20 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 			log.error("[ARGOCD-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
 
+	}
+
+	/**
+	 * Decrypts the given encrypted access token using AES encryption.
+	 *
+	 * @param encryptedAccessToken
+	 *            the encrypted access token
+	 * @return the decrypted access token, or an empty string if the input is null
+	 *         or empty
+	 */
+	public String decryptAccessToken(String encryptedAccessToken) {
+		return StringUtils.isNotEmpty(encryptedAccessToken)
+				? aesEncryptionService.decrypt(encryptedAccessToken, argoCDConfig.getAesEncryptionKey())
+				: "";
 	}
 
 }

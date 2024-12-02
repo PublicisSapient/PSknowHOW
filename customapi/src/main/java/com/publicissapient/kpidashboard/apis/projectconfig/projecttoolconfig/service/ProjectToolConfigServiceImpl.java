@@ -34,7 +34,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -304,6 +303,15 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		List<ProjectToolConfigDTO> projectConfToolDtoList = mapJiraSubProject(toolConfigList);
 		log.info(SUCCESS_MSG);
 		return projectConfToolDtoList;
+	}
+
+	@Override
+	public List<ProjectToolConfig> getProjectToolConfigsByProjectId(ObjectId basicProjectConfigId) {
+		return toolRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	}
+
+	public List<ProjectToolConfig> saveProjectToolConfigs(List<ProjectToolConfig> projectToolConfigs) {
+		return toolRepository.saveAll(projectToolConfigs);
 	}
 
 	@Override
