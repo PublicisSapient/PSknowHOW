@@ -278,13 +278,18 @@ public class KPIExcelDataService {
 		long processTime = System.currentTimeMillis() - startTime;
 		log.info("[KPI-EXCEL-SERVICE]. Time taken to process Excel kpi data request: {}", processTime);
 
+		return getObject(kpiID, totalKpiElementList, label, projectIds);
+
+	}
+
+	private Object getObject(String kpiID, List<KpiElement> totalKpiElementList, String label,
+			List<String> projectIds) {
 		if (null != kpiID) {
 			return createKpiExcelValidationDataResponse(totalKpiElementList, label, projectIds);
 		} else {
 			log.info("[KPI-EXCEL-SERVICE]. kpiId is Invalid ");
 			return null;
 		}
-
 	}
 
 	/**
@@ -360,12 +365,7 @@ public class KPIExcelDataService {
 		long processTime = System.currentTimeMillis() - startTime;
 		log.info("[KPI-EXCEL-SERVICE]. Time taken to process Excel kpi data request: {}", processTime);
 
-		if (null != kpiID) {
-			return createKpiExcelValidationDataResponse(totalKpiElementList, label, projectIds);
-		} else {
-			log.info("[KPI-EXCEL-SERVICE]. kpiId is Invalid ");
-			return null;
-		}
+		return getObject(kpiID, totalKpiElementList, label, projectIds);
 
 	}
 
