@@ -19,7 +19,7 @@
 <p-toast [style]="{ marginTop: '80px' }"></p-toast>
 <div class="main p-pl-6 p-pr-6 p-pb-1">
   <div class="p-d-flex p-p-0 p-flex-column">
-    <div class="nav-container">
+    <div class="nav-container" *ngIf="clone === 'false'">
       <nav>
         <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
           <ng-container *ngIf="!last">

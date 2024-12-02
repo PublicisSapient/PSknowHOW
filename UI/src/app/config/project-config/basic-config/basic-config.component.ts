@@ -17,13 +17,13 @@
  ******************************************************************************/
 
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 declare const require: any;
 
@@ -60,6 +60,7 @@ export class BasicConfigComponent implements OnInit {
   allProjectList: any[];
   selectedItems: { [key: string]: any } = {};
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
+  clone: string = '';
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -67,7 +68,8 @@ export class BasicConfigComponent implements OnInit {
     private messenger: MessageService,
     private getAuthorizationService: GetAuthorizationService,
     private ga: GoogleAnalyticsService,
-    public router: Router) {
+    public router: Router,
+    private route: ActivatedRoute) {
     this.projectTypeOptions = [
       { name: 'Scrum', value: false },
       { name: 'Kanban', value: true }
@@ -95,12 +97,15 @@ export class BasicConfigComponent implements OnInit {
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
 
     this.allProjectList = this.sharedService.getProjectList();
+
+
   }
 
   getFields() {
     // api call to get formData
     this.blocked = true;
-    const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+    let formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
 
@@ -143,7 +148,31 @@ export class BasicConfigComponent implements OnInit {
       });
     }
     this.blocked = false;
+    this.prefillForm();
 
+    this.route.queryParams.subscribe(params => {
+      this.clone = params['clone'];
+      if (this.clone === 'true') {
+        setTimeout(() => {
+          this.prefillForm();
+        }, 500);
+      }
+    });
+  }
+
+  prefillForm(): void {
+    if (this.selectedProject && Object.keys(this.selectedProject).length) {
+      let project = JSON.parse(JSON.stringify(this.selectedProject));
+      const formValues = {};
+      this.formData.forEach(field => {
+        formValues[field.hierarchyLevelId] = { name: project[field.hierarchyLevelId] };
+      });
+      formValues['projectName'] = 'Clone_' + this.selectedProject['name'];
+      formValues['kanban'] = this.selectedProject.type === 'Kanban';
+      formValues['assigneeDetails'] = this.selectedProject['saveAssigneeDetails'];
+      formValues['developerKpiEnabled'] = this.selectedProject['developerKpiEnabled'];
+      this.form.patchValue(formValues);
+    }
   }
 
   search(event, field) {
@@ -210,7 +239,12 @@ export class BasicConfigComponent implements OnInit {
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
-    submitData['developerKpiEnabled'] = formValue['developerKpiEnabled']
+    submitData['developerKpiEnabled'] = formValue['developerKpiEnabled'];
+    if (this.clone === 'true') {
+      submitData['clonedFrom'] = this.selectedProject['id'];
+    } else {
+      submitData['clonedFrom'] = null;
+    }
     let gaObj = {
       name: formValue['projectName'],
       kanban: formValue['kanban'],

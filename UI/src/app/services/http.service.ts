@@ -54,6 +54,7 @@ export class HttpService {
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
   private logoutUrl = this.baseUrl + '/api/userlogout';
+  private centralUserLogoutUrl = this.baseUrl + '/api/centralUserlogout'
   private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
@@ -284,7 +285,7 @@ export class HttpService {
   /**  logout from the server */
   logout(): Observable<any> {
     if(environment?.['AUTHENTICATION_SERVICE']){
-      this.logoutUrl = environment?.['CENTRAL_API_URL'] + '/api/sso-logout';
+      this.logoutUrl = this.centralUserLogoutUrl;
     }
     return this.http.get(this.logoutUrl);
   }

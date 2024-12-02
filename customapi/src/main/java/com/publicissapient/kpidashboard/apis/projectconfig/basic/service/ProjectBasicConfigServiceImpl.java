@@ -33,6 +33,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -166,6 +169,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Autowired
 	private ConfigHelperService configHelperService;
 
+	@Autowired
+	private ProjectToolConfigServiceImpl projectToolConfigService;
+
 	/**
 	 * method to save basic configuration
 	 *
@@ -199,8 +205,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			if (accessRoleOfParent == null) {
 
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
-				//TODO:Clone call cloning service
-				configHelperService.updateCacheProjectBasicConfig(basicConfig);
+				cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
+                configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
@@ -210,9 +216,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
-				//TODO:Clone call cloning service
-				configHelperService.updateCacheProjectBasicConfig(basicConfig);
-				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
+				cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
+                configHelperService.updateCacheProjectBasicConfig(basicConfig);
+                addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else {
@@ -222,6 +228,99 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			}
 		}
 		return response;
+	}
+
+	/**
+	 * Clone Tool Configurations, Field Mappings, and Board Metadata for Cloned
+	 * Project
+	 *
+	 * @param savedProjectBasicConfig
+	 *            savedProjectBasicConfig
+	 */
+	private void cloneProjectToolConfigAndDependencies(ProjectBasicConfig savedProjectBasicConfig) {
+		if (savedProjectBasicConfig.getClonedFrom() == null) {
+			return;
+		}
+
+		// Step 1: Clone tool configurations
+		List<ProjectToolConfig> clonedToolConfigs = cloneToolConfigurations(savedProjectBasicConfig);
+
+		// Step 2: Clone field mappings
+		cloneFieldMapping(savedProjectBasicConfig, clonedToolConfigs);
+
+		// Step 3: Clone board metadata
+		cloneBoardMetadata(savedProjectBasicConfig, clonedToolConfigs);
+	}
+
+	private List<ProjectToolConfig> cloneToolConfigurations(ProjectBasicConfig savedProjectBasicConfig) {
+		List<ProjectToolConfig> toolConfigList = projectToolConfigService
+				.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
+		List<ProjectToolConfig> clonedToolConfigs = new ArrayList<>();
+
+		for (ProjectToolConfig toolConfig : toolConfigList) {
+			try {
+				ProjectToolConfig clonedToolConfig = toolConfig.clone();
+				clonedToolConfig.setId(null);
+				clonedToolConfig.setBasicProjectConfigId(savedProjectBasicConfig.getId());
+				clonedToolConfig
+						.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedToolConfig.setCreatedBy(authenticationService.getLoggedInUser());
+				clonedToolConfig
+						.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedToolConfig.setProjectId(savedProjectBasicConfig.getId().toString());
+				clonedToolConfigs.add(clonedToolConfig);
+			} catch (CloneNotSupportedException e) {
+				log.error("Error in cloning ProjectToolConfig", e);
+			}
+		}
+
+		return projectToolConfigService.saveProjectToolConfigs(clonedToolConfigs);
+	}
+
+	private void cloneFieldMapping(ProjectBasicConfig savedProjectBasicConfig,
+			List<ProjectToolConfig> clonedToolConfigs) {
+		FieldMapping originalFieldMapping = fieldMappingService
+				.getFieldMappingByBasicconfigId(savedProjectBasicConfig.getClonedFrom().toString());
+		Optional<ProjectToolConfig> toolConfigOptional = clonedToolConfigs.stream().filter(
+				tool -> Constant.TOOL_JIRA.equals(tool.getToolName()) || Constant.TOOL_AZURE.equals(tool.getToolName()))
+				.findFirst();
+
+		if (originalFieldMapping != null && toolConfigOptional.isPresent()) {
+			try {
+				FieldMapping clonedFieldMapping = originalFieldMapping.clone();
+				clonedFieldMapping.setId(null);
+				clonedFieldMapping.setProjectToolConfigId(toolConfigOptional.get().getId());
+				clonedFieldMapping.setBasicProjectConfigId(savedProjectBasicConfig.getId());
+				clonedFieldMapping
+						.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), CommonConstant.TIME_FORMAT));
+				clonedFieldMapping.setUpdatedBy(authenticationService.getLoggedInUser());
+				clonedFieldMapping.setProjectId(savedProjectBasicConfig.getId().toString());
+				fieldMappingService.saveFieldMapping(clonedFieldMapping);
+			} catch (CloneNotSupportedException e) {
+				log.error("Error in cloning FieldMapping", e);
+			}
+		}
+	}
+
+	private void cloneBoardMetadata(ProjectBasicConfig savedProjectBasicConfig,
+			List<ProjectToolConfig> clonedToolConfigs) {
+		BoardMetadata originalBoardMetadata = boardMetadataRepository
+				.findByProjectBasicConfigId(savedProjectBasicConfig.getClonedFrom());
+		Optional<ProjectToolConfig> toolConfigOptional = clonedToolConfigs.stream().filter(
+				tool -> Constant.TOOL_JIRA.equals(tool.getToolName()) || Constant.TOOL_AZURE.equals(tool.getToolName()))
+				.findFirst();
+
+		if (originalBoardMetadata != null && toolConfigOptional.isPresent()) {
+			try {
+				BoardMetadata clonedBoardMetadata = originalBoardMetadata.clone();
+				clonedBoardMetadata.setId(null);
+				clonedBoardMetadata.setProjectToolConfigId(toolConfigOptional.get().getId());
+				clonedBoardMetadata.setProjectBasicConfigId(savedProjectBasicConfig.getId());
+				boardMetadataRepository.save(clonedBoardMetadata);
+			} catch (CloneNotSupportedException e) {
+				log.error("Error in cloning BoardMetadata", e);
+			}
+		}
 	}
 
 	/**
@@ -361,6 +460,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_BASIC_TREE);
+		if (basicConfig.getClonedFrom() != null) {
+			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
+			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
+			cacheService.clearCache(CommonConstant.CACHE_BOARD_META_DATA_MAP);
+		}
 	}
 
 	/**
