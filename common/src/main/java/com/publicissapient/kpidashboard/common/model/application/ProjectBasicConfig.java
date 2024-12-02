@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
@@ -56,6 +57,7 @@ public class ProjectBasicConfig extends BasicModel {
 	private boolean saveAssigneeDetails;
 	private boolean developerKpiEnabled;
 	private boolean projectOnHold;
+	private ObjectId clonedFrom;
 
 	/**
 	 * @return isKanban value
