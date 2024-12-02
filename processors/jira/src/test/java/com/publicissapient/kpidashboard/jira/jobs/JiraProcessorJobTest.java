@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.publicissapient.kpidashboard.jira.tasklet.KanbanJiraIssueReleaseStatusTasklet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -77,6 +78,9 @@ public class JiraProcessorJobTest {
 
 	@Mock
 	private IssueJqlReader issueJqlReader;
+
+	@Mock
+	private KanbanJiraIssueReleaseStatusTasklet kanbanJiraIssueReleaseStatusTasklet;
 
 	@Mock
 	private IssueSprintReader issueSprintReader;
