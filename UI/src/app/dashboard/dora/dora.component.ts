@@ -415,26 +415,32 @@ export class DoraComponent implements OnInit {
   }
 
   handleSelectedOption(event, kpi) {
-    this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+    const kpiId = kpi?.kpiId;
+    this.kpiSelectedFilterObj[kpiId] = [];
 
-    if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
-      for (const key in event) {
-        if (event[key]?.length == 0) {
-          delete event[key];
-          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-        } else if (Array.isArray(event[key])) {
-          for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
+    if (event && Object.keys(event)?.length && typeof event === 'object') {
+      Object.entries(event).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          // Handle array values
+          if (value.length === 0) {
+            delete event[key];
+            this.kpiSelectedFilterObj[kpiId] = event;
+          } else {
+            this.kpiSelectedFilterObj[kpiId] = [
+              ...this.kpiSelectedFilterObj[kpiId],
+              ...value
+            ];
           }
-        } else {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
+        } else if (typeof value === 'string' || typeof value === 'number') {
+          // Handle primitive values
+          this.kpiSelectedFilterObj[kpiId] = value;
         }
-      }
+      });
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
+      this.kpiSelectedFilterObj[kpiId].push(event);
     }
 
-    this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
+    this.getChartData(kpiId, this.ifKpiExist(kpiId), kpi?.kpiDetail?.aggregationCriteria);
     this.kpiSelectedFilterObj['action'] = 'update';
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }

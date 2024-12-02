@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.jobs;
 
+import com.publicissapient.kpidashboard.jira.tasklet.KanbanJiraIssueReleaseStatusTasklet;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -86,6 +87,9 @@ public class JiraProcessorJob {
 
 	@Autowired
 	JiraIssueReleaseStatusTasklet jiraIssueReleaseStatusTasklet;
+
+	@Autowired
+	KanbanJiraIssueReleaseStatusTasklet kanbanJiraIssueReleaseStatusTasklet;
 
 	@Autowired
 	SprintReportTasklet sprintReportTasklet;
@@ -163,6 +167,11 @@ public class JiraProcessorJob {
 				.tasklet(jiraIssueReleaseStatusTasklet, transactionManager).listener(jobStepProgressListener).build();
 	}
 
+	private Step processKanbanProjectStatusStep() {
+		return builderFactory.getStepBuilder("Fetch Release Status Kanban", jobRepository)
+				.tasklet(kanbanJiraIssueReleaseStatusTasklet, transactionManager).listener(jobStepProgressListener).build();
+	}
+
 	@TrackExecutionTime
 	private Step fetchIssueScrumBoardChunkStep() {
 		return builderFactory.getStepBuilder("Fetch Issues Scrum Board", jobRepository)
@@ -207,7 +216,7 @@ public class JiraProcessorJob {
 	public Job fetchIssueKanbanBoardJob() {
 		return builderFactory.getJobBuilder("FetchIssueKanban Job", jobRepository).incrementer(new RunIdIncrementer())
 				.start(metaDataStep()).next(fetchIssueKanbanBoardChunkStep()).next(kanbanReleaseDataStep())
-				.listener(jobListenerKanban).build();
+				.next(processKanbanProjectStatusStep()).listener(jobListenerKanban).build();
 
 	}
 
@@ -235,7 +244,7 @@ public class JiraProcessorJob {
 	public Job fetchIssueKanbanJqlJob() {
 		return builderFactory.getJobBuilder("FetchIssueKanban JQL Job", jobRepository)
 				.incrementer(new RunIdIncrementer()).start(metaDataStep()).next(fetchIssueKanbanJqlChunkStep())
-				.next(kanbanReleaseDataStep()).listener(jobListenerKanban).build();
+				.next(kanbanReleaseDataStep()).next(processKanbanProjectStatusStep()).listener(jobListenerKanban).build();
 	}
 
 	@TrackExecutionTime
