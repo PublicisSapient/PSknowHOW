@@ -16,58 +16,33 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application.dto;
+package com.publicissapient.kpidashboard.common.model.jira;
 
-import java.util.List;
-
-import org.bson.types.ObjectId;
-
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Map;
 
 /**
- * @author narsingh9
- *
+ * @author kunkambl
  */
-@Data
-@Builder
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectBasicConfigDTO {
-	private ObjectId id;
-	private String projectName;
-	private String createdAt;
-	private String createdBy;
-	private String updatedAt;
-	private String updatedBy;
-	private String consumerCreatedOn;
-	private boolean kanban;
-	private List<HierarchyValueDTO> hierarchy;
-	private boolean saveAssigneeDetails;
-	private boolean developerKpiEnabled;
-	private boolean projectOnHold;
-	private ObjectId clonedFrom;
+@Data
+@Document(collection = "kanban_jira_issue_release_status")
+public class KanbanJiraIssueReleaseStatus extends BasicModel {
 
-	/**
-	 * @return isKanban value
-	 */
-	public boolean getIsKanban() {
-		return this.kanban;
-	}
-
-	/**
-	 * set isKanban value
-	 *
-	 * @param isKanban
-	 *            boolean value
-	 */
-	public void setIsKanban(boolean isKanban) {
-		this.kanban = isKanban;
-	}
+    private String basicProjectConfigId;
+    private Map<Long, String> toDoList;
+    private Map<Long, String> inProgressList;
+    private Map<Long, String> closedList;
 }

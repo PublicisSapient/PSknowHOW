@@ -16,14 +16,14 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, Output,EventEmitter} from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 declare const require: any;
 
@@ -55,10 +55,11 @@ export class BasicConfigComponent implements OnInit {
   breadcrumbs: Array<any>
   @Output() closeProjectSetupPopup = new EventEmitter();
   steps: MenuItem[] | undefined;
-  isProjectSetupPopup : boolean = false;
-  isProjectCOmpletionPopup : boolean = false;
+  isProjectSetupPopup: boolean = false;
+  isProjectCOmpletionPopup: boolean = false;
   allProjectList: any[];
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
+  clone: string = '';
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -66,7 +67,8 @@ export class BasicConfigComponent implements OnInit {
     private messenger: MessageService,
     private getAuthorizationService: GetAuthorizationService,
     private ga: GoogleAnalyticsService,
-    public router: Router) {
+    public router: Router,
+    private route: ActivatedRoute) {
     this.projectTypeOptions = [
       { name: 'Scrum', value: false },
       { name: 'Kanban', value: true }
@@ -75,18 +77,18 @@ export class BasicConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.isProjectSetupPopup = true;
-    this.breadcrumbs = [{ label: 'MY PROJECTS',handleEvent : ()=>{this.closeProjectSetupPopup.emit()} },{ label: 'ADD NEW PROJECT'}];
+    this.breadcrumbs = [{ label: 'MY PROJECTS', handleEvent: () => { this.closeProjectSetupPopup.emit() } }, { label: 'ADD NEW PROJECT' }];
     this.steps = [
       {
-          label: 'Connect tools',
+        label: 'Connect tools',
       },
       {
-          label: 'Run processor',
+        label: 'Run processor',
       },
       {
-          label: 'Data ready on Dashboard',
+        label: 'Data ready on Dashboard',
       }
-  ];
+    ];
     this.getHierarchy();
     this.ifSuperUser = this.getAuthorizationService.checkIfSuperUser();
     this.selectedProject = this.sharedService.getSelectedProject();
@@ -94,12 +96,15 @@ export class BasicConfigComponent implements OnInit {
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
 
     this.allProjectList = this.sharedService.getProjectList();
+
+
   }
 
   getFields() {
     // api call to get formData
     this.blocked = true;
-    const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+    let formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
     this.formData.unshift(
@@ -127,7 +132,7 @@ export class BasicConfigComponent implements OnInit {
       {
         level: this.formData.length,
         hierarchyLevelId: 'assigneeDetails',
-        label1:'Enable People performance KPIs',
+        label1: 'Enable People performance KPIs',
         label2: this.assigneeSwitchInfo,
         inputType: 'boolean',
         value: false,
@@ -139,7 +144,7 @@ export class BasicConfigComponent implements OnInit {
       {
         level: this.formData.length,
         hierarchyLevelId: 'developerKpiEnabled',
-        label1:'Enable Developers KPIs',
+        label1: 'Enable Developers KPIs',
         label2: this.developerKpiInfo,
         inputType: 'boolean',
         value: false,
@@ -154,7 +159,31 @@ export class BasicConfigComponent implements OnInit {
       );
     });
     this.blocked = false;
+    this.prefillForm();
 
+    this.route.queryParams.subscribe(params => {
+      this.clone = params['clone'];
+      if (this.clone === 'true') {
+        setTimeout(() => {
+          this.prefillForm();
+        }, 500);
+      }
+    });
+  }
+
+  prefillForm(): void {
+    if (this.selectedProject && Object.keys(this.selectedProject).length) {
+      let project = JSON.parse(JSON.stringify(this.selectedProject));
+      const formValues = {};
+      this.formData.forEach(field => {
+        formValues[field.hierarchyLevelId] = { name: project[field.hierarchyLevelId] };
+      });
+      formValues['projectName'] = 'Clone_' + this.selectedProject['name'];
+      formValues['kanban'] = this.selectedProject.type === 'Kanban';
+      formValues['assigneeDetails'] = this.selectedProject['saveAssigneeDetails'];
+      formValues['developerKpiEnabled'] = this.selectedProject['developerKpiEnabled'];
+      this.form.patchValue(formValues);
+    }
   }
 
   search(event, field) {
@@ -177,7 +206,12 @@ export class BasicConfigComponent implements OnInit {
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
-    submitData['developerKpiEnabled'] = formValue['developerKpiEnabled']
+    submitData['developerKpiEnabled'] = formValue['developerKpiEnabled'];
+    if (this.clone === 'true') {
+      submitData['clonedFrom'] = this.selectedProject['id'];
+    } else {
+      submitData['clonedFrom'] = null;
+    }
     let gaObj = {
       name: formValue['projectName'],
       kanban: formValue['kanban'],
@@ -195,7 +229,7 @@ export class BasicConfigComponent implements OnInit {
         },
         value: formValue[element.hierarchyLevelId].name ? formValue[element.hierarchyLevelId].name : formValue[element.hierarchyLevelId]
       });
-      gaObj['category'+ (index+1)] = element.hierarchyLevelName;
+      gaObj['category' + (index + 1)] = element.hierarchyLevelName;
     });
     this.blocked = true;
     this.http.addBasicConfig(submitData).subscribe(response => {
@@ -217,7 +251,7 @@ export class BasicConfigComponent implements OnInit {
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            this.sharedService.setCurrentUserDetails({authorities});
+            this.sharedService.setCurrentUserDetails({ authorities });
           }
         }
         this.form.reset();
@@ -259,9 +293,9 @@ export class BasicConfigComponent implements OnInit {
       formFieldData.forEach(element => {
         if (element.suggestions && element.suggestions.length) {
           element.suggestions = element.suggestions.map(suggestion => ({
-              name: suggestion,
-              code: suggestion
-            }));
+            name: suggestion,
+            code: suggestion
+          }));
         }
         element.value = '';
         element.required = true;

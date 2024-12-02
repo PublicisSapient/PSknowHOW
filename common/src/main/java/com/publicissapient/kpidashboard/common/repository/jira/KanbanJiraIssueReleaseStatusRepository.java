@@ -16,37 +16,16 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
+package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.util.List;
-
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssueReleaseStatus;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "board_metadata")
-public class BoardMetadata extends BasicModel implements Cloneable {
-
-	private ObjectId projectBasicConfigId;
-	private ObjectId projectToolConfigId;
-	private String metadataTemplateCode;
-	private List<Metadata> metadata;
-
-	@Override
-	public BoardMetadata clone() throws CloneNotSupportedException {
-		return (BoardMetadata) super.clone();
-	}
-
+/**
+ * @author kunkambl
+ */
+public interface KanbanJiraIssueReleaseStatusRepository
+		extends MongoRepository<KanbanJiraIssueReleaseStatus, ObjectId> {
+	KanbanJiraIssueReleaseStatus findByBasicProjectConfigId(String basicProjectConfigId);
 }
