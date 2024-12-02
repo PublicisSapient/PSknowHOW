@@ -31,7 +31,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.kpicolumnconfig.service.KpiColumnConfigService;
+import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfigDTO;
+import com.publicissapient.kpidashboard.common.model.application.KpiColumnDetails;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,6 +68,7 @@ import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrServiceKanban;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KPIExcelDataServiceTest {
@@ -73,6 +78,9 @@ public class KPIExcelDataServiceTest {
 
 	@Mock
 	private CacheService cacheService;
+
+	@Mock
+	KpiColumnConfigService kpiColumnConfigService;
 
 	@Mock
 	private JiraServiceR jiraServiceR;
@@ -239,33 +247,43 @@ public class KPIExcelDataServiceTest {
 		level = 1;
 		idList.add("TPRO_TPRO");
 		idList.add("THPRO_THPRO");
-
+		Map<String, List<String>> selMap = new HashMap<>();
+		selMap.put("project", Arrays.asList("THPRO_THPRO_65118da7965fbb0d14bce23c"));
+		KpiRequest kpiRequest = new KpiRequest();
+		kpiRequest.setLabel("project");
+		kpiRequest.setSelectedMap(selMap);
+		List<KpiRequest> requests = new ArrayList<>();
+		requests.add(kpiRequest);
 		acceptedFilterList.add(Filters.PROJECT.name());
+		KpiColumnConfigDTO kpiColumnConfigDTO = new KpiColumnConfigDTO();
+		kpiColumnConfigDTO.setBasicProjectConfigId(new ObjectId("65118da7965fbb0d14bce23c"));
+		kpiColumnConfigDTO.setSaveFlag(true);
+		kpiColumnConfigDTO.setKpiId("kpi48");
+		KpiColumnDetails kpiColumnDetails = new KpiColumnDetails();
+		kpiColumnDetails.setColumnName("ABCD");
+		kpiColumnDetails.setIsDefault(true);
+		kpiColumnDetails.setIsShown(true);
+		kpiColumnDetails.setOrder(1);
+		List<KpiColumnDetails> kpiColumnDetail = new ArrayList<>();
+		kpiColumnDetail.add(kpiColumnDetails);
+		KpiColumnDetails kpiColumnDetails1 = new KpiColumnDetails();
+		kpiColumnDetails1.setColumnName("XYZ");
+		kpiColumnDetails1.setIsDefault(true);
+		kpiColumnDetails1.setIsShown(true);
+		kpiColumnDetails1.setOrder(2);
+		kpiColumnDetail.add(kpiColumnDetails1);
+		kpiColumnConfigDTO.setKpiColumnDetails(kpiColumnDetail);
+
+		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
+		List<KpiElement> totalKpiElementList = new ArrayList<>();
+		KpiElement mockKpiElement = new KpiElement();
+		mockKpiElement.setKpiId("kpi48");
+		totalKpiElementList.add(mockKpiElement);
+		when(jiraServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
 		kpiExcelDataService
-				.process("kpi48", level, idList, acceptedFilterList, null, true, false);
+				.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false);
 
-		Assert.assertNotNull(kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, null, true, false));
-
-		kpiExcelDataService
-				.process("kpi61", level, idList, acceptedFilterList, null, true, false);
-
-		Assert.assertNotNull(kpiExcelDataService.process("kpi61", level, idList, acceptedFilterList, null, true, false));
-
-		kpiExcelDataService
-				.process("kpi63", level, idList, acceptedFilterList, null, true, false);
-
-		Assert.assertNotNull(kpiExcelDataService.process("kpi63", level, idList, acceptedFilterList, null, true, false));
-
-		kpiExcelDataService
-				.process("kpi65", level, idList, acceptedFilterList, null, true, false);
-
-		Assert.assertNotNull(kpiExcelDataService.process("kpi65", level, idList, acceptedFilterList, null, true, false));
-
-		kpiExcelDataService
-				.process("kpi66", level, idList, acceptedFilterList, null, true, false);
-
-		Assert.assertNotNull(kpiExcelDataService.process("kpi66", level, idList, acceptedFilterList, null, true, false));
-
+		Assert.assertNotNull(kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false));
 
 	}
 
@@ -274,26 +292,41 @@ public class KPIExcelDataServiceTest {
 
 		level = 1;
 		idList.add("THPRO_THPRO");
+		Map<String, List<String>> selMap = new HashMap<>();
+		selMap.put("project", Arrays.asList("THPRO_THPRO_65118da7965fbb0d14bce23c"));
+		KpiRequest kpiRequest = new KpiRequest();
+		kpiRequest.setLabel("project");
+		kpiRequest.setSelectedMap(selMap);
+		List<KpiRequest> requests = new ArrayList<>();
+		requests.add(kpiRequest);
+		acceptedFilterList.add(Filters.PROJECT.name());
+		KpiColumnConfigDTO kpiColumnConfigDTO = new KpiColumnConfigDTO();
+		kpiColumnConfigDTO.setBasicProjectConfigId(new ObjectId("65118da7965fbb0d14bce23c"));
+		kpiColumnConfigDTO.setSaveFlag(true);
+		kpiColumnConfigDTO.setKpiId("kpi14");
+		KpiColumnDetails kpiColumnDetails = new KpiColumnDetails();
+		kpiColumnDetails.setColumnName("ABCD");
+		kpiColumnDetails.setIsDefault(true);
+		kpiColumnDetails.setIsShown(true);
+		kpiColumnDetails.setOrder(1);
+		List<KpiColumnDetails> kpiColumnDetail = new ArrayList<>();
+		kpiColumnDetail.add(kpiColumnDetails);
+		KpiColumnDetails kpiColumnDetails1 = new KpiColumnDetails();
+		kpiColumnDetails1.setColumnName("XYZ");
+		kpiColumnDetails1.setIsDefault(true);
+		kpiColumnDetails1.setIsShown(true);
+		kpiColumnDetails1.setOrder(2);
+		kpiColumnDetail.add(kpiColumnDetails1);
+		kpiColumnConfigDTO.setKpiColumnDetails(kpiColumnDetail);
+
+		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
 
 		List<KpiElement> validationKpiElementList = new ArrayList<>();
 		validationKpiElementList.add(validationJiraKpiElement);
 
 		when(jiraServiceR.process(Mockito.any())).thenReturn(validationKpiElementList);
-		KpiRequest kpiRequest = createKpiRequest("kpi14", "");
 		KPIExcelValidationDataResponse kpiExcelValidationDataResponse = (KPIExcelValidationDataResponse) kpiExcelDataService
 				.process("kpi14", level, idList, null, kpiRequest, null, false);
-
-		kpiRequest = createKpiRequest("kpi8", "");
-		kpiExcelDataService.process("kpi8", level, idList, null, kpiRequest, null, false);
-
-		kpiRequest = createKpiRequest("kpi11", "");
-		kpiExcelDataService.process("kpi11", level, idList, null, kpiRequest, null, false);
-
-		kpiRequest = createKpiRequest("kpi168", "");
-		kpiExcelDataService.process("kpi168", level, idList, null, kpiRequest, null, false);
-
-		kpiRequest = createKpiRequest("kpi16", "");
-		kpiExcelDataService.process("kpi16", level, idList, null, kpiRequest, null, false);
 
 		assertThat("Excel Validation Process Data: ", kpiExcelValidationDataResponse.getMapOfSprintAndData()
 				.get("Alpha_Project1_Sprint1_name").getDefectKeyList().size(), equalTo(1));

@@ -316,7 +316,14 @@ public class KPIExcelDataService {
 
 				KpiRequest kpiRequest = pair.getValue();
 				label = kpiRequest.getLabel();
-				projectIds = kpiRequest.getSelectedMap().get(PROJECT).stream().toList();
+
+				if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(PROJECT).stream().toList())) {
+					projectIds = kpiRequest.getSelectedMap().get(PROJECT).stream().toList();
+				} else if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(SPRINT).stream().toList())) {
+					projectIds = kpiRequest.getSelectedMap().get(SPRINT).stream().toList();
+				} else {
+					projectIds = kpiRequest.getSelectedMap().get(RELEASE).stream().toList();
+				}
 
 				switch (pair.getKey()) {
 				case EXCEL_JIRAKANBAN:
