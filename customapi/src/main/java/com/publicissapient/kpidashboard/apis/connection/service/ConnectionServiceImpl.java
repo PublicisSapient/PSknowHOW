@@ -129,8 +129,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		List<Connection> nonAuthConnection = new ArrayList<>();
 
-		connectionData.stream().filter(
-				e -> !e.isSharedConnection() && !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
+		connectionData.stream()
+				.filter(e -> !e.isSharedConnection()
+						&& !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 				.forEach(nonAuthConnection::add);
 
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
@@ -238,8 +239,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 
 		List<Connection> nonAuthConnection = new ArrayList<>();
-		typeList.stream().filter(
-				e -> !e.isSharedConnection() && !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
+		typeList.stream()
+				.filter(e -> !e.isSharedConnection()
+						&& !e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 				.forEach(nonAuthConnection::add);
 
 		if (CollectionUtils.isNotEmpty(nonAuthConnection)) {
@@ -273,10 +275,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 		String api = "save";
 
 		if (connName == null) {
-			List<Connection> publicConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(), true);
+			List<Connection> publicConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(),
+					true);
 
-			List<Connection> privateConnections = connectionRepository.findByTypeAndSharedConnection(conn.getType(), false)
-					.stream().filter(e -> e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
+			List<Connection> privateConnections = connectionRepository
+					.findByTypeAndSharedConnection(conn.getType(), false).stream()
+					.filter(e -> e.getConnectionUsers().contains(authenticationService.getLoggedInUser()))
 					.collect(Collectors.toList());
 
 			Connection existingPublicConn = findConnectionWithSameDetails(conn, publicConnections, api);
@@ -695,11 +699,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 		case ProcessorConstants.BAMBOO:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.BITBUCKET:
-		case ProcessorConstants.ARGOCD:
-			setEncryptedAccessTokenForDb(conn);
+			setEncryptedPasswordFieldForDb(conn);
 			break;
 		case ProcessorConstants.GITLAB:
 		case ProcessorConstants.GITHUB:
+		case ProcessorConstants.ARGOCD:
 			setEncryptedAccessTokenForDb(conn);
 			break;
 		case ProcessorConstants.JENKINS:
