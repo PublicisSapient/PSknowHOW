@@ -6,9 +6,9 @@
       <div class="export-button">
         <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save" class="p-p-2 p-mr-2" [disabled] = "isDisableSaveCOnfigurationBtn"
           (click)="saveTableColumnOrder()"></button>
-        <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.3" pButton pRipple label="Export View"
+        <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.4" pButton pRipple label="Export View"
           class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
-        <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.3" pButton pRipple label="Export All"
+        <button *ngIf="modalDetails['tableValues'].length > 0" style="line-height: 1.4" pButton pRipple label="Export All"
           class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
       </div>
     </div>
@@ -68,30 +68,45 @@
       </ng-template>
       <ng-template pTemplate="body" let-rowData let-index="rowIndex">
         <tr [pReorderableRow]="index">
-          <td class="font-small min-max-width multidata-col" *ngFor="let column of modalDetails['tableHeadings']" pFrozenColumn [frozen]="forzenColumns?.includes(column?.toLowerCase())">
-            <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date'))?'date': 'other'))">
-              <ng-container *ngSwitchCase="'array'">
-                <ng-container *ngFor="let data of rowData[column]">
-                  <a *ngIf="data?.hasOwnProperty('hyperlink')" [href]="data['hyperlink']" class="text-blue column-content-spacing" rel="noopener" target="_blank">{{data['text']}}</a>
-                  <ng-template #displayData>
-                    <p class="column-content-spacing">{{data}}</p>
-                  </ng-template>
+          <ng-container *ngFor="let column of modalDetails['tableHeadings']">
+            <!-- need to add different container for issue id because issue id marker was not working -->
+           <ng-container *ngIf="column?.toLowerCase() === 'issue id'">
+            <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn>
+              <div class="cell-indicator">
+                <div class="color-indicator" [ngStyle]="{'background-color': rowData['marker'] ? rowData['marker'] : ''}"></div>
+                <a [href]="rowData[column].hyperlink" class="text-blue p-ml-1"  rel="noopener" target="_blank">{{rowData[column].text}}</a>
+              </div>
+            </td>
+           </ng-container>
+           <ng-container *ngIf="column?.toLowerCase() !== 'issue id'">
+            <td class="font-small min-max-width multidata-col" pFrozenColumn [frozen]="forzenColumns?.includes(column?.toLowerCase())">
+              <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date'))?'date': 'other'))">
+                <ng-container *ngSwitchCase="'array'">
+                  <ng-container *ngFor="let data of rowData[column]">
+                    <a *ngIf="data?.hasOwnProperty('hyperlink')" [href]="data['hyperlink']" class="text-blue column-content-spacing" rel="noopener" target="_blank">{{data['text']}}</a>
+                    <ng-template #displayData>
+                      <p class="column-content-spacing">{{data}}</p>
+                    </ng-template>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngSwitchCase="'hyperlink'">
+                  <a [href]="rowData[column]['hyperlink']" class="text-blue" rel="noopener" target="_blank">{{rowData[column]['text']}}</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'sprintRating'">
+                  <img [src]="sprintRatingObj[rowData[column]]" alt="rating" />
+                </ng-container>
+                <ng-container *ngSwitchCase="'other'">
+                  {{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') : rowData[column]}}
+                </ng-container>
+                <ng-container *ngSwitchCase="'date'">
+                  {{rowData[column] | isoDateFormat}}
                 </ng-container>
               </ng-container>
-              <ng-container *ngSwitchCase="'hyperlink'">
-                <a [href]="rowData[column]['hyperlink']" class="text-blue" rel="noopener" target="_blank">{{rowData[column]['text']}}</a>
-              </ng-container>
-              <ng-container *ngSwitchCase="'sprintRating'">
-                <img [src]="sprintRatingObj[rowData[column]]" alt="rating" />
-              </ng-container>
-              <ng-container *ngSwitchCase="'other'">
-                {{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') : rowData[column]}}
-              </ng-container>
-              <ng-container *ngSwitchCase="'date'">
-                {{rowData[column] | isoDateFormat}}
-              </ng-container>
-            </ng-container>
-          </td>
+            </td>
+           </ng-container>
+           
+          </ng-container>
+          
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
