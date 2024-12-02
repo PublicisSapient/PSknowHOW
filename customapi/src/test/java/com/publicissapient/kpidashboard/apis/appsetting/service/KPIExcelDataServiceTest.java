@@ -253,7 +253,7 @@ public class KPIExcelDataServiceTest {
 		totalKpiElementList.add(validationJiraKpiElement);
 
 		KpiColumnConfigDTO kpiColumnConfigDTO = getKpiColumnConfigDTO("kpi48", new ObjectId("65118da7965fbb0d14bce23c"));
-		KpiRequest kpiRequest = createKpiRequest("kpi48", "", "project");
+		KpiRequest kpiRequest = createKpiRequestForSprint("kpi48", "", "sprint");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
 		when(jiraServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
 		kpiExcelDataService
@@ -307,13 +307,13 @@ public class KPIExcelDataServiceTest {
 		validationKpiElementList.add(validationJiraKpiElement);
 
 		when(jiraServiceR.process(Mockito.any())).thenReturn(validationKpiElementList);
-		KpiRequest kpiRequest = createKpiRequest("kpi14", "", "release");
+		KpiRequest kpiRequest = createKpiRequestForRelease("kpi14", "", "release");
 		KpiColumnConfigDTO kpiColumnConfigDTO = getKpiColumnConfigDTO("kpi14", new ObjectId("65118da7965fbb0d14bce23c"));
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
 		KPIExcelValidationDataResponse kpiExcelValidationDataResponse = (KPIExcelValidationDataResponse) kpiExcelDataService
 				.process("kpi14", level, idList, null, kpiRequest, null, false);
 
-		kpiRequest = createKpiRequest("kpi8", "", "project");
+		kpiRequest = createKpiRequestForSprint("kpi8", "", "sprint");
 		KpiColumnConfigDTO kpiColumnConfigDTO1 = getKpiColumnConfigDTO("kpi8", new ObjectId("65118da7965fbb0d14bce23c"));
 		when(jenkinsServiceR.process(Mockito.any())).thenReturn(validationKpiElementList);
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO1);
@@ -425,6 +425,54 @@ public class KPIExcelDataServiceTest {
 			selectedMap.put("release", Arrays.asList("34576_THPRO_THPRO_65118da7965fbb0d14bce23c"));
 		}
 
+		kpiRequest.setSelectedMap(selectedMap);
+		return kpiRequest;
+	}
+
+	private KpiRequest createKpiRequestForSprint(String kpiId, String kpiName, String label) {
+		KpiRequest kpiRequest = new KpiRequest();
+		List<KpiElement> kpiList = new ArrayList<>();
+		KpiElement kpiElement = new KpiElement();
+		kpiElement.setKpiId(kpiId);
+		kpiElement.setKpiName(kpiName);
+		kpiElement.setKpiCategory("Category One");
+		kpiElement.setKpiSource("Jira");
+		kpiElement.setMaxValue("500");
+		kpiElement.setChartType("gaugeChart");
+		kpiList.add(kpiElement);
+		kpiRequest.setLevel(2);
+		kpiRequest.setIds(new String[] { "7" });
+		kpiRequest.setLabel(label);
+		// Hierarchy List created above is sent for processing.
+		kpiRequest.setKpiList(kpiList);
+		kpiRequest.setRequestTrackerId();
+		Map<String, List<String>> selectedMap = new HashMap<>();
+		selectedMap.put("project", new ArrayList<>());
+		selectedMap.put("sprint", Arrays.asList("345_THPRO_THPRO_65118da7965fbb0d14bce23c"));
+		kpiRequest.setSelectedMap(selectedMap);
+		return kpiRequest;
+	}
+	private KpiRequest createKpiRequestForRelease(String kpiId, String kpiName, String label) {
+		KpiRequest kpiRequest = new KpiRequest();
+		List<KpiElement> kpiList = new ArrayList<>();
+		KpiElement kpiElement = new KpiElement();
+		kpiElement.setKpiId(kpiId);
+		kpiElement.setKpiName(kpiName);
+		kpiElement.setKpiCategory("Category One");
+		kpiElement.setKpiSource("Jira");
+		kpiElement.setMaxValue("500");
+		kpiElement.setChartType("gaugeChart");
+		kpiList.add(kpiElement);
+		kpiRequest.setLevel(2);
+		kpiRequest.setIds(new String[] { "7" });
+		kpiRequest.setLabel(label);
+		// Hierarchy List created above is sent for processing.
+		kpiRequest.setKpiList(kpiList);
+		kpiRequest.setRequestTrackerId();
+		Map<String, List<String>> selectedMap = new HashMap<>();
+		selectedMap.put("project", new ArrayList<>());
+		selectedMap.put("sprint", new ArrayList<>());
+		selectedMap.put("release", Arrays.asList("345_THPRO_THPRO_65118da7965fbb0d14bce23c"));
 		kpiRequest.setSelectedMap(selectedMap);
 		return kpiRequest;
 	}
