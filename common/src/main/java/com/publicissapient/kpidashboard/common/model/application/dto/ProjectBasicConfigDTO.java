@@ -60,6 +60,7 @@ public class ProjectBasicConfigDTO {
 	private boolean saveAssigneeDetails;
 	private boolean developerKpiEnabled;
 	private boolean projectOnHold;
+	private ObjectId clonedFrom;
 
 	private ObjectId clonedFrom;
 

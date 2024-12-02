@@ -97,12 +97,11 @@ public class TestConnectionServiceImplTest {
 	public void validateConnectionJira() throws URISyntaxException {
 		when(customApiConfig.getJiraTestConnection()).thenReturn("rest/api/2/issue/createmeta");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
-
+		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjpkWE5sY2pwclpYaz0=");
 		when(restTemplate.exchange(new URI("https://abc.com/rest/api/2/issue/createmeta"),
 				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-
+		conn.setPassword("dXNlcjprZXk=");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
@@ -127,7 +126,7 @@ public class TestConnectionServiceImplTest {
 		conn.setBaseUrl("https://abc.com/jira/");
 		when(customApiConfig.getZephyrTestConnection()).thenReturn("rest/api/2/issue/createmeta");
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer key");
 
 		when(restTemplate.exchange(new URI("https://abc.com/jira/rest/api/2/issue/createmeta"),
 				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
@@ -222,10 +221,6 @@ public class TestConnectionServiceImplTest {
 		when(customApiConfig.getJiraTestConnection()).thenReturn("rest/api/2/issue/createmeta");
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, "Basic dXNlcjprZXk=");
-
-		when(restTemplate.exchange(new URI("https://abc.com/rest/api/2/issue/createmeta"),
-				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
 	}
 
@@ -390,8 +385,6 @@ public class TestConnectionServiceImplTest {
 		conn.setRepoToolProvider(Constant.TOOL_GITHUB);
 		conn.setUsername("testUserName");
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
-		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class),
-				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
 
@@ -410,11 +403,6 @@ public class TestConnectionServiceImplTest {
 		provider.setTestApiUrl("https://www.test.com");
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, "Basic dGVzdFVzZXJOYW1lOnRlc3RBY2Nlc3NUb2tlbg==");
-
-		when(restTemplate.exchange(new URI("https://abc.comapi/2/projects/"),
-				HttpMethod.GET, new HttpEntity<>(headers), String.class)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-
-
 		testConnectionServiceImpl.validateConnection(conn, Constant.REPO_TOOLS);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
@@ -426,8 +414,6 @@ public class TestConnectionServiceImplTest {
 		conn.setRepoToolProvider(Constant.TOOL_SONAR);
 		conn.setUsername("testUserName");
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.OK);
-		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class),
-				ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
 		RepoToolsProvider provider= new RepoToolsProvider();
 		provider.setTestApiUrl("https://www.test.com");
 		ServiceResponse serviceResponse = testConnectionServiceImpl.validateConnection(conn, Constant.REPO_TOOLS);

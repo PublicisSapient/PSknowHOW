@@ -16,18 +16,13 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.argocd.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
+package com.publicissapient.kpidashboard.common.constant;
 
 /**
- * UserCredentialsDTO represents the ArgoCD user information
+ * Enumerates the possible Login statuses.
  *
+ * @author shunaray
  */
-@Data
-@AllArgsConstructor
-public class UserCredentialsDTO {
-	private String username;
-	private String password;
+public enum Status {
+	SUCCESS, FAIL
 }

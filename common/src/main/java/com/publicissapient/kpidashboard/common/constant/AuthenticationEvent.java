@@ -16,17 +16,13 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.argocd.dto;
-
-import lombok.Data;
+package com.publicissapient.kpidashboard.common.constant;
 
 /**
- * Application represents the information for ArgoCD Application
+ * Enumerates the possible Auth Event.
  *
+ * @author shunaray
  */
-@Data
-public class Application {
-	private ApplicationMetadata metadata;
-	private Specification spec;
-	private Status status;
+public enum AuthenticationEvent {
+	LOGIN, LOGOUT
 }

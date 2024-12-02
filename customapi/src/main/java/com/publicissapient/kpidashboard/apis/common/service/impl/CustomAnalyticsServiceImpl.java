@@ -42,9 +42,11 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import com.publicissapient.kpidashboard.apis.common.service.UsersSessionService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
+import com.publicissapient.kpidashboard.common.constant.Status;
 import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
@@ -73,8 +75,6 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String USER_AUTH_TYPE = "authType";
 	private static final String NOTIFICATION_EMAIL = "notificationEmail";
 
-	public static final String SUCCESS = "SUCCESS";
-
 	@Autowired
 	UserAuthorizedProjectsService userAuthorizedProjectsService;
 	@Autowired
@@ -88,7 +88,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
 	@Autowired
-	private UserLoginHistoryService userLoginHistoryService;
+	private UsersSessionService usersSessionService;
 
 	@Autowired
 	private UserTokenReopository userTokenReopository;
@@ -116,7 +116,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		json.put(NOTIFICATION_EMAIL, userinfo.getNotificationEmail());
 		Gson gson = new Gson();
 
-		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
+		usersSessionService.createUsersSessionInfo(userinfo, AuthenticationEvent.LOGIN, Status.SUCCESS);
 
 		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
@@ -168,7 +168,8 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			} else {
 				userMap.put(PROJECTS_ACCESS, new JSONArray());
 			}
-			userLoginHistoryService.createUserLoginHistoryInfo(userinfoKnowHow, SUCCESS);
+			usersSessionService.createUsersSessionInfo(userinfoKnowHow, AuthenticationEvent.LOGIN,
+					Status.SUCCESS);
 		}
 		userMap.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
