@@ -23,6 +23,7 @@ import java.util.List;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
+import org.bson.types.ObjectId;
 
 /**
  * @author yasbano
@@ -78,6 +79,8 @@ public interface ProjectToolConfigService {
 	 * @return list of tools
 	 */
 	List<ProjectToolConfigDTO> getProjectToolConfigs(String basicProjectConfigId);
+
+	List<ProjectToolConfig> getProjectToolConfigsByProjectId(ObjectId basicProjectConfigId);
 
 	/**
 	 * Gets tools of the project filtered by type
