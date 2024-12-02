@@ -21,9 +21,16 @@ This files contain common methods that can be use in application
 **********************************************/
 
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 @Injectable()
 export class KpiHelperService {
   constructor() {}
+  private headerAction = new Subject<any>();
+  headerAction$ = this.headerAction.asObservable();
+
+  emitHeaderAction(action: any): void {
+    this.headerAction.next(action);
+  }
 
   stackedBarChartData(inputData: any, color: any) {
     const dataGroup1 = inputData.dataGroup?.dataGroup1;

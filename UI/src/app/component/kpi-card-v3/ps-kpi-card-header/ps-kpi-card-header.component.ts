@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
+import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import {KPI_HEADER_ACTION} from '../../../model/Constants'
 
 @Component({
   selector: 'app-ps-kpi-card-header',
@@ -13,7 +15,8 @@ export class PsKpiCardHeaderComponent implements OnInit {
   @ViewChild('kpimenu') kpimenu: Menu;
   menuItems: MenuItem[] | undefined;
   warning = '';
-  constructor() { }
+  MenuValues = KPI_HEADER_ACTION;
+  constructor(private kpiHelperService:KpiHelperService) { }
 
   ngOnInit(): void {
     this.initializeMenu()
@@ -32,34 +35,37 @@ export class PsKpiCardHeaderComponent implements OnInit {
       {
         label: 'Settings',
         icon: 'fas fa-cog',
-        // command: () => {
-        //   this.onOpenFieldMappingDialog();
-        // },
+        command: () => {
+          this.kpiHelperService.emitHeaderAction({...this.MenuValues,setting:true});
+        },
         // disabled: this.disableSettings || this.service.getSelectedType()?.toLowerCase() === 'kanban'
       },
       {
         label: 'List View',
         icon: 'pi pi-align-justify',
-        // command: ($event) => {
-        //   this.prepareData();
-        // },
+        command: ($event) => {
+          // this.prepareData();
+          this.kpiHelperService.emitHeaderAction({...this.MenuValues,listView:true});
+        },
         // disabled: this.selectedTab === 'release' || this.selectedTab === 'backlog'
       },
       {
         label: 'Explore',
         icon: 'pi pi-table',
-        // command: () => {
-        //   this.exportToExcel();
-        // },
+        command: () => {
+          // this.exportToExcel(); modalHeads
+          this.kpiHelperService.emitHeaderAction({...this.MenuValues,explore:true});
+        },
         // disabled: !this.kpiData.kpiDetail.chartType
       },
       {
         label: 'Comments',
         icon: 'pi pi-comments',
-        // command: ($event) => {
-        //   this.showComments = true;
-        //   this.openCommentModal();
-        // },
+        command: ($event) => {
+          // this.showComments = true;
+          // this.openCommentModal();
+          this.kpiHelperService.emitHeaderAction({...this.MenuValues,comment:true});
+        },
       }
     ];
   }
