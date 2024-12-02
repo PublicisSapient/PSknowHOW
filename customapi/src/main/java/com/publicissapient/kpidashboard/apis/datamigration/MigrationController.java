@@ -49,16 +49,4 @@ public class MigrationController {
 		}
 	}
 
-	@PutMapping(value = "/populateorganization")//put call
-	public ResponseEntity<ServiceResponse> populateOrganizationHierarchy() {
-		try {
-			dataMigrationService.populateOrganizationHierarchy();
-			return ResponseEntity.status(HttpStatus.SC_NO_CONTENT).body(new ServiceResponse());
-		} catch (Exception ex) {
-			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-					.body(new ServiceResponse(false, "could not save to database", null));
-		}
-
-	}
-
 }
