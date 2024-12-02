@@ -70,10 +70,8 @@ public class DataMigrationService {
 
 		nodeWiseOrganizationHierarchy = new HashMap<>();
 
-		//for (ProjectBasicDup project : projectBasicDupList) {
-		for (ProjectBasicConfig project : projectBasicConfigList) {
-			//List<HierarchyValueDup> hierarchyList = project.getHierarchy();
-			List<HierarchyValue> hierarchyList = project.getHierarchy();
+		for (ProjectBasicDup project : projectBasicDupList) {
+			List<HierarchyValueDup> hierarchyList = project.getHierarchy();
 			if (hierarchyList == null || hierarchyList.isEmpty())
 				continue;
 			// copy mainOrganzation Hierarchy
@@ -153,8 +151,7 @@ public class DataMigrationService {
 
 	}
 
-	//private static String checkParent(int level, List<HierarchyValueDup> hierarchyList,
-	private static String checkParent(int level, List<HierarchyValue> hierarchyList,
+	private static String checkParent(int level, List<HierarchyValueDup> hierarchyList,
 			Map<String, OrganizationHierarchy> nodeWiseOrganizationHierachy) throws InconsistentDataException {
 
 		if (level < 1) {
@@ -162,14 +159,13 @@ public class DataMigrationService {
 		}
 
 		// Find current level hierarchy value
-		//HierarchyValueDup currentHierarchy = hierarchyList.stream()
-		HierarchyValue currentHierarchy = hierarchyList.stream()
+		HierarchyValueDup currentHierarchy = hierarchyList.stream()
 				.filter(hv -> hv.getHierarchyLevel().getLevel() == level).findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("No hierarchy found for level: " + level));
 
 		String key = level + ":"
-				+ (StringUtils.isEmpty(currentHierarchy.getValue()) ? currentHierarchy.getValue()
-						: currentHierarchy.getValue());
+				+ (StringUtils.isEmpty(currentHierarchy.getCustomizedValue()) ? currentHierarchy.getValue()
+						: currentHierarchy.getCustomizedValue());
 		OrganizationHierarchy organizationHierarchy = nodeWiseOrganizationHierachy.get(key);
 
 		if (organizationHierarchy == null) {
@@ -232,8 +228,11 @@ public class DataMigrationService {
 							OrganizationHierarchy::getNodeId));
 
 			// Update project basic config list with unique projectNodeId
-			projectBasicConfigList.forEach(projectBasicConfig -> projectBasicConfig
-					.setProjectNodeId(projectNameWiseUniqueId.get(projectBasicConfig.getProjectName())));
+			projectBasicConfigList.forEach(projectBasicConfig -> {
+				projectBasicConfig.setProjectNodeId(projectNameWiseUniqueId.get(projectBasicConfig.getProjectName()));
+				projectBasicConfig.setProjectDisplayName(projectBasicConfig.getProjectName());
+
+			});
 
 			// Save all data to the repository
 			if (organizationHierarchyRepository.count() > 0) {
@@ -249,7 +248,9 @@ public class DataMigrationService {
 
 			log.info("Data successfully saved to the database.");
 
-		} catch (DuplicateKeyException ex) {
+		} catch (
+
+		DuplicateKeyException ex) {
 			log.error("Duplicate project name found in organization hierarchy: {}", ex.getMessage());
 			throw new DuplicateKeyException(
 					"Duplicate project name found in organization hierarchy: " + ex.getMessage(), ex);
