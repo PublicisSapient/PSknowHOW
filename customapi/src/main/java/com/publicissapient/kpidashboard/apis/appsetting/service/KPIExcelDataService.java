@@ -174,6 +174,19 @@ public class KPIExcelDataService {
 
 	}
 
+	public List<String> getProjectIDAndLabel(KpiRequest kpiRequest) {
+		List<String> idAndLabel = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(PROJECT).stream().toList())) {
+			idAndLabel.addAll(kpiRequest.getSelectedMap().get(PROJECT).stream().toList());
+		} else if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(SPRINT).stream().toList())) {
+			idAndLabel.addAll(kpiRequest.getSelectedMap().get(SPRINT).stream().toList());
+		} else {
+			idAndLabel.addAll(kpiRequest.getSelectedMap().get(RELEASE).stream().toList());
+		}
+		return idAndLabel;
+	}
+
 	/**
 	 * Returns true iff source is kanban
 	 *
@@ -223,18 +236,8 @@ public class KPIExcelDataService {
 
 				cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.EXCEL.name(),
 						pair.getValue().getRequestTrackerId());
-
-				KpiRequest kpiRequest = pair.getValue();
-				label = kpiRequest.getLabel();
-
-				if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(PROJECT).stream().toList())) {
-					projectIds = kpiRequest.getSelectedMap().get(PROJECT).stream().toList();
-				} else if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(SPRINT).stream().toList())) {
-					projectIds = kpiRequest.getSelectedMap().get(SPRINT).stream().toList();
-				} else {
-					projectIds = kpiRequest.getSelectedMap().get(RELEASE).stream().toList();
-				}
-
+				projectIds = getProjectIDAndLabel(pair.getValue());
+				label = pair.getValue().getLabel();
 				switch (pair.getKey()) {
 				case EXCEL_JIRA:
 					jiraKpiDataFuture = excelJiraKpiDataFuture(executor, pair, apiAuth);
@@ -314,16 +317,8 @@ public class KPIExcelDataService {
 				cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.EXCEL.name(),
 						pair.getValue().getRequestTrackerId());
 
-				KpiRequest kpiRequest = pair.getValue();
-				label = kpiRequest.getLabel();
-
-				if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(PROJECT).stream().toList())) {
-					projectIds = kpiRequest.getSelectedMap().get(PROJECT).stream().toList();
-				} else if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(SPRINT).stream().toList())) {
-					projectIds = kpiRequest.getSelectedMap().get(SPRINT).stream().toList();
-				} else {
-					projectIds = kpiRequest.getSelectedMap().get(RELEASE).stream().toList();
-				}
+				projectIds = getProjectIDAndLabel(pair.getValue());
+				label = pair.getValue().getLabel();
 
 				switch (pair.getKey()) {
 				case EXCEL_JIRAKANBAN:
