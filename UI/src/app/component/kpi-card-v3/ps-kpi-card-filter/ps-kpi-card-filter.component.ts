@@ -4,30 +4,25 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-ps-kpi-card-filter',
   templateUrl: './ps-kpi-card-filter.component.html',
-  styleUrls: ['./ps-kpi-card-filter.component.css']
+  styleUrls: ['./ps-kpi-card-filter.component.css'],
 })
 export class PsKpiCardFilterComponent implements OnInit {
-
-  @Input()  kpiCardFilter: any;
+  @Input() kpiCardFilter: any;
   @Output() filterChange = new EventEmitter<any>();
 
-  selectedKey: '';
-  form: FormGroup
+  form: FormGroup;
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-   //   selectedKey: [''], 
+        selectedKey: [''],
     });
-   }
-
-  ngOnInit(): void {
-    
-
-    this.kpiCardFilter.filterGroup.filterGroup1.forEach(filter => {
-      this.form.addControl(filter.filterKey, this.fb.control(''));
-    });
-    this.setDefaultFilter(this.kpiCardFilter)
   }
 
+  ngOnInit(): void {
+    this.kpiCardFilter.filterGroup.filterGroup1.forEach((filter) => {
+      this.form.addControl(filter.filterKey, this.fb.control(''));
+    });
+    this.setDefaultFilter(this.kpiCardFilter);
+  }
 
   getOptions(filterKey: string) {
     const uniqueValues = [
@@ -37,15 +32,27 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   handleChange() {
-    const filterData = Object.fromEntries(Object.entries(this.form.value).filter(([_,value]) => value !== '' && value !== null && value !== undefined));
-    this.filterChange.emit(filterData)
+    const filterData = Object.fromEntries(
+      Object.entries(this.form.value).filter(
+        ([_, value]) => value !== '' && value !== null && value !== undefined,
+      ),
+    );
+    this.filterChange.emit(this.form.value);
     
-  
   }
 
   onSelectButtonChange(event) {
-    this.form.get('selectedKey')?.setValue(event.value); // Update selectedKey in the form
-    console.log(event, this.form.get('selectedKey')?.value);
+   // this.form.get('selectedKey')?.setValue(event.value); // Update selectedKey in the form
+    const test = this.kpiCardFilter.dataGroup.dataGroup1.filter(
+      (x) => x.key == event.value,
+    );
+    //this.selectedKey =
+    this.form.get('selectedKey')?.setValue(test.map((item) => ({
+        unit: item.unit,
+        key: item.key,
+      })))
+
+    this.handleChange();
   }
   setDefaultFilter(filter: any) {
     if (filter.kpiFilters) {
@@ -55,9 +62,4 @@ export class PsKpiCardFilterComponent implements OnInit {
       this.handleChange();
     }
   }
-
-
-
-
-
 }

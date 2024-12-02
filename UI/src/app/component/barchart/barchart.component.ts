@@ -56,9 +56,12 @@ export class BarchartComponent implements OnInit {
 
   private createChart(): void {
     const element = this.elRef.nativeElement.querySelector('.chart-container');
-    const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+    const margin = { top: 20, right: 20, bottom: 40, left: 60 };
     const chartWidth = this.width - margin.left - margin.right;
     const chartHeight = this.height - margin.top - margin.bottom;
+  
+    // Extract unit from the dataGroup or set default
+    const unit = this.data.map((d) => d.unit)[0] || 'Count'; //this.dataGroup?.unit ||
   
     // Append SVG container
     this.svg = d3
@@ -95,7 +98,23 @@ export class BarchartComponent implements OnInit {
   
     this.svg
       .append('g')
-      .call(d3.axisLeft(yScale).ticks(5).tickFormat((d) => `${d}hr`));
+      .call(
+        d3.axisLeft(yScale)
+          .ticks(5)
+          .tickFormat((d) => `${d}${unit === 'Count' ? '' : ` ${unit}`}`) // Add unit dynamically
+      );
+  
+    // Add Y-axis label
+    this.svg
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', -margin.left + 10)
+      .attr('x', -chartHeight / 2)
+      // .attr('dy', '-1.5em')
+      .style('text-anchor', 'middle')
+      .style('font-size', '12px')
+      .style('font-weight', 'bold')
+      .text(unit); // Display the unit dynamically
   
     // Tooltip
     this.tooltip = d3
@@ -127,12 +146,15 @@ export class BarchartComponent implements OnInit {
       .on('mouseover', (event, d) => {
         this.tooltip
           .style('display', 'block')
-          .html(`<strong>${d.value}hr</strong>`);
+          .html(
+            `<strong>${d.category}:</strong> ${d.value}${unit === 'Count' ? '' : ` ${unit}`}`
+          );
       })
-      .on('mousemove', (event) => {
+      .on('mousemove', (event,d) => {
+        console.log(d)
         this.tooltip
-          .style('top', `${event.pageY - 40}px`)
-          .style('left', `${event.pageX + 10}px`);
+          .style('top', `${chartHeight-xScale.bandwidth()}px`)
+          .style('left', `${xScale.bandwidth()}px`);
       })
       .on('mouseout', () => {
         this.tooltip.style('display', 'none');
@@ -151,7 +173,7 @@ export class BarchartComponent implements OnInit {
       .style('font-size', '12px')
       .style('font-weight', 'bold')
       .style('fill', 'black')
-      .text((d) => `${d.value}hr`);
+      .text((d) => `${d.value}${unit === 'Count' ? '' : ` ${unit}`}`); // Add unit dynamically
   }
 
   private updateChart(): void {

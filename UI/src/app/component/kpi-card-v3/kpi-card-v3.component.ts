@@ -14,6 +14,7 @@ export class KpiCardV3Component implements OnInit {
   currentChartData;
   KpiCategory;
   colorPalette = ['#167a26', '#4ebb1a', '#f53535'];
+  selectedButtonValue;
 
   constructor(private kpihelper: KpiHelperService) {}
 
@@ -40,15 +41,23 @@ export class KpiCardV3Component implements OnInit {
   }
 
   onFilterChange(event) {
+    const { selectedKey, ...updatedEvent } = event;
+    const filterData = Object.fromEntries(
+      Object.entries(updatedEvent).filter(
+        ([_, value]) => value !== '' && value !== null && value !== undefined,
+      ),
+    );
+ 
     const filterIssues = this.applyDynamicfilter(
       this.cardData.issueData,
-      event,
+      filterData,
     );
     this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
     this.currentChartData = this.prepareChartData(
       this.copyCardData,
       this.colorPalette,
     );
+    this.selectedButtonValue = selectedKey;
   }
 
   applyDynamicfilter(data: [], filter: { [key: string]: any }) {
@@ -93,8 +102,12 @@ export class KpiCardV3Component implements OnInit {
 
   showCummalative(){
     if(this.cardData?.chartType === 'stacked-bar'){
-    return  this.kpihelper.convertToHoursIfTime(this.currentChartData.totalCount,this.cardData.unit)
+    return  this.kpihelper.convertToHoursIfTime(this.currentChartData.totalCount,'day')
     }else{
+      if(!!this.selectedButtonValue && !!this.selectedButtonValue[0].key){
+        const totalValue = this.calculateValue(this.copyCardData.issueData,this.selectedButtonValue[0].key)
+         return this.kpihelper.convertToHoursIfTime(totalValue,this.selectedButtonValue[0].unit)
+      }
      return this.currentChartData.totalCount 
     }
   }
