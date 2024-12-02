@@ -22,7 +22,7 @@ import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.CreateKanbanJiraIssueReleaseStatusImpl;
+import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -31,6 +31,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,8 @@ public class KanbanJiraIssueReleaseStatusTasklet implements Tasklet {
     FetchProjectConfiguration fetchProjectConfiguration;
 
     @Autowired
-    CreateKanbanJiraIssueReleaseStatusImpl createJiraIssueReleaseStatus;
+    @Qualifier("createKanbanJiraIssueReleaseStatusImpl")
+    CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
 
     @Autowired
     JiraProcessorConfig jiraProcessorConfig;
