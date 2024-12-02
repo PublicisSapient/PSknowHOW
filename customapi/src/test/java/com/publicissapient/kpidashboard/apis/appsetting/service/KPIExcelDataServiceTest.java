@@ -253,14 +253,14 @@ public class KPIExcelDataServiceTest {
 		totalKpiElementList.add(validationJiraKpiElement);
 
 		KpiColumnConfigDTO kpiColumnConfigDTO = getKpiColumnConfigDTO("kpi48", new ObjectId("65118da7965fbb0d14bce23c"));
-		KpiRequest kpiRequest = createKpiRequestForSprint("kpi48", "", "sprint");
+		KpiRequest kpiRequest = createKpiRequestForSprint("kpi48", "", "Abcd");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
 		when(jiraServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
 		kpiExcelDataService
 				.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false);
 
 		KpiColumnConfigDTO kpiColumnConfigDTO1 = getKpiColumnConfigDTO("kpi61", new ObjectId("65118da7965fbb0d14bce23c"));
-		 createKpiRequest("kpi61", "", "project");
+		 createKpiRequestForRelease("kpi61", "", "release");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO1);
 		when(sonarServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
 		kpiExcelDataService
@@ -286,11 +286,37 @@ public class KPIExcelDataServiceTest {
 		Assert.assertNotNull(kpiExcelDataService.process("kpi65", level, idList, acceptedFilterList, kpiRequest, true, false));
 
 		KpiColumnConfigDTO kpiColumnConfigDTO4 = getKpiColumnConfigDTO("kpi66", new ObjectId("65118da7965fbb0d14bce23c"));
-		createKpiRequest("kpi66", "", "sprint");
+		createKpiRequest("kpi66", "", "project");
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO4);
 		when(jenkinsServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
 		kpiExcelDataService
 				.process("kpi66", level, idList, acceptedFilterList, kpiRequest, true, false);
+
+		Assert.assertNotNull(kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false));
+
+	}
+
+	@Test
+	public void testProcessForKPIData_Kanban_KPIExcelValidation2() throws Exception {
+
+		level = 1;
+		idList.add("TPRO_TPRO");
+		idList.add("THPRO_THPRO");
+
+		acceptedFilterList.add(Filters.PROJECT.name());
+
+		List<KpiElement> totalKpiElementList = new ArrayList<>();
+		totalKpiElementList.add(validationJiraKpiElement);
+
+		KpiColumnConfigDTO kpiColumnConfigDTO = new KpiColumnConfigDTO();
+		kpiColumnConfigDTO.setBasicProjectConfigId(null);
+		kpiColumnConfigDTO.setSaveFlag(false);
+		kpiColumnConfigDTO.setKpiId("kpi48");
+		KpiRequest kpiRequest = createKpiRequestForSprint("kpi48", "", "sprint");
+		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
+		when(jiraServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
+		kpiExcelDataService
+				.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false);
 
 		Assert.assertNotNull(kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, kpiRequest, true, false));
 
