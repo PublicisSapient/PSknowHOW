@@ -158,8 +158,8 @@ export class ConnectionListComponent implements OnInit {
       connectionLabel: 'ArgoCD',
       categoryValue: 'build',
       categoryLabel: 'Build',
-      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Password', 'Share connection with everyone'],
-      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'password', 'sharedConnection']
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Access Token','Share connection with everyone'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'accessToken', 'sharedConnection']
     }
   ];
 
@@ -1306,7 +1306,7 @@ export class ConnectionListComponent implements OnInit {
         this.testingConnection = false;
       });
         break;
-      case 'ArgoCD': this.testConnectionService.testArgoCD(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['vault']).subscribe(next => {
+      case 'ArgoCD': this.testConnectionService.testArgoCD(reqData['baseUrl'], reqData['username'], reqData['accessToken']).subscribe(next => {
         if (next.success && next.data === 200) {
           this.testConnectionMsg = 'Valid Connection';
           this.testConnectionValid = true;

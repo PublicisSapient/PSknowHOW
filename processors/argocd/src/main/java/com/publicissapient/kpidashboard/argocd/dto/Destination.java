@@ -18,16 +18,13 @@
 
 package com.publicissapient.kpidashboard.argocd.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * UserCredentialsDTO represents the ArgoCD user information
- *
+ * Destination represents the destination details for an ArgoCD Application.
  */
 @Data
-@AllArgsConstructor
-public class UserCredentialsDTO {
-	private String username;
-	private String password;
+public class Destination {
+	private String server;
+	private String namespace;
 }
