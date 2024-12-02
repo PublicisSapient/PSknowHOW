@@ -157,3 +157,7 @@
   align-items: center;
   height: 100%;
 }
+
+.columns-btn{
+    float: right;
+}
