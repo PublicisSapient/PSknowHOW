@@ -243,7 +243,7 @@ describe('AdvancedSettingsComponent', () => {
     component.selectedView = 'processor_state';
     component.getProjects();
     // fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/basicconfigs')[0].flush(getProjectsResponse);
+    httpMock.match(baseUrl + '/api/basicconfigs')[0]?.flush(getProjectsResponse);
     // expect(component.userProjects).toEqual([{ "name": "TestUser", "id": "601bca9569515b0001d68182" }]);
   });
 
