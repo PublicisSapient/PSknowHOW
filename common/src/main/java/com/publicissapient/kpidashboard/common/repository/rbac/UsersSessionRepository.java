@@ -16,18 +16,25 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.common.service;
+package com.publicissapient.kpidashboard.common.repository.rbac;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UsersLoginHistory;
+import org.bson.types.ObjectId;
+import org.springframework.data.repository.CrudRepository;
 
-public interface UserLoginHistoryService {
+import com.publicissapient.kpidashboard.common.constant.AuthenticationEvent;
+import com.publicissapient.kpidashboard.common.model.rbac.UsersSession;
+
+public interface UsersSessionRepository extends CrudRepository<UsersSession, ObjectId> {
 
 	/**
-	 *
-	 * @param userInfo
-	 * @param status
-	 * @return
+	 * Find the latest login history for a user
+	 * 
+	 * @param userName
+	 *            username
+	 * @param event
+	 *            {@link AuthenticationEvent}
+	 * @return most recent logout of user
 	 */
-	UsersLoginHistory createUserLoginHistoryInfo(UserInfo userInfo, String status);
+	UsersSession findTopByUserNameAndEventOrderByTimeStampDesc(String userName, AuthenticationEvent event);
+
 }

@@ -2422,7 +2422,7 @@ export class JiraConfigComponent implements OnInit {
               const fakeEvent = {
                 checked: this.queryEnabled
               };
-              this.jiraMethodChange(fakeEvent, self);
+              this.jiraMethodChange(self, fakeEvent);
             }
           } else if (obj === 'team') {
             if (this.toolForm && this.toolForm.controls[obj]) {
@@ -2462,9 +2462,8 @@ export class JiraConfigComponent implements OnInit {
     self.fetchBoards(self);
   }
 
-  jiraMethodChange(event = null, self) {
+  jiraMethodChange(self, event = null) {
     this.submitted = false;
-    const group = {};
     if (self.urlParam === 'Jira') {
       if (event && event.checked) {
         self.toolForm.controls['boards'].setValue([]);
@@ -2491,6 +2490,10 @@ export class JiraConfigComponent implements OnInit {
       }
     }
 
+    this.fillToolForm(self);
+  }
+
+  fillToolForm(self) {
     if (self.selectedToolConfig && self.selectedToolConfig.length) {
       for (const obj in self.selectedToolConfig[0]) {
         if (obj !== 'queryEnabled') {
@@ -2503,6 +2506,7 @@ export class JiraConfigComponent implements OnInit {
       }
     }
   }
+
   // convenience getter for easy access to form fields
   get tool() {
     return this.toolForm.controls;

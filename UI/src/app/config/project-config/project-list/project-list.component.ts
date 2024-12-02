@@ -83,6 +83,11 @@ export class ProjectListComponent implements OnInit {
         }
       },
       {
+        label: 'Clone Project', icon: 'pi pi-copy', command: () => {
+          this.editProject(this.selectedProductForExecutingAction, true);
+        }
+      },
+      {
         label: 'Settings', icon: 'pi pi-wrench', command: () => {
           this.allProjectList.forEach(project => {
             this.editConfiguration(this.selectedProductForExecutingAction, 0);
@@ -209,9 +214,13 @@ export class ProjectListComponent implements OnInit {
     this.isNewProject = true;
   }
 
-  editProject(project) {
+  editProject(project, clone = false) {
     this.sharedService.setSelectedProject(project);
-    this.router.navigate(['./dashboard/Config/BasicConfig']);
+    if (!clone) {
+      this.router.navigate(['./dashboard/Config/BasicConfig']);
+    } else {
+      this.router.navigate(['./dashboard/Config/BasicConfig'], { queryParams: { 'clone': true }});
+    }
   }
 
   deleteProject(project) {
