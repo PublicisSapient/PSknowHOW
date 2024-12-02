@@ -146,3 +146,14 @@
 .markerInfo{
     font-size: 0.75rem;
 }
+
+.color-indicator{
+    width: 10px;
+    height: inherit;
+}
+
+.cell-indicator{
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
