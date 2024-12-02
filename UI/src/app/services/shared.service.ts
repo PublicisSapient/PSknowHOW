@@ -122,6 +122,8 @@ export class SharedService {
   isRecommendationsEnabledObs = this.isRecommendationsEnabledSubject.asObservable();
 
   selectedMap = {};
+  primaryFilterSelection: String = '';
+  queryParamForUrl: any;
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -568,6 +570,14 @@ export class SharedService {
 
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
+  }
+
+  setQueryParams(params) {
+    this.queryParamForUrl = params && JSON.parse(params);
+  }
+
+  getQueryParams() {
+    return this.queryParamForUrl;
   }
 }
 

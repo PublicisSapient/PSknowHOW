@@ -95,9 +95,9 @@ export class AdditionalFilterComponent implements OnChanges {
 
 /**
  * Resets the filter data based on the currently selected tab and trends.
- * If the selected tab is not 'developer', filterData is cleared; otherwise, 
+ * If the selected tab is not 'developer', filterData is cleared; otherwise,
  * it checks if the selected trends have changed and resets filterData accordingly.
- * 
+ *
  * @returns {void} - No return value.
  */
   resetFilterData() {
@@ -115,7 +115,7 @@ export class AdditionalFilterComponent implements OnChanges {
  * Sets the correct level for filters based on the additional filter levels,
  * excluding 'release' and 'sprint' levels, and restores the filter selection state
  * after a brief delay.
- * 
+ *
  * @returns {void} - This function does not return a value.
  */
   setCorrectLevel() {
@@ -123,6 +123,7 @@ export class AdditionalFilterComponent implements OnChanges {
     this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
     setTimeout(() => {
       this.stateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+      // console.log('this.stateFilters additionalFilter ', this.stateFilters)
       if (this.stateFilters && Object.keys(this.stateFilters)) {
         Object.keys(this.stateFilters).forEach((key) => {
           let correctIndex = 0;
@@ -209,9 +210,11 @@ export class AdditionalFilterComponent implements OnChanges {
             this.onAdditionalFilterChange.emit({ [this.selectedAdditionalFilterLevel[i]]: e[i] });
           }
         }
+        console.log('obj', obj)
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
       } else {
         this.onAdditionalFilterChange.emit(e);
+        console.log('e', e)
         this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
       }
     } else {
@@ -232,6 +235,7 @@ export class AdditionalFilterComponent implements OnChanges {
       }
       this.multiSelect.close(e);
     }
+    console.log('this.stateFilters applyAdditionalFilter ', this.stateFilters)
   }
 
   moveSelectedOptionToTop(event, index) {
@@ -259,14 +263,16 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
 /**
- * Handles the change event of a dropdown element. 
+ * Handles the change event of a dropdown element.
  * If the selected element is valid, it applies an additional filter based on the event and index provided.
- * 
+ *
  * @param {any} $event - The event object from the dropdown change.
  * @param {number} index - The index of the dropdown element being changed.
  * @returns {void}
  */
-  onDropDownChange($event:any,index){
+  onDropDownChange($event: any, index) {
+    console.log('$event', $event)
+    console.log('this.stateFilters', this.stateFilters)
     if(this.helperService.isDropdownElementSelected($event)){
       this.applyAdditionalFilter($event, index)
     }

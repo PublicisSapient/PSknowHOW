@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { HelperService } from 'src/app/services/helper.service';
 import { DropdownFilterOptions } from 'primeng/dropdown';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-parent-filter',
@@ -19,7 +20,7 @@ export class ParentFilterComponent implements OnChanges {
   additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
   filterValue: string = '';
-  constructor(public helperService: HelperService) { }
+  constructor(public helperService: HelperService, public sharedService: SharedService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['parentFilterConfig']) {
@@ -33,7 +34,7 @@ export class ParentFilterComponent implements OnChanges {
         });
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
 
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
+        this.stateFilters = this.sharedService.getQueryParams()?.parent_level || this.helperService.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
             this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId.toLowerCase() === this.stateFilters.toLowerCase() })[0];
@@ -55,7 +56,7 @@ export class ParentFilterComponent implements OnChanges {
         });
         this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
+        this.stateFilters = this.sharedService.getQueryParams()?.primary_level || this.helperService.getBackupOfFilterSelectionState('primary_level');
         Promise.resolve().then(() => {
           if (this.stateFilters) {
             if (Array.isArray(this.stateFilters)) {
@@ -97,7 +98,7 @@ export class ParentFilterComponent implements OnChanges {
 /**
  * Handles the change of the selected level in the filter configuration.
  * Emits the selected level and updates the backup of filter selection state based on whether the parent level has changed.
- * 
+ *
  * @param {boolean} parentLevelChanged - Indicates if the parent level has changed.
  * @returns {void}
  */
@@ -125,7 +126,7 @@ export class ParentFilterComponent implements OnChanges {
 /**
  * Handles the change event of a dropdown element.
  * If a dropdown element is selected, it triggers the level change handling.
- * 
+ *
  * @param {any} $event - The event object from the dropdown change.
  * @returns {void}
  */

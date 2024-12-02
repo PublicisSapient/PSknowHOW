@@ -8,6 +8,8 @@ import { Subject, interval } from 'rxjs';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { MultiSelect } from 'primeng/multiselect';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-filter-new',
@@ -84,10 +86,45 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     public cdr: ChangeDetectorRef,
     private messageService: MessageService,
     private ga: GoogleAnalyticsService,
-    private featureFlagsService: FeatureFlagsService) { }
+    private featureFlagsService: FeatureFlagsService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private location: Location) { }
 
 
   async ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const urlPath = this.location.path();
+      console.log('urlPath ', decodeURIComponent(urlPath))
+      const queryParamsIndex = this.location.path().indexOf('?');
+      console.log('queryParamsIndex ', queryParamsIndex)
+      const decodedPath = decodeURIComponent(urlPath);
+      if (urlPath !== decodedPath) {
+        this.router.navigateByUrl(decodedPath);
+      }
+      if (queryParamsIndex !== -1) {
+        const queryString = urlPath.slice(queryParamsIndex + 1);
+
+        // Parse query string into key-value pairs
+        const urlParams = new URLSearchParams(queryString);
+
+        // Example: Get specific parameter values
+        let param = urlParams.get('stateFilters');
+        if (param.includes('###')) {
+          param = param.replace('###', '___');
+        }
+        console.log('Param:', param);
+        this.service.setQueryParams(JSON.stringify(param));
+        this.router.navigate([], {
+          queryParams: { 'stateFilters': param }, // Pass the object here
+          relativeTo: this.route,
+          queryParamsHandling: 'merge', // Merge with existing queryParams
+        });
+      }
+      // console.log('params', params);
+      // const keyValue = params['stateFilters']; // Access specific key
+      // console.log('Value of key:', keyValue);
+    });
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
@@ -468,7 +505,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Updates the level names in the provided data based on the hierarchy details stored in localStorage.
    * It modifies the label names of primary and parent filters for each board in the data structure.
-   * 
+   *
    * @param {any} data - The data object containing boards with filters to be updated.
    * @returns {any} - The updated data object with modified level names.
    * @throws {Error} - Throws an error if localStorage data is not in the expected format.
@@ -517,9 +554,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Handles changes to the parent filter by updating the primary filter configuration 
+   * Handles changes to the parent filter by updating the primary filter configuration
    * and setting the selected level based on the event provided.
-   * 
+   *
    * @param event - The new value for the selected level.
    * @returns void
    * @throws None
@@ -554,7 +591,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Removes a filter identified by the given ID from the color object and updates the filter selection state.
    * Called only on click of the "X" button in selected filters
-   * 
+   *
    * @param {string} id - The ID of the filter to be removed.
    * @returns {void}
    */
@@ -589,7 +626,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Handles changes to the primary filter, updating the event data and managing additional filters.
    * It processes the event based on its structure, updates the state, and triggers necessary service calls.
-   * 
+   *
    * @param {Object | Array} event - The event object or array containing filter data.
    * @returns {void}
    */
@@ -683,7 +720,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Prepares and applies KPI call data based on the selected project trends and filters.
    * It updates various filter states and invokes service methods to set selected trends and data.
-   * 
+   *
    * @param {any} event - The event data containing project information and filters.
    * @returns {void}
    */
@@ -723,7 +760,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Sends the filter data to the dashboard based on the provided event.
    * Updates various filter states and applies the necessary data transformations.
-   * 
+   *
    * @param {Array} event - An array of event objects containing filter criteria.
    * @returns {void}
    */
@@ -833,7 +870,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Sets the sprint details based on the provided event data, formatting start and end dates,
    * and updating the selected sprint and additional data flags.
-   * 
+   *
    * @param {any} event - The event data containing sprint or release information.
    * @returns {void} - This function does not return a value.
    */
@@ -856,7 +893,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Formats a given date string into a specific format: "DD MMM'YY".
    * If the input string is empty, returns 'N/A'.
-   * 
+   *
    * @param dateString - The date string to be formatted.
    * @returns A formatted date string or 'N/A' if the input is empty.
    */
@@ -875,7 +912,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Handles changes to additional filters based on the provided event.
    * Updates the filter application data and manages the state of selected filters.
-   * 
+   *
    * @param {Object} event - The event object containing filter changes.
    * @returns {void}
    */
@@ -934,7 +971,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Applies the selected date filter to the service and updates the filterApplyData object.
    * It handles the selection of date types and updates the relevant configurations based on the selected level.
-   * 
+   *
    * @param {void} - This function does not take any parameters.
    * @returns {void} - This function does not return a value.
    */
@@ -970,7 +1007,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Populates additional filters based on the provided event data.
    * It processes the event to extract project IDs and updates the additionalFiltersArr accordingly.
-   * 
+   *
    * @param {any} event - The event data, which can be a single object or an array of objects.
    * @returns {void} - This function does not return a value.
    */
@@ -1041,7 +1078,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Retrieves the correct hierarchy level name based on the provided level.
    * It checks against predefined squad level IDs and names, returning the appropriate mapping.
-   * 
+   *
    * @param level - The level identifier or name to be mapped.
    * @returns string - The corresponding hierarchy level name or an empty string if not found.
    */
@@ -1064,7 +1101,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   /**
    * Fetches processor trace logs for the currently selected project and updates the service with the log details.
-   * 
+   *
    * @returns {void} - This function does not return a value.
    * @throws {Error} - Logs error to the console if the HTTP request fails.
    */
@@ -1093,7 +1130,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Fetches the active iteration status for the selected sprint and updates the sync status.
    * It handles UI blocking, error messages, and data refresh based on the fetch results.
-   * 
+   *
    * @param {void} - No parameters are accepted.
    * @returns {void} - This function does not return a value.
    */
@@ -1164,7 +1201,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   /**
    * Compiles Google Analytics data from the provided filter array, transforming it into a structured format.
-   * 
+   *
    * @param selectedFilterArray - An object containing filter data, which may include 'additional_level' or 'primary_level'.
    * @returns void - This function does not return a value.
    * @throws None - This function does not throw exceptions.
@@ -1206,9 +1243,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Toggles the visibility of the dropdown menu. 
+   * Toggles the visibility of the dropdown menu.
    * If the overlay is visible, it closes the menu.
-   * 
+   *
    * @param event - The event that triggered the toggle action.
    * @returns void
    * @throws None
@@ -1222,9 +1259,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Toggles the visibility of KPIs based on the selected tab and type, 
+   * Toggles the visibility of KPIs based on the selected tab and type,
    * updates the dashboard configuration, and submits the changes to the server.
-   * 
+   *
    * @param {void} - No parameters are accepted.
    * @returns {void} - The function does not return a value.
    * @throws {Error} - Throws an error if the HTTP request fails or if saving the configuration is unsuccessful.
@@ -1333,7 +1370,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   /**
    * Toggles the visibility of the chart based on the provided value.
    * Updates the service to reflect the current view state.
-   * 
+   *
    * @param val - A boolean indicating whether to show the chart (true) or not (false).
    * @returns void
    * @throws None
