@@ -192,7 +192,7 @@ export class BasicConfigComponent implements OnInit {
   search(event, field) {
     const filtered: any[] = [];
     const query = event.query;
-    const list = (field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list;
+    const list = field.list;
     for (let i = 0; i < list.length; i++) {
       const listItem = list[i];
       if (listItem?.nodeDisplayName?.toLowerCase().indexOf(query?.toLowerCase()) >= 0) {

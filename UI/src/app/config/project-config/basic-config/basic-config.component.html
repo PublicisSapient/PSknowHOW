@@ -142,7 +142,7 @@
                     >
                       <ng-template let-listItem pTemplate="item">
                         <div class="listItem-item">
-                          <div>{{ listItem.nodeDisplayName }} {{getNodeDisplayNameById(listItem.parentId, field)}}</div>
+                          <div>{{ listItem.nodeDisplayName }} <span class="parent_span">{{getNodeDisplayNameById(listItem.parentId, field)}}</span></div>
                         </div>
                       </ng-template>
                     </p-autoComplete>
