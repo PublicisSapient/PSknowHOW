@@ -15,18 +15,15 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package com.publicissapient.kpidashboard.common.repository.application;
 
-package com.publicissapient.kpidashboard.argocd.dto;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import lombok.Data;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
-/**
- * Application represents the information for ArgoCD Application
- *
- */
-@Data
-public class Application {
-	private ApplicationMetadata metadata;
-	private Specification spec;
-	private Status status;
+@Repository
+public interface OrganizationHierarchyRepository extends MongoRepository<OrganizationHierarchy, ObjectId> {
+
 }

@@ -16,18 +16,19 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.argocd.dto;
+package com.publicissapient.kpidashboard.apis.datamigration.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import org.springframework.stereotype.Component;
 
-/**
- * UserCredentialsDTO represents the ArgoCD user information
- *
- */
-@Data
-@AllArgsConstructor
-public class UserCredentialsDTO {
-	private String username;
-	private String password;
+@Component
+public class InconsistentDataException extends Exception {
+	private static final long serialVersionUID = -664077740219817001L;
+
+	public InconsistentDataException() {
+		super();
+	}
+
+	public InconsistentDataException(String str) {
+		super(str);
+	}
 }

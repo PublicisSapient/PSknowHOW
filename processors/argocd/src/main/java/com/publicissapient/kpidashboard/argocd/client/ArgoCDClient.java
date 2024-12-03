@@ -18,8 +18,20 @@
 
 package com.publicissapient.kpidashboard.argocd.client;
 
-import java.net.URI;
+import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_ENDPOINT;
+import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_PARAM;
+import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.ARGOCD_CLUSTER_ENDPOINT;
+import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHORIZATION_HEADER;
+import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.BEARER;
 
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.StreamSupport;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,15 +42,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.argocd.dto.Application;
 import com.publicissapient.kpidashboard.argocd.dto.ApplicationsList;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_ENDPOINT;
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_PARAM;
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHORIZATION_HEADER;
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.BEARER;
 
 /**
  * Client for fetching information from ArgoCD
@@ -67,10 +77,9 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<ApplicationsList> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
 					new HttpEntity<>(requestHeaders), ApplicationsList.class);
-			log.debug("ArgoCDClient :: getApplications response :: {}", response.getBody());
 			return response.getBody();
 		} catch (RestClientException ex) {
-			log.error("ArgoCDClient :: getApplications Exception occured :: {}", ex.getMessage());
+			log.error("ArgoCDClient :: getApplications Exception occurred :: {}", ex.getMessage());
 			throw ex;
 		}
 	}
@@ -94,11 +103,49 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<Application> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
 					new HttpEntity<>(requestHeaders), Application.class);
-			log.debug("ArgoCDClient :: getApplicationByName response :: {}", response.getBody());
 			return response.getBody();
 		} catch (RestClientException ex) {
-			log.error("ArgoCDClient :: getApplicationByName Exception occured :: {}", ex.getMessage());
+			log.error("ArgoCDClient :: getApplicationByName Exception occurred :: {}", ex.getMessage());
 			throw ex;
+		}
+	}
+
+	/**
+	 * Get the cluster names associated with the account.
+	 *
+	 * @param baseUrl
+	 *            the ArgoCD base URL
+	 * @param accessToken
+	 *            the user access token
+	 * @return a map where the key is the server URL and the value is the cluster
+	 *         name
+	 * @throws RestClientException
+	 *             if an error occurs while making the REST call
+	 * @throws RuntimeException
+	 *             if an error occurs while processing the JSON response
+	 */
+	public Map<String, String> getClusterName(String baseUrl, String accessToken) {
+		String url = baseUrl + ARGOCD_CLUSTER_ENDPOINT;
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, String> serverToNameMap = new HashMap<>();
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+		requestHeaders.add(AUTHORIZATION_HEADER, BEARER + accessToken);
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
+					new HttpEntity<>(requestHeaders), String.class);
+			if (StringUtils.isNotEmpty(response.getBody())) {
+				JsonNode root1 = mapper.readTree(response.getBody());
+				StreamSupport.stream(root1.path("items").spliterator(), false)
+						.forEach(item -> serverToNameMap.put(item.path("server").asText(), item.path("name").asText()));
+			}
+			return serverToNameMap;
+		} catch (RestClientException ex) {
+			log.error("ArgoCDClient :: getClusterName Exception occurred :: {}", ex.getMessage());
+			throw ex;
+		} catch (JsonProcessingException ex) {
+			log.error("ArgoCDClient :: getClusterName JsonProcessingException occurred :: {}", ex.getMessage());
+			return Collections.emptyMap();
 		}
 	}
 }

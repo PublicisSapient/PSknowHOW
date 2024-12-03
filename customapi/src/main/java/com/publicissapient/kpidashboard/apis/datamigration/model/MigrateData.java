@@ -16,17 +16,16 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.argocd.dto;
+package com.publicissapient.kpidashboard.apis.datamigration.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-/**
- * Application represents the information for ArgoCD Application
- *
- */
 @Data
-public class Application {
-	private ApplicationMetadata metadata;
-	private Specification spec;
-	private Status status;
+@AllArgsConstructor
+public class MigrateData {
+	private String projectName;
+	private String level;
+	private String hierarchyName;
+
 }
