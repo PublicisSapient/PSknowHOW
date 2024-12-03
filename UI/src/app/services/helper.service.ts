@@ -33,7 +33,8 @@ export class HelperService {
     grossMaturityObj = {};
     public passMaturityToFilter;
     selectedFilterArray: any = [];
-    selectedFilters: any = {}
+    selectedFilters: any = {};
+    selectedUrlFilters: string = '{}';
     refreshCounter: number = 0;
 
     constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router, private route: ActivatedRoute) {
@@ -736,23 +737,32 @@ export class HelperService {
         }
         if (!this.refreshCounter) {
             ++this.refreshCounter;
-        } else {
+        } else if (this.refreshCounter) {
             console.log('User Navigation Detected');
-            this.removeQueryParams();
+            // this.removeQueryParams();
 
             if (this.selectedFilters['primary_level']) {
                 if (this.selectedFilters['primary_level'][0]) {
                     this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path.replace(/###/gi, '___');
                 }
             }
+            this.setBackupOfUrlFilters('{}');
+            let stringified = JSON.stringify(this.selectedFilters);
 
-            let stringified = this.selectedFilters;
             this.router.navigate([], {
-                queryParams: { stateFilters: encodeURI(JSON.stringify(stringified)) }, // Pass the object here
+                queryParams: { 'stateFilters': stringified }, // Pass the object here
                 relativeTo: this.route,
-                // queryParamsHandling: 'merge',
-            });
+              });
+
         }
+    }
+
+    setBackupOfUrlFilters(data) {
+        this.selectedUrlFilters = data;
+    }
+
+    getBackupOfUrlFilters() {
+        return this.selectedUrlFilters;
     }
 
 

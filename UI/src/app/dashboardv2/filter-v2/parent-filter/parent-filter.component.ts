@@ -32,8 +32,7 @@ export class ParentFilterComponent implements OnChanges {
           }
         });
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
-
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
+        this.stateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())['parent_level'] || this.helperService.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
             this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId.toLowerCase() === this.stateFilters.toLowerCase() })[0];
@@ -55,7 +54,7 @@ export class ParentFilterComponent implements OnChanges {
         });
         this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
+        this.stateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())['primary_level'] || this.helperService.getBackupOfFilterSelectionState('primary_level');
         Promise.resolve().then(() => {
           if (this.stateFilters) {
             if (Array.isArray(this.stateFilters)) {
