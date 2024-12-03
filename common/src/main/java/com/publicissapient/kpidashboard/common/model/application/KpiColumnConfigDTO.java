@@ -39,4 +39,5 @@ public class KpiColumnConfigDTO {
 	private ObjectId basicProjectConfigId;
 	private String kpiId;
 	private List<KpiColumnDetails> kpiColumnDetails;
+	private boolean saveFlag;
 }
