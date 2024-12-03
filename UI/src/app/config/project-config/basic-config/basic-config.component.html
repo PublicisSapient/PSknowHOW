@@ -155,7 +155,7 @@
               <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
                 icon="pi pi-angle-double-left" iconPos="left" (click)="closeProjectSetupPopup.emit()"></button>
               <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-                icon="pi pi-save" iconPos="left" label="Finalize" [disabled]="!form.valid"></button>
+                icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
             </div>
           </form>
         </div>

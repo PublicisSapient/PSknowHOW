@@ -122,7 +122,6 @@ export class BasicConfigComponent implements OnInit {
       });
 
       if (this.clone === 'true') {
-        this.formData = this.formData.filter(item => item.hierarchyLevelId !== "project")
         this.formData.push(
           {
             level: this.formData.length,
@@ -179,7 +178,10 @@ export class BasicConfigComponent implements OnInit {
       let project = JSON.parse(JSON.stringify(this.selectedProject));
       const formValues = {};
       this.formData.forEach(field => {
-        formValues[field.hierarchyLevelId] = field.list?.find(item => item.nodeDisplayName === project[field.hierarchyLevelId]) ?? undefined;
+        const nodeDisplayName = field.hierarchyLevelId === 'project'
+          ? project['name']
+          : project[field.hierarchyLevelId];
+        formValues[field.hierarchyLevelId] = field.list?.find(item => item.nodeDisplayName === nodeDisplayName) ?? undefined;
       });
       formValues['projectName'] = 'Clone_' + this.selectedProject['name'];
       formValues['kanban'] = this.selectedProject.type === 'Kanban';
@@ -213,35 +215,58 @@ export class BasicConfigComponent implements OnInit {
     // currentLevel.filteredSuggestions = currentLevel.list.filter(item => item.nodeId === selectedNodeId);
 
     // Step 2: Filter items in levels below based on selected item’s nodeId
-    this.filterBelowLevels(selectedNodeId, currentIndex);
+    if(event.hierarchyLevelId === 'project' && this.clone == 'true') {
+      const formValues = {};
+      formValues['projectName'] = 'Clone_' + event.nodeDisplayName;
+      this.form.patchValue(formValues)
+    } else {
+      this.filterBelowLevels(selectedNodeId, currentIndex);
+    }
 
     // Step 3: Filter items in levels above based on selected item's parentId
     this.filterAboveLevels(selectedParentId, currentIndex);
   }
 
   filterAboveLevels(selectedParentId: any, currentIndex: number) {
+
     let selectParentId = selectedParentId;
     for (let i = currentIndex - 1; i >= 0; i--) {
       if (this.formData[i]?.list) {
+
         this.formData[i].filteredSuggestions = this.formData[i]?.list.filter(item => item.nodeId === selectParentId);
         selectParentId = this.formData[i]?.filteredSuggestions[0].parentId;
+
+        if (this.formData[i].filteredSuggestions && this.formData[i].filteredSuggestions.length) {
+          this.selectedItems[this.formData[i].hierarchyLevelId] = this.formData[i].filteredSuggestions[0];
+        }
       }
     }
-
-    // Method to prepopulate if only one item exists in list
-    this.formData.forEach(level => {
-      if (level.filteredSuggestions && level.filteredSuggestions.length === 1) {
-        this.selectedItems[level.hierarchyLevelId] = level.filteredSuggestions[0];
-      }
-    });
   }
 
   filterBelowLevels(selectedNodeId: string, currentIndex: number) {
+
+    let selectParentId = selectedNodeId;
     for (let i = currentIndex + 1; i < this.formData.length; i++) {
       if (this.formData[i].list) {
-        this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => item.parentId === selectedNodeId);
+        this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => item.parentId === selectParentId);
+
+        if (this.formData[i].filteredSuggestions && this.formData[i].filteredSuggestions.length) {
+          this.selectedItems[this.formData[i].hierarchyLevelId] = this.formData[i].filteredSuggestions[0];
+          selectParentId = this.formData[i].filteredSuggestions[0].nodeId
+          if(this.formData[i].hierarchyLevelId === 'project' && this.clone == 'true') {
+            const formValues = {};
+            formValues['projectName'] = 'Clone_' + this.formData[i].filteredSuggestions[0].nodeDisplayName;
+            this.form.patchValue(formValues)
+          }
       }
     }
+  }
+    // this.formData.forEach(level => {
+    //   if (level.filteredSuggestions && level.filteredSuggestions.length) {
+    //     this.selectedItems[level.hierarchyLevelId] = level.filteredSuggestions[0];
+
+    //   }
+    // });
   }
 
   onSubmit() {
@@ -268,7 +293,7 @@ export class BasicConfigComponent implements OnInit {
       user_email: this.sharedService.getCurrentUserDetails('user_email'),
     }
     this.getFieldsResponse.forEach((element, index) => {
-      if (element.hierarchyLevelId === 'project') {
+      if (element.hierarchyLevelId === 'project' && this.clone !== 'true') {
         if (typeof formValue[element.hierarchyLevelId] === 'string') {
           const newProjectName = formValue[element.hierarchyLevelId].trim();
           submitData['projectName'] = newProjectName;
@@ -318,9 +343,13 @@ export class BasicConfigComponent implements OnInit {
             }
           }
           this.form.reset();
+          let summary = 'Basic config submitted!!'
+          if(this.clone === 'true') {
+            summary = 'Clone has been Completed!!'
+          }
           this.messenger.add({
             severity: 'success',
-            summary: 'Basic config submitted!!',
+            summary: summary,
             detail: ''
           });
           this.isProjectSetupPopup = false;
@@ -413,4 +442,7 @@ export class BasicConfigComponent implements OnInit {
         return `(${matchingObject.nodeDisplayName})`;
       }
     }
+  getButtonLabel(): string {
+    return this.clone === 'true' ? 'Clone' : 'Finalize';
+  }
 }
