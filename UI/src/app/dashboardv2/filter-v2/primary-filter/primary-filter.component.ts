@@ -68,11 +68,13 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.isUserChange) {
         this.helperService.setBackupOfFilterSelectionState(this.service.getQueryParams());
       } else {
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState() ? this.helperService.getBackupOfFilterSelectionState() : JSON.parse(this.service.getQueryParams());
+        // this.stateFilters = this.helperService.getBackupOfFilterSelectionState() ? this.helperService.getBackupOfFilterSelectionState() : JSON.parse(this.service.getQueryParams());
+        // console.log('this.helperService.getBackupOfFilterSelectionState()', this.helperService.getBackupOfFilterSelectionState());
+        // console.log('JSON.parse(this.service.getQueryParams()) ', JSON.parse(this.service.getQueryParams()))
+        this.stateFilters = JSON.parse(this.service.getQueryParams()) || this.helperService.getBackupOfFilterSelectionState();
       }
-      // this.stateFilters = this.service.getQueryParams() || this.helperService.getBackupOfFilterSelectionState();
 
-      // console.log('this.stateFilters 1 ', this.stateFilters, this.selectedTab)
+      // console.log('this.primaryFilterConfig ', this.primaryFilterConfig)
       // this.helperService.setRouteParams(this.stateFilters, this.selectedTab);
       if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
         if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||

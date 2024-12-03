@@ -94,42 +94,44 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     // console.log('filter new component');
-    this.route.queryParams.subscribe(params => {
-      const urlPath = this.location.path();
-      console.log('urlPath ', decodeURIComponent(urlPath))
-      const queryParamsIndex = this.location.path().indexOf('?');
-      // console.log('queryParamsIndex ', queryParamsIndex)
-      const decodedPath = decodeURIComponent(urlPath);
-      if (urlPath !== decodedPath) {
-        this.router.navigateByUrl(decodedPath);
-        // this.location.replaceState(decodedPath);
-        // window.history.replaceState(null, '', decodedPath); // Update the URL
+    this.subscriptions.push(
+      this.route.queryParams.subscribe(params => {
+        const urlPath = this.location.path();
+        console.log('urlPath ', decodeURIComponent(urlPath))
+        const queryParamsIndex = this.location.path().indexOf('?');
+        // console.log('queryParamsIndex ', queryParamsIndex)
+        const decodedPath = decodeURIComponent(urlPath);
+        if (urlPath !== decodedPath) {
+          this.router.navigateByUrl(decodedPath);
+          // this.location.replaceState(decodedPath);
+          // window.history.replaceState(null, '', decodedPath); // Update the URL
 
-      }
-      if (queryParamsIndex !== -1) {
-        const queryString = urlPath.slice(queryParamsIndex + 1);
-
-        // Parse query string into key-value pairs
-        const urlParams = new URLSearchParams(queryString);
-
-        // Example: Get specific parameter values
-        let param = urlParams.get('stateFilters');
-        if (param.includes('###')) {
-          param = param.replace('###', '___');
         }
-        // console.log('Param:', param);
-        this.service.setQueryParams(JSON.stringify(param));
-        // console.log('before navigate')
-        this.router.navigate([], {
-          queryParams: { 'stateFilters': param }, // Pass the object here
-          relativeTo: this.route,
-          queryParamsHandling: 'merge', // Merge with existing queryParams
-        });
-      }
-      // console.log('params', params);
-      // const keyValue = params['stateFilters']; // Access specific key
-      // console.log('Value of key:', keyValue);
-    });
+        if (queryParamsIndex !== -1) {
+          const queryString = urlPath.slice(queryParamsIndex + 1);
+
+          // Parse query string into key-value pairs
+          const urlParams = new URLSearchParams(queryString);
+
+          // Example: Get specific parameter values
+          let param = urlParams.get('stateFilters');
+          if (param.includes('###')) {
+            param = param.replace('###', '___');
+          }
+          // console.log('Param:', param);
+          this.service.setQueryParams(JSON.stringify(param));
+          // console.log('before navigate')
+          this.router.navigate([], {
+            queryParams: { 'stateFilters': param }, // Pass the object here
+            relativeTo: this.route,
+            queryParamsHandling: 'merge', // Merge with existing queryParams
+          });
+        }
+        // console.log('params', params);
+        // const keyValue = params['stateFilters']; // Access specific key
+        // console.log('Value of key:', keyValue);
+      })
+    );
     this.selectedTab = decodeURIComponent(this.service.getSelectedTab()).split('?')[0] || 'iteration';
     console.log('this.selectedTab ', this.selectedTab)
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
@@ -428,6 +430,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   callBoardConfigAsPerStateFilters() {
+    // console.log('this.helperService.getBackupOfFilterSelectionState()', this.helperService.getBackupOfFilterSelectionState());
+    // let stateFilters = (this.service.getQueryParams() && JSON.parse(this.service.getQueryParams())) || this.helperService.getBackupOfFilterSelectionState();
     let stateFilters = this.helperService.getBackupOfFilterSelectionState();
     if (stateFilters && stateFilters['primary_level']) {
       let selectedProject;
