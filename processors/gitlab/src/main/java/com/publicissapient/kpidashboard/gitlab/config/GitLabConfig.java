@@ -49,4 +49,5 @@ public class GitLabConfig {
 	private int initialRunOccurrenceInDays;
 	private String api;
 	private String customApiBaseUrl;
+	private String perPageSize;
 }

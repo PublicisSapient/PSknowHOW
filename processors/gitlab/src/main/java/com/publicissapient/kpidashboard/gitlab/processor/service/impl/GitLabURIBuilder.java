@@ -136,7 +136,7 @@ public class GitLabURIBuilder {
 			String datetime = zdt1.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 			map.put("since", datetime);
 		}
-		map.put("per_page", GitLabConstants.PER_PAGE_SIZE);
+		map.put("per_page", config.getPerPageSize());
 		return map;
 	}
 
@@ -145,7 +145,7 @@ public class GitLabURIBuilder {
 		map.put("ref_name",
 				StringUtils.isNotEmpty(gitLabInfo.getBranch()) ? gitLabInfo.getBranch().replace(" ", "%20") : "master");
 
-		map.put("per_page", GitLabConstants.PER_PAGE_SIZE);
+		map.put("per_page", config.getPerPageSize());
 		return map;
 	}
 
