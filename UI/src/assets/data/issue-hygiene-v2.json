@@ -2,7 +2,7 @@
   "kpiId": "kpi124",
   "kpiName": "Estimation Hygiene",
   "unit": "Count",
-  "chartType": "",
+  "chartType": "semi-circle-donut-chart",
   "id": "65793ddb127be336160bc0f2",
   "isDeleted": "False",
   "kpiCategory": "Iteration",

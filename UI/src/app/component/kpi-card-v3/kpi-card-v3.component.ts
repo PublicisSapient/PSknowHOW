@@ -80,7 +80,8 @@ export class KpiCardV3Component implements OnInit {
       case 'stacked-bar':
         chartData = this.kpihelper.stackedChartData(inputData, color);
         break;
-
+      case 'semi-circle-donut-chart' :
+        chartData = this.kpihelper.semicircledonutchartData(inputData);
       default:
         break;
     }
