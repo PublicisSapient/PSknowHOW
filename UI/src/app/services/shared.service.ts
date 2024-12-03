@@ -244,7 +244,7 @@ export class SharedService {
   }
 
   clearLogoImage() {
-    this.subject.next();
+    this.subject.next(true);
   }
 
   getLogoImage(): Observable<any> {

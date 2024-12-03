@@ -20,6 +20,7 @@ import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.component';
 import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
+import { DecodeUrlGuard } from './decodeURL.guard';
 
 @Injectable({
     providedIn: 'root'
@@ -63,7 +64,7 @@ export class AppInitializerService {
                         feature: "Config"
                     }
                 },
-                { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full' },
+                { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
                 { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
                 { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
