@@ -747,7 +747,8 @@ export class HelperService {
                 }
             }
             this.setBackupOfUrlFilters('{}');
-            let stringified = JSON.stringify(this.selectedFilters);
+            let stringified = btoa(JSON.stringify(this.selectedFilters));
+            // let stringified = (JSON.stringify(this.selectedFilters));
 
             this.router.navigate([], {
                 queryParams: { 'stateFilters': stringified }, // Pass the object here
