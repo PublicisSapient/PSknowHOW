@@ -392,4 +392,11 @@ export class BasicConfigComponent implements OnInit {
     });
   }
 
+  getNodeDisplayNameById(nodeId: string, field) {
+    const currentIndex = this.formData.findIndex(level => level === field);
+      if (this.formData[currentIndex-1]?.list) {
+        let matchingObject = this.formData[currentIndex - 1]?.list.find(item => item.nodeId === nodeId);
+        return `(${matchingObject.nodeDisplayName})`;
+      }
+    }
 }

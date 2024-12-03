@@ -62,7 +62,6 @@ public class ProjectBasicConfigDTO {
 	private boolean projectOnHold;
 	private ObjectId clonedFrom;
 
-	private ObjectId clonedFrom;
 
 	/**
 	 * @return isKanban value
