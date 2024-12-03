@@ -69,8 +69,6 @@ export class PrimaryFilterComponent implements OnChanges {
         this.helperService.setBackupOfFilterSelectionState(this.service.getQueryParams());
       } else {
         // this.stateFilters = this.helperService.getBackupOfFilterSelectionState() ? this.helperService.getBackupOfFilterSelectionState() : JSON.parse(this.service.getQueryParams());
-        // console.log('this.helperService.getBackupOfFilterSelectionState()', this.helperService.getBackupOfFilterSelectionState());
-        // console.log('JSON.parse(this.service.getQueryParams()) ', JSON.parse(this.service.getQueryParams()))
         this.stateFilters = JSON.parse(this.service.getQueryParams()) || this.helperService.getBackupOfFilterSelectionState();
       }
 

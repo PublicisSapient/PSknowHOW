@@ -26,7 +26,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = decodeURIComponent(selectedTab?.split('/')[2]).split('?')[0] ? decodeURIComponent(selectedTab?.split('/')[2]).split('?')[0] : 'iteration';
-    console.log('this.selectedTab', this.selectedTab);
+
     this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
 
     this.sharedService.setSelectedBoard(this.selectedTab);

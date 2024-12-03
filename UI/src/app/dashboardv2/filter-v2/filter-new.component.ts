@@ -430,7 +430,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   callBoardConfigAsPerStateFilters() {
-    // console.log('this.helperService.getBackupOfFilterSelectionState()', this.helperService.getBackupOfFilterSelectionState());
     // let stateFilters = (this.service.getQueryParams() && JSON.parse(this.service.getQueryParams())) || this.helperService.getBackupOfFilterSelectionState();
     let stateFilters = this.helperService.getBackupOfFilterSelectionState();
     if (stateFilters && stateFilters['primary_level']) {
