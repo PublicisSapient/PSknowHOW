@@ -15,15 +15,15 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package com.publicissapient.kpidashboard.common.model.application;
 
-import java.util.List;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -33,72 +33,61 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * @author anisingh4
- */
 @Data
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "project_basic_configs")
-public class ProjectBasicConfig extends BasicModel {
+@Document(collection = "organization_hierarchy")
+public class OrganizationHierarchy extends BasicModel implements Serializable {
 
-	private String emmUpdatedOn;
-	private String consumerCreatedOn;
+	private static final long serialVersionUID = 67050747445127809L;
 
-	// link with Hierarchy Master nodeId where Level Is project
+	// UniqueId of Central Hierarchy for Each Node
 	@Indexed(unique = true)
-	private String projectNodeId;
+	private String nodeId;
 
-	private String projectName;
-	private String projectDisplayName;
+	private String nodeName;
 
-	private String createdAt;
-	private String createdBy;
-	private String updatedAt;
-	private String updatedBy;
-	private boolean kanban;
-	private List<HierarchyValue> hierarchy;
-	private boolean saveAssigneeDetails;
-	private boolean developerKpiEnabled;
-	private boolean projectOnHold;
-	private ObjectId clonedFrom;
+	private String nodeDisplayName;
 
-	/**
-	 * @return isKanban value
-	 */
-	public boolean getIsKanban() {
-		return this.kanban;
-	}
+	// Todo same as labelName in Account Hierarchy
+	private String hierarchyLevelId;
 
-	/**
-	 * set isKanban value
-	 *
-	 * @param isKanban
-	 *            boolean value
-	 */
-	public void setIsKanban(boolean isKanban) {
-		this.kanban = isKanban;
-	}
+	@Indexed(unique = true)
+	private String parentId;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	private LocalDateTime createdDate;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	private LocalDateTime modifiedDate;
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) {
+		if (this == o)
 			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
+		if (!(o instanceof OrganizationHierarchy))
 			return false;
-		}
 
-		ProjectBasicConfig that = (ProjectBasicConfig) o;
+		OrganizationHierarchy that = (OrganizationHierarchy) o;
 
-		return getId() != null ? getId().equals(that.getId()) : that.getId() == null;
+		if (!nodeId.equals(that.nodeId))
+			return false;
+		if (!nodeName.equals(that.nodeName))
+			return false;
+		if (!hierarchyLevelId.equals(that.hierarchyLevelId))
+			return false;
+		return parentId.equals(that.parentId);
 	}
 
 	@Override
 	public int hashCode() {
-		return getId() != null ? getId().hashCode() : 0;
+		int result = nodeId.hashCode();
+		result = 31 * result + nodeName.hashCode();
+		result = 31 * result + hierarchyLevelId.hashCode();
+		result = 31 * result + parentId.hashCode();
+		return result;
 	}
 }
