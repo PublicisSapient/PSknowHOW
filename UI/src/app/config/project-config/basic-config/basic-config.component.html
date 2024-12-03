@@ -19,7 +19,7 @@
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="main p-pl-6 p-pr-6 p-pb-1">
   <div class="p-d-flex p-p-0 p-flex-column">
-    <div class="nav-container">
+    <div class="nav-container" *ngIf="clone === 'false'">
       <nav>
         <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
           <ng-container *ngIf="!last">
@@ -100,8 +100,7 @@
                   <span class="p-float-label w-50 p-mr-3">
                     <p-autoComplete id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
                       [style]="{'width':'500px'}" [suggestions]="field.filteredSuggestions"
-                      (completeMethod)="search($event, field)" required="required" [dropdown]="true" field="name"
-                      [forceSelection]="isSpeedSuite === true ? true : false">
+                      (completeMethod)="search($event, field)" required="required" [dropdown]="true" field="name">
                       <ng-template let-country pTemplate="item">
                         <div class="country-item">
                           <div>{{country.name}}</div>

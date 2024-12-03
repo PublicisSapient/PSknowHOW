@@ -79,7 +79,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@Autowired
 	private KpiDataProvider kpiDataProvider;
 
-	List<String> sprintIdList = new ArrayList<>();
+	private volatile List<String> sprintIdList = new ArrayList<>();
 
 	/**
 	 * Gets Qualifier Type

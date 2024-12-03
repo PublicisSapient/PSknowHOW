@@ -261,12 +261,11 @@ export class TestConnectionService {
     );
   }
 
-  testArgoCD(baseUrl, username, password, vault): Observable<any> {
+  testArgoCD(baseUrl,username,accessToken): Observable<any> {
     const postData = {
       baseUrl,
       username,
-      password: password ? password : '',
-      vault
+      accessToken
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');

@@ -25,6 +25,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * This class is used to bind external configurations to a bean in application
  * code. You can inject and use this bean throughout your application code just
@@ -293,6 +296,10 @@ public class CustomApiConfig {// NOPMD
 
 	private List<Integer> groupIdsToExcludeFromCache;
 
+    @Setter
+    @Getter
+    private int userSessionsExpiresOn;
+	
 	public String getDefectRateUrl() {
 		return defectRateUrl;
 	}

@@ -781,26 +781,40 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.excludeColumns = this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns ? this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns : [];
     this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
       if (response['success']) {
-        this.tableColumns = response['data']['kpiColumnDetails'];
-        this.selectedColumns = this.tableColumns.filter(colDetails => colDetails.isDefault || colDetails.isShown).map(col => col.columnName);
-        this.tableComponent.clear();
-        this.generateTableColumnsFilterData(Object.keys(tableValues[0]));
-        this.tableHeaders = this.selectedColumns;
-        this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
-        this.modalDetails['kpiId'] = kpi.kpiId;
-        this.modalDetails['tableValues'] = tableValues.map(item => {
-          const formattedItem = { ...item };
-          for (const key in formattedItem) {
-              if (key.toLowerCase().includes('date') && formattedItem[key]) {
-                  formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
-              }
-          }
-           return formattedItem
-      });
-        this.generateExcludeColumnsFilterList(tableValues[0]);
-        this.generateTableColumnData();
-        this.displayModal = true;
+        this.exportExcelComponent.dataTransformForIterationTableWidget(this.markerInfo,this.excludeColumns,response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
+        
+      //   this.tableColumns = response['data']['kpiColumnDetails'];
+      //   this.selectedColumns = this.tableColumns.filter(colDetails => colDetails.isDefault || colDetails.isShown).map(col => col.columnName);
+      //   this.tableComponent.clear();
+      //   this.generateTableColumnsFilterData(Object.keys(tableValues[0]));
+      //   this.tableHeaders = this.selectedColumns;
+      //   this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
+      //   this.modalDetails['kpiId'] = kpi.kpiId;
+      //   this.modalDetails['tableValues'] = tableValues.map(item => {
+      //     const formattedItem = { ...item };
+      //     for (const key in formattedItem) {
+      //         if (key.toLowerCase().includes('date') && formattedItem[key]) {
+      //             formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
+      //         }
+      //     }
+      //      return formattedItem
+      // });
+      //   this.generateExcludeColumnsFilterList(tableValues[0]);
+      //   this.generateTableColumnData();
+      //   this.displayModal = true;
+      }     
+    });
+  }
+
+  transformDateToISO(tableValues) {
+    return tableValues.map(item => {
+      const formattedItem = { ...item };
+      for (const key in formattedItem) {
+        if (key.toLowerCase().includes('date') && formattedItem[key]) {
+          formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
+        }
       }
+      return formattedItem
     });
   }
 
@@ -841,16 +855,16 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   applyColumnFilter() {
-    this.saveKpiColumnsConfig(this.selectedColumns,'APPLY');
+    this.saveKpiColumnsConfig(this.selectedColumns, 'APPLY');
   }
 
   saveTableColumnOrder() {
     if (this.tableComponent.columns.length > 0) {
-      this.saveKpiColumnsConfig(this.tableComponent.columns,'SAVE');
+      this.saveKpiColumnsConfig(this.tableComponent.columns, 'SAVE');
     }
   }
 
-  saveKpiColumnsConfig(selectedColumns: any[],action:string) {
+  saveKpiColumnsConfig(selectedColumns: any[], action: string) {
     const postData = {
       kpiId: '',
       basicProjectConfigId: '',
@@ -871,7 +885,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     });
     postData['kpiColumnDetails'].sort((a, b) => a.order - b.order);
     this.tableHeaders = postData['kpiColumnDetails'].map(col => col.columnName);
-    if(action === 'SAVE'){
+    if (action === 'SAVE') {
       this.httpService.postkpiColumnsConfig(postData).subscribe(response => {
         if (response && response['success'] && response['data']) {
           this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
@@ -879,7 +893,7 @@ export class IterationComponent implements OnInit, OnDestroy {
           this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
         }
       });
-    }else{
+    } else {
       this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations applied successfully!' });
     }
 
