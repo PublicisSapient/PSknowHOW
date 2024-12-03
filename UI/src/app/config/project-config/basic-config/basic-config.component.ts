@@ -108,7 +108,9 @@ export class BasicConfigComponent implements OnInit {
 
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
-
+    this.route.queryParams.subscribe(params => {
+      this.clone = params['clone'];
+    })
     if (Array.isArray(this.formData)) {
       this.formData?.unshift({
         level: 0,
@@ -118,6 +120,22 @@ export class BasicConfigComponent implements OnInit {
         value: false,
         required: true
       });
+
+      if (this.clone === 'true') {
+        this.formData = this.formData.filter(item => item.hierarchyLevelId !== "project")
+        this.formData.push(
+          {
+            level: this.formData.length,
+            hierarchyLevelId: 'projectName',
+            hierarchyLevelName: 'Project Name',
+            hierarchyLevelTooltip: 'Project Name',
+            inputType: 'text',
+            value: '',
+            required: true
+          }
+        );
+      }
+
       this.formData?.push(
         {
           level: this.formData.length,
@@ -149,15 +167,11 @@ export class BasicConfigComponent implements OnInit {
     }
     this.blocked = false;
     this.prefillForm();
-
-    this.route.queryParams.subscribe(params => {
-      this.clone = params['clone'];
       if (this.clone === 'true') {
         setTimeout(() => {
           this.prefillForm();
         }, 500);
       }
-    });
   }
 
   prefillForm(): void {
@@ -165,7 +179,7 @@ export class BasicConfigComponent implements OnInit {
       let project = JSON.parse(JSON.stringify(this.selectedProject));
       const formValues = {};
       this.formData.forEach(field => {
-        formValues[field.hierarchyLevelId] = { name: project[field.hierarchyLevelId] };
+        formValues[field.hierarchyLevelId] = field.list?.find(item => item.nodeDisplayName === project[field.hierarchyLevelId]) ?? undefined;
       });
       formValues['projectName'] = 'Clone_' + this.selectedProject['name'];
       formValues['kanban'] = this.selectedProject.type === 'Kanban';

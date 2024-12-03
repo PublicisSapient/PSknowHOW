@@ -84,7 +84,7 @@
                     </p-selectButton>
                   </div>
                 </div>
-                <!-- <div *ngSwitchCase="'text'">
+                <div *ngSwitchCase="'text'">
                   <div class="p-mb-3 p-mt-3">
                     <span class="p-float-label" pTooltip='{{ field.hierarchyLevelTooltip }}' tooltipPosition="bottom"
                       tooltipEvent="hover">
@@ -97,7 +97,7 @@
                       *ngIf="form.controls[field.hierarchyLevelId].errors?.stringValidator">Special
                       Characters are not allowed.</span>
                   </div>
-                </div> -->
+                </div>
                 <div *ngSwitchCase="'boolean'" class="p-mb-3">
                   <ng-container
                     *ngIf="ifSuperUser === true || isProjectAdmin === true"
@@ -132,7 +132,7 @@
                       [formControlName]="field.hierarchyLevelId"
                       [style]="{ width: '500px' }"
                       [suggestions]="(field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list"
-                      (completeMethod)="search($event, field)"
+                      (completeMethod)="search({ query: selectedItems[field.hierarchyLevelId]?.nodeDisplayName || $event.query }, field)"
                       required="required"
                       [dropdown]="true"
                       field="nodeDisplayName"
