@@ -15,16 +15,9 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
-package com.publicissapient.kpidashboard.common.model.application;
+package com.publicissapient.kpidashboard.apis.datamigration.model;
 
 import java.util.List;
-
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,72 +26,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * @author anisingh4
- */
 @Data
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "project_basic_configs")
-public class ProjectBasicConfig extends BasicModel {
+public class ProjectBasicDup {
 
 	private String emmUpdatedOn;
 	private String consumerCreatedOn;
 
-	// link with Hierarchy Master nodeId where Level Is project
-	@Indexed(unique = true)
-	private String projectNodeId;
-
 	private String projectName;
-	private String projectDisplayName;
-
 	private String createdAt;
 	private String createdBy;
 	private String updatedAt;
 	private String updatedBy;
 	private boolean kanban;
-	private List<HierarchyValue> hierarchy;
+	private List<HierarchyValueDup> hierarchy;
 	private boolean saveAssigneeDetails;
 	private boolean developerKpiEnabled;
 	private boolean projectOnHold;
-	private ObjectId clonedFrom;
 
-	/**
-	 * @return isKanban value
-	 */
-	public boolean getIsKanban() {
-		return this.kanban;
-	}
-
-	/**
-	 * set isKanban value
-	 *
-	 * @param isKanban
-	 *            boolean value
-	 */
-	public void setIsKanban(boolean isKanban) {
-		this.kanban = isKanban;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-
-		ProjectBasicConfig that = (ProjectBasicConfig) o;
-
-		return getId() != null ? getId().equals(that.getId()) : that.getId() == null;
-	}
-
-	@Override
-	public int hashCode() {
-		return getId() != null ? getId().hashCode() : 0;
-	}
 }
