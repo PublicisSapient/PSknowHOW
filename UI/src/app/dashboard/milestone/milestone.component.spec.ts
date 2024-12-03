@@ -13,6 +13,7 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { DatePipe } from '@angular/common';
 import { of } from 'rxjs';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { MessageService } from 'primeng/api';
 
 
 
@@ -369,7 +370,7 @@ describe('MilestoneComponent', () => {
             ],
             declarations: [MilestoneComponent,ExportExcelComponent],
             providers: [
-                HelperService,
+                HelperService,MessageService,
                 { provide: APP_CONFIG, useValue: AppConfig },
                 HttpService,
                 { provide: SharedService, useValue: service }
