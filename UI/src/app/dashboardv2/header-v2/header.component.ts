@@ -74,8 +74,10 @@ export class HeaderComponent implements OnInit {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: () => {
-          if(!window.location.hash.includes('Config')){
+          console.log('window.location.hash', window.location.hash);
+          if(!window.location.hash.split('?')[0].includes('Config')){
             this.lastVisitedFromUrl = window.location.hash.substring(1);
+            console.log('lastVisitedFromUrl', this.lastVisitedFromUrl);
           }
           this.router.navigate(['/dashboard/Config/ProjectList']);
         },

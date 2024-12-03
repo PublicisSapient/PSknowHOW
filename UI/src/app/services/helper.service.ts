@@ -27,6 +27,7 @@ import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PlatformLocation } from '@angular/common';
 @Injectable()
 export class HelperService {
   isKanban = false;
@@ -35,7 +36,7 @@ export class HelperService {
   selectedFilterArray: any = [];
   selectedFilters: any = {}
 
-  constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router, private route: ActivatedRoute) {
+  constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router, private route: ActivatedRoute, private platformLocation: PlatformLocation) {
     this.passMaturityToFilter = new EventEmitter();
   }
 
@@ -733,7 +734,7 @@ export class HelperService {
     } else {
       this.selectedFilters = null;
     }
-    console.log(this.selectedFilters)
+    // console.log(this.selectedFilters)
     let queryParams: String = ''; // Object for queryParams
     queryParams = JSON.stringify(this.selectedFilters);
     // Use queryParams object for navigation
@@ -760,51 +761,51 @@ export class HelperService {
     }
   }
 
-  setRouteParams = (stateFilters, selectedDb) => {
-    const data = stateFilters;
-    const queryParams: { [key: string]: any } = {}; // Object for queryParams
+  // setRouteParams = (stateFilters, selectedDb) => {
+  //   const data = stateFilters;
+  //   const queryParams: { [key: string]: any } = {}; // Object for queryParams
 
-    // Handle parent_level
-    if (data.parent_level) {
-      if (typeof data.parent_level === "string") {
-        queryParams['parent_level'] = data.parent_level.replace(/\s+/g, '_');
-      } else if (typeof data.parent_level === "object" && data.parent_level.basicProjectConfigId) {
-        queryParams['parent_level'] = data.parent_level.basicProjectConfigId;
-      }
-    }
+  //   // Handle parent_level
+  //   if (data.parent_level) {
+  //     if (typeof data.parent_level === "string") {
+  //       queryParams['parent_level'] = data.parent_level.replace(/\s+/g, '_');
+  //     } else if (typeof data.parent_level === "object" && data.parent_level.basicProjectConfigId) {
+  //       queryParams['parent_level'] = data.parent_level.basicProjectConfigId;
+  //     }
+  //   }
 
-    // Handle primary_level
-    if (Array.isArray(data.primary_level)) {
-      const primaryValues = data.primary_level.map(level => {
-        const value = level.basicProjectConfigId || level.nodeId || '';
-        return value.trim().replace(/\s+/g, '_');
-      });
-      if (primaryValues.length > 0) {
-        queryParams['primary_level'] = primaryValues.join(',');
-      }
-    }
+  //   // Handle primary_level
+  //   if (Array.isArray(data.primary_level)) {
+  //     const primaryValues = data.primary_level.map(level => {
+  //       const value = level.basicProjectConfigId || level.nodeId || '';
+  //       return value.trim().replace(/\s+/g, '_');
+  //     });
+  //     if (primaryValues.length > 0) {
+  //       queryParams['primary_level'] = primaryValues.join(',');
+  //     }
+  //   }
 
-    // Handle additional_level
-    if (data.additional_level && typeof data.additional_level === 'object') {
-      for (const key in data.additional_level) {
-        if (Array.isArray(data.additional_level[key])) {
-          const additionalValues = data.additional_level[key]
-            .map(item => item.nodeId || '') // Use `nodeId` as the value
-            .filter((id: string) => id.trim() !== ''); // Remove empty strings
-          if (additionalValues.length > 0) {
-            queryParams[key] = additionalValues.join(','); // Add as comma-separated
-          }
-        }
-      }
-    }
+  //   // Handle additional_level
+  //   if (data.additional_level && typeof data.additional_level === 'object') {
+  //     for (const key in data.additional_level) {
+  //       if (Array.isArray(data.additional_level[key])) {
+  //         const additionalValues = data.additional_level[key]
+  //           .map(item => item.nodeId || '') // Use `nodeId` as the value
+  //           .filter((id: string) => id.trim() !== ''); // Remove empty strings
+  //         if (additionalValues.length > 0) {
+  //           queryParams[key] = additionalValues.join(','); // Add as comma-separated
+  //         }
+  //       }
+  //     }
+  //   }
 
-    // Use queryParams object for navigation
-    this.router.navigate([], {
-      queryParams: queryParams, // Pass the object here
-      relativeTo: this.route,
-      queryParamsHandling: 'merge', // Merge with existing queryParams
-    });
-  };
+  //   // Use queryParams object for navigation
+  //   this.router.navigate([], {
+  //     queryParams: queryParams, // Pass the object here
+  //     relativeTo: this.route,
+  //     queryParamsHandling: 'merge', // Merge with existing queryParams
+  //   });
+  // };
 
   setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {
     let haveBackup = {}

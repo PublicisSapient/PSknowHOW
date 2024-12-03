@@ -93,14 +93,18 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
 
   async ngOnInit() {
+    // console.log('filter new component');
     this.route.queryParams.subscribe(params => {
       const urlPath = this.location.path();
       console.log('urlPath ', decodeURIComponent(urlPath))
       const queryParamsIndex = this.location.path().indexOf('?');
-      console.log('queryParamsIndex ', queryParamsIndex)
+      // console.log('queryParamsIndex ', queryParamsIndex)
       const decodedPath = decodeURIComponent(urlPath);
       if (urlPath !== decodedPath) {
         this.router.navigateByUrl(decodedPath);
+        // this.location.replaceState(decodedPath);
+        // window.history.replaceState(null, '', decodedPath); // Update the URL
+
       }
       if (queryParamsIndex !== -1) {
         const queryString = urlPath.slice(queryParamsIndex + 1);
@@ -113,8 +117,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         if (param.includes('###')) {
           param = param.replace('###', '___');
         }
-        console.log('Param:', param);
+        // console.log('Param:', param);
         this.service.setQueryParams(JSON.stringify(param));
+        // console.log('before navigate')
         this.router.navigate([], {
           queryParams: { 'stateFilters': param }, // Pass the object here
           relativeTo: this.route,
@@ -125,7 +130,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       // const keyValue = params['stateFilters']; // Access specific key
       // console.log('Value of key:', keyValue);
     });
-    this.selectedTab = this.service.getSelectedTab() || 'iteration';
+    this.selectedTab = decodeURIComponent(this.service.getSelectedTab()).split('?')[0] || 'iteration';
+    console.log('this.selectedTab ', this.selectedTab)
     this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
 
@@ -168,7 +174,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.service.onTabSwitch
         .subscribe(data => {
           setTimeout(() => {
-            this.selectedTab = JSON.parse(JSON.stringify(data.selectedBoard));
+            this.selectedTab = decodeURIComponent(JSON.parse(JSON.stringify(data.selectedBoard))).split('?')[0];
+            console.log('selectedTab', this.selectedTab);
             if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
               this.showChart = 'chart';
               this.service.setShowTableView(this.showChart);

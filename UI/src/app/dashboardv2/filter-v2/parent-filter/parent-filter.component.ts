@@ -34,7 +34,7 @@ export class ParentFilterComponent implements OnChanges {
         });
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
 
-        this.stateFilters = this.sharedService.getQueryParams()?.parent_level || this.helperService.getBackupOfFilterSelectionState('parent_level');
+        this.stateFilters = (this.sharedService.getQueryParams() && JSON.parse(this.sharedService.getQueryParams())?.parent_level) || this.helperService.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
             this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId.toLowerCase() === this.stateFilters.toLowerCase() })[0];
