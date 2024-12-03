@@ -110,6 +110,7 @@ export class AppComponent implements OnInit {
             const urlParams = new URLSearchParams(queryString);
 
             let param = urlParams.get('stateFilters');
+            param = atob(param);
             if (param.includes('###')) {
               param = param.replace(/###/gi, '___');
             }
