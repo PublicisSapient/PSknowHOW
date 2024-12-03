@@ -42,7 +42,7 @@ public class KPIExcelValidationDataResponse {
 	@JsonProperty("validationData")
 	/* package */ Map<String, ValidationData> mapOfSprintAndData;
 	private String kpiName;
-	private boolean saveDisplay;
+	private boolean saveDisplay; // Use for providing excel enable and disable flag
 	private String kpiId;
 	@JsonProperty("columns")
 	private List<String> excelColumns;
@@ -97,6 +97,10 @@ public class KPIExcelValidationDataResponse {
 		this.kpiName = kpiName;
 	}
 
+	/**
+	 * set save display flag
+	 *
+	 */
 	public boolean getSaveDisplay() {
 		return saveDisplay;
 	}
