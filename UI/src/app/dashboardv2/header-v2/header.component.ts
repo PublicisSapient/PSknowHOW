@@ -35,6 +35,10 @@ export class HeaderComponent implements OnInit {
   userRole: string = '';
   noToolsConfigured: boolean;
 
+  buttonLabel = 'Copy URL';
+  buttonIcon = 'pi pi-copy';
+  buttonStyleClass = 'p-button-secondary p-button-sm';
+
   constructor(
     private httpService: HttpService,
     public sharedService: SharedService,
@@ -178,5 +182,30 @@ export class HeaderComponent implements OnInit {
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.router.navigate([`/dashboard/my-knowhow`]);
     }
+  }
+
+  copyUrlToClipboard() {
+    const url = window.location.href; // Get the current URL
+    navigator.clipboard.writeText(url).then(() => {
+      this.showSuccess();
+    }).catch(err => {
+      console.error('Failed to copy URL: ', err);
+    });
+  }
+
+  showSuccess() {
+    this.buttonLabel = 'Copied!';
+    this.buttonIcon = 'pi pi-check';
+    this.buttonStyleClass = 'p-button-sm p-button-success';
+
+    setTimeout(() => {
+      this.resetButton();
+    }, 5000);
+  }
+
+  resetButton() {
+    this.buttonLabel = 'Copy URL';
+    this.buttonIcon = 'pi pi-copy';
+    this.buttonStyleClass = 'p-button-sm p-button-secondary';
   }
 }

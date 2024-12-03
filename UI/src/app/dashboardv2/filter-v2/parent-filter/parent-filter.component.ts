@@ -32,7 +32,7 @@ export class ParentFilterComponent implements OnChanges {
           }
         });
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
-        this.stateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())['parent_level'] || this.helperService.getBackupOfFilterSelectionState('parent_level');
+        this.stateFilters = (this.helperService.getBackupOfUrlFilters() && JSON.parse(this.helperService.getBackupOfUrlFilters())['parent_level']) || this.helperService.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
             this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId.toLowerCase() === this.stateFilters.toLowerCase() })[0];
@@ -96,7 +96,7 @@ export class ParentFilterComponent implements OnChanges {
 /**
  * Handles the change of the selected level in the filter configuration.
  * Emits the selected level and updates the backup of filter selection state based on whether the parent level has changed.
- * 
+ *
  * @param {boolean} parentLevelChanged - Indicates if the parent level has changed.
  * @returns {void}
  */
@@ -124,7 +124,7 @@ export class ParentFilterComponent implements OnChanges {
 /**
  * Handles the change event of a dropdown element.
  * If a dropdown element is selected, it triggers the level change handling.
- * 
+ *
  * @param {any} $event - The event object from the dropdown change.
  * @returns {void}
  */
