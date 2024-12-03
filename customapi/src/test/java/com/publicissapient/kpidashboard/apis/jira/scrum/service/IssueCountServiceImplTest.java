@@ -22,12 +22,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -74,39 +74,31 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 @RunWith(MockitoJUnitRunner.class)
 public class IssueCountServiceImplTest {
 
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	@Mock
-	JiraIssueRepository jiraIssueRepository;
+	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private static final String STORY_LIST = "stories";
+	private static final String SPRINTSDETAILS = "sprints";
+	public static final String PROJECT_WISE_STORY_CATEGORIES = "projectWiseStoryCategories";
+	public static final String PROJECT_WISE_TOTAL_CATEGORIES = "projectWiseTotalCategories";
+
 	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
-	@Mock
-	KpiHelperService kpiHelperService;
 	@InjectMocks
 	IssueCountServiceImpl issueCountServiceImpl;
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-	@Mock
-	SprintRepository sprintRepository;
-	@Mock
-	CustomApiConfig customApiSetting;
 	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock
 	private CommonService commonService;
 	@Mock
 	private FilterHelperService filterHelperService;
-
 	@Mock
-	private JiraServiceR jiraKPIService;
+	private KpiDataCacheService kpiDataCacheService;
+	@Mock
+	private	KpiDataProvider kpiDataProvider;
+
 	private Map<String, Object> filterLevelMap;
-	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	private List<JiraIssue> totalIssueList = new ArrayList<>();
@@ -119,6 +111,7 @@ public class IssueCountServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.ISSUE_COUNT.getKpiId());
 		kpiRequest.setLabel("PROJECT");
+		kpiRequest.setLevel(5);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -154,7 +147,7 @@ public class IssueCountServiceImplTest {
 
 	@After
 	public void cleanup() {
-		jiraIssueRepository.deleteAll();
+
 	}
 
 	@Test
@@ -172,9 +165,14 @@ public class IssueCountServiceImplTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
+		Map<String, Object> result = new HashMap<>();
+		result.put(SPRINTSDETAILS,sprintDetailsList);
+		result.put(STORY_LIST, totalIssueList);
+		result.put(PROJECT_WISE_STORY_CATEGORIES, new HashMap<>());
+		result.put(PROJECT_WISE_TOTAL_CATEGORIES, new HashMap<>());
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchIssueCountData(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(result);
 
 		Map<String, Object> storyList = issueCountServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
@@ -185,9 +183,35 @@ public class IssueCountServiceImplTest {
 	public void testGetStoryList() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
+
+		Map<String, List<String>> projectWiseJiraIdentification = new HashMap<>();
+		Map<String, List<String>> projectWiseStoryCategories = new HashMap<>();
+		treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			List<String> jiraStoryIdentification = new ArrayList<>();
+			List<String> jiraStoryCategory = new ArrayList<>();
+			FieldMapping fieldMapping = fieldMappingMap.get(basicProjectConfigId);
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKpi40()).isPresent()) {
+				jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationKpi40().stream().map(String::toLowerCase)
+						.collect(Collectors.toList());
+			}
+			if (Optional.ofNullable(fieldMapping.getJiraStoryCategoryKpi40()).isPresent()) {
+				jiraStoryCategory = fieldMapping.getJiraStoryCategoryKpi40().stream().map(String::toLowerCase)
+						.collect(Collectors.toList());
+			}
+			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
+			projectWiseStoryCategories.put(basicProjectConfigId.toString(), jiraStoryCategory);
+		});
+
+		Map<String, Object> result = new HashMap<>();
+		result.put(SPRINTSDETAILS,sprintDetailsList);
+		result.put(STORY_LIST, totalIssueList);
+		result.put(PROJECT_WISE_STORY_CATEGORIES, projectWiseStoryCategories);
+		result.put(PROJECT_WISE_TOTAL_CATEGORIES, projectWiseJiraIdentification);
+
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
+		when(kpiDataProvider.fetchIssueCountDataFromDB(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(result);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))

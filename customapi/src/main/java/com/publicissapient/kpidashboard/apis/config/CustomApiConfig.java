@@ -299,7 +299,7 @@ public class CustomApiConfig {// NOPMD
     @Setter
     @Getter
     private int userSessionsExpiresOn;
-	
+
 	public String getDefectRateUrl() {
 		return defectRateUrl;
 	}
