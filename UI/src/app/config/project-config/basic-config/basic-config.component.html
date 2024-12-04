@@ -19,7 +19,7 @@
 <p-toast [style]="{ marginTop: '80px' }"></p-toast>
 <div class="main p-pl-6 p-pr-6 p-pb-1">
   <div class="p-d-flex p-p-0 p-flex-column">
-    <div class="nav-container">
+    <div class="nav-container" *ngIf="clone === 'false'">
       <nav>
         <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
           <ng-container *ngIf="!last">
@@ -54,6 +54,15 @@
                   </div>
                 </ng-template>
               </p-messages>
+              <p-messages *ngIf="getConeStatusFlag() && form.get('developerKpiEnabled')?.value" severity="warn">
+                <ng-template pTemplate>
+                  <em class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #f39c12;"></em>
+                  <div class="p-ml-2">
+                    Tools config required for Developer dashboard are not supported for cloning.
+                    Please configure your SCM tools after completing the cloning step
+                  </div>
+                </ng-template>
+              </p-messages>
             </div>
           </div>
 
@@ -84,7 +93,7 @@
                     </p-selectButton>
                   </div>
                 </div>
-                <!-- <div *ngSwitchCase="'text'">
+                <div *ngSwitchCase="'text'">
                   <div class="p-mb-3 p-mt-3">
                     <span class="p-float-label" pTooltip='{{ field.hierarchyLevelTooltip }}' tooltipPosition="bottom"
                       tooltipEvent="hover">
@@ -97,7 +106,7 @@
                       *ngIf="form.controls[field.hierarchyLevelId].errors?.stringValidator">Special
                       Characters are not allowed.</span>
                   </div>
-                </div> -->
+                </div>
                 <div *ngSwitchCase="'boolean'" class="p-mb-3">
                   <ng-container
                     *ngIf="ifSuperUser === true || isProjectAdmin === true"
@@ -132,7 +141,7 @@
                       [formControlName]="field.hierarchyLevelId"
                       [style]="{ width: '500px' }"
                       [suggestions]="(field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list"
-                      (completeMethod)="search($event, field)"
+                      (completeMethod)="search({ query: selectedItems[field.hierarchyLevelId]?.nodeDisplayName || $event.query }, field)"
                       required="required"
                       [dropdown]="true"
                       field="nodeDisplayName"
@@ -142,7 +151,7 @@
                     >
                       <ng-template let-listItem pTemplate="item">
                         <div class="listItem-item">
-                          <div>{{ listItem.nodeDisplayName }}</div>
+                          <div>{{ listItem.nodeDisplayName }} <span class="parent_span">{{getNodeDisplayNameById(listItem.parentId, field)}}</span></div>
                         </div>
                       </ng-template>
                     </p-autoComplete>
@@ -155,7 +164,7 @@
               <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
                 icon="pi pi-angle-double-left" iconPos="left" (click)="closeProjectSetupPopup.emit()"></button>
               <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-                icon="pi pi-save" iconPos="left" label="Finalize" [disabled]="!form.valid"></button>
+                icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
             </div>
           </form>
         </div>
@@ -163,9 +172,13 @@
       <ng-container *ngIf="isProjectCOmpletionPopup">
         <div class="p-p-0">
           <div class="p-d-flex p-jc-center p-pb-3">
-            <h5 class="card__primary__title__text p-mb-0">
+            <h5 *ngIf = "!getConeStatusFlag()" class="card__primary__title__text p-mb-0">
               Project “{{selectedProject?.['name']}}” successfully added.
               Connect Tools to sync KPI’s.
+            </h5>
+            <h5 *ngIf = "getConeStatusFlag()" class="card__primary__title__text p-mb-0">
+              Cloned project “{{selectedProject?.['name']}}” successfully added. 
+              Proceed to Project Configuration to review and make any necessary changes.
             </h5>
           </div>
           <div class="p-d-flex p-jc-center p-pb-3">
@@ -177,9 +190,14 @@
           <div class="p-pb-3">
             <p-steps [model]="steps" [readonly]="false"></p-steps>
           </div>
-          <div class="p-d-flex p-jc-center p-pb-3">
+          <div *ngIf = "!getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
             <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
                 [queryParams]="{tab: 1}">Continue to Tool Connections</a></label>
+          </div>
+          <div *ngIf = "getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
+            <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
+                      [queryParams]="{ type: selectedProject?.Type, tab: 2 }">
+                      Continue to Project Configuration</a></label>
           </div>
 
           <div class="p-d-flex p-jc-center p-pb-3">

@@ -24,8 +24,8 @@ import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 import { BasicConfigComponent } from './basic-config.component';
-import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 
 describe('BasicConfigComponent', () => {
   let component: BasicConfigComponent;
@@ -35,7 +35,7 @@ describe('BasicConfigComponent', () => {
   let authService: jasmine.SpyObj<GetAuthorizationService>;
   let messageService: jasmine.SpyObj<MessageService>;
   let gaService: jasmine.SpyObj<GoogleAnalyticsService>;
-
+  let mockActivatedRoute;
   const hierarchyData = [
     {
       "hierarchyLevelId": "bu",
@@ -227,6 +227,7 @@ describe('BasicConfigComponent', () => {
         { provide: MessageService, useValue: messageServiceSpy },
         { provide: GoogleAnalyticsService, useValue: gaServiceSpy },
         { provide: Router, useValue: {} },
+        { provide: ActivatedRoute, useValue: {} }
       ]
     }).compileComponents();
 
@@ -263,7 +264,7 @@ describe('BasicConfigComponent', () => {
       return null;
     });
     spyOn(localStorage, 'setItem');
-
+    spyOn(component, 'getFields');
     // Mock return for getOrganizationHierarchy
     httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
 
@@ -370,7 +371,6 @@ describe('BasicConfigComponent', () => {
     };
 
     httpService.addBasicConfig.and.returnValue(of(mockErrorResponse));
-
     component.onSubmit();
     tick();
 
@@ -383,7 +383,6 @@ describe('BasicConfigComponent', () => {
 
   it('should handle network error during form submission', fakeAsync(() => {
     httpService.addBasicConfig.and.returnValue(throwError(() => new Error('Network error')));
-
     component.onSubmit();
     tick();
 
@@ -497,7 +496,6 @@ describe('BasicConfigComponent', () => {
     };
 
     httpService.getOrganizationHierarchy.and.returnValue(of(mockFormFieldData));
-    spyOn(component, 'getFields');
 
     component.getHierarchy();
 
@@ -556,7 +554,6 @@ describe('BasicConfigComponent', () => {
   it('should handle empty localStorage data gracefully', () => {
     (localStorage.getItem as jasmine.Spy).and.returnValue(null);
     httpService.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
-    spyOn(component, 'getFields');
 
     component.getHierarchy();
 

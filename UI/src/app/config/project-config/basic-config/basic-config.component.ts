@@ -17,13 +17,13 @@
  ******************************************************************************/
 
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 declare const require: any;
 
@@ -60,6 +60,7 @@ export class BasicConfigComponent implements OnInit {
   allProjectList: any[];
   selectedItems: { [key: string]: any } = {};
   isSpeedSuite = environment?.['SPEED_SUITE'] ? environment?.['SPEED_SUITE'] : false;
+  clone: string = '';
 
   constructor(private formBuilder: UntypedFormBuilder,
     private sharedService: SharedService,
@@ -67,7 +68,8 @@ export class BasicConfigComponent implements OnInit {
     private messenger: MessageService,
     private getAuthorizationService: GetAuthorizationService,
     private ga: GoogleAnalyticsService,
-    public router: Router) {
+    public router: Router,
+    private route: ActivatedRoute) {
     this.projectTypeOptions = [
       { name: 'Scrum', value: false },
       { name: 'Kanban', value: true }
@@ -95,15 +97,20 @@ export class BasicConfigComponent implements OnInit {
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
 
     this.allProjectList = this.sharedService.getProjectList();
+
+
   }
 
   getFields() {
     // api call to get formData
     this.blocked = true;
-    const formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+    let formFieldData = JSON.parse(localStorage.getItem('hierarchyData'));
+
     this.formData = JSON.parse(JSON.stringify(formFieldData));
     this.getFieldsResponse = JSON.parse(JSON.stringify(formFieldData));
-
+    this.route.queryParams.subscribe(params => {
+      this.clone = params['clone'];
+    })
     if (Array.isArray(this.formData)) {
       this.formData?.unshift({
         level: 0,
@@ -113,6 +120,21 @@ export class BasicConfigComponent implements OnInit {
         value: false,
         required: true
       });
+
+      if (this.clone === 'true') {
+        this.formData.push(
+          {
+            level: this.formData.length,
+            hierarchyLevelId: 'projectName',
+            hierarchyLevelName: 'Project Name',
+            hierarchyLevelTooltip: 'Project Name',
+            inputType: 'text',
+            value: '',
+            required: true
+          }
+        );
+      }
+
       this.formData?.push(
         {
           level: this.formData.length,
@@ -143,13 +165,36 @@ export class BasicConfigComponent implements OnInit {
       });
     }
     this.blocked = false;
+    this.prefillForm();
+      if (this.clone === 'true') {
+        setTimeout(() => {
+          this.prefillForm();
+        }, 500);
+      }
+  }
 
+  prefillForm(): void {
+    if (this.selectedProject && Object.keys(this.selectedProject).length) {
+      let project = JSON.parse(JSON.stringify(this.selectedProject));
+      const formValues = {};
+      this.formData.forEach(field => {
+        const nodeDisplayName = field.hierarchyLevelId === 'project'
+          ? project['name']
+          : project[field.hierarchyLevelId];
+        formValues[field.hierarchyLevelId] = field.list?.find(item => item.nodeDisplayName === nodeDisplayName) ?? undefined;
+      });
+      formValues['projectName'] = 'Clone_' + this.selectedProject['name'];
+      formValues['kanban'] = this.selectedProject.type === 'Kanban';
+      formValues['assigneeDetails'] = this.selectedProject['saveAssigneeDetails'];
+      formValues['developerKpiEnabled'] = this.selectedProject['developerKpiEnabled'];
+      this.form.patchValue(formValues);
+    }
   }
 
   search(event, field) {
     const filtered: any[] = [];
     const query = event.query;
-    const list = (field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list;
+    const list = field.filteredSuggestions && field.filteredSuggestions.length? field.filteredSuggestions: field.list;
     for (let i = 0; i < list.length; i++) {
       const listItem = list[i];
       if (listItem?.nodeDisplayName?.toLowerCase().indexOf(query?.toLowerCase()) >= 0) {
@@ -170,33 +215,53 @@ export class BasicConfigComponent implements OnInit {
     // currentLevel.filteredSuggestions = currentLevel.list.filter(item => item.nodeId === selectedNodeId);
 
     // Step 2: Filter items in levels below based on selected item’s nodeId
-    this.filterBelowLevels(selectedNodeId, currentIndex);
+    if(event.hierarchyLevelId === 'project' && this.clone == 'true') {
+      const formValues = {};
+      formValues['projectName'] = 'Clone_' + event.nodeDisplayName;
+      this.form.patchValue(formValues)
+    } else {
+      this.filterBelowLevels(selectedNodeId, currentIndex);
+    }
 
     // Step 3: Filter items in levels above based on selected item's parentId
     this.filterAboveLevels(selectedParentId, currentIndex);
   }
 
   filterAboveLevels(selectedParentId: any, currentIndex: number) {
+
     let selectParentId = selectedParentId;
     for (let i = currentIndex - 1; i >= 0; i--) {
       if (this.formData[i]?.list) {
+
         this.formData[i].filteredSuggestions = this.formData[i]?.list.filter(item => item.nodeId === selectParentId);
         selectParentId = this.formData[i]?.filteredSuggestions[0].parentId;
+
+        if (this.formData[i].filteredSuggestions && this.formData[i].filteredSuggestions.length) {
+          this.selectedItems[this.formData[i].hierarchyLevelId] = this.formData[i].filteredSuggestions[0];
+        }
       }
     }
-
-    // Method to prepopulate if only one item exists in list
-    this.formData.forEach(level => {
-      if (level.filteredSuggestions && level.filteredSuggestions.length === 1) {
-        this.selectedItems[level.hierarchyLevelId] = level.filteredSuggestions[0];
-      }
-    });
   }
 
   filterBelowLevels(selectedNodeId: string, currentIndex: number) {
+
+    let selectParentId = selectedNodeId;
     for (let i = currentIndex + 1; i < this.formData.length; i++) {
       if (this.formData[i].list) {
-        this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => item.parentId === selectedNodeId);
+        if(selectParentId) {
+        this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => item.parentId === selectParentId);
+        }
+        selectParentId = this.formData[i]?.filteredSuggestions[0]?.parentId;
+
+        if (this.formData[i].filteredSuggestions && this.formData[i].filteredSuggestions.length && this.clone == 'true') {
+          this.selectedItems[this.formData[i].hierarchyLevelId] = this.formData[i].filteredSuggestions[0];
+          selectParentId = this.formData[i].filteredSuggestions[0].nodeId
+          if(this.formData[i].hierarchyLevelId === 'project') {
+            const formValues = {};
+            formValues['projectName'] = 'Clone_' + this.formData[i].filteredSuggestions[0].nodeDisplayName;
+            this.form.patchValue(formValues)
+          }
+      }
       }
     }
   }
@@ -210,7 +275,12 @@ export class BasicConfigComponent implements OnInit {
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
-    submitData['developerKpiEnabled'] = formValue['developerKpiEnabled']
+    submitData['developerKpiEnabled'] = formValue['developerKpiEnabled'];
+    if (this.clone === 'true') {
+      submitData['clonedFrom'] = this.selectedProject['id'];
+    } else {
+      submitData['clonedFrom'] = null;
+    }
     let gaObj = {
       name: formValue['projectName'],
       kanban: formValue['kanban'],
@@ -220,7 +290,7 @@ export class BasicConfigComponent implements OnInit {
       user_email: this.sharedService.getCurrentUserDetails('user_email'),
     }
     this.getFieldsResponse.forEach((element, index) => {
-      if (element.hierarchyLevelId === 'project') {
+      if (element.hierarchyLevelId === 'project' && this.clone !== 'true') {
         if (typeof formValue[element.hierarchyLevelId] === 'string') {
           const newProjectName = formValue[element.hierarchyLevelId].trim();
           submitData['projectName'] = newProjectName;
@@ -356,6 +426,21 @@ export class BasicConfigComponent implements OnInit {
       localStorage.setItem('hierarchyData', JSON.stringify(transformedData, null, 2));
       this.getFields();
     });
+  }
+
+  getNodeDisplayNameById(nodeId: string, field) {
+    const currentIndex = this.formData.findIndex(level => level === field);
+      if (this.formData[currentIndex-1]?.list) {
+        let matchingObject = this.formData[currentIndex - 1]?.list.find(item => item.nodeId === nodeId);
+        return `(${matchingObject.nodeDisplayName})`;
+      }
+    }
+  getButtonLabel(): string {
+    return this.clone === 'true' ? 'CLONE' : 'Finalize';
+  }
+
+  getConeStatusFlag(): boolean {
+    return this.clone === 'true';
   }
 
 }

@@ -287,8 +287,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<ProjectToolConfig> toolConfigList = projectToolConfigService
 				.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
 		List<ProjectToolConfig> clonedToolConfigs = new ArrayList<>();
-
+		List<String> scmToolList = Arrays.asList(Constant.TOOL_GITHUB, Constant.TOOL_GITLAB,
+				Constant.TOOL_BITBUCKET, Constant.TOOL_AZUREREPO);
 		for (ProjectToolConfig toolConfig : toolConfigList) {
+			if(savedProjectBasicConfig.isDeveloperKpiEnabled() && scmToolList.contains(toolConfig.getToolName()))
+				continue;
 			try {
 				ProjectToolConfig clonedToolConfig = toolConfig.clone();
 				clonedToolConfig.setId(null);
