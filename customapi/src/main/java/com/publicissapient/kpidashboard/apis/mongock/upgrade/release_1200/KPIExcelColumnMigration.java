@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 
 import io.mongock.api.annotations.ChangeUnit;
@@ -64,10 +65,11 @@ public class KPIExcelColumnMigration {
 				}
 			}
 
-			// Step 2: Delete all data except for the Iteration kpiIds
+			// Step 2: Delete all data except for the Iteration kpiIds and
+			// LEAD_TIME_FOR_CHANGE
 			List<String> kpiIdsToKeep = Arrays.asList("kpi128", "kpi121", "kpi119", "kpi75", "kpi123", "kpi122",
 					"kpi120", "kpi124", "kpi132", "kpi133", "kpi134", "kpi125", "kpi131", "kpi135", "kpi136", "kpi140",
-					"kpi145", "kpi154", "kpi176");
+					"kpi145", "kpi154", "kpi176", "Kpi146", "Kpi156");
 
 			sourceCollection.deleteMany(new Document(KPI_ID, new Document("$nin", kpiIdsToKeep)));
 			log.info("Deleted unwanted kpi_column_configs entries.");
@@ -75,8 +77,7 @@ public class KPIExcelColumnMigration {
 			// Step 3: Insert new data from the KPIExcelColumn enum
 			for (KPIExcelColumn kpiExcelColumn : KPIExcelColumn.values()) {
 				// Check if the kpiId already exists in the collection
-				Document existingEntry = sourceCollection.find(new Document(KPI_ID, kpiExcelColumn.getKpiId()))
-						.first();
+				Document existingEntry = sourceCollection.find(new Document(KPI_ID, kpiExcelColumn.getKpiId())).first();
 				if (existingEntry != null) {
 					log.info("Skipping insertion for existing kpiId: {}", kpiExcelColumn.getKpiId());
 					continue; // Skip this kpiId if it already exists
@@ -87,11 +88,37 @@ public class KPIExcelColumnMigration {
 				document.put("basicProjectConfigId", null);
 				document.put(KPI_ID, kpiExcelColumn.getKpiId());
 				document.put("kpiColumnDetails", createColumnDetails(kpiExcelColumn));
-
 				// Insert into the collection
 				sourceCollection.insertOne(document);
 				log.info("Inserted new entry for kpiId: {}", kpiExcelColumn.getKpiId());
 			}
+
+			// Document for kpi156
+			Document kpi156 = new Document("basicProjectConfigId", null).append("kpiId", "kpi156").append(
+					"kpiColumnDetails",
+					List.of(new Document("columnName", "Project Name").append("order", 1).append("isShown", true)
+							.append("isDefault", true),
+							new Document("columnName", "Weeks").append("order", 2).append("isShown", true)
+									.append("isDefault", true),
+							new Document("columnName", "Story ID").append("order", 3).append("isShown", true)
+									.append("isDefault", true),
+							new Document("columnName", "Lead Time (In Days) [B-A]").append("order", 4)
+									.append("isShown", true).append("isDefault", true),
+							new Document("columnName", "Change Completion Date [A]").append("order", 5)
+									.append("isShown", true).append("isDefault", true),
+							new Document("columnName", "Change Release Date [B]").append("order", 6)
+									.append("isShown", true).append("isDefault", true),
+							new Document("columnName", "Merge Request Id").append("order", 7).append("isShown", true)
+									.append("isDefault", false),
+							new Document("columnName", "Branch").append("order", 8).append("isShown", true)
+									.append("isDefault", false)));
+			// Document for kpi146
+			Document kpi146 = new Document("basicProjectConfigId", null).append("kpiId", "kpi146")
+					.append("kpiColumnDetails", List.of(new Document("columnName", "Date").append("order", 1)
+							.append("isShown", true).append("isDefault", true)));
+			// Insert documents
+			sourceCollection.insertMany(List.of(kpi156, kpi146));
+
 			log.info("Inserted new KPI column configs from KPIExcelColumn enum.");
 		} catch (Exception e) {
 			log.error("Error during KPI column migration: ", e);
@@ -110,7 +137,6 @@ public class KPIExcelColumnMigration {
 			// Clear the target collection
 			MongoCollection<Document> sourceCollection = mongoTemplate.getCollection("kpi_column_configs");
 			sourceCollection.deleteMany(new Document());
-
 			// Restore backup
 			try (MongoCursor<Document> cursor = backupCollection.find().iterator()) {
 				while (cursor.hasNext()) {
@@ -119,6 +145,8 @@ public class KPIExcelColumnMigration {
 					sourceCollection.insertOne(document);
 				}
 			}
+			// Remove documents with the specified kpiIds
+			sourceCollection.deleteMany(Filters.in("kpiId", "kpi156", "kpi146"));
 			log.info("Rollback completed. Data restored from backup.");
 		} catch (Exception e) {
 			log.error("Error during rollback: ", e);
