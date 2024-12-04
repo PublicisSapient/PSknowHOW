@@ -10,6 +10,7 @@ import { Menu } from 'primeng/menu';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -85,7 +86,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   copyCardData: any;
   currentChartData;
   KpiCategory;
-  colorPalette = ['#167a26', '#4ebb1a', '#f53535'];
+  colorPalette =  d3.schemeCategory10;//['#167a26', '#4ebb1a', '#f53535'];
   selectedButtonValue;
   cardData;
 

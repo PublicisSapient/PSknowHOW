@@ -30,11 +30,11 @@
                         </div>
                         <div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
                             <ng-container
-                                *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
-
+                                *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined && test()">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-                                    <div *ngIf="selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled']"
-                                        class="{{ kpi.kpiDetail?.kpiWidth ? kpi.kpiDetail?.kpiWidth === 100 ? 'p-col-12' : 'p-col-6'  : 'p-col-6'  }}">
+                                    <!--selectedKPITab === kpi.kpiDetail?.kpiSubCategory &&-->
+                                    <div *ngIf=" kpi['isEnabled']"
+                                        class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -53,7 +53,7 @@
                                             [showCommentIcon]="showCommentIcon"
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
-                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize"
+                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail?.kpiSize"
                                             [kpiChartData]="kpiChartData" [immediateLoader]='immediateLoader'
                                             [partialData]="checkIfPartialDataPresent(kpi)">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
