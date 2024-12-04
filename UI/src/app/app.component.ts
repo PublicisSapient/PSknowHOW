@@ -24,7 +24,8 @@ import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-import { FeatureFlagsService } from './services/feature-toggle.service';
+import { HelperService } from './services/helper.service';
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -34,11 +35,11 @@ import { FeatureFlagsService } from './services/feature-toggle.service';
 
 
 export class AppComponent implements OnInit {
-
   loadingRouteConfig: boolean;
-
   authorized = <boolean>true;
-
+  refreshCounter: number = 0;
+  self: any = this;
+  selectedTab: string = '';
   @HostListener('window:scroll', ['$event'])
   onScroll(event) {
     const header = document.querySelector('.header');
@@ -50,13 +51,12 @@ export class AppComponent implements OnInit {
   }
 
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
+    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private helperService: HelperService, private location: Location) {
     this.authorized = this.getAuth.checkAuth();
   }
 
   ngOnInit() {
     localStorage.removeItem('newUI');
-
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
       .subscribe(params => {
@@ -68,8 +68,7 @@ export class AppComponent implements OnInit {
         if (sprintId) {
           this.service.setSprintQueryParamInFilters(sprintId)
         }
-      }
-      );
+      });
 
     this.primengConfig.ripple = true;
     this.authorized = this.getAuth.checkAuth();
@@ -90,8 +89,45 @@ export class AppComponent implements OnInit {
           uiType: 'New'
         };
         this.ga.setPageLoad(data);
+
+        if (!this.refreshCounter) {
+          ++this.refreshCounter;
+
+          let selectedTab = this.location.path();
+          selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+          selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+          this.selectedTab = selectedTab.split('?statefilters=')[0];
+          this.service.setSelectedBoard(this.selectedTab);
+
+          const urlPath = decodeURIComponent(window.location.hash);
+          const queryParamsIndex = urlPath.indexOf('?');
+          const decodedPath = decodeURIComponent(urlPath);
+
+          if (queryParamsIndex !== -1) {
+            const queryString = urlPath.slice(queryParamsIndex + 1);
+
+            // Parse query string into key-value pairs
+            const urlParams = new URLSearchParams(queryString);
+
+            let param = urlParams.get('stateFilters');
+            param = atob(param);
+            if (param.includes('###')) {
+              param = param.replace(/###/gi, '___');
+            }
+            console.log('Param:', param);
+
+            this.helperService.setBackupOfUrlFilters(param);
+
+            // this.router.navigate([], {
+            //   queryParams: { 'stateFilters': param }, // Pass the object here
+            //   relativeTo: this.route,
+            //   queryParamsHandling: 'merge', // Merge with existing queryParams
+            // });
+          }
+        }
       }
 
     });
   }
+
 }
