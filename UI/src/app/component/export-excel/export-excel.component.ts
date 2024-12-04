@@ -39,7 +39,7 @@ export class ExportExcelComponent implements OnInit {
   tableColumns = []; // store all table coumns with configurations
   isDisableSaveCOnfigurationBtn: boolean = false;
   markerInfo = [];
-  forzenColumns = ['issue id','issue description'];
+  forzenColumns = ['issue id'];
 
   constructor(
     private excelService: ExcelService,
@@ -206,7 +206,7 @@ export class ExportExcelComponent implements OnInit {
   }
 
   generateColumnFilterData() {
-    this.excludeColumnFilter = ['Linked Defect', 'Defect Priority', 'Linked Stories'];
+    this.excludeColumnFilter = ['Linked Defect','Linked Stories'];
     if (this.modalDetails['tableValues'].length > 0) {
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
