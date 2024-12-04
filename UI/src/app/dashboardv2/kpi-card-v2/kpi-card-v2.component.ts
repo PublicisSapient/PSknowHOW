@@ -86,7 +86,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   copyCardData: any;
   currentChartData;
   KpiCategory;
-  colorPalette =  d3.schemeCategory10;//['#167a26', '#4ebb1a', '#f53535'];
+  colorPalette =  ['#FBCF5F','#6079C5','#A4F6A5'];//d3.schemeCategory10;//['#167a26', '#4ebb1a', '#f53535'];
   selectedButtonValue;
   cardData;
 
