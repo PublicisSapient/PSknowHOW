@@ -42,5 +42,4 @@ public class UserDTO {
 	private String displayName;
 	private boolean approved;
 	private boolean verified;
-
 }

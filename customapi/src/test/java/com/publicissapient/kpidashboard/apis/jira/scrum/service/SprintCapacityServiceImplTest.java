@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -149,6 +152,12 @@ public class SprintCapacityServiceImplTest {
 		resultMap.put("stories",totalJiraIssueList);
 		resultMap.put("sprints",sprintDetailsList);
 		resultMap.put("JiraIssueHistoryData",jiraIssueCustomHistories);
+
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
 
 	@Test
@@ -198,6 +207,12 @@ public class SprintCapacityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any(), Mockito.any())).thenReturn(dataList);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		FieldMapping fieldMapping = mock(FieldMapping.class);
 		try {
 			KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

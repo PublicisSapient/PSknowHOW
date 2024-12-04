@@ -7,9 +7,7 @@ import lombok.Data;
 @Data
 public class ForgotPasswordRequestDTO {
 
-	/**
-	 * email id, must not be empty
-	 */
+	/** email id, must not be empty */
 	@NotEmpty
 	private String email;
 }

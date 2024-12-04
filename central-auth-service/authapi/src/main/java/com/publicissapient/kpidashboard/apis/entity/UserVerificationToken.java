@@ -62,12 +62,11 @@ public class UserVerificationToken {
 	 * Sets expiry date.
 	 *
 	 * @param days
-	 *            the minutes
+	 *          the minutes
 	 */
 	public void setExpiryDate(int days) {
 		Calendar now = Calendar.getInstance();
 		now.add(Calendar.DAY_OF_MONTH, days);
 		this.expiryDate = now.getTime();
 	}
-
 }

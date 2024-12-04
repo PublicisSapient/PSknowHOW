@@ -52,7 +52,7 @@ public class KPIExcelData {
 	@JsonProperty("Original Time Estimate (in hours)")
 	private String originalTimeEstimate;
 
-	@JsonProperty("Total Time Spent (in hours)")
+	@JsonProperty("Time Spent (in hours)")
 	private String totalTimeSpent;
 
 	@JsonProperty("Closed")
@@ -76,7 +76,10 @@ public class KPIExcelData {
 	@JsonProperty("Issue Description")
 	private String issueDesc;
 
-	@JsonProperty("Story Size(In story point)")
+	@JsonProperty("Story Description")
+	private String storyDesc;
+
+	@JsonProperty("Story Points")
 	private String storyPoints;
 
 	@JsonProperty("Intake to DOR")
@@ -123,6 +126,12 @@ public class KPIExcelData {
 
 	@JsonProperty("Resolved Status")
 	private String resolvedStatus;
+
+	@JsonProperty("Defect Description")
+	private String defectDesc;
+
+	@JsonProperty("Defect Priority")
+	private String defectPriority;
 
 	@JsonProperty("Defect ID")
 	private Map<String, String> defectId;
@@ -228,6 +237,9 @@ public class KPIExcelData {
 
 	@JsonProperty("Issue Status")
 	private String issueStatus;
+
+	@JsonProperty("Defect Status")
+	private String defectStatus;
 
 	@JsonProperty("Execution Date")
 	private String executionDate;

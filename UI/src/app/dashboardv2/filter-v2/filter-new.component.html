@@ -101,26 +101,26 @@
     </div>
     <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover"
       tooltipStyleClass="tooltiptext"
-      *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity'">
+      *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
       <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
         <i class="pi pi-pause" style="font-size: 1rem"></i>
       </span>
-      <p-multiSelect #showHideDdn [styleClass]="'showHideDdn'" [options]="masterData['kpiList']" optionLabel="kpiName">
+      <p-multiSelect #showHideDdn [styleClass]="'showHideDdn'" [options]="masterDataCopy['kpiList']" optionLabel="kpiName">
         <ng-template pTemplate="header">
           <p-checkbox [styleClass]="'showHideDdnSelectAll'" name="showHideSelectAll" [(ngModel)]="showHideSelectAll"
-            [binary]="true" (onChange)="showHideSelectAllApply();enableShowHideApply = false;"></p-checkbox>
+            [binary]="true" (onChange)="showHideSelectAllApply();disableShowHideApply = false;"></p-checkbox>
         </ng-template>
         <ng-template let-option pTemplate="item">
           <div class="filter-item">
             <p-checkbox name="{{ option.kpiId }}" [(ngModel)]="option.isEnabled" [binary]="true"
-              (onChange)="enableShowHideApply = false; showHideSelectAll = false;"></p-checkbox>
+              (onChange)="setSelectAll(); disableShowHideApply = false;"></p-checkbox>
             <span>{{option.kpiName}}</span>
           </div>
         </ng-template>
         <ng-template pTemplate="footer">
           <div class="p-p-3 p-text-right">
             <p-button label="Apply" (onClick)="showHideKPIs()" [style]="{backgroundColor: '#0B4BC8'}"
-              [disabled]="enableShowHideApply"></p-button>
+              [disabled]="disableShowHideApply"></p-button>
           </div>
         </ng-template>
       </p-multiSelect>

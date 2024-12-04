@@ -29,43 +29,28 @@ import org.springframework.validation.ObjectError;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-/**
- * This class handles all the API errors.
- * 
- */
+/** This class handles all the API errors. */
 public class ApiError {
 
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	/**
-	 * operation call status
-	 */
+	/** operation call status */
 	private HttpStatus status;
 
-	/**
-	 * date-time instance of when the error happened
-	 */
+	/** date-time instance of when the error happened */
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
 	private String timestamp;
 
-	/**
-	 * user-friendly message about the error
-	 */
+	/** user-friendly message about the error */
 	private String message;
 
-	/**
-	 * Detail description of error message
-	 */
+	/** Detail description of error message */
 	private Object details;
 
-	/**
-	 * system message describing the error in more detail
-	 */
+	/** system message describing the error in more detail */
 	private String debugMessage;
 
-	/**
-	 * array of sub-errors that happened
-	 */
+	/** array of sub-errors that happened */
 	private List<ApiSubError> subErrors;
 
 	private ApiError() {
@@ -178,5 +163,4 @@ public class ApiError {
 	public void setSubErrors(List<ApiSubError> subErrors) {
 		this.subErrors = subErrors;
 	}
-
 }

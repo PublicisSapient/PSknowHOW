@@ -19,9 +19,7 @@ package com.publicissapient.kpidashboard.apis.errors;
 
 import com.publicissapient.kpidashboard.apis.enums.AuthType;
 
-/**
- * Can be thrown if user does not exists.
- */
+/** Can be thrown if user does not exists. */
 public class UsernameNotFoundException extends RuntimeException {
 
 	private static final long serialVersionUID = -8596676033217258687L;
@@ -32,12 +30,11 @@ public class UsernameNotFoundException extends RuntimeException {
 	 * Instantiates a new User not found exception.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param authType
-	 *            the auth type
+	 *          the auth type
 	 */
 	public UsernameNotFoundException(String username, AuthType authType) {
 		super(String.format(MESSAGE, username, authType.name()));
 	}
-
 }

@@ -85,8 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				String resourceAPIKey = request.getHeader(X_API_KEY);
 				String resource = request.getHeader(RESOURCE_KEY);
 
-				if (resourceAPIKey.isEmpty() || resource.isEmpty()
-						|| !resourceAPIKey.equals(authConfig.getServerApiKey())) {
+				if (resourceAPIKey.isEmpty() || resource.isEmpty() || !resourceAPIKey.equals(authConfig.getServerApiKey())) {
 					throw new BadCredentialsException(NO_RESOURCE_API_KEY_EXCEPTION);
 				} else {
 					filterChain.doFilter(request, response);
@@ -104,6 +103,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			log.error(JWT_FILTER_GENERIC_EXCEPTION, request.getRequestURI(), exception.getMessage());
 			response.setStatus(HttpStatus.FORBIDDEN.value());
 		}
-
 	}
 }

@@ -60,9 +60,9 @@ public class StandardAuthenticationController {
 	public ResponseEntity<ServiceResponseDTO> registerUser(@Valid @RequestBody UserDTO request) {
 		boolean isSuccess = standardAuthenticationService.registerUser(request);
 
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponseDTO(isSuccess, isSuccess ? messageService.getMessage(SUCCESS_SENT_APPROVAL)
-						: messageService.getMessage(ERROR_REGISTER_AGAIN), request.getUsername()));
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess,
+				isSuccess ? messageService.getMessage(SUCCESS_SENT_APPROVAL) : messageService.getMessage(ERROR_REGISTER_AGAIN),
+				request.getUsername()));
 	}
 
 	@GetMapping("/user-approvals/pending")
@@ -77,17 +77,19 @@ public class StandardAuthenticationController {
 		boolean isSuccess = userApprovalService.approveUser(usernameRequestDTO.getUsername());
 
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponseDTO(isSuccess, isSuccess ? messageService.getMessage("success_request_approve")
-						: messageService.getMessage("error_request_approve"), isSuccess));
-
+				.body(new ServiceResponseDTO(isSuccess,
+						isSuccess
+								? messageService.getMessage("success_request_approve")
+								: messageService.getMessage("error_request_approve"),
+						isSuccess));
 	}
 
 	@PutMapping(value = "/reject", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponseDTO> deleteUser(@Valid @RequestBody UserNameRequestDTO usernameRequestDTO) {
 		boolean isSuccess = userApprovalService.rejectUser(usernameRequestDTO.getUsername());
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponseDTO(isSuccess, isSuccess ? messageService.getMessage("rejected_user_deleted")
-						: messageService.getMessage("error_delete_user"), isSuccess));
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponseDTO(isSuccess,
+				isSuccess ? messageService.getMessage("rejected_user_deleted") : messageService.getMessage("error_delete_user"),
+				isSuccess));
 	}
 
 	@PostMapping(value = "/forgot-password", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -99,11 +101,10 @@ public class StandardAuthenticationController {
 
 	/**
 	 * Resets the password after validating the token
+	 *
 	 * <p>
 	 * resetPassword method accepts ResetPasswordRequest object as param and
 	 * forwards the request to ForgotPasswordService to validate the request.
-	 *
-	 * </p>
 	 *
 	 * @param updatedPasswordRequest
 	 * @return ServiceResponse with <tt>sucess</tt> if the request is valid and
@@ -111,8 +112,7 @@ public class StandardAuthenticationController {
 	 *         response code <tt>-14</tt>
 	 */
 	@PostMapping(value = "/reset-password", produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponseDTO> resetPassword(
-			@RequestBody ResetPasswordRequestDTO updatedPasswordRequest) {
+	public ResponseEntity<ServiceResponseDTO> resetPassword(@RequestBody ResetPasswordRequestDTO updatedPasswordRequest) {
 		boolean isSuccess = false;
 		UserDTO user = null;
 		try {
@@ -135,14 +135,14 @@ public class StandardAuthenticationController {
 	 * Change password.
 	 *
 	 * @param response
-	 *            the http servlet response
+	 *          the http servlet response
 	 * @param request
-	 *            the request
+	 *          the request
 	 * @return the response entity
 	 * @throws IOException
-	 *             the io exception
+	 *           the io exception
 	 * @throws ServletException
-	 *             the servlet exception
+	 *           the servlet exception
 	 */
 	@PostMapping(value = "/change-password", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request,

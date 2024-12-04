@@ -39,7 +39,7 @@ import lombok.Setter;
 /**
  * This class serves as the model for storing credential used for login and
  * Signup.
- * 
+ *
  * @author Hiren Babariya
  */
 @Data
@@ -86,8 +86,7 @@ public class User {
 
 	@SuppressWarnings("java:S107")
 	public User(String username, String password, String firstName, String lastName, String displayName, String email,
-			LocalDateTime createdDate, String authType, LocalDateTime modifiedDate, boolean userVerified,
-			boolean approved) {
+			LocalDateTime createdDate, String authType, LocalDateTime modifiedDate, boolean userVerified, boolean approved) {
 		this.username = username;
 		this.password = hash(password);
 		this.firstName = firstName;
@@ -99,14 +98,13 @@ public class User {
 		this.modifiedDate = modifiedDate;
 		this.userVerified = userVerified;
 		this.approved = approved;
-
 	}
 
 	/**
 	 * Hash string.
 	 *
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return the string
 	 */
 	public static String hash(String password) {
@@ -120,7 +118,7 @@ public class User {
 	 * Sets password.
 	 *
 	 * @param password
-	 *            the password
+	 *          the password
 	 */
 	public void setPassword(String password) {
 		this.password = hash(password);
@@ -143,7 +141,7 @@ public class User {
 	 * Check password boolean.
 	 *
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return the boolean
 	 */
 	public boolean checkPassword(String password) {
@@ -152,11 +150,11 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User{" + "id=" + id + ", username='" + username + '\'' + ", password='" + password + '\''
-				+ ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", displayName='"
-				+ displayName + '\'' + ", failedLoginAttemptCount=" + failedLoginAttemptCount
-				+ ", lastUnsuccessfulLoginTime=" + lastUnsuccessfulLoginTime + ", email='" + email + '\''
-				+ ", approved=" + approved + ", userVerified=" + userVerified + ", authType='" + authType + '\''
-				+ ", createdDate=" + createdDate + ", modifiedDate=" + modifiedDate + '}';
+		return "User{" + "id=" + id + ", username='" + username + '\'' + ", password='" + password + '\'' +
+				", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", displayName='" + displayName + '\'' +
+				", failedLoginAttemptCount=" + failedLoginAttemptCount + ", lastUnsuccessfulLoginTime=" +
+				lastUnsuccessfulLoginTime + ", email='" + email + '\'' + ", approved=" + approved + ", userVerified=" +
+				userVerified + ", authType='" + authType + '\'' + ", createdDate=" + createdDate + ", modifiedDate=" +
+				modifiedDate + '}';
 	}
 }

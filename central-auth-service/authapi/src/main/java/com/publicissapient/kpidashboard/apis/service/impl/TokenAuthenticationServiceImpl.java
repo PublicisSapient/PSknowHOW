@@ -69,19 +69,19 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 		return Jwts.builder().setSubject(subject).claim(DETAILS_CLAIM, authType)
 				.claim(ROLES_CLAIM,
-						Objects.nonNull(authorities) ? authorities.stream().map(GrantedAuthority::getAuthority).toList()
+						Objects.nonNull(authorities)
+								? authorities.stream().map(GrantedAuthority::getAuthority).toList()
 								: new ArrayList<>())
-				.setExpiration(Date.from(expirationInstant))
-				.signWith(SignatureAlgorithm.HS512, authProperties.getSecret()).compact();
+				.setExpiration(Date.from(expirationInstant)).signWith(SignatureAlgorithm.HS512, authProperties.getSecret())
+				.compact();
 	}
 
 	@Override
 	public void addStandardCookies(String jwt, HttpServletResponse response) {
-		CookieUtil.addCookie(response, CookieUtil.COOKIE_NAME, jwt, cookieConfig.getDuration(),
-				cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure());
+		CookieUtil.addCookie(response, CookieUtil.COOKIE_NAME, jwt, cookieConfig.getDuration(), cookieConfig.getDomain(),
+				cookieConfig.getIsSameSite(), cookieConfig.getIsSecure());
 		CookieUtil.addCookie(response, CookieUtil.EXPIRY_COOKIE_NAME, cookieConfig.getDuration().toString(), false,
-				cookieConfig.getDuration(), cookieConfig.getDomain(), cookieConfig.getIsSameSite(),
-				cookieConfig.getIsSecure());
+				cookieConfig.getDuration(), cookieConfig.getDomain(), cookieConfig.getIsSameSite(), cookieConfig.getIsSecure());
 	}
 
 	@Override

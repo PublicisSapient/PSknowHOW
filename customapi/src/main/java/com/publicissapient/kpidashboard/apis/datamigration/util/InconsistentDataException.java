@@ -16,18 +16,19 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.common.service;
+package com.publicissapient.kpidashboard.apis.datamigration.util;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UsersLoginHistory;
+import org.springframework.stereotype.Component;
 
-public interface UserLoginHistoryService {
+@Component
+public class InconsistentDataException extends Exception {
+	private static final long serialVersionUID = -664077740219817001L;
 
-	/**
-	 *
-	 * @param userInfo
-	 * @param status
-	 * @return
-	 */
-	UsersLoginHistory createUserLoginHistoryInfo(UserInfo userInfo, String status);
+	public InconsistentDataException() {
+		super();
+	}
+
+	public InconsistentDataException(String str) {
+		super(str);
+	}
 }

@@ -200,7 +200,7 @@ public class CreatedVsResolvedServiceImplTest {
 				startDate, endDate, kpiRequest);
 		createdVsResolvedListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
 		assertThat("createdVsResolved value :",
-				((List<JiraIssue>) (createdVsResolvedListMap.get(CREATED_VS_RESOLVED_KEY))).size(), equalTo(45));
+				((List<JiraIssue>) (createdVsResolvedListMap.get(CREATED_VS_RESOLVED_KEY))).size(), equalTo(48));
 	}
 
 	@Test
@@ -234,7 +234,10 @@ public class CreatedVsResolvedServiceImplTest {
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
 		resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, new ArrayList<JiraIssue>());
-
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		try {
 			KpiElement kpiElement = createdVsResolvedServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

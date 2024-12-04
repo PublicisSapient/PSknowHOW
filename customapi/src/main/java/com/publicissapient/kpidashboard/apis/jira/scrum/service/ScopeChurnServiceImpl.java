@@ -470,7 +470,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 				totalSprintStoryMap.put(CommonConstant.ADDED, sprintWiseAddedList);
 				totalSprintStoryMap.put(CommonConstant.REMOVED, sprintWiseRemovedList);
 				KPIExcelUtility.populateScopeChurn(sprintName, totalSprintStoryMap, addedIssueDateMap,
-						removedIssueDateMap, excelData, fieldMapping);
+						removedIssueDateMap, excelData, fieldMapping, customApiConfig);
 
 			}
 		}

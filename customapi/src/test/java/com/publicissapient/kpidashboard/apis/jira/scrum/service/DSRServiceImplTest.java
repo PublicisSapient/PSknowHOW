@@ -83,10 +83,13 @@ public class DSRServiceImplTest {
 	List<JiraIssue> uatBugList = new ArrayList<>();
 	List<JiraIssue> totalBugList = new ArrayList<>();
 	List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
+	Map<String, List<String>> priority = new HashMap<>();
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@Mock
 	CacheService cacheService;
+	@Mock
+	CustomApiConfig customApiConfig;
 	@Mock
 	ConfigHelperService configHelperService;
 	@InjectMocks
@@ -148,9 +151,8 @@ public class DSRServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		kpiWiseAggregation.put("defectSeepageRate", "percentile");
-		Map<String, List<String>> priority = new HashMap<>();
 		priority.put("P3", Arrays.asList("P3 - Major"));
-		when(customApiSetting.getPriority()).thenReturn(priority);
+
 	}
 
 	@After
@@ -165,7 +167,7 @@ public class DSRServiceImplTest {
 		filterComponentIdWiseDefectMap.put(UATBUGKEY, uatBugList);
 		filterComponentIdWiseDefectMap.put(TOTALBUGKEY, totalBugList);
 		Double dsrValue = dsrServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-		assertThat("DSR value :", dsrValue, equalTo(47.0));
+		assertThat("DSR value :", dsrValue, equalTo(45.0));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -186,11 +188,12 @@ public class DSRServiceImplTest {
 			v1.setIncludeRCAForKPI35(Arrays.asList("code issue"));
 			v1.setDefectPriorityKPI35(Arrays.asList("P3"));
 		});
+		when(customApiConfig.getPriority()).thenReturn(priority);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = dsrServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get(TOTALBUGKEY))).size(),
-				equalTo(8));
+				equalTo(9));
 	}
 
 	@Test
@@ -219,6 +222,10 @@ public class DSRServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(dsrServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		try {
 			KpiElement kpiElement = dsrServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -258,6 +265,11 @@ public class DSRServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(dsrServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
+
 		try {
 			KpiElement kpiElement = dsrServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -288,6 +300,10 @@ public class DSRServiceImplTest {
 			v1.setExcludeUnlinkedDefects(false);
 		});
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);

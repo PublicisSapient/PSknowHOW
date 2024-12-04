@@ -41,9 +41,9 @@ public final class CommonConstant {
 	public static final String SUCCESS_STATUS = "Success";
 	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})";
-	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{3,30}$";// Username can only contain letters and numbers
+	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{3,30}$"; // Username can only contain letters and numbers
 	public static final String WRONG_CREDENTIALS_ERROR_MESSAGE = "Login Failed: The username or password entered is incorrect";
-																		// Maximum length is 30 and min is 3 characters
+	// Maximum length is 30 and min is 3 characters
 	public static final String SUCCESS_VALID_TOKEN = "success_valid_token";
 	public static final String ERROR_INVALID_USER = "error_invalid_user";
 	public static final String SUCCESS_DELETE_TOKEN = "success_delete_token";
@@ -51,6 +51,7 @@ public final class CommonConstant {
 	public static final String SUCCESS_LOGIN = "success_login";
 	public static final String SUCCESS_SENT_APPROVAL = "success_sent_approval";
 	public static final String ERROR_REGISTER_AGAIN = "error_register_again";
+
 	private CommonConstant() {
 	}
 }

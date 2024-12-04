@@ -5,8 +5,7 @@ import { UntypedFormGroup, Validators, UntypedFormControl } from '@angular/forms
 
 @Component({
   selector: 'app-auto-approval',
-  templateUrl: './auto-approval.component.html',
-  styleUrls: ['./auto-approval.component.css']
+  templateUrl: './auto-approval.component.html'
 })
 export class AutoApprovalComponent implements OnInit {
   rolesData: Array<object> = [];

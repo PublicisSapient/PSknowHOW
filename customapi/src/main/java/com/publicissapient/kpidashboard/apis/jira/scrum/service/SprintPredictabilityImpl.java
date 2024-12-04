@@ -491,7 +491,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Long, List<Object>,
 					&& CollectionUtils.isNotEmpty(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
 				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
 				KPIExcelUtility.populateSprintPredictability(node.getSprintFilter().getName(), issueDetailsSet,
-						excelData, fieldMapping, jiraIssueMap);
+						excelData, fieldMapping, jiraIssueMap, customApiConfig);
 			}
 		}
 	}

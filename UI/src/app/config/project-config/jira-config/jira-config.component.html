@@ -33,11 +33,6 @@
             <h5 class="card__primary__title__text p-m-0">{{formTitle}} Configuration</h5>
         </div>
         <div class="p-mb-4">
-            <!-- <div class="p-d-flex p-justify-between p-align-center">
-                <h3 class="p-m-0">Configured Tools</h3>
-                <button pButton pRipple type="button" class="p-button p-button-success p-button-raised" icon="pi pi-plus"
-                iconPos="left" label="Add New" (click)="isConfigureTool = true"></button>
-            </div> -->
             <p-table #dt [value]="configuredTools" [columns]="configuredToolTableCols" dataKey="id"
                 [loading]="loading" styleClass="p-datatable-striped p-mt-5 p-mb-5"
                  loadingIcon="loading-img">
@@ -148,9 +143,7 @@
             <p-accordionTab>
                 <ng-template pTemplate="header">
                     <span class="p-d-flex p-justify-between w-100">
-                        <!-- <div class="p-d-flex p-align-center"> -->
                         <h3>STEP 2: Configure</h3>
-                        <!-- </div> -->
                     </span>
                 </ng-template>
                 <form [formGroup]="toolForm" autocomplete="off" class="tool-form">
@@ -380,16 +373,6 @@
             </p-accordionTab>
 
         </p-accordion>
-
-
-
-
-
-
-
-
-
-
     </div>
 </div>
 <app-page-loader *ngIf="isLoading"></app-page-loader>

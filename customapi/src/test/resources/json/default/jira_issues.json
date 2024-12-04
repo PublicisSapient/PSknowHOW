@@ -276,7 +276,7 @@
     "storyPoints": "0",
     "changeDate": "2022-09-27T05:41:37.0000000",
     "isDeleted": "False",
-    "priority": "P3 - Major",
+    "priority": "P3",
     "labels": [],
     "createdDate": "2022-09-14T09:57:13.0000000",
     "rootCauseList": [
@@ -2166,7 +2166,7 @@
     "storyPoints": "0",
     "changeDate": "2022-08-10T05:13:24.0000000",
     "isDeleted": "False",
-    "priority": "P1 - Blocker",
+    "priority": "P1",
     "labels": [],
     "createdDate": "2022-07-21T04:33:21.0000000",
     "rootCauseList": [
@@ -2683,7 +2683,7 @@
     "storyPoints": "0",
     "changeDate": "2022-09-26T10:33:23.0000000",
     "isDeleted": "False",
-    "priority": "P2 - Critical",
+    "priority": "P2",
     "labels": [],
     "createdDate": "2022-09-21T11:45:03.0000000",
     "rootCauseList": [
@@ -3885,5 +3885,286 @@
     "dueDate": "2022-09-06T00:00:00.000Z",
     "devDueDate": "2022-09-06T00:00:00.000Z",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6335e31c4fd2f76a821114c6",
+    "processorId": "632902802757f265fcb6c452",
+    "issueId": "15841584",
+    "number": "STORY1",
+    "name": "Remove D3V3 library - UI ",
+    "typeId": "7",
+    "typeName": "Story",
+    "status": "Closed",
+    "state": "Closed",
+    "estimate": "0",
+    "storyPoints": "0",
+    "isDeleted": "False",
+    "priority": "P4 - Minor",
+    "labels": [
+      "UI"
+    ],
+    "createdDate": "2022-09-23T10:10:03.0000000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "testUser3"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "testUser3"
+    ],
+    "ownersFullName": [
+      "testUser3"
+    ],
+    "ownersShortName": [
+      "testUser3"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2022-09-27T21:00:00.0000000",
+    "sprintBeginDate": "2022-09-14T09:00:00.0000000",
+    "sprintName": "TEST| KnowHOW|PI_10|Opensource",
+    "sprintID": "40345_Scrum Project_6335363749794a18e8a4479b",
+    "sprintIdList": [
+      "40345"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "Scrum Project",
+    "projectID": "Scrum Project_6335363749794a18e8a4479b",
+    "projectKey": "TEST",
+    "resolution": "Fixed or Completed",
+    "affectedVersions": [],
+    "additionalFilters": [
+      {
+        "filterId": "afOne",
+        "filterValues": [
+          {
+            "valueId": "UI_afOne_6335363749794a18e8a4479b",
+            "value": "UI"
+          }
+        ]
+      }
+    ],
+    "assigneeId": "testUser3",
+    "assigneeName": "testUser3",
+    "jiraStatus": "Closed",
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "releaseVersions": [
+      {
+        "releaseName": "KnowHOW v5.2.0",
+        "releaseDate": "2022-10-07T00:00:00.000+05:30"
+      }
+    ],
+    "defectRaisedByQA": false,
+    "remainingEstimateMinutes": 0,
+    "productionDefect": false,
+    "updateDate": "2022-09-27T19:12:43.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6335e31c4fd2f76a821114c6",
+    "processorId": "632902802757f265fcb6c452",
+    "issueId": "15841565",
+    "number": "STORY2",
+    "name": "UI Defect",
+    "typeId": "7",
+    "typeName": "Story",
+    "status": "Closed",
+    "state": "Closed",
+    "estimate": "0",
+    "storyPoints": "0",
+    "isDeleted": "False",
+    "priority": "P4 - Minor",
+    "labels": [
+      "UI"
+    ],
+    "createdDate": "2022-09-23T10:10:03.0000000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "testUser3"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "testUser3"
+    ],
+    "ownersFullName": [
+      "testUser3"
+    ],
+    "ownersShortName": [
+      "testUser3"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2022-09-27T21:00:00.0000000",
+    "sprintBeginDate": "2022-09-14T09:00:00.0000000",
+    "sprintName": "TEST| KnowHOW|PI_10|Opensource",
+    "sprintID": "40345_Scrum Project_6335363749794a18e8a4479b",
+    "sprintIdList": [
+      "40345"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "Scrum Project",
+    "projectID": "Scrum Project_6335363749794a18e8a4479b",
+    "projectKey": "TEST",
+    "resolution": "Fixed or Completed",
+    "affectedVersions": [],
+    "additionalFilters": [
+      {
+        "filterId": "afOne",
+        "filterValues": [
+          {
+            "valueId": "UI_afOne_6335363749794a18e8a4479b",
+            "value": "UI"
+          }
+        ]
+      }
+    ],
+    "assigneeId": "testUser3",
+    "assigneeName": "testUser3",
+    "jiraStatus": "Closed",
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "releaseVersions": [
+      {
+        "releaseName": "KnowHOW v5.2.0",
+        "releaseDate": "2022-10-07T00:00:00.000+05:30"
+      }
+    ],
+    "defectRaisedByQA": false,
+    "remainingEstimateMinutes": 0,
+    "productionDefect": false,
+    "updateDate": "2022-09-27T19:12:43.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6335e31c4fd2f76a821114c6",
+    "processorId": "632902802757f265fcb6c452",
+    "issueId": "158417655",
+    "number": "TEST-9992",
+    "name": "UI Defect",
+    "typeId": "7",
+    "typeName": "Bug",
+    "status": "Closed",
+    "state": "Closed",
+    "estimate": "0",
+    "storyPoints": "0",
+    "isDeleted": "False",
+    "priority": "P4 - Minor",
+    "labels": [
+      "UI"
+    ],
+    "createdDate": "2022-09-23T10:10:03.0000000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "testUser3"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "testUser3"
+    ],
+    "ownersFullName": [
+      "testUser3"
+    ],
+    "ownersShortName": [
+      "testUser3"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2022-09-27T21:00:00.0000000",
+    "sprintBeginDate": "2022-09-14T09:00:00.0000000",
+    "sprintName": "TEST| KnowHOW|PI_10|Opensource",
+    "sprintID": "40345_Scrum Project_6335363749794a18e8a4479b",
+    "sprintIdList": [
+      "40345"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "Scrum Project",
+    "projectID": "Scrum Project_6335363749794a18e8a4479b",
+    "projectKey": "TEST",
+    "resolution": "Fixed or Completed",
+    "affectedVersions": [],
+    "additionalFilters": [
+      {
+        "filterId": "afOne",
+        "filterValues": [
+          {
+            "valueId": "UI_afOne_6335363749794a18e8a4479b",
+            "value": "UI"
+          }
+        ]
+      }
+    ],
+    "assigneeId": "testUser3",
+    "assigneeName": "testUser3",
+    "jiraStatus": "Closed",
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "releaseVersions": [
+      {
+        "releaseName": "KnowHOW v5.2.0",
+        "releaseDate": "2022-10-07T00:00:00.000+05:30"
+      }
+    ],
+    "defectStoryID" : ["STORY1", "STORY2" ],
+    "defectRaisedByQA": false,
+    "remainingEstimateMinutes": 0,
+    "productionDefect": false,
+    "updateDate": "2022-09-27T19:12:43.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   }
+
 ]

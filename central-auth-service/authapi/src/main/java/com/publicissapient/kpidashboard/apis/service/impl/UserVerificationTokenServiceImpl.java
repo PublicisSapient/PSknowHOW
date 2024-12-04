@@ -40,7 +40,6 @@ public class UserVerificationTokenServiceImpl implements UserVerificationTokenSe
 	 * validateEmailToken method checks the token received from request, exists in
 	 * the database.If the token is found in the database method will forward the
 	 * token to validate it
-	 * </p>
 	 *
 	 * @param token
 	 * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type

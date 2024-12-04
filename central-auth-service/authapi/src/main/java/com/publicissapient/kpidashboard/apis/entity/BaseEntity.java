@@ -55,5 +55,4 @@ public class BaseEntity {
 
 	@Column(name = "modified_date")
 	private LocalDate modifiedDate;
-
 }

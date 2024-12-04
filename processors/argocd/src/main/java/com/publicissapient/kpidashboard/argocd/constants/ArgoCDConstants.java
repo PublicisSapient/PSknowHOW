@@ -73,4 +73,6 @@ public class ArgoCDConstants {
 	
 	/** The Constant Date time format. */
 	public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
+	public static final String ARGOCD_CLUSTER_ENDPOINT = "/api/v1/clusters";
 }

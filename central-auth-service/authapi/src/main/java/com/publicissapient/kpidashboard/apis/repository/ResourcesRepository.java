@@ -28,5 +28,4 @@ import com.publicissapient.kpidashboard.apis.entity.Resource;
 public interface ResourcesRepository extends JpaRepository<Resource, Long> {
 
 	Optional<Resource> findByName(String name);
-
 }

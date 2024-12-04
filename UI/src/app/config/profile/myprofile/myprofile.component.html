@@ -231,7 +231,6 @@
               <ng-template pTemplate="body" let-project let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
                 <tr>
                   <td *ngIf="rowgroup" [attr.rowspan]="rowspan" class='border-bottom border-right'>
-                    <!-- <div>{{project['role']}}</div> -->
                     <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_PROJECT_ADMIN'">Project Admin</div>
                     <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_PROJECT_VIEWER'">Project Viewer</div>
                     <div class="p-text-uppercase" *ngIf="project['role'] === 'ROLE_SUPERADMIN'">Superadmin</div>

@@ -35,7 +35,7 @@ public interface UserVerificationTokenRepository extends JpaRepository<UserVerif
 	 * Find by user verification token.
 	 *
 	 * @param token
-	 *            the token
+	 *          the token
 	 * @return the user verification token
 	 */
 	UserVerificationToken findByToken(String token);

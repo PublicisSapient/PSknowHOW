@@ -11,14 +11,8 @@ import { Logged } from '../services/logged.guard';
 import { SSOGuard } from '../services/sso.guard';
 import { FeatureGuard } from '../services/feature.guard';
 import { AccessGuard } from '../services/access.guard';
-import { DashboardComponent } from '../dashboard/dashboard.component';
 import { IterationComponent } from '../dashboard/iteration/iteration.component';
-import { DeveloperComponent } from '../dashboard/developer/developer.component';
 import { MaturityComponent } from '../dashboard/maturity/maturity.component';
-import { BacklogComponent } from '../dashboard/backlog/backlog.component';
-import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
-import { DoraComponent } from '../dashboard/dora/dora.component';
-import { ExecutiveComponent } from '../dashboard/executive/executive.component';
 import { ErrorComponent } from '../dashboard/error/error.component';
 import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
 import { AuthGuard } from './auth.guard';
@@ -26,6 +20,7 @@ import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.component';
 import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
+import { DecodeUrlGuard } from './decodeURL.guard';
 
 @Injectable({
     providedIn: 'root'
@@ -34,7 +29,7 @@ export class AppInitializerService {
 
     constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
     }
-    commonRoutes: Routes = localStorage.getItem('newUI') ? [
+    commonRoutes: Routes = [
         { path: '', redirectTo: 'iteration', pathMatch: 'full' },
         // {
         //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
@@ -46,50 +41,6 @@ export class AppInitializerService {
             path: 'kpi-maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
                 feature: "Maturity"
-            }
-        }
-    ] : [
-        { path: '', redirectTo: 'iteration', pathMatch: 'full' },
-        {
-            path: 'my-knowhow', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "My Dashboard"
-            }
-        },
-        // {
-        //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
-        //     // data: {
-        //     //     feature: "Iteration"
-        //     // }
-        // },
-        {
-            path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "Developer"
-            }
-        },
-        {
-            path: 'kpi-maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "Maturity"
-            }
-        },
-        {
-            path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "Backlog"
-            }
-        },
-        {
-            path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "Release"
-            }
-        },
-        {
-            path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "Dora"
             }
         }
     ];
@@ -102,7 +53,7 @@ export class AppInitializerService {
             canActivate: [SSOGuard]
         },
         {
-            path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
+            path: 'dashboard', component: DashboardV2Component,
             canActivateChild: [FeatureGuard],
             children: [
                 ...this.commonRoutes,
@@ -113,7 +64,7 @@ export class AppInitializerService {
                         feature: "Config"
                     }
                 },
-                { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
+                { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
                 { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
                 { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
@@ -126,7 +77,7 @@ export class AppInitializerService {
     routesAuth: Routes = [
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
         {
-            path: 'dashboard', component: !localStorage.getItem('newUI') ? DashboardComponent : DashboardV2Component,
+            path: 'dashboard', component: DashboardV2Component,
             children: [
             ...this.commonRoutes,
                 { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
@@ -138,7 +89,7 @@ export class AppInitializerService {
                         feature: "Config"
                     }
                 },
-                { path: ':boardName', component: !localStorage.getItem('newUI') ? ExecutiveComponent : ExecutiveV2Component, pathMatch: 'full' },
+                { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full' },
 
             ], canActivate: [AuthGuard],
         },

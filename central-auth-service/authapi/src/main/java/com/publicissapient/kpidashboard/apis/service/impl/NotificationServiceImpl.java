@@ -111,7 +111,6 @@ public class NotificationServiceImpl implements NotificationService {
 					.map(User::getEmail).collect(Collectors.toSet()));
 			if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
 				emailAddresses.addAll(superAdminUsersList.stream().map(User::getEmail).collect(Collectors.toSet()));
-
 			}
 		}
 		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
@@ -139,12 +138,11 @@ public class NotificationServiceImpl implements NotificationService {
 				sendNotificationEvent(emailAddresses, customData, subject, notKey, authConfig.getKafkaMailTopic(),
 						kafkaTemplate, templateKey, authConfig.isMailWithoutKafka());
 			} else {
-				log.error("Notification Event not sent : No email address found "
-						+ "or Property - notificationSubject.accessRequest not set in property file ");
+				log.error("Notification Event not sent : No email address found " +
+						"or Property - notificationSubject.accessRequest not set in property file ");
 			}
 		} else {
-			log.info(
-					"Notification Switch is Off. If want to send notification set true for notification.switch in property");
+			log.info("Notification Switch is Off. If want to send notification set true for notification.switch in property");
 		}
 	}
 
@@ -168,21 +166,18 @@ public class NotificationServiceImpl implements NotificationService {
 			if (StringUtils.isNotBlank(notSubject)) {
 				GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
 				if (globalConfigs != null) {
-					EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null,
-							null, notSubject, null, customData, globalConfigs.getEmailHost(),
-							globalConfigs.getEmailPort());
+					EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null, null,
+							notSubject, null, customData, globalConfigs.getEmailHost(), globalConfigs.getEmailPort());
 					notificationEventProducer.sendNotificationEvent(notKey, emailEventDTO, null, topic, kafkaTemplate);
 				} else {
 					log.error("Notification Event not sent : notification emailServer Details not found in db");
 				}
 			} else {
-				log.error("Notification Event not sent : notification subject for {} not found in properties file",
-						notSubject);
+				log.error("Notification Event not sent : notification subject for {} not found in properties file", notSubject);
 			}
 		} else {
 			sendEmailWithoutKafka(emailAddresses, customData, notSubject, templateKey);
 		}
-
 	}
 
 	/**
@@ -193,9 +188,8 @@ public class NotificationServiceImpl implements NotificationService {
 	 * @param notSubject
 	 * @param templateKey
 	 */
-
-	private void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData,
-			String notSubject, String templateKey) {
+	private void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData, String notSubject,
+			String templateKey) {
 		GlobalConfig globalConfigs = globalConfigRepository.findByEnv(authConfig.getNotificationEnv());
 		if (StringUtils.isNotBlank(notSubject) && globalConfigs != null) {
 			EmailEventDTO emailEventDTO = new EmailEventDTO(globalConfigs.getFromEmail(), emailAddresses, null, null,
@@ -203,8 +197,8 @@ public class NotificationServiceImpl implements NotificationService {
 			JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEventDTO);
 			MimeMessage message = javaMailSender.createMimeMessage();
 			try {
-				MimeMessageHelper helper = new MimeMessageHelper(message,
-						MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+				MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+						StandardCharsets.UTF_8.name());
 				Context context = new Context();
 				Map<String, String> customData = emailEventDTO.getCustomData();
 				if (MapUtils.isNotEmpty(customData)) {
@@ -233,9 +227,7 @@ public class NotificationServiceImpl implements NotificationService {
 		}
 	}
 
-	/**
-	 * Gets api host
-	 **/
+	/** Gets api host */
 	public String getApiHost() throws UnknownHostException {
 
 		StringBuilder urlPath = new StringBuilder();
@@ -309,7 +301,6 @@ public class NotificationServiceImpl implements NotificationService {
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	@Override
@@ -335,8 +326,7 @@ public class NotificationServiceImpl implements NotificationService {
 		Optional<User> userOptional = userRepository.findByEmail(email);
 		if (userOptional.isPresent()) {
 			Map<String, String> customData = createCustomDataVerificationUser(username, email, serverPath, "", " ");
-			sendEmailNotification(Arrays.asList(email), customData,
-					CommonConstant.USER_VERIFICATION_FAILED_NOTIFICATION_KEY,
+			sendEmailNotification(Arrays.asList(email), customData, CommonConstant.USER_VERIFICATION_FAILED_NOTIFICATION_KEY,
 					CommonConstant.USER_VERIFICATION_FAILED_TEMPLATE_KEY);
 			userRepository.deleteByUsername(userOptional.get().getUsername());
 		}
@@ -346,7 +336,6 @@ public class NotificationServiceImpl implements NotificationService {
 	 * @param username
 	 * @param email
 	 */
-
 	@Override
 	public void sendUserPreApprovalRequestEmailToAdmin(String username, String email) {
 		List<String> emailAddresses = getEmailAddressBasedOnRoles(Arrays.asList(CommonConstant.ROLE_SUPERADMIN));
@@ -378,13 +367,13 @@ public class NotificationServiceImpl implements NotificationService {
 	 * * create custom data for email
 	 *
 	 * @param username
-	 *            emailId
+	 *          emailId
 	 * @param token
-	 *            token
+	 *          token
 	 * @param url
-	 *            url
+	 *          url
 	 * @param expiryTime
-	 *            expiryTime in Min
+	 *          expiryTime in Min
 	 * @return Map<String, String>
 	 */
 	private Map<String, String> createCustomDataForgotPassword(String username, String token, String url,
@@ -436,5 +425,4 @@ public class NotificationServiceImpl implements NotificationService {
 		}
 		return serverPath;
 	}
-
 }

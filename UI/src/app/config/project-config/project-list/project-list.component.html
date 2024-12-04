@@ -63,10 +63,6 @@
                 </td>
                 <td class="p-0 p-text-right">
                     <div class="p-d-flex p-jc-end">
-                        <!-- <div *ngIf="isAdminOrSuperAdmin" class="action-btns p-mr-4"
-                            (click)="editConfiguration(project)">Edit Config</div>
-                        <div *ngIf="isAdminOrSuperAdmin" class="action-btns" (click)="deleteProject(project)"
-                            [ngClass]="{'not-allowed': authorization.checkIfViewer(project)}">Delete Project</div> -->
                         <div *ngIf="isAdminOrSuperAdmin">
                           <ng-container *ngIf="!getAuthorizationService.checkIfViewer(project)">
                             <p-splitButton label="" icon="pi pi-cog" [model]="items" (onDropdownClick)="handleActionsClick(project)" styleClass="p-button-text"></p-splitButton>
