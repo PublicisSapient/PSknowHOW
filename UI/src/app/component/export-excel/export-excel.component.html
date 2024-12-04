@@ -41,8 +41,8 @@
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
             <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width" pReorderableColumn [pReorderableColumnDisabled]="forzenColumns.includes(item?.toLowerCase())" pFrozenColumn alignFrozen="left"
-            [frozen]="forzenColumns?.includes(item?.toLowerCase())" [ngClass]="{'overlap': filteredColumn === item }" >
-              <div class="table-head">
+            [frozen]="forzenColumns?.includes(item?.toLowerCase())" [ngClass]="{'overlap': filteredColumn === item,'move-top':forzenColumns?.includes(item?.toLowerCase())}">
+              <div class="table-head" >
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
                   <p-columnFilter [field]="item" matchMode="in" *ngIf="!excludeColumnFilter.includes(item)"

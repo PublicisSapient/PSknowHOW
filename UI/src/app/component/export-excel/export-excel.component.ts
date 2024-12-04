@@ -74,6 +74,7 @@ export class ExportExcelComponent implements OnInit {
 
 
   dataTransformForIterationTableWidget(markerInfo, excludeColumns, rawColumConfig, rawExcelData, kpiName, kpiId) {
+    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
     const tableData = [];
@@ -104,6 +105,7 @@ export class ExportExcelComponent implements OnInit {
   }
   
   dataTransformatin(rawColumConfig, rawExcelData, chartType, kpiName) {
+    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
     this.tableColumns = rawColumConfig;
 
     if (chartType == 'stacked-area') {
@@ -316,5 +318,28 @@ export class ExportExcelComponent implements OnInit {
     }
 
   }
+
+   makeIssueIDOnFirstOrder(columns) {
+    // Identify the "issue id" column (case-insensitive)
+    const issueIdColumn = columns.find(
+      (col) => col.columnName.toLowerCase() === "issue id"
+    );
+  
+    if (!issueIdColumn) {
+      return columns; // Return original if "issue id" is not found
+    }
+  
+    // Set "issue id" to the first position and adjust its order
+    issueIdColumn.order = 0;
+  
+    // Filter out the "issue id" column and reassign orders for the rest
+    const remainingColumns = columns
+      .filter((col) => col !== issueIdColumn)
+      .sort((a, b) => a.order - b.order)
+      .map((col, index) => ({ ...col, order: index + 1 }));
+  
+    // Return the updated array with "issue id" at the top
+    return [issueIdColumn, ...remainingColumns];
+   }
 
 }
