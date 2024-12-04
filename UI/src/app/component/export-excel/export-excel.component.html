@@ -41,7 +41,8 @@
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
             <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width" pReorderableColumn [pReorderableColumnDisabled]="forzenColumns.includes(item?.toLowerCase())" pFrozenColumn alignFrozen="left"
-            [frozen]="forzenColumns?.includes(item?.toLowerCase())" [ngClass]="{'overlap': filteredColumn === item,'move-top':forzenColumns?.includes(item?.toLowerCase())}">
+            [frozen]="forzenColumns?.includes(item?.toLowerCase())" [ngClass]="{'overlap': filteredColumn === item,'move-top':forzenColumns?.includes(item?.toLowerCase())}" 
+            [ngStyle]="{'max-width': modalDetails['tableHeadings']?.length < 3 ? 'inherit' : '190px'}">
               <div class="table-head" >
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
@@ -79,7 +80,7 @@
             </td>
            </ng-container>
            <ng-container *ngIf="column?.toLowerCase() !== 'issue id'">
-            <td class="font-small min-max-width multidata-col" pFrozenColumn [frozen]="forzenColumns?.includes(column?.toLowerCase())">
+            <td class="font-small min-max-width multidata-col" pFrozenColumn [frozen]="forzenColumns?.includes(column?.toLowerCase())" [ngStyle]="{'max-width': modalDetails['tableHeadings']?.length < 3 ? 'inherit' : '190px'}">
               <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date'))?'date': 'other'))">
                 <ng-container *ngSwitchCase="'array'">
                   <ng-container *ngFor="let data of rowData[column]">
