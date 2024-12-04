@@ -200,7 +200,7 @@ export class HeaderComponent implements OnInit {
 
     setTimeout(() => {
       this.resetButton();
-    }, 5000);
+    }, 1500);
   }
 
   resetButton() {
