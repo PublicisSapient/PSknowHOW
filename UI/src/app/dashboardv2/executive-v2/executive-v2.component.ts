@@ -26,6 +26,10 @@ import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
+import iterationCommitment from '../../../assets/data/Iteration-committment-v2.json';
+import wastage from '../../../assets/data/Wastage-V2.json';
+import EstimateActual from '../../../assets/data/Estimate-Actual-V2.json';
+import Workremaining from '../../../assets/data/Work-remaining-V2.json';
 
 @Component({
   selector: 'app-executive-v2',
@@ -122,6 +126,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   selectedTrend: any = [];
+  data = [iterationCommitment, Workremaining,wastage, EstimateActual]; //,,,issueHygiene
+
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
     const selectedTab = window.location.hash.substring(1);
@@ -2761,4 +2767,36 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     return kpi?.kpiDetail?.yaxisLabel;
   }
+
+  test() {
+    if (this.selectedTab === 'iteration') {
+      this.updatedConfigGlobalData = this.data;
+    }
+    return true;
+  }
+
+  getkpiwidth(kpiwidth) {
+    let retValue = '';
+
+    switch (kpiwidth) {
+      case 100:
+        retValue = 'p-col-12';
+        break;
+      case 50:
+        retValue = 'p-col-6';
+        break;
+      case 66:
+        retValue = 'p-col-9';
+        break;
+      case 33:
+        retValue = 'p-col-3';
+        break;
+      default:
+        retValue = 'p-col-6';
+        break;
+    }
+
+    return retValue;
+  }
+
 }

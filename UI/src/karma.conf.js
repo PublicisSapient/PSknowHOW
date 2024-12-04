@@ -18,7 +18,7 @@ module.exports = function (config) {
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
-      clearContext: true, // leave Jasmine Spec Runner output visible in browser,
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser,
       jasmine: {
         // timeoutInterval: 2147483647  // maximum value a 32 bit int can hold
         timeoutInterval: 6000,
@@ -42,7 +42,7 @@ module.exports = function (config) {
         { type: 'text-summary', subdir: '.', file: 'text-summary.txt' },
       ]
     },
-    reporters: ['progress', 'coverage'],
+    reporters: ['progress', 'coverage','kjhtml'],
     port: 8000,
     colors: true,
     logLevel: config.LOG_INFO,

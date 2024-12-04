@@ -1,0 +1,23 @@
+<form [formGroup]="form" (ngSubmit)="handleChange()">
+    <div class="kpi-card-filter p-px-5 p-py-2">
+        <div *ngIf="kpiCardFilter?.chartType === 'stacked-bar-chart'" id="">
+            <p-selectButton 
+                [options]="kpiCardFilter.dataGroup.dataGroup1" 
+                (onChange)="onSelectButtonChange($event)"
+                optionLabel="name" 
+                optionValue="key">
+            </p-selectButton>
+        </div>
+        <div class="filterSection">
+            <ng-container class="p-p-1" *ngFor="let filter of kpiCardFilter.filterGroup.filterGroup1">
+                <p-dropdown 
+                    [options]="getOptions(filter?.filterKey)" 
+                    [formControlName]="filter?.filterKey" 
+                    (onChange)="handleChange()"
+                    [filter]="true" 
+                    [placeholder]="filter?.filterName">
+                </p-dropdown>
+            </ng-container>
+        </div>
+    </div>
+</form>
