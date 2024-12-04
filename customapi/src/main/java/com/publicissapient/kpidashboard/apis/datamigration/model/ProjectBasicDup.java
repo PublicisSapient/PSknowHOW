@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -6,20 +6,18 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
-package com.publicissapient.kpidashboard.common.model.application;
+ *
+ ******************************************************************************/
+package com.publicissapient.kpidashboard.apis.datamigration.model;
 
 import java.util.List;
-
-import org.bson.types.ObjectId;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,10 +32,20 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KpiColumnConfigDTO {
-	private ObjectId id;
-	private ObjectId basicProjectConfigId;
-	private String kpiId;
-	private List<KpiColumnDetails> kpiColumnDetails;
-	private boolean saveFlag;
+public class ProjectBasicDup {
+
+	private String emmUpdatedOn;
+	private String consumerCreatedOn;
+
+	private String projectName;
+	private String createdAt;
+	private String createdBy;
+	private String updatedAt;
+	private String updatedBy;
+	private boolean kanban;
+	private List<HierarchyValueDup> hierarchy;
+	private boolean saveAssigneeDetails;
+	private boolean developerKpiEnabled;
+	private boolean projectOnHold;
+
 }

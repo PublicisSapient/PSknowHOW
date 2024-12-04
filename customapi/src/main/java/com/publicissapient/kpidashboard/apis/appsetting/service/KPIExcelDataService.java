@@ -47,6 +47,7 @@ import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
+import com.publicissapient.kpidashboard.apis.kpicolumnconfig.service.KpiColumnConfigService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelValidationDataResponse;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -55,6 +56,7 @@ import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceR;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrServiceKanban;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfigDTO;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
@@ -82,6 +84,9 @@ public class KPIExcelDataService {
 	private static final String EXCEL_SONARKANBAN = "EXCEL-SONARKANBAN";
 	private static final String EXCEL_JENKINSKANBAN = "EXCEL-JENKINSKANBAN";
 	private static final String EXCEL_BIBUCKETKANBAN = "EXCEL-BITBUCKETKANBAN";
+	public static final String PROJECT = "project";
+	public static final String RELEASE = "release";
+	public static final String SPRINT = "sprint";
 
 	@Autowired
 	private JiraServiceR jiraServiceR;
@@ -124,6 +129,8 @@ public class KPIExcelDataService {
 
 	@Autowired
 	NonTrendServiceFactory serviceFactory;
+	@Autowired
+	KpiColumnConfigService kpiColumnConfigService;
 
 	/**
 	 * Processes the request for fetching the source wise KPI data. It leverages
@@ -156,7 +163,7 @@ public class KPIExcelDataService {
 	 */
 
 	public Object process(String kpiID, int level, List<String> filterIds, List<String> acceptedFilter,
-						  KpiRequest kpiRequest, Boolean isKanban, Boolean isApiAuth) {
+			KpiRequest kpiRequest, Boolean isKanban, Boolean isApiAuth) {
 
 		Map<String, KpiRequest> kpiRequestSourceWiseMap = createKPIRequest(kpiID, level, filterIds, kpiRequest,
 				isKanban);
@@ -165,6 +172,19 @@ public class KPIExcelDataService {
 		}
 		return processScrum(kpiID, kpiRequestSourceWiseMap, acceptedFilter, isApiAuth);
 
+	}
+
+	public List<String> getProjectIDAndLabel(KpiRequest kpiRequest) {
+		List<String> idAndLabel = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(PROJECT).stream().toList())) {
+			idAndLabel.addAll(kpiRequest.getSelectedMap().get(PROJECT).stream().toList());
+		} else if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(SPRINT).stream().toList())) {
+			idAndLabel.addAll(kpiRequest.getSelectedMap().get(SPRINT).stream().toList());
+		} else {
+			idAndLabel.addAll(kpiRequest.getSelectedMap().get(RELEASE).stream().toList());
+		}
+		return idAndLabel;
 	}
 
 	/**
@@ -191,17 +211,19 @@ public class KPIExcelDataService {
 	 * @param kpiRequestSourceWiseMap
 	 * @param acceptedFilter
 	 * @param apiAuth
-	 * 			check if api auth
+	 *            check if api auth
 	 * @return Excel data Object
 	 */
 	@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	private Object processScrum(String kpiID, Map<String, KpiRequest> kpiRequestSourceWiseMap,
-								List<String> acceptedFilter, Boolean apiAuth) {
+			List<String> acceptedFilter, Boolean apiAuth) {
 
 		List<KpiElement> totalKpiElementList = new ArrayList<>();
 		ExecutorService executor = Executors.newFixedThreadPool(10);
 
 		long startTime = System.currentTimeMillis();
+		String label = null;
+		List<String> projectIds = new ArrayList<>();
 
 		try {
 			Future<List<KpiElement>> jiraKpiDataFuture = null;
@@ -214,26 +236,27 @@ public class KPIExcelDataService {
 
 				cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.EXCEL.name(),
 						pair.getValue().getRequestTrackerId());
-
+				projectIds = getProjectIDAndLabel(pair.getValue());
+				label = pair.getValue().getLabel();
 				switch (pair.getKey()) {
-					case EXCEL_JIRA:
-						jiraKpiDataFuture = excelJiraKpiDataFuture(executor, pair, apiAuth);
-						break;
-					case EXCEL_JENKINS:
-						jenkinsKpiDataFuture = excelJenkinsKpiDataFuture(executor, pair, apiAuth);
-						break;
-					case EXCEL_SONAR:
-						sonarKpiDataFuture = excelSonarKpiDataFuture(executor, pair, apiAuth);
-						break;
-					case EXCEL_ZEPHYR:
-						zephyrKpiDataFuture = excelZephyrKpiDataFuture(executor, pair, apiAuth);
-						break;
-					case EXCEL_BITBUCKET:
-						bitbucketKpiDataFuture = excelbitBucketKpiDataFuture(executor, pair);
-						break;
+				case EXCEL_JIRA:
+					jiraKpiDataFuture = excelJiraKpiDataFuture(executor, pair, apiAuth);
+					break;
+				case EXCEL_JENKINS:
+					jenkinsKpiDataFuture = excelJenkinsKpiDataFuture(executor, pair, apiAuth);
+					break;
+				case EXCEL_SONAR:
+					sonarKpiDataFuture = excelSonarKpiDataFuture(executor, pair, apiAuth);
+					break;
+				case EXCEL_ZEPHYR:
+					zephyrKpiDataFuture = excelZephyrKpiDataFuture(executor, pair, apiAuth);
+					break;
+				case EXCEL_BITBUCKET:
+					bitbucketKpiDataFuture = excelbitBucketKpiDataFuture(executor, pair);
+					break;
 
-					default:
-						break;
+				default:
+					break;
 				}
 			}
 
@@ -255,13 +278,18 @@ public class KPIExcelDataService {
 		long processTime = System.currentTimeMillis() - startTime;
 		log.info("[KPI-EXCEL-SERVICE]. Time taken to process Excel kpi data request: {}", processTime);
 
+		return getObject(kpiID, totalKpiElementList, label, projectIds);
+
+	}
+
+	private Object getObject(String kpiID, List<KpiElement> totalKpiElementList, String label,
+			List<String> projectIds) {
 		if (null != kpiID) {
-			return createKpiExcelValidationDataResponse(totalKpiElementList);
+			return createKpiExcelValidationDataResponse(totalKpiElementList, label, projectIds);
 		} else {
 			log.info("[KPI-EXCEL-SERVICE]. kpiId is Invalid ");
 			return null;
 		}
-
 	}
 
 	/**
@@ -274,11 +302,13 @@ public class KPIExcelDataService {
 	 */
 	@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	private Object processKanban(String kpiID, Map<String, KpiRequest> kpiRequestSourceWiseMap,
-								 List<String> acceptedFilter) {
+			List<String> acceptedFilter) {
 
 		List<KpiElement> totalKpiElementList = new ArrayList<>();
 		ExecutorService executor = Executors.newFixedThreadPool(10);
 		long startTime = System.currentTimeMillis();
+		String label = null;
+		List<String> projectIds = new ArrayList<>();
 
 		try {
 			Future<List<KpiElement>> jiraKanbanKpiDataFuture = null;
@@ -292,25 +322,28 @@ public class KPIExcelDataService {
 				cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.EXCEL.name(),
 						pair.getValue().getRequestTrackerId());
 
-				switch (pair.getKey()) {
-					case EXCEL_JIRAKANBAN:
-						jiraKanbanKpiDataFuture = excelJiraKanbanKpiDataFuture(executor, pair);
-						break;
-					case EXCEL_ZEPHYRKANBAN:
-						zephyrKanbanKpiDataFuture = excelZephyreKanbanKpiDataFuture(executor, pair);
+				projectIds = getProjectIDAndLabel(pair.getValue());
+				label = pair.getValue().getLabel();
 
-						break;
-					case EXCEL_SONARKANBAN:
-						sonarKanbanKpiDataFuture = excelSonarKanbanKpiDataFuture(executor, pair);
-						break;
-					case EXCEL_BIBUCKETKANBAN:
-						bitbucketKanbanKpiDataFuture = excelBitBucketKanbanKpiDataFuture(executor, pair);
-						break;
-					case EXCEL_JENKINSKANBAN:
-						jenkinsKanbanKpiDataFuture = excelJenkinsKanbanKpiDataFuture(executor, pair);
-						break;
-					default:
-						break;
+				switch (pair.getKey()) {
+				case EXCEL_JIRAKANBAN:
+					jiraKanbanKpiDataFuture = excelJiraKanbanKpiDataFuture(executor, pair);
+					break;
+				case EXCEL_ZEPHYRKANBAN:
+					zephyrKanbanKpiDataFuture = excelZephyreKanbanKpiDataFuture(executor, pair);
+
+					break;
+				case EXCEL_SONARKANBAN:
+					sonarKanbanKpiDataFuture = excelSonarKanbanKpiDataFuture(executor, pair);
+					break;
+				case EXCEL_BIBUCKETKANBAN:
+					bitbucketKanbanKpiDataFuture = excelBitBucketKanbanKpiDataFuture(executor, pair);
+					break;
+				case EXCEL_JENKINSKANBAN:
+					jenkinsKanbanKpiDataFuture = excelJenkinsKanbanKpiDataFuture(executor, pair);
+					break;
+				default:
+					break;
 				}
 			}
 
@@ -332,12 +365,7 @@ public class KPIExcelDataService {
 		long processTime = System.currentTimeMillis() - startTime;
 		log.info("[KPI-EXCEL-SERVICE]. Time taken to process Excel kpi data request: {}", processTime);
 
-		if (null != kpiID) {
-			return createKpiExcelValidationDataResponse(totalKpiElementList);
-		} else {
-			log.info("[KPI-EXCEL-SERVICE]. kpiId is Invalid ");
-			return null;
-		}
+		return getObject(kpiID, totalKpiElementList, label, projectIds);
 
 	}
 
@@ -347,9 +375,24 @@ public class KPIExcelDataService {
 	 * @param totalKpiElementList
 	 * @return Excel validation data response
 	 */
-	private Object createKpiExcelValidationDataResponse(List<KpiElement> totalKpiElementList) {
+	private Object createKpiExcelValidationDataResponse(List<KpiElement> totalKpiElementList, String label,
+			List<String> projectIds) {
 		KPIExcelValidationDataResponse kpiExcelValidationDataResponse = new KPIExcelValidationDataResponse();
-		prepareKpiExcelValidationDataResponse(kpiExcelValidationDataResponse, totalKpiElementList);
+		KpiColumnConfigDTO kpiColumnConfigDTO;
+
+		if ((label.equalsIgnoreCase("Project") || label.equalsIgnoreCase("SQD") || label.equalsIgnoreCase("Sprint")
+				|| label.equalsIgnoreCase("Release")) && projectIds.size() < 2) {
+			String projectBasicConfigID = projectIds.get(0).substring(projectIds.get(0).lastIndexOf("_") + 1);
+			kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(projectBasicConfigID,
+					totalKpiElementList.get(0).getKpiId());
+			kpiColumnConfigDTO.setSaveFlag(true);
+
+		} else {
+			kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(null,
+					totalKpiElementList.get(0).getKpiId());
+			kpiColumnConfigDTO.setSaveFlag(false);
+		}
+		prepareKpiExcelValidationDataResponse(kpiExcelValidationDataResponse, totalKpiElementList, kpiColumnConfigDTO);
 		return kpiExcelValidationDataResponse;
 	}
 
@@ -362,7 +405,7 @@ public class KPIExcelDataService {
 	 * @throws java.util.concurrent.ExecutionException
 	 */
 	private void addAllToKpiElementList(List<KpiElement> totalKpiElementList,
-										Future<List<KpiElement>> jiraKpiDataFuture)
+			Future<List<KpiElement>> jiraKpiDataFuture)
 			throws InterruptedException, java.util.concurrent.ExecutionException {
 		if (null != jiraKpiDataFuture) {
 			totalKpiElementList.addAll(jiraKpiDataFuture.get());
@@ -377,7 +420,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelJenkinsKanbanKpiDataFuture(ExecutorService executor,
-																	 Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair) {
 		Future<List<KpiElement>> jenkinsKanbanKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name(),
 				pair.getValue().getRequestTrackerId());
@@ -396,7 +439,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelBitBucketKanbanKpiDataFuture(ExecutorService executor,
-																	   Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair) {
 		Future<List<KpiElement>> bitbucketKanbanKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name(),
 				pair.getValue().getRequestTrackerId());
@@ -415,7 +458,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelSonarKanbanKpiDataFuture(ExecutorService executor,
-																   Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair) {
 		Future<List<KpiElement>> sonarKanbanKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name(),
 				pair.getValue().getRequestTrackerId());
@@ -434,7 +477,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelZephyreKanbanKpiDataFuture(ExecutorService executor,
-																	 Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair) {
 		Future<List<KpiElement>> zephyrKanbanKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYRKANBAN.name(),
 				pair.getValue().getRequestTrackerId());
@@ -453,7 +496,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelJiraKanbanKpiDataFuture(ExecutorService executor,
-																  Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair) {
 		Future<List<KpiElement>> jiraKanbanKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name(),
 				pair.getValue().getRequestTrackerId());
@@ -472,7 +515,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelbitBucketKpiDataFuture(ExecutorService executor,
-																 Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair) {
 		Future<List<KpiElement>> bitbucketKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name(),
 				pair.getValue().getRequestTrackerId());
@@ -493,7 +536,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelZephyrKpiDataFuture(ExecutorService executor,
-															  Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
+			Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
 		Future<List<KpiElement>> zephyrKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name(),
 				pair.getValue().getRequestTrackerId());
@@ -520,7 +563,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelSonarKpiDataFuture(ExecutorService executor,
-															 Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
+			Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
 		Future<List<KpiElement>> sonarKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name(),
 				pair.getValue().getRequestTrackerId());
@@ -547,7 +590,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelJenkinsKpiDataFuture(ExecutorService executor,
-															   Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
+			Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
 		Future<List<KpiElement>> jenkinsKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name(),
 				pair.getValue().getRequestTrackerId());
@@ -574,7 +617,7 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelJiraKpiDataFuture(ExecutorService executor,
-															Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
+			Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
 		Future<List<KpiElement>> jiraKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(),
 				pair.getValue().getRequestTrackerId());
@@ -584,15 +627,15 @@ public class KPIExcelDataService {
 		category.add(CommonConstant.BACKLOG);
 		Callable<List<KpiElement>> jiraKpiDataTask = () -> {
 			if (category.contains(pair.getValue().getKpiList().get(0).getKpiCategory())) {
-				//when request coming from ITERATION/RELEASE/BACKLOG board
-				if(Boolean.TRUE.equals(apiAuth)){
+				// when request coming from ITERATION/RELEASE/BACKLOG board
+				if (Boolean.TRUE.equals(apiAuth)) {
 					return serviceFactory.getService(pair.getValue().getKpiList().get(0).getKpiCategory())
 							.processWithExposedApiToken(pair.getValue());
 				}
 				return serviceFactory.getService(pair.getValue().getKpiList().get(0).getKpiCategory())
 						.process(pair.getValue());
 			} else {
-				//when request coming from trend boards
+				// when request coming from trend boards
 				if (Boolean.TRUE.equals(apiAuth)) {
 					return jiraServiceR.processWithExposedApiToken(pair.getValue());
 				}
@@ -609,20 +652,22 @@ public class KPIExcelDataService {
 	 *
 	 * @param kpiExcelValidationDataResponse
 	 * @param totalKpiElementList
+	 * @param kpiColumnConfigDTO
 	 */
 	private void prepareKpiExcelValidationDataResponse(KPIExcelValidationDataResponse kpiExcelValidationDataResponse,
-													   List<KpiElement> totalKpiElementList) {
+			List<KpiElement> totalKpiElementList, KpiColumnConfigDTO kpiColumnConfigDTO) {
 
 		// totalKpiElementList will have only one KPI data at any given time
 		totalKpiElementList.forEach(element -> {
 
 			kpiExcelValidationDataResponse.setKpiId(element.getKpiId());
 			kpiExcelValidationDataResponse.setKpiName(element.getKpiName());
-
 			Map<String, ValidationData> mapOfSprintAndData = element.getMapOfSprintAndData();
 			kpiExcelValidationDataResponse.setMapOfSprintAndData(mapOfSprintAndData);
 			kpiExcelValidationDataResponse.setExcelData(element.getExcelData());
 			kpiExcelValidationDataResponse.setExcelColumns(element.getExcelColumns());
+			kpiExcelValidationDataResponse.setKpiColumnDetails(kpiColumnConfigDTO.getKpiColumnDetails());
+			kpiExcelValidationDataResponse.setSaveDisplay(kpiColumnConfigDTO.isSaveFlag());
 		});
 
 	}
@@ -643,7 +688,7 @@ public class KPIExcelDataService {
 	 * @return map of source with kpi request.
 	 */
 	public Map<String, KpiRequest> createKPIRequest(String kpiID, int level, List<String> filterIds, KpiRequest kpiReq,
-													Boolean isKanban) {
+			Boolean isKanban) {
 
 		List<String> kpiSourceList = null;
 
@@ -682,7 +727,7 @@ public class KPIExcelDataService {
 				List<String> masterKpiIdList = masterList.stream().map(KpiMaster::getKpiId)
 						.collect(Collectors.toList());
 				Stream.of(KPICode.values()).filter(kpi -> kpi != KPICode.INVALID
-								&& kpi.getSource().equalsIgnoreCase(source) && masterKpiIdList.contains(kpi.getKpiId()))
+						&& kpi.getSource().equalsIgnoreCase(source) && masterKpiIdList.contains(kpi.getKpiId()))
 						.forEach(kpi -> {
 
 							KpiElement kpiElement = new KpiElement();
