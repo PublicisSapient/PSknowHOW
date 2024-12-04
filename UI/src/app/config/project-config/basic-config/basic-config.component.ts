@@ -340,13 +340,9 @@ export class BasicConfigComponent implements OnInit {
             }
           }
           this.form.reset();
-          let summary = 'Basic config submitted!!'
-          if(this.clone === 'true') {
-            summary = 'Clone has been Completed!!'
-          }
           this.messenger.add({
             severity: 'success',
-            summary: summary,
+            summary: 'Basic config submitted!!',
             detail: ''
           });
           this.isProjectSetupPopup = false;
