@@ -205,8 +205,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			if (accessRoleOfParent == null) {
 
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
+				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
-                configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				if (!projectAccessManager.getUserInfo(username).getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
 					addNewProjectIntoUserInfo(savedProjectBasicConfig, username);
 				}
@@ -216,8 +216,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			} else if (Constant.ROLE_SUPERADMIN.equals(accessRoleOfParent)
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
-				cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
-                configHelperService.updateCacheProjectBasicConfig(basicConfig);
+				configHelperService.updateCacheProjectBasicConfig(basicConfig);
+                cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
                 addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
@@ -228,6 +228,37 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			}
 		}
 		return response;
+	}
+
+	/**
+	 * add new ProjectNode if not already present in OrganizationHierarchy
+	 *
+	 * @param projectBasicConfigDTO
+	 *            ProjectBasicConfigDTO
+	 * @param projectNodeId
+	 *            String
+	 */
+	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO,
+			String projectNodeId) {
+		if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
+			Optional<HierarchyValueDTO> maxLevel = projectBasicConfigDTO.getHierarchy().stream()
+					.max(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
+			OrganizationHierarchy newOrganizationHierarchy = new OrganizationHierarchy();
+			maxLevel.ifPresent(ml -> newOrganizationHierarchy.setParentId(ml.getOrgHierarchyNodeId()));
+			newOrganizationHierarchy.setNodeId(projectNodeId);
+			newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+			newOrganizationHierarchy.setNodeName(projectBasicConfigDTO.getProjectName());
+			newOrganizationHierarchy.setNodeDisplayName(projectBasicConfigDTO.getProjectDisplayName());
+			newOrganizationHierarchy.setCreatedDate(LocalDateTime.now());
+			newOrganizationHierarchy.setModifiedDate(LocalDateTime.now());
+			organizationHierarchyService.save(newOrganizationHierarchy);
+			clearOrgHierarchyCache();
+		}
+	}
+
+	private void clearOrgHierarchyCache() {
+		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
+		configHelperService.loadConfigData();
 	}
 
 	/**
@@ -321,37 +352,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				log.error("Error in cloning BoardMetadata", e);
 			}
 		}
-	}
-
-	/**
-	 * add new ProjectNode if not already present in OrganizationHierarchy
-	 *
-	 * @param projectBasicConfigDTO
-	 *            ProjectBasicConfigDTO
-	 * @param projectNodeId
-	 *            String
-	 */
-	private void addProjectNodeToOrganizationHierarchy(ProjectBasicConfigDTO projectBasicConfigDTO,
-			String projectNodeId) {
-		if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
-			Optional<HierarchyValueDTO> maxLevel = projectBasicConfigDTO.getHierarchy().stream()
-					.max(Comparator.comparing(hierarchyValue -> hierarchyValue.getHierarchyLevel().getLevel()));
-			OrganizationHierarchy newOrganizationHierarchy = new OrganizationHierarchy();
-			maxLevel.ifPresent(ml -> newOrganizationHierarchy.setParentId(ml.getOrgHierarchyNodeId()));
-			newOrganizationHierarchy.setNodeId(projectNodeId);
-			newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
-			newOrganizationHierarchy.setNodeName(projectBasicConfigDTO.getProjectName());
-			newOrganizationHierarchy.setNodeDisplayName(projectBasicConfigDTO.getProjectDisplayName());
-			newOrganizationHierarchy.setCreatedDate(LocalDateTime.now());
-			newOrganizationHierarchy.setModifiedDate(LocalDateTime.now());
-			organizationHierarchyService.save(newOrganizationHierarchy);
-			clearOrgHierarchyCache();
-		}
-	}
-
-	private void clearOrgHierarchyCache() {
-		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
-		configHelperService.loadConfigData();
 	}
 
 	private void addNewProjectIntoUserInfo(ProjectBasicConfig basicConfig, String username) {

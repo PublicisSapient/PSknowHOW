@@ -55,6 +55,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -64,7 +65,6 @@ import com.publicissapient.kpidashboard.apis.auth.exceptions.UserNotFoundExcepti
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
