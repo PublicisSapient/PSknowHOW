@@ -109,11 +109,11 @@ export class ExportExcelComponent implements OnInit {
     this.tableColumns = rawColumConfig;
 
     if (chartType == 'stacked-area') {
-      this.generateAddRemoveData(Object.keys(rawExcelData[0].Count))
       const re = {}
       re['excelData'] = rawExcelData;
       re['columns'] = rawColumConfig;
-      this.dataTransformForStackedAreaChart(re);
+      const allColumns = this.dataTransformForStackedAreaChart(re);
+      this.generateAddRemoveData(allColumns);
     } else {
       this.generateAddRemoveData(Object.keys(rawExcelData[0]))
       const re = {}
@@ -131,17 +131,20 @@ export class ExportExcelComponent implements OnInit {
 
   dataTransformForStackedAreaChart(getData) {
     let kpiObj = JSON.parse(JSON.stringify(getData));
+    kpiObj['columns'] = kpiObj['columns'].map(col=>col.columnName);
     kpiObj['excelData'] = kpiObj['excelData'].map((item) => {
       for (let key in item['Count']) {
-        if (!kpiObj['columns'].map(col => col.columnName)?.includes(key)) {
-          kpiObj['columns'] = [...kpiObj['columns'], { columnName: key, isDefault: false, isShown: false, order: 0 }];
+        if (!kpiObj['columns'].includes(key)) {
+          kpiObj['columns'] = [...kpiObj['columns'], key];
         }
       }
       let obj = { ...item, ...item['Count'] };
       delete obj['Count'];
       return obj;
     });
+    const allColumnList = [...kpiObj['columns']];
     this.kpiExcelData = this.excelService.generateExcelModalData(kpiObj);
+    return allColumnList;
   }
 
   generateAddRemoveData(tableValue) {
