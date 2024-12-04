@@ -15,18 +15,37 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package com.publicissapient.kpidashboard.apis.datamigration.model;
 
-package com.publicissapient.kpidashboard.argocd.dto;
+import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * Application represents the information for ArgoCD Application
- *
- */
 @Data
-public class Application {
-	private ApplicationMetadata metadata;
-	private Specification spec;
-	private Status status;
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProjectBasicDup {
+
+	private String emmUpdatedOn;
+	private String consumerCreatedOn;
+
+	private String projectName;
+	private String createdAt;
+	private String createdBy;
+	private String updatedAt;
+	private String updatedBy;
+	private boolean kanban;
+	private List<HierarchyValueDup> hierarchy;
+	private boolean saveAssigneeDetails;
+	private boolean developerKpiEnabled;
+	private boolean projectOnHold;
+
 }

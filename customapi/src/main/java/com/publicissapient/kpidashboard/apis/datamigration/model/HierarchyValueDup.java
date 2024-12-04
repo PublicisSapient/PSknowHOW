@@ -16,17 +16,30 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.argocd.dto;
+package com.publicissapient.kpidashboard.apis.datamigration.model;
+
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * Application represents the information for ArgoCD Application
- *
+ * @author shi6
  */
 @Data
-public class Application {
-	private ApplicationMetadata metadata;
-	private Specification spec;
-	private Status status;
+@Getter
+@Setter
+@NoArgsConstructor
+public class HierarchyValueDup {
+	private HierarchyLevel hierarchyLevel;
+	private String value;
+	private String customizedValue;
+
+	public HierarchyValueDup(HierarchyLevel hierarchyLevel, String value) {
+		this.hierarchyLevel = hierarchyLevel;
+		this.value = value;
+		this.customizedValue = value;
+	}
 }
