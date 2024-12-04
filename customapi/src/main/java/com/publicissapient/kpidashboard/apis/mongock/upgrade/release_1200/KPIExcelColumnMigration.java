@@ -37,7 +37,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ChangeUnit(id = "excel_Column_Migration", order = "12002", author = "aksshriv1", systemVersion = "12.0.0")
 public class KPIExcelColumnMigration {
+	public static final String COLUMN_NAME = "columnName";
 	public static final String KPI_ID = "kpiId";
+	public static final String IS_SHOWN = "isShown";
+	public static final String ORDER = "order";
+	public static final String BASIC_PROJECT_CONFIG_ID = "basicProjectConfigId";
+	public static final String IS_DEFAULT = "isDefault";
+	public static final String KPI_COLUMN_DETAILS = "kpiColumnDetails";
 	private final MongoTemplate mongoTemplate;
 
 	public KPIExcelColumnMigration(MongoTemplate mongoTemplate) {
@@ -85,37 +91,37 @@ public class KPIExcelColumnMigration {
 
 				// Prepare the new document
 				Document document = new Document();
-				document.put("basicProjectConfigId", null);
+				document.put(BASIC_PROJECT_CONFIG_ID, null);
 				document.put(KPI_ID, kpiExcelColumn.getKpiId());
-				document.put("kpiColumnDetails", createColumnDetails(kpiExcelColumn));
+				document.put(KPI_COLUMN_DETAILS, createColumnDetails(kpiExcelColumn));
 				// Insert into the collection
 				sourceCollection.insertOne(document);
 				log.info("Inserted new entry for kpiId: {}", kpiExcelColumn.getKpiId());
 			}
 
 			// Document for kpi156
-			Document kpi156 = new Document("basicProjectConfigId", null).append("kpiId", "kpi156").append(
-					"kpiColumnDetails",
-					List.of(new Document("columnName", "Project Name").append("order", 1).append("isShown", true)
-							.append("isDefault", true),
-							new Document("columnName", "Weeks").append("order", 2).append("isShown", true)
-									.append("isDefault", true),
-							new Document("columnName", "Story ID").append("order", 3).append("isShown", true)
-									.append("isDefault", true),
-							new Document("columnName", "Lead Time (In Days) [B-A]").append("order", 4)
-									.append("isShown", true).append("isDefault", true),
-							new Document("columnName", "Change Completion Date [A]").append("order", 5)
-									.append("isShown", true).append("isDefault", true),
-							new Document("columnName", "Change Release Date [B]").append("order", 6)
-									.append("isShown", true).append("isDefault", true),
-							new Document("columnName", "Merge Request Id").append("order", 7).append("isShown", true)
-									.append("isDefault", false),
-							new Document("columnName", "Branch").append("order", 8).append("isShown", true)
-									.append("isDefault", false)));
+			Document kpi156 = new Document(BASIC_PROJECT_CONFIG_ID, null).append(KPI_ID, "kpi156").append(
+					KPI_COLUMN_DETAILS,
+					List.of(new Document(COLUMN_NAME, "Project Name").append(ORDER, 1).append(IS_SHOWN, true)
+							.append(IS_DEFAULT, true),
+							new Document(COLUMN_NAME, "Weeks").append(ORDER, 2).append(IS_SHOWN, true)
+									.append(IS_DEFAULT, true),
+							new Document(COLUMN_NAME, "Story ID").append(ORDER, 3).append(IS_SHOWN, true)
+									.append(IS_DEFAULT, true),
+							new Document(COLUMN_NAME, "Lead Time (In Days) [B-A]").append(ORDER, 4)
+									.append(IS_SHOWN, true).append(IS_DEFAULT, true),
+							new Document(COLUMN_NAME, "Change Completion Date [A]").append(ORDER, 5)
+									.append(IS_SHOWN, true).append(IS_DEFAULT, true),
+							new Document(COLUMN_NAME, "Change Release Date [B]").append(ORDER, 6).append(IS_SHOWN, true)
+									.append(IS_DEFAULT, true),
+							new Document(COLUMN_NAME, "Merge Request Id").append(ORDER, 7).append(IS_SHOWN, true)
+									.append(IS_DEFAULT, false),
+							new Document(COLUMN_NAME, "Branch").append(ORDER, 8).append(IS_SHOWN, true)
+									.append(IS_DEFAULT, false)));
 			// Document for kpi146
-			Document kpi146 = new Document("basicProjectConfigId", null).append("kpiId", "kpi146")
-					.append("kpiColumnDetails", List.of(new Document("columnName", "Date").append("order", 1)
-							.append("isShown", true).append("isDefault", true)));
+			Document kpi146 = new Document(BASIC_PROJECT_CONFIG_ID, null).append(KPI_ID, "kpi146")
+					.append(KPI_COLUMN_DETAILS, List.of(new Document(COLUMN_NAME, "Date").append(ORDER, 1)
+							.append(IS_SHOWN, true).append(IS_DEFAULT, true)));
 			// Insert documents
 			sourceCollection.insertMany(List.of(kpi156, kpi146));
 
@@ -146,7 +152,7 @@ public class KPIExcelColumnMigration {
 				}
 			}
 			// Remove documents with the specified kpiIds
-			sourceCollection.deleteMany(Filters.in("kpiId", "kpi156", "kpi146"));
+			sourceCollection.deleteMany(Filters.in(KPI_ID, "kpi156", "kpi146"));
 			log.info("Rollback completed. Data restored from backup.");
 		} catch (Exception e) {
 			log.error("Error during rollback: ", e);
@@ -165,10 +171,10 @@ public class KPIExcelColumnMigration {
 
 		for (int i = 0; i < columnNames.size(); i++) {
 			Document columnDetail = new Document();
-			columnDetail.put("columnName", columnNames.get(i));
-			columnDetail.put("order", i + 1);
-			columnDetail.put("isShown", true);
-			columnDetail.put("isDefault", true);
+			columnDetail.put(COLUMN_NAME, columnNames.get(i));
+			columnDetail.put(ORDER, i + 1);
+			columnDetail.put(IS_SHOWN, true);
+			columnDetail.put(IS_DEFAULT, true);
 			columnDetails.add(columnDetail);
 		}
 		return columnDetails;
