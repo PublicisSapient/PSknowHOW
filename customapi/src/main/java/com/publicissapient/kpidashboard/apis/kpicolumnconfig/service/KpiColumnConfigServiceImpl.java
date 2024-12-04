@@ -74,13 +74,21 @@ public class KpiColumnConfigServiceImpl implements KpiColumnConfigService {
 
 	@Override
 	public KpiColumnConfigDTO getByKpiColumnConfig(String basicProjectConfigId, String kpiId) {
-		ObjectId basicProjectConfigObjectId = new ObjectId(basicProjectConfigId);
-		KpiColumnConfig existingKpiColumnConfig = kpiColumnConfigRepository
-				.findByBasicProjectConfigIdAndKpiId(basicProjectConfigObjectId, kpiId);
-		if (existingKpiColumnConfig != null) {
-			return convertToKpiColumnConfigDTO(existingKpiColumnConfig);
+
+		if (basicProjectConfigId != null) {
+			ObjectId basicProjectConfigObjectId = new ObjectId(basicProjectConfigId);
+			KpiColumnConfig existingKpiColumnConfig = kpiColumnConfigRepository
+					.findByBasicProjectConfigIdAndKpiId(basicProjectConfigObjectId, kpiId);
+			if (existingKpiColumnConfig != null) {
+				return convertToKpiColumnConfigDTO(existingKpiColumnConfig);
+			} else {
+				// return the default configuration
+				KpiColumnConfig defaultKpiColumnConfig = kpiColumnConfigRepository
+						.findByBasicProjectConfigIdAndKpiId(null, kpiId);
+				return convertToKpiColumnConfigDTO(defaultKpiColumnConfig);
+			}
 		} else {
-			// return the default configuration
+
 			KpiColumnConfig defaultKpiColumnConfig = kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(null,
 					kpiId);
 			return convertToKpiColumnConfigDTO(defaultKpiColumnConfig);

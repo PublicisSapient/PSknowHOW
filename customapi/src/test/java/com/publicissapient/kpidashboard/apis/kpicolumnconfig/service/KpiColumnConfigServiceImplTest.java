@@ -66,12 +66,23 @@ public class KpiColumnConfigServiceImplTest {
 	}
 
 	@Test
-	public void testGetByKpiColumnConfig() {
+	public void testGetByNullKpiColumnConfig() {
 		KpiColumnConfig kpiColumnConfig1 = kpiColumnConfigs.get(0);
 		kpiColumnConfig1.setBasicProjectConfigId(new ObjectId("6417fe6a74821060a7133de7"));
 		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(kpiColumnConfig1);
 		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(
 				kpiColumnConfig1.getBasicProjectConfigId().toString(), kpiColumnConfig1.getKpiId());
+		KpiColumnConfigDTO kpiColumnConfig1DTO = convertToKpiColumnConfigDTO(kpiColumnConfig1);
+		assertEquals(kpiColumnConfigDTO, kpiColumnConfig1DTO);
+	}
+
+	@Test
+	public void testForNullBasicConfigID() {
+		KpiColumnConfig kpiColumnConfig1 = kpiColumnConfigs.get(0);
+		kpiColumnConfig1.setBasicProjectConfigId(null);
+		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(kpiColumnConfig1);
+		KpiColumnConfigDTO kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(
+				null, kpiColumnConfig1.getKpiId());
 		KpiColumnConfigDTO kpiColumnConfig1DTO = convertToKpiColumnConfigDTO(kpiColumnConfig1);
 		assertEquals(kpiColumnConfigDTO, kpiColumnConfig1DTO);
 	}
