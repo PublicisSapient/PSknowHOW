@@ -3943,5 +3943,21 @@
         }
       }
     ]
-  }
+  },
+  "kpiDetail": {
+  "kpiSubCategory": "Iteration Review",
+  "kpiWidth": 50,
+  "kpiUnit": "hours",
+  "xaxisLabel": "Date",
+  "yaxisLabel": "Value",
+  "isAggregationStacks": true,
+  "chartType": "stackedColumn",
+  "lowerThresholdBG": "#ffcccc",
+  "upperThresholdBG": "#ccffcc",
+  "barLegend": "Legend A",
+  "lineLegend": "Line Legend A"
+},
+"isEnabled": true,
+"chartWidth":500,
+"chartHeight":400
 }

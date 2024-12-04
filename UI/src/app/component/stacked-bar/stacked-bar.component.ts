@@ -9,8 +9,8 @@ import * as d3 from 'd3';
 })
 export class StackedBarComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
-  @Input() width: number = 800; // Chart width
-  @Input() height: number = 100; // Chart height
+  @Input() width;
+  @Input() height;
 
   private svg: any;
   private tooltip: any;
@@ -31,8 +31,8 @@ export class StackedBarComponent implements OnInit, OnChanges {
 
   private createChart(): void {
     const element = this.elRef.nativeElement;
-    const chartWidth = 600; // Total width of the chart
-    const chartHeight = 50; // Height of the bar
+    const chartWidth = this.width; // Total width of the chart
+    const chartHeight = this.height; // Height of the bar
     const margin = { top: 40, right: 20, bottom: 20, left: 20 };
     const totalValue = this.data.reduce((sum, d) => sum + d.value, 0); // Total value of all sections
   

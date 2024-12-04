@@ -15,9 +15,8 @@ import * as d3 from 'd3';
 })
 export class StackedBarChartComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
-  @Input() width: number = 800; // Chart width
-  @Input() height: number = 100; // Chart height
-
+  @Input() width;
+  @Input() height;
   private svg: any;
   private tooltip: any;
 
@@ -36,8 +35,8 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
   }
 
   private createChart(): void {
-    const chartWidth = 700; // Adjusted width to fit within the card
-    const chartHeight = 50; // Height of the bar
+    const chartWidth = this.width; // Adjusted width to fit within the card
+    const chartHeight = this.height; // Height of the bar
     const margin = { top: 50, right: 20, bottom: 50, left: 20 };
   
     // Calculate total value for scaling

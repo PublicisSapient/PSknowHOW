@@ -153,6 +153,7 @@ import { PsKpiCardFilterComponent } from './component/kpi-card-v3/ps-kpi-card-fi
 import { PsKpiCardChartRendererComponent } from './component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
 import { KpiHelperService } from './services/kpi-helper.service';
 import { StackedBarComponent } from './component/stacked-bar/stacked-bar.component';
+import { SemiCircleDonutChartComponent } from './component/semi-circle-donut-chart/semi-circle-donut-chart.component';
 
 
 /******************************************************/
@@ -247,7 +248,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         PsKpiCardHeaderComponent,
         PsKpiCardFilterComponent,
         PsKpiCardChartRendererComponent,
-        StackedBarComponent
+        StackedBarComponent,
+        SemiCircleDonutChartComponent
     ],
     imports: [
         DropdownModule,

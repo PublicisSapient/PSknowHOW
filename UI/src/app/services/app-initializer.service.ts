@@ -36,12 +36,12 @@ export class AppInitializerService {
     }
     commonRoutes: Routes = localStorage.getItem('newUI') ? [
         { path: '', redirectTo: 'iteration', pathMatch: 'full' },
-        {
-            path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "Iteration"
-            }
-        },
+        // {
+        //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        //     // data: {
+        //     //     feature: "Iteration"
+        //     // }
+        // },
         {
             path: 'kpi-maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
             data: {
@@ -56,12 +56,12 @@ export class AppInitializerService {
                 feature: "My Dashboard"
             }
         },
-        {
-            path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "Iteration"
-            }
-        },
+        // {
+        //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        //     // data: {
+        //     //     feature: "Iteration"
+        //     // }
+        // },
         {
             path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
             data: {

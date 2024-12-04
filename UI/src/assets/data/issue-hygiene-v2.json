@@ -2412,5 +2412,8 @@
         }
       }
     ]
-  }
+  },
+  "kpiDetail": {
+    "kpiSubCategory": "Iteration Review"
+}
 }

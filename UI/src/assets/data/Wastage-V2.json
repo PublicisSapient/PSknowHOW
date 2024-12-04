@@ -3960,5 +3960,21 @@
         "Undefined"
       ]
     }
-  ]
+  ],
+  "kpiDetail": {
+  "kpiSubCategory": "Iteration Review",
+  "kpiWidth": 50,
+  "kpiUnit": "hours",
+  "xaxisLabel": "Date",
+  "yaxisLabel": "Value",
+  "isAggregationStacks": true,
+  "chartType": "stackedColumn",
+  "lowerThresholdBG": "#ffcccc",
+  "upperThresholdBG": "#ccffcc",
+  "barLegend": "Legend A",
+  "lineLegend": "Line Legend A"
+},
+"isEnabled": true,
+"chartWidth":750,
+"chartHeight":25
 }

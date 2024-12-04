@@ -5,6 +5,7 @@
   opacity: 1;
   position: relative;
   max-height: 500px;
+  height: 500px;
 }
 
 :host .kpi-card-header {
@@ -365,4 +366,29 @@
 
 :host ::ng-deep .p-overflowlabel {
   word-break: break-all;
+}
+
+/* region */
+.legend{
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.legend li{
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+}
+
+.legend li span{
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
 }

@@ -34,8 +34,8 @@ import * as d3 from 'd3';
 })
 export class BarchartComponent implements OnInit {
   @Input() data: any[] = []; // Input dataset
-  @Input() width: number = 300; // Chart width
-  @Input() height: number = 300; // Chart height
+  @Input() width;
+  @Input() height;
 
   private svg: any;
   private tooltip: any;
@@ -61,7 +61,7 @@ export class BarchartComponent implements OnInit {
     const chartHeight = this.height - margin.top - margin.bottom;
   
     // Extract unit from the dataGroup or set default
-    const unit = this.data.map((d) => d.unit)[0] || 'Count'; //this.dataGroup?.unit ||
+    const unit = this.data.map((d) => d.unit)[0] || 'hr'; //this.dataGroup?.unit ||
   
     // Append SVG container
     this.svg = d3
@@ -101,7 +101,7 @@ export class BarchartComponent implements OnInit {
       .call(
         d3.axisLeft(yScale)
           .ticks(5)
-          .tickFormat((d) => `${d}${unit === 'Count' ? '' : ` ${unit}`}`) // Add unit dynamically
+          .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
       );
   
     // Add Y-axis label
@@ -141,8 +141,8 @@ export class BarchartComponent implements OnInit {
       .attr('width', xScale.bandwidth())
       .attr('height', (d) => chartHeight - yScale(d.value))
       .attr('fill', (d) => colorScale(d.category))
-      .attr('rx', 5) // Rounded corners
-      .attr('ry', 5)
+      // .attr('rx', 5) // Rounded corners
+      // .attr('ry', 25)
       .on('mouseover', (event, d) => {
         this.tooltip
           .style('display', 'block')
@@ -173,7 +173,7 @@ export class BarchartComponent implements OnInit {
       .style('font-size', '12px')
       .style('font-weight', 'bold')
       .style('fill', 'black')
-      .text((d) => `${d.value}${unit === 'Count' ? '' : ` ${unit}`}`); // Add unit dynamically
+      .text((d) => `${d.value}${unit === 'Count' ? '' : 'hr'}`); // Add unit dynamically
   }
 
   private updateChart(): void {
