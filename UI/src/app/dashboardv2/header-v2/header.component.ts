@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit {
   userRole: string = '';
   noToolsConfigured: boolean;
 
-  buttonLabel = 'Copy URL';
+  buttonLabel = 'Share URL';
   buttonIcon = 'pi pi-copy';
   buttonStyleClass = 'p-button-secondary p-button-sm';
 
