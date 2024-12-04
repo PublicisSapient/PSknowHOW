@@ -440,6 +440,11 @@ export class BasicConfigComponent implements OnInit {
       }
     }
   getButtonLabel(): string {
-    return this.clone === 'true' ? 'Clone' : 'Finalize';
+    return this.clone === 'true' ? 'CLONE' : 'Finalize';
   }
+
+  getConeStatusFlag(): boolean {
+    return this.clone === 'true';
+  }
+
 }
