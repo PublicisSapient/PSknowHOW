@@ -19,11 +19,11 @@
 
 package com.publicissapient.kpidashboard.common.repository.application;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
@@ -35,7 +35,10 @@ public interface ProjectHierarchyRepository extends MongoRepository<ProjectHiera
 
 	List<ProjectHierarchy> findByBasicProjectConfigIdIn(List<ObjectId> basicProjectConfigIdList);
 
-	List<ProjectHierarchy> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId, List<String> distinctSprintIDs, String hierarchyLevelIdSprint);
+	@Query(value = "{ 'basicProjectConfigId': ?0, 'nodeId': { $nin: ?1 }, 'hierarchyLevelId': ?2 }", fields = "{ 'nodeId': 1 }")
+	List<ProjectHierarchy> findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(ObjectId basicProjectConfigId,
+			List<String> distinctSprintIDs, String hierarchyLevelId);
 
-	void deleteByBasicProjectConfigIdAndNodeIdIn(ObjectId basicProjectConfigId, List<String> nodeIdsToBeDeleted, String hierarchyLevelId);
+	void deleteByBasicProjectConfigIdAndNodeIdIn(ObjectId basicProjectConfigId, List<String> nodeIdsToBeDeleted,
+			String hierarchyLevelId);
 }
