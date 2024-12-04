@@ -5,6 +5,15 @@
   opacity: 1;
   position: relative;
   max-height: 500px;
+}
+
+:host .kpi-card-container-v2{
+  background: #fff;
+  border: 1px solid #D5DBE1;
+  border-radius: 10px;
+  opacity: 1;
+  position: relative;
+  max-height: 500px;
   height: 500px;
 }
 
