@@ -1819,9 +1819,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (kpiId === 'kpi171') {
       //calculate number of days for lead time
       let kpi3preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
-      kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
-        return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
-      });
+      kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
+      this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
+
     } else {
       this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
     }
@@ -1976,6 +1976,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
+    //  this.exportExcelComponent.dataTransformForIterationTableWidget(this.markerInfo,this.excludeColumns,response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
+        
   }
 
   generateExcel() {
