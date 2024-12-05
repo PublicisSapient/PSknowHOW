@@ -69,7 +69,7 @@
           <form (ngSubmit)="onSubmit()" [formGroup]="form">
             <div
               class="p-mb-3 p-mt-3 p-pl-1 form-container"
-              *ngFor="let field of formData"
+              *ngFor="let field of formData; let index=index"
             >
               <div [ngSwitch]="field.inputType">
                 <div *ngSwitchCase="'switch'">
@@ -141,7 +141,7 @@
                       [formControlName]="field.hierarchyLevelId"
                       [style]="{ width: '500px' }"
                       [suggestions]="(field.filteredSuggestions && field.filteredSuggestions.length) ? field.filteredSuggestions : field.list"
-                      (completeMethod)="search({ query: selectedItems[field.hierarchyLevelId]?.nodeDisplayName || $event.query }, field)"
+                      (completeMethod)="search({ query: $event.query }, field, index)"
                       required="required"
                       [dropdown]="true"
                       field="nodeDisplayName"

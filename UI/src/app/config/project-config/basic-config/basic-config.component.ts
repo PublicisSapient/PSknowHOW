@@ -121,7 +121,9 @@ export class BasicConfigComponent implements OnInit {
         required: true
       });
 
-      if (this.clone === 'true') {
+      if (this.clone !== 'true') {
+        this.formData = this.formData.filter(item=>item.hierarchyLevelId !== 'project')
+      }
         this.formData.push(
           {
             level: this.formData.length,
@@ -133,7 +135,7 @@ export class BasicConfigComponent implements OnInit {
             required: true
           }
         );
-      }
+      
 
       this.formData?.push(
         {
@@ -191,12 +193,22 @@ export class BasicConfigComponent implements OnInit {
     }
   }
 
-  search(event, field) {
+  search(event, field, index) {
     const filtered: any[] = [];
     const query = event.query;
-    const list = field.filteredSuggestions && field.filteredSuggestions.length? field.filteredSuggestions: field.list;
-    for (let i = 0; i < list.length; i++) {
-      const listItem = list[i];
+    const parentNode = index>1?this.form.value[this.formData[index-1].hierarchyLevelId]:null;
+    let filteredFieldsByParentId;
+    if(parentNode) {
+      filteredFieldsByParentId = field.list.filter(item => item.parentId == parentNode.nodeId)
+    } else if(field.filteredSuggestions && field.filteredSuggestions.length) {
+      filteredFieldsByParentId = field.filteredSuggestions;
+    } else {
+      filteredFieldsByParentId = field.list
+    }
+    console.log(parentNode, filteredFieldsByParentId)
+    // const list = field.filteredSuggestions && field.filteredSuggestions.length? field.filteredSuggestions: field.list;
+    for (let i = 0; i < filteredFieldsByParentId.length; i++) {
+      const listItem = filteredFieldsByParentId[i];
       if (listItem?.nodeDisplayName?.toLowerCase().indexOf(query?.toLowerCase()) >= 0) {
         filtered.push(listItem);
       }
@@ -245,13 +257,13 @@ export class BasicConfigComponent implements OnInit {
 
   filterBelowLevels(selectedNodeId: string, currentIndex: number) {
 
-    let selectParentId = selectedNodeId;
+    let selectParentId = [selectedNodeId];
     for (let i = currentIndex + 1; i < this.formData.length; i++) {
       if (this.formData[i].list) {
-        if(selectParentId) {
-        this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => item.parentId === selectParentId);
+        if(selectParentId.length) {
+        this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => selectParentId.includes(item.parentId));
         }
-        selectParentId = this.formData[i]?.filteredSuggestions[0]?.parentId;
+        selectParentId = this.formData[i]?.filteredSuggestions.map(item=>item.nodeId);
 
         if (this.formData[i].filteredSuggestions && this.formData[i].filteredSuggestions.length && this.clone == 'true') {
           this.selectedItems[this.formData[i].hierarchyLevelId] = this.formData[i].filteredSuggestions[0];
@@ -290,18 +302,6 @@ export class BasicConfigComponent implements OnInit {
       user_email: this.sharedService.getCurrentUserDetails('user_email'),
     }
     this.getFieldsResponse.forEach((element, index) => {
-      if (element.hierarchyLevelId === 'project' && this.clone !== 'true') {
-        if (typeof formValue[element.hierarchyLevelId] === 'string') {
-          const newProjectName = formValue[element.hierarchyLevelId].trim();
-          submitData['projectName'] = newProjectName;
-          submitData['projectDisplayName'] = newProjectName;
-          submitData['projectNodeId'] = null;
-        } else {
-          submitData['projectName'] = formValue[element.hierarchyLevelId]?.nodeName;
-          submitData['projectDisplayName'] = formValue[element.hierarchyLevelId]?.nodeDisplayName;
-          submitData['projectNodeId'] = formValue[element.hierarchyLevelId]?.nodeId;
-        }
-      }
       submitData['hierarchy'].push({
         hierarchyLevel: {
           level: formValue[element.hierarchyLevelId]?.level,
@@ -342,7 +342,7 @@ export class BasicConfigComponent implements OnInit {
           this.form.reset();
           this.messenger.add({
             severity: 'success',
-            summary: 'Basic config submitted!!',
+            summary: 'Project setup initiated',
             detail: ''
           });
           this.isProjectSetupPopup = false;
