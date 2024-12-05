@@ -10,6 +10,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { of } from 'rxjs';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { MessageService } from 'primeng/api';
 
 describe('DoraComponent', () => {
   let component: DoraComponent;
@@ -19949,7 +19950,7 @@ describe('DoraComponent', () => {
       ],
       declarations: [DoraComponent,ExportExcelComponent],
       providers: [
-        HelperService,
+        HelperService,MessageService,
         HttpService,
         { provide: APP_CONFIG, useValue: AppConfig },
         { provide: SharedService, useValue: service },

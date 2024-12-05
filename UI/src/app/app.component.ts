@@ -39,9 +39,6 @@ export class AppComponent implements OnInit {
 
   authorized = <boolean>true;
 
-  newUI: boolean = false;
-  isNewUISwitch: boolean = false;
-
   @HostListener('window:scroll', ['$event'])
   onScroll(event) {
     const header = document.querySelector('.header');
@@ -58,10 +55,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.checkNewUIFlag();
-
-    this.newUI = localStorage.getItem('newUI') ? true : false;
-
+    localStorage.removeItem('newUI');
 
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
@@ -93,32 +87,11 @@ export class AppComponent implements OnInit {
           url: event.urlAfterRedirects + '/' + (this.service.getSelectedType() || 'Scrum'),
           userRole: this.authorisation.getRole(),
           version: this.httpService.currentVersion,
-          uiType: JSON.parse(localStorage.getItem('newUI')) === true ? 'New' : 'Old'
+          uiType: 'New'
         };
         this.ga.setPageLoad(data);
       }
 
     });
-  }
-
-  async checkNewUIFlag(){
-    this.feature.config = this.feature.loadConfig().then((res) => res);
-    this.isNewUISwitch = await this.feature.isFeatureEnabled('NEW_UI_SWITCH');
-  }
-
-  uiSwitch(event, userChange = false) {
-    let isChecked = event.checked;
-    const data = {
-      type: isChecked ? 'New' : 'Old'
-    };
-    this.ga.setUIType(data);
-    if (isChecked) {
-      localStorage.setItem('newUI', 'true');
-    } else {
-      localStorage.removeItem('newUI');
-    }
-    if (userChange) {
-      window.location.reload();
-    }
   }
 }

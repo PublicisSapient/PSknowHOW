@@ -16,18 +16,16 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.argocd.dto;
+package com.publicissapient.kpidashboard.apis.datamigration.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-/**
- * UserCredentialsDTO represents the ArgoCD user information
- *
- */
 @Data
 @AllArgsConstructor
-public class UserCredentialsDTO {
-	private String username;
-	private String password;
+public class MigrateData {
+	private String projectName;
+	private String level;
+	private String hierarchyName;
+
 }

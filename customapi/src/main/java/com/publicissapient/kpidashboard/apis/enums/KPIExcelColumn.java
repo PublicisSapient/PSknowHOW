@@ -292,7 +292,8 @@ public enum KPIExcelColumn {
 							Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
 
 	FLOW_DISTRIBUTION("Kpi146",
-									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
+									Arrays.asList("Date")),
+	FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
 	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
 			"Priority", "Assignee", "Issue Status", "Release Tag Date (Latest)", "Dev Completion Date", "Completion Date")),

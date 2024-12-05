@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.junit.Test;
@@ -47,6 +46,8 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CustomAnalyticsServiceImplTest {
@@ -70,7 +71,7 @@ public class CustomAnalyticsServiceImplTest {
 	@Mock
 	private UserInfoServiceImpl service;
 	@Mock
-	private UserLoginHistoryService userLoginHistoryService;
+	private UsersSessionService usersSessionService;
 	@Test
 	public void testAddAnalyticsData() {
 		HttpServletResponse resp = Mockito.mock(HttpServletResponse.class);

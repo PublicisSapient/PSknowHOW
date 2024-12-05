@@ -27,5 +27,6 @@ import lombok.Data;
 @Data
 public class Application {
 	private ApplicationMetadata metadata;
+	private Specification spec;
 	private Status status;
 }
