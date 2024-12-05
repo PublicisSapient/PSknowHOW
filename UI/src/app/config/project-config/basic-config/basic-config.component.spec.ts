@@ -306,7 +306,7 @@ describe('BasicConfigComponent', () => {
       list: [{ nodeDisplayName: 'Test Node' }, { nodeDisplayName: 'Another Node' }],
       filteredSuggestions: []
     };
-    component.search(mockEvent, mockField);
+    component.search(mockEvent, mockField, 2);
     expect(mockField.filteredSuggestions.length).toBe(1);
     expect(mockField.filteredSuggestions[0].nodeDisplayName).toBe('Test Node');
   });
@@ -356,7 +356,7 @@ describe('BasicConfigComponent', () => {
     expect(sharedService.setProjectList).toHaveBeenCalled();
     expect(messageService.add).toHaveBeenCalledWith({
       severity: 'success',
-      summary: 'Basic config submitted!!',
+      summary: 'Project setup initiated',
       detail: ''
     });
     expect(gaService.createProjectData).toHaveBeenCalled();
