@@ -27,6 +27,7 @@ public class AccessItem {
 
 	@Indexed(unique = true)
 	private String itemId;
+	private String itemName;
 
 	@Override
 	public boolean equals(Object o) {

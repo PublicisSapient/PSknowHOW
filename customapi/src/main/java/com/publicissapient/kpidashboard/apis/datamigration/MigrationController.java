@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.datamigration;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.datamigration.model.MigrateData;
+import com.publicissapient.kpidashboard.apis.datamigration.service.DataMigrationService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,18 @@ public class MigrationController {
 		} else {
 			return ResponseEntity.status(HttpStatus.SC_NO_CONTENT).body(new ServiceResponse());
 		}
+	}
+
+	@PutMapping(value = "/populateorganization")//put call
+	public ResponseEntity<ServiceResponse> populateOrganizationHierarchy() {
+		try {
+			dataMigrationService.populateOrganizationHierarchy();
+			return ResponseEntity.status(HttpStatus.SC_NO_CONTENT).body(new ServiceResponse());
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+					.body(new ServiceResponse(false, "could not save to database", null));
+		}
+
 	}
 
 }
