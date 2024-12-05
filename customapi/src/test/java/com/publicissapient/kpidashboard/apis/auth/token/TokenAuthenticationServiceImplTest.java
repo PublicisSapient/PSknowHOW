@@ -172,7 +172,6 @@ public class TokenAuthenticationServiceImplTest {
 		parList.add(par);
 		accessItem = new AccessItem();
 		accessItem.setItemId("itemId");
-		accessItem.setItemName("itemName");
 		accessItems.add(accessItem);
 
 		accessNodes = new AccessNode();
@@ -204,7 +203,6 @@ public class TokenAuthenticationServiceImplTest {
 
 		accessItem = new AccessItem();
 		accessItem.setItemId("itemId");
-		accessItem.setItemName("itemName");
 		accessItems.add(accessItem);
 
 		accessNodes = new AccessNode();

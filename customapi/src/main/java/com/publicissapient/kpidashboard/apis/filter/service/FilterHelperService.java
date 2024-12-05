@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -136,9 +136,9 @@ public class FilterHelperService {
 			if (data.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
 					|| data.getNode().stream()
 							.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-									&& node.getAccountHierarchy().getSprintState() != null
+									&& node.getProjectHierarchy().getSprintState() != null
 									&& nsprintStateList
-											.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))
+											.contains(node.getProjectHierarchy().getSprintState().toLowerCase()))
 					|| data.getNode().stream()
 							.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))) {
 				hierarchyData.add(data);
@@ -190,6 +190,7 @@ public class FilterHelperService {
 		return filteredDataSetNew;
 	}
 
+	// todo remove
 	/**
 	 * @param projectConfig
 	 *            for filter creation

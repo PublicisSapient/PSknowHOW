@@ -19,15 +19,18 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.stereotype.Service;
@@ -103,7 +106,7 @@ public class CacheServiceImpl implements CacheService {
 		return accountHierarchyDataList.stream()
 				.filter(data -> data.getNode().stream()
 						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-								&& node.getAccountHierarchy().getSprintState() != null)).toList();
+								&& node.getProjectHierarchy().getSprintState() != null)).toList();
 
 	}
 
@@ -117,10 +120,51 @@ public class CacheServiceImpl implements CacheService {
 	@Cacheable(CommonConstant.CACHE_PROJECT_CONFIG_MAP)
 	@Override
 	public Object cacheProjectConfigMapData() {
+		log.info("Creating Project Config Cache");
+		configHelperService.loadConfigData();
+		return filterOnHoldProjectBasicConfig();
+
+	}
+
+	/**
+	 * this method will be current updated map store in cache
+	 * @return
+	 */
+	@CachePut(CommonConstant.CACHE_PROJECT_CONFIG_MAP)
+	@Override
+	public Object updateCacheProjectConfigMapData() {
 		log.info("updating Project Config Cache");
+		return filterOnHoldProjectBasicConfig();
+	}
+
+	@Cacheable(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP)
+	@Override
+	public Object cacheAllProjectConfigMapData() {
+		log.info("Creating All Project Config Cache");
 		configHelperService.loadConfigData();
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 
+	}
+
+	/**
+	 * this method will be current updated map store in cache
+	 * @return
+	 */
+	@CachePut(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP)
+	@Override
+	public Object updateAllCacheProjectConfigMapData() {
+		log.info("updating All Project Config Cache");
+		return configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+	}
+
+	private Object filterOnHoldProjectBasicConfig() {
+
+		Map<String, ProjectBasicConfig> projectConfigMap = (Map<String, ProjectBasicConfig>) configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+
+		return projectConfigMap == null ? Collections.emptyMap() : projectConfigMap.entrySet()
+				.stream()
+				.filter(entry -> entry.getValue() != null && !entry.getValue().isProjectOnHold())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_MAP)
@@ -131,7 +175,7 @@ public class CacheServiceImpl implements CacheService {
 		return configHelperService.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 
 	}
-	
+
 	@Cacheable(CommonConstant.CACHE_BOARD_META_DATA_MAP)
 	@Override
 	public Object cacheBoardMetaDataMapData() {

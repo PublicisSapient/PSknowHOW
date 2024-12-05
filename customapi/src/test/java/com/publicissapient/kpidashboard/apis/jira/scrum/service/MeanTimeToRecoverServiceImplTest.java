@@ -153,7 +153,7 @@ public class MeanTimeToRecoverServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -229,7 +229,7 @@ public class MeanTimeToRecoverServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList, false);
 //		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(new ArrayList<>());
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(new ArrayList<>());

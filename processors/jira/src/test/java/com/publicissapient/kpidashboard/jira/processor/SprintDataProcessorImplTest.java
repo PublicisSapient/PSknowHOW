@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -95,6 +97,10 @@ public class SprintDataProcessorImplTest {
         projectConfFieldMapping.setProjectName("knowhow");
         projectConfFieldMapping.setKanban(false);
         projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("5fd99f7bc8b51a7b55aec836"));
+        ProjectBasicConfig basicConfig= new ProjectBasicConfig();
+        basicConfig.setProjectName("knowhow");
+        basicConfig.setProjectNodeId("abc_uniqueId");
+        projectConfFieldMapping.setProjectBasicConfig(basicConfig);
         FieldMapping fieldMapping=new FieldMapping();
         fieldMapping.setSprintName("customfield_12700");
         projectConfFieldMapping.setFieldMapping(fieldMapping);

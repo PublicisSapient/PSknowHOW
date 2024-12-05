@@ -133,7 +133,7 @@ describe('DashboardconfigComponent', () => {
     const getProjectsResponse = { message: 'Fetched successfully', success: true, data: [{ id: '601bca9569515b0001d68182', projectName: 'TestRIshabh', createdAt: '2021-02-04T10:21:09', isKanban: false }] };
     component.getProjects();
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/basicconfigs')[0].flush(getProjectsResponse);
+    httpMock.match(baseUrl + '/api/basicconfigs')[0]?.flush(getProjectsResponse);
   });
 
   it('should allow user to select project', () => {

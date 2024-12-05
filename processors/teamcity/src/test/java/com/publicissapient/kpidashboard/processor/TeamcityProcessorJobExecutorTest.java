@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.processor;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -154,7 +155,7 @@ public class TeamcityProcessorJobExecutorTest {
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(teamcityConfig.getAesEncryptionKey()).thenReturn("aesKey");
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
 		when(aesEncryptionService.decrypt(anyString(), anyString())).thenReturn(PLAIN_TEXT_PASSWORD);

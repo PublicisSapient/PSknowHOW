@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,10 +70,10 @@ public class IssueKanbanProcessorTest {
 		readData.setSprintFetch(false);
 		KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
 		when(jiraIssueProcessor.convertToKanbanJiraIssue(any(), any(), any(), any())).thenReturn(jiraIssue);
-		KanbanAccountHierarchy accountHierarchy = KanbanAccountHierarchy.builder()
-				.basicProjectConfigId(new ObjectId("63bfa0f80b28191677615735")).build();
-		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();
-		accountHierarchies.add(accountHierarchy);
+		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
+				projectHierarchy.setBasicProjectConfigId(new ObjectId("63bfa0f80b28191677615735"));
+		Set<ProjectHierarchy> accountHierarchies = new HashSet<>();
+		accountHierarchies.add(projectHierarchy);
 		when(jiraIssueAccountHierarchyProcessor.createKanbanAccountHierarchy(any(), any()))
 				.thenReturn(accountHierarchies);
 		AssigneeDetails assigneeDetails = new AssigneeDetails();
@@ -83,7 +84,7 @@ public class IssueKanbanProcessorTest {
 
 		// Assert
 		assertEquals(jiraIssue, result.getKanbanJiraIssue());
-		assertEquals(accountHierarchies, result.getKanbanAccountHierarchies());
+		assertEquals(accountHierarchies, result.getProjectHierarchies());
 		assertEquals(assigneeDetails, result.getAssigneeDetails());
 	}
 }

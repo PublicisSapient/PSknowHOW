@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -80,6 +81,8 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	private SprintDetails sprintDetails;
 	@InjectMocks
 	private JiraIssueAccountHierarchyProcessorImpl createAccountHierarchy;
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
 
 	@Before
 	public void setup() {
@@ -101,7 +104,6 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	@Test
 	public void createAccountHierarchy() {
 		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
-		when(accountHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(accountHierarchyList);
 		Assert.assertEquals(2, createAccountHierarchy
 				.createAccountHierarchy(jiraIssues.get(0), createProjectConfig(), getSprintDetails())
 				.size());

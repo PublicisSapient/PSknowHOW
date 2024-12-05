@@ -213,7 +213,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 
 	private void setProjectMeta(TestExecutionData testExecutionData, ProjectBasicConfig project) {
 		if (testExecutionData != null && project != null) {
-			testExecutionData.setProjectNodeId(project.getProjectName() + "_" + project.getId().toHexString());
+			testExecutionData.setProjectNodeId(project.getProjectNodeId());
 			testExecutionData.setProjectName(project.getProjectName());
 			testExecutionData.setBasicProjectConfigId(project.getId().toHexString());
 			testExecutionData.setKanban(project.getIsKanban());

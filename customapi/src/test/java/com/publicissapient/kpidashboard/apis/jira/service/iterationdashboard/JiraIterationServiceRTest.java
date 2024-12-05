@@ -129,7 +129,7 @@ public class JiraIterationServiceRTest {
 		serviceFactory.initMyServiceCache();
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
