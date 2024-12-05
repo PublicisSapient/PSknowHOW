@@ -307,15 +307,15 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 
 					List<IterationKpiData> data = new ArrayList<>();
 					data.add(new IterationKpiData(INTAKE_TO_DOR,
-							(double) Math.round(ObjectUtils.defaultIfNull(intakeDor, 0L).doubleValue() / 480),
+							 ObjectUtils.defaultIfNull(intakeDor, 0L).doubleValue() / 480,
 							ObjectUtils.defaultIfNull(intakeDorTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 							getIterationKpiModalValue(intakeDorModalValues, cycleTimeList)));
 					data.add(new IterationKpiData(DOR_TO_DOD,
-							(double) Math.round(ObjectUtils.defaultIfNull(dorDod, 0L).doubleValue() / 480),
+							ObjectUtils.defaultIfNull(dorDod, 0L).doubleValue() / 480,
 							ObjectUtils.defaultIfNull(dorDodTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 							getIterationKpiModalValue(dorDodModalValues, cycleTimeList)));
 					data.add(new IterationKpiData(DOD_TO_LIVE,
-							(double) Math.round(ObjectUtils.defaultIfNull(dodLive, 0L).doubleValue() / 480),
+							ObjectUtils.defaultIfNull(dodLive, 0L).doubleValue() / 480,
 							ObjectUtils.defaultIfNull(dodLiveTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 							getIterationKpiModalValue(dodLiveModalValues, cycleTimeList)));
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(type, null, data);
@@ -328,15 +328,15 @@ public class CycleTimeServiceImpl extends JiraBacklogKPIService<Long, List<Objec
 
 			List<IterationKpiData> data = new ArrayList<>();
 			data.add(new IterationKpiData(INTAKE_TO_DOR,
-					(double) Math.round(ObjectUtils.defaultIfNull(overAllIntakeDor, 0L).doubleValue() / 480),
+					ObjectUtils.defaultIfNull(overAllIntakeDor, 0L).doubleValue() / 480,
 					ObjectUtils.defaultIfNull(overAllIntakeDorTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 					getIterationKpiModalValue(overAllIntakeDorModalValues, cycleTimeList)));
 			data.add(new IterationKpiData(DOR_TO_DOD,
-					(double) Math.round(ObjectUtils.defaultIfNull(overAllDorDod, 0L).doubleValue() / 480),
+					ObjectUtils.defaultIfNull(overAllDorDod, 0L).doubleValue() / 480,
 					ObjectUtils.defaultIfNull(overAllDorDodTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 					getIterationKpiModalValue(overAllDorDodModalValues, cycleTimeList)));
 			data.add(new IterationKpiData(DOD_TO_LIVE,
-					(double) Math.round(ObjectUtils.defaultIfNull(overAllDodLive, 0L).doubleValue() / 480),
+					ObjectUtils.defaultIfNull(overAllDodLive, 0L).doubleValue() / 480,
 					ObjectUtils.defaultIfNull(overAllDodLiveTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 					getIterationKpiModalValue(overAllDodLiveModalValues, cycleTimeList)));
 			IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, CommonConstant.OVERALL,
