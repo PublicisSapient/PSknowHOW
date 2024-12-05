@@ -39,7 +39,7 @@ export class ExportExcelComponent implements OnInit {
   tableColumns = []; // store all table coumns with configurations
   isDisableSaveCOnfigurationBtn: boolean = false;
   markerInfo = [];
-  forzenColumns = ['issue id','issue description'];
+  forzenColumns = ['issue id'];
 
   constructor(
     private excelService: ExcelService,
@@ -74,6 +74,7 @@ export class ExportExcelComponent implements OnInit {
 
 
   dataTransformForIterationTableWidget(markerInfo, excludeColumns, rawColumConfig, rawExcelData, kpiName, kpiId) {
+    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
     this.markerInfo = markerInfo;
     this.modalDetails['kpiId'] = kpiId;
     const tableData = [];
@@ -104,14 +105,15 @@ export class ExportExcelComponent implements OnInit {
   }
   
   dataTransformatin(rawColumConfig, rawExcelData, chartType, kpiName) {
+    rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
     this.tableColumns = rawColumConfig;
 
     if (chartType == 'stacked-area') {
-      this.generateAddRemoveData(Object.keys(rawExcelData[0].Count))
       const re = {}
       re['excelData'] = rawExcelData;
       re['columns'] = rawColumConfig;
-      this.dataTransformForStackedAreaChart(re);
+      const allColumns = this.dataTransformForStackedAreaChart(re);
+      this.generateAddRemoveData(allColumns);
     } else {
       this.generateAddRemoveData(Object.keys(rawExcelData[0]))
       const re = {}
@@ -129,17 +131,20 @@ export class ExportExcelComponent implements OnInit {
 
   dataTransformForStackedAreaChart(getData) {
     let kpiObj = JSON.parse(JSON.stringify(getData));
+    kpiObj['columns'] = kpiObj['columns'].map(col=>col.columnName);
     kpiObj['excelData'] = kpiObj['excelData'].map((item) => {
       for (let key in item['Count']) {
-        if (!kpiObj['columns'].map(col => col.columnName)?.includes(key)) {
-          kpiObj['columns'] = [...kpiObj['columns'], { columnName: key, isDefault: false, isShown: false, order: 0 }];
+        if (!kpiObj['columns'].includes(key)) {
+          kpiObj['columns'] = [...kpiObj['columns'], key];
         }
       }
       let obj = { ...item, ...item['Count'] };
       delete obj['Count'];
       return obj;
     });
+    const allColumnList = [...kpiObj['columns']];
     this.kpiExcelData = this.excelService.generateExcelModalData(kpiObj);
+    return allColumnList;
   }
 
   generateAddRemoveData(tableValue) {
@@ -206,7 +211,7 @@ export class ExportExcelComponent implements OnInit {
   }
 
   generateColumnFilterData() {
-    this.excludeColumnFilter = ['Linked Defect', 'Defect Priority', 'Linked Stories'];
+    this.excludeColumnFilter = ['Linked Defect','Linked Stories'];
     if (this.modalDetails['tableValues'].length > 0) {
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
@@ -316,5 +321,28 @@ export class ExportExcelComponent implements OnInit {
     }
 
   }
+
+   makeIssueIDOnFirstOrder(columns) {
+    // Identify the "issue id" column (case-insensitive)
+    const issueIdColumn = columns.find(
+      (col) => col.columnName.toLowerCase() === "issue id"
+    );
+  
+    if (!issueIdColumn) {
+      return columns; // Return original if "issue id" is not found
+    }
+  
+    // Set "issue id" to the first position and adjust its order
+    issueIdColumn.order = 0;
+  
+    // Filter out the "issue id" column and reassign orders for the rest
+    const remainingColumns = columns
+      .filter((col) => col !== issueIdColumn)
+      .sort((a, b) => a.order - b.order)
+      .map((col, index) => ({ ...col, order: index + 1 }));
+  
+    // Return the updated array with "issue id" at the top
+    return [issueIdColumn, ...remainingColumns];
+   }
 
 }
