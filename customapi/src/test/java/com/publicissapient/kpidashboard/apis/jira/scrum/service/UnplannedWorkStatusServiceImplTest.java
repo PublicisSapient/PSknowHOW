@@ -144,7 +144,7 @@ public class UnplannedWorkStatusServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(unplannedWorkStatusService.getQualifierType(), equalTo("UNPLANNED_WORK_STATUS"));
+		assertThat(unplannedWorkStatusService.getQualifierType(), equalTo(""));
 	}
 
 	@Test

@@ -83,7 +83,7 @@ public class DevCompletionStatusServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEV_COMPLETED_STATUS.name();
+		return "";
 	}
 
 	@Override

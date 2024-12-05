@@ -170,7 +170,7 @@ public class DefectCountByRCAServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_RCA_PIE_CHART.name();
+		return "";
 	}
 
 	@Override
