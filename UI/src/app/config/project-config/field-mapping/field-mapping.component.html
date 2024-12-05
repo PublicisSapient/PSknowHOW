@@ -20,9 +20,9 @@
 <div class="main field-mapping p-5">
     <div class="p-d-flex p-align-center p-jc-between position-relative p-pb-3">
         <div class="p-d-flex p-align-center">
-            <a [routerLink]="['/dashboard/Config/ConfigSettings/' + selectedConfig.id]" [queryParams]="{type: selectedConfig?.type.toLowerCase(), tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left"
+            <a [routerLink]="['/dashboard/Config/ConfigSettings/' + selectedConfig.id]" [queryParams]="{type: (selectedConfig?.type?.toLowerCase() || selectedConfig?.Type?.toLowerCase()), tab: 2}" pButton pRipple type="button" icon="pi pi-arrow-left"
                 class="p-button-raised p-button-secondary back-button p-mr-4"></a>
-            <h5 class="card__primary__title__text p-m-0">Field Mappings ({{selectedConfig?.type?.toLowerCase() === 'kanban' ? 'Kanban' : 'Scrum'}})</h5>
+            <h5 class="card__primary__title__text p-m-0">Field Mappings ({{(selectedConfig?.type?.toLowerCase() || selectedConfig?.Type?.toLowerCase()) === 'kanban' ? 'Kanban' : 'Scrum'}})</h5>
         </div>
         <div>
             <input type="button" class="btn-export p-mr-3" value="Export" (click)="export()" />
