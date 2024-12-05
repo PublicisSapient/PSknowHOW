@@ -1971,11 +1971,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   handleArrowClick(kpi, label, tableValues) {
-    this.displayModal = true;
     const idx = this.ifKpiExist(kpi?.kpiId);
-    this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
-    this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
-    this.modalDetails['tableValues'] = tableValues;
+    const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
+    this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
+      if (response['success']) {
+        this.exportExcelComponent.dataTransformForIterationTableWidget([],[],response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
+      }     
+    });
   }
 
   generateExcel() {
