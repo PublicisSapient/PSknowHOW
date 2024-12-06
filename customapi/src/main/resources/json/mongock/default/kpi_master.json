@@ -4403,7 +4403,7 @@
     "yAxisLabel": "",
     "xAxisLabel": "",
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "dropdown",
+    "kpiFilter": "multiSelectDropDown",
     "boxType": "2_column",
     "calculateMaturity": true,
     "isAggregationStacks": false,
@@ -4423,7 +4423,6 @@
     },
     "isPositiveTrend": false,
     "kpiBaseLine": "0",
-    "hideOverallFilter" : true,
     "showTrend": false
   },
   {
