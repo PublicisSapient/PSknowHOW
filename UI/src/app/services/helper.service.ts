@@ -26,7 +26,7 @@ import { ExcelService } from './excel.service';
 import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { environment } from 'src/environments/environment';
-import { ActivatedRoute, Router, UrlTree } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 @Injectable()
 export class HelperService {
     isKanban = false;
@@ -95,7 +95,7 @@ export class HelperService {
                 //             kpiRequestObject.kpiList.push(obj)
                 //         }
                 //     }
-                // } 
+                // }
                 // else if (visibleKpis.includes(obj.kpiId)) {
                 //     if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
                 //         kpiRequestObject.kpiList.push(obj)
@@ -743,7 +743,7 @@ export class HelperService {
 
             if (this.selectedFilters['primary_level']) {
                 if (this.selectedFilters['primary_level'][0]) {
-                    this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path.replace(/###/gi, '___');
+                    this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path?.replace(/###/gi, '___');
                 }
             }
             this.setBackupOfUrlFilters('{}');
