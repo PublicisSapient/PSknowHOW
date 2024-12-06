@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
