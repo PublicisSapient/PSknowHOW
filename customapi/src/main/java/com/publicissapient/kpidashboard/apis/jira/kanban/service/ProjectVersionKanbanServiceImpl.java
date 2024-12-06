@@ -164,7 +164,7 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 			}
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_FREQUENCY.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_FREQUENCY_KANBAN.getColumns());
 
 	}
 
