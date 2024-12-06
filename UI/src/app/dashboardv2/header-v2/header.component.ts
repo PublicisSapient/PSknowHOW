@@ -35,6 +35,23 @@ export class HeaderComponent implements OnInit {
   userRole: string = '';
   noToolsConfigured: boolean;
 
+  // pSLogoInfo= {
+  //   "imageUrl": "assets/img/PSKnowHowLogo.svg",
+  //   "altText": "psLogo"
+  //   }
+
+  platformLogoInfo = {
+       "imageUrl": "assets/img/knowHOW_logo_final.png",
+       "altText": "KnowHow",
+       "width":150
+    }
+
+    platformSwitchItems = [
+      {label: "Assessments", event: 'assessments'},
+      {label: "Retros", event: 'retro'},
+      {label: "KnowHOW", event: 'knowHow'}
+    ]
+
   constructor(
     private httpService: HttpService,
     public sharedService: SharedService,
@@ -179,4 +196,14 @@ export class HeaderComponent implements OnInit {
       this.router.navigate([`/dashboard/my-knowhow`]);
     }
   }
+
+  onSwitchApplicationClick(e){
+    console.log('onSwitchApplicationClick',e)
+  }
+
+  onLogoClick(e){
+    console.log('onLogoClick',e);
+    this.navigateToMyKnowHOW()
+  }
 }
+
