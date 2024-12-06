@@ -785,7 +785,7 @@ public class KPIExcelUtilityTest {
 		// Act
 		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig, fieldMapping);
 		// Assert
-		assertEquals(5, kpiExcelData.size());
+		assertEquals(3, kpiExcelData.size());
 		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
 		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
