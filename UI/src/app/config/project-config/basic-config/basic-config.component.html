@@ -49,6 +49,15 @@
                   </div>
                 </ng-template>
               </p-messages>
+              <p-messages *ngIf="getConeStatusFlag() && form.get('developerKpiEnabled')?.value" severity="warn">
+                <ng-template pTemplate>
+                  <em class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #f39c12;"></em>
+                  <div class="p-ml-2">
+                    Tools config required for Developer dashboard are not supported for cloning.
+                    Please configure your SCM tools after completing the cloning step
+                  </div>
+                </ng-template>
+              </p-messages>
             </div>
           </div>
 
@@ -117,7 +126,7 @@
               <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
                 icon="pi pi-angle-double-left" iconPos="left" (click)="closeProjectSetupPopup.emit()"></button>
               <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-                icon="pi pi-save" iconPos="left" label="Finalize" [disabled]="!form.valid"></button>
+                icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
             </div>
           </form>
 
@@ -126,8 +135,12 @@
       <ng-container *ngIf="isProjectCOmpletionPopup">
         <div class="p-p-0">
           <div class="p-d-flex p-jc-center p-pb-3">
-            <h5 class="card__primary__title__text p-mb-0">Project “{{selectedProject?.['name']}}” successfully added.
-              Connect Tools to sync KPI’s.</h5>
+            <h5 *ngIf = "!getConeStatusFlag()" class="card__primary__title__text p-mb-0">
+              Project “{{selectedProject?.['name']}}” successfully added. Connect Tools to sync KPI’s.</h5>
+            <h5 *ngIf = "getConeStatusFlag()" class="card__primary__title__text p-mb-0">
+              Cloned project “{{selectedProject?.['name']}}” successfully added. 
+              Proceed to Project Configuration to review and make any necessary changes.
+            </h5>
           </div>
           <div class="p-d-flex p-jc-center p-pb-3">
             <label>Here is what to do next in order to sync data for this project:</label>
@@ -135,9 +148,15 @@
           <div class="p-pb-3">
             <p-steps [model]="steps" [readonly]="false"></p-steps>
           </div>
-          <div class="p-d-flex p-jc-center p-pb-3">
+          <div *ngIf = "!getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
             <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
                 [queryParams]="{tab: 1}">Continue to Tool Connections</a></label>
+          </div>
+
+          <div *ngIf = "getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
+            <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
+                      [queryParams]="{ type: selectedProject?.Type, tab: 2 }">
+                      Continue to Project Configuration</a></label>
           </div>
 
           <div class="p-d-flex p-jc-center p-pb-3">
