@@ -24,8 +24,9 @@ export class PrimaryFilterComponent implements OnChanges {
   defaultFilterCounter: number = 0;
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
+  applyFilters: boolean = false;
 
-  constructor(private service: SharedService, public helperService: HelperService) {
+  constructor(public service: SharedService, public helperService: HelperService) {
     // This is required speecifically when filter is removed from removeFilter fn on filter-new
     this.service.selectedTrendsEvent.subscribe(filters => {
       if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
@@ -56,10 +57,10 @@ export class PrimaryFilterComponent implements OnChanges {
   applyDefaultFilters() {
     this.populateFilters();
     setTimeout(() => {
-      this.stateFilters = this.helperService.getBackupOfFilterSelectionState();
+      this.stateFilters = (this.helperService.getBackupOfUrlFilters() && JSON.parse(this.helperService.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.helperService.getBackupOfUrlFilters()) : this.helperService.getBackupOfFilterSelectionState();
       if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
-        if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
-          this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
+        if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
+          this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
           if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']?.length) {
             this.selectedFilters = [];
             if (this.filters[0].labelName === this.stateFilters['primary_level'][0].labelName) {
@@ -69,7 +70,7 @@ export class PrimaryFilterComponent implements OnChanges {
                 });
 
                 // in case project in state filters has been deleted
-                if(!this.selectedFilters?.length || !this.selectedFilters[0]) {
+                if (!this.selectedFilters?.length || !this.selectedFilters[0]) {
                   this.selectedFilters = [this.filters[0]];
                   this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
                 }
@@ -90,12 +91,12 @@ export class PrimaryFilterComponent implements OnChanges {
 
             }
           } else {
-            if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
+            if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
               this.selectedFilters = [];
               this.selectedFilters.push(this.stateFilters['parent_level']);
             } else {
-              if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName?.toLowerCase() ||
-                this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
+              if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName.toLowerCase() ||
+                this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
                 // reset
                 this.selectedFilters = [];
                 this.selectedFilters.push(this.filters[0]);
@@ -152,7 +153,7 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.filterData[selectedLevel]?.length) {
         if (this.primaryFilterConfig['defaultLevel']?.sortBy) {
           if (this.selectedTab.toLowerCase() === 'iteration') {
-            this.filters = this.setDropdownWithMoreActiveOption(selectedLevel); 
+            this.filters = this.setDropdownWithMoreActiveOption(selectedLevel);
           } else if (this.selectedTab.toLowerCase() === 'release') {
             this.filters = this.helperService.releaseSorting(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId))
           } else {
@@ -176,6 +177,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
   applyPrimaryFilters(event) {
     if (this.primaryFilterConfig && Object.keys(this.primaryFilterConfig).length) {
+      this.applyFilters = true;
       if (!Array.isArray(this.selectedFilters)) {
         this.selectedFilters = [this.selectedFilters];
       }
@@ -183,14 +185,14 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.selectedFilters?.length && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
         this.service.setNoSprints(false);
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
-          let addtnlStateFilters = this.helperService.getBackupOfFilterSelectionState('additional_level');
+          let addtnlStateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())?.additional_level || this.helperService.getBackupOfFilterSelectionState('additional_level');
           if (addtnlStateFilters && (!this.previousSelectedFilters?.length || this.arraysEqual(this.selectedFilters, this.previousSelectedFilters)) && this.selectedTab !== 'developer') {
             let combinedEvent = {};
             combinedEvent['additional_level'] = addtnlStateFilters;
             combinedEvent['primary_level'] = [...this.selectedFilters];
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit(combinedEvent);
-          } else if(this.selectedFilters?.length){
+          } else if (this.selectedFilters?.length) {
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit([...this.selectedFilters]);
             // project selection changed, reset addtnl. filters
@@ -206,7 +208,8 @@ export class PrimaryFilterComponent implements OnChanges {
         }
 
         if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] })
+          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
+          this.applyFilters = false;
         }
       }
 
@@ -252,28 +255,28 @@ export class PrimaryFilterComponent implements OnChanges {
 
   isString(val): boolean { return typeof val === 'string'; }
 
-  onDropdownChange($event:any){
-    if(this.helperService.isDropdownElementSelected($event)){
+  onDropdownChange($event: any) {
+    if (this.helperService.isDropdownElementSelected($event)) {
       this.applyPrimaryFilters($event)
     }
   }
 
-  isFilterHidden(filterDataSet:any): boolean{
-    if(this.selectedTab?.toLowerCase() === 'iteration' ){
-      if(filterDataSet.filter(x=>x.sprintState?.toLowerCase()==='active').length>1){
+  isFilterHidden(filterDataSet: any): boolean {
+    if (this.selectedTab?.toLowerCase() === 'iteration') {
+      if (filterDataSet.filter(x => x.sprintState?.toLowerCase() === 'active').length > 1) {
         return false;
       }
       return true;
-    }else{
+    } else {
       return false;
     }
   }
 
-  setDropdownWithMoreActiveOption(selectedLevel){
-    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x=>x.sprintState?.toLowerCase() ==='active');
-    if(moreThanOneActiveOption.length>1){
+  setDropdownWithMoreActiveOption(selectedLevel) {
+    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x => x.sprintState?.toLowerCase() === 'active');
+    if (moreThanOneActiveOption.length > 1) {
       return moreThanOneActiveOption;
-    }else{
+    } else {
       return this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate'])
     }
   }

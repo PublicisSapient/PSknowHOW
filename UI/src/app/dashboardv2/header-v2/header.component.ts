@@ -35,6 +35,10 @@ export class HeaderComponent implements OnInit {
   userRole: string = '';
   noToolsConfigured: boolean;
 
+  buttonLabel = 'Share URL';
+  buttonIcon = 'pi pi-copy';
+  buttonStyleClass = 'p-button-secondary p-button-sm';
+
   constructor(
     private httpService: HttpService,
     public sharedService: SharedService,
@@ -74,7 +78,7 @@ export class HeaderComponent implements OnInit {
         label: 'Settings',
         icon: 'fas fa-cog',
         command: () => {
-          if(!window.location.hash.includes('Config')){
+          if(!window.location.hash.split('?')[0].includes('Config')){
             this.lastVisitedFromUrl = window.location.hash.substring(1);
           }
           this.router.navigate(['/dashboard/Config/ProjectList']);
@@ -178,5 +182,30 @@ export class HeaderComponent implements OnInit {
     if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
       this.router.navigate([`/dashboard/my-knowhow`]);
     }
+  }
+
+  copyUrlToClipboard() {
+    const url = window.location.href; // Get the current URL
+    navigator.clipboard.writeText(url).then(() => {
+      this.showSuccess();
+    }).catch(err => {
+      console.error('Failed to copy URL: ', err);
+    });
+  }
+
+  showSuccess() {
+    this.buttonLabel = 'Copied!';
+    this.buttonIcon = 'pi pi-check';
+    this.buttonStyleClass = 'p-button-sm p-button-success';
+
+    setTimeout(() => {
+      this.resetButton();
+    }, 1500);
+  }
+
+  resetButton() {
+    this.buttonLabel = 'Copy URL';
+    this.buttonIcon = 'pi pi-copy';
+    this.buttonStyleClass = 'p-button-sm p-button-secondary';
   }
 }

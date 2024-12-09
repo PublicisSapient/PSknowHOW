@@ -346,7 +346,7 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   getAssigneeRoles() {
-    if (!(this.projectAssigneeRoles.length > 0)) {
+    if (this.projectAssigneeRoles.length <= 0) {
       this.http_service.getAssigneeRoles()
         .subscribe(response => {
           if (response && response?.success && response?.data) {
@@ -362,7 +362,7 @@ export class CapacityPlanningComponent implements OnInit {
   }
 
   getCapacityJiraAssignee(projectId) {
-    if (!(Object.keys(this.projectJiraAssignees).length > 0) || (this.projectJiraAssignees['basicProjectConfigId'] !== projectId)) {
+    if (Object.keys(this.projectJiraAssignees).length <= 0 || (this.projectJiraAssignees['basicProjectConfigId'] !== projectId)) {
       this.jiraAssigneeLoader = true;
       this.http_service.getJiraProjectAssignee(projectId)
         .subscribe(response => {

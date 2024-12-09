@@ -125,10 +125,23 @@ describe('NavNewComponent', () => {
 
   beforeEach(async () => {
     const httpSpy = jasmine.createSpyObj('HttpService', ['getShowHideOnDashboardNewUI', 'getAllHierarchyLevels']);
-    const sharedSpy = jasmine.createSpyObj('SharedService', ['getSelectedType', 'setSelectedBoard', 'setScrumKanban', 'getSelectedTrends', 'setDashConfigData', 'selectedTrendsEvent', 'onTypeOrTabRefresh', 'setSelectedType', 'setCurrentUserDetails', 'currentUserDetailsSubject']);
+    const sharedSpy = jasmine.createSpyObj('SharedService', [
+      'getSelectedType',
+      'setSelectedBoard',
+      'setScrumKanban',
+      'getSelectedTrends',
+      'setDashConfigData',
+      'selectedTrendsEvent',
+      'onTypeOrTabRefresh',
+      'setSelectedType',
+      'setCurrentUserDetails',
+      'currentUserDetailsSubject',
+    ]);
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const helperSpy = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState', 'deepEqual']);
+
+    sharedSpy.onTabSwitch = new Subject(); // Use Subject for better control
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -139,8 +152,8 @@ describe('NavNewComponent', () => {
         { provide: MessageService, useValue: messageSpy },
         { provide: APP_CONFIG, useValue: AppConfig },
         { provide: Router, useValue: routerSpy },
-        { provide: HelperService, useValue: helperSpy }
-      ]
+        { provide: HelperService, useValue: helperSpy },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NavNewComponent);
@@ -151,29 +164,17 @@ describe('NavNewComponent', () => {
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     helperService = TestBed.inject(HelperService) as jasmine.SpyObj<HelperService>;
 
-    // Set default values for shared service spies
+    // Set default mocks
     sharedService.getSelectedType.and.returnValue('scrum');
     sharedService.getSelectedTrends.and.returnValue([]);
-
-    const mockResponse = { data: 'some data' };  // Mock response from the service
-    httpService.getShowHideOnDashboardNewUI.and.returnValue(of(mockResponse));
-    // sharedService.setCurrentUserDetails({
-    //   "user_name": "SUPERADMIN",
-    //   "user_email": "abc@def.com",
-    //   "authType": "STANDARD",
-    //   "authorities": [
-    //     "ROLE_SUPERADMIN"
-    //   ],
-    //   "projectsAccess": [],
-    //   "notificationEmail": {
-    //     "accessAlertNotification": false,
-    //     "errorAlertNotification": false
-    //   }
-    // });
+    httpService.getShowHideOnDashboardNewUI.and.returnValue(of({ data: 'mock data' }));
   });
 
   afterEach(() => {
     localStorage.clear();
+    sharedService.getSelectedType.calls.reset();
+    sharedService.getSelectedTrends.calls.reset();
+    sharedService.setScrumKanban.calls.reset();
   });
 
   it('should create the component', () => {

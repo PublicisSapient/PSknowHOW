@@ -25,8 +25,6 @@ import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
-import * as Excel from 'exceljs';
-import * as fs from 'file-saver';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 declare let require: any;
 @Component({

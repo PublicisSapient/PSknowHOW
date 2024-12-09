@@ -24,11 +24,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
-    
-    this.sharedService.setSelectedBoard(this.selectedTab);
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.sharedService.setScrumKanban(this.selectedType);
 
@@ -37,6 +32,11 @@ export class NavNewComponent implements OnInit, OnDestroy {
     } else {
       this.getBoardConfig([]);
     }
+
+    this.sharedService.onTabSwitch
+      .subscribe(data => {
+        this.selectedTab = data.selectedBoard;
+      });
   }
 
   // unsubscribing all Kpi Request
