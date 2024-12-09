@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class NavNewComponent implements OnInit, OnDestroy {
   items: any;
+  filterItem:any;
   activeItem: any;
   selectedTab: string = '';
   selectedType: string = '';
@@ -112,6 +113,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
           };
         });
         this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+        this.filterItem = this.items.filter(item=>this.sharedService.navTabVisibilityArray.includes(item.label));
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
           if (res.data) {

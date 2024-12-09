@@ -92,21 +92,29 @@
      this.kpiData.forEach((item) => {
        let trueShowCount = 0;
        let allShownFlag = false;
+       //#region  test sudhansh pal
        if ((item?.boardName && item?.kpis)) {
           item.kpis.forEach((kpi) => {
            kpiObj[kpi.kpiId] = new UntypedFormControl(kpi.shown);
-           trueShowCount = kpi.shown ? ++trueShowCount : trueShowCount;
+          // trueShowCount = kpi.shown ? ++trueShowCount : trueShowCount;
          });
-         if (trueShowCount === item?.kpis?.length) {
-           allShownFlag = true;
-         }
-         boardNames[item.boardName] = new UntypedFormControl(allShownFlag);
-       }
+        //  if (trueShowCount === item?.kpis?.length) {
+        //    allShownFlag = true;
+        //  }
+         boardNames[item.boardName] = new UntypedFormControl(true);
+        }
+       //#endregion
      });
         this.kpiForm = new UntypedFormGroup({
           kpiCategories: new UntypedFormGroup(boardNames),
           kpis: new UntypedFormGroup(kpiObj)
         });
+
+        Object.entries(this.kpiForm.value.kpiCategories).forEach(([key, value]) => {
+          if(value && !this.service.navTabVisibilityArray.some(item => item === key)){
+            this.service.navTabVisibilityArray.push(key)
+          }
+      });
      }
 
      handleTabChange(event) {
@@ -170,6 +178,9 @@
         iterationKpis.kpis = iterationData.kpis;
       }
     }
+    
+    this.service.navTabVisibility$.next(this.service.navTabVisibilityArray);
+
      this.httpService.submitShowHideKpiData(kpiListPayload,this.selectedProject['id'])
        .subscribe(response => {
          this.loader = false;
@@ -209,9 +220,24 @@ return item.kpiId;
        }
      }
      // on kpicategory flag change,  setting all of its kpi flag
-     handleKpiCategoryChange(event, boardData) { 
-      console.log(event.checked,boardData);
-     }
+    handleKpiCategoryChange(event, boardData) { 
+         const boardSlug = boardData.boardName;
+        if (event.checked) {
+            // If the checkbox is checked, check if navTabVisibilityArray already contains the boardSlug
+            const exists = this.service.navTabVisibilityArray.some(item => item === boardSlug);
+            if (!exists) {
+                // If it does not exist, push the boardData into navTabVisibilityArray
+                this.service.navTabVisibilityArray.push(boardData.boardName);
+            }
+        } else {
+            // If the checkbox is unchecked, check if navTabVisibilityArray contains the boardSlug
+            const index = this.service.navTabVisibilityArray.findIndex(item => item === boardSlug);
+            if (index !== -1) {
+                // If it exists, remove it from navTabVisibilityArray
+                this.service.navTabVisibilityArray.splice(index, 1);
+            }
+        }
+    }
 
      setMainDashboardKpiShowHideStatus(kpiId,shown){
       const selectedKpi = this.tabListContent[this.selectedTab][0].kpis.find(kpiDetail => kpiDetail.kpiId === kpiId);

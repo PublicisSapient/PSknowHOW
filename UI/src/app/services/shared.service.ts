@@ -57,6 +57,8 @@ export class SharedService {
   private authToken = '';
   public sprintForRnR;
   public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
+  public navTabVisibility$ = new BehaviorSubject<any[]>([]);
+  public navTabVisibilityArray = [];
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
