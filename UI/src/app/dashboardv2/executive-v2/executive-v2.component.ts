@@ -1751,8 +1751,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (preAggregatedValues?.length > 1) {
           if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
-          } else {
-            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          } else { 
+            if(kpiId === 'kpi171'){
+              this.kpiChartData[kpiId] = [this.helperService.aggregationCycleTime(preAggregatedValues)];
+            }else{
+              this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+            }
           }
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
@@ -1780,6 +1784,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [];
     }
+    this.kpi171RoundOff();
   }
 
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
@@ -1813,15 +1818,30 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [...preAggregatedValues];
     }
+    this.kpi171RoundOff();
+  }
+
+  kpi171RoundOff() {
+    if (this.kpiChartData.hasOwnProperty('kpi171') && this.kpiChartData['kpi171'].length) {
+      const roundOffData = [...this.kpiChartData['kpi171']]
+      if (roundOffData && roundOffData?.length) {
+        roundOffData[0]['data'] = roundOffData[0]?.data?.map(item => ({
+          ...item,
+          value: Math.round(item.value),   // Round off `value`
+          value1: Math.round(item.value1) // Round off `value1`
+        }));
+        this.kpiChartData['kpi171'] = roundOffData;
+      }
+    }
   }
 
   kpi171Check(kpiId, preAggregatedValues) {
     if (kpiId === 'kpi171') {
       //calculate number of days for lead time
-      let kpi3preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
-      kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
-        return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
-      });
+      let kpi171preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
+      kpi171preAggregatedValues = this.helperService.aggregationCycleTime(kpi171preAggregatedValues);
+      this.kpiChartData[kpiId] = [kpi171preAggregatedValues];
+
     } else {
       this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
     }
@@ -1971,11 +1991,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   handleArrowClick(kpi, label, tableValues) {
-    this.displayModal = true;
     const idx = this.ifKpiExist(kpi?.kpiId);
-    this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
-    this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
-    this.modalDetails['tableValues'] = tableValues;
+    const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
+    this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
+      if (response['success']) {
+        this.exportExcelComponent.dataTransformForIterationTableWidget([],[],response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
+      }     
+    });
   }
 
   generateExcel() {
@@ -2135,7 +2157,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       else if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201' || this.kpiStatusCodeArr[kpi.kpiId] === '203') && (kpi.kpiId === 'kpi171')) {
-        if (this.kpiChartData[kpi.kpiId]?.length && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
+        if (this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
           return true;
         } else {
           return false;

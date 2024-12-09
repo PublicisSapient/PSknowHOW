@@ -985,12 +985,43 @@ export class HelperService {
             return '-';
         } else {
             time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-        }
-        const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        const year = date.getFullYear();
-        const month = monthNames[date.getMonth()];
-        const day = String(date.getDate()).padStart(2, '0');
+          }
+          const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+          const year = date.getFullYear();
+          const month = monthNames[date.getMonth()];
+          const day = String(date.getDate()).padStart(2, '0');
 
-        return `${day}-${month}-${year} ${(matches ? '' : time)}`;
+          return `${day}-${month}-${year} ${(matches?'':time)}`;
+      }
+
+      aggregationCycleTime(data) {
+        // Object to store intermediate calculations
+        const resultData = {};
+
+        // Process each filter
+        data.forEach(filter => {
+            filter.data.forEach(record => {
+                const label = record.label;
+                if (!resultData[label]) {
+                    resultData[label] = { totalValue1: 0, weightedValue: 0 };
+                }
+                resultData[label].totalValue1 += record.value1;
+                resultData[label].weightedValue += record.value * record.value1;
+            });
+        });
+
+        // Construct the aggregated response
+        const aggregatedResponse = {
+            filter1: data[0]['filter1'],
+            data: Object.entries(resultData).map(([label, values]) => ({
+                label,
+                value: values['totalValue1'] > 0 ? Math.round(values['weightedValue'] / values['totalValue1']) : 0,
+                value1: values['totalValue1'],
+                unit: "d",
+                unit1: "issues"
+            }))
+        };
+
+        return aggregatedResponse;
     }
 }
