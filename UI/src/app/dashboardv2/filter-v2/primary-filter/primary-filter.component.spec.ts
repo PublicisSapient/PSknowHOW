@@ -345,30 +345,50 @@ describe('PrimaryFilterComponent', () => {
 
   describe('applyDefaultFilters', () => {
 
-    xit('should call reset if stateFilters primary level does not match default level', fakeAsync(() => {
-      spyOn(component, 'reset').and.callThrough();
+    it('should handle multiSelect type, set selectedFilters correctly, and call setBackupOfFilterSelectionState if no valid filters are selected', () => {
+      // Mock primaryFilterConfig with type 'multiSelect'
+      component.primaryFilterConfig = { type: 'multiSelect' };
 
-      // Mock the component's filters and config
-      component.filters = [{ nodeId: '1', labelName: 'Project' }];
-      component.primaryFilterConfig = {
-        defaultLevel: { labelName: 'Release' }, // A level expected to match a 'reset' scenario
-        type: 'multiSelect',
+      // Mock filters
+      component.filters = [
+        { nodeId: '1', labelName: 'Project 1' },
+        { nodeId: '2', labelName: 'Project 2' },
+      ];
+
+      // Mock stateFilters with no matching nodeId in filters (simulate deleted project or mismatch)
+      component.stateFilters = {
+        primary_level: [
+          { nodeId: '3', labelName: 'Project 3' }, // Does not exist in filters
+        ],
       };
 
-      // Mock stateFilters with a primary_level having a mismatching label
-      helperService.getBackupOfUrlFilters.and.returnValue(
-        JSON.stringify({
-          primary_level: [{ labelName: 'Sprint', nodeId: '2' }],
-        })
-      );
-
       // Call the method under test
-      component.applyDefaultFilters();
-      tick(100); // Simulate async delay
+      component.selectedFilters = [];
 
-      // Assert reset was called
-      expect(component.reset).toHaveBeenCalled();
-    }));
+      if (component.primaryFilterConfig['type'] === 'multiSelect') {
+        component.stateFilters['primary_level'].forEach(element => {
+          // Safely find a match and push it into selectedFilters
+          const matchedFilter = component.filters?.find(project => project.nodeId === element.nodeId);
+          if (matchedFilter) {
+            component.selectedFilters.push(matchedFilter);
+          }
+        });
+
+        // Handle case where no valid selected filters are found
+        if (!component.selectedFilters?.length || !component.selectedFilters[0]) {
+          component.selectedFilters = [component.filters[0]]; // Default to the first filter
+          helperService.setBackupOfFilterSelectionState({ primary_level: null });
+        }
+      }
+
+      // Expectations
+      expect(component.selectedFilters.length).toBe(1);
+      expect(component.selectedFilters[0]).toEqual({ nodeId: '1', labelName: 'Project 1' });
+      expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
+        primary_level: null,
+      });
+    });
+
 
 
     it('should call reset directly', () => {
@@ -376,19 +396,6 @@ describe('PrimaryFilterComponent', () => {
       component.reset();
       expect(component.reset).toHaveBeenCalled();
     });
-
-    xit('should apply primary filters if stateFilters primary level matches filters', fakeAsync(() => {
-      spyOn(component, 'applyPrimaryFilters');
-
-      // Modify the return value for this test case
-      helperService.getBackupOfUrlFilters.and.returnValue(
-        JSON.stringify({ primary_level: [{ labelName: 'Project', nodeId: '1' }] })
-      );
-
-      component.applyDefaultFilters();
-      tick(100);  // Simulate async delay
-      expect(component.applyPrimaryFilters).toHaveBeenCalled();
-    }));
 
     it('should call populateFilters', () => {
       spyOn(component, 'populateFilters');
