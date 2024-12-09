@@ -26,7 +26,7 @@ export class PrimaryFilterComponent implements OnChanges {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   applyFilters: boolean = false;
 
-  constructor(private service: SharedService, public helperService: HelperService) {
+  constructor(public service: SharedService, public helperService: HelperService) {
     // This is required speecifically when filter is removed from removeFilter fn on filter-new
     this.service.selectedTrendsEvent.subscribe(filters => {
       if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
