@@ -20,11 +20,10 @@ import { Injectable, Inject } from '@angular/core';
 import {
   HttpClient,
   HttpHeaders,
-  HttpParams,
   HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
-import { catchError, map, mapTo, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { APP_CONFIG, IAppConfig } from './app.config';
 import { Router } from '@angular/router';

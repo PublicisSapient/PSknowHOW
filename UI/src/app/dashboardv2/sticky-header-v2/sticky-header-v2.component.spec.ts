@@ -78,6 +78,7 @@ describe('StickyHeaderV2Component', () => {
     expect(mockHelperService.getObjectKeys).toHaveBeenCalledWith(mockObject);
   });
 
+  // --> skipping this test case for now.
   xit('should unsubscribe from all subscriptions on destroy', () => {
     const subscriptionSpy = spyOn(Subscription.prototype, 'unsubscribe').and.callThrough();
 
