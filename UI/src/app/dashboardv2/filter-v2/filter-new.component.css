@@ -373,3 +373,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   position: relative;
   z-index: 1001;
 }
+
+
+:host ::ng-deep .showHideDdn  {
+  top:12px;
+}
+
