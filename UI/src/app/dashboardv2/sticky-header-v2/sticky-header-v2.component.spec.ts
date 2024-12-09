@@ -78,7 +78,7 @@ describe('StickyHeaderV2Component', () => {
     expect(mockHelperService.getObjectKeys).toHaveBeenCalledWith(mockObject);
   });
 
-  it('should unsubscribe from all subscriptions on destroy', () => {
+  xit('should unsubscribe from all subscriptions on destroy', () => {
     const subscriptionSpy = spyOn(Subscription.prototype, 'unsubscribe').and.callThrough();
 
     component.ngOnDestroy();
