@@ -53,7 +53,6 @@ export class ExcelService {
                 if (data[key][datakey]) {
                   appendedRowData.push({ text: datakey, hyperlink: data[key][datakey] });
                 } else {
-                  console.log(datakey)
                   appendedRowData.push(datakey);
                 }
               }

@@ -203,21 +203,19 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateFTPRExcelData(List<String> storyIds, List<JiraIssue> ftprStories,
+	public static List<KPIExcelData> populateFTPRExcelData(List<String> storyIds, List<JiraIssue> ftprStories,
 			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData, List<JiraIssue> defects,
 			CustomApiConfig customApiConfig, FieldMapping fieldMapping) {
 		List<String> collectFTPIds = ftprStories.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 		setQualityKPIExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping, customApiConfig);
-		setFTPRSpecificData(storyIds, kpiExcelData, collectFTPIds);
+		setFTPRSpecificData(kpiExcelData, collectFTPIds);
+		return kpiExcelData;
 	}
 
-	private static void setFTPRSpecificData(List<String> storyIds, List<KPIExcelData> kpiExcelData,
-			List<String> collectFTPIds) {
-
-		storyIds.forEach(story -> {
-			KPIExcelData excelData = new KPIExcelData();
-			excelData.setFirstTimePass(collectFTPIds.contains(story) ? Constant.EXCEL_YES : Constant.EMPTY_STRING);
-			kpiExcelData.add(excelData);
+	private static void setFTPRSpecificData(List<KPIExcelData> kpiExcelData, List<String> collectFTPIds) {
+		kpiExcelData.forEach(story -> {
+			boolean isFirstTimePass = story.getStoryId().keySet().stream().anyMatch(collectFTPIds::contains);
+			story.setFirstTimePass(isFirstTimePass ? Constant.EXCEL_YES : Constant.EMPTY_STRING);
 		});
 	}
 

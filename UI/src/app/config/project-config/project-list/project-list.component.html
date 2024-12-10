@@ -49,7 +49,7 @@
             <tr class="w-100" *ngIf="columns.length>0">
                 <th *ngFor="let col of columns" scope="col">
                     <input pInputText [id]="col.id" type="text"
-                        (input)="dt.filter($event.target.value, col.id, 'startsWith')" class="p-column-filter"
+                        (input)="dt.filter($event.target.value, col.id, 'contains')" class="p-column-filter"
                         [style]="{'width':'100%'}" placeholder="Search" />
                     <label [for]="col.id"></label>
                 </th>
