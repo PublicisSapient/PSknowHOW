@@ -80,9 +80,9 @@ public class FieldMappingStructureControllerTest {
 
     @Test
     public void fetchFieldMappingStructureByKpiId() throws Exception {
-        when(kpiHelperService.fetchFieldMappingStructureByKpiId("1234","kpi0")).thenReturn(fieldMappingStructureResponse);
+        when(kpiHelperService.fetchFieldMappingStructureByKpiId("665da03ba3a61d61665d21e1","kpi0")).thenReturn(fieldMappingStructureResponse);
         when(projectAccessUtil.configIdHasUserAccess(any())).thenReturn(true);
-        mockMvc.perform(get("/kpiFieldMapping/1234/kpi0")).andExpect(status().is2xxSuccessful())
+        mockMvc.perform(get("/kpiFieldMapping/665da03ba3a61d61665d21e1/kpi0")).andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType("application/json"));
     }
 }
