@@ -5,6 +5,7 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
+  ViewContainerRef,
 } from '@angular/core';
 import * as d3 from 'd3';
 
@@ -19,8 +20,11 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
   @Input() height;
   private svg: any;
   private tooltip: any;
+  elem;
 
-  constructor(private elRef: ElementRef) {}
+  constructor(private elRef: ElementRef, private viewContainerRef: ViewContainerRef) {
+    this.elem = this.viewContainerRef.element.nativeElement;
+  }
 
   ngOnInit(): void {
     if (this.data && this.data.length) {
@@ -35,10 +39,10 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
   }
 
   private createChart(): void {
-    const chartWidth = this.width; // Adjusted width to fit within the card
     const chartHeight = this.height; // Height of the bar
     const margin = { top: 50, right: 20, bottom: 50, left: 20 };
-  
+    const chartWidth = (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth; // Adjusted width to fit within the card
+
     // Calculate total value for scaling
     const totalNegative = Math.abs(
       this.data.filter(d => d.value < 0).reduce((sum, d) => sum + d.value, 0)
@@ -47,23 +51,23 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .filter(d => d.value > 0)
       .reduce((sum, d) => sum + d.value, 0);
     const total = totalNegative + totalPositive;
-  
+
     // X scale for proportional widths
     const xScale = d3
       .scaleLinear()
       .domain([-totalNegative, totalPositive])
       .range([0, chartWidth]);
-  
+
     // Clear any existing SVG content
     d3.select(this.elRef.nativeElement).selectAll('*').remove();
-  
+
     // Create the SVG container
     const svg = d3
       .select(this.elRef.nativeElement)
       .append('svg')
       .attr('width', chartWidth + margin.left + margin.right)
       .attr('height', chartHeight + margin.top + margin.bottom);
-  
+
     // Add axis for context
     const xAxis = d3.axisBottom(xScale).ticks(10);
     svg
@@ -72,14 +76,14 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .call(xAxis)
       .selectAll('text')
       .style('font-size', '12px');
-  
+
     // Draw the stacked bar chart
     let cumulativeOffset = 0;
-  
+
     const g = svg
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
-  
+
     g.selectAll('rect')
       .data(this.data)
       .enter()
@@ -93,12 +97,12 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .attr('width', d => Math.abs(xScale(d.value) - xScale(0)))
       .attr('height', chartHeight)
       .attr('fill', d => d.color)
-      // .attr('rx', 10) // Rounded corners
-      // .attr('ry', 10); // Rounded corners
-  
+    // .attr('rx', 10) // Rounded corners
+    // .attr('ry', 10); // Rounded corners
+
     // Reset cumulative offset for labels
     cumulativeOffset = 0;
-  
+
     // Add labels inside each section
     g.selectAll('text')
       .data(this.data)
@@ -117,7 +121,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .attr('dominant-baseline', 'middle')
       .text(d => d.value);
   }
-  
+
   private updateChart(): void {
     // Clear previous chart
     d3.select(this.elRef.nativeElement).select('.chart-container').html('');

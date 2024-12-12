@@ -1,22 +1,32 @@
-.kpi-card-filter{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.kpi-card-filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  :host ::ng-deep .p-selectbutton.p-buttonset.p-component {
-    background-color: #EAEDF0!important;
-    border-radius: 8px !important;
-  }
+:host ::ng-deep .p-selectbutton.p-buttonset.p-component {
+  background-color: #EAEDF0 !important;
+  border-radius: 8px !important;
+}
 
-  .filterSection {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center; /* Vertically center the contents */
-    margin-right: 10px; /* Optional: Adjust margin for spacing */
-    gap: 10px;
-  }
-  
-  .filterSection > ng-container {
-    margin-left: 10px; /* Optional: Add spacing between dropdowns */
-  }
+.filterSection {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  /* Vertically center the contents */
+  margin-right: 10px;
+  /* Optional: Adjust margin for spacing */
+  gap: 10px;
+}
+
+.filterSection>ng-container {
+  margin-left: 10px;
+  /* Optional: Add spacing between dropdowns */
+}
+
+:host ::ng-deep .p-dropdown.p-component,
+:host ::ng-deep .p-multiselect.p-component {
+  width: 150px;
+  margin-left: 5px;
+  height: 32px;
+}
