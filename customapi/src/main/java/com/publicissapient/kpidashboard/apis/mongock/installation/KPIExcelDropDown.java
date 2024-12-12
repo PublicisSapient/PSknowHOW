@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ChangeUnit(id = "ddl8", order = "008", author = "PSKnowHOW")
-public class KPIExcelColumnMigration {
+public class KPIExcelDropDown {
 	public static final String COLUMN_NAME = "columnName";
 	public static final String KPI_ID = "kpiId";
 	public static final String IS_SHOWN = "isShown";
@@ -46,7 +46,7 @@ public class KPIExcelColumnMigration {
 	public static final String KPI_COLUMN_DETAILS = "kpiColumnDetails";
 	private final MongoTemplate mongoTemplate;
 
-	public KPIExcelColumnMigration(MongoTemplate mongoTemplate) {
+	public KPIExcelDropDown(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
