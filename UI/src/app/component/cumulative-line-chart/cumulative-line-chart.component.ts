@@ -155,8 +155,8 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
 
     const color = d3.scaleOrdinal()
       .domain(categories)
-      .range(['#5AA5A2', '#4472C4', '#D99748', '#CDBA38', '#D8725F']);
-
+      // .range(['#5AA5A2', '#4472C4', '#D99748', '#CDBA38', '#D8725F']);
+      .range(['#FBCF5F', '#6079C5', '#A4F6A5', '#83A1C1'])
     const tooltipContainer = d3.select(elem).select('.tooltip-container');
 
     const showTooltip = (linedata) => {
