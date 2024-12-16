@@ -276,14 +276,17 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
 		String unit;
+		String name;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			unit = CommonConstant.SP;
+			name = CommonConstant.STORY_POINT;
 		} else {
 			unit = CommonConstant.DAY;
+			name = CommonConstant.ORIGINAL_ESTIMATE;
 		}
 
-		dataGroup1.add(createKpiData("Value", STORY_POINT, 1, SUM, unit));
+		dataGroup1.add(createKpiData("Value", name, 1, SUM, unit));
 		dataGroup1.add(createKpiData("", ISSUE_COUNT, 2, "count", ""));
 
 		List<KpiData> dataGroup2 = new ArrayList<>();
