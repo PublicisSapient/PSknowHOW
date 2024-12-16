@@ -314,5 +314,13 @@ export class BasicConfigComponent implements OnInit {
     return this.clone === 'true';
   }
 
+  backToProjectList() {
+    if (this.clone === 'true') {
+      this.router.navigate(['./dashboard/Config/ProjectList']);
+    } else {
+      this.closeProjectSetupPopup.emit();
+    }
+  }
+
 
 }
