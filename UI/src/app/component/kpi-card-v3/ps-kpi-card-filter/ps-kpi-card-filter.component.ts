@@ -18,7 +18,7 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.kpiCardFilter.filterGroup.filterGroup1.forEach((filter) => {
+    this.kpiCardFilter?.filterGroup?.filterGroup1?.forEach((filter) => {
       this.form.addControl(filter.filterKey, this.fb.control(''));
     });
     this.setDefaultFilter(this.kpiCardFilter);

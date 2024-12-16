@@ -2,7 +2,7 @@
   "kpiId": "kpi135",
   "kpiName": "First Time Pass Rate",
   "unit": "Hours",
-  "chartType": "",
+  "chartType": "tableNonRawData",
   "id": "65793ddb127be336160bc0f8",
   "isDeleted": "False",
   "kpiCategory": "Iteration",
@@ -22,7 +22,7 @@
   "dataGroup": {
     "dataGroup1": [
       {
-        "name": "Issue count",
+        "name": "Issue Count",
         "kpiValue": 11,
         "order": 1,
         "unit": "",
@@ -36,7 +36,7 @@
         "showAsLegend": false
       },
       {
-        "name": "",
+        "name": "Percentage",
         "kpiValue": 81.82,
         "order": 3,
         "unit": "",
@@ -499,5 +499,11 @@
         }
       }
     ]
-  }
+  },
+  "kpiDetail": {
+    "kpiSubCategory": "Iteration Review",
+    "kpiWidth": 33,
+    "kpiHeight": 50
+  },
+  "isEnabled": true
 }

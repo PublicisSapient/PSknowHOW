@@ -2,7 +2,7 @@
   "kpiId": "kpi122",
   "kpiName": "Closure Possible Today",
   "unit": "Story Point",
-  "chartType": "",
+  "chartType": "table",
   "id": "65793ddb127be336160bc0f0",
   "isDeleted": "False",
   "kpiCategory": "Iteration",
@@ -360,7 +360,8 @@
   },
   "kpiDetail": {
     "kpiSubCategory": "Iteration Review",
-    "kpiWidth": 66,
+    "kpiWidth": 33,
     "kpiHeight": 50
-  }
+  },
+  "isEnabled": true
 }

@@ -3,7 +3,7 @@
     <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"></app-ps-kpi-card-header>
 
     <div class="kpi-card-body">
-      <div>
+      <div *ngIf="checkFilterPresence(kpiFilterData)">
         <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData" *ngIf="cardData?.chartType !== 'chartWithFilter' && cardData?.chartType !== 'CumulativeMultilineChart'"
           (filterChange)="onFilterChange($event)"></app-ps-kpi-card-filter>
       </div>
@@ -74,7 +74,7 @@
     </div>
 
     <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
-      *ngIf="kpiData.kpiDetail.chartType !== 'stacked-area'"
+      *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'"
       [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }"
       class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
       <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
@@ -115,7 +115,7 @@
         </ng-container>
       </ng-container>
     </div>
-    <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : kpiData.kpiDetail.chartType === 'stacked-area' ? '270px' : '220px',
+    <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : kpiData?.kpiDetail?.chartType === 'stacked-area' ? '270px' : '220px',
     'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
       <!--place for chart to be rendered-->
       <ng-content

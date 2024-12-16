@@ -27,6 +27,16 @@ export class KpiHelperService {
   constructor() { }
   private headerAction = new Subject<any>();
   headerAction$ = this.headerAction.asObservable();
+  iconObj = {
+    'Issue Count' : 'Warning.svg',
+    'Issue at Risk' : 'Warning.svg',
+    'DIR' :  'Watch.svg',
+    'Original Estimate' : 'PieChart.svg',
+    'Defect Density' : 'visibility_on.svg',
+    'Story Linked Defects' :  'Warning.svg',
+    'Unlinked Defects' : 'Check.svg',
+    'Percentage': 'Check.svg',
+  };
 
   emitHeaderAction(action: any): void {
     this.headerAction.next(action);
@@ -172,6 +182,50 @@ export class KpiHelperService {
     let result = [];
     result = inputData.filter(kpiData => kpiData.filter1.toLowerCase() === 'overall');
     return { chartData: result };
+  }
+
+  tabularKPI(inputData) {
+    
+    const dataGroup1 = inputData.dataGroup?.dataGroup1;
+    const issueData = inputData.issueData;
+    const categoryGroup = inputData.categoryData?.categoryGroup;
+    const chartData: any = [];
+
+    dataGroup1.forEach((group: any, index) => {
+      const filteredIssues = issueData.filter(
+        (issue: any) => issue[group.key] !== undefined,
+      );
+      let aggregateVal = 0;
+      if(!filteredIssues.length && group.aggregation === 'count') {
+        aggregateVal = issueData.length
+      } else {
+        aggregateVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
+          return sum + (issue[group.key] || 0); // Sum up the values for the key
+        }, 0), 'day');
+      }
+
+      chartData.push({
+        category: group.name,
+        value: aggregateVal,
+        icon: this.iconObj[group.name]
+      });
+    });
+
+    return { chartData: chartData };
+  }
+
+  tabularKPINonRawData(inputData) {
+    const chartData: any = [];
+
+    inputData.forEach((group: any, index) => {
+      chartData.push({
+        category: group.name,
+        value: group.kpiValue,
+        icon: this.iconObj[group.name]
+      });
+    });
+
+    return { chartData: chartData };
   }
 
   convertToHoursIfTime(val, unit) {

@@ -15,6 +15,7 @@ export class ChartWithFiltersComponent implements OnChanges {
   @Input() filters;
   @Input() kpiName;
   @Input() modalHeads;
+  @Input() selectedTab;
   displayModal: boolean = false;
   selectedMainFilter;
   modalDetails;

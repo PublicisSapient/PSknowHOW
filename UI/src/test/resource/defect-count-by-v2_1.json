@@ -1,6 +1,6 @@
 {
   "kpiId": "kpi136",
-  "kpiName": "Defect Count by Status",
+  "kpiName": "Defect Count By",
   "unit": "Count",
   "chartType": "chartWithFilter",
   "id": "65793ddb127be336160bc0fc",
@@ -2908,5 +2908,8 @@
       }
     ]
   },
-  "isEnabled": true
+  "isEnabled": true,
+  "kpiDetail": {
+    "kpiWidth": 66
+  }
 }

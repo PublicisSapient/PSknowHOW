@@ -15,7 +15,7 @@
   opacity: 1;
   position: relative;
   max-height: 500px;
-  height: 400px;
+  height: 100%;
 }
 
 :host .kpi-card-header {

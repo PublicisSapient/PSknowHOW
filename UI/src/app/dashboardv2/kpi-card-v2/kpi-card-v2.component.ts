@@ -600,6 +600,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       case 'CumulativeMultilineChart':
         chartData = this.kpiHelperService.filterLessKPI(inputData.trendValueList);
         break;
+      case 'table':
+        chartData = this.kpiHelperService.tabularKPI(inputData);
+        break;
+      case 'tableNonRawData':
+        chartData = this.kpiHelperService.tabularKPINonRawData(inputData.dataGroup.dataGroup1);
       default:
         break;
     }
@@ -632,4 +637,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   //#endregion
+
+  checkFilterPresence(filterData) {
+    return filterData?.filterGroup;
+  }
 }

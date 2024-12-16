@@ -2,7 +2,7 @@
   "kpiId": "kpi133",
   "kpiName": "Quality Status",
   "unit": "",
-  "chartType": "",
+  "chartType": "tableNonRawData",
   "id": "65793ddb127be336160bc0f4",
   "isDeleted": "False",
   "kpiCategory": "Iteration",
@@ -1537,5 +1537,11 @@
         }
       }
     ]
-  }
+  },
+  "kpiDetail": {
+    "kpiSubCategory": "Iteration Review",
+    "kpiWidth": 33,
+    "kpiHeight": 50
+  },
+  "isEnabled": true
 }

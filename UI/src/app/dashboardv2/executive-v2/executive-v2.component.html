@@ -22,7 +22,7 @@
             <div class="{{selectedtype}}" id="{{selectedtype}}">
                 <div class="clearfix" *ngIf="showChart !== 'table'">
                     <div class="right-container col">
-                        <div class="tabs-container" *ngIf="tabsArr.size > 1">
+                        <div class="tabs-container" *ngIf="tabsArr.size > 1 && selectedTab !== 'iteration'">
                             <div class="tab" *ngFor="let tab of tabsArr"
                                 [ngClass]="{ 'is-selected': selectedKPITab == tab }" (click)="selectKPITab(tab)">
                                 {{ tab }}
@@ -32,9 +32,9 @@
                             <ng-container
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined && test()">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-                                    <!--selectedKPITab === kpi.kpiDetail?.kpiSubCategory &&-->
-                                    <div *ngIf="kpi['isEnabled']"
-                                        class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}">
+                                    <div *ngIf="kpi?.kpiDetail?.kpiSubCategory && selectedTab !== 'iteration' ? selectedKPITab === kpi.kpiDetail.kpiSubCategory &&  kpi['isEnabled'] : kpi['isEnabled']"
+                                        class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}" 
+                                        [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : 'auto') }">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"

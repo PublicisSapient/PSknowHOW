@@ -32,7 +32,10 @@ import EstimateActual from '../../../assets/data/Estimate-Actual-V2.json';
 import Workremaining from '../../../assets/data/Work-remaining-V2.json';
 import DefectCountBy from '../../../test/resource/defect-count-by-v2_1.json';
 import IterationBurnUp from '../../../test/resource/iteration-burnup.json';
-import ClosurePossible from '../../../test/resource/closure-possible-v2_1.json';
+import ClosurePossibleToday from '../../../test/resource/closure-possible-v2_1.json';
+import IssuesLikelyToSpill from '../../../test/resource/issue-to-spill-v2_1.json';
+import FTPR from '../../../test/resource/ftpr-v2_1.json';
+import QualityStatus from '../../../test/resource/quality-status-v2_1.json';
 
 @Component({
   selector: 'app-executive-v2',
@@ -129,7 +132,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   selectedTrend: any = [];
-  data = [DefectCountBy, iterationCommitment, Workremaining, wastage, EstimateActual, IterationBurnUp, ClosurePossible]; //,,,issueHygiene
+  data = [iterationCommitment, Workremaining, IterationBurnUp, wastage, EstimateActual, DefectCountBy,
+    ClosurePossibleToday, IssuesLikelyToSpill, FTPR, QualityStatus];
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
@@ -243,7 +247,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   setGlobalConfigData(globalConfig) {
     // this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    let dummyData = require('../../../test/resource/board-config-PSKnowHOW.json'); 
+    let dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
     this.configGlobalData = dummyData.data.userBoardConfigDTO[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     if (!this.configGlobalData) {
       this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;

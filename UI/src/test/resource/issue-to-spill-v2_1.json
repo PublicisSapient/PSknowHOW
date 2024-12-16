@@ -2,7 +2,7 @@
   "kpiId": "kpi123",
   "kpiName": "Issues likely to Spill",
   "unit": "Count",
-  "chartType": "",
+  "chartType": "table",
   "id": "65793ddb127be336160bc0ef",
   "isDeleted": "False",
   "kpiCategory": "Iteration",
@@ -2147,5 +2147,11 @@
         }
       }
     ]
-  }
+  },
+  "kpiDetail": {
+    "kpiSubCategory": "Iteration Review",
+    "kpiWidth": 33,
+    "kpiHeight": 50
+  },
+  "isEnabled": true
 }
