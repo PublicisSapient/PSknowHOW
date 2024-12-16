@@ -2,7 +2,7 @@
   "kpiId": "kpi124",
   "kpiName": "Estimation Hygiene",
   "unit": "Count",
-  "chartType": "",
+  "chartType": "table",
   "id": "65793ddb127be336160bc0f2",
   "isDeleted": "False",
   "kpiCategory": "Iteration",
@@ -32,7 +32,7 @@
   "dataGroup": {
     "dataGroup1": [
       {
-        "key": "",
+        "key": "Original Estimate",
         "name": "Issue without estimates",
         "order": 1,
         "aggregation": "count",
@@ -42,7 +42,7 @@
         "value1": "Issue without estimates"
       },
       {
-        "key": "",
+        "key": "Logged Work",
         "name": "Issue with missing worklogs",
         "order": 2,
         "aggregation": "count",
@@ -2412,5 +2412,11 @@
         }
       }
     ]
-  }
+  },
+  "kpiDetail": {
+    "kpiSubCategory": "Iteration Review",
+    "kpiWidth": 33,
+    "kpiHeight": 50
+  },
+  "isEnabled": true
 }

@@ -19,7 +19,7 @@
         </div>
         <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="cardData?.chartType ===  'bar-chart'">
           <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
-            <h3>{{dataGroup.name}}</h3>
+            <p>{{dataGroup.name}}</p>
             <h3>{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),cardData.unit)}}</h3>
           </div>
         </div>

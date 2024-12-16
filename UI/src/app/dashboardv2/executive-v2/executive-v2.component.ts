@@ -36,6 +36,7 @@ import ClosurePossibleToday from '../../../test/resource/closure-possible-v2_1.j
 import IssuesLikelyToSpill from '../../../test/resource/issue-to-spill-v2_1.json';
 import FTPR from '../../../test/resource/ftpr-v2_1.json';
 import QualityStatus from '../../../test/resource/quality-status-v2_1.json';
+import EstimateHygiene from '../../../test/resource/issue-hygiene-v2_1.json';
 
 @Component({
   selector: 'app-executive-v2',
@@ -133,7 +134,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   durationFilter = 'Past 6 Months';
   selectedTrend: any = [];
   data = [iterationCommitment, Workremaining, IterationBurnUp, wastage, EstimateActual, DefectCountBy,
-    ClosurePossibleToday, IssuesLikelyToSpill, FTPR, QualityStatus];
+    ClosurePossibleToday, IssuesLikelyToSpill, FTPR, QualityStatus, EstimateHygiene];
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {

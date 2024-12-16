@@ -10,8 +10,8 @@
     (modifiedDataResult)="applyAdditionalFilters($event)"></app-kpi-additional-filter>
   </p-overlayPanel>
   <div class="p-d-flex p-jc-between" *ngIf="modifiedData?.length">
-    <div id="legend">
-      <table>
+    <div id="legend" [ngStyle]="{'width': selectedTab === 'iteration' ? '400px' : '250px'}">
+      <table style="width: 100%;">
         <thead>
           <tr>
             <th></th>
