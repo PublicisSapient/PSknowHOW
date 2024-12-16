@@ -1,5 +1,5 @@
 <form [formGroup]="form" (ngSubmit)="handleChange()">
-    <div class="kpi-card-filter p-px-5 p-py-2">
+    <div class="kpi-card-filter p-px-5 p-py-5">
         <div *ngIf="kpiCardFilter?.chartType === 'stacked-bar-chart'" id="">
             <p-selectButton 
                 [options]="kpiCardFilter.dataGroup.dataGroup1" 

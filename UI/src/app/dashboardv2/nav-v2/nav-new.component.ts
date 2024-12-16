@@ -6,6 +6,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 
+
 @Component({
   selector: 'app-nav-new',
   templateUrl: './nav-new.component.html',
@@ -19,6 +20,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
+  dummyData = require('../../../test/resource/board-config-PSKnowHOW.json'); 
 
   constructor(public httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, public helperService: HelperService) {
   }
@@ -47,7 +49,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
   getBoardConfig(projectList) {
     this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
       (response) => {
-        this.setBoards(response);
+        
+        // this.setBoards(response);
+        this.setBoards(this.dummyData);
       },
       (error) => {
         this.messageService.add({

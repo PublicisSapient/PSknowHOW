@@ -30,6 +30,7 @@ import iterationCommitment from '../../../assets/data/Iteration-committment-v2.j
 import wastage from '../../../assets/data/Wastage-V2.json';
 import EstimateActual from '../../../assets/data/Estimate-Actual-V2.json';
 import Workremaining from '../../../assets/data/Work-remaining-V2.json';
+import DefectCountBy from '../../../test/resource/defect-count-by-v2_1.json';
 
 @Component({
   selector: 'app-executive-v2',
@@ -126,7 +127,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   selectedTrend: any = [];
-  data = [iterationCommitment, Workremaining,wastage, EstimateActual]; //,,,issueHygiene
+  data = [DefectCountBy, iterationCommitment, Workremaining, wastage, EstimateActual]; //,,,issueHygiene
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
@@ -239,7 +240,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setGlobalConfigData(globalConfig) {
-    this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    // this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    let dummyData = require('../../../test/resource/board-config-PSKnowHOW.json'); 
+    this.configGlobalData = dummyData.data.userBoardConfigDTO[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     if (!this.configGlobalData) {
       this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     }
@@ -2786,10 +2789,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         retValue = 'p-col-6';
         break;
       case 66:
-        retValue = 'p-col-9';
+        retValue = 'p-col-8';
         break;
       case 33:
-        retValue = 'p-col-3';
+        retValue = 'p-col-4';
         break;
       default:
         retValue = 'p-col-6';

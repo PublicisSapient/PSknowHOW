@@ -1,0 +1,503 @@
+{
+  "kpiId": "kpi135",
+  "kpiName": "First Time Pass Rate",
+  "unit": "Hours",
+  "chartType": "",
+  "id": "65793ddb127be336160bc0f8",
+  "isDeleted": "False",
+  "kpiCategory": "Iteration",
+  "kpiUnit": "Hours",
+  "kanban": false,
+  "kpiSource": "Jira",
+  "groupId": 8,
+  "sprint": "BAU Sprint 36_Goodyear BAU SFCC",
+  "modalHeads": [
+    "Issue Id",
+    "Issue Description",
+    "First Time Pass",
+    "Linked Defect",
+    "Defect Priority"
+  ],
+  "responseCode": "200",
+  "dataGroup": {
+    "dataGroup1": [
+      {
+        "name": "Issue count",
+        "kpiValue": 11,
+        "order": 1,
+        "unit": "",
+        "showAsLegend": false
+      },
+      {
+        "name": "Original Estimate",
+        "kpiValue": 9660,
+        "order": 2,
+        "unit": "Hours",
+        "showAsLegend": false
+      },
+      {
+        "name": "",
+        "kpiValue": 81.82,
+        "order": 3,
+        "unit": "",
+        "showAsLegend": false
+      }
+    ]
+  },
+  "issueData": [
+    {
+      "Issue Id": "GECP-48881",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48881",
+      "Issue Description": "Promotion display on Cart product card to be configurable",
+      "Issue Status": "Ready for Sign-off",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "3.0/24.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "1d 30m",
+      "Original Estimate": "3d ",
+      "Priority": "P3 - Major",
+      "Due Date": "09-Sep-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "06-Sep-2024",
+      "Assignee": "Hasmukh Rawal",
+      "First Time Pass": "Y",
+      "Change Date": "2024-09-11",
+      "Labels": [
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-08-27",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Hasmukh Rawal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-11",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-49173",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49173",
+      "Issue Description": "Test Case Creation for attributesForCompare.js",
+      "Issue Status": "Closed",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.0/8.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "6h ",
+      "Original Estimate": "1d ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "09-Sep-2024",
+      "Assignee": "Mansi Sabharwal",
+      "First Time Pass": "Y",
+      "Change Date": "2024-09-11",
+      "Labels": [
+        "TECH_DEBT",
+        "CodeCoverage"
+      ],
+      "Created Date": "2024-09-03",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Mansi Sabharwal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Resolution": "Fixed or Completed",
+      "Release Name": "-",
+      "Updated Date": "2024-09-11",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-48272",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48272",
+      "Issue Description": "Multi language PDF to download - remaining touchpoints (CT CA)",
+      "Issue Status": "Ready for Sign-off",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.63/13.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "4h 30m",
+      "Original Estimate": "1d 5h ",
+      "Priority": "P4 - Minor",
+      "Due Date": "11-Sep-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "10-Sep-2024",
+      "Assignee": "Vikas Kumar Singh",
+      "First Time Pass": "Y",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "Estimation_Delay",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-08-09",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Vikas Kumar Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-49169",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49169",
+      "Issue Description": "Test Case Creation for totals.js",
+      "Issue Status": "Closed",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.5/12.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "1d 4h ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "12-Sep-2024",
+      "Assignee": "Mansi Sabharwal",
+      "First Time Pass": "Y",
+      "Change Date": "2024-09-12",
+      "Labels": [
+        "TECH_DEBT",
+        "CodeCoverage"
+      ],
+      "Created Date": "2024-09-03",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Mansi Sabharwal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Resolution": "Fixed or Completed",
+      "Release Name": "-",
+      "Updated Date": "2024-09-12",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-47985",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-47985",
+      "Issue Description": "RTI turned OFF | Quick View | OOS Scenarios - QE Testable",
+      "Issue Status": "Ready for Sign-off",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.5/12.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "2d 5h 15m",
+      "Original Estimate": "1d 4h ",
+      "Priority": "P3 - Major",
+      "Due Date": "06-Sep-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "-",
+      "Assignee": "Charu Chopra",
+      "Linked Defect": {
+        "GECP-49439": "https://tools.publicis.sapient.com/jira/browse/GECP-49439",
+        "GECP-49370": "https://tools.publicis.sapient.com/jira/browse/GECP-49370",
+        "GECP-49375": "https://tools.publicis.sapient.com/jira/browse/GECP-49375",
+        "GECP-49374": "https://tools.publicis.sapient.com/jira/browse/GECP-49374",
+        "GECP-49259": "https://tools.publicis.sapient.com/jira/browse/GECP-49259",
+        "GECP-49358": "https://tools.publicis.sapient.com/jira/browse/GECP-49358",
+        "GECP-49355": "https://tools.publicis.sapient.com/jira/browse/GECP-49355"
+      },
+      "Defect Priority": {
+        "GECP-49439": "P3 - Major",
+        "GECP-49370": "P3 - Major",
+        "GECP-49375": "P3 - Major",
+        "GECP-49374": "P3 - Major",
+        "GECP-49259": "P1 - Blocker",
+        "GECP-49358": "P3 - Major",
+        "GECP-49355": "P3 - Major"
+      },
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "QETestable",
+        "RTIOff_Nissan",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-08-06",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Charu Chopra"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-48903",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48903",
+      "Issue Description": "Roll tag",
+      "Issue Status": "Ready for Sign-off",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "0.5/4.0 hrs",
+      "Remaining Hours": 180,
+      "Logged Work": "1h ",
+      "Original Estimate": "4h ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "3h ",
+      "Remaining Days": "3h ",
+      "Dev Due Date": "09-Sep-2024",
+      "Assignee": "Meghan moloney",
+      "First Time Pass": "Y",
+      "Change Date": "2024-09-11",
+      "Labels": [
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-08-28",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Meghan moloney"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-11",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-49417",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49417",
+      "Issue Description": "Add \"Find Nearby\" link for RTI off on PDP and Quickview | GAS,JT",
+      "Issue Status": "Ready for Sign-off",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "3.0/24.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "2h 30m",
+      "Original Estimate": "3d ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "-",
+      "Assignee": "Hasmukh Rawal",
+      "First Time Pass": "Y",
+      "Linked Defect": {
+        "GECP-49783": "https://tools.publicis.sapient.com/jira/browse/GECP-49783"
+      },
+      "Defect Priority": {
+        "GECP-49783": "P4 - Minor"
+      },
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "RTIOff_Nissan",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-09-10",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Hasmukh Rawal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-49180",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49180",
+      "Issue Description": " Post Production Activities",
+      "Issue Status": "Closed",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "0.5/4.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "4h ",
+      "Original Estimate": "4h ",
+      "Priority": "P3 - Major",
+      "Due Date": "07-Aug-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "07-Aug-2024",
+      "Assignee": "Namitha Kn",
+      "First Time Pass": "Y",
+      "Change Date": "2024-09-04",
+      "Labels": [],
+      "Created Date": "2024-09-03",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Namitha Kn"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Resolution": "Fixed or Completed",
+      "Release Name": "-",
+      "Updated Date": "2024-09-04",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-48802",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48802",
+      "Issue Description": "PDP and Quickview pricing section to reflect Installation Discounts/savings",
+      "Issue Status": "Ready for Sign-off",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "5.0/40.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "7d 1h 30m",
+      "Original Estimate": "5d ",
+      "Priority": "P3 - Major",
+      "Due Date": "12-Sep-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "10-Sep-2024",
+      "Assignee": "Hasmukh Rawal",
+      "First Time Pass": "Y",
+      "Linked Defect": {
+        "GECP-49754": "https://tools.publicis.sapient.com/jira/browse/GECP-49754",
+        "GECP-49753": "https://tools.publicis.sapient.com/jira/browse/GECP-49753"
+      },
+      "Defect Priority": {
+        "GECP-49754": "P4 - Minor",
+        "GECP-49753": "P3 - Major"
+      },
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Roadmap_Priority_2024",
+        "DesignExploration"
+      ],
+      "Created Date": "2024-08-27",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Hasmukh Rawal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-47767",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-47767",
+      "Issue Description": "RTI turned OFF | Compare | OOS Scenarios - QE testable",
+      "Issue Status": "Ready for Sign-off",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.5/12.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "2d 5h ",
+      "Original Estimate": "1d 4h ",
+      "Priority": "P3 - Major",
+      "Due Date": "06-Sep-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "31-Jul-2024",
+      "Assignee": "Ashwati Menon",
+      "Linked Defect": {
+        "GECP-49439": "https://tools.publicis.sapient.com/jira/browse/GECP-49439",
+        "GECP-49373": "https://tools.publicis.sapient.com/jira/browse/GECP-49373"
+      },
+      "Defect Priority": {
+        "GECP-49439": "P3 - Major",
+        "GECP-49373": "P3 - Major"
+      },
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Sprint33_Initial",
+        "QETestable",
+        "RTIOff_Nissan",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-08-02",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Ashwati Menon"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    },
+    {
+      "Issue Id": "GECP-47309",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-47309",
+      "Issue Description": "RTI turned OFF | Product Card | OOS scenarios (QE Testable)",
+      "Issue Status": "Ready for Sign-off",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.0/8.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "1d 1h ",
+      "Original Estimate": "1d ",
+      "Priority": "P3 - Major",
+      "Due Date": "06-Sep-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Dev Due Date": "-",
+      "Assignee": "Prateek Shrivastava",
+      "First Time Pass": "Y",
+      "Linked Defect": {
+        "GECP-49356": "https://tools.publicis.sapient.com/jira/browse/GECP-49356"
+      },
+      "Defect Priority": {
+        "GECP-49356": "P3 - Major"
+      },
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "RTIOff_Nissan",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-07-23",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Prateek Shrivastava"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ]
+    }
+  ],
+  "maxValue": "",
+  "kpiInfo": {
+    "definition": "Percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect.",
+    "details": [
+      {
+        "type": "link",
+        "kpiLinkDetail": {
+          "text": "Detailed Information at",
+          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680642/First+time+pass+rate"
+        }
+      }
+    ]
+  }
+}

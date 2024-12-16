@@ -76,6 +76,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   scrumProjectsAvailable: boolean = true;
   squadLevel: any;
   noFilterApplyData: boolean = false;
+  dummyData = require('../../../test/resource/board-config-PSKnowHOW.json'); 
 
   constructor(
     private httpService: HttpService,
@@ -433,7 +434,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
         (response) => {
           if (response.success === true) {
-            let data = response.data.userBoardConfigDTO;
+            // let data = response.data.userBoardConfigDTO;
+            let data = this.dummyData.data.userBoardConfigDTO;
             data = this.setLevelNames(data);
             data['configDetails'] = response.data.configDetails;
             this.dashConfigData = data;
@@ -502,12 +504,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       data['others'].forEach((board) => {
         if (board?.filters) {
-          board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.primaryFilter.defaultLevel.labelName)[0].hierarchyLevelName;
+          board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
           if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-            board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+            board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
           }
           if (board.filters.parentFilter?.emittedLevel) {
-            board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+            board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.parentFilter.emittedLevel.toLowerCase())[0].hierarchyLevelName;
           }
         }
       });

@@ -25,6 +25,7 @@ export class ChartWithFiltersComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['filters']) {
+      this.data = this.data.chartData || this.data;
       if (this.selectedFilter2?.length) {
         this.selectedFilter2.forEach(filter => {
           filter.selectedValue = null;
@@ -179,7 +180,7 @@ export class ChartWithFiltersComponent implements OnChanges {
   }
 
   populateAdditionalFilters() {
-    this.filters.filterGroup2.forEach(element => {
+    this.filters.filterGroup2?.forEach(element => {
       element.values = this.getUniquePropertyValues(this.data, element.filterKey)
     });
   }

@@ -40,7 +40,7 @@ export class BarchartComponent implements OnInit {
   private svg: any;
   private tooltip: any;
 
-  constructor(private elRef: ElementRef) {}
+  constructor(private elRef: ElementRef) { }
 
   ngOnInit(): void {
     if (this.data && this.data.length) {
@@ -57,53 +57,51 @@ export class BarchartComponent implements OnInit {
   private createChart(): void {
     const element = this.elRef.nativeElement.querySelector('.chart-container');
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
-    const chartWidth = this.width - margin.left - margin.right;
-    const chartHeight = this.height - margin.top - margin.bottom;
-  
+    const chartWidth = this.width - margin.left - margin.right - 100;
+    const chartHeight = 300 - margin.top - margin.bottom - 50;
+
     // Extract unit from the dataGroup or set default
     const unit = this.data.map((d) => d.unit)[0] || 'hr'; //this.dataGroup?.unit ||
-  
+
     // Append SVG container
     this.svg = d3
       .select(element)
       .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height)
+      .attr('width', 300)
+      .attr('height', 300)
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
-  
+
     // Define scales
     const xScale = d3
       .scaleBand()
       .domain(this.data.map((d) => d.category))
-      .range([0, chartWidth])
+      .range([0, 300])
       .padding(0.3);
-  
+
     const yScale = d3
       .scaleLinear()
       .domain([0, d3.max(this.data, (d) => d.value) || 0])
       .nice()
       .range([chartHeight, 0]);
-  
+
+    // gridlines
+    this.svg.selectAll('line.gridline').data(yScale.ticks(4)).enter()
+      .append('svg:line')
+      .attr('x1', 0)
+      .attr('x2', chartWidth)
+      .attr('y1', (d) => yScale(d))
+      .attr('y2', (d) => yScale(d))
+      .style('stroke', '#ccc')
+      .style('stroke-width', 0.5)
+      .style('fill', 'none')
+      .attr('class', 'gridline');
+
     const colorScale = d3
       .scaleOrdinal()
       .domain(this.data.map((d) => d.category))
       .range(this.data.map((d) => d.color));
-  
-    // Add axes
-    this.svg
-      .append('g')
-      .attr('transform', `translate(0, ${chartHeight})`)
-      .call(d3.axisBottom(xScale));
-  
-    this.svg
-      .append('g')
-      .call(
-        d3.axisLeft(yScale)
-          .ticks(5)
-          .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
-      );
-  
+
     // Add Y-axis label
     this.svg
       .append('text')
@@ -115,7 +113,7 @@ export class BarchartComponent implements OnInit {
       .style('font-size', '12px')
       .style('font-weight', 'bold')
       .text(unit); // Display the unit dynamically
-  
+
     // Tooltip
     this.tooltip = d3
       .select(element)
@@ -128,21 +126,36 @@ export class BarchartComponent implements OnInit {
       .style('padding', '5px 10px')
       .style('border-radius', '5px')
       .style('pointer-events', 'none');
-  
+
     // Add bars
     this.svg
       .selectAll('.bar')
       .data(this.data)
       .enter()
-      .append('rect')
+      .append('path')
       .attr('class', 'bar')
-      .attr('x', (d) => xScale(d.category)!)
-      .attr('y', (d) => yScale(d.value))
-      .attr('width', xScale.bandwidth())
-      .attr('height', (d) => chartHeight - yScale(d.value))
-      .attr('fill', (d) => colorScale(d.category))
-      // .attr('rx', 5) // Rounded corners
-      // .attr('ry', 25)
+      .attr('d', (d) => {
+        const x = xScale(d.category) - 15; // Adjust to center the bar (since width is 30px)
+        const y = yScale(d.value); // Starting y position of the bar
+        const width = 30; // Fixed width of 30px
+        const height = chartHeight - yScale(d.value); // Height of the bar
+        const rx = 15;
+        const ry = 15;
+
+        // Create a custom path for the bar with rounded top corners and sharp bottom corners
+        if (d.value) {
+          return `M${x},${y + ry}
+              a${rx},${ry} 0 0 1 ${rx},${-ry}
+              h${width - 2 * rx}
+              a${rx},${ry} 0 0 1 ${rx},${ry}
+              v${height - 15}
+              h${-(width)}Z`;
+        } else {
+          return ``;
+        }
+      })
+      .attr('transform', (d) => { return `translate(${margin.left - 15}, ${0})` })
+      .attr('fill', (d) => d.color)
       .on('mouseover', (event, d) => {
         this.tooltip
           .style('display', 'block')
@@ -150,16 +163,16 @@ export class BarchartComponent implements OnInit {
             `<strong>${d.category}:</strong> ${d.value}${unit === 'Count' ? '' : ` ${unit}`}`
           );
       })
-      .on('mousemove', (event,d) => {
+      .on('mousemove', (event, d) => {
         console.log(d)
         this.tooltip
-          .style('top', `${chartHeight-xScale.bandwidth()}px`)
+          .style('top', `${chartHeight - xScale.bandwidth()}px`)
           .style('left', `${xScale.bandwidth()}px`);
       })
       .on('mouseout', () => {
         this.tooltip.style('display', 'none');
       });
-  
+
     // Add labels above bars
     this.svg
       .selectAll('.label')
@@ -174,6 +187,25 @@ export class BarchartComponent implements OnInit {
       .style('font-weight', 'bold')
       .style('fill', 'black')
       .text((d) => `${d.value}${unit === 'Count' ? '' : 'hr'}`); // Add unit dynamically
+
+    // Add axes
+    this.svg
+      .append('g')
+      .attr('class', 'xAxisG')
+      .attr('transform', `translate(0, ${chartHeight})`)
+      .call(d3.axisBottom(xScale));
+
+    this.svg
+      .append('g')
+      .attr('class', 'yAxisG')
+      .call(
+        d3.axisLeft(yScale)
+          .ticks(5)
+          .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
+      );
+
+    this.svg.selectAll('.xAxisG path, .xAxisG line, .yAxisG path, .yAxisG line')
+      .attr('stroke', '#ccc');
   }
 
   private updateChart(): void {

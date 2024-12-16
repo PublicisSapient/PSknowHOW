@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 
 import * as d3 from 'd3';
 
@@ -11,11 +11,14 @@ export class StackedBarComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
   @Input() width;
   @Input() height;
+  elem;
 
   private svg: any;
   private tooltip: any;
 
-  constructor(private elRef: ElementRef) {}
+  constructor(private elRef: ElementRef, private viewContainerRef: ViewContainerRef) {
+    this.elem = this.viewContainerRef.element.nativeElement;
+  }
 
   ngOnInit(): void {
     if (this.data && this.data.length) {
@@ -31,9 +34,9 @@ export class StackedBarComponent implements OnInit, OnChanges {
 
   private createChart(): void {
     const element = this.elRef.nativeElement;
-    const chartWidth = this.width; // Total width of the chart
     const chartHeight = this.height; // Height of the bar
     const margin = { top: 40, right: 20, bottom: 20, left: 20 };
+    const chartWidth = (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth; // Adjusted width to fit within the card
     const totalValue = this.data.reduce((sum, d) => sum + d.value, 0); // Total value of all sections
   
     // Normalize data for percentage

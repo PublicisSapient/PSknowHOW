@@ -1,24 +1,29 @@
 :host .kpi-card-header {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #c0c0c0;
-    padding: 8px 10px;
-    letter-spacing: 0px;
-    align-items: center;
-  
-    color: #202429;
-    overflow: visible;
-  }
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #c0c0c0;
+  padding: 8px 10px;
+  letter-spacing: 0px;
+  align-items: center;
+
+  color: #202429;
+  overflow: visible;
+}
 
 
-  .kpi-card-title-container{
-    display: flex;
-  }
+.kpi-card-title-container {
+  display: flex;
+}
 
-  .kpi-card-title-container h3 {
-    margin-bottom: auto;
-    line-height: 32px;
-    margin-top: 0;
+.kpi-card-title-container h3 {
+  margin-bottom: auto;
+  line-height: 32px;
+  margin-top: 0;
+}
+
+.kpi-card-name-placeholder h3 {
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 :host .kpi-menu-container {
@@ -29,8 +34,18 @@
 :host ::ng-deep .p-menu.p-menu-overlay {
   top: 40px !important;
 }
-  
+
 :host ::ng-deep .p-menu.p-component.p-menu-overlay {
   left: unset !important;
   right: 10px !important;
+}
+
+:host ::ng-deep .info-icon {
+  height: 20px;
+  margin-left: 20px;
+  margin-top: 7px;
+}
+
+:host ::ng-deep .info-icon img {
+  height: 20px;
 }

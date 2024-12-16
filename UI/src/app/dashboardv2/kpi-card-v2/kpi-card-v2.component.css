@@ -5,6 +5,7 @@
   opacity: 1;
   position: relative;
   max-height: 500px;
+  height: 400px;
 }
 
 :host .kpi-card-container-v2{
@@ -14,7 +15,7 @@
   opacity: 1;
   position: relative;
   max-height: 500px;
-  height: 500px;
+  height: 400px;
 }
 
 :host .kpi-card-header {
@@ -74,7 +75,7 @@
   color: #333333;
   width: auto;
   right: 0;
-  height: 80px;
+  height: auto;
   display: flex;
   align-items: center;
 }
@@ -384,7 +385,8 @@
   justify-content: space-around;
   align-items: center;
   padding: 0;
-  margin: 20px 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 .legend li{

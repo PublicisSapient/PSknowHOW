@@ -21,7 +21,7 @@ This files contain common methods that can be use in application
 **********************************************/
 
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { filter, Subject } from 'rxjs';
 @Injectable()
 export class KpiHelperService {
   constructor() {}
@@ -156,6 +156,16 @@ export class KpiHelperService {
 
   semicircledonutchartData(inputData: any) {
     return { chartData: inputData.issueData.length };
+  }
+
+  pieChartWithFiltersData(inputData: any) {
+    let chartData = inputData.issueData;
+    let filterGroup = inputData.filterGroup;
+    let test = {
+      chartData : chartData,
+      filterGroup : filterGroup
+    }
+    return { chartData: test };
   }
 
   convertToHoursIfTime(val, unit) {

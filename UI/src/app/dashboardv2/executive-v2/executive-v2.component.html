@@ -33,7 +33,7 @@
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined && test()">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
                                     <!--selectedKPITab === kpi.kpiDetail?.kpiSubCategory &&-->
-                                    <div *ngIf=" kpi['isEnabled']"
+                                    <div *ngIf="kpi['isEnabled']"
                                         class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"

@@ -1,43 +1,43 @@
-
 <ng-container *ngIf="selectedTab === 'iteration'; else cardWithOutRawJsonTemplate">
   <div class="kpi-card-container-v2">
-    <app-ps-kpi-card-header
-      [cardHeaderData]="kpiHeaderData"
-    ></app-ps-kpi-card-header>
-  
+    <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"></app-ps-kpi-card-header>
+
     <div class="kpi-card-body">
-      <app-ps-kpi-card-filter
-        [kpiCardFilter]="kpiFilterData"
-        (filterChange)="onFilterChange($event)"
-      ></app-ps-kpi-card-filter>
-      <div *ngIf="cardData?.chartType === 'stacked-bar-chart' ||  cardData?.chartType ===  'stacked-bar'" class="p-pr-5 p-pl-5">
-        <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
-        <h3>{{showCummalative()}}</h3>
+      <div>
+        <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData" *ngIf="cardData?.chartType !== 'chartWithFilter'"
+          (filterChange)="onFilterChange($event)"></app-ps-kpi-card-filter>
       </div>
-      <app-ps-kpi-card-chart-renderer
-        [chartData]="currentChartData.chartData"
-        [chartType]="cardData.chartType"
-        [chartWidth]="cardData.chartWidth"
-        [chartHeight]="cardData.chartHeight"
-      ></app-ps-kpi-card-chart-renderer>
-      <div class="p-d-flex p-pr-5 p-pl-5" *ngIf="cardData?.chartType ===  'bar-chart'">
-        <div class="p-col-6" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
-          <h3>{{dataGroup.name}}</h3>
-          <h3>{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),cardData.unit)}}</h3>
+      <div *ngIf="cardData?.chartType === 'stacked-bar-chart' ||  cardData?.chartType ===  'stacked-bar'"
+        class="p-pr-5 p-pl-5 p-col-6">
+        <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
+        <h3 class="p-my-0">{{showCummalative()}}</h3>
+      </div>
+      <div class="p-d-flex">
+        <div class="{{ cardData?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
+          <app-ps-kpi-card-chart-renderer [chartData]="currentChartData.chartData" [chartType]="cardData.chartType"
+            [chartWidth]="cardData.chartWidth" [chartHeight]="cardData.chartHeight"></app-ps-kpi-card-chart-renderer>
+        </div>
+        <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="cardData?.chartType ===  'bar-chart'">
+          <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
+            <h3>{{dataGroup.name}}</h3>
+            <h3>{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),cardData.unit)}}</h3>
+          </div>
         </div>
       </div>
     </div>
-  
-    <div *ngIf="cardData?.chartType === 'stacked-bar-chart' ||  cardData?.chartType ===  'stacked-bar'" class="kpi-card-footer p-pr-5 p-pl-5">
+
+    <div *ngIf="cardData?.chartType === 'stacked-bar-chart' ||  cardData?.chartType ===  'stacked-bar'"
+      class="kpi-card-footer p-pr-5 p-pl-5">
       <ul class="legend" *ngFor="let footer of currentChartData?.chartData">
-        <li class="p-p-3">
-          <span [ngStyle]="{ 'background-color': footer.color }"></span
-          >{{ footer.category }}
+        <li class="p-px-3 p-py-0">
+          <span [ngStyle]="{ 'background-color': footer.color }"></span>{{ footer.category }}
         </li>
       </ul>
     </div>
   </div>
 </ng-container>
+
+
 <ng-template #cardWithOutRawJsonTemplate>
   <div class="kpi-card-container">
     <div class="kpi-card-header p-pr-5 p-pl-5 p-jc-between">
@@ -52,8 +52,8 @@
               [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
           </span>
         </div>
-        <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'" (mouseover)="showWarning(true)"
-          (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
+        <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'"
+          (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
           <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
             src="../../../assets/img/Warning.svg" />
           <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
@@ -72,8 +72,9 @@
         </ng-template>
       </p-menu>
     </div>
-  
-    <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" *ngIf="kpiData.kpiDetail.chartType !== 'stacked-area'"
+
+    <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
+      *ngIf="kpiData.kpiDetail.chartType !== 'stacked-area'"
       [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }"
       class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
       <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
@@ -97,13 +98,13 @@
               </ng-option>
             </ng-container>
           </ng-select>
-  
+
           <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
             inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
-            [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
-            (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
-            [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
-            [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+            [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected"
+            (onChange)="handleChange('multi', $event, k)" (onClear)="handleClearAll('filter'+(k+1))" [filter]="false"
+            [showHeader]="false" [showClear]="true" [style]="{'height': '32px', 'margin-left': '5px'}"
+            defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
           </p-multiSelect>
         </ng-container>
       </div>
@@ -136,7 +137,7 @@
               <span>
                 <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
                 <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded  p-mt-3"
-                (click)="reloadKPI()"></button>
+                  (click)="reloadKPI()"></button>
               </span>
             </div>
           </div>
@@ -157,9 +158,9 @@
               <span>
                 <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
                 <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-mt-3"
-                (click)="reloadKPI()"></button>
+                  (click)="reloadKPI()"></button>
               </span>
-  
+
             </div>
           </div>
         </div>
