@@ -399,7 +399,7 @@
 </ng-container>
 <ng-template #noProjectsTemplate>
     <div class="p-d-flex p-align-center p-justify-center no-projects">
-        <h2>You do not have access to any {{kanbanActivated ? 'Kanban' : 'Scrum'}} project</h2>
+        <h2>You do not have access to any {{ selectedtype.toLowerCase() === 'kanban' ? 'Kanban' : 'Scrum'}} project</h2>
     </div>
 </ng-template>
 <ng-template #noFilterApplyDataTemplate>

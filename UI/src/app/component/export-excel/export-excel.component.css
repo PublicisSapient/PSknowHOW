@@ -59,7 +59,7 @@
 
 .min-max-width{
     min-width:190px;
-    /* max-width: 190px; */
+    max-width: 190px;
     word-break: break-word;
 }
 
@@ -142,3 +142,32 @@
 :host ::ng-deep .p-datatable-scrollable .p-datatable-wrapper{
     min-height: 300px;
 }
+
+.markerInfo{
+    font-size: 0.75rem;
+}
+
+.color-indicator{
+    width: 10px;
+    height: inherit;
+}
+
+.cell-indicator{
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.columns-btn{
+    float: right;
+}
+
+.move-top {
+    background-color: white !important;
+}
+
+.move-top:hover {
+    background-color: white !important;
+}
+
+

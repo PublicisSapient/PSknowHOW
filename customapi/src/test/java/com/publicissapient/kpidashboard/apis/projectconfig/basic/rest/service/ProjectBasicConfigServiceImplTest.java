@@ -41,6 +41,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl;
+import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -179,6 +185,8 @@ public class ProjectBasicConfigServiceImplTest {
 	private CapacityMasterService capacityMasterService;
 	@Mock
 	private TestExecutionService testExecutionService;
+	@Mock
+	private ProjectToolConfigServiceImpl projectToolConfigService;
 	private ProjectBasicConfig basicConfig;
 	private Optional<ProjectBasicConfig> basicConfigOpt = Optional.empty();
 	private ProjectBasicConfig diffbasicConfig;
@@ -198,6 +206,12 @@ public class ProjectBasicConfigServiceImplTest {
 	@Mock
 	private HappinessKpiDataRepository happinessKpiDataRepository;
 
+	@Mock
+	private FieldMappingRepository fieldMappingRepository;
+
+	ProjectToolConfig listProjectTool = new ProjectToolConfig();
+	FieldMapping fieldMapping;
+	BoardMetadata boardMetadata;
 
 
 	/**
@@ -209,8 +223,20 @@ public class ProjectBasicConfigServiceImplTest {
 		basicConfigDTO = new ProjectBasicConfigDTO();
 		basicConfig = ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json")
 				.getProjectBasicConfigs().get(0);
+		boardMetadata=new BoardMetadata();
+		boardMetadata.setProjectBasicConfigId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
+		boardMetadata.setProjectToolConfigId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
+		boardMetadata.setMetadataTemplateCode("10");
 		basicConfig.setId(new ObjectId("5f855dec29cf840345f2d111"));
 		basicConfigDTO = modelMapper.map(basicConfig, ProjectBasicConfigDTO.class);
+		listProjectTool.setId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
+		listProjectTool.setToolName("Jira");
+		listProjectTool.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
+		listProjectTool.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
+		listProjectTool.setBranch("test1");
+		listProjectTool.setJobName("testing1");
+
+		fieldMapping=FieldMappingDataFactory.newInstance("/json/default/project_field_mappings.json").getFieldMappings().get(0);
 
 		basicConfigOpt = Optional.of(basicConfig);
 
@@ -374,6 +400,41 @@ public class ProjectBasicConfigServiceImplTest {
 		userInfo.setAuthType(AuthType.STANDARD);
 		userInfo.setAuthorities(Lists.newArrayList("ROLE_GUEST"));
 		when(projectAccessManager.getUserInfo(any())).thenReturn(userInfo);
+		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
+		assertThat("Status: ", response.getSuccess(), equalTo(true));
+	}
+
+	@Test
+	public void addConfigTest_nonSuperadminCloneProject_success() {
+		basicConfig.setClonedFrom(new ObjectId("5fd9ab0995fe13000165d0ba"));
+		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
+		SecurityContextHolder.setContext(securityContext);
+		when(authenticationService.getLoggedInUser()).thenReturn("guest");
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("GUEST");
+		userInfo.setAuthType(AuthType.STANDARD);
+		userInfo.setAuthorities(Lists.newArrayList("ROLE_GUEST"));
+		when(projectAccessManager.getUserInfo(any())).thenReturn(userInfo);
+		when(projectToolConfigService.getProjectToolConfigsByProjectId(any())).thenReturn(Arrays.asList(listProjectTool));
+		when(projectToolConfigService.saveProjectToolConfigs(any())).thenReturn(Arrays.asList(listProjectTool));
+		when(fieldMappingService.getFieldMappingByBasicconfigId(anyString())).thenReturn(fieldMapping);
+		when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(boardMetadata);
+		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
+		assertThat("Status: ", response.getSuccess(), equalTo(true));
+	}
+
+	@Test
+	public void addConfigTest_nonSuperadminCloneProject_success1() {
+		basicConfig.setClonedFrom(new ObjectId("5fd9ab0995fe13000165d0ba"));
+		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
+		SecurityContextHolder.setContext(securityContext);
+		when(authenticationService.getLoggedInUser()).thenReturn("guest");
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("GUEST");
+		userInfo.setAuthType(AuthType.STANDARD);
+		userInfo.setAuthorities(Lists.newArrayList("ROLE_GUEST"));
+		when(projectAccessManager.getUserInfo(any())).thenReturn(userInfo);
+		listProjectTool.setToolName("Jenkins");
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}

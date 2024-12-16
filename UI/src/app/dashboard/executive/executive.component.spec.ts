@@ -49,6 +49,7 @@ import { environment } from '../../../environments/environment';
 import { of } from 'rxjs/internal/observable/of';
 import { DropdownModule } from 'primeng/dropdown';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { MessageService } from 'primeng/api';
 
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
@@ -2493,7 +2494,7 @@ describe('ExecutiveComponent', () => {
         ExportExcelComponent
       ],
       providers: [
-        HelperService,
+        HelperService,MessageService,
         { provide: APP_CONFIG, useValue: AppConfig },
         HttpService,
         { provide: SharedService, useValue: service }

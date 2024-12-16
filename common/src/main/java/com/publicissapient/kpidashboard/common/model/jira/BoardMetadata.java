@@ -37,11 +37,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "board_metadata")
-public class BoardMetadata extends BasicModel {
+public class BoardMetadata extends BasicModel implements Cloneable {
 
 	private ObjectId projectBasicConfigId;
 	private ObjectId projectToolConfigId;
 	private String metadataTemplateCode;
 	private List<Metadata> metadata;
+
+	@Override
+	public BoardMetadata clone() throws CloneNotSupportedException {
+		return (BoardMetadata) super.clone();
+	}
 
 }

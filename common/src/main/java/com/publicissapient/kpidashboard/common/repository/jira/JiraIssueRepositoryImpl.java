@@ -493,6 +493,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(ADDITIONAL_FILTER);
 		query.fields().include(LOGGED_WORK_MINUTES);
 		query.fields().include(PROJECT_NAME);
+		query.fields().include(PRIORITY);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -843,6 +844,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(LOGGED_WORK_MINUTES);
 		query.fields().include(TYPE_NAME);
 		query.fields().include(PROJECT_NAME);
+		query.fields().include(PRIORITY);
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}

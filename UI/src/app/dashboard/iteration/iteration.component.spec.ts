@@ -2577,7 +2577,7 @@ describe('IterationComponent', () => {
         spyOn(component, 'generateTableColumnData');
         component.tableComponent.clear = () => { };
         component.handleArrowClick(kpi, "Issue Count", tableValues);
-        expect(component.displayModal).toBeTruthy();
+        expect(component.displayModal).toBeFalse();
     });
 
     it('should convert to hours', () => {

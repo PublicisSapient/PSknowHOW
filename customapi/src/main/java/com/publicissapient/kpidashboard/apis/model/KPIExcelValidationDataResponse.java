@@ -24,6 +24,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.publicissapient.kpidashboard.common.model.application.KpiColumnDetails;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 
 /**
@@ -41,11 +42,14 @@ public class KPIExcelValidationDataResponse {
 	@JsonProperty("validationData")
 	/* package */ Map<String, ValidationData> mapOfSprintAndData;
 	private String kpiName;
+	private boolean saveDisplay; // Use for providing excel enable and disable flag
 	private String kpiId;
 	@JsonProperty("columns")
 	private List<String> excelColumns;
 	@JsonProperty("excelData")
 	private List<KPIExcelData> excelData;
+	@JsonProperty("kpiColumnList")
+	private List<KpiColumnDetails> kpiColumnDetails;
 
 	public List<String> getExcelColumns() {
 		return excelColumns;
@@ -94,6 +98,18 @@ public class KPIExcelValidationDataResponse {
 	}
 
 	/**
+	 * set save display flag
+	 *
+	 */
+	public boolean getSaveDisplay() {
+		return saveDisplay;
+	}
+
+	public void setSaveDisplay(boolean saveDisplay) {
+		this.saveDisplay = saveDisplay;
+	}
+
+	/**
 	 * Gets kpi id.
 	 *
 	 * @return the kpi id
@@ -118,6 +134,14 @@ public class KPIExcelValidationDataResponse {
 
 	public void setExcelData(List<KPIExcelData> excelData) {
 		this.excelData = excelData;
+	}
+
+	public List<KpiColumnDetails> getKpiColumnDetails() {
+		return kpiColumnDetails;
+	}
+
+	public void setKpiColumnDetails(List<KpiColumnDetails> kpiColumnDetails) {
+		this.kpiColumnDetails = kpiColumnDetails;
 	}
 
 }
