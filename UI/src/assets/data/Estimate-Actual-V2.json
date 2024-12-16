@@ -3946,7 +3946,7 @@
   },
   "kpiDetail": {
   "kpiSubCategory": "Iteration Review",
-  "kpiWidth": 50,
+  "kpiWidth": 33,
   "kpiUnit": "hours",
   "xaxisLabel": "Date",
   "yaxisLabel": "Value",

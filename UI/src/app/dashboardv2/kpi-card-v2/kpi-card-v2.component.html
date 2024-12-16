@@ -4,7 +4,7 @@
 
     <div class="kpi-card-body">
       <div>
-        <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData" *ngIf="cardData?.chartType !== 'chartWithFilter'"
+        <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData" *ngIf="cardData?.chartType !== 'chartWithFilter' && cardData?.chartType !== 'CumulativeMultilineChart'"
           (filterChange)="onFilterChange($event)"></app-ps-kpi-card-filter>
       </div>
       <div *ngIf="cardData?.chartType === 'stacked-bar-chart' ||  cardData?.chartType ===  'stacked-bar'"

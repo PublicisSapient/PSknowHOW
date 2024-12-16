@@ -597,6 +597,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       case 'chartWithFilter':
         chartData = this.kpiHelperService.pieChartWithFiltersData(inputData);
         break;
+      case 'CumulativeMultilineChart':
+        chartData = this.kpiHelperService.filterLessKPI(inputData.trendValueList);
+        break;
       default:
         break;
     }

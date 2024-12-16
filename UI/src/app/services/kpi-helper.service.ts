@@ -24,7 +24,7 @@ import { Injectable } from '@angular/core';
 import { filter, Subject } from 'rxjs';
 @Injectable()
 export class KpiHelperService {
-  constructor() {}
+  constructor() { }
   private headerAction = new Subject<any>();
   headerAction$ = this.headerAction.asObservable();
 
@@ -162,10 +162,16 @@ export class KpiHelperService {
     let chartData = inputData.issueData;
     let filterGroup = inputData.filterGroup;
     let test = {
-      chartData : chartData,
-      filterGroup : filterGroup
+      chartData: chartData,
+      filterGroup: filterGroup
     }
     return { chartData: test };
+  }
+
+  filterLessKPI(inputData) {
+    let result = [];
+    result = inputData.filter(kpiData => kpiData.filter1.toLowerCase() === 'overall');
+    return { chartData: result };
   }
 
   convertToHoursIfTime(val, unit) {
@@ -204,8 +210,7 @@ export class KpiHelperService {
     const days = rhours / 8;
     const rdays = Math.floor(days);
     rhours = (days - rdays) * 8;
-    return `${rdays !== 0 ? rdays + 'd ' : ''}${
-      rhours !== 0 ? rhours + 'h ' : ''
-    }${rminutes !== 0 ? rminutes + 'm' : ''}`;
+    return `${rdays !== 0 ? rdays + 'd ' : ''}${rhours !== 0 ? rhours + 'h ' : ''
+      }${rminutes !== 0 ? rminutes + 'm' : ''}`;
   }
 }

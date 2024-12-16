@@ -357,5 +357,10 @@
         }
       }
     ]
+  },
+  "kpiDetail": {
+    "kpiSubCategory": "Iteration Review",
+    "kpiWidth": 66,
+    "kpiHeight": 50
   }
 }
