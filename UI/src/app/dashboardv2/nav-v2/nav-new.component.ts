@@ -102,7 +102,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
           this.dashConfigData = data;
         }
 
-        this.items = [...this.dashConfigData['scrum'], ...this.dashConfigData['others']].filter(board => board.kpis.some(kpi => kpi.shown === true) ).map((obj) => {
+        this.items = [...this.dashConfigData['scrum'], ...this.dashConfigData['others']].filter(board => 
+          board.kpis.some(kpi => kpi.shown === true) || board.kpis.length === 0
+        ).map((obj) => {
           return {
             label: obj['boardName'],
             slug: obj['boardSlug'],
