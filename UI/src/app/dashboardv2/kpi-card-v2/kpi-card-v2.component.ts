@@ -596,7 +596,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         chartData = this.kpiHelperService.stackedChartData(inputData, color);
         break;
       case 'semi-circle-donut-chart':
-        chartData = this.kpiHelperService.semicircledonutchartData(inputData);
+        chartData = this.kpiHelperService.semicircledonutchartData(inputData,color);
         break;
       case 'chartWithFilter':
         chartData = this.kpiHelperService.pieChartWithFiltersData(inputData);

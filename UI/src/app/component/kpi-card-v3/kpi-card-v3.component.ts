@@ -81,7 +81,7 @@ export class KpiCardV3Component implements OnInit {
         chartData = this.kpihelper.stackedChartData(inputData, color);
         break;
       case 'semi-circle-donut-chart' :
-        chartData = this.kpihelper.semicircledonutchartData(inputData);
+        chartData = this.kpihelper.semicircledonutchartData(inputData,color);
       default:
         break;
     }

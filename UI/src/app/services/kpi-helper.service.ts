@@ -21,7 +21,7 @@ This files contain common methods that can be use in application
 **********************************************/
 
 import { Injectable } from '@angular/core';
-import { filter, Subject } from 'rxjs';
+import {  Subject } from 'rxjs';
 @Injectable()
 export class KpiHelperService {
   constructor() { }
@@ -94,12 +94,6 @@ export class KpiHelperService {
         (issue: any) => issue[group.key] !== undefined,
       );
 
-      // const value = filteredIssues.reduce((sum: any, issue: any) => {
-      //     return sum + (issue[group.key] || 0); // Sum up the values for the key
-      // }, 0);
-      // const convertedValue = this.convertToHoursIfTime(value, 'day'); // or 'day' depending on your requirement
-
-      // console.log(convertedValue)
       chartData.push({
         category: group.name,
         value: filteredIssues.reduce((sum: any, issue: any) => {
@@ -113,7 +107,6 @@ export class KpiHelperService {
       return sum + (issue.value || 0); // Sum up the values for the key
     }, 0);
 
-    // console.log(convertToHoursIfTime(,'day'))
     const test = chartData.map((item: any) => {
       return {
         ...item,
@@ -150,7 +143,6 @@ export class KpiHelperService {
 
         // Push the result into chartData array
         chartData.push({ category: name, value: sum, color: color[groupKey] }); // Default color if not specified
-        //   });
       }
     }
 
@@ -166,8 +158,8 @@ export class KpiHelperService {
     return { chartData: test };
   }
 
-  semicircledonutchartData(inputData: any) {
-    return { chartData: inputData.issueData.length };
+  semicircledonutchartData(json: any,color: any) {
+    return { chartData: json.issueData.length, color:color};
   }
 
   pieChartWithFiltersData(inputData: any) {
