@@ -39,6 +39,23 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
   }
 
   private createChart(): void {
+    this.data = [
+      {
+        "category": "Scope removed",
+        "value": 0,
+        "color": "#A4F6A5"
+      },
+      {
+        "category": "Scope added",
+        "value": 6,
+        "color": "#6079C5"
+      },
+      {
+        "category": "Initial Commitment",
+        "value": 55,
+        "color": "#FBCF5F"
+      }
+    ];
     const chartHeight = this.height; // Height of the bar
     const margin = { top: 50, right: 20, bottom: 50, left: 20 };
     const chartWidth = (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth; // Adjusted width to fit within the card

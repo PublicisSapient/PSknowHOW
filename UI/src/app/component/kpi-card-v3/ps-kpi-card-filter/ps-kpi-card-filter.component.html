@@ -18,7 +18,7 @@
     >
     </p-selectButton>
     </div>
-    <div class="filterSection">
+    <div class="filterSection" *ngIf="kpiCardFilter?.chartType !== 'chartWithFilter'">
       <ng-container
         class="p-p-1"
         *ngFor="let filter of kpiCardFilter?.filterGroup?.filterGroup1"

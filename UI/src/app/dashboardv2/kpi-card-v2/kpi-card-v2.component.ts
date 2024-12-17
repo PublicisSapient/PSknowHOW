@@ -145,45 +145,43 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
 
     //#region new card kpi
-    this.cardData = this.kpiData;
-    const {
-      responseCode,
-      issueData,
-      kpiName,
-      kpiInfo,
-      kpiId,
-      dataGroup,
-      filterGroup,
-      kpiFilters,
-      chartType,
-      unit,
-      categoryData
-    } = this.cardData;
-    this.kpiHeaderData = { responseCode, issueData, kpiName, kpiInfo, kpiId };
-    this.kpiFilterData = { dataGroup, filterGroup, issueData, kpiFilters, chartType, categoryData };
-    this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
-    this.currentChartData = this.prepareChartData(
-      this.cardData,
-      this.colorPalette,
-    );
+    if (this.selectedTab === 'iteration') {
+      this.cardData = this.trendValueList;
+      const {
+        issueData,
+        kpiName,
+        kpiInfo,
+        kpiId,
+        dataGroup,
+        filterGroup,
+        categoryData
+      } = this.cardData;
+      this.kpiHeaderData = { issueData, kpiName, kpiInfo, kpiId };
+      this.kpiFilterData = { dataGroup, filterGroup, issueData, chartType: this.kpiData?.kpiDetail?.chartType, categoryData };
+      this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
+      this.currentChartData = this.prepareChartData(
+        this.cardData,
+        this.colorPalette,
+      );
 
-    this.subscriptions.push(this.kpiHelperService.headerAction$.subscribe(x => {
-      if (x.listView) {
-        console.log('*********listview***', x)
-        this.prepareData();
-      } else if (x.setting) {
-        console.log('*********settings***', x)
-        this.onOpenFieldMappingDialog();
-      } else if (x.explore) {
-        console.log('*********explore***', x)
-        this.exportToExcel();
+      this.subscriptions.push(this.kpiHelperService.headerAction$.subscribe(x => {
+        if (x.listView) {
+          console.log('*********listview***', x)
+          this.prepareData();
+        } else if (x.setting) {
+          console.log('*********settings***', x)
+          this.onOpenFieldMappingDialog();
+        } else if (x.explore) {
+          console.log('*********explore***', x)
+          this.exportToExcel();
 
-      } else if (x.comment) {
-        this.showComments = true;
-        console.log('*********comment***', x)
-        this.openCommentModal();
-      }
-    }))
+        } else if (x.comment) {
+          this.showComments = true;
+          console.log('*********comment***', x)
+          this.openCommentModal();
+        }
+      }))
+    }
 
     //#endregion
   }
@@ -584,9 +582,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   applyDynamicfilter(data: [], filter: { [key: string]: any }) {
     return data.filter((item) => {
       return Object.entries(filter).every(([key, value]) => {
-        if(Array.isArray(value)){
+        if (Array.isArray(value)) {
           return value.includes(item[key]);
-        }else{
+        } else {
           return item[key] === value;
         }
       });
@@ -594,7 +592,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   prepareChartData(inputData: any, color: any) {
-    return this.kpiHelperService.getChartDataSet(inputData,this.cardData.chartType,color);
+    if (this.kpiData.kpiDetail.chartType && this.kpiData.kpiDetail.chartType !== '') {
+      return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color);
+    } else {
+      return {};
+    }
   }
 
   calculateValue(issueData, key: string): string {

@@ -36,11 +36,14 @@ export class BarchartComponent implements OnInit {
   @Input() data: any[] = []; // Input dataset
   @Input() width;
   @Input() height;
+  elem;
 
   private svg: any;
   private tooltip: any;
 
-  constructor(private elRef: ElementRef) { }
+  constructor(private elRef: ElementRef, private viewContainerRef: ViewContainerRef) {
+    this.elem = this.viewContainerRef.element.nativeElement;
+  }
 
   ngOnInit(): void {
     if (this.data && this.data.length) {
@@ -57,7 +60,7 @@ export class BarchartComponent implements OnInit {
   private createChart(): void {
     const element = this.elRef.nativeElement.querySelector('.chart-container');
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
-    const chartWidth = this.width - margin.left - margin.right - 100;
+    const chartWidth = d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right - 100;
     const chartHeight = 300 - margin.top - margin.bottom - 50;
 
     // Extract unit from the dataGroup or set default

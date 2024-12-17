@@ -30,9 +30,9 @@
                         </div>
                         <div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
                             <ng-container
-                                *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined && test()">
+                                *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-                                    <div *ngIf="kpi?.kpiDetail?.kpiSubCategory && selectedTab !== 'iteration' ? selectedKPITab === kpi.kpiDetail.kpiSubCategory &&  kpi['isEnabled'] : kpi['isEnabled']"
+                                    <div *ngIf="kpi?.kpiDetail?.kpiSubCategory && selectedTab !== 'iteration' ? selectedKPITab === kpi.kpiDetail.kpiSubCategory &&  kpi['isEnabled'] :  iterationKPIData[kpi?.kpiId] && kpi['isEnabled']"
                                         class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}" 
                                         [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '414px') }">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
@@ -49,7 +49,7 @@
                                             [showChartView]="showChart"
                                             [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
                                             [sprintsOverlayVisible]="sprintsOverlayVisible && kpi?.kpiDetail?.chartType !== 'table'"
-                                            [trendValueList]="kpiChartData[kpi?.kpiId]" [colors]="colorObj"
+                                            [trendValueList]="selectedTab === 'iteration' ? iterationKPIData[kpi?.kpiId] ? iterationKPIData[kpi?.kpiId] : {} : kpiChartData[kpi?.kpiId]" [colors]="colorObj"
                                             [showCommentIcon]="showCommentIcon"
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"

@@ -94,19 +94,19 @@ export class HelperService {
                 if (obj.videoLink) {
                     delete obj.videoLink;
                 }
-                // if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
-                //     if (obj.isEnabled && obj.shown) {
-                //         if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
-                //             kpiRequestObject.kpiList.push(obj)
-                //         }
-                //     }
-                // }
-                // else if (visibleKpis.includes(obj.kpiId)) {
-                //     if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
-                //         kpiRequestObject.kpiList.push(obj)
-                //     }
-                // }
-                kpiRequestObject.kpiList.push(obj);
+                if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
+                    if (obj.isEnabled && obj.shown) {
+                        if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                            kpiRequestObject.kpiList.push(obj)
+                        }
+                    }
+                }
+                else if (visibleKpis.includes(obj.kpiId)) {
+                    if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                        kpiRequestObject.kpiList.push(obj)
+                    }
+                }
+                // kpiRequestObject.kpiList.push(obj);
             }
         }
 
@@ -743,7 +743,6 @@ export class HelperService {
         if (!this.refreshCounter) {
             ++this.refreshCounter;
         } else if (this.refreshCounter) {
-            console.log('User Navigation Detected');
             // this.removeQueryParams();
 
             if (this.selectedFilters['primary_level']) {

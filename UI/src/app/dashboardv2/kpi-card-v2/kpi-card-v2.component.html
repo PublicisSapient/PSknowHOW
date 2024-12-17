@@ -14,8 +14,8 @@
       </div>
       <div class="p-d-flex">
         <div class="{{ cardData?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
-          <app-ps-kpi-card-chart-renderer [chartData]="currentChartData.chartData" [chartType]="cardData.chartType"
-            [chartWidth]="cardData.chartWidth" [chartHeight]="cardData.chartHeight"></app-ps-kpi-card-chart-renderer>
+          <app-ps-kpi-card-chart-renderer [chartData]="currentChartData?.chartData" [chartType]="kpiData.kpiDetail.chartType"
+            [chartWidth]="cardData?.chartWidth" [chartHeight]="cardData?.chartHeight"></app-ps-kpi-card-chart-renderer>
         </div>
         <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="cardData?.chartType ===  'bar-chart'">
           <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">

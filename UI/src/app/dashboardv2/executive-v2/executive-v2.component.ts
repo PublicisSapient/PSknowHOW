@@ -134,8 +134,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   selectedTrend: any = [];
-  data = [iterationCommitment, Workremaining, IterationBurnUp, wastage, EstimateActual, DefectCountBy,
-    ClosurePossibleToday, IssuesLikelyToSpill, FTPR, QualityStatus, EstimateHygiene, WorkStatus];
+  iterationKPIData = {};
+  // iterationKPIData = [iterationCommitment, Workremaining, IterationBurnUp, wastage, EstimateActual, DefectCountBy,
+  //   ClosurePossibleToday, IssuesLikelyToSpill, FTPR, QualityStatus, EstimateHygiene, WorkStatus];
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
@@ -282,7 +283,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (element.shown && element.isEnabled) {
         this.kpiConfigData[element.kpiId] = true;
         if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
-          this.createTrendsData(element.kpiId);
+          if (this.selectedTab !== 'iteration') {
+            this.createTrendsData(element.kpiId);
+          }
           this.handleMaturityTableLoader();
         }
       } else {
@@ -333,7 +336,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.hierarchyLevel = hierarchyData[this.selectedtype?.toLowerCase()];
       }
     }
-    if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
+    if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0) {
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
       this.globalConfig = $event.dashConfigData;
@@ -783,7 +786,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
-    if (this.selectedTab !== 'release' && this.selectedTab !== 'backlog') {
+    if (this.selectedTab !== 'release' && this.selectedTab !== 'backlog' && this.selectedTab !== 'iteration') {
       this.jiraKpiRequest = this.httpService.postKpi(postData, source)
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -823,7 +826,29 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.postJiraKPIForRelease(postData, source);
     } else if (this.selectedTab === 'backlog') {
       this.postJiraKPIForBacklog(postData, source);
+    } else if (this.selectedTab === 'iteration') {
+      this.postJiraKPIForIteration(postData, source);
     }
+  }
+
+  // post request of Jira(scrum) hygiene
+  postJiraKPIForIteration(postData, source): void {
+    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
+      .subscribe(getData => {
+        if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+          this.updatedConfigGlobalData = this.updatedConfigGlobalData.sort((a, b) => a.defaultOrder - b.defaultOrder);
+          // creating array into object where key is kpi id
+          const localVariable = this.helperService.createKpiWiseId(getData);
+
+          this.iterationKPIData = Object.assign({}, this.jiraKpiData, localVariable);
+          this.removeLoaderFromKPIs(localVariable);
+        } else {
+          this.handleKPIError(postData);
+        }
+      }, (error) => {
+        // Handle error
+        this.handleKPIError(postData);
+      });
   }
 
   postJiraKPIForBacklog(postData, source) {
@@ -2803,7 +2828,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   test() {
     if (this.selectedTab === 'iteration') {
-      this.updatedConfigGlobalData = this.data;
+      this.updatedConfigGlobalData = this.iterationKPIData;
     }
     return true;
   }

@@ -28,6 +28,7 @@ export class KpiHelperService {
   private headerAction = new Subject<any>();
   headerAction$ = this.headerAction.asObservable();
   iconObj = {
+    'Issue count': 'Warning.svg',
     'Issue Count': 'Warning.svg',
     'Issue at Risk': 'Warning.svg',
     'Issue without estimates': 'Warning.svg',
@@ -35,7 +36,7 @@ export class KpiHelperService {
     'Unlinked Defects': 'Warning.svg',
     'Story Linked Defects': 'Check.svg',
     'DIR': 'Watch.svg',
-    'Original Estimate': 'PieChart.svg',
+    'Story Point': 'PieChart.svg',
     'Defect Density': 'visibility_on.svg',
     'Percentage': 'Check.svg',
   };
@@ -190,8 +191,6 @@ export class KpiHelperService {
     });
 
     chartData['categoryData'] = categoryGroup;
-
-    console.log(chartData);
     return { chartData: chartData };
   }
 
@@ -219,10 +218,9 @@ export class KpiHelperService {
 
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
-    const categoryGroup = inputData.categoryData?.categoryGroup;
     const chartData: any = [];
 
-    dataGroup1.forEach((group: any, index) => {
+    dataGroup1?.forEach((group: any, index) => {
       const filteredIssues = issueData.filter(
         (issue: any) => issue[group.key] !== undefined,
       );
@@ -320,7 +318,7 @@ export class KpiHelperService {
       case 'CumulativeMultilineChart':
         returnDataSet = this.filterLessKPI(inputData.trendValueList);
         break;
-      case 'table':
+      case 'table-v2':
         returnDataSet = this.tabularKPI(inputData);
         break;
       case 'tableNonRawData':

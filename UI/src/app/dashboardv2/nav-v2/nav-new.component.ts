@@ -50,8 +50,8 @@ export class NavNewComponent implements OnInit, OnDestroy {
     this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
       (response) => {
         
-        this.setBoards(response);
-        // this.setBoards(this.dummyData);
+        // this.setBoards(response);
+        this.setBoards(this.dummyData);
       },
       (error) => {
         this.messageService.add({

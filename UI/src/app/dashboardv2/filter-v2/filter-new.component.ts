@@ -434,8 +434,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
         (response) => {
           if (response.success === true) {
-            let data = response.data.userBoardConfigDTO;
-            // let data = this.dummyData.data.userBoardConfigDTO;
+            // let data = response.data.userBoardConfigDTO;
+            let data = this.dummyData.data.userBoardConfigDTO;
             data = this.setLevelNames(data);
             data['configDetails'] = response.data.configDetails;
             this.dashConfigData = data;

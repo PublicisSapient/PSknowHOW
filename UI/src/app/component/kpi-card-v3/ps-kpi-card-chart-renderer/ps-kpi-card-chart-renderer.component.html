@@ -13,12 +13,12 @@
   <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'"
     [data]="chartData" [filters]="[]">
   </app-cumulative-line-chart>
-  <app-tabular-kpi-v2 *ngSwitchCase="'table'"
+  <app-tabular-kpi-v2 *ngSwitchCase="'table-v2'"
   [data]="chartData" [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
   <app-tabular-kpi-v2 *ngSwitchCase="'tableNonRawData'"
   [data]="chartData" [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
   <app-grouped-bar-chart *ngSwitchCase="'grouped-bar-chart'" [filters]="chartData.categoryData.categoryGroup" [data]="chartData"></app-grouped-bar-chart>
-  <div *ngSwitchDefault>Select a chart type</div>
+  <div *ngSwitchDefault>{{ chartType }}</div>
   
 
 </div>

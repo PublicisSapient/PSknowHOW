@@ -3411,6 +3411,7 @@
                                 "kpiCategory": "Iteration",
                                 "kpiSubCategory": "Iteration Review",
                                 "kpiUnit": "Count",
+                                "chartType": "grouped-bar-chart",
                                 "showTrend": false,
                                 "isPositiveTrend": true,
                                 "boxType": "3_column",
@@ -3437,51 +3438,6 @@
                                 "kpiWidth": 66,
                                 "kpiHeight": 100,
                                 "isRawData": true,
-                                "trendCalculative": false,
-                                "xaxisLabel": "",
-                                "yaxisLabel": "",
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi145",
-                            "kpiName": "Dev Completion Status",
-                            "isEnabled": true,
-                            "order": 3,
-                            "subCategoryBoard": "Iteration Review",
-                            "kpiDetail": {
-                                "id": "65793ddb127be336160bc105",
-                                "kpiId": "kpi145",
-                                "kpiName": "Dev Completion Status",
-                                "isDeleted": "False",
-                                "defaultOrder": 3,
-                                "kpiCategory": "Iteration",
-                                "kpiSubCategory": "Iteration Review",
-                                "kpiUnit": "Count",
-                                "showTrend": false,
-                                "isPositiveTrend": true,
-                                "boxType": "3_column",
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "maxValue": "",
-                                "kanban": false,
-                                "groupId": 8,
-                                "kpiInfo": {
-                                    "definition": "It gives a comparative view between the planned completion and actual completion from a development point of view. In addition, user can see the delay (in days) in dev completed issues",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/99483649/Dev+Completion+Status"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "multiSelectDropDown",
                                 "trendCalculative": false,
                                 "xaxisLabel": "",
                                 "yaxisLabel": "",
@@ -3539,51 +3495,6 @@
                                 "kpiWidth": 33,
                                 "kpiHeight": 100,
                                 "isRawData": true,
-                                "trendCalculative": false,
-                                "xaxisLabel": "",
-                                "yaxisLabel": "",
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi134",
-                            "kpiName": "Unplanned Work Status",
-                            "isEnabled": true,
-                            "order": 5,
-                            "subCategoryBoard": "Iteration Review",
-                            "kpiDetail": {
-                                "id": "65793ddb127be336160bc0f5",
-                                "kpiId": "kpi134",
-                                "kpiName": "Unplanned Work Status",
-                                "isDeleted": "False",
-                                "defaultOrder": 5,
-                                "kpiCategory": "Iteration",
-                                "kpiSubCategory": "Iteration Review",
-                                "kpiUnit": "Count",
-                                "showTrend": false,
-                                "isPositiveTrend": true,
-                                "boxType": "2_column",
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "maxValue": "",
-                                "kanban": false,
-                                "groupId": 8,
-                                "kpiInfo": {
-                                    "definition": "It shows count of the issues which do not have a due date. It also shows the completed count amongst the unplanned issues.",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680593/Unplanned+Work+Status"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "multiSelectDropDown",
                                 "trendCalculative": false,
                                 "xaxisLabel": "",
                                 "yaxisLabel": "",
@@ -3739,36 +3650,6 @@
                             "shown": true
                         },
                         {
-                            "kpiId": "kpi154",
-                            "kpiName": "Daily Standup View",
-                            "isEnabled": true,
-                            "order": 8,
-                            "subCategoryBoard": "Daily Standup",
-                            "kpiDetail": {
-                                "id": "65793ddc127be336160bc10f",
-                                "kpiId": "kpi154",
-                                "kpiName": "Daily Standup View",
-                                "isDeleted": "False",
-                                "defaultOrder": 8,
-                                "kpiCategory": "Iteration",
-                                "kpiSubCategory": "Daily Standup",
-                                "showTrend": false,
-                                "isPositiveTrend": true,
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "maxValue": "",
-                                "kanban": false,
-                                "groupId": 13,
-                                "kpiFilter": "multiselectdropdown",
-                                "kpiWidth": 100,
-                                "trendCalculative": false,
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
                             "kpiId": "kpi131",
                             "kpiName": "Wastage",
                             "isEnabled": true,
@@ -3818,7 +3699,7 @@
                                     ]
                                 },
                                 "kpiFilter": "multiSelectDropDown",
-                                "kpiWidth": 66,
+                                "kpiWidth": 33,
                                 "kpiHeight": 100,
                                 "isRawData": true,
                                 "trendCalculative": false,
@@ -3972,186 +3853,6 @@
                                 "kpiWidth": 66,
                                 "kpiHeight": 100,
                                 "isRawData": false,
-                                "trendCalculative": false,
-                                "xaxisLabel": "",
-                                "yaxisLabel": "",
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi132",
-                            "kpiName": "Defect Count by RCA",
-                            "isEnabled": true,
-                            "order": 14,
-                            "subCategoryBoard": "Iteration Review",
-                            "kpiDetail": {
-                                "id": "65793ddb127be336160bc0f3",
-                                "kpiId": "kpi132",
-                                "kpiName": "Defect Count by RCA",
-                                "isDeleted": "False",
-                                "defaultOrder": 15,
-                                "kpiCategory": "Iteration",
-                                "kpiSubCategory": "Iteration Review",
-                                "kpiUnit": "Count",
-                                "chartType": "pieChart",
-                                "showTrend": false,
-                                "isPositiveTrend": true,
-                                "boxType": "chart",
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "maxValue": "",
-                                "kanban": false,
-                                "groupId": 8,
-                                "kpiInfo": {
-                                    "definition": "It shows the breakup of all defects within an iteration by root cause identified.",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713409/Defect+count+by+RCA"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "radioButton",
-                                "trendCalculative": false,
-                                "xaxisLabel": "",
-                                "yaxisLabel": "",
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi140",
-                            "kpiName": "Defect Count by Priority",
-                            "isEnabled": true,
-                            "order": 15,
-                            "subCategoryBoard": "Iteration Review",
-                            "kpiDetail": {
-                                "id": "65793ddb127be336160bc103",
-                                "kpiId": "kpi140",
-                                "kpiName": "Defect Count by Priority",
-                                "isDeleted": "False",
-                                "defaultOrder": 16,
-                                "kpiCategory": "Iteration",
-                                "kpiSubCategory": "Iteration Review",
-                                "kpiUnit": "Count",
-                                "chartType": "pieChart",
-                                "showTrend": false,
-                                "isPositiveTrend": true,
-                                "boxType": "chart",
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "maxValue": "",
-                                "kanban": false,
-                                "groupId": 8,
-                                "kpiInfo": {
-                                    "definition": "It shows the breakup of all defects within an iteration by priority. User can view the total defects in the iteration as well as the defects created after iteration start.",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713441/Defect+count+by+Priority"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "radioButton",
-                                "trendCalculative": false,
-                                "xaxisLabel": "",
-                                "yaxisLabel": "",
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi121",
-                            "kpiName": "Capacity",
-                            "isEnabled": true,
-                            "order": 20,
-                            "subCategoryBoard": "Iteration Review",
-                            "kpiDetail": {
-                                "id": "65793ddb127be336160bc0eb",
-                                "kpiId": "kpi121",
-                                "kpiName": "Capacity",
-                                "isDeleted": "False",
-                                "defaultOrder": 0,
-                                "kpiCategory": "Iteration",
-                                "kpiSubCategory": "Iteration Review",
-                                "kpiUnit": "",
-                                "showTrend": false,
-                                "isPositiveTrend": true,
-                                "boxType": "1_column",
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "maxValue": "",
-                                "kanban": false,
-                                "groupId": 8,
-                                "kpiInfo": {
-                                    "details": [
-                                        {
-                                            "type": "paragraph",
-                                            "value": "Planned capacity is the development team's available time."
-                                        },
-                                        {
-                                            "type": "paragraph",
-                                            "value": "Source of this is KnowHOW"
-                                        }
-                                    ]
-                                },
-                                "trendCalculative": false,
-                                "xaxisLabel": "",
-                                "yaxisLabel": "",
-                                "isAdditionalFilterSupport": true
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi176",
-                            "kpiName": "Risks And Dependencies",
-                            "isEnabled": true,
-                            "order": 20,
-                            "subCategoryBoard": "Iteration Review",
-                            "kpiDetail": {
-                                "id": "65f1299e81460113cec05244",
-                                "kpiId": "kpi176",
-                                "kpiName": "Risks And Dependencies",
-                                "isDeleted": "False",
-                                "defaultOrder": 6,
-                                "kpiCategory": "Iteration",
-                                "kpiSubCategory": "Iteration Review",
-                                "kpiUnit": "Count",
-                                "chartType": "",
-                                "showTrend": false,
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "maxValue": "",
-                                "kanban": false,
-                                "groupId": 8,
-                                "kpiInfo": {
-                                    "definition": "It displayed all the risks and dependencies tagged in a sprint",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/102891521/Risks+and+Dependencies"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "radioButton",
                                 "trendCalculative": false,
                                 "xaxisLabel": "",
                                 "yaxisLabel": "",
