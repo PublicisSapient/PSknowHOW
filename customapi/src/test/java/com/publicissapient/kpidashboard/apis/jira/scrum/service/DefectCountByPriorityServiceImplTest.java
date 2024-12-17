@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -90,8 +89,7 @@ public class DefectCountByPriorityServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(defectCountByPriorityService.getQualifierType(),
-				equalTo(KPICode.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.name()));
+		assertThat(defectCountByPriorityService.getQualifierType(), equalTo(""));
 	}
 
 	@Before

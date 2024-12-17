@@ -182,7 +182,7 @@ public class DevCompletionStatusServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(devCompletionStatusService.getQualifierType(), equalTo("DEV_COMPLETED_STATUS"));
+		assertThat(devCompletionStatusService.getQualifierType(), equalTo(""));
 	}
 
 	@Test

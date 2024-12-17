@@ -170,7 +170,7 @@ public class DefectCountByPriorityServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.name();
+		return "";
 	}
 
 	@Override

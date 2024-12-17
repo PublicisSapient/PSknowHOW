@@ -134,7 +134,9 @@ public class KpiElement implements Serializable { // NOPMD
 
 	//for consolidated one kpi for all Pie charts where grouping happens on some key
 	private transient FilterGroup filterGroup;
-
+	//Holds what type of data will be shown on KPI chart - Iteration KPI
+	private transient KpiDataGroup dataGroup;
+	private transient CategoryData categoryData;
 	private String responseCode;
 
 	/**
@@ -924,4 +926,19 @@ public class KpiElement implements Serializable { // NOPMD
 		return responseCode;
 	}
 
+    public KpiDataGroup getDataGroup() {
+        return dataGroup;
+    }
+
+    public void setDataGroup(KpiDataGroup dataGroup) {
+        this.dataGroup = dataGroup;
+    }
+
+    public CategoryData getCategoryData() {
+        return categoryData;
+    }
+
+    public void setCategoryData(CategoryData categoryData) {
+        this.categoryData = categoryData;
+    }
 }

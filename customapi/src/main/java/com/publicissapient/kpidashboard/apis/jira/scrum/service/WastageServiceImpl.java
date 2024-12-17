@@ -101,7 +101,7 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.WASTAGE.name();
+		return "";
 	}
 
 	@Override

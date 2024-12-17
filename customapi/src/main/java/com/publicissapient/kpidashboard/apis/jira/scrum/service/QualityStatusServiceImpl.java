@@ -107,7 +107,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.QUALITY_STATUS.name();
+		return "";
 	}
 
 	@Override

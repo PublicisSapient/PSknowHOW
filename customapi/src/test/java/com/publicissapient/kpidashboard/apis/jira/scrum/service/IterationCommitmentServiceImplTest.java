@@ -155,7 +155,7 @@ public class IterationCommitmentServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(iterationCommitmentServiceImpl.getQualifierType(), equalTo("ITERATION_COMMITMENT"));
+		assertThat(iterationCommitmentServiceImpl.getQualifierType(), equalTo(""));
 	}
 
 	@After

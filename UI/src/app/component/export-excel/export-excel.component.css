@@ -161,3 +161,13 @@
 .columns-btn{
     float: right;
 }
+
+.move-top {
+    background-color: white !important;
+}
+
+.move-top:hover {
+    background-color: white !important;
+}
+
+

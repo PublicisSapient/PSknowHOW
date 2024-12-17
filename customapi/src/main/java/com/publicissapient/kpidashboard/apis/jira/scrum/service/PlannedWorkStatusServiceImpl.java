@@ -108,7 +108,7 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.PLANNED_WORK_STATUS.name();
+		return "";
 	}
 
 	@Override

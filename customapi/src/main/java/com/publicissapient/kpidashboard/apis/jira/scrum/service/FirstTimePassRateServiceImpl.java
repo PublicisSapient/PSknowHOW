@@ -211,9 +211,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
 					Optional.ofNullable(jiraIssues).ifPresent(
 							jIssue -> jIssue.forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue)));
-					KPIExcelUtility.populateFTPRExcelData(totalStoryIdList, ftpStoriesList, excelData, issueMapping,
+					List<KPIExcelData> excelDatas = new ArrayList<>();
+					KPIExcelUtility.populateFTPRExcelData(totalStoryIdList, ftpStoriesList, excelDatas, issueMapping,
 							new ArrayList<>(linkedDefects != null ? linkedDefects : new ArrayList<>()), customApiConfig,
 							fieldMapping);
+					excelData.addAll(excelDatas);
 				}
 			} else {
 				ftprForCurrentLeaf = 0.0d;

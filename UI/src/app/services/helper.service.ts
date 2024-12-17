@@ -61,6 +61,11 @@ export class HelperService {
                 downloadJson.selectedMap[filterData[0].label].push(filterData[0].filterData[i].nodeId);
             }
         }
+
+        if(isKanban === true){
+                     downloadJson['selectedMap']['sprint'] = [];
+                 }
+
         return this.httpService.downloadExcel(downloadJson, kpiId);
 
     }
@@ -95,7 +100,7 @@ export class HelperService {
                 //             kpiRequestObject.kpiList.push(obj)
                 //         }
                 //     }
-                // } 
+                // }
                 // else if (visibleKpis.includes(obj.kpiId)) {
                 //     if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
                 //         kpiRequestObject.kpiList.push(obj)

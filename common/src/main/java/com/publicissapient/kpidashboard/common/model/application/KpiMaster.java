@@ -104,4 +104,6 @@ public class KpiMaster extends BasicModel {
 	private Boolean isXaxisGroup;
 	//to implement bar graph by modifying bar-line graph
 	private Boolean lineChart;
+	private Integer kpiHeight;
+	private Boolean isRawData;
 }

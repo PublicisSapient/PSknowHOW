@@ -98,7 +98,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.ISSUE_LIKELY_TO_SPILL.name();
+		return "";
 	}
 
 	@Override

@@ -80,7 +80,7 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.ISSUE_HYGIENE.name();
+		return "";
 	}
 
 	@Override
@@ -223,7 +223,7 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprint.getName());
-			kpiElement.setModalHeads(KPIExcelColumn.ESTIMATE_HYGINE.getColumns());
+			kpiElement.setModalHeads(KPIExcelColumn.ISSUE_HYGINE.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}

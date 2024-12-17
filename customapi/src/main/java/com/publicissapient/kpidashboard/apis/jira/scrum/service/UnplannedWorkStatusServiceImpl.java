@@ -84,7 +84,7 @@ public class UnplannedWorkStatusServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.UNPLANNED_WORK_STATUS.name();
+		return "";
 	}
 
 	@Override

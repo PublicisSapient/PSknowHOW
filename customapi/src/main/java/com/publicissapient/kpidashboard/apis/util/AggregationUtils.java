@@ -142,14 +142,14 @@ public final class AggregationUtils {
 	 */
 	public static Long averageLong(List<Long> numbers) {
 		Long sum = 0l;
-		Double average = null;
+		Long average = null;
 		if (CollectionUtils.isNotEmpty(numbers)) {
 			for (Long element : numbers) {
 				sum += element;
 			}
-			average = (Double.valueOf(sum) / numbers.size());
+			average = (sum / numbers.size());
 		}
-		return average == null ? null : Math.round(average);
+		return average == null ? null : average;
 	}
 
 	/**

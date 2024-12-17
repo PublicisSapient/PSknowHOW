@@ -154,7 +154,7 @@ public class FTPRServiceImplTest {
 	@Test
 	public void getQualifierType() {
 		String qualifierType = ftprService.getQualifierType();
-		assertEquals(KPICode.FIRST_TIME_PASS_RATE_ITERATION.name(), qualifierType);
+		assertEquals("", qualifierType);
 	}
 
 	@Test

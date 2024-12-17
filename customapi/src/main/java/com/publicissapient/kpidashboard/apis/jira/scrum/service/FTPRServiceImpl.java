@@ -249,7 +249,7 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.FIRST_TIME_PASS_RATE_ITERATION.name();
+		return "";
 	}
 
 	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {

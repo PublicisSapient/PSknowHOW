@@ -169,7 +169,7 @@ public class QualityStatusServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(qualityStatusServiceImpl.getQualifierType(), equalTo("QUALITY_STATUS"));
+		assertThat(qualityStatusServiceImpl.getQualifierType(), equalTo(""));
 	}
 
 	@After

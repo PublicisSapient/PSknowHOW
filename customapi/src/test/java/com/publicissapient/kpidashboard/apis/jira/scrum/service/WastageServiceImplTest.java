@@ -189,7 +189,7 @@ public class WastageServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(wastageServiceImpl.getQualifierType(), equalTo("WASTAGE"));
+		assertThat(wastageServiceImpl.getQualifierType(), equalTo(""));
 	}
 
 	@After

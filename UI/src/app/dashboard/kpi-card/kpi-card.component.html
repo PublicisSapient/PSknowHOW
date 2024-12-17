@@ -110,7 +110,7 @@
     </div>
     <div class="kpi-card-footer p-d-flex justify-content-between">
         <div class="kpi-card-icons"
-            [ngClass]="{'disable-setting-icon': (service.getSelectedType()?.toLowerCase() !== 'scrum' || service.getSelectedTrends().length > 1 ||  service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase() !== 'project' ||  userRole === 'roleViewer' || checkIfViewer)}">
+            [ngClass]="{'disable-setting-icon': (service.getSelectedType()?.toLowerCase() !== 'scrum' || service.getSelectedTrends().length > 1 ||  userRole === 'roleViewer' || checkIfViewer)}">
             <img src="../../../assets/img/setting-icon.svg" alt="KPI Setting"
                 class="ico-active p-mr-1 kpi-download-icon" (click)="onOpenFieldMappingDialog();" pTooltip="Setting"
                 tooltipPosition="top" tooltipEvent="hover" [escape]="false" />

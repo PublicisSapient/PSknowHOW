@@ -90,7 +90,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.CLOSURE_POSSIBLE_TODAY.name();
+		return "";
 	}
 
 	@Override

@@ -92,7 +92,7 @@ public class DefectCountByRCAServiceImplTest {
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(defectCountByRCAService.getQualifierType(), equalTo(KPICode.DEFECT_COUNT_BY_RCA_PIE_CHART.name()));
+		assertThat(defectCountByRCAService.getQualifierType(), equalTo(""));
 	}
 
 	@Before
