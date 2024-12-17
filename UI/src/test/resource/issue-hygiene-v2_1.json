@@ -2415,7 +2415,7 @@
   },
   "kpiDetail": {
     "kpiSubCategory": "Iteration Review",
-    "kpiWidth": 33,
+    "kpiWidth": 66,
     "kpiHeight": 50
   },
   "isEnabled": true

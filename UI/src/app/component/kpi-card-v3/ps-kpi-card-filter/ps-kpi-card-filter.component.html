@@ -9,7 +9,7 @@
             </p-selectButton>
         </div>
         <div class="filterSection">
-            <ng-container class="p-p-1" *ngFor="let filter of kpiCardFilter?.filterGroup?.filterGroup1">
+            <div class="p-p-1" *ngFor="let filter of kpiCardFilter?.filterGroup?.filterGroup1">
                 <p-dropdown 
                     [options]="getOptions(filter?.filterKey)" 
                     [formControlName]="filter?.filterKey" 
@@ -18,7 +18,8 @@
                     [placeholder]="filter?.filterName"
                     [showClear]="true">
                 </p-dropdown>
-            </ng-container>
+                <div class="selected-val" *ngIf="form.value[filter?.filterKey]">{{ form.value[filter?.filterKey] }}</div>
+            </div>
         </div>
     </div>
 </form>
