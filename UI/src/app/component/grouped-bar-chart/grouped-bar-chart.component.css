@@ -1,0 +1,9 @@
+.bar {
+    fill: steelblue;
+  }
+  .bar2 {
+    fill: orange;
+  }
+  .axis text {
+    font-size: 12px;
+  }

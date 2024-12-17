@@ -1,6 +1,6 @@
 <form [formGroup]="form" (ngSubmit)="handleChange()">
   <div class="kpi-card-filter p-px-5 p-pt-5">
-    <div *ngIf="kpiCardFilter?.chartType === 'stacked-bar-chart'" id="">
+    <div *ngIf="kpiCardFilter?.chartType === 'stacked-bar-chart'">
       <p-selectButton
         [options]="kpiCardFilter?.dataGroup?.dataGroup1"
         (onChange)="onSelectButtonChange($event)"
@@ -8,6 +8,15 @@
         optionValue="key"
       >
       </p-selectButton>
+    </div>
+    <div *ngIf="kpiCardFilter?.chartType === 'grouped-bar-chart'">
+      <p-selectButton
+      [options]="kpiCardFilter?.categoryData?.categoryGroup"
+      (onChange)="onSelectButtonChange($event)"
+      optionLabel="categoryName"
+      optionValue="categoryName"
+    >
+    </p-selectButton>
     </div>
     <div class="filterSection">
       <ng-container
@@ -18,6 +27,7 @@
           [options]="getOptions(filter?.filterKey)"
           [formControlName]="filter?.filterKey"
           (onChange)="handleChange()"
+          (onClear)="clearFilters()"
           [filter]="true"
           [placeholder]="filter?.filterName"
           [showClear]="true"

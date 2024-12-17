@@ -156,10 +156,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       filterGroup,
       kpiFilters,
       chartType,
-      unit
+      unit,
+      categoryData
     } = this.cardData;
     this.kpiHeaderData = { responseCode, issueData, kpiName, kpiInfo, kpiId };
-    this.kpiFilterData = { dataGroup, filterGroup, issueData, kpiFilters, chartType };
+    this.kpiFilterData = { dataGroup, filterGroup, issueData, kpiFilters, chartType, categoryData };
     this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
     this.currentChartData = this.prepareChartData(
       this.cardData,
@@ -571,6 +572,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.selectedButtonValue = selectedKey;
   }
 
+  onFilterClear() {
+    const filterIssues = this.cardData.issueData;
+    this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+    this.currentChartData = this.prepareChartData(
+      this.copyCardData,
+      this.colorPalette,
+    );
+  }
+
   applyDynamicfilter(data: [], filter: { [key: string]: any }) {
     return data.filter((item) => {
       return Object.entries(filter).every(([key, value]) => {
@@ -609,6 +619,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         break;
       case 'tableNonRawData':
         chartData = this.kpiHelperService.tabularKPINonRawData(inputData.dataGroup.dataGroup1);
+        break;
+      case 'grouped-bar-chart':
+        chartData = this.kpiHelperService.groupedBarChartData(inputData, color);
+        break;
       default:
         break;
     }

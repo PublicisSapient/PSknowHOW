@@ -9,6 +9,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class PsKpiCardFilterComponent implements OnInit {
   @Input() kpiCardFilter: any;
   @Output() filterChange = new EventEmitter<any>();
+  @Output() filterClear = new EventEmitter<any>();
+  
 
   form: FormGroup;
   constructor(private fb: FormBuilder) {
@@ -21,6 +23,7 @@ export class PsKpiCardFilterComponent implements OnInit {
     this.kpiCardFilter?.filterGroup?.filterGroup1?.forEach((filter) => {
       this.form.addControl(filter.filterKey, this.fb.control(''));
     });
+    console.log(this.kpiCardFilter);
     this.setDefaultFilter(this.kpiCardFilter);
   }
 
@@ -38,7 +41,10 @@ export class PsKpiCardFilterComponent implements OnInit {
       ),
     );
     this.filterChange.emit(this.form.value);
-    
+  }
+
+  clearFilters() {
+    this.filterClear.emit(true);
   }
 
   onSelectButtonChange(event) {

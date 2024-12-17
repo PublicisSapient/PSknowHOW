@@ -2,7 +2,7 @@
   "kpiId": "kpi128",
   "kpiName": "Planned Work Status",
   "unit": "Count",
-  "chartType": "",
+  "chartType": "grouped-bar-chart",
   "id": "65793ddb127be336160bc0ed",
   "isDeleted": "False",
   "kpiCategory": "Iteration",
@@ -4798,5 +4798,10 @@
         }
       }
     ]
-  }
+  },
+  "kpiDetail": {
+    "kpiWidth": 66,
+    "kpiHeight": 100
+  },
+  "isEnabled": true
 }

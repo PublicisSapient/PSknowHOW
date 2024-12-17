@@ -47,7 +47,7 @@
     "dataGroup1": [
       {
         "key": "Value",
-        "name": "Story point",
+        "name": "Original Estimate",
         "order": 1,
         "aggregation": "sum",
         "unit": "day",

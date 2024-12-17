@@ -28,15 +28,15 @@ export class KpiHelperService {
   private headerAction = new Subject<any>();
   headerAction$ = this.headerAction.asObservable();
   iconObj = {
-    'Issue Count' : 'Warning.svg',
-    'Issue at Risk' : 'Warning.svg',
-    'Issue without estimates' : 'Warning.svg',
-    'Issue with missing worklogs' : 'Warning.svg',
-    'Unlinked Defects' : 'Warning.svg',
-    'Story Linked Defects' :  'Check.svg',
-    'DIR' :  'Watch.svg',
-    'Original Estimate' : 'PieChart.svg',
-    'Defect Density' : 'visibility_on.svg',
+    'Issue Count': 'Warning.svg',
+    'Issue at Risk': 'Warning.svg',
+    'Issue without estimates': 'Warning.svg',
+    'Issue with missing worklogs': 'Warning.svg',
+    'Unlinked Defects': 'Warning.svg',
+    'Story Linked Defects': 'Check.svg',
+    'DIR': 'Watch.svg',
+    'Original Estimate': 'PieChart.svg',
+    'Defect Density': 'visibility_on.svg',
     'Percentage': 'Check.svg',
   };
 
@@ -166,6 +166,43 @@ export class KpiHelperService {
     return { chartData: test };
   }
 
+  groupedBarChartData(json, color) {
+    let chartData = {};
+    chartData['data'] = [];
+    const issueData = json.issueData || [];
+    const dataGroup = json.dataGroup.dataGroup1;
+    const categoryGroup = json.categoryData.categoryGroup2;
+    let issueDataCopy;
+
+    categoryGroup.forEach(categoryElem => {
+      let test = {};
+      test['category'] = categoryElem.categoryName;
+      test['value1'] = 0;
+      test['value2'] = 0;
+
+      issueDataCopy = issueData.filter(issue => issue.Category.includes(categoryElem.categoryName));
+
+      dataGroup.forEach(dataGroupElem => {
+        if (dataGroupElem.aggregation === 'count') {
+          test['value1'] = issueDataCopy.length;
+        } else if (dataGroupElem.aggregation === 'sum') {
+          test['value2'] = issueDataCopy.reduce((acc: number, issue: any) => {
+            return acc + (issue['Remaining Hours'] || 0); // Use the key from the data group
+          }, 0);
+
+          test['value2'] = test['value2'] / (8 * 60);
+        }
+      });
+      test['color'] = color;
+      chartData['data'].push(test);
+    });
+
+    chartData['categoryData'] = categoryGroup;
+
+    console.log(chartData);
+    return { chartData: chartData };
+  }
+
   semicircledonutchartData(inputData: any) {
     return { chartData: inputData.issueData.length };
   }
@@ -187,7 +224,7 @@ export class KpiHelperService {
   }
 
   tabularKPI(inputData) {
-    
+
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
@@ -198,7 +235,7 @@ export class KpiHelperService {
         (issue: any) => issue[group.key] !== undefined,
       );
       let aggregateVal = 0;
-      if(!filteredIssues.length && group.aggregation === 'count') {
+      if (!filteredIssues.length && group.aggregation === 'count') {
         aggregateVal = issueData.length
       } else {
         aggregateVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
