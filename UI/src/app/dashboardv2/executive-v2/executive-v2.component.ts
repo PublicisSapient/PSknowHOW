@@ -836,7 +836,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-          this.updatedConfigGlobalData = this.updatedConfigGlobalData.sort((a, b) => a.defaultOrder - b.defaultOrder);
+          this.updatedConfigGlobalData = this.updatedConfigGlobalData.sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
 

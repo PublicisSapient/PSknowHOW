@@ -39,6 +39,7 @@ export class KpiHelperService {
     'Story Point': 'PieChart.svg',
     'Defect Density': 'visibility_on.svg',
     'Percentage': 'Check.svg',
+    '': 'Check.svg',
   };
 
   emitHeaderAction(action: any): void {

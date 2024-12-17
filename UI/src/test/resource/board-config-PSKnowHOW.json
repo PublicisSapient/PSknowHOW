@@ -3492,7 +3492,7 @@
                                     ]
                                 },
                                 "kpiFilter": "multiSelectDropDown",
-                                "kpiWidth": 33,
+                                "kpiWidth": 50,
                                 "kpiHeight": 100,
                                 "isRawData": true,
                                 "trendCalculative": false,
