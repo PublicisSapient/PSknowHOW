@@ -32,11 +32,11 @@ export class KpiHelperService {
     'Issue at Risk' : 'Warning.svg',
     'Issue without estimates' : 'Warning.svg',
     'Issue with missing worklogs' : 'Warning.svg',
-    'Story Linked Defects' :  'Warning.svg',
+    'Unlinked Defects' : 'Warning.svg',
+    'Story Linked Defects' :  'Check.svg',
     'DIR' :  'Watch.svg',
     'Original Estimate' : 'PieChart.svg',
     'Defect Density' : 'visibility_on.svg',
-    'Unlinked Defects' : 'Check.svg',
     'Percentage': 'Check.svg',
   };
 
