@@ -31,6 +31,7 @@
           [filter]="true"
           [placeholder]="filter?.filterName"
           [showClear]="true"
+          (onClear)="clearMultiSelect(filter?.filterKey)"
         >
         </p-multiSelect>
       </ng-container>

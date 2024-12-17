@@ -594,39 +594,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   prepareChartData(inputData: any, color: any) {
-    let chartData: any;
-    switch (this.cardData.chartType) {
-      case 'stacked-bar-chart':
-        chartData = this.kpiHelperService.stackedBarChartData(inputData, color);
-        break;
-      case 'bar-chart':
-        chartData = this.kpiHelperService.barChartData(inputData, color);
-        break;
-      case 'stacked-bar':
-        chartData = this.kpiHelperService.stackedChartData(inputData, color);
-        break;
-      case 'semi-circle-donut-chart':
-        chartData = this.kpiHelperService.semicircledonutchartData(inputData);
-        break;
-      case 'chartWithFilter':
-        chartData = this.kpiHelperService.pieChartWithFiltersData(inputData);
-        break;
-      case 'CumulativeMultilineChart':
-        chartData = this.kpiHelperService.filterLessKPI(inputData.trendValueList);
-        break;
-      case 'table':
-        chartData = this.kpiHelperService.tabularKPI(inputData);
-        break;
-      case 'tableNonRawData':
-        chartData = this.kpiHelperService.tabularKPINonRawData(inputData.dataGroup.dataGroup1);
-        break;
-      case 'grouped-bar-chart':
-        chartData = this.kpiHelperService.groupedBarChartData(inputData, color);
-        break;
-      default:
-        break;
-    }
-    return chartData;
+    return this.kpiHelperService.getChartDataSet(inputData,this.cardData.chartType,color);
   }
 
   calculateValue(issueData, key: string): string {

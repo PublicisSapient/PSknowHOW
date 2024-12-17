@@ -16,133 +16,72 @@ export class SemiCircleDonutChartComponent implements OnInit {
   constructor(private elementRef: ElementRef) {}
 
   ngOnInit(): void {
-    this.drawChart();
-    this.drawFullCircle();
+    this.createDonutChart();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     // Check if the value input has changed
     if (changes.value) {
-      this.drawChart();
+      this.createDonutChart();
     }
   }
 
-  private drawChart(): void {
-    const chartContainer = this.elementRef.nativeElement.querySelector('.chart-container');
-    
-    // Clear the container before redrawing
-    d3.select(chartContainer).selectAll('*').remove();
+private createDonutChart(): void {
+  const chartWidth = (this.width === undefined) ? 100 : this.width;; // Width of the chart
+  const chartHeight = (this.height === undefined) ? 200 : this.height;; // Height of the chart
+  const radius = Math.min(chartWidth, chartHeight) / 2; // Radius of the donut
+  const thickness = Math.floor(radius/3); // Thickness of the donut ring
+  // Clear existing SVG content
+  d3.select(this.elementRef.nativeElement).selectAll('svg').remove();
 
-    const radius = this.width / 2;
-    const chartValue = Math.min(this.value / this.max, 1); // Cap value at 100%
+  // Create the SVG container
+  const svg = d3
+    .select(this.elementRef.nativeElement)
+    .append('svg')
+    .attr('width', chartWidth)
+    .attr('height', chartHeight)
+    .append('g')
+    .attr('transform', `translate(${chartWidth / 2}, ${chartHeight / 2})`); // Center the chart
 
-    const containerWidth = chartContainer.offsetWidth;
-    const containerHeight = chartContainer.offsetHeight;
-    const radius1 = Math.min(containerWidth, containerHeight) / 2;
+  // Create arc generator
+  const arc = d3.arc()
+    .innerRadius(radius - thickness)
+    .outerRadius(radius);
 
-    // Create SVG element
-    const svg = d3
-      .select(chartContainer)
-      .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height)
-      .append('g')
-      .attr('transform', `translate(${this.width / 2}, ${this.height})`);
+  // Create pie generator
+  const pie = d3.pie()
+    .sort(null)
+    .value(d => d.value);
 
-    // Background Arc
-    const arcBackground = d3.arc()
-      .innerRadius(radius - 20)
-      .outerRadius(radius)
-      .startAngle(0)//.startAngle(-Math.PI / 2)
-      .endAngle(2 * Math.PI);//.endAngle(Math.PI / 2);
+  // Define the data (completed and remaining)
+  const data = [
+    { value: this.value, color: '#4A6CF7' }, // Blue color for completed
+    { value: this.max - this.value, color: '#E5EAF2' } // Gray color for remaining
+  ];
 
-    svg.append('path')
-      .attr('d', arcBackground)
-      .attr('fill', '#e6e6e6');
+  // Append the arcs
+  const path = svg.selectAll('path')
+    .data(pie(data))
+    .enter()
+    .append('path')
+    .attr('d', arc)
+    .attr('fill', d => d.data.color);
 
-    // Foreground Arc (based on value)
-    const arcForeground = d3.arc()
-      .innerRadius(radius - 20)
-      .outerRadius(radius)
-      .startAngle(0)//.startAngle(-Math.PI / 2)
-      .endAngle(2* Math.PI);// .endAngle(-Math.PI / 2 + chartValue * Math.PI);
+  // Add central text
+  svg.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '-0.5em') // Adjust text position
+    .style('font-size', '14px')
+    .style('fill', '#4A6CF7')
+    .text('Total issues');
 
-    svg.append('path')
-      .attr('d', arcForeground)
-      .attr('fill', '#4f81bd');
+  svg.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '1em') // Adjust text position
+    .style('font-size', '24px')
+    .style('font-weight', 'bold')
+    .style('fill', '#4A6CF7')
+    .text(this.value);
+}
 
-    // Add Text in the Center
-    svg.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '-10')
-      .attr('font-size', '24px')
-      .attr('fill', '#333')
-      .text(this.value);
-
-    svg.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '20')
-      .attr('font-size', '16px')
-      .attr('fill', '#666')
-      .text('Total issues');
-  }
-
-  private drawFullCircle(): void {
-    const chartContainer = this.elementRef.nativeElement.querySelector('.chart-container');
-    const containerWidth = chartContainer.offsetWidth;
-    const containerHeight = chartContainer.offsetHeight;
-    const radius = Math.min(containerWidth, containerHeight) / 2;
-    const chartValue = Math.min(this.value / this.max, 1); // Cap value at 100%
-  
-    // Clear existing content
-    d3.select(chartContainer).selectAll('*').remove();
-  
-    // Create SVG element
-    const svg = d3.select(chartContainer)
-      .append('svg')
-      .attr('width', containerWidth)
-      .attr('height', containerHeight)
-      .append('g')
-      .attr('transform', `translate(${containerWidth / 2}, ${containerHeight / 2})`);
-  
-    // Create full circle arc
-    const arc = d3.arc()
-      .innerRadius(radius - 50)
-      .outerRadius(radius)
-      .startAngle(-Math.PI / 2)
-      .endAngle(2 * Math.PI);
-  
-    // Append the full circle to the SVG
-    svg.append('path')
-      .attr('d', arc)
-      .attr('fill', '#e6e6e6'); // Background color
-
-      //test start
-// Foreground Arc (based on value)
-const arcForeground = d3.arc()
-.innerRadius(radius - 20)
-.outerRadius(radius)
-.startAngle(-Math.PI / 2)
-.endAngle(-Math.PI / 2 + chartValue * Math.PI);
-
-svg.append('path')
-.attr('d', arcForeground)
-.attr('fill', '#4f81bd');
-      //test end
-  
-    // Add text or other elements as needed
-    svg.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '-10')
-      .attr('font-size', '24px')
-      .attr('fill', '#333')
-      .text(this.value);
-
-    svg.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '20')
-      .attr('font-size', '16px')
-      .attr('fill', '#666')
-      .text('Total issues');
-  }
 }

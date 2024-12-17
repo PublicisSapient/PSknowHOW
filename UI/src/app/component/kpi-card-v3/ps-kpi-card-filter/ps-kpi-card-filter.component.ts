@@ -20,7 +20,7 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.kpiCardFilter?.filterGroup?.filterGroup1?.forEach((filter) => {
+    this.kpiCardFilter?.filterGroup?.filterGroup1?.forEach((filter: { filterKey: any; }) => {
       this.form.addControl(filter.filterKey, this.fb.control(''));
     });
     console.log(this.kpiCardFilter);
@@ -29,7 +29,7 @@ export class PsKpiCardFilterComponent implements OnInit {
 
   getOptions(filterKey: string) {
     const uniqueValues = [
-      ...new Set(this.kpiCardFilter.issueData.map((issue) => issue[filterKey])),
+      ...new Set(this.kpiCardFilter.issueData.map((issue: { [x: string]: any; }) => issue[filterKey])),
     ];
     return uniqueValues.map((value) => ({ label: value, value: value }));
   }
@@ -50,10 +50,10 @@ export class PsKpiCardFilterComponent implements OnInit {
   onSelectButtonChange(event) {
    // this.form.get('selectedKey')?.setValue(event.value); // Update selectedKey in the form
     const test = this.kpiCardFilter.dataGroup.dataGroup1.filter(
-      (x) => x.key == event.value,
+      (x: { key: any; }) => x.key == event.value,
     );
     //this.selectedKey =
-    this.form.get('selectedKey')?.setValue(test.map((item) => ({
+    this.form.get('selectedKey')?.setValue(test.map((item: { unit: any; key: any; }) => ({
         unit: item.unit,
         key: item.key,
       })))
@@ -67,5 +67,10 @@ export class PsKpiCardFilterComponent implements OnInit {
       });
       this.handleChange();
     }
+  }
+
+  clearMultiSelect(controlName: string){
+    this.form.get(controlName)?.reset();
+    this.handleChange();
   }
 }

@@ -21,7 +21,7 @@ This files contain common methods that can be use in application
 **********************************************/
 
 import { Injectable } from '@angular/core';
-import { filter, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 @Injectable()
 export class KpiHelperService {
   constructor() { }
@@ -94,12 +94,6 @@ export class KpiHelperService {
         (issue: any) => issue[group.key] !== undefined,
       );
 
-      // const value = filteredIssues.reduce((sum: any, issue: any) => {
-      //     return sum + (issue[group.key] || 0); // Sum up the values for the key
-      // }, 0);
-      // const convertedValue = this.convertToHoursIfTime(value, 'day'); // or 'day' depending on your requirement
-
-      // console.log(convertedValue)
       chartData.push({
         category: group.name,
         value: filteredIssues.reduce((sum: any, issue: any) => {
@@ -113,15 +107,14 @@ export class KpiHelperService {
       return sum + (issue.value || 0); // Sum up the values for the key
     }, 0);
 
-    // console.log(convertToHoursIfTime(,'day'))
-    const test = chartData.map((item: any) => {
+    const modifiedDataSet = chartData.map((item: any) => {
       return {
         ...item,
         tooltipValue: this.convertToHoursIfTime(item.value, 'day'),
         value: Math.floor(Math.floor(Math.abs(item.value) / 60) / 8),
       };
     });
-    return { chartData: test, totalCount };
+    return { chartData: modifiedDataSet, totalCount };
   }
 
   barChartData(json: any, color: any) {
@@ -150,11 +143,10 @@ export class KpiHelperService {
 
         // Push the result into chartData array
         chartData.push({ category: name, value: sum, color: color[groupKey] }); // Default color if not specified
-        //   });
       }
     }
 
-    const test = chartData.map((item: any) => {
+    const modifiedDataSet = chartData.map((item: any) => {
       return {
         ...item,
         tooltipValue: this.convertToHoursIfTime(item.value, json.unit),
@@ -163,7 +155,7 @@ export class KpiHelperService {
       };
     });
 
-    return { chartData: test };
+    return { chartData: modifiedDataSet };
   }
 
   groupedBarChartData(json, color) {
@@ -203,18 +195,18 @@ export class KpiHelperService {
     return { chartData: chartData };
   }
 
-  semicircledonutchartData(inputData: any) {
-    return { chartData: inputData.issueData.length };
+  semicircledonutchartData(json: any, color: any) {
+    return { chartData: json.issueData.length, color: color };
   }
 
   pieChartWithFiltersData(inputData: any) {
     let chartData = inputData.issueData;
     let filterGroup = inputData.filterGroup;
-    let test = {
+    let modifiedDataSet = {
       chartData: chartData,
       filterGroup: filterGroup
     }
-    return { chartData: test };
+    return { chartData: modifiedDataSet };
   }
 
   filterLessKPI(inputData) {
@@ -305,5 +297,41 @@ export class KpiHelperService {
     rhours = (days - rdays) * 8;
     return `${rdays !== 0 ? rdays + 'd ' : ''}${rhours !== 0 ? rhours + 'h ' : ''
       }${rminutes !== 0 ? rminutes + 'm' : ''}`;
+  }
+
+  getChartDataSet(inputData, chartType, color) {
+    let returnDataSet;
+    switch (chartType) {
+      case 'stacked-bar-chart':
+        returnDataSet = this.stackedBarChartData(inputData, color);
+        break;
+      case 'bar-chart':
+        returnDataSet = this.barChartData(inputData, color);
+        break;
+      case 'stacked-bar':
+        returnDataSet = this.stackedChartData(inputData, color);
+        break;
+      case 'semi-circle-donut-chart':
+        returnDataSet = this.semicircledonutchartData(inputData, color);
+        break;
+      case 'chartWithFilter':
+        returnDataSet = this.pieChartWithFiltersData(inputData);
+        break;
+      case 'CumulativeMultilineChart':
+        returnDataSet = this.filterLessKPI(inputData.trendValueList);
+        break;
+      case 'table':
+        returnDataSet = this.tabularKPI(inputData);
+        break;
+      case 'tableNonRawData':
+        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup.dataGroup1);
+        break;
+      case 'grouped-bar-chart':
+        returnDataSet = this.groupedBarChartData(inputData, color);
+        break;
+      default:
+        break;
+    }
+    return returnDataSet;
   }
 }
