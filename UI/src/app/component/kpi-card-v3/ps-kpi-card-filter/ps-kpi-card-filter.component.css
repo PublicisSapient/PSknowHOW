@@ -30,3 +30,10 @@
   margin-left: 5px;
   height: 32px;
 }
+
+.selected-val {
+  display: block;
+  padding: 5px;
+  font-size: 10px;
+  color: green;
+}
