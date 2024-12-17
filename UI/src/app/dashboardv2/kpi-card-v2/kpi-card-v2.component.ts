@@ -574,7 +574,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   applyDynamicfilter(data: [], filter: { [key: string]: any }) {
     return data.filter((item) => {
       return Object.entries(filter).every(([key, value]) => {
-        return item[key] === value;
+        if(Array.isArray(value)){
+          return value.includes(item[key]);
+        }else{
+          return item[key] === value;
+        }
       });
     });
   }
