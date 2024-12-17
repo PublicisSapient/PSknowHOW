@@ -107,14 +107,14 @@ export class KpiHelperService {
       return sum + (issue.value || 0); // Sum up the values for the key
     }, 0);
 
-    const test = chartData.map((item: any) => {
+    const modifiedDataSet = chartData.map((item: any) => {
       return {
         ...item,
         tooltipValue: this.convertToHoursIfTime(item.value, 'day'),
         value: Math.floor(Math.floor(Math.abs(item.value) / 60) / 8),
       };
     });
-    return { chartData: test, totalCount };
+    return { chartData: modifiedDataSet, totalCount };
   }
 
   barChartData(json: any, color: any) {
@@ -146,7 +146,7 @@ export class KpiHelperService {
       }
     }
 
-    const test = chartData.map((item: any) => {
+    const modifiedDataSet = chartData.map((item: any) => {
       return {
         ...item,
         tooltipValue: this.convertToHoursIfTime(item.value, json.unit),
@@ -155,7 +155,7 @@ export class KpiHelperService {
       };
     });
 
-    return { chartData: test };
+    return { chartData: modifiedDataSet };
   }
 
   semicircledonutchartData(json: any,color: any) {
@@ -165,11 +165,11 @@ export class KpiHelperService {
   pieChartWithFiltersData(inputData: any) {
     let chartData = inputData.issueData;
     let filterGroup = inputData.filterGroup;
-    let test = {
+    let modifiedDataSet = {
       chartData: chartData,
       filterGroup: filterGroup
     }
-    return { chartData: test };
+    return { chartData: modifiedDataSet };
   }
 
   filterLessKPI(inputData) {
@@ -260,5 +260,37 @@ export class KpiHelperService {
     rhours = (days - rdays) * 8;
     return `${rdays !== 0 ? rdays + 'd ' : ''}${rhours !== 0 ? rhours + 'h ' : ''
       }${rminutes !== 0 ? rminutes + 'm' : ''}`;
+  }
+
+  getChartDataSet(inputData,chartType, color){
+    let returnDataSet;
+    switch (chartType) {
+      case 'stacked-bar-chart':
+        returnDataSet = this.stackedBarChartData(inputData, color);
+        break;
+      case 'bar-chart':
+        returnDataSet = this.barChartData(inputData, color);
+        break;
+      case 'stacked-bar':
+        returnDataSet = this.stackedChartData(inputData, color);
+        break;
+      case 'semi-circle-donut-chart':
+        returnDataSet = this.semicircledonutchartData(inputData,color);
+        break;
+      case 'chartWithFilter':
+        returnDataSet = this.pieChartWithFiltersData(inputData);
+        break;
+      case 'CumulativeMultilineChart':
+        returnDataSet = this.filterLessKPI(inputData.trendValueList);
+        break;
+      case 'table':
+        returnDataSet = this.tabularKPI(inputData);
+        break;
+      case 'tableNonRawData':
+        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup.dataGroup1);
+      default:
+        break;
+    }
+    return returnDataSet;
   }
 }
