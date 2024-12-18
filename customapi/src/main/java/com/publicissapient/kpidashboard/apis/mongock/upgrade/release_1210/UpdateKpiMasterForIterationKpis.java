@@ -1,27 +1,25 @@
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1200;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1210;
+
+import com.mongodb.client.MongoCollection;
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
-import com.mongodb.client.MongoCollection;
-
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
-
 /**
  * prijain3
  */
-@ChangeUnit(id = "r_update_kpi_master_for_iteration_kpis", order = "012003", author = "prijain3", systemVersion = "12.0.0")
+@ChangeUnit(id = "update_kpi_master_for_iteration_kpis", order = "12000", author = "prijain3", systemVersion = "12.1.0")
 public class UpdateKpiMasterForIterationKpis {
 	private final MongoTemplate mongoTemplate;
 	private static final String KPI_MASTER = "kpi_master";
 	private static final String KPI_ID = "kpiId";
-	private static final String KPI_NAME = "kpiName";
-	private static final String IS_DELETED = "isDeleted";
+    private static final String KPI_NAME = "kpiName";
+    private static final String IS_DELETED = "isDeleted";
 	private static final String CHART_TYPE = "chartType";
 	private static final String KPI_WIDTH = "kpiWidth";
 	private static final String KPI_HEIGHT = "kpiHeight";
@@ -35,6 +33,90 @@ public class UpdateKpiMasterForIterationKpis {
 	@Execution
 	public void execution() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
+        //update KPI names
+        changeFieldValue("kpi75", KPI_NAME, "Estimate vs Actual time", kpiMaster);
+        changeFieldValue("kpi136", KPI_NAME, "Defect Count by", kpiMaster);
+        changeFieldValue("kpi128", KPI_NAME, "Work Status", kpiMaster);
+        changeFieldValue("kpi135", KPI_NAME, "First Time Pass Rate (%)", kpiMaster);
+
+        //soft delete KPIs
+        changeFieldValue("kpi134", IS_DELETED, "True", kpiMaster);
+        changeFieldValue("kpi132", IS_DELETED, "True", kpiMaster);
+        changeFieldValue("kpi140", IS_DELETED, "True", kpiMaster);
+        changeFieldValue("kpi145", IS_DELETED, "True", kpiMaster);
+
+		//update chart type
+		changeFieldValue("kpi120", CHART_TYPE, "stacked-bar-chart", kpiMaster);
+		changeFieldValue("kpi119", CHART_TYPE, "bar-chart", kpiMaster);
+		changeFieldValue("kpi131", CHART_TYPE, "stacked-bar", kpiMaster);
+		changeFieldValue("kpi175", CHART_TYPE, "bar-chart", kpiMaster);
+		changeFieldValue("kpi128", CHART_TYPE, "grouped-bar-chart", kpiMaster);
+		changeFieldValue("kpi124", CHART_TYPE, "table-v2", kpiMaster);
+		changeFieldValue("kpi122", CHART_TYPE, "table-v2", kpiMaster);
+		changeFieldValue("kpi135", CHART_TYPE, "table-v2", kpiMaster);
+		changeFieldValue("kpi133", CHART_TYPE, "table-v2", kpiMaster);
+		changeFieldValue("kpi123", CHART_TYPE, "table-v2", kpiMaster);
+
+		//update KPI Width
+		changeFieldValue("kpi120", KPI_WIDTH, 66, kpiMaster);
+		changeFieldValue("kpi119", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi125", KPI_WIDTH, 66, kpiMaster);
+		changeFieldValue("kpi131", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi175", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi136", KPI_WIDTH, 66, kpiMaster);
+		changeFieldValue("kpi128", KPI_WIDTH, 66, kpiMaster);
+		changeFieldValue("kpi124", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi122", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi135", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi133", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi123", KPI_WIDTH, 33, kpiMaster);
+
+		//update KPI Height
+		changeFieldValue("kpi120", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi119", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi125", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi131", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi175", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi136", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi128", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi124", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi122", KPI_HEIGHT, 50, kpiMaster);
+		changeFieldValue("kpi135", KPI_HEIGHT, 50, kpiMaster);
+		changeFieldValue("kpi133", KPI_HEIGHT, 50, kpiMaster);
+		changeFieldValue("kpi123", KPI_HEIGHT, 50, kpiMaster);
+
+		//update Display Order
+		changeFieldValue("kpi120", DISPLAY_ORDER, 1, kpiMaster);
+		changeFieldValue("kpi119", DISPLAY_ORDER, 2, kpiMaster);
+		changeFieldValue("kpi125", DISPLAY_ORDER, 3, kpiMaster);
+		changeFieldValue("kpi131", DISPLAY_ORDER, 4, kpiMaster);
+		changeFieldValue("kpi175", DISPLAY_ORDER, 5, kpiMaster);
+		changeFieldValue("kpi136", DISPLAY_ORDER, 6, kpiMaster);
+		changeFieldValue("kpi128", DISPLAY_ORDER, 7, kpiMaster);
+		changeFieldValue("kpi124", DISPLAY_ORDER, 8, kpiMaster);
+		changeFieldValue("kpi122", DISPLAY_ORDER, 9, kpiMaster);
+		changeFieldValue("kpi135", DISPLAY_ORDER, 10, kpiMaster);
+		changeFieldValue("kpi133", DISPLAY_ORDER, 11, kpiMaster);
+		changeFieldValue("kpi123", DISPLAY_ORDER, 12, kpiMaster);
+
+		//update Raw data kpi flag
+		changeFieldValue("kpi120", IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue("kpi119", IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue("kpi125", IS_RAW_DATA, false, kpiMaster);
+		changeFieldValue("kpi131", IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue("kpi175", IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue("kpi136", IS_RAW_DATA, false, kpiMaster);
+		changeFieldValue("kpi128", IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue("kpi124", IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue("kpi122", IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue("kpi135", IS_RAW_DATA, false, kpiMaster);
+		changeFieldValue("kpi133", IS_RAW_DATA, false, kpiMaster);
+		changeFieldValue("kpi123", IS_RAW_DATA, true, kpiMaster);
+	}
+
+	@RollbackExecution
+	public void rollback() {
+        MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
 		// update KPI names
 		changeFieldValue("kpi75", KPI_NAME, "Estimate vs Actual", kpiMaster);
 		changeFieldValue("kpi136", KPI_NAME, "Defect Count by Status", kpiMaster);
@@ -76,7 +158,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi135", DISPLAY_ORDER, 12, kpiMaster);
 		changeFieldValue("kpi133", DISPLAY_ORDER, 13, kpiMaster);
 		changeFieldValue("kpi123", DISPLAY_ORDER, 8, kpiMaster);
-
+		
 		List<String> iterationKpis = Arrays.asList("kpi120", "kpi119", "kpi125", "kpi131", "kpi75", "kpi136", "kpi128",
 				"kpi124", "kpi122", "kpi135", "kpi133", "kpi123");
 		iterationKpis.forEach(kpiId -> {
@@ -86,90 +168,6 @@ public class UpdateKpiMasterForIterationKpis {
 		iterationKpis.remove("kpi120");
 		iterationKpis.remove("kpi125");
 		iterationKpis.forEach(kpiId -> removeField("kpi120", KPI_WIDTH, kpiMaster));
-	}
-
-	@RollbackExecution
-	public void rollback() {
-		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
-		//update KPI names
-		changeFieldValue("kpi75", KPI_NAME, "Estimate vs Actual time", kpiMaster);
-		changeFieldValue("kpi136", KPI_NAME, "Defect Count by", kpiMaster);
-		changeFieldValue("kpi128", KPI_NAME, "Work Status", kpiMaster);
-		changeFieldValue("kpi135", KPI_NAME, "First Time Pass Rate (%)", kpiMaster);
-
-		//soft delete KPIs
-		changeFieldValue("kpi134", IS_DELETED, "True", kpiMaster);
-		changeFieldValue("kpi132", IS_DELETED, "True", kpiMaster);
-		changeFieldValue("kpi140", IS_DELETED, "True", kpiMaster);
-		changeFieldValue("kpi145", IS_DELETED, "True", kpiMaster);
-
-		//update chart type
-		changeFieldValue("kpi120", CHART_TYPE, "stacked-bar-chart", kpiMaster);
-		changeFieldValue("kpi119", CHART_TYPE, "bar-chart", kpiMaster);
-		changeFieldValue("kpi131", CHART_TYPE, "stacked-bar", kpiMaster);
-		changeFieldValue("kpi175", CHART_TYPE, "bar-chart", kpiMaster);
-		changeFieldValue("kpi128", CHART_TYPE, "grouped-bar-chart", kpiMaster);
-		changeFieldValue("kpi124", CHART_TYPE, "table-v2", kpiMaster);
-		changeFieldValue("kpi122", CHART_TYPE, "table-v2", kpiMaster);
-		changeFieldValue("kpi135", CHART_TYPE, "table-v2", kpiMaster);
-		changeFieldValue("kpi133", CHART_TYPE, "table-v2", kpiMaster);
-		changeFieldValue("kpi123", CHART_TYPE, "table-v2", kpiMaster);
-
-		//update KPI Width
-		changeFieldValue("kpi120", KPI_WIDTH, 66, kpiMaster);
-		changeFieldValue("kpi119", KPI_WIDTH, 33, kpiMaster);
-		changeFieldValue("kpi125", KPI_WIDTH, 66, kpiMaster);
-		changeFieldValue("kpi131", KPI_WIDTH, 33, kpiMaster);
-		changeFieldValue("kpi175", KPI_WIDTH, 33, kpiMaster);
-		changeFieldValue("kpi136", KPI_WIDTH, 66, kpiMaster);
-		changeFieldValue("kpi128", KPI_WIDTH, 66, kpiMaster);
-		changeFieldValue("kpi124", KPI_WIDTH, 33, kpiMaster);
-		changeFieldValue("kpi122", KPI_WIDTH, 33, kpiMaster);
-		changeFieldValue("kpi135", KPI_WIDTH, 33, kpiMaster);
-		changeFieldValue("kpi133", KPI_WIDTH, 33, kpiMaster);
-		changeFieldValue("kpi123", KPI_WIDTH, 33, kpiMaster);
-
-		//update KPI Height
-		changeFieldValue("kpi120", KPI_HEIGHT, 100, kpiMaster);
-		changeFieldValue("kpi119", KPI_HEIGHT, 100, kpiMaster);
-		changeFieldValue("kpi125", KPI_HEIGHT, 100, kpiMaster);
-		changeFieldValue("kpi131", KPI_HEIGHT, 100, kpiMaster);
-		changeFieldValue("kpi175", KPI_HEIGHT, 100, kpiMaster);
-		changeFieldValue("kpi136", KPI_HEIGHT, 100, kpiMaster);
-		changeFieldValue("kpi128", KPI_HEIGHT, 100, kpiMaster);
-		changeFieldValue("kpi124", KPI_HEIGHT, 50, kpiMaster);
-		changeFieldValue("kpi122", KPI_HEIGHT, 50, kpiMaster);
-		changeFieldValue("kpi135", KPI_HEIGHT, 50, kpiMaster);
-		changeFieldValue("kpi133", KPI_HEIGHT, 50, kpiMaster);
-		changeFieldValue("kpi123", KPI_HEIGHT, 50, kpiMaster);
-
-		//update Display Order
-		changeFieldValue("kpi120", DISPLAY_ORDER, 1, kpiMaster);
-		changeFieldValue("kpi119", DISPLAY_ORDER, 2, kpiMaster);
-		changeFieldValue("kpi125", DISPLAY_ORDER, 3, kpiMaster);
-		changeFieldValue("kpi131", DISPLAY_ORDER, 4, kpiMaster);
-		changeFieldValue("kpi175", DISPLAY_ORDER, 5, kpiMaster);
-		changeFieldValue("kpi136", DISPLAY_ORDER, 6, kpiMaster);
-		changeFieldValue("kpi128", DISPLAY_ORDER, 7, kpiMaster);
-		changeFieldValue("kpi124", DISPLAY_ORDER, 8, kpiMaster);
-		changeFieldValue("kpi122", DISPLAY_ORDER, 9, kpiMaster);
-		changeFieldValue("kpi135", DISPLAY_ORDER, 10, kpiMaster);
-		changeFieldValue("kpi133", DISPLAY_ORDER, 11, kpiMaster);
-		changeFieldValue("kpi123", DISPLAY_ORDER, 12, kpiMaster);
-
-		//update Raw data kpi flag
-		changeFieldValue("kpi120", IS_RAW_DATA, true, kpiMaster);
-		changeFieldValue("kpi119", IS_RAW_DATA, true, kpiMaster);
-		changeFieldValue("kpi125", IS_RAW_DATA, false, kpiMaster);
-		changeFieldValue("kpi131", IS_RAW_DATA, true, kpiMaster);
-		changeFieldValue("kpi175", IS_RAW_DATA, true, kpiMaster);
-		changeFieldValue("kpi136", IS_RAW_DATA, false, kpiMaster);
-		changeFieldValue("kpi128", IS_RAW_DATA, true, kpiMaster);
-		changeFieldValue("kpi124", IS_RAW_DATA, true, kpiMaster);
-		changeFieldValue("kpi122", IS_RAW_DATA, true, kpiMaster);
-		changeFieldValue("kpi135", IS_RAW_DATA, false, kpiMaster);
-		changeFieldValue("kpi133", IS_RAW_DATA, false, kpiMaster);
-		changeFieldValue("kpi123", IS_RAW_DATA, true, kpiMaster);
 	}
 
 	private void changeFieldValue(String kpiId, String field, String value, MongoCollection<Document> kpiMaster) {
