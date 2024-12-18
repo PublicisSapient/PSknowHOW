@@ -64,7 +64,7 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 	private static final String REMAINING_WORK = "Remaining Work";
 	private static final String WORK_STATUS = "Work Status";
 	private static final String SPRINT_DETAILS = "sprint details";
-	private static final String SINGLE = "Single";
+	private static final String FILTER_TYPE = "Multi";
 	private static final String SUM = "sum";
 
 	@Autowired
@@ -240,8 +240,8 @@ public class WorkRemainingV2ServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, FILTER_BY_STATUS, "Issue Status", 2));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_STATUS, "Issue Status", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;

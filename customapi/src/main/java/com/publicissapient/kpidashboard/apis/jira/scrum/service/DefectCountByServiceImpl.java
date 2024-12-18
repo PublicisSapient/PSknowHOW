@@ -60,7 +60,7 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 	private static final String SPRINT_DETAILS = "SprintDetails";
 	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	private static final String SINGLE = "Single";
+	private static final String FILTER_TYPE = "Multi";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -148,7 +148,7 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_STATUS_PIE_CHART.name();
+		return KPICode.DEFECT_COUNT_BY_ITERATION.name();
 	}
 
 	@Override
@@ -212,9 +212,9 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the first group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, "Status", "Issue Status", 1));
-		filterList.add(createFilter(SINGLE, "Priority", "Priority", 2));
-		filterList.add(createFilter(SINGLE, "RCA", "Root Cause List", 3));
+		filterList.add(createFilter(FILTER_TYPE, "Status", "Issue Status", 1));
+		filterList.add(createFilter(FILTER_TYPE, "Priority", "Priority", 2));
+		filterList.add(createFilter(FILTER_TYPE, "RCA", "Root Cause List", 3));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;

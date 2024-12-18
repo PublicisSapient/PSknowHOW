@@ -319,7 +319,7 @@ public class FTPRV2ServiceImpl extends JiraIterationKPIService {
 			displayName = CommonConstant.STORY_POINT;
 			kpiValue = storyPoint;
 		} else {
-			unit = CommonConstant.HOURS;
+			unit = CommonConstant.DAY;
 			displayName = CommonConstant.ORIGINAL_ESTIMATE;
 			kpiValue = originalEstimate;
 		}

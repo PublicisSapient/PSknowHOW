@@ -55,7 +55,7 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 	private static final String SCOPE_ADDED = "Scope added";
 	private static final String SCOPE_REMOVED = "Scope removed";
 	private static final String INITIAL_COMMITMENT = "Initial Commitment";
-	private static final String SINGLE = "Single";
+	private static final String FILTER_TYPE = "Multi";
 	private static final String FILTER_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String FILTER_BY_STATUS = "Filter by status";
 
@@ -239,8 +239,8 @@ public class IterationCommitmentV2ServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, FILTER_BY_STATUS, "Issue Status", 2));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_STATUS, "Issue Status", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;

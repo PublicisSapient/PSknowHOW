@@ -19,7 +19,6 @@ public class UpdateKpiMasterForIterationKpis {
 	private static final String KPI_MASTER = "kpi_master";
 	private static final String KPI_ID = "kpiId";
     private static final String KPI_NAME = "kpiName";
-    private static final String IS_DELETED = "isDeleted";
 	private static final String CHART_TYPE = "chartType";
 	private static final String KPI_WIDTH = "kpiWidth";
 	private static final String KPI_HEIGHT = "kpiHeight";
@@ -39,30 +38,27 @@ public class UpdateKpiMasterForIterationKpis {
         changeFieldValue("kpi128", KPI_NAME, "Work Status", kpiMaster);
         changeFieldValue("kpi135", KPI_NAME, "First Time Pass Rate (%)", kpiMaster);
 
-        //soft delete KPIs
-        changeFieldValue("kpi134", IS_DELETED, "True", kpiMaster);
-        changeFieldValue("kpi132", IS_DELETED, "True", kpiMaster);
-        changeFieldValue("kpi140", IS_DELETED, "True", kpiMaster);
-        changeFieldValue("kpi145", IS_DELETED, "True", kpiMaster);
+		deleteDocument(Arrays.asList("kpi132", "kpi140", "kpi145", "kpi134"), kpiMaster);
 
 		//update chart type
 		changeFieldValue("kpi120", CHART_TYPE, "stacked-bar-chart", kpiMaster);
 		changeFieldValue("kpi119", CHART_TYPE, "bar-chart", kpiMaster);
 		changeFieldValue("kpi131", CHART_TYPE, "stacked-bar", kpiMaster);
-		changeFieldValue("kpi175", CHART_TYPE, "bar-chart", kpiMaster);
+		changeFieldValue("kpi75", CHART_TYPE, "bar-chart", kpiMaster);
+		changeFieldValue("kpi136", CHART_TYPE, "chartWithFilter", kpiMaster);
 		changeFieldValue("kpi128", CHART_TYPE, "grouped-bar-chart", kpiMaster);
 		changeFieldValue("kpi124", CHART_TYPE, "table-v2", kpiMaster);
 		changeFieldValue("kpi122", CHART_TYPE, "table-v2", kpiMaster);
-		changeFieldValue("kpi135", CHART_TYPE, "table-v2", kpiMaster);
-		changeFieldValue("kpi133", CHART_TYPE, "table-v2", kpiMaster);
+		changeFieldValue("kpi135", CHART_TYPE, "tableNonRawData", kpiMaster);
+		changeFieldValue("kpi133", CHART_TYPE, "tableNonRawData", kpiMaster);
 		changeFieldValue("kpi123", CHART_TYPE, "table-v2", kpiMaster);
 
 		//update KPI Width
-		changeFieldValue("kpi120", KPI_WIDTH, 66, kpiMaster);
-		changeFieldValue("kpi119", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi120", KPI_WIDTH, 50, kpiMaster);
+		changeFieldValue("kpi119", KPI_WIDTH, 50, kpiMaster);
 		changeFieldValue("kpi125", KPI_WIDTH, 66, kpiMaster);
 		changeFieldValue("kpi131", KPI_WIDTH, 33, kpiMaster);
-		changeFieldValue("kpi175", KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue("kpi75", KPI_WIDTH, 33, kpiMaster);
 		changeFieldValue("kpi136", KPI_WIDTH, 66, kpiMaster);
 		changeFieldValue("kpi128", KPI_WIDTH, 66, kpiMaster);
 		changeFieldValue("kpi124", KPI_WIDTH, 33, kpiMaster);
@@ -76,7 +72,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi119", KPI_HEIGHT, 100, kpiMaster);
 		changeFieldValue("kpi125", KPI_HEIGHT, 100, kpiMaster);
 		changeFieldValue("kpi131", KPI_HEIGHT, 100, kpiMaster);
-		changeFieldValue("kpi175", KPI_HEIGHT, 100, kpiMaster);
+		changeFieldValue("kpi75", KPI_HEIGHT, 100, kpiMaster);
 		changeFieldValue("kpi136", KPI_HEIGHT, 100, kpiMaster);
 		changeFieldValue("kpi128", KPI_HEIGHT, 100, kpiMaster);
 		changeFieldValue("kpi124", KPI_HEIGHT, 100, kpiMaster);
@@ -90,7 +86,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi119", DISPLAY_ORDER, 2, kpiMaster);
 		changeFieldValue("kpi125", DISPLAY_ORDER, 3, kpiMaster);
 		changeFieldValue("kpi131", DISPLAY_ORDER, 4, kpiMaster);
-		changeFieldValue("kpi175", DISPLAY_ORDER, 5, kpiMaster);
+		changeFieldValue("kpi75", DISPLAY_ORDER, 5, kpiMaster);
 		changeFieldValue("kpi136", DISPLAY_ORDER, 6, kpiMaster);
 		changeFieldValue("kpi128", DISPLAY_ORDER, 7, kpiMaster);
 		changeFieldValue("kpi124", DISPLAY_ORDER, 8, kpiMaster);
@@ -104,7 +100,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi119", IS_RAW_DATA, true, kpiMaster);
 		changeFieldValue("kpi125", IS_RAW_DATA, false, kpiMaster);
 		changeFieldValue("kpi131", IS_RAW_DATA, true, kpiMaster);
-		changeFieldValue("kpi175", IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue("kpi75", IS_RAW_DATA, true, kpiMaster);
 		changeFieldValue("kpi136", IS_RAW_DATA, false, kpiMaster);
 		changeFieldValue("kpi128", IS_RAW_DATA, true, kpiMaster);
 		changeFieldValue("kpi124", IS_RAW_DATA, true, kpiMaster);
@@ -123,17 +119,12 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi128", KPI_NAME, "Planned Work Status", kpiMaster);
 		changeFieldValue("kpi135", KPI_NAME, "First Time Pass Rate", kpiMaster);
 
-		// soft delete KPIs
-		changeFieldValue("kpi134", IS_DELETED, "False", kpiMaster);
-		changeFieldValue("kpi132", IS_DELETED, "False", kpiMaster);
-		changeFieldValue("kpi140", IS_DELETED, "False", kpiMaster);
-		changeFieldValue("kpi145", IS_DELETED, "False", kpiMaster);
-
 		//update chart type
 		removeField("kpi120", CHART_TYPE, kpiMaster);
 		removeField("kpi119", CHART_TYPE, kpiMaster);
 		removeField("kpi131", CHART_TYPE, kpiMaster);
-		removeField("kpi175", CHART_TYPE, kpiMaster);
+		removeField("kpi75", CHART_TYPE, kpiMaster);
+		changeFieldValue("kpi136", CHART_TYPE, "pieChart", kpiMaster);
 		removeField("kpi128", CHART_TYPE, kpiMaster);
 		removeField("kpi124", CHART_TYPE, kpiMaster);
 		removeField("kpi122", CHART_TYPE, kpiMaster);
@@ -150,7 +141,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi119", DISPLAY_ORDER, 4, kpiMaster);
 		changeFieldValue("kpi125", DISPLAY_ORDER, 9, kpiMaster);
 		changeFieldValue("kpi131", DISPLAY_ORDER, 10, kpiMaster);
-		changeFieldValue("kpi175", DISPLAY_ORDER, 23, kpiMaster);
+		changeFieldValue("kpi75", DISPLAY_ORDER, 23, kpiMaster);
 		changeFieldValue("kpi136", DISPLAY_ORDER, 14, kpiMaster);
 		changeFieldValue("kpi128", DISPLAY_ORDER, 2, kpiMaster);
 		changeFieldValue("kpi124", DISPLAY_ORDER, 22, kpiMaster);
@@ -188,5 +179,9 @@ public class UpdateKpiMasterForIterationKpis {
 	private void removeField(String kpiId, String field, MongoCollection<Document> kpiMaster) {
 		kpiMaster.updateMany(new Document(KPI_ID, new Document("$in", Arrays.asList(kpiId))),
 				new Document("$unset", new Document(field, "")));
+	}
+
+	private void deleteDocument(List<String> kpiId, MongoCollection<Document> kpiMaster) {
+		kpiMaster.deleteMany(new Document(KPI_ID, new Document("$in", kpiId)));
 	}
 }

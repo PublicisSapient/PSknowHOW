@@ -50,7 +50,7 @@ public class EstimateVsActualV2ServiceImpl extends JiraIterationKPIService {
 	private static final String FILTER_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String FILTER_BY_PRIORITY = "Filter by Priority";
 	private static final String ISSUES = "issues";
-	private static final String SINGLE = "Single";
+	private static final String FILTER_TYPE = "Multi";
 	private static final String SUM = "sum";
 
 	@Autowired
@@ -165,8 +165,8 @@ public class EstimateVsActualV2ServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, FILTER_BY_PRIORITY, "Priority", 2));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_PRIORITY, "Priority", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;

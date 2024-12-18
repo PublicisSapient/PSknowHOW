@@ -62,7 +62,7 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 	private static final String ISSUE_AT_RISK = "Issue at Risk";
 	private static final String SPRINT_STATE_ACTIVE = "ACTIVE";
 	private static final String SPRINT_DETAILS = "sprint details";
-	private static final String SINGLE = "Single";
+	private static final String FILTER_TYPE = "Multi";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -200,8 +200,8 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, FILTER_BY_PRIORITY, "Priority", 2));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_PRIORITY, "Priority", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;
@@ -241,7 +241,7 @@ public class IssueLikelyToSpillv2ServiceImpl extends JiraIterationKPIService {
 			unit = CommonConstant.SP;
 			displayName = CommonConstant.STORY_POINT;
 		} else {
-			unit = CommonConstant.HOURS;
+			unit = CommonConstant.DAY;
 			displayName = CommonConstant.ORIGINAL_ESTIMATE;
 		}
 
