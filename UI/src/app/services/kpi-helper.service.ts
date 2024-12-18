@@ -328,6 +328,9 @@ export class KpiHelperService {
       case 'grouped-bar-chart':
         returnDataSet = this.groupedBarChartData(inputData, color);
         break;
+      case 'tabular-with-donut-chart':
+        returnDataSet = this.tabularKPI(inputData);
+        break;
       default:
         break;
     }

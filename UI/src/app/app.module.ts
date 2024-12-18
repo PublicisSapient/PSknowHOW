@@ -141,7 +141,6 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
-import { KpiCardV3Component } from './component/kpi-card-v3/kpi-card-v3.component';
 import { StackedBarChartComponent } from './component/stacked-bar-chart/stacked-bar-chart.component';
 import { PsKpiCardHeaderComponent } from './component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
 import { PsKpiCardFilterComponent } from './component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
@@ -235,7 +234,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         ChartWithFiltersComponent,
         KpiAdditionalFilterComponent,
         StickyHeaderV2Component,
-        KpiCardV3Component,
         StackedBarChartComponent,
         PsKpiCardHeaderComponent,
         PsKpiCardFilterComponent,
