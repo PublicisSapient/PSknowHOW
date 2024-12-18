@@ -7468,7 +7468,7 @@
                         "primaryFilter": {
                             "type": "singleSelect",
                             "defaultLevel": {
-                                "labelName": "project"
+                                "labelName": "release"
                             }
                         }
                     }

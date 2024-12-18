@@ -354,8 +354,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       }
 
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
 
+      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+      
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
       this.noOfDataPoints = this.selectedTab.toLowerCase() !== 'developer' && this.coundMaxNoOfSprintSelectedForProject($event);
@@ -2855,6 +2856,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     return retValue;
+  }
+
+  checkKPIPresence(kpi) {
+    if (this.tabsArr.size > 1) {
+      if (this.selectedTab !== 'iteration') {
+        return this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled'];
+      } else {
+        return this.iterationKPIData[kpi?.kpiId] && kpi['isEnabled'];
+      }
+    } else {
+      return kpi['isEnabled'];
+    }
   }
 
 }

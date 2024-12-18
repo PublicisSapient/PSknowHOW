@@ -60,7 +60,7 @@ export class BarchartComponent implements OnInit {
   private createChart(): void {
     const element = this.elRef.nativeElement.querySelector('.chart-container');
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
-    const chartWidth = d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right - 100;
+    const chartWidth = d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right;
     const chartHeight = 300 - margin.top - margin.bottom - 50;
 
     // Extract unit from the dataGroup or set default
