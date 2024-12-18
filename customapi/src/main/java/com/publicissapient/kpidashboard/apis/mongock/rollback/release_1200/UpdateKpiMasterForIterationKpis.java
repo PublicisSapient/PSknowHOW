@@ -50,11 +50,9 @@ public class UpdateKpiMasterForIterationKpis {
 		//update chart type
 		removeField("kpi120", CHART_TYPE, kpiMaster);
 		removeField("kpi119", CHART_TYPE, kpiMaster);
-//		changeFieldValue("kpi125", CHART_TYPE, "", kpiMaster);
 		removeField("kpi131", CHART_TYPE, kpiMaster);
 		removeField("kpi175", CHART_TYPE, kpiMaster);
-//		changeFieldValue("kpi136", CHART_TYPE, "", kpiMaster);
-//		changeFieldValue("kpi128", CHART_TYPE, "", kpiMaster);
+		removeField("kpi128", CHART_TYPE, kpiMaster);
 		removeField("kpi124", CHART_TYPE, kpiMaster);
 		removeField("kpi122", CHART_TYPE, kpiMaster);
 		removeField("kpi135", CHART_TYPE, kpiMaster);
@@ -108,11 +106,9 @@ public class UpdateKpiMasterForIterationKpis {
 		//update chart type
 		changeFieldValue("kpi120", CHART_TYPE, "stacked-bar-chart", kpiMaster);
 		changeFieldValue("kpi119", CHART_TYPE, "bar-chart", kpiMaster);
-//		changeFieldValue("kpi125", CHART_TYPE, "", kpiMaster);
 		changeFieldValue("kpi131", CHART_TYPE, "stacked-bar", kpiMaster);
 		changeFieldValue("kpi175", CHART_TYPE, "bar-chart", kpiMaster);
-//		changeFieldValue("kpi136", CHART_TYPE, "", kpiMaster);
-//		changeFieldValue("kpi128", CHART_TYPE, "", kpiMaster);
+		changeFieldValue("kpi128", CHART_TYPE, "grouped-bar-chart", kpiMaster);
 		changeFieldValue("kpi124", CHART_TYPE, "table-v2", kpiMaster);
 		changeFieldValue("kpi122", CHART_TYPE, "table-v2", kpiMaster);
 		changeFieldValue("kpi135", CHART_TYPE, "table-v2", kpiMaster);
