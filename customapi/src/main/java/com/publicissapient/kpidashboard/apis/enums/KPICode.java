@@ -287,17 +287,9 @@ public enum KPICode {
      */
     WORK_REMAINING("kpi119", KPISource.JIRA.name()),
     /**
-     * Defect Count By RCA (Iteration)
-     */
-    DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()),
-    /**
      * Defect Count By Status (Iteration)
      */
-    DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", KPISource.JIRA.name()),
-    /**
-     * Defect Count By Priority (Iteration)
-     */
-    DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()),
+    DEFECT_COUNT_BY_ITERATION("kpi136", KPISource.JIRA.name()),
     /**
      * Risks and Dependencies
      */
@@ -365,19 +357,11 @@ public enum KPICode {
     /**
      * Planned Work Status
      */
-    PLANNED_WORK_STATUS("kpi128", KPISource.JIRA.name()),
-    /**
-     * Dev Completed Status KPI Code
-     */
-    DEV_COMPLETED_STATUS("kpi145", KPISource.JIRA.name()),
+    WORK_STATUS("kpi128", KPISource.JIRA.name()),
     /**
      * Quality Status
      */
     QUALITY_STATUS("kpi133", KPISource.JIRA.name()),
-    /**
-     * Unplanned Work Status
-     */
-    UNPLANNED_WORK_STATUS("kpi134", KPISource.JIRA.name()),
     /**
      * Unlinked Work Items
      */

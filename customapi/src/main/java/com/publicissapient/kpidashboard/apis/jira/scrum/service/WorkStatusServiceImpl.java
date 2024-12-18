@@ -71,7 +71,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	private static final String DELAY = "Delay";
 	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	private static final String SINGLE = "Single";
+	private static final String FILTER_TYPE = "Multi";
 	public static final String PLANNED = "Planned";
 	public static final String UNPLANNED = "Unplanned";
 	public static final String DEV_COMPLETION = "Dev Completion";
@@ -88,7 +88,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.PLANNED_WORK_STATUS.name();
+		return KPICode.WORK_STATUS.name();
 	}
 
 	@Override
@@ -330,8 +330,8 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 		// for the group by selection
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
-		filterList.add(createFilter(SINGLE, FILTER_BY_PRIORITY, "Priority", 2));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_PRIORITY, "Priority", 2));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;

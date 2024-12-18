@@ -59,7 +59,7 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 	private static final String FILTER_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue Count";
-	private static final String SINGLE = "Single";
+	private static final String FILTER_TYPE = "Multi";
 	private static final String SPRINT_DETAILS = "sprint details";
 
 	@Autowired
@@ -177,7 +177,7 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 		FilterGroup filterGroup = new FilterGroup();
 
 		List<Filter> filterList = new ArrayList<>();
-		filterList.add(createFilter(SINGLE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
 		filterGroup.setFilterGroup1(filterList);
 
 		return filterGroup;
@@ -217,7 +217,7 @@ public class ClosurePossibleTodayV2ServiceImpl extends JiraIterationKPIService {
 			unit = CommonConstant.SP;
 			displayName = CommonConstant.STORY_POINT;
 		} else {
-			unit = CommonConstant.HOURS;
+			unit = CommonConstant.DAY;
 			displayName = CommonConstant.ORIGINAL_ESTIMATE;
 		}
 
