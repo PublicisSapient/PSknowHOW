@@ -99,7 +99,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
 
     // Draw the stacked bar chart
     let cumulativeOffset = 0;
-
+    let nonZeroBars = this.data.filter(d => parseInt(d.value) > 0);
     const g = svg.selectAll('.slice')
       .data(this.data)
       .enter()
@@ -134,6 +134,16 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
             A${radius},${radius} 0 0 1 ${radius},0
             Z`;
         } else if (Math.abs(d.value)) {
+          if (nonZeroBars?.length === 1) {
+            return `M${radius},0
+                H${width - radius} 
+                A${radius},${radius} 0 0 1 ${width},${radius} 
+                V${chartHeight - radius} 
+                A${radius},${radius} 0 0 1 ${width - radius},${chartHeight} 
+                H0 
+                V0
+                Z`;
+          }
           if (index === 1 || index === 0) {
             return `M${-radius},0
                 H${width - radius} 
