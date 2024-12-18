@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-tabular-kpi-with-donut-chart',
@@ -8,4 +8,8 @@ import { Component, OnInit, Input } from '@angular/core';
 export class TabularKpiWithDonutChartComponent {
 
   @Input() data: any[] = [];
+
+  ngOnChanges(changes: SimpleChanges): void {
+  }
+
 }

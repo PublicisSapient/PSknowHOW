@@ -2865,7 +2865,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (this.selectedTab !== 'iteration') {
         return this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled'];
       } else {
-        return this.iterationKPIData[kpi?.kpiId] && kpi['isEnabled'];
+        return this.iterationKPIData[kpi?.kpiId] && this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled'];
       }
     } else {
       return kpi['isEnabled'];

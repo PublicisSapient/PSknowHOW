@@ -7,3 +7,13 @@
   .axis text {
     font-size: 12px;
   }
+
+  #summary {
+    text-align: center;
+    align-content: center;
+  }
+
+  .summary-value {
+    font-size: 14px;
+    font-weight: bold;
+  }

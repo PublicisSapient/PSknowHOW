@@ -38,7 +38,7 @@ export class GroupedBarChartComponent implements OnInit {
 
     // Chart dimensions
     const margin = { top: 20, right: 30, bottom: 40, left: 50 };
-    const width = d3.select(this.elem).select('#chart').node().offsetWidth - margin.left - margin.right - 250;
+    const width = d3.select(this.elem).select('#chart').node().offsetWidth - margin.left - margin.right;
     const height = 250 - margin.top - margin.bottom;
 
     // Create SVG container
@@ -67,11 +67,13 @@ export class GroupedBarChartComponent implements OnInit {
 
     // Add x-axis
     svg.append("g")
+      .attr('class', 'xAxisG')
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x0));
 
     // Add y-axis
     svg.append("g")
+      .attr('class', 'yAxisG')
       .call(d3.axisLeft(y));
 
     // gridlines
@@ -146,7 +148,10 @@ export class GroupedBarChartComponent implements OnInit {
       })
       .attr('fill', (d, i) => d.color[1]);
 
-    svg.selectAll('.xAxisG path, .xAxisG line, .yAxisG path, .yAxisG line')
+    svg.selectAll('.yAxisG path, .yAxisG line, .xAxisG path, .xAxisG line')
       .attr('stroke', '#ccc');
+
+    svg.selectAll('.yAxisG .domain')
+      .style('display', 'none');
   }
 }

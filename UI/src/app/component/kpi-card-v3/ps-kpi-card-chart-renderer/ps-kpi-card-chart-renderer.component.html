@@ -20,6 +20,4 @@
   <app-tabular-kpi-with-donut-chart *ngSwitchCase="'tabular-with-donut-chart'" [data]="chartData"></app-tabular-kpi-with-donut-chart>
   <app-grouped-bar-chart *ngSwitchCase="'grouped-bar-chart'" [filters]="chartData.categoryData.categoryGroup" [data]="chartData"></app-grouped-bar-chart>
   <div *ngSwitchDefault>{{ chartType }}</div>
-  
-
 </div>

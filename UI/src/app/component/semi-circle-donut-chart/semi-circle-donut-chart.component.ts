@@ -22,6 +22,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     // Check if the value input has changed
     if (changes.value) {
+      this.value = parseInt(this.value + '');
       this.createDonutChart();
     }
   }
@@ -55,7 +56,7 @@ private createDonutChart(): void {
 
   // Define the data (completed and remaining)
   const data = [
-    { value: this.value, color: '#4A6CF7' }, // Blue color for completed
+    { value: this.value, color: '#627AD0' }, // Blue color for completed
     { value: this.max - this.value, color: '#E5EAF2' } // Gray color for remaining
   ];
 
@@ -72,15 +73,15 @@ private createDonutChart(): void {
     .attr('text-anchor', 'middle')
     .attr('dy', '-0.5em') // Adjust text position
     .style('font-size', '14px')
-    .style('fill', '#4A6CF7')
-    .text('Total issues');
+    .style('fill', '#627AD0')
+    .text('%');
 
   svg.append('text')
     .attr('text-anchor', 'middle')
     .attr('dy', '1em') // Adjust text position
-    .style('font-size', '24px')
+    .style('font-size', '18px')
     .style('font-weight', 'bold')
-    .style('fill', '#4A6CF7')
+    .style('fill', '#627AD0')
     .text(this.value);
 }
 

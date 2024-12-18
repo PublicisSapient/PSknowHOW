@@ -209,6 +209,9 @@ export class BarchartComponent implements OnInit {
 
     this.svg.selectAll('.xAxisG path, .xAxisG line, .yAxisG path, .yAxisG line')
       .attr('stroke', '#ccc');
+
+    this.svg.selectAll('.yAxisG .domain')
+      .style('display', 'none');
   }
 
   private updateChart(): void {

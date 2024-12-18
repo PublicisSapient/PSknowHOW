@@ -22,7 +22,7 @@
             <div class="{{selectedtype}}" id="{{selectedtype}}">
                 <div class="clearfix" *ngIf="showChart !== 'table'">
                     <div class="right-container col">
-                        <div class="tabs-container" *ngIf="tabsArr.size > 1 && selectedTab !== 'iteration'">
+                        <div class="tabs-container" *ngIf="tabsArr.size > 1">
                             <div class="tab" *ngFor="let tab of tabsArr"
                                 [ngClass]="{ 'is-selected': selectedKPITab == tab }" (click)="selectKPITab(tab)">
                                 {{ tab }}
@@ -32,7 +32,7 @@
                             <ng-container
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-                                    <div *ngIf="checkKPIPresence(kpi)"
+                                    <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154'"
                                         class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}" 
                                         [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '414px') }">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
@@ -349,6 +349,18 @@
                                         </app-kpi-card-v2>
 
                                     </div>
+                                    <div *ngIf="kpi.kpiId === 'kpi154'">
+                                        <!-- <app-daily-scrum-tab
+                                          [assigneeList]="kpiChartData['kpi154']"
+                                          [columns]="jiraKpiData['kpi154']?.modalHeads"
+                                          [filterData]="jiraKpiData['kpi154']?.filterData"
+                                          [issueData]="jiraKpiData['kpi154']?.issueData"
+                                          [standUpStatusFilter]="jiraKpiData['kpi154']?.standUpStatusFilter"
+                                          [kpiData]="dailyStandupData"
+                                          (reloadKPITab)="reloadKPI($event)"
+                                          [loader]=" loaderJiraArray.includes('kpi154')">
+                                        </app-daily-scrum-tab> -->
+                                      </div>
                                     <ng-template #noDataForChartWithFilters>
                                         <div class="min-ht">
                                             <div class="p-w-100  p-d-flex p-justify-center">

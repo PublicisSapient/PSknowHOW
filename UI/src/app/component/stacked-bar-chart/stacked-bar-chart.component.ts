@@ -40,7 +40,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
 
   private createChart(): void {
     const chartHeight = 30; // Height of the bar
-    const margin = { top: 50, right: 20, bottom: 50, left: 20 };
+    const margin = { top: 20, right: 20, bottom: 20, left: 20 };
     const chartWidth = (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth; // Adjusted width to fit within the card
     const radius = 12.5;
     // Calculate total value for scaling
@@ -72,7 +72,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
     const xAxis = d3.axisBottom(xScale).ticks(10);
     svg
       .append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top + 55})`)
+      .attr('transform', `translate(${margin.left}, ${0})`)
       .attr('class', 'xAxisG')
       .call(xAxis)
       .selectAll('text')
@@ -82,20 +82,20 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
     const gridlines = svg.append("g")
       .attr("class", "gridlines");
 
-    // Add vertical gridlines
-    gridlines.selectAll(".gridline")
-      .data(xScale.ticks(10)) // Set the number of gridlines
-      .enter()
-      .append("line")
-      .attr("class", "gridline")
-      .attr("x1", d => xScale(d))
-      .attr("x2", d => xScale(d))
-      .attr("y1", -100)
-      .attr("y2", 100)
-      .attr("stroke", "#ccc") // Color of the gridlines
-      .attr("stroke-width", 0.5)
-      .attr('transform', `translate(${margin.left}, ${margin.top})`)
-    // .attr("stroke-dasharray", "2,2"); // Optional: makes lines dashed
+    // // Add vertical gridlines
+    // gridlines.selectAll(".gridline")
+    //   .data(xScale.ticks(10)) // Set the number of gridlines
+    //   .enter()
+    //   .append("line")
+    //   .attr("class", "gridline")
+    //   .attr("x1", d => xScale(d))
+    //   .attr("x2", d => xScale(d))
+    //   .attr("y1", -100)
+    //   .attr("y2", 100)
+    //   .attr("stroke", "#ccc") // Color of the gridlines
+    //   .attr("stroke-width", 0.5)
+    //   .attr('transform', `translate(${margin.left}, ${margin.top})`)
+    // // .attr("stroke-dasharray", "2,2"); // Optional: makes lines dashed
 
     // Draw the stacked bar chart
     let cumulativeOffset = 0;
@@ -184,8 +184,8 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .text(d => d.value);
 
 
-    svg.selectAll('.xAxisG path, .xAxisG line')
-      .attr('stroke', '#ccc');
+    svg.selectAll('.xAxisG *')
+      .style('display', 'none');
   }
 
   private updateChart(): void {
