@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
+    <div *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar' ||  kpiData?.kpiDetail?.chartType ===  'grouped-bar-chart'"
       class="kpi-card-footer p-pr-5 p-pl-5">
       <ul class="legend" *ngFor="let footer of currentChartData?.chartData">
         <li class="p-px-3 p-py-0">

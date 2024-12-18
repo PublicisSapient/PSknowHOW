@@ -106,20 +106,44 @@ export class GroupedBarChartComponent implements OnInit {
                 Z`;
     };
 
+    const nonRoundedTopPath = (x, y, width, height) => {
+      return `M${x},${y}
+              H${x + width}
+              V${y + height}
+              H${x}
+              Z`;
+    };
+
     // Bar 1 (value1)
     groups.append("path")
       .attr("class", "bar")
-      .attr("d", d => roundedTopPath(
-        x1("value2") - 40, y(d.value1), barWidth, height - y(d.value1), radius
-      ))
+      .attr("d", d => {
+        if (height - y(d.value1) >= radius) {
+          return roundedTopPath(
+            x1("value2") - 40, y(d.value1), barWidth, height - y(d.value1), radius
+          )
+        } else {
+          return nonRoundedTopPath(
+            x1("value2") - 40, y(d.value1), barWidth, height - y(d.value1)
+          );
+        }
+      })
       .attr('fill', (d, i) => d.color[0]);
 
     // Bar 2 (value2)
     groups.append("path")
       .attr("class", "bar2")
-      .attr("d", d => roundedTopPath(
-        x1("value2") + 10, y(d.value2), barWidth, height - y(d.value2), radius
-      ))
+      .attr("d", d => {
+        if (height - y(d.value2) >= radius) {
+          return roundedTopPath(
+            x1("value2") + 10, y(d.value2), barWidth, height - y(d.value2), radius
+          );
+        } else {
+          return nonRoundedTopPath(
+            x1("value2") + 10, y(d.value2), barWidth, height - y(d.value2)
+          );
+        }
+      })
       .attr('fill', (d, i) => d.color[1]);
 
     svg.selectAll('.xAxisG path, .xAxisG line, .yAxisG path, .yAxisG line')

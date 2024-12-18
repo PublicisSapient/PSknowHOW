@@ -135,7 +135,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
             Z`;
         } else if (Math.abs(d.value)) {
           if (nonZeroBars?.length === 1) {
-            return `M${radius},0
+            return `M${0},0
                 H${width - radius} 
                 A${radius},${radius} 0 0 1 ${width},${radius} 
                 V${chartHeight - radius} 
