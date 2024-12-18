@@ -613,7 +613,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   showCummalative() {
-    if (this.cardData?.chartType === 'stacked-bar') {
+    if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
       return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
     } else {
       if (!!this.selectedButtonValue && !!this.selectedButtonValue[0].key) {
