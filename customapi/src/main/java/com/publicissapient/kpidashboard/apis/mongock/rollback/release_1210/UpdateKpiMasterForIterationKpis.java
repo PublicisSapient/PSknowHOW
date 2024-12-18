@@ -40,6 +40,9 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi128", KPI_NAME, "Planned Work Status", kpiMaster);
 		changeFieldValue("kpi135", KPI_NAME, "First Time Pass Rate", kpiMaster);
 
+		//update KPI subcategory
+		changeFieldValue("kpi125", "kpiSubCategory", "Iteration Progress", kpiMaster);
+
 		//update chart type
 		removeField("kpi120", CHART_TYPE, kpiMaster);
 		removeField("kpi119", CHART_TYPE, kpiMaster);
@@ -90,6 +93,9 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi136", KPI_NAME, "Defect Count by", kpiMaster);
 		changeFieldValue("kpi128", KPI_NAME, "Work Status", kpiMaster);
 		changeFieldValue("kpi135", KPI_NAME, "First Time Pass Rate (%)", kpiMaster);
+
+		//update KPI subcategory
+		changeFieldValue("kpi125", "kpiSubCategory", "Iteration Review", kpiMaster);
 
 		deleteDocument(Arrays.asList("kpi132", "kpi140", "kpi145", "kpi134", "kpi176"), kpiMaster);
 
