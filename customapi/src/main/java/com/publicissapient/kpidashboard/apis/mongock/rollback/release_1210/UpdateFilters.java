@@ -40,6 +40,7 @@ public class UpdateFilters {
 	public void execution() {
 		updateFilterBoardId(8, 15);
 		updateFilterBoardId(9, 16);
+		updateFilterBoardId(19, 17);
 	}
 
 	/**
@@ -59,6 +60,7 @@ public class UpdateFilters {
 	public void rollback() {
 		updateFilterBoardId(15, 8);
 		updateFilterBoardId(16, 9);
+		updateFilterBoardId(17, 19);
 	}
 
 }
