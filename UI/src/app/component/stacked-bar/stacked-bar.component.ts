@@ -35,12 +35,27 @@ export class StackedBarComponent implements OnInit, OnChanges {
   private createChart(): void {
     const element = this.elRef.nativeElement;
     const chartHeight = 30; // Height of the bar
+    const radius = 12.5; // Radius for rounded corners
     const margin = { top: 40, right: 20, bottom: 20, left: 20 };
-    const chartWidth = (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth; // Adjusted width to fit within the card
-    const totalValue = this.data.reduce((sum, d) => sum + d.value, 0); // Total value of all sections
+  
+    // Calculate chart width dynamically
+    const chartWidth =
+      (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth;
+  
+    // Filter out categories with zero value
+    const filteredData = this.data.filter(d => d.value !== 0);
+  
+    // If all values are zero, return early
+    if (filteredData.length === 0) {
+      console.warn('No valid data to render');
+      return;
+    }
+  
+    // Calculate total value for percentage normalization
+    const totalValue = filteredData.reduce((sum, d) => sum + d.value, 0);
   
     // Normalize data for percentage
-    const normalizedData = this.data.map(d => ({
+    const normalizedData = filteredData.map(d => ({
       ...d,
       percentage: (d.value / totalValue) * 100,
     }));
@@ -54,51 +69,61 @@ export class StackedBarComponent implements OnInit, OnChanges {
       .append('svg')
       .attr('width', chartWidth + margin.left + margin.right)
       .attr('height', chartHeight + margin.top + margin.bottom);
-
   
-    // Draw the main bar (stacked sections)
+    // Group for chart
     const g = svg
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
   
     let cumulativeWidth = 0;
   
-    g.selectAll('rect')
+    // Draw the stacked sections with rounded corners
+    g.selectAll('path')
       .data(normalizedData)
       .enter()
-      .append('rect')
-      .attr('x', d => {
+      .append('path')
+      .attr('d', d => {
+        const width = (chartWidth * d.percentage) / 100;
         const x = cumulativeWidth;
-        cumulativeWidth += (chartWidth * d.percentage) / 100;
-        return x;
+        cumulativeWidth += width;
+  
+        // Rounded rectangle path logic
+        return `M${x + radius},0
+                H${x + width - radius}
+                A${radius},${radius} 0 0 1 ${x + width},${radius}
+                V${chartHeight - radius}
+                A${radius},${radius} 0 0 1 ${x + width - radius},${chartHeight}
+                H${x + radius}
+                A${radius},${radius} 0 0 1 ${x},${chartHeight - radius}
+                V${radius}
+                A${radius},${radius} 0 0 1 ${x + radius},0
+                Z`;
       })
-      .attr('y', 0)
-      .attr('width', d => (chartWidth * d.percentage) / 100) // Proportional width
-      .attr('height', chartHeight)
-      .attr('fill', d => d.color) // Dynamic fill color
-      // .attr('rx', 25) // Rounded corners
-      // .attr('ry', 25); // Rounded corners
+      .attr('fill', d => d.color);
+  
+    // Reset cumulativeWidth for labels
+    cumulativeWidth = 0;
   
     // Add labels inside each section
-    cumulativeWidth = 0; // Reset cumulativeWidth for labels
     g.selectAll('text')
       .data(normalizedData)
       .enter()
       .append('text')
       .attr('x', d => {
-        const x = cumulativeWidth + (chartWidth * d.percentage) / 200;
-        cumulativeWidth += (chartWidth * d.percentage) / 100;
+        const width = (chartWidth * d.percentage) / 100;
+        const x = cumulativeWidth + width / 2;
+        cumulativeWidth += width;
         return x;
       })
       .attr('y', chartHeight / 2)
       .style('fill', 'white')
-      .style('font-size', '14px')
+      .style('font-size', '12px')
       .style('font-weight', 'bold')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .text(d => `${d.value}d`);
+      .text(d => d.value);
   }
-  
+
   private updateChart(): void {
     // Clear previous chart
     d3.select(this.elRef.nativeElement).select('.chart-container').html('');
