@@ -151,7 +151,7 @@ export class GroupedBarChartComponent implements OnInit {
     svg.selectAll('.yAxisG path, .yAxisG line, .xAxisG path, .xAxisG line')
       .attr('stroke', '#ccc');
 
-    svg.selectAll('.yAxisG .domain')
+    svg.selectAll('.yAxisG .domain, .yAxisG .tick:nth-child(odd)')
       .style('display', 'none');
   }
 }

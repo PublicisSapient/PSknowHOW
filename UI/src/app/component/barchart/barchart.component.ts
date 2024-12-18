@@ -92,7 +92,7 @@ export class BarchartComponent implements OnInit {
     this.svg.selectAll('line.gridline').data(yScale.ticks(4)).enter()
       .append('svg:line')
       .attr('x1', 0)
-      .attr('x2', chartWidth)
+      .attr('x2', 300)
       .attr('y1', (d) => yScale(d))
       .attr('y2', (d) => yScale(d))
       .style('stroke', '#ccc')
@@ -203,7 +203,7 @@ export class BarchartComponent implements OnInit {
       .attr('class', 'yAxisG')
       .call(
         d3.axisLeft(yScale)
-          .ticks(5)
+          .ticks(4)
           .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
       );
 
