@@ -38,7 +38,7 @@ public class UpdateKpiMasterForIterationKpis {
         changeFieldValue("kpi128", KPI_NAME, "Work Status", kpiMaster);
         changeFieldValue("kpi135", KPI_NAME, "First Time Pass Rate (%)", kpiMaster);
 
-		deleteDocument(Arrays.asList("kpi132", "kpi140", "kpi145", "kpi134"), kpiMaster);
+		deleteDocument(Arrays.asList("kpi132", "kpi140", "kpi145", "kpi134", "kpi176"), kpiMaster);
 
 		//update chart type
 		changeFieldValue("kpi120", CHART_TYPE, "stacked-bar-chart", kpiMaster);
@@ -49,7 +49,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue("kpi128", CHART_TYPE, "grouped-bar-chart", kpiMaster);
 		changeFieldValue("kpi124", CHART_TYPE, "table-v2", kpiMaster);
 		changeFieldValue("kpi122", CHART_TYPE, "table-v2", kpiMaster);
-		changeFieldValue("kpi135", CHART_TYPE, "tableNonRawData", kpiMaster);
+		changeFieldValue("kpi135", CHART_TYPE, "tabular-with-donut-chart", kpiMaster);
 		changeFieldValue("kpi133", CHART_TYPE, "tableNonRawData", kpiMaster);
 		changeFieldValue("kpi123", CHART_TYPE, "table-v2", kpiMaster);
 
