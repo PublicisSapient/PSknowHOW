@@ -34,7 +34,7 @@ export class StackedBarComponent implements OnInit, OnChanges {
 
   private createChart(): void {
     const element = this.elRef.nativeElement;
-    const chartHeight = this.height; // Height of the bar
+    const chartHeight = 30; // Height of the bar
     const margin = { top: 40, right: 20, bottom: 20, left: 20 };
     const chartWidth = (d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right) || window.innerWidth; // Adjusted width to fit within the card
     const totalValue = this.data.reduce((sum, d) => sum + d.value, 0); // Total value of all sections

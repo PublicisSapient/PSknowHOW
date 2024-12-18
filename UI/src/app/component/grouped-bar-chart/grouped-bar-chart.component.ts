@@ -74,6 +74,18 @@ export class GroupedBarChartComponent implements OnInit {
     svg.append("g")
       .call(d3.axisLeft(y));
 
+    // gridlines
+    svg.selectAll('line.gridline').data(y.ticks(4)).enter()
+      .append('svg:line')
+      .attr('x1', 0)
+      .attr('x2', width)
+      .attr('y1', (d) => y(d))
+      .attr('y2', (d) => y(d))
+      .style('stroke', '#ccc')
+      .style('stroke-width', 0.5)
+      .style('fill', 'none')
+      .attr('class', 'gridline');
+
     const barWidth = 30; // Fixed bar width
     const radius = barWidth / 2; // Corner radius for rounded tops
     // Draw bars for both groups
