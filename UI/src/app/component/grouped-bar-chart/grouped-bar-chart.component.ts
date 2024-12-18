@@ -121,5 +121,8 @@ export class GroupedBarChartComponent implements OnInit {
         x1("value2") + 10, y(d.value2), barWidth, height - y(d.value2), radius
       ))
       .attr('fill', (d, i) => d.color[1]);
+
+    svg.selectAll('.xAxisG path, .xAxisG line, .yAxisG path, .yAxisG line')
+      .attr('stroke', '#ccc');
   }
 }

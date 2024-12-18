@@ -7066,13 +7066,6 @@
                                                 "text": "Detailed Information at",
                                                 "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70484023/Release+Release+Burnup"
                                             }
-                                        },
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70484023/Release+Release+Burnup"
-                                            }
                                         }
                                     ]
                                 },
@@ -7468,8 +7461,13 @@
                         "primaryFilter": {
                             "type": "singleSelect",
                             "defaultLevel": {
-                                "labelName": "release"
+                                "labelName": "release",
+                                "sortBy": "releaseState"
                             }
+                        },
+                        "parentFilter": {
+                            "labelName": "Project",
+                            "emittedLevel": "release"
                         }
                     }
                 },
@@ -7479,17 +7477,173 @@
                     "boardSlug": "backlog",
                     "kpis": [
                         {
+                            "kpiId": "kpi3",
+                            "kpiName": "Lead Time",
+                            "isEnabled": true,
+                            "order": 1,
+                            "subCategoryBoard": "Flow KPIs",
+                            "kpiDetail": {
+                                "id": "65793ddb127be336160bc107",
+                                "kpiId": "kpi3",
+                                "kpiName": "Lead Time",
+                                "isDeleted": "False",
+                                "defaultOrder": 1,
+                                "kpiCategory": "Backlog",
+                                "kpiSubCategory": "Flow KPIs",
+                                "kpiBaseLine": "0",
+                                "kpiUnit": "Days",
+                                "chartType": "line",
+                                "upperThresholdBG": "red",
+                                "lowerThresholdBG": "white",
+                                "showTrend": true,
+                                "isPositiveTrend": false,
+                                "calculateMaturity": true,
+                                "hideOverallFilter": false,
+                                "kpiSource": "Jira",
+                                "combinedKpiSource": "Jira/Azure",
+                                "thresholdValue": 20,
+                                "kanban": false,
+                                "groupId": 11,
+                                "kpiInfo": {
+                                    "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+                                    "details": [
+                                        {
+                                            "type": "link",
+                                            "kpiLinkDetail": {
+                                                "text": "Detailed Information at",
+                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "kpiFilter": "dropdown",
+                                "aggregationCriteria": "sum",
+                                "maturityRange": [
+                                    "-60",
+                                    "60-45",
+                                    "45-30",
+                                    "30-10",
+                                    "10-"
+                                ],
+                                "trendCalculative": false,
+                                "xaxisLabel": "Range",
+                                "yaxisLabel": "Days",
+                                "isAdditionalFilterSupport": false
+                            },
+                            "shown": true
+                        },
+                        {
+                            "kpiId": "kpi161",
+                            "kpiName": "Iteration Readiness",
+                            "isEnabled": true,
+                            "order": 1,
+                            "subCategoryBoard": "Backlog Health",
+                            "kpiDetail": {
+                                "id": "65793ddc127be336160bc11b",
+                                "kpiId": "kpi161",
+                                "kpiName": "Iteration Readiness",
+                                "isDeleted": "False",
+                                "defaultOrder": 1,
+                                "kpiCategory": "Backlog",
+                                "kpiSubCategory": "Backlog Health",
+                                "kpiUnit": "Count",
+                                "chartType": "stackedColumn",
+                                "showTrend": false,
+                                "isPositiveTrend": true,
+                                "boxType": "chart",
+                                "calculateMaturity": false,
+                                "hideOverallFilter": false,
+                                "kpiSource": "Jira",
+                                "combinedKpiSource": "Jira/Azure",
+                                "maxValue": "",
+                                "kanban": false,
+                                "groupId": 11,
+                                "kpiInfo": {
+                                    "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog",
+                                    "details": [
+                                        {
+                                            "type": "link",
+                                            "kpiLinkDetail": {
+                                                "text": "Detailed Information at",
+                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886303/Iteration+Readiness"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "kpiFilter": "radioButton",
+                                "maturityRange": [
+                                    "-40",
+                                    "40-60",
+                                    "60-75",
+                                    "75-90",
+                                    "90-"
+                                ],
+                                "trendCalculative": false,
+                                "xaxisLabel": "Sprint",
+                                "yaxisLabel": "Count",
+                                "isAdditionalFilterSupport": false
+                            },
+                            "shown": true
+                        },
+                        {
+                            "kpiId": "kpi170",
+                            "kpiName": "Flow Efficiency",
+                            "isEnabled": true,
+                            "order": 1,
+                            "subCategoryBoard": "Flow KPIs",
+                            "kpiDetail": {
+                                "id": "65793ddc127be336160bc11e",
+                                "kpiId": "kpi170",
+                                "kpiName": "Flow Efficiency",
+                                "isDeleted": "False",
+                                "defaultOrder": 1,
+                                "kpiCategory": "Backlog",
+                                "kpiSubCategory": "Flow KPIs",
+                                "kpiUnit": "%",
+                                "chartType": "line",
+                                "upperThresholdBG": "red",
+                                "lowerThresholdBG": "white",
+                                "showTrend": false,
+                                "isPositiveTrend": false,
+                                "calculateMaturity": false,
+                                "hideOverallFilter": false,
+                                "kpiSource": "Jira",
+                                "combinedKpiSource": "Jira/Azure",
+                                "thresholdValue": 40,
+                                "kanban": false,
+                                "groupId": 11,
+                                "kpiInfo": {
+                                    "definition": "The percentage of time spent in work states vs wait states across the lifecycle of an issue",
+                                    "details": [
+                                        {
+                                            "type": "link",
+                                            "kpiLinkDetail": {
+                                                "text": "Detailed Information at",
+                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827496/Flow+Efficiency"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "kpiFilter": "dropDown",
+                                "aggregationCriteria": "average",
+                                "trendCalculative": false,
+                                "xaxisLabel": "Range",
+                                "isAdditionalFilterSupport": false
+                            },
+                            "shown": true
+                        },
+                        {
                             "kpiId": "kpi138",
                             "kpiName": "Backlog Readiness",
                             "isEnabled": true,
-                            "order": 1,
+                            "order": 2,
                             "subCategoryBoard": "Backlog Health",
                             "kpiDetail": {
                                 "id": "65793ddb127be336160bc106",
                                 "kpiId": "kpi138",
                                 "kpiName": "Backlog Readiness",
                                 "isDeleted": "False",
-                                "defaultOrder": 1,
+                                "defaultOrder": 2,
                                 "kpiCategory": "Backlog",
                                 "kpiSubCategory": "Backlog Health",
                                 "kpiUnit": "Count",
@@ -7535,123 +7689,21 @@
                             "shown": true
                         },
                         {
-                            "kpiId": "kpi3",
-                            "kpiName": "Lead Time",
-                            "isEnabled": true,
-                            "order": 1,
-                            "subCategoryBoard": "Flow KPIs",
-                            "kpiDetail": {
-                                "id": "65793ddb127be336160bc107",
-                                "kpiId": "kpi3",
-                                "kpiName": "Lead Time",
-                                "isDeleted": "False",
-                                "defaultOrder": 1,
-                                "kpiCategory": "Backlog",
-                                "kpiSubCategory": "Flow KPIs",
-                                "kpiBaseLine": "0",
-                                "kpiUnit": "Days",
-                                "chartType": "line",
-                                "upperThresholdBG": "red",
-                                "lowerThresholdBG": "white",
-                                "showTrend": true,
-                                "isPositiveTrend": false,
-                                "calculateMaturity": true,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "thresholdValue": 20.0,
-                                "kanban": false,
-                                "groupId": 11,
-                                "kpiInfo": {
-                                    "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "dropdown",
-                                "aggregationCriteria": "sum",
-                                "maturityRange": [
-                                    "-60",
-                                    "60-45",
-                                    "45-30",
-                                    "30-10",
-                                    "10-"
-                                ],
-                                "trendCalculative": false,
-                                "xaxisLabel": "Range",
-                                "yaxisLabel": "Days",
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi170",
-                            "kpiName": "Flow Efficiency",
-                            "isEnabled": true,
-                            "order": 1,
-                            "subCategoryBoard": "Flow KPIs",
-                            "kpiDetail": {
-                                "id": "65793ddc127be336160bc11e",
-                                "kpiId": "kpi170",
-                                "kpiName": "Flow Efficiency",
-                                "isDeleted": "False",
-                                "defaultOrder": 1,
-                                "kpiCategory": "Backlog",
-                                "kpiSubCategory": "Flow KPIs",
-                                "kpiUnit": "%",
-                                "chartType": "line",
-                                "upperThresholdBG": "red",
-                                "lowerThresholdBG": "white",
-                                "showTrend": false,
-                                "isPositiveTrend": false,
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "thresholdValue": 40.0,
-                                "kanban": false,
-                                "groupId": 11,
-                                "kpiInfo": {
-                                    "definition": "The percentage of time spent in work states vs wait states across the lifecycle of an issue",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827496/Flow+Efficiency"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "dropDown",
-                                "aggregationCriteria": "average",
-                                "trendCalculative": false,
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
                             "kpiId": "kpi127",
                             "kpiName": "Production Defects Ageing",
                             "isEnabled": true,
-                            "order": 2,
+                            "order": 3,
                             "subCategoryBoard": "Backlog Health",
                             "kpiDetail": {
                                 "id": "65793ddb127be336160bc0fa",
                                 "kpiId": "kpi127",
                                 "kpiName": "Production Defects Ageing",
                                 "isDeleted": "False",
-                                "defaultOrder": 2,
+                                "defaultOrder": 3,
                                 "kpiCategory": "Backlog",
                                 "kpiSubCategory": "Backlog Health",
                                 "kpiUnit": "Number",
-                                "chartType": "line",
+                                "chartType": "grouped_column_plus_line",
                                 "upperThresholdBG": "red",
                                 "lowerThresholdBG": "white",
                                 "showTrend": false,
@@ -7660,7 +7712,7 @@
                                 "hideOverallFilter": false,
                                 "kpiSource": "Jira",
                                 "combinedKpiSource": "Jira/Azure",
-                                "thresholdValue": 0.0,
+                                "thresholdValue": 0,
                                 "kanban": false,
                                 "groupId": 10,
                                 "kpiInfo": {
@@ -7677,6 +7729,8 @@
                                 },
                                 "kpiFilter": "multiSelectDropDown",
                                 "aggregationCriteria": "sum",
+                                "isXaxisGroup": true,
+                                "lineChart": false,
                                 "trendCalculative": false,
                                 "xaxisLabel": "Months",
                                 "yaxisLabel": "Count",
@@ -7685,17 +7739,59 @@
                             "shown": true
                         },
                         {
-                            "kpiId": "kpi129",
-                            "kpiName": "Issues Without Story Link",
+                            "kpiId": "kpi137",
+                            "kpiName": "Defect Reopen Rate",
                             "isEnabled": true,
-                            "order": 3,
+                            "order": 4,
+                            "subCategoryBoard": "Backlog Health",
+                            "kpiDetail": {
+                                "id": "65793ddb127be336160bc0fd",
+                                "kpiId": "kpi137",
+                                "kpiName": "Defect Reopen Rate",
+                                "isDeleted": "False",
+                                "defaultOrder": 4,
+                                "kpiCategory": "Backlog",
+                                "kpiSubCategory": "Backlog Health",
+                                "kpiUnit": "Hours",
+                                "showTrend": false,
+                                "isPositiveTrend": false,
+                                "calculateMaturity": false,
+                                "hideOverallFilter": true,
+                                "kpiSource": "Jira",
+                                "combinedKpiSource": "Jira/Azure",
+                                "kanban": false,
+                                "groupId": 10,
+                                "kpiInfo": {
+                                    "definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available.",
+                                    "details": [
+                                        {
+                                            "type": "link",
+                                            "kpiLinkDetail": {
+                                                "text": "Detailed Information at",
+                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820630/Defects+Reopen+rate"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "kpiFilter": "dropdown",
+                                "aggregationCriteria": "average",
+                                "trendCalculative": false,
+                                "isAdditionalFilterSupport": true
+                            },
+                            "shown": true
+                        },
+                        {
+                            "kpiId": "kpi129",
+                            "kpiName": "Unlinked Work Items",
+                            "isEnabled": true,
+                            "order": 5,
                             "subCategoryBoard": "Backlog Health",
                             "kpiDetail": {
                                 "id": "65793ddb127be336160bc0f9",
                                 "kpiId": "kpi129",
-                                "kpiName": "Issues Without Story Link",
+                                "kpiName": "Unlinked Work Items",
                                 "isDeleted": "False",
-                                "defaultOrder": 3,
+                                "defaultOrder": 5,
                                 "kpiCategory": "Backlog",
                                 "kpiSubCategory": "Backlog Health",
                                 "kpiUnit": "Hours",
@@ -7733,101 +7829,6 @@
                                 "xaxisLabel": "",
                                 "yaxisLabel": "",
                                 "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi161",
-                            "kpiName": "Iteration Readiness",
-                            "isEnabled": true,
-                            "order": 4,
-                            "subCategoryBoard": "Backlog Health",
-                            "kpiDetail": {
-                                "id": "65793ddc127be336160bc11b",
-                                "kpiId": "kpi161",
-                                "kpiName": "Iteration Readiness",
-                                "isDeleted": "False",
-                                "defaultOrder": 4,
-                                "kpiCategory": "Backlog",
-                                "kpiSubCategory": "Backlog Health",
-                                "kpiUnit": "Count",
-                                "chartType": "stackedColumn",
-                                "showTrend": false,
-                                "isPositiveTrend": true,
-                                "boxType": "chart",
-                                "calculateMaturity": false,
-                                "hideOverallFilter": false,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "maxValue": "",
-                                "kanban": false,
-                                "groupId": 11,
-                                "kpiInfo": {
-                                    "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886303/Iteration+Readiness"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "radioButton",
-                                "maturityRange": [
-                                    "-40",
-                                    "40-60",
-                                    "60-75",
-                                    "75-90",
-                                    "90-"
-                                ],
-                                "trendCalculative": false,
-                                "xaxisLabel": "Sprint",
-                                "yaxisLabel": "Count",
-                                "isAdditionalFilterSupport": false
-                            },
-                            "shown": true
-                        },
-                        {
-                            "kpiId": "kpi137",
-                            "kpiName": "Defect Reopen Rate",
-                            "isEnabled": true,
-                            "order": 5,
-                            "subCategoryBoard": "Backlog Health",
-                            "kpiDetail": {
-                                "id": "65793ddb127be336160bc0fd",
-                                "kpiId": "kpi137",
-                                "kpiName": "Defect Reopen Rate",
-                                "isDeleted": "False",
-                                "defaultOrder": 5,
-                                "kpiCategory": "Backlog",
-                                "kpiSubCategory": "Backlog Health",
-                                "kpiUnit": "Hours",
-                                "showTrend": false,
-                                "isPositiveTrend": false,
-                                "calculateMaturity": false,
-                                "hideOverallFilter": true,
-                                "kpiSource": "Jira",
-                                "combinedKpiSource": "Jira/Azure",
-                                "kanban": false,
-                                "groupId": 10,
-                                "kpiInfo": {
-                                    "definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available.",
-                                    "details": [
-                                        {
-                                            "type": "link",
-                                            "kpiLinkDetail": {
-                                                "text": "Detailed Information at",
-                                                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820630/Defects+Reopen+rate"
-                                            }
-                                        }
-                                    ]
-                                },
-                                "kpiFilter": "dropdown",
-                                "aggregationCriteria": "average",
-                                "trendCalculative": false,
-                                "isAdditionalFilterSupport": true
                             },
                             "shown": true
                         },
@@ -7902,7 +7903,7 @@
                                 "hideOverallFilter": false,
                                 "kpiSource": "Jira",
                                 "combinedKpiSource": "Jira/Azure",
-                                "thresholdValue": 40.0,
+                                "thresholdValue": 40,
                                 "kanban": false,
                                 "groupId": 10,
                                 "kpiInfo": {
@@ -8196,6 +8197,46 @@
                     ],
                     "filters": {
                         "projectTypeSwitch": {
+                            "enabled": false,
+                            "visible": true
+                        },
+                        "primaryFilter": {
+                            "type": "singleSelect",
+                            "defaultLevel": {
+                                "labelName": "project"
+                            }
+                        }
+                    }
+                },
+                {
+                    "boardId": 17,
+                    "boardName": "KPI Maturity",
+                    "boardSlug": "kpi-maturity",
+                    "kpis": [
+                        {
+                            "kpiId": "kpi989",
+                            "kpiName": "Kpi Maturity",
+                            "isEnabled": true,
+                            "order": 1,
+                            "kpiDetail": {
+                                "id": "65793ddb127be336160bc102",
+                                "kpiId": "kpi989",
+                                "kpiName": "Kpi Maturity",
+                                "isDeleted": "False",
+                                "defaultOrder": 1,
+                                "kpiCategory": "KPI Maturity",
+                                "showTrend": false,
+                                "calculateMaturity": false,
+                                "hideOverallFilter": false,
+                                "kanban": false,
+                                "trendCalculative": false,
+                                "isAdditionalFilterSupport": false
+                            },
+                            "shown": true
+                        }
+                    ],
+                    "filters": {
+                        "projectTypeSwitch": {
                             "enabled": true,
                             "visible": true
                         },
@@ -8208,41 +8249,6 @@
                         "parentFilter": {
                             "labelName": "Organization Level"
                         }
-                    }
-                },
-                {
-                    "boardId": 17,
-                    "boardName": "KPI Maturity",
-                    "boardSlug": "kpi-maturity",
-                    "kpis": [],
-                    "filters": {
-                        "projectTypeSwitch": {
-                            "enabled": true,
-                            "visible": true
-                        },
-                        "primaryFilter": {
-                            "type": "multiSelect",
-                            "defaultLevel": {
-                                "labelName": "project"
-                            }
-                        },
-                        "parentFilter": {
-                            "labelName": "Organization Level"
-                        },
-                        "additionalFilters": [
-                            {
-                                "type": "multiSelect",
-                                "defaultLevel": {
-                                    "labelName": "sprint"
-                                }
-                            },
-                            {
-                                "type": "multiSelect",
-                                "defaultLevel": {
-                                    "labelName": "sqd"
-                                }
-                            }
-                        ]
                     }
                 }
             ]
