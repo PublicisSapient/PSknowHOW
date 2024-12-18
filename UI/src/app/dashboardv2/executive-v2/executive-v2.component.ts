@@ -513,7 +513,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
-
+    
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
@@ -828,6 +828,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else if (this.selectedTab === 'backlog') {
       this.postJiraKPIForBacklog(postData, source);
     } else if (this.selectedTab === 'iteration') {
+      this.iterationKPIData = [];
       this.postJiraKPIForIteration(postData, source);
     }
   }
@@ -841,7 +842,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
 
-          this.iterationKPIData = Object.assign({}, this.jiraKpiData, localVariable);
+          this.iterationKPIData = Object.assign({}, this.iterationKPIData, localVariable);
           this.removeLoaderFromKPIs(localVariable);
         } else {
           this.handleKPIError(postData);
