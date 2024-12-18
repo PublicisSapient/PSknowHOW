@@ -1,5 +1,5 @@
-header {
-  background: #fff;
+.psheader {
+  background: #fff!important;
   border-bottom: 2px solid #eaedf0;
   padding: 0 20px;
 }
