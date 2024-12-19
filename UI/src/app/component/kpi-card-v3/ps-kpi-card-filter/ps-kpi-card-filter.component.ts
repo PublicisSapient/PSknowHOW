@@ -38,7 +38,7 @@ export class PsKpiCardFilterComponent implements OnInit {
   handleChange() {
     const filterData = Object.fromEntries(
       Object.entries(this.form.value).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined,
+        ([_, value]) => value !== '' && value !== null && value !== undefined && (!Array.isArray(value) || value.length > 0),
       ),
     );
     this.filterChange.emit({...this.form.value,selectedKeyObj:this.selectedKeyObj});

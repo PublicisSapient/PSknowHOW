@@ -554,7 +554,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const { selectedKeyObj,selectedKey, ...updatedEvent } = event;
     const filterData = Object.fromEntries(
       Object.entries(updatedEvent).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined,
+        ([_, value]) => value !== '' && value !== null && value !== undefined && (!Array.isArray(value) || value.length > 0),
       ),
     );
 
@@ -566,6 +566,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.currentChartData = this.prepareChartData(
       this.copyCardData,
       this.colorPalette,
+      selectedKey
     );
     this.selectedButtonValue = selectedKeyObj;
   }
@@ -591,9 +592,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     });
   }
 
-  prepareChartData(inputData: any, color: any) {
+  prepareChartData(inputData: any, color: any,key?:any) {
     if (this.kpiData.kpiDetail.chartType && this.kpiData.kpiDetail.chartType !== '') {
-      return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color);
+      return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color,key);
     } else {
       return {};
     }
@@ -615,7 +616,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   showCummalative() {
     if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
       return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
-    } else {
+    } else if(this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart'){
+      if(!!this.selectedButtonValue && !!this.selectedButtonValue[0].key){
+        const tempCount=this.selectedButtonValue[0].key
+     return   this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
+      }else{
+        return this.currentChartData.totalCount
+      }
+    } else{
       if (!!this.selectedButtonValue && !!this.selectedButtonValue[0].key) {
         const totalValue = this.calculateValue(this.copyCardData.issueData, this.selectedButtonValue[0].key)
         return this.kpiHelperService.convertToHoursIfTime(totalValue, this.selectedButtonValue[0].unit)

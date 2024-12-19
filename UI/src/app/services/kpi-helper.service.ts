@@ -46,7 +46,7 @@ export class KpiHelperService {
     this.headerAction.next(action);
   }
 
-  stackedBarChartData(inputData: any, color: any) {
+  stackedBarChartData(inputData: any, color: any,key:string) {
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
@@ -64,11 +64,9 @@ export class KpiHelperService {
       const filteredIssues = issueData.filter(
         (issue: any) => issue.Category[0] === category.categoryName,
       );
-
       chartData.push({
         category: category.categoryName,
-        value:
-          filteredIssues.length * (category.categoryValue === '+' ? 1 : -1), // Count of issues for this category  filteredIssues.length * (category.categoryValue === '+'?1:-1),
+        value:(key ? filteredIssues.reduce((sum, issue) => sum + (issue.key || 0), 0) : filteredIssues.length)* (category.categoryValue === '+' ? 1 : -1),
         color: color[index % color.length],
       });
     });
@@ -255,7 +253,7 @@ export class KpiHelperService {
   tabularKPINonRawData(inputData) {
     const chartData: any = [];
 
-    inputData.forEach((group: any, index) => {
+    inputData?.forEach((group: any, index) => {
       chartData.push({
         category: group.name,
         value: group.kpiValue,
@@ -306,11 +304,11 @@ export class KpiHelperService {
       }${rminutes !== 0 ? rminutes + 'm' : ''}`;
   }
 
-  getChartDataSet(inputData, chartType, color) {
+  getChartDataSet(inputData, chartType, color,key?:any) {
     let returnDataSet;
     switch (chartType) {
       case 'stacked-bar-chart':
-        returnDataSet = this.stackedBarChartData(inputData, color);
+        returnDataSet = this.stackedBarChartData(inputData, color,key);
         break;
       case 'bar-chart':
         returnDataSet = this.barChartData(inputData, color);
@@ -331,13 +329,13 @@ export class KpiHelperService {
         returnDataSet = this.tabularKPI(inputData);
         break;
       case 'tableNonRawData':
-        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup.dataGroup1);
+        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1);
         break;
       case 'grouped-bar-chart':
         returnDataSet = this.groupedBarChartData(inputData, color);
         break;
       case 'tabular-with-donut-chart':
-        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup.dataGroup1);
+        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1);
         break;
       default:
         break;
