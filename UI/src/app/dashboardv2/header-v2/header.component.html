@@ -1,51 +1,19 @@
-<header class="">
-  <nav class="p-d-flex p-align-center p-jc-between">
-
-    <div class="logo p-pt-1 p-pb-1 p-d-flex">
-      <div class="position-relative p-mr-2 die-container" *ngIf="auth_service && isSpeedSuite">
-        <img src="assets/img/Switchplatforms.svg" class="icon-dice" (click)="appItems.toggle($event)" alt="Switch" width="50"/>
-        <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
-        <p-menu [model]="appList" [popup]="true" #appItems class="app-switch"></p-menu>
-     </div>
-      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo"/>
-    </div>
-
-    <div class="p-d-flex p-align-center p-p-1">
-
+<div class="psheader">
+  <lib-ps-header [showHeaderComments]="true" [showHeaderUserDetails]="true" [showElement]="false" [platformSwitchItems]="platformSwitchItems" [platformLogoInfo]="platformLogoInfo" [showHeaderNotifications]="true" 
+  (logoClick)="onLogoClick($event)" (switchApplicationClick)="onSwitchApplicationClick($event)" [showSwitch]="false">
+    <div comments >
       <app-recent-comments></app-recent-comments>
-
-      <div class="p-p-2 rounded p-mr-3 position-relative filter-btn" role="button"
-        (click)="notification.toggle($event)">
-        <img src="../../../assets/img/ico-notifications.svg" alt="Notification" />
-        <span *ngIf="notificationCount > 0" class="count noti-count">{{notificationCount}}</span>
-      </div>
-      <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
-
-      <div class="back-btn-wraper" *ngIf="userDetails['authorities']?.includes('ROLE_PROJECT_ADMIN') || userDetails['authorities']?.includes('ROLE_SUPERADMIN') || userDetails['authorities']?.includes('ROLE_PROJECT_VIEWER')">
-        <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')"
-          class="back-btn-container rounded p-mr-3">
-          <button pButton pRipple class="back-btn" [ngClass]="noToolsConfigured ? 'p-d-none' : ''" [disabled]="backToDashboardLoader" routerLinkActive="active"
-            icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="DASHBOARD"
-            (click)="navigateToDashboard()" ></button>
-        </div>
-      </div>
-
-      <div class="p-d-flex p-align-center p-jc-between" role="button" (click)="usermenu.toggle($event)">
-        <i class="far fa-user custom-user p-ml-2 p-mr-2"></i>
-        <div class="cursor-pointer">
-          <div>
-            {{userDetails['user_name']}}
-          </div>
-        </div>
-      </div>
-      <p-menu #usermenu [popup]="true" [model]="userMenuItems">
-        <ng-template pTemplate="item" let-item>
-          <div>
-            <i [class]="item.icon"></i>
-            <span> {{ item.label }}</span>
-          </div>
-        </ng-template>
-      </p-menu>
     </div>
-  </nav>
-</header>
+    <div notifications>
+      <div class="p-p-2 rounded p-mr-3 position-relative filter-btn" role="button"
+      (click)="notification.toggle($event)">
+      <img src="../../../assets/img/ico-notifications.svg" alt="Notification" />
+      <span *ngIf="notificationCount > 0" class="count noti-count">{{notificationCount}}</span>
+    </div>
+    <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
+    </div>
+    <div userDetails>
+    <lib-ps-user-profile-details [items]="userMenuItems" [userName]="userDetails['user_name']" [userInitials]="'SA'"></lib-ps-user-profile-details>
+    </div>
+  </lib-ps-header> 
+</div>

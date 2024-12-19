@@ -26,7 +26,12 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/favicon1.png"
+              "src/favicon1.png",
+              {
+                "glob": "**/*",
+                "input": "node_modules/@ps-speed-suite/global-components/src/lib/assets/images",
+                "output": "assets/images"
+              }
             ],
             "styles": [
               "node_modules/@fortawesome/fontawesome-free/css/all.css",
@@ -36,6 +41,7 @@
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeng/resources/themes/md-light-indigo/theme.css",
               "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/@ps-speed-suite/global-components/src/lib/styles/styles.scss",
               "src/styles.css"
             ],
             "scripts": [
@@ -183,7 +189,12 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/favicon1.png"
+              "src/favicon1.png",
+              {
+                "glob": "**/*",
+                "input": "node_modules/@ps-speed-suite/global-components/src/lib/assets/images",
+                "output": "assets/images"
+              }
             ]
           }
         },
