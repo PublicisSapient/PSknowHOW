@@ -30,7 +30,7 @@
     </div>
     <div
       *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
-      class="kpi-card-footer p-pr-5 p-pl-5">
+      class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
       <ul class="legend">
         <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData">
           <span [ngStyle]="{ 'background-color': footer.color }"></span>{{ footer.category }}
@@ -38,7 +38,7 @@
       </ul>
     </div>
 
-    <div *ngIf="kpiData?.kpiDetail?.chartType === 'grouped-bar-chart'" class="kpi-card-footer p-pr-5 p-pl-5">
+    <div *ngIf="kpiData?.kpiDetail?.chartType === 'grouped-bar-chart'" class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
       <ul class="legend" style="margin-top: -20px;">
         <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData?.data;let i = index;">
           <span [ngStyle]="{ 'background-color': footer['color' + (i+1)] }"></span>{{ footer['category' + (i+1)] }}
