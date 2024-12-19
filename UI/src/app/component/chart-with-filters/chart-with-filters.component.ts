@@ -16,11 +16,14 @@ export class ChartWithFiltersComponent implements OnChanges {
   @Input() kpiName;
   @Input() modalHeads;
   @Input() selectedTab;
+  @Input() category;
   displayModal: boolean = false;
   selectedMainFilter;
   modalDetails;
   selectedFilter2;
   elem;
+  selectedMainCategory: string = '';
+  psColors = ['#FBCF5F', '#A4F6A5', '#FFB688', '#D38EEC', '#ED8888', '#6079C5', '#9FE8FA', '#D4CEB0', '#99CDA9', '#6079C5'];
 
   constructor(private viewContainerRef: ViewContainerRef) { }
 
@@ -38,6 +41,9 @@ export class ChartWithFiltersComponent implements OnChanges {
       this.dataCopy = Object.assign([], this.data);
 
       this.selectedMainFilter = this.filters.filterGroup1[0];
+      if (this.category && this.category.length && this.category[1]) {
+        this.selectedMainCategory = this.category[1];
+      }
       this.populateLegend(this.modifiedData);
 
       this.modalDetails = {
@@ -66,7 +72,7 @@ export class ChartWithFiltersComponent implements OnChanges {
       .attr("height", height)
       .append("g")
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-    var color = d3.scaleOrdinal(d3.schemeTableau10);
+    var color = d3.scaleOrdinal([...this.psColors, ...d3.schemeTableau10]);
 
     var data_ready = Object.entries(data).map(([key, value]) => ({ key, value }));
     let pie_input = [];
@@ -92,7 +98,7 @@ export class ChartWithFiltersComponent implements OnChanges {
       .attr('fill', function (d) { return (color(d.data.key)) })
       .attr("stroke", function (d) { return (color(d.data.key)) })
       .style("stroke-width", "1px")
-      .style("opacity", 0.7)
+      // .style("opacity", 0.7)
       .style('cursor', 'pointer')
       .on('click', (event, d) => this.exploreData(d.data.name));
   }
@@ -133,7 +139,7 @@ export class ChartWithFiltersComponent implements OnChanges {
     arr.forEach(element => {
       total += element[Object.keys(element)[0]];
     });
-    var color = d3.scaleOrdinal(d3.schemeTableau10);
+    var color = d3.scaleOrdinal([...this.psColors, ...d3.schemeTableau10]);
     arr.forEach(element => {
       this.legendData.push({
         key: Object.keys(element)[0],
@@ -206,6 +212,14 @@ export class ChartWithFiltersComponent implements OnChanges {
     this.dataCopy = event.dataCopy;
     this.populateLegend(this.modifiedData);
     setTimeout(() => this.draw(this.modifiedData), 100);
+  }
+
+  categorySelect(event) {
+    this.dataCopy = this.data.filter(issue => issue.Category.includes(event.option.categoryName));
+    this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
+    this.draw(this.modifiedData);
+    this.legendData = [];
+    this.populateLegend(this.modifiedData);
   }
 
   clearAdditionalFilters() {

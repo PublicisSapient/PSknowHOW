@@ -8,7 +8,7 @@
   <app-semi-circle-donut-chart *ngSwitchCase="'semi-circle-donut-chart'" [value]="chartData" [max]="100"
     [width]="chartWidth" [height]="chartHeight"></app-semi-circle-donut-chart>
   <app-chart-with-filters [data]="chartData" *ngSwitchCase="'chartWithFilter'" [filters]="chartData?.filterGroup"
-  [selectedTab]="'iteration'">
+  [selectedTab]="'iteration'" [category]="chartData?.category">
   </app-chart-with-filters>
   <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'"
     [data]="chartData" [filters]="[]">
