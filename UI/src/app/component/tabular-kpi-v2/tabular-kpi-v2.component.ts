@@ -7,4 +7,5 @@ import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 })
 export class TabularKpiV2Component {
   @Input() data: any[] = [];
+  @Input() kpiId: string = '';
 }

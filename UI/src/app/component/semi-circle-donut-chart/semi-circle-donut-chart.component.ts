@@ -12,6 +12,9 @@ export class SemiCircleDonutChartComponent implements OnInit {
   @Input() max: number = 100; // Maximum value for the chart
   @Input() width: number = 200; // Width of the chart
   @Input() height: number = 100; // Height of the chart (half the width)
+  @Input() kpiId: string = '';
+  @Input() totalIssues: number = 0;
+  @Input() color;
 
   constructor(private elementRef: ElementRef) { }
 
@@ -62,7 +65,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
 
     // Define the data (completed and remaining)
     const data = [
-      { value: this.value, color: '#627AD0' }, // Blue color for completed
+      { value: this.value, color: this.color?.length ? this.color : '#627AD0' }, // Blue color for completed
       { value: this.max - this.value, color: '#E5EAF2' } // Gray color for remaining
     ];
 
@@ -75,20 +78,30 @@ export class SemiCircleDonutChartComponent implements OnInit {
       .attr('fill', d => d.data.color);
 
     // Add central text
-    svg.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '-0.5em') // Adjust text position
-      .style('font-size', '14px')
-      .style('fill', '#627AD0')
-      .text('%');
+    if (this.kpiId !== 'kpi124') {
+      svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '-0.5em') // Adjust text position
+        .style('font-size', '14px')
+        .style('fill', '#627AD0')
+        .text('%');
 
-    svg.append('text')
+      svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '1em') // Adjust text position
+        .style('font-size', '18px')
+        .style('font-weight', 'bold')
+        .style('fill', '#627AD0')
+        .text(this.value);
+    } else {
+      svg.append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', '1em') // Adjust text position
+      .attr('dy', '0.5em') // Adjust text position
       .style('font-size', '18px')
       .style('font-weight', 'bold')
       .style('fill', '#627AD0')
-      .text(this.value);
+      .text(this.value + '/' + this.totalIssues);
+    }
   }
 
 }

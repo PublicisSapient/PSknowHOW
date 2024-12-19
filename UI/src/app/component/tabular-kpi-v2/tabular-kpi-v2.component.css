@@ -20,6 +20,7 @@
 
 .data {
     text-align: left;
+    align-content: center;
 }
 
 .tabularKPI-column-header {
