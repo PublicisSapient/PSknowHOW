@@ -210,9 +210,11 @@ export class KpiHelperService {
   pieChartWithFiltersData(inputData: any) {
     let chartData = inputData.issueData;
     let filterGroup = inputData.filterGroup;
+    let categoryGroup = inputData.categoryData.categoryGroup;
     let modifiedDataSet = {
       chartData: chartData,
-      filterGroup: filterGroup
+      filterGroup: filterGroup,
+      category: categoryGroup
     }
     return { chartData: modifiedDataSet };
   }
