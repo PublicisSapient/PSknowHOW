@@ -188,7 +188,7 @@ export class KpiHelperService {
           test['color2'] = color[1];
         }
       });
-      
+
       test['color'] = color;
       chartData['data'].push(test);
     });
@@ -208,9 +208,11 @@ export class KpiHelperService {
   pieChartWithFiltersData(inputData: any) {
     let chartData = inputData.issueData;
     let filterGroup = inputData.filterGroup;
+    let categoryGroup = inputData.categoryData.categoryGroup;
     let modifiedDataSet = {
       chartData: chartData,
-      filterGroup: filterGroup
+      filterGroup: filterGroup,
+      category: categoryGroup
     }
     return { chartData: modifiedDataSet };
   }
@@ -221,29 +223,48 @@ export class KpiHelperService {
     return { chartData: result };
   }
 
-  tabularKPI(inputData) {
+  tabularKPI(inputData, color) {
 
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const chartData: any = [];
 
     dataGroup1?.forEach((group: any, index) => {
-      const filteredIssues = issueData.filter(
-        (issue: any) => issue[group.key] !== undefined,
-      );
-      let aggregateVal = 0;
-      if (!filteredIssues.length && group.aggregation === 'count') {
-        aggregateVal = issueData.length
+      let filteredIssues;
+      if (!group.key1 || group.key1 !== 'Category') {
+        filteredIssues = issueData.filter(
+          (issue: any) => issue[group.key] !== undefined,
+        );
       } else {
-        aggregateVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
-          return sum + (issue[group.key] || 0); // Sum up the values for the key
-        }, 0), 'day');
+        filteredIssues = issueData.filter(
+          (issue: any) => issue[group.key1].includes(group.value1)
+        );
+      }
+      let aggregateVal = 0;
+      if (group.aggregation === 'count') {
+        if (filteredIssues?.length) {
+          aggregateVal = filteredIssues.length
+        } else {
+          aggregateVal = issueData.length
+        }
+      } else if (group.aggregation === 'sum') {
+        if (filteredIssues?.length) {
+          aggregateVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
+            return sum + (issue[group.key] || 0); // Sum up the values for the key
+          }, 0), 'day');
+        } else {
+          aggregateVal = this.convertToHoursIfTime(issueData.reduce((sum: any, issue: any) => {
+            return sum + (issue[group.key] || 0); // Sum up the values for the key
+          }, 0), 'day');
+        }
       }
 
       chartData.push({
         category: group.name,
         value: aggregateVal,
-        icon: this.iconObj[group.name]
+        icon: this.iconObj[group.name],
+        totalIssues: issueData.length,
+        color: color[index]
       });
     });
 
@@ -326,7 +347,7 @@ export class KpiHelperService {
         returnDataSet = this.filterLessKPI(inputData.trendValueList);
         break;
       case 'table-v2':
-        returnDataSet = this.tabularKPI(inputData);
+        returnDataSet = this.tabularKPI(inputData, color);
         break;
       case 'tableNonRawData':
         returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1);

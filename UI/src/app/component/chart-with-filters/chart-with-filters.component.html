@@ -2,12 +2,19 @@
   <div class="p-d-flex p-jc-between">
     <p-selectButton [options]="filters?.filterGroup1" [(ngModel)]="selectedMainFilter"
       (onOptionClick)="mainFilterSelect($event)" optionLabel="filterName"></p-selectButton>
-    <p-button label="Apply Filters" icon="pi pi-filter" styleClass="filter-btn" (click)="op.toggle($event)"></p-button>
+    <ng-container *ngIf="filters && filters?.length">
+      <p-button label="Apply Filters" icon="pi pi-filter" styleClass="filter-btn"
+        (click)="op.toggle($event)"></p-button>
+    </ng-container>
+    <ng-container *ngIf="category && category?.length">
+      <p-selectButton [options]="category" [(ngModel)]="selectedMainCategory"
+      (onOptionClick)="categorySelect($event)" optionLabel="categoryName"></p-selectButton>
+    </ng-container>
   </div>
   <p-overlayPanel #op>
-    <app-kpi-additional-filter [data]="data" [dataCopy]="dataCopy" [modifiedData]="modifiedData" 
-    [selectedFilter2]="selectedFilter2" [selectedMainFilter]="selectedMainFilter" [filters]="filters"
-    (modifiedDataResult)="applyAdditionalFilters($event)"></app-kpi-additional-filter>
+    <app-kpi-additional-filter [data]="data" [dataCopy]="dataCopy" [modifiedData]="modifiedData"
+      [selectedFilter2]="selectedFilter2" [selectedMainFilter]="selectedMainFilter" [filters]="filters"
+      (modifiedDataResult)="applyAdditionalFilters($event)"></app-kpi-additional-filter>
   </p-overlayPanel>
   <div class="p-d-flex p-jc-between" *ngIf="modifiedData?.length">
     <div id="legend" [ngStyle]="{'width': selectedTab === 'iteration' ? '400px' : '250px'}">

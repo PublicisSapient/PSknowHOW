@@ -41,7 +41,7 @@ public class UpdateKpiMasterForIterationKpis {
 		//update KPI subcategory
 		changeFieldValue("kpi125", "kpiSubCategory", "Iteration Review", kpiMaster);
 
-		deleteDocument(Arrays.asList("kpi132", "kpi140", "kpi145", "kpi134", "kpi176"), kpiMaster);
+		deleteDocument(Arrays.asList("kpi132", "kpi140", "kpi145", "kpi134"), kpiMaster);
 
 		//update chart type
 		changeFieldValue("kpi120", CHART_TYPE, "stacked-bar-chart", kpiMaster);

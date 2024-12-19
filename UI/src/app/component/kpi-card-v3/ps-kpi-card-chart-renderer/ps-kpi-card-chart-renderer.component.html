@@ -8,13 +8,13 @@
   <app-semi-circle-donut-chart *ngSwitchCase="'semi-circle-donut-chart'" [value]="chartData" [max]="100"
     [width]="chartWidth" [height]="chartHeight"></app-semi-circle-donut-chart>
   <app-chart-with-filters [data]="chartData" *ngSwitchCase="'chartWithFilter'" [filters]="chartData?.filterGroup"
-  [selectedTab]="'iteration'">
+  [selectedTab]="'iteration'" [category]="chartData?.category">
   </app-chart-with-filters>
   <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'"
     [data]="chartData" [filters]="[]">
   </app-cumulative-line-chart>
   <app-tabular-kpi-v2 *ngSwitchCase="'table-v2'"
-  [data]="chartData" [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
+  [data]="chartData" [kpiId]="kpiId" [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
   <app-tabular-kpi-v2 *ngSwitchCase="'tableNonRawData'"
   [data]="chartData" [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
   <app-tabular-kpi-with-donut-chart *ngSwitchCase="'tabular-with-donut-chart'" [data]="chartData"></app-tabular-kpi-with-donut-chart>
