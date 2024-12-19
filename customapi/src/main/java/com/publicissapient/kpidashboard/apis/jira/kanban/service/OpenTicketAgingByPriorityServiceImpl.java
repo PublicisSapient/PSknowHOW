@@ -248,7 +248,7 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 
 				rangeWisePriorityCountMap
 						.forEach((rangeMonth, priorityCountMap) -> populateProjectFilterWiseDataMap(priorityCountMap,
-								priorityList, trendValueMap, node.getProjectFilter().getId(), rangeMonth));
+								priorityList, trendValueMap, node.getProjectFilter().getName(), rangeMonth));
 
 				// Populates data in Excel for validation for tickets created before
 				populateExcelDataObject(requestTrackerId, node.getProjectFilter().getId(), excelData,
@@ -301,13 +301,12 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 	 * @param projectWisePriorityCountMap
 	 * @param projectWisePriorityList
 	 * @param trendValueMap
-	 * @param projectNodeId
+	 * @param projectName
 	 * @param rangeMonth
 	 */
 	private void populateProjectFilterWiseDataMap(Map<String, Long> projectWisePriorityCountMap,
-			Set<String> projectWisePriorityList, Map<String, List<DataCount>> trendValueMap, String projectNodeId,
+			Set<String> projectWisePriorityList, Map<String, List<DataCount>> trendValueMap, String projectName,
 			String rangeMonth) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		Map<String, Long> projectFilterWiseDataMap = new HashMap<>();
 		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(projectWisePriorityList)) {

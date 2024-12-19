@@ -178,10 +178,9 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		kpiElement.setExcelColumns(KPIExcelColumn.UNIT_TEST_COVERAGE.getColumns());
 	}
 
-	private void prepareCoverageList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private void prepareCoverageList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<String> coverageList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Double> dateWiseCoverageList = new ArrayList<>();
 		history.values().forEach(sonarDetails -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
@@ -189,7 +188,7 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 					.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
 			Double coverage = metricMap.get(TEST_UNIT_COVERAGE) == null ? 0d
 					: Double.parseDouble(metricMap.get(TEST_UNIT_COVERAGE).toString());
-			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
+			String keyName = prepareSonarKeyName(projectName, sonarDetails.getName(), sonarDetails.getBranch());
 			DataCount dcObj = getDataCountObject(coverage, projectName, date, keyName);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);

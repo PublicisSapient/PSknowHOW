@@ -250,7 +250,7 @@ public class NetOpenTicketCountStatusImpl
 					String date = getRange(dateRange, kpiRequest);
 
 					populateProjectFilterWiseDataMap(projectWiseStatusCountMap, projectWiseStatusList, dataCountMap,
-							node.getProjectFilter().getId(), date);
+							node.getProjectFilter().getName(), date);
 
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 
@@ -302,13 +302,12 @@ public class NetOpenTicketCountStatusImpl
 	 *
 	 * @param projectWiseStatusList
 	 * @param projectFilterWiseDataMap
-	 * @param projectNodeId
+	 * @param projectName
 	 * @param date
 	 */
 	private void populateProjectFilterWiseDataMap(Map<String, Long> projectWiseStatusCountMap,
 			Set<String> projectWiseStatusList, Map<String, List<DataCount>> projectFilterWiseDataMap,
-			String projectNodeId, String date) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+			String projectName, String date) {
 		Map<String, Long> finalMap = new HashMap<>();
 		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(projectWiseStatusList)) {

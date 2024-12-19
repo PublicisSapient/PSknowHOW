@@ -227,10 +227,9 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		return map;
 	}
 
-	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<String> violations, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseViolationsList = new ArrayList<>();
 		List<Map<String, Object>> globalSonarViolationsHowerMap = new ArrayList<>();
 		history.values().forEach(sonarDetails -> {
@@ -254,7 +253,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 			Long sonarViolations = sonarViolationsHowerMap.values().stream().map(Integer.class::cast)
 					.mapToLong(val -> val).sum();
 
-			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
+			String keyName = prepareSonarKeyName(projectName, sonarDetails.getName(), sonarDetails.getBranch());
 			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);

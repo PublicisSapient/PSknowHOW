@@ -203,8 +203,8 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 *            sonarhistory
 	 * @param date
 	 *            node date
-	 * @param projectNodeId
-	 *            projectNodeId
+	 * @param projectName
+	 *            projectName
 	 * @param projectList
 	 *            projectList
 	 * @param debtList
@@ -214,10 +214,9 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 * @param versionDate
 	 *            versionDate
 	 */
-	private void prepareSqualeList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private void prepareSqualeList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseDebtList = new ArrayList<>();
 		history.values().forEach(sonarDetails -> {
 
@@ -226,7 +225,7 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 					.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
 
 			final Long squaleRatingValue = getSqualeRatingValue(metricMap.get(SQALE_RATING));
-			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
+			String keyName = prepareSonarKeyName(projectName, sonarDetails.getName(), sonarDetails.getBranch());
 			DataCount dcObj = getDataCount(squaleRatingValue, projectName, date);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);

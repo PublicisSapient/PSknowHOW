@@ -26,35 +26,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
-import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
-import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
-import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
-import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
-import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
-import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
-import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
-import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
-import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
-import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,23 +36,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.publicissapient.kpidashboard.apis.datamigration.model.HierarchyValueDup;
 import com.publicissapient.kpidashboard.apis.datamigration.model.MigrateData;
 import com.publicissapient.kpidashboard.apis.datamigration.model.ProjectBasicDup;
 import com.publicissapient.kpidashboard.apis.datamigration.util.InconsistentDataException;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
+import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
+import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
+import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
+import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
+import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
+import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -129,15 +130,18 @@ public class DataMigrationService {
 	private AccessRequestsRepository accessRequestsRepository;
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
+	@Autowired
+	private KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
 
 	protected Map<String, OrganizationHierarchy> nodeWiseOrganizationHierarchy;
 	protected List<ProjectBasicConfig> projectBasicConfigList;
+	protected List<ProjectBasicDup> projectBasicDupList;
 
 	public List<MigrateData> dataMigration() {
 		List<MigrateData> failureData = new ArrayList<>();
 		log.info("Fetching basic Config");
 		projectBasicConfigList = basicConfigRepository.findAll();
-		List<ProjectBasicDup> projectBasicDupList = duplicateProject(projectBasicConfigList);
+		projectBasicDupList = duplicateProject(projectBasicConfigList);
 		updateCustomizedName(projectBasicDupList);
 
 		nodeWiseOrganizationHierarchy = new HashMap<>();
@@ -256,6 +260,7 @@ public class DataMigrationService {
 			}
 
 			organizationHierarchy.setNodeId(UUID.randomUUID().toString());
+			currentHierarchy.setOrgHierarchyNodeId(organizationHierarchy.getNodeId());
 			nodeWiseOrganizationHierachy.put(key, organizationHierarchy);
 		} else {
 			// Validate parent ID consistency
@@ -265,7 +270,7 @@ public class DataMigrationService {
 				throw new InconsistentDataException(level + ":" + currentHierarchy.getValue());
 			}
 		}
-
+		currentHierarchy.setOrgHierarchyNodeId(organizationHierarchy.getNodeId());
 		return organizationHierarchy.getNodeId();
 	}
 
@@ -279,21 +284,22 @@ public class DataMigrationService {
 			// Proceed only if there are no failures and the map is populated
 			if (CollectionUtils.isEmpty(failureData) && MapUtils.isNotEmpty(nodeWiseOrganizationHierarchy)) {
 				saveOrganizationHierarchyAndUpdateProjectBasic(new ArrayList<>(nodeWiseOrganizationHierarchy.values()),
-						projectBasicConfigList);
+						projectBasicConfigList, projectBasicDupList);
 			}
 
 		} else {
 			saveOrganizationHierarchyAndUpdateProjectBasic(new ArrayList<>(nodeWiseOrganizationHierarchy.values()),
-					projectBasicConfigList);
+					projectBasicConfigList, projectBasicDupList);
 		}
 	}
 
 	public void saveOrganizationHierarchyAndUpdateProjectBasic(List<OrganizationHierarchy> organizationHierarchyList,
-			List<ProjectBasicConfig> projectBasicConfigList) {
+			List<ProjectBasicConfig> projectBasicConfigList, List<ProjectBasicDup> projectBasicDupList) {
 		log.info("Start - Updating Node Names to Original Values");
 
 		try {
 			// Update node names to match their display names
+
 			organizationHierarchyList
 					.forEach(orgHierarchy -> orgHierarchy.setNodeName(orgHierarchy.getNodeDisplayName()));
 
@@ -303,8 +309,20 @@ public class DataMigrationService {
 					.collect(Collectors.toMap(OrganizationHierarchy::getNodeDisplayName,
 							OrganizationHierarchy::getNodeId));
 
+			Map<String, List<HierarchyValueDup>> collect = projectBasicDupList.stream()
+					.collect(Collectors.toMap(ProjectBasicDup::getProjectName, ProjectBasicDup::getHierarchy));
+
 			// Update project basic config list with unique projectNodeId
 			projectBasicConfigList.forEach(projectBasicConfig -> {
+				List<HierarchyValueDup> hierarchyValueDups = collect.get(projectBasicConfig.getProjectName());
+
+				projectBasicConfig.getHierarchy()
+						.forEach(
+								hierarchyValue -> hierarchyValue.setOrgHierarchyNodeId(hierarchyValueDups.stream()
+										.filter(dup -> hierarchyValue.getHierarchyLevel().getLevel() == dup
+												.getHierarchyLevel().getLevel())
+										.toList().get(0).getOrgHierarchyNodeId()));
+
 				projectBasicConfig.setProjectNodeId(projectNameWiseUniqueId.get(projectBasicConfig.getProjectName()));
 				projectBasicConfig.setProjectDisplayName(projectBasicConfig.getProjectName());
 
@@ -372,9 +390,12 @@ public class DataMigrationService {
 		Map<String, String> projectNameWiseNodeId = projectBasicConfigList.stream().collect(
 				Collectors.toMap(a -> (a.getProjectName() + "_" + a.getId()), ProjectBasicConfig::getProjectNodeId));
 		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get("SPRINT_HISTORY");
+		List<KpiCommentsHistory> allHistory = kpiCommentsHistoryRepository.findAll();
 		List<KPIComments> all = kpiCommentsRepository.findAll();
+
 		log.info("KPI Comments Data Processing Started");
 		List<KPIComments> finalKpiComment = new ArrayList<>();
+		List<KpiCommentsHistory> finalKpiHistoryComment = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(all)) {
 			for (KPIComments kpiComment : all) {
@@ -394,7 +415,27 @@ public class DataMigrationService {
 			}
 		}
 		log.info("KPI Comments Data Processing Completed");
+		log.info("KPI Comments History Data Processing Started");
+		if (CollectionUtils.isNotEmpty(allHistory)) {
+			for (KpiCommentsHistory kpiComment : allHistory) {
+				if (projectNameWiseNodeId.containsKey(kpiComment.getNode())) {
+					kpiComment.setNode(projectNameWiseNodeId.get(kpiComment.getNode()));
+					if (StringUtils.isNotEmpty(kpiComment.getNodeChildId())
+							&& sprintNodeHistory.containsKey(kpiComment.getNodeChildId())) {
+						kpiComment.setNodeChildId(sprintNodeHistory.get(kpiComment.getNodeChildId()));
+						finalKpiHistoryComment.add(kpiComment);
+					}
+
+					else if (StringUtils.isEmpty(kpiComment.getNodeChildId())) {
+						finalKpiHistoryComment.add(kpiComment);
+					}
+
+				}
+			}
+		}
+		log.info("KPI Comments History Data Processing Completed");
 		dataSetToSave.put("KPI_COMMENT", finalKpiComment);
+		dataSetToSave.put("KPI_COMMENT_HISTORY", finalKpiHistoryComment);
 
 	}
 
