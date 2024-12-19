@@ -551,7 +551,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   //#region new card
 
   onFilterChange(event) {
-    const { selectedKey, ...updatedEvent } = event;
+    const { selectedKeyObj,selectedKey, ...updatedEvent } = event;
     const filterData = Object.fromEntries(
       Object.entries(updatedEvent).filter(
         ([_, value]) => value !== '' && value !== null && value !== undefined,
@@ -567,7 +567,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.copyCardData,
       this.colorPalette,
     );
-    this.selectedButtonValue = selectedKey;
+    this.selectedButtonValue = selectedKeyObj;
   }
 
   onFilterClear() {
