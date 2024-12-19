@@ -328,7 +328,7 @@ public class FTPRV2ServiceImpl extends JiraIterationKPIService {
 		List<KpiData> dataGroup1 = new ArrayList<>();
 		dataGroup1.add(createKpiData("Issue count", 1, "", totalStories));
 		dataGroup1.add(createKpiData(displayName, 2, unit, kpiValue));
-		dataGroup1.add(createKpiData("", 3, "", calculateFTPR(ftpStoryCount, totalStories)));
+		dataGroup1.add(createKpiData("%", 3, "", calculateFTPR(ftpStoryCount, totalStories)));
 		dataGroup.setDataGroup1(dataGroup1);
 		return dataGroup;
 	}
