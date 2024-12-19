@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.datamigration.model.MigrationLockLog;
+import com.publicissapient.kpidashboard.apis.datamigration.util.MigrationEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -132,6 +134,9 @@ public class DataMigrationService {
 	private KpiCommentsRepository kpiCommentsRepository;
 	@Autowired
 	private KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
+
+	@Autowired
+	private MigrationLockService migrationLockService;
 
 	protected Map<String, OrganizationHierarchy> nodeWiseOrganizationHierarchy;
 	protected List<ProjectBasicConfig> projectBasicConfigList;
@@ -278,6 +283,7 @@ public class DataMigrationService {
 	 * create organization hierarchy and update project basic hierarchy
 	 */
 	public void populateOrganizationHierarchy() {
+
 		if (MapUtils.isEmpty(nodeWiseOrganizationHierarchy)) {
 			log.info("Calling the validation process");
 			List<MigrateData> failureData = dataMigration();
@@ -296,69 +302,82 @@ public class DataMigrationService {
 	public void saveOrganizationHierarchyAndUpdateProjectBasic(List<OrganizationHierarchy> organizationHierarchyList,
 			List<ProjectBasicConfig> projectBasicConfigList, List<ProjectBasicDup> projectBasicDupList) {
 		log.info("Start - Updating Node Names to Original Values");
+		if (!migrationLockService.checkPreviousMigration()) {
+			MigrationLockLog fullMigration = new MigrationLockLog(MigrationEnum.MIGRATION_STEP.name());
+			try {
+				// Update node names to match their display names
 
-		try {
-			// Update node names to match their display names
+				organizationHierarchyList
+						.forEach(orgHierarchy -> orgHierarchy.setNodeName(orgHierarchy.getNodeDisplayName()));
 
-			organizationHierarchyList
-					.forEach(orgHierarchy -> orgHierarchy.setNodeName(orgHierarchy.getNodeDisplayName()));
+				// Map project names to their unique node IDs
+				Map<String, String> projectNameWiseUniqueId = organizationHierarchyList.stream()
+						.filter(orgHierarchy -> "project".equalsIgnoreCase(orgHierarchy.getHierarchyLevelId()))
+						.collect(Collectors.toMap(OrganizationHierarchy::getNodeDisplayName,
+								OrganizationHierarchy::getNodeId));
 
-			// Map project names to their unique node IDs
-			Map<String, String> projectNameWiseUniqueId = organizationHierarchyList.stream()
-					.filter(orgHierarchy -> "project".equalsIgnoreCase(orgHierarchy.getHierarchyLevelId()))
-					.collect(Collectors.toMap(OrganizationHierarchy::getNodeDisplayName,
-							OrganizationHierarchy::getNodeId));
+				Map<String, List<HierarchyValueDup>> collect = projectBasicDupList.stream()
+						.collect(Collectors.toMap(ProjectBasicDup::getProjectName, ProjectBasicDup::getHierarchy));
 
-			Map<String, List<HierarchyValueDup>> collect = projectBasicDupList.stream()
-					.collect(Collectors.toMap(ProjectBasicDup::getProjectName, ProjectBasicDup::getHierarchy));
+				// Update project basic config list with unique projectNodeId
+				projectBasicConfigList.forEach(projectBasicConfig -> {
+					List<HierarchyValueDup> hierarchyValueDups = collect.get(projectBasicConfig.getProjectName());
 
-			// Update project basic config list with unique projectNodeId
-			projectBasicConfigList.forEach(projectBasicConfig -> {
-				List<HierarchyValueDup> hierarchyValueDups = collect.get(projectBasicConfig.getProjectName());
+					projectBasicConfig.getHierarchy()
+							.forEach(
+									hierarchyValue -> hierarchyValue.setOrgHierarchyNodeId(hierarchyValueDups.stream()
+											.filter(dup -> hierarchyValue.getHierarchyLevel().getLevel() == dup
+													.getHierarchyLevel().getLevel())
+											.toList().get(0).getOrgHierarchyNodeId()));
 
-				projectBasicConfig.getHierarchy()
-						.forEach(
-								hierarchyValue -> hierarchyValue.setOrgHierarchyNodeId(hierarchyValueDups.stream()
-										.filter(dup -> hierarchyValue.getHierarchyLevel().getLevel() == dup
-												.getHierarchyLevel().getLevel())
-										.toList().get(0).getOrgHierarchyNodeId()));
+					projectBasicConfig
+							.setProjectNodeId(projectNameWiseUniqueId.get(projectBasicConfig.getProjectName()));
+					projectBasicConfig.setProjectDisplayName(projectBasicConfig.getProjectName());
 
-				projectBasicConfig.setProjectNodeId(projectNameWiseUniqueId.get(projectBasicConfig.getProjectName()));
-				projectBasicConfig.setProjectDisplayName(projectBasicConfig.getProjectName());
+				});
 
-			});
+				// projectHierarchy
+				Map<ObjectId, String> projectIdWiseUniqueId = projectBasicConfigList.stream()
+						.collect(Collectors.toMap(ProjectBasicConfig::getId, ProjectBasicConfig::getProjectNodeId));
+				List<AccountHierarchy> accountHierarchyRepositoryAll = accountHierarchyRepository.findAll();
+				List<KanbanAccountHierarchy> kanbanAccountHierarchyList = kanbanAccountHierarchyRepository.findAll();
+				List<SprintDetails> allSprintDetails = sprintRepository.findAll();
+				Map<String, Object> dataToSave = createDataToSave(organizationHierarchyList, projectBasicConfigList,
+						projectIdWiseUniqueId, accountHierarchyRepositoryAll, kanbanAccountHierarchyList,
+						allSprintDetails);
 
-			// projectHierarchy
-			Map<ObjectId, String> projectIdWiseUniqueId = projectBasicConfigList.stream()
-					.collect(Collectors.toMap(ProjectBasicConfig::getId, ProjectBasicConfig::getProjectNodeId));
-			List<AccountHierarchy> accountHierarchyRepositoryAll = accountHierarchyRepository.findAll();
-			List<KanbanAccountHierarchy> kanbanAccountHierarchyList = kanbanAccountHierarchyRepository.findAll();
-			List<SprintDetails> allSprintDetails = sprintRepository.findAll();
-			Map<String, Object> dataToSave = createDataToSave(organizationHierarchyList, projectBasicConfigList,
-					projectIdWiseUniqueId, accountHierarchyRepositoryAll, kanbanAccountHierarchyList, allSprintDetails);
+				dataToSave.put("ORGANIZATION_HIERARCHY", organizationHierarchyList);
+				dataToSave.put("PROJECT_BASIC", projectBasicConfigList);
+				// Save all data to the repository
+				saveService.saveToDatabase(dataToSave);
+				log.info("Data successfully saved to the database.");
+				fullMigration.setMigrated(true);
 
-			dataToSave.put("ORGANIZATION_HIERARCHY", organizationHierarchyList);
-			dataToSave.put("PROJECT_BASIC", projectBasicConfigList);
-			// Save all data to the repository
-			saveService.saveToDatabase(dataToSave);
-			log.info("Data successfully saved to the database.");
+			} catch (DuplicateKeyException ex) {
+				log.error("Duplicate project name found in organization hierarchy: {}", ex.getMessage());
+				fullMigration.setMigrated(false);
+				throw new DuplicateKeyException(
+						"Duplicate project name found in organization hierarchy: " + ex.getMessage(), ex);
 
-		} catch (DuplicateKeyException ex) {
-			log.error("Duplicate project name found in organization hierarchy: {}", ex.getMessage());
-			throw new DuplicateKeyException(
-					"Duplicate project name found in organization hierarchy: " + ex.getMessage(), ex);
+			} catch (DataIntegrityViolationException ex) {
+				log.error("Data integrity violation occurred: {}", ex.getMessage());
+				fullMigration.setMigrated(false);
+				throw new DataIntegrityViolationException(
+						"Data integrity violation while saving organization hierarchy or project basic config: "
+								+ ex.getMessage(),
+						ex);
 
-		} catch (DataIntegrityViolationException ex) {
-			log.error("Data integrity violation occurred: {}", ex.getMessage());
-			throw new DataIntegrityViolationException(
-					"Data integrity violation while saving organization hierarchy or project basic config: "
-							+ ex.getMessage(),
-					ex);
-
-		} catch (Exception ex) {
-			log.error("An unexpected error occurred: {}", ex.getMessage());
-			throw new IllegalStateException("An unexpected error occurred while saving data: " + ex.getMessage(), ex);
+			} catch (Exception ex) {
+				log.error("An unexpected error occurred: {}", ex.getMessage());
+				fullMigration.setMigrated(false);
+				throw new IllegalStateException("An unexpected error occurred while saving data: " + ex.getMessage(),
+						ex);
+			} finally {
+				fullMigration.setMigrationDate(LocalDateTime.now());
+				migrationLockService.saveToDB(fullMigration);
+			}
 		}
+
 	}
 
 	private Map<String, Object> createDataToSave(List<OrganizationHierarchy> organizationHierarchyList,
