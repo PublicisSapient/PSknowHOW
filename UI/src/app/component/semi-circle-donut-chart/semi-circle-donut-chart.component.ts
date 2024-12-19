@@ -13,7 +13,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
   @Input() width: number = 200; // Width of the chart
   @Input() height: number = 100; // Height of the chart (half the width)
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef) { }
 
   ngOnInit(): void {
     this.createDonutChart();
@@ -27,62 +27,68 @@ export class SemiCircleDonutChartComponent implements OnInit {
     }
   }
 
-private createDonutChart(): void {
-  const chartWidth = (this.width === undefined) ? 100 : this.width;; // Width of the chart
-  const chartHeight = (this.height === undefined) ? 200 : this.height;; // Height of the chart
-  const radius = Math.min(chartWidth, chartHeight) / 2; // Radius of the donut
-  const thickness = Math.floor(radius/3); // Thickness of the donut ring
-  // Clear existing SVG content
-  d3.select(this.elementRef.nativeElement).selectAll('svg').remove();
+  private createDonutChart(): void {
+    const chartWidth = (this.width === undefined) ? 100 : this.width;; // Width of the chart
+    const chartHeight = (this.height === undefined) ? 200 : this.height;; // Height of the chart
+    const radius = Math.min(chartWidth, chartHeight) / 2; // Radius of the donut
+    const thickness = Math.floor(radius / 3); // Thickness of the donut ring
+    // Clear existing SVG content
+    d3.select(this.elementRef.nativeElement).selectAll('svg').remove();
 
-  // Create the SVG container
-  const svg = d3
-    .select(this.elementRef.nativeElement)
-    .append('svg')
-    .attr('width', chartWidth)
-    .attr('height', chartHeight)
-    .append('g')
-    .attr('transform', `translate(${chartWidth / 2}, ${chartHeight / 2})`); // Center the chart
+    // Create the SVG container
+    const svg = d3
+      .select(this.elementRef.nativeElement)
+      .append('svg')
+      .attr('width', chartWidth)
+      .attr('height', chartHeight)
+      .append('g')
+      .attr('transform', `translate(${chartWidth / 2}, ${chartHeight / 2})`); // Center the chart
 
-  // Create arc generator
-  const arc = d3.arc()
-    .innerRadius(radius - thickness)
-    .outerRadius(radius);
+    // Create arc generator
+    const roundedArc = d3.arc()
+      .innerRadius(radius - thickness)
+      .outerRadius(radius)
+      .cornerRadius(thickness / 2); // rounded ends
 
-  // Create pie generator
-  const pie = d3.pie()
-    .sort(null)
-    .value(d => d.value);
+    // Create arc generator
+    const arc = d3.arc()
+      .innerRadius(radius - thickness)
+      .outerRadius(radius);
 
-  // Define the data (completed and remaining)
-  const data = [
-    { value: this.value, color: '#627AD0' }, // Blue color for completed
-    { value: this.max - this.value, color: '#E5EAF2' } // Gray color for remaining
-  ];
+    // Create pie generator
+    const pie = d3.pie()
+      .sort(null)
+      .value(d => d.value);
 
-  // Append the arcs
-  const path = svg.selectAll('path')
-    .data(pie(data))
-    .enter()
-    .append('path')
-    .attr('d', arc)
-    .attr('fill', d => d.data.color);
+    // Define the data (completed and remaining)
+    const data = [
+      { value: this.value, color: '#627AD0' }, // Blue color for completed
+      { value: this.max - this.value, color: '#E5EAF2' } // Gray color for remaining
+    ];
 
-  // Add central text
-  svg.append('text')
-    .attr('text-anchor', 'middle')
-    .attr('dy', '-0.5em') // Adjust text position
-    .style('font-size', '14px')
-    .style('fill', '#627AD0')
-    .text('%');
+    // Append the arcs
+    const path = svg.selectAll('path')
+      .data(pie(data))
+      .enter()
+      .append('path')
+      .attr('d', roundedArc)
+      .attr('fill', d => d.data.color);
 
-  svg.append('text')
-    .attr('text-anchor', 'middle')
-    .attr('dy', '1em') // Adjust text position
-    .style('font-size', '18px')
-    .style('font-weight', 'bold')
-    .style('fill', '#627AD0')
-    .text(this.value);
-}
+    // Add central text
+    svg.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '-0.5em') // Adjust text position
+      .style('font-size', '14px')
+      .style('fill', '#627AD0')
+      .text('%');
+
+    svg.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '1em') // Adjust text position
+      .style('font-size', '18px')
+      .style('font-weight', 'bold')
+      .style('fill', '#627AD0')
+      .text(this.value);
+  }
 
 }
