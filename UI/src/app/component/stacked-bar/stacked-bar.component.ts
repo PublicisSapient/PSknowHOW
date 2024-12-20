@@ -60,8 +60,8 @@ export class StackedBarComponent implements OnInit, OnChanges {
       percentage: (d.value / totalValue) * 100,
     }));
   
-    // Clear any previous SVG content
-    d3.select(element).selectAll('*').remove();
+    // Clear any existing SVG content
+    d3.select(this.elRef.nativeElement).selectAll('svg').remove();
   
     // Create the SVG container
     const svg = d3
