@@ -552,7 +552,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   onFilterChange(event) {
     const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
-    if (selectedKeyObj['Category'] !== 'Value') {
+    if (selectedKeyObj && selectedKeyObj['Category'] !== 'Value') {
       const filterIssues = this.applyDynamicfilter(
         this.cardData.issueData,
         [selectedKeyObj, updatedEvent]
