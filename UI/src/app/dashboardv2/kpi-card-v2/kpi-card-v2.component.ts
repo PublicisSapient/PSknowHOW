@@ -580,7 +580,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     let filteredData = [];
     // cleanup empty or null or undefined props
     filterArr = this.sanitizeArray(filterArr);
-    
+
     if (filterArr.length) {
       data.forEach((item: any) => {
 
@@ -656,7 +656,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
       return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
     } else if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart') {
-      if (!!this.selectedButtonValue && !!this.selectedButtonValue[0].key) {
+      if (!!this.selectedButtonValue?.length && !!this.selectedButtonValue[0]?.key) {
         const tempCount = this.selectedButtonValue[0].key
         return this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
       } else {

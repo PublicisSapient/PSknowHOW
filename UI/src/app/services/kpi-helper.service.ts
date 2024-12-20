@@ -181,9 +181,9 @@ export class KpiHelperService {
           test['color1'] = color[0];
         } else if (dataGroupElem.aggregation === 'sum') {
           test['value2'] = issueDataCopy.reduce((acc: number, issue: any) => {
-            return acc + (issue['Remaining Hours'] || 0); // Use the key from the data group
+            return acc + (issue[dataGroupElem.key] || 0); // Use the key from the data group
           }, 0);
-          test['value2'] = test['value2'] / (8 * 60);
+          
           test['category2'] = 'Story Points';
           test['color2'] = color[1];
         }
@@ -196,7 +196,7 @@ export class KpiHelperService {
     chartData['categoryData'] = categoryGroup;
     chartData['summaryHeader'] = json.dataGroup.dataGroup2[0].name;
     chartData['summaryValue'] = this.convertToHoursIfTime(issueData.reduce((acc: number, issue: any) => {
-      return acc + (issue['Remaining Hours'] || 0); // Use the key from the data group
+      return acc + (issue[json.dataGroup.dataGroup2[0].key] || 0); // Use the key from the data group
     }, 0), 'day');
     return { chartData: chartData };
   }
