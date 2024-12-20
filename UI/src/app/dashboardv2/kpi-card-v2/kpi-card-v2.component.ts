@@ -606,7 +606,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             value: element[x]
           }
         });
-        filteredData = filteredData.filter(issue => filterObj[0].value.includes(issue[filterObj[0].key]));
+        if (Array.isArray(filterObj[0].value)) {
+          filteredData = filteredData.filter(issue => filterObj[0].value.includes(issue[filterObj[0].key]));
+        } else {
+          filteredData = filteredData.filter(issue => issue[filterObj[0].key].includes(filterObj[0].value));
+        }
       });
     }
     return filteredData;
