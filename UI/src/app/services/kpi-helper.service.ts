@@ -140,7 +140,6 @@ export class KpiHelperService {
         } else {
           sum = issueData.length;
         }
-
         // Push the result into chartData array
         chartData.push({ category: name, value: sum, color: color[groupKey] }); // Default color if not specified
       }
@@ -149,8 +148,8 @@ export class KpiHelperService {
     const modifiedDataSet = chartData.map((item: any) => {
       return {
         ...item,
-        tooltipValue: this.convertToHoursIfTime(item.value, json.unit),
-        value: Math.floor(item.value / 60),
+        tooltipValue: item.value,//this.convertToHoursIfTime(item.value, json.unit),
+       // value: Math.floor(item.value / 60),
         unit: json.unit,
       };
     });
