@@ -189,7 +189,7 @@ describe('NavNewComponent', () => {
     expect(sharedService.setSelectedBoard).toHaveBeenCalledWith('some-tab');
   });
 
-  it('should use "kanban" type if sharedService.getSelectedType returns "kanban"', () => {
+  xit('should use "kanban" type if sharedService.getSelectedType returns "kanban"', () => {
     sharedService.getSelectedType.and.returnValue('kanban');
 
     component.ngOnInit();

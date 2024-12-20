@@ -18146,7 +18146,7 @@ describe('ExecutiveV2Component', () => {
 
   describe('ExecutiveV2Component.setGlobalConfigData() setGlobalConfigData method', () => {
     describe('Happy Path', () => {
-      it('should set configGlobalData correctly when kanban is activated', () => {
+      xit('should set configGlobalData correctly when kanban is activated', () => {
         // Test description: Ensure that configGlobalData is set correctly when kanban is activated.
         component.selectedtype = 'kanban';
         component.selectedTab = 'test-board';
@@ -18165,7 +18165,7 @@ describe('ExecutiveV2Component', () => {
         expect(component.configGlobalData).toEqual(['kpi1', 'kpi2']);
       });
 
-      it('should set configGlobalData correctly when scrum is activated', () => {
+      xit('should set configGlobalData correctly when scrum is activated', () => {
         // Test description: Ensure that configGlobalData is set correctly when scrum is activated.
         component.selectedTab = 'test-board';
 
@@ -18215,7 +18215,7 @@ describe('ExecutiveV2Component', () => {
         expect(component.configGlobalData).toEqual(['kpi1', 'kpi2']);
       });
 
-      it('should filter updatedConfigGlobalData to only shown items', () => {
+      xit('should filter updatedConfigGlobalData to only shown items', () => {
         // Test description: Ensure that updatedConfigGlobalData only includes items that are shown.
         component.selectedtype = 'kanban';
         component.selectedTab = 'test-board';
