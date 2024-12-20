@@ -29,7 +29,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author girpatha
@@ -40,7 +39,7 @@ public class MetadataIdentifierUpdaterForTemplates {
     private final MongoTemplate mongoTemplate;
 
     @Value("${json.file.path}")
-    private String JSON_FILE_PATH;
+    private String jsonFilePath;
 
     private static final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";
     private static final String TEMPLATE_CODE = "templateCode";
@@ -54,14 +53,13 @@ public class MetadataIdentifierUpdaterForTemplates {
     public void execution() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         List<Document> metadataIdentifiers = mapper.readValue(
-                TypeReference.class.getResourceAsStream(JSON_FILE_PATH),
+                TypeReference.class.getResourceAsStream(jsonFilePath),
                 new TypeReference<List<Document>>() {
                 }
         );
 
         List<Document> filteredMetadataIdentifiers = metadataIdentifiers.stream()
-                .filter(doc -> "11".equals(doc.getString(TEMPLATE_CODE)) || "12".equals(doc.getString(TEMPLATE_CODE)))
-                .collect(Collectors.toList());
+                .filter(doc -> "11".equals(doc.getString(TEMPLATE_CODE)) || "12".equals(doc.getString(TEMPLATE_CODE))).toList();
 
         MongoCollection<Document> collection = mongoTemplate.getCollection(METADATA_IDENTIFIER_COLLECTION);
         collection.insertMany(filteredMetadataIdentifiers);
