@@ -67,7 +67,7 @@ public class MetadataIdentifierUpdaterForTemplates {
 
         collection.updateMany(
                 new Document(TEMPLATE_NAME, "Standard Template"),
-                new Document("$set", new Document(TEMPLATE_NAME, "Standard non-DOJO Template"))
+                new Document("$set", new Document(TEMPLATE_NAME, "Standard DOJO Template"))
         );
     }
 
@@ -77,7 +77,7 @@ public class MetadataIdentifierUpdaterForTemplates {
         collection.deleteMany(new Document(TEMPLATE_CODE, new Document("$in", List.of("11", "12"))));
 
         collection.updateMany(
-                new Document(TEMPLATE_NAME, "Standard non-DOJO Template"),
+                new Document(TEMPLATE_NAME, "Standard DOJO Template"),
                 new Document("$set", new Document(TEMPLATE_NAME, "Standard Template"))
         );
     }
