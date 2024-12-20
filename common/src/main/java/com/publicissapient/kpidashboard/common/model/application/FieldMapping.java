@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -547,6 +548,17 @@ public class FieldMapping extends FieldMappingHistory implements Cloneable {
 
 	@Override
 	public FieldMapping clone() throws CloneNotSupportedException {
-		return (FieldMapping) super.clone();
+		try {
+			FieldMapping cloned = (FieldMapping) super.clone();
+			Field[] historyFields = FieldMappingHistory.class.getDeclaredFields();
+			for (Field field : historyFields) {
+				field.setAccessible(true);
+				field.set(cloned, null);
+
+			}
+			return cloned;
+		} catch (Exception e) {
+			throw new CloneNotSupportedException("Failed to clone FieldMapping object: " + e.getMessage());
+		}
 	}
 }
