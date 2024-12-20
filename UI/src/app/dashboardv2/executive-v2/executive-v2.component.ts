@@ -839,7 +839,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // check for Capacity KPI and sort
-          this.updatedConfigGlobalData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121').sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
+          this.updatedConfigGlobalData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi176').sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
 
