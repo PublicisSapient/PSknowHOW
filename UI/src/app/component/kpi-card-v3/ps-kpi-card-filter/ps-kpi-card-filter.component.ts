@@ -53,15 +53,11 @@ export class PsKpiCardFilterComponent implements OnInit {
     const tempObject = {
       [this.kpiCardFilter.categoryData.categoryKey] : event.value
     }
-    this.selectedKeyObj = tempObject
-    
-    // .map((item: { unit: any; key: any; }) => ({
-    //     unit: item.unit,
-    //     key: item.key,
-    //   }))
-
+    this.selectedKeyObj = tempObject;
     this.handleChange();
   }
+
+  
   setDefaultFilter(filter: any) {
     if (filter.kpiFilters) {
       Object.entries(filter.kpiFilters).forEach(([key, value]) => {

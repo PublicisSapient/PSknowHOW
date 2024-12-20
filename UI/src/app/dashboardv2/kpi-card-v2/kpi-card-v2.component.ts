@@ -552,17 +552,30 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   onFilterChange(event) {
     const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
+    if (selectedKeyObj && selectedKeyObj['Category'] !== 'Value') {
+      const filterIssues = this.applyDynamicfilter(
+        this.cardData.issueData,
+        [selectedKeyObj, updatedEvent]
+      );
+      this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+      this.currentChartData = this.prepareChartData(
+        this.copyCardData,
+        this.colorPalette,
+        selectedKey
+      );
+    } else {
+      const filterIssues = this.applyDynamicfilter(
+        this.cardData.issueData,
+        [updatedEvent]
+      );
+      this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
 
-    const filterIssues = this.applyDynamicfilter(
-      this.cardData.issueData,
-      [selectedKeyObj, updatedEvent]
-    );
-    this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
-    this.currentChartData = this.prepareChartData(
-      this.copyCardData,
-      this.colorPalette,
-      selectedKey
-    );
+      this.currentChartData = this.prepareChartData(
+        this.copyCardData,
+        this.colorPalette,
+        'Value'
+      );
+    }
     this.selectedButtonValue = selectedKeyObj;
   }
 
@@ -632,11 +645,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
 
   prepareChartData(inputData: any, color: any, key?: any) {
-    if (this.kpiData.kpiDetail.chartType && this.kpiData.kpiDetail.chartType !== '') {
-      return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color, key);
-    } else {
-      return {};
-    }
+    return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color, key);
   }
 
   calculateValue(issueData, key: string): string {
