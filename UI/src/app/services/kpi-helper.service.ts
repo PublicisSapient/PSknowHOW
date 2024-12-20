@@ -46,7 +46,7 @@ export class KpiHelperService {
     this.headerAction.next(action);
   }
 
-  stackedBarChartData(inputData: any, color: any,key:string) {
+  stackedBarChartData(inputData: any, color: any, key: string) {
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
@@ -60,13 +60,15 @@ export class KpiHelperService {
     // Handle categoryGroup if present
     // if (categoryGroup && dataGroup1[0]?.showAsLegend === false) {
     categoryGroup.forEach((category: any, index) => {
+      let filteredIssues = [];
       // Filter issues matching the categoryName
-      const filteredIssues = issueData.filter(
+      filteredIssues = issueData.filter(
         (issue: any) => issue.Category[0] === category.categoryName,
       );
+
       chartData.push({
         category: category.categoryName,
-        value:(key ? filteredIssues.reduce((sum, issue) => sum + (issue.key || 0), 0) : filteredIssues.length)* (category.categoryValue === '+' ? 1 : -1),
+        value: (key ? filteredIssues.reduce((sum, issue) => sum + (issue[key] || 0), 0) : filteredIssues.length) * (category.categoryValue === '+' ? 1 : -1),
         color: color[index % color.length],
       });
     });
@@ -78,7 +80,7 @@ export class KpiHelperService {
     return { chartData, totalCount };
   }
 
-  stackedChartData(inputData: any, color: any) {
+  stackedChartData(inputData: any, color: any, key: string) {
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
@@ -183,7 +185,7 @@ export class KpiHelperService {
           test['value2'] = issueDataCopy.reduce((acc: number, issue: any) => {
             return acc + (issue[dataGroupElem.key] || 0); // Use the key from the data group
           }, 0);
-          
+
           test['category2'] = 'Story Points';
           test['color2'] = color[1];
         }
@@ -325,17 +327,17 @@ export class KpiHelperService {
       }${rminutes !== 0 ? rminutes + 'm' : ''}`;
   }
 
-  getChartDataSet(inputData, chartType, color,key?:any) {
+  getChartDataSet(inputData, chartType, color, key?: any) {
     let returnDataSet;
     switch (chartType) {
       case 'stacked-bar-chart':
-        returnDataSet = this.stackedBarChartData(inputData, color,key);
+        returnDataSet = this.stackedBarChartData(inputData, color, key);
         break;
       case 'bar-chart':
         returnDataSet = this.barChartData(inputData, color);
         break;
       case 'stacked-bar':
-        returnDataSet = this.stackedChartData(inputData, color);
+        returnDataSet = this.stackedChartData(inputData, color, key);
         break;
       case 'semi-circle-donut-chart':
         returnDataSet = this.semicircledonutchartData(inputData, color);
