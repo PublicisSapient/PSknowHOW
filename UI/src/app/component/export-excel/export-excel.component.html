@@ -2,7 +2,9 @@
   (onHide)="clearModalDataOnClose()">
   <p-header>
     <div>
-      {{modalDetails['header']}}
+      <div>
+        {{modalDetails['header']}}
+      </div>
       <div class="export-button">
         <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save" class="p-p-2 p-mr-2" [disabled] = "isDisableSaveCOnfigurationBtn"
           (click)="saveTableColumnOrder()"></button>
@@ -41,8 +43,9 @@
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
             <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width" pReorderableColumn [pReorderableColumnDisabled]="forzenColumns.includes(item?.toLowerCase())" pFrozenColumn alignFrozen="left"
-            [frozen]="forzenColumns?.includes(item?.toLowerCase())" [ngClass]="{'overlap': filteredColumn === item }" >
-              <div class="table-head">
+            [frozen]="forzenColumns?.includes(item?.toLowerCase())" [ngClass]="{'overlap': filteredColumn === item,'move-top':forzenColumns?.includes(item?.toLowerCase())}" 
+            [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4  ? '380px' : '190px'}">
+              <div class="table-head" >
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
                   <p-columnFilter [field]="item" matchMode="in" *ngIf="!excludeColumnFilter.includes(item)"
@@ -71,15 +74,16 @@
           <ng-container *ngFor="let column of modalDetails['tableHeadings']">
             <!-- need to add different container for issue id because issue id marker was not working -->
            <ng-container *ngIf="column?.toLowerCase() === 'issue id'">
-            <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn>
+            <td class="font-small p-p-0 text-center min-max-width" pFrozenColumn [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4 ? '380px' : '190px'}">
               <div class="cell-indicator">
                 <div class="color-indicator" [ngStyle]="{'background-color': rowData['marker'] ? rowData['marker'] : ''}"></div>
-                <a [href]="rowData[column].hyperlink" class="text-blue p-ml-1"  rel="noopener" target="_blank">{{rowData[column].text}}</a>
+                <a *ngIf="typeOf(rowData[column]) else simpleText" [href]="rowData[column].hyperlink" class="text-blue p-ml-1"  rel="noopener" target="_blank">{{rowData[column]?.text}}</a>
+                <ng-template #simpleText>{{rowData[column]}}</ng-template>
               </div>
             </td>
            </ng-container>
            <ng-container *ngIf="column?.toLowerCase() !== 'issue id'">
-            <td class="font-small min-max-width multidata-col" pFrozenColumn [frozen]="forzenColumns?.includes(column?.toLowerCase())">
+            <td class="font-small min-max-width multidata-col" pFrozenColumn [frozen]="forzenColumns?.includes(column?.toLowerCase())" [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4  ? '380px' : '190px'}">
               <ng-container [ngSwitch]="checkIfArray(rowData[column]) ? 'array' : (rowData[column]?.hasOwnProperty('hyperlink') ? 'hyperlink' : (column.toLowerCase() === 'sprint rating' ? 'sprintRating' :(column.toLowerCase().includes('date'))?'date': 'other'))">
                 <ng-container *ngSwitchCase="'array'">
                   <ng-container *ngFor="let data of rowData[column]">

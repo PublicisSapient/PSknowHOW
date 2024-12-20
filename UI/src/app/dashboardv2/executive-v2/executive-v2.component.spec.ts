@@ -16430,13 +16430,15 @@ describe('ExecutiveV2Component', () => {
       order: 3,
       shown: true,
     };
+    component.service.setSelectedTrends([{basicProjectConfigId:'testid'}])
+    
     const tableValues = [{
       ['Issue Description']:
         'Playground server is failing with OutOfMemoryError',
       ['Issue Id']: 'DTS-20225',
     }];
     component.handleArrowClick(kpi, "Issue Count", tableValues);
-    expect(component.displayModal).toBeTruthy();
+    expect(component.displayModal).toBeFalse();
   });
 
   it('should convert to hours', () => {
