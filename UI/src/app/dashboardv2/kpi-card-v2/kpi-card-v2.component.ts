@@ -555,7 +555,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (selectedKeyObj && selectedKeyObj['Category'] !== 'Value') {
       const filterIssues = this.applyDynamicfilter(
         this.cardData.issueData,
-        [selectedKeyObj, updatedEvent]
+        [selectedKeyObj, ...Object.entries(updatedEvent).map(([key, value]) => {
+          return { [key]: value };
+        })]
       );
       this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
       this.currentChartData = this.prepareChartData(
@@ -566,7 +568,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     } else {
       const filterIssues = this.applyDynamicfilter(
         this.cardData.issueData,
-        [updatedEvent]
+        Object.entries(updatedEvent).map(([key, value]) => {
+          return { [key]: value };
+        })
       );
       this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
 
@@ -588,59 +592,45 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     );
   }
 
-  applyDynamicfilter(data: [], filterArr: any) {
+  applyDynamicfilter(data: any[], filterArr: any) {
     console.log(filterArr);
-    let filteredData = [];
+    let filteredData = data;
     // cleanup empty or null or undefined props
     filterArr = this.sanitizeArray(filterArr);
 
     if (filterArr.length) {
-      data.forEach((item: any) => {
-
-        filterArr.forEach(filter => {
-          if (filter) {
-            // actual filtering
-            Object.entries(filter).every(([key, value]) => {
-              if (Array.isArray(item[key])) {
-                if (item[key].includes(value)) {
-                  filteredData.push(item);
-                }
-              } else {
-                if (Array.isArray(value)) {
-                  value.forEach(val => {
-                    if (item[key] === val) {
-                      filteredData.push(item);
-                    }
-                  });
-                }
-                else if (item[key] === value) {
-                  filteredData.push(item);
-                }
-              }
-            });
+      filterArr.forEach(element => {
+        let filterObj = Object.keys(element).map(x => {
+          return {
+            key: x,
+            value: element[x]
           }
         });
+        filteredData = filteredData.filter(issue => filterObj[0].value.includes(issue[filterObj[0].key]));
       });
-    } else {
-      filteredData = data;
     }
     return filteredData;
   }
 
   // cleanup empty or null or undefined props
-  sanitizeArray(array) {
-    return array.filter(item =>
-      item && // Remove null or undefined
-      typeof item === 'object' && // Ensure it's an object
-      Object.values(item).some(value => Boolean(value) && (!Array.isArray(value) || value.length > 0)) // At least one valid property
-    ).map(item => {
-      // Remove empty or falsy properties from each object
-      return Object.fromEntries(
-        Object.entries(item).filter(([_, value]) =>
-          Boolean(value) && (!Array.isArray(value) || value.length > 0)
-        )
-      );
-    });
+  sanitizeArray(input) {
+    // Recursive function to handle nested structures
+    function sanitize(item) {
+      if (Array.isArray(item)) {
+        return item
+          .map(sanitize) // Recursively sanitize array elements
+          .filter((el) => el !== null && el !== undefined && Object.keys(el).length > 0); // Exclude null, undefined, or empty objects
+      } else if (typeof item === "object" && item !== null) {
+        const sanitizedObject = {};
+        for (const [key, value] of Object.entries(item)) {
+          if (value) sanitizedObject[key] = value; // Add key-value pairs with truthy values
+        }
+        return Object.keys(sanitizedObject).length > 0 ? sanitizedObject : null; // Remove empty objects
+      }
+      return null; // Exclude non-object and non-array elements
+    }
+
+    return sanitize(input);
   }
 
 
