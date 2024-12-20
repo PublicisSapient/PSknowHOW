@@ -39,6 +39,8 @@ public class MetadataIdentifierUpdaterForTemplates {
 	private final MongoTemplate mongoTemplate;
 	private static final String JSON_FILE_PATH = "/json/mongock/default/metadata_identifier.json";
 	private static final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";
+	private static final String TEMPLATE_CODE = "templateCode";
+	private static final String TEMPLATE_NAME = "templateName";
 
 	public MetadataIdentifierUpdaterForTemplates(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -53,26 +55,26 @@ public class MetadataIdentifierUpdaterForTemplates {
 		);
 
 		List<Document> filteredMetadataIdentifiers = metadataIdentifiers.stream()
-				.filter(doc -> "11".equals(doc.getString("templateCode")) || "12".equals(doc.getString("templateCode")))
+				.filter(doc -> "11".equals(doc.getString(TEMPLATE_CODE)) || "12".equals(doc.getString(TEMPLATE_CODE)))
 				.collect(Collectors.toList());
 
 		MongoCollection<Document> collection = mongoTemplate.getCollection(METADATA_IDENTIFIER_COLLECTION);
 		collection.insertMany(filteredMetadataIdentifiers);
 
 		collection.updateMany(
-				new Document("templateName", "Standard Template"),
-				new Document("$set", new Document("templateName", "Standard non-DOJO Template"))
+				new Document(TEMPLATE_NAME, "Standard Template"),
+				new Document("$set", new Document(TEMPLATE_NAME, "Standard non-DOJO Template"))
 		);
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		MongoCollection<Document> collection = mongoTemplate.getCollection(METADATA_IDENTIFIER_COLLECTION);
-		collection.deleteMany(new Document("templateCode", new Document("$in", List.of("11", "12"))));
+		collection.deleteMany(new Document(TEMPLATE_CODE, new Document("$in", List.of("11", "12"))));
 
 		collection.updateMany(
-				new Document("templateName", "Standard non-DOJO Template"),
-				new Document("$set", new Document("templateName", "Standard Template"))
+				new Document(TEMPLATE_NAME, "Standard non-DOJO Template"),
+				new Document("$set", new Document(TEMPLATE_NAME, "Standard Template"))
 		);
 	}
 
