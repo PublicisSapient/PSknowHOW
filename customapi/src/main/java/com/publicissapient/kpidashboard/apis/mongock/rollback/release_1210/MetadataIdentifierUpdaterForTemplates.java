@@ -17,18 +17,16 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1210;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCollection;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.mongock.data.MetaDataIdentifierDataFactory;
+import com.publicissapient.kpidashboard.apis.util.MongockUtil;
+import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 import org.bson.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -39,16 +37,14 @@ public class MetadataIdentifierUpdaterForTemplates {
 
     private final MongoTemplate mongoTemplate;
 
-    private final CustomApiConfig customApiConfig;
 
     private static final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";
     private static final String TEMPLATE_CODE = "templateCode";
     private static final String TEMPLATE_NAME = "templateName";
+    List<MetadataIdentifier> metadataIdentifierList;
 
-    @Autowired
-    public MetadataIdentifierUpdaterForTemplates(MongoTemplate mongoTemplate, CustomApiConfig customApiConfig) {
+    public MetadataIdentifierUpdaterForTemplates(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.customApiConfig = customApiConfig;
     }
 
     @Execution
@@ -63,21 +59,14 @@ public class MetadataIdentifierUpdaterForTemplates {
     }
 
     @RollbackExecution
-    public void rollback() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        List<Document> metadataIdentifiers = mapper.readValue(
-                TypeReference.class.getResourceAsStream(customApiConfig.getJsonFilePath()),
-                new TypeReference<List<Document>>() {
-                }
-        );
-
-        List<Document> filteredMetadataIdentifiers = metadataIdentifiers.stream()
-                .filter(doc -> "11".equals(doc.getString(TEMPLATE_CODE)) || "12".equals(doc.getString(TEMPLATE_CODE)))
-                .toList();
-
+    public void rollback(){
         MongoCollection<Document> collection = mongoTemplate.getCollection(METADATA_IDENTIFIER_COLLECTION);
-        collection.insertMany(filteredMetadataIdentifiers);
-
+        MetaDataIdentifierDataFactory metaDataIdentifierDataFactory = MetaDataIdentifierDataFactory.newInstance();
+        metadataIdentifierList = metaDataIdentifierDataFactory.getMetadataIdentifierList();
+        List<MetadataIdentifier> filteredMetadataIdentifiers = metadataIdentifierList.stream()
+                .filter(metadataIdentifier -> "11".equals(metadataIdentifier.getTemplateCode()) || "12".equals(metadataIdentifier.getTemplateCode()))
+                .toList();
+        MongockUtil.insertFilteredListToDB(filteredMetadataIdentifiers, METADATA_IDENTIFIER_COLLECTION, mongoTemplate);
         collection.updateMany(
                 new Document(TEMPLATE_NAME, "Standard Template"),
                 new Document("$set", new Document(TEMPLATE_NAME, "Standard DOJO Template"))
