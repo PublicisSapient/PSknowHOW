@@ -24,6 +24,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.IOException;
@@ -37,10 +38,12 @@ import java.util.stream.Collectors;
 public class MetadataIdentifierUpdaterForTemplates {
 
     private final MongoTemplate mongoTemplate;
-    private static final String JSON_FILE_PATH = "/json/mongock/default/metadata_identifier.json";
     private static final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";
     private static final String TEMPLATE_CODE = "templateCode";
     private static final String TEMPLATE_NAME = "templateName";
+
+    @Value("${json.file.path}")
+    private String JSON_FILE_PATH;
 
     public MetadataIdentifierUpdaterForTemplates(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;

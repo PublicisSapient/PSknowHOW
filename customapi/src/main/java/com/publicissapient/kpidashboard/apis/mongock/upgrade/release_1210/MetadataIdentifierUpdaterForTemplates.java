@@ -24,6 +24,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.IOException;
@@ -36,46 +37,50 @@ import java.util.stream.Collectors;
 @ChangeUnit(id = "metadata_identifier_updater_for_templates", order = "12102", author = "girpatha", systemVersion = "12.1.0")
 public class MetadataIdentifierUpdaterForTemplates {
 
-	private final MongoTemplate mongoTemplate;
-	private static final String JSON_FILE_PATH = "/json/mongock/default/metadata_identifier.json";
-	private static final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";
-	private static final String TEMPLATE_CODE = "templateCode";
-	private static final String TEMPLATE_NAME = "templateName";
+    private final MongoTemplate mongoTemplate;
 
-	public MetadataIdentifierUpdaterForTemplates(MongoTemplate mongoTemplate) {
-		this.mongoTemplate = mongoTemplate;
-	}
+    @Value("${json.file.path}")
+    private String JSON_FILE_PATH;
 
-	@Execution
-	public void execution() throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		List<Document> metadataIdentifiers = mapper.readValue(
-				TypeReference.class.getResourceAsStream(JSON_FILE_PATH),
-				new TypeReference<List<Document>>() {}
-		);
+    private static final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";
+    private static final String TEMPLATE_CODE = "templateCode";
+    private static final String TEMPLATE_NAME = "templateName";
 
-		List<Document> filteredMetadataIdentifiers = metadataIdentifiers.stream()
-				.filter(doc -> "11".equals(doc.getString(TEMPLATE_CODE)) || "12".equals(doc.getString(TEMPLATE_CODE)))
-				.collect(Collectors.toList());
+    public MetadataIdentifierUpdaterForTemplates(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
-		MongoCollection<Document> collection = mongoTemplate.getCollection(METADATA_IDENTIFIER_COLLECTION);
-		collection.insertMany(filteredMetadataIdentifiers);
+    @Execution
+    public void execution() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Document> metadataIdentifiers = mapper.readValue(
+                TypeReference.class.getResourceAsStream(JSON_FILE_PATH),
+                new TypeReference<List<Document>>() {
+                }
+        );
 
-		collection.updateMany(
-				new Document(TEMPLATE_NAME, "Standard Template"),
-				new Document("$set", new Document(TEMPLATE_NAME, "Standard non-DOJO Template"))
-		);
-	}
+        List<Document> filteredMetadataIdentifiers = metadataIdentifiers.stream()
+                .filter(doc -> "11".equals(doc.getString(TEMPLATE_CODE)) || "12".equals(doc.getString(TEMPLATE_CODE)))
+                .collect(Collectors.toList());
 
-	@RollbackExecution
-	public void rollback() {
-		MongoCollection<Document> collection = mongoTemplate.getCollection(METADATA_IDENTIFIER_COLLECTION);
-		collection.deleteMany(new Document(TEMPLATE_CODE, new Document("$in", List.of("11", "12"))));
+        MongoCollection<Document> collection = mongoTemplate.getCollection(METADATA_IDENTIFIER_COLLECTION);
+        collection.insertMany(filteredMetadataIdentifiers);
 
-		collection.updateMany(
-				new Document(TEMPLATE_NAME, "Standard non-DOJO Template"),
-				new Document("$set", new Document(TEMPLATE_NAME, "Standard Template"))
-		);
-	}
+        collection.updateMany(
+                new Document(TEMPLATE_NAME, "Standard Template"),
+                new Document("$set", new Document(TEMPLATE_NAME, "Standard non-DOJO Template"))
+        );
+    }
+
+    @RollbackExecution
+    public void rollback() {
+        MongoCollection<Document> collection = mongoTemplate.getCollection(METADATA_IDENTIFIER_COLLECTION);
+        collection.deleteMany(new Document(TEMPLATE_CODE, new Document("$in", List.of("11", "12"))));
+
+        collection.updateMany(
+                new Document(TEMPLATE_NAME, "Standard non-DOJO Template"),
+                new Document("$set", new Document(TEMPLATE_NAME, "Standard Template"))
+        );
+    }
 
 }
