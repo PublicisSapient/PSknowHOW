@@ -920,9 +920,9 @@ public final class KpiDataHelper {
 							sprintStartDateTime, sprintEndDateTime))
 					.reduce((a, b) -> b);
 			if (issueSprint.isPresent()
-					&& fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase())) {
+					&& fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo())) {
 				issueWiseDeliveredStatus.putIfAbsent(jiraIssue.getNumber(),
-						issueSprint.get().getChangedTo().toLowerCase());
+						issueSprint.get().getChangedTo());
 				resolvedSubtaskForSprint.add(jiraIssue);
 			}
 		});
@@ -953,7 +953,7 @@ public final class KpiDataHelper {
 					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
 					.findFirst().orElse(new JiraIssueCustomHistory());
 			Optional<JiraHistoryChangeLog> jiraHistoryChangeLog = jiraIssueCustomHistory.getStatusUpdationLog().stream()
-					.filter(changeLog -> fieldMappingDoneStatus.contains(changeLog.getChangedTo().toLowerCase())
+					.filter(changeLog -> fieldMappingDoneStatus.contains(changeLog.getChangedTo())
 							&& changeLog.getUpdatedOn().isAfter(sprintStartDate))
 					.findFirst();
 			if (jiraHistoryChangeLog.isPresent() && sprintEndDate
