@@ -551,16 +551,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   //#region new card
 
   onFilterChange(event) {
-    const { selectedKeyObj,selectedKey, ...updatedEvent } = event;
-    const filterData = Object.fromEntries(
-      Object.entries(updatedEvent).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined && (!Array.isArray(value) || value.length > 0),
-      ),
-    );
+    const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
 
     const filterIssues = this.applyDynamicfilter(
       this.cardData.issueData,
-      filterData,
+      [selectedKeyObj, updatedEvent]
     );
     this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
     this.currentChartData = this.prepareChartData(
@@ -580,21 +575,65 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     );
   }
 
-  applyDynamicfilter(data: [], filter: { [key: string]: any }) {
-    return data.filter((item) => {
-      return Object.entries(filter).every(([key, value]) => {
-        if (Array.isArray(value)) {
-          return value.includes(item[key]);
-        } else {
-          return item[key] === value;
-        }
+  applyDynamicfilter(data: [], filterArr: any) {
+    console.log(filterArr);
+    let filteredData = [];
+    // cleanup empty or null or undefined props
+    filterArr = this.sanitizeArray(filterArr);
+    
+    if (filterArr.length) {
+      data.forEach((item: any) => {
+
+        filterArr.forEach(filter => {
+          if (filter) {
+            // actual filtering
+            Object.entries(filter).every(([key, value]) => {
+              if (Array.isArray(item[key])) {
+                if (item[key].includes(value)) {
+                  filteredData.push(item);
+                }
+              } else {
+                if (Array.isArray(value)) {
+                  value.forEach(val => {
+                    if (item[key] === val) {
+                      filteredData.push(item);
+                    }
+                  });
+                }
+                else if (item[key] === value) {
+                  filteredData.push(item);
+                }
+              }
+            });
+          }
+        });
       });
+    } else {
+      filteredData = data;
+    }
+    return filteredData;
+  }
+
+  // cleanup empty or null or undefined props
+  sanitizeArray(array) {
+    return array.filter(item =>
+      item && // Remove null or undefined
+      typeof item === 'object' && // Ensure it's an object
+      Object.values(item).some(value => Boolean(value) && (!Array.isArray(value) || value.length > 0)) // At least one valid property
+    ).map(item => {
+      // Remove empty or falsy properties from each object
+      return Object.fromEntries(
+        Object.entries(item).filter(([_, value]) =>
+          Boolean(value) && (!Array.isArray(value) || value.length > 0)
+        )
+      );
     });
   }
 
-  prepareChartData(inputData: any, color: any,key?:any) {
+
+  prepareChartData(inputData: any, color: any, key?: any) {
     if (this.kpiData.kpiDetail.chartType && this.kpiData.kpiDetail.chartType !== '') {
-      return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color,key);
+      return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color, key);
     } else {
       return {};
     }
@@ -616,14 +655,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   showCummalative() {
     if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
       return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
-    } else if(this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart'){
-      if(!!this.selectedButtonValue && !!this.selectedButtonValue[0].key){
-        const tempCount=this.selectedButtonValue[0].key
-     return   this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
-      }else{
+    } else if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart') {
+      if (!!this.selectedButtonValue && !!this.selectedButtonValue[0].key) {
+        const tempCount = this.selectedButtonValue[0].key
+        return this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
+      } else {
         return this.currentChartData.totalCount
       }
-    } else{
+    } else {
       if (!!this.selectedButtonValue && !!this.selectedButtonValue[0].key) {
         const totalValue = this.calculateValue(this.copyCardData.issueData, this.selectedButtonValue[0].key)
         return this.kpiHelperService.convertToHoursIfTime(totalValue, this.selectedButtonValue[0].unit)

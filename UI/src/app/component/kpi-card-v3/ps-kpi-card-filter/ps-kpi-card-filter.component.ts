@@ -50,13 +50,15 @@ export class PsKpiCardFilterComponent implements OnInit {
 
   onSelectButtonChange(event) {
     this.form.get('selectedKey')?.setValue(event.value); // Update selectedKey in the form
-    const tempObject = this.kpiCardFilter.dataGroup.dataGroup1.filter(
-      (x: { key: any; }) => x.key == event.value,
-    );
-    this.selectedKeyObj =tempObject.map((item: { unit: any; key: any; }) => ({
-        unit: item.unit,
-        key: item.key,
-      }))
+    const tempObject = {
+      [this.kpiCardFilter.categoryData.categoryKey] : event.value
+    }
+    this.selectedKeyObj = tempObject
+    
+    // .map((item: { unit: any; key: any; }) => ({
+    //     unit: item.unit,
+    //     key: item.key,
+    //   }))
 
     this.handleChange();
   }
