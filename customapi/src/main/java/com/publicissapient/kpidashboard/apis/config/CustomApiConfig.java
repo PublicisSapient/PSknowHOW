@@ -225,6 +225,8 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolAPIKey;
 	private String repoToolURL;
 
+	private String jsonFilePath;
+
 	public String getRepoToolUpdateConnectionUrl() {
 		return repoToolUpdateConnectionUrl;
 	}
@@ -1318,4 +1320,12 @@ public class CustomApiConfig {// NOPMD
     public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
         this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
     }
+
+	public String getJsonFilePath() {
+		return jsonFilePath;
+	}
+
+	public void setJsonFilePath(String jsonFilePath) {
+		this.jsonFilePath = jsonFilePath;
+	}
 }
