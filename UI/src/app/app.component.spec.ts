@@ -12,6 +12,8 @@ import { PrimeNGConfig } from 'primeng/api';
 import { of } from 'rxjs';
 import { APP_CONFIG, AppConfig } from './services/app.config';
 import { FeatureFlagsService } from './services/feature-toggle.service';
+import { HelperService } from './services/helper.service';
+import { CommonModule, DatePipe } from '@angular/common';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -31,7 +33,7 @@ describe('AppComponent', () => {
       declarations: [ AppComponent ],
       imports: [ RouterTestingModule, HttpClientTestingModule ],
       providers: [ GoogleAnalyticsService, HttpService, GetAuthorizationService,
-         SharedService, PrimeNGConfig, GetAuthService, FeatureFlagsService ,
+         SharedService, PrimeNGConfig, GetAuthService, FeatureFlagsService , HelperService, DatePipe,
          { provide: APP_CONFIG, useValue: AppConfig }]
     })
     .compileComponents();

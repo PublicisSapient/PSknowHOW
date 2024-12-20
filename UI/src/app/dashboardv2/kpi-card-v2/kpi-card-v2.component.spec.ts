@@ -30,6 +30,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from '../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { KpiHelperService } from '../../services/kpi-helper.service';
 import { of } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
@@ -76,7 +77,7 @@ describe('KpiCardV2Component', () => {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
-      providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, DialogService,
+      providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, DialogService, KpiHelperService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })

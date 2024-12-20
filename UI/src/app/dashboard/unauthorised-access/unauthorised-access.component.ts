@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
   selector: 'app-unauthorised-access',
@@ -8,10 +7,10 @@ import { HelperService } from 'src/app/services/helper.service';
 })
 export class UnauthorisedAccessComponent {
 
-  constructor(private helperService : HelperService) { }
+  constructor() { }
 
   reloadApp(){
-    this.helperService.windowReload();
+    window.location.reload();
   }
 
 }
