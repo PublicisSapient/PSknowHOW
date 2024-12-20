@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -435,6 +436,59 @@ public class KpiHelperServiceTest {
 		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
 		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c", "kpi0"));
 	}
+
+
+	@Test
+	public void updateKPISource() {
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+		ProjectToolConfig jira= new ProjectToolConfig();
+		jira.setId(new ObjectId("6335363749794a18e8a4479c"));
+		jira.setTestCaseStatus(Arrays.asList("test1"));
+		List<ProjectToolConfig>  projectToolConfigs= new ArrayList<>();
+		projectToolConfigs.add(jira);
+		projectTool.put("Jira",projectToolConfigs);
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
+
+		when(cacheService
+				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
+		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479b"), new ObjectId("6335363749794a18e8a4479c"));
+	}
+
+	@Test
+	public void updateKpiSourceNull() {
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+		ProjectToolConfig jira= new ProjectToolConfig();
+		jira.setId(new ObjectId("6335363749794a18e8a4479c"));
+		jira.setTestCaseStatus(Arrays.asList("test1"));
+		List<ProjectToolConfig>  projectToolConfigs= new ArrayList<>();
+		projectToolConfigs.add(jira);
+		projectTool.put("Jira",projectToolConfigs);
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
+
+		when(cacheService
+				.cacheProjectToolConfigMapData()).thenReturn(null);
+		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479b"), new ObjectId("6335363749794a18e8a4479c"));
+	}
+
+	@Test
+	public void updateKpiSourceNoProject() {
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+		ProjectToolConfig jira= new ProjectToolConfig();
+		jira.setId(new ObjectId("6335363749794a18e8a4479c"));
+		jira.setTestCaseStatus(Arrays.asList("test1"));
+		List<ProjectToolConfig>  projectToolConfigs= new ArrayList<>();
+		projectToolConfigs.add(jira);
+		projectTool.put("Jira",projectToolConfigs);
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
+
+		when(cacheService
+				.cacheProjectToolConfigMapData()).thenReturn(null);
+		kpiHelperService.updateKPISource(new ObjectId("6335363749794a18e8a4479c"), new ObjectId("6335363749794a18e8a4479c"));
+	}
+
 
 	@Test
 	public void testFetchJiraCustomHistoryDataFromDbForKanban() throws ApplicationException {

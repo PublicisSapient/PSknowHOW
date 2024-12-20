@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1200;
+package com.publicissapient.kpidashboard.apis.mongock.installation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +35,8 @@ import io.mongock.api.annotations.RollbackExecution;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ChangeUnit(id = "excel_Column_Migration", order = "12002", author = "aksshriv1", systemVersion = "12.0.0")
-public class KPIExcelColumnMigration {
+@ChangeUnit(id = "ddl8", order = "008", author = "PSKnowHOW")
+public class KPIExcelDropDown {
 	public static final String COLUMN_NAME = "columnName";
 	public static final String KPI_ID = "kpiId";
 	public static final String IS_SHOWN = "isShown";
@@ -46,7 +46,7 @@ public class KPIExcelColumnMigration {
 	public static final String KPI_COLUMN_DETAILS = "kpiColumnDetails";
 	private final MongoTemplate mongoTemplate;
 
-	public KPIExcelColumnMigration(MongoTemplate mongoTemplate) {
+	public KPIExcelDropDown(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 

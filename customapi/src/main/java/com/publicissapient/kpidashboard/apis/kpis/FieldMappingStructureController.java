@@ -4,6 +4,8 @@ import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
+import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,11 +53,17 @@ public class FieldMappingStructureController {
 					.body(new ServiceResponse(false, "Unauthorized to get the kpi field mapping", "Unauthorized"));
 		}
 		FieldMappingStructureResponse result = kPIHelperService.fetchFieldMappingStructureByKpiId(projectBasicConfigId, kpiId);
-		
+
 		if (result == null) {
 			response = new ServiceResponse(false, "no field mapping stucture found", null);
 		} else {
-			response = new ServiceResponse(true, "field mapping stucture", result);
+			if(StringUtils.isNotEmpty(result.getProjectToolConfigId())) {
+				result.setKpiSource(kPIHelperService.updateKPISource(new ObjectId(projectBasicConfigId), new ObjectId(result.getProjectToolConfigId())));
+				response = new ServiceResponse(true, "field mapping stucture", result);
+			}
+			else{
+				response = new ServiceResponse(true, "Tool Source Absent", result);
+			}
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);

@@ -135,7 +135,7 @@ export class BasicConfigComponent implements OnInit {
             required: true
           }
         );
-      
+
 
       this.formData?.push(
         {

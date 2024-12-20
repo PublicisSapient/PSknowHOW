@@ -162,7 +162,7 @@
             </div>
             <div class="p-text-right p-col-12">
               <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
-                icon="pi pi-angle-double-left" iconPos="left" (click)="closeProjectSetupPopup.emit()"></button>
+                icon="pi pi-angle-double-left" iconPos="left" (click)="backToProjectList()"></button>
               <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
                 icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
             </div>
@@ -173,19 +173,14 @@
         <div class="p-p-0">
           <div class="p-d-flex p-jc-center p-pb-3">
             <h5 *ngIf = "!getConeStatusFlag()" class="card__primary__title__text p-mb-0">
-              Project “{{selectedProject?.['name']}}” successfully added.
-              Connect Tools to sync KPI’s.
-            </h5>
+              Project “{{selectedProject?.['name']}}” successfully added. Connect Tools to sync KPI’s.</h5>
             <h5 *ngIf = "getConeStatusFlag()" class="card__primary__title__text p-mb-0">
-              Cloned project “{{selectedProject?.['name']}}” successfully added. 
+              Cloned project “{{selectedProject?.['name']}}” successfully added.
               Proceed to Project Configuration to review and make any necessary changes.
             </h5>
           </div>
           <div class="p-d-flex p-jc-center p-pb-3">
-            <label
-              >Here is what to do next in order to sync data for this
-              project:</label
-            >
+            <label>Here is what to do next in order to sync data for this project:</label>
           </div>
           <div class="p-pb-3">
             <p-steps [model]="steps" [readonly]="false"></p-steps>

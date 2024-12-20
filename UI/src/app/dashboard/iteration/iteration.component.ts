@@ -783,25 +783,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       if (response['success']) {
         this.exportExcelComponent.dataTransformForIterationTableWidget(this.markerInfo,this.excludeColumns,response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
         
-      //   this.tableColumns = response['data']['kpiColumnDetails'];
-      //   this.selectedColumns = this.tableColumns.filter(colDetails => colDetails.isDefault || colDetails.isShown).map(col => col.columnName);
-      //   this.tableComponent.clear();
-      //   this.generateTableColumnsFilterData(Object.keys(tableValues[0]));
-      //   this.tableHeaders = this.selectedColumns;
-      //   this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
-      //   this.modalDetails['kpiId'] = kpi.kpiId;
-      //   this.modalDetails['tableValues'] = tableValues.map(item => {
-      //     const formattedItem = { ...item };
-      //     for (const key in formattedItem) {
-      //         if (key.toLowerCase().includes('date') && formattedItem[key]) {
-      //             formattedItem[key] = this.helperService.transformDateToISO(formattedItem[key]);
-      //         }
-      //     }
-      //      return formattedItem
-      // });
-      //   this.generateExcludeColumnsFilterList(tableValues[0]);
-      //   this.generateTableColumnData();
-      //   this.displayModal = true;
       }     
     });
   }
