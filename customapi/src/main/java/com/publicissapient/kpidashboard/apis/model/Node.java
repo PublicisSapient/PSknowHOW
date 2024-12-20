@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 
 public class Node implements Serializable {
 
@@ -40,7 +41,11 @@ public class Node implements Serializable {
 	private int level;
 	private String groupName;
 
+	//todo remove
 	private AccountHierarchy accountHierarchy; // NOSONAR
+	private ProjectHierarchy projectHierarchy;
+
+	//todo remove
 	private KanbanAccountHierarchy accountHierarchyKanban;
 
 	private ProjectFilter projectFilter;
@@ -52,6 +57,7 @@ public class Node implements Serializable {
 		this.children = new ArrayList<>();
 	}
 
+	//todo remove
 	/**
 	 * 
 	 * @param object
@@ -67,67 +73,59 @@ public class Node implements Serializable {
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 	}
 
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			AccountHierarchy accountHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter) {
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 		this.sprintFilter = sprintFilter;
 	}
 
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			AccountHierarchy accountHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter,
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter,
 			ReleaseFilter releaseFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchy = accountHierarchy;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 		this.sprintFilter = sprintFilter;
 		this.releaseFilter = releaseFilter;
 	}
 
-	/**
-	 * 
-	 * @param object
-	 * @param childId
-	 * @param parentId
-	 * @param groupName
-	 * @param accountHierarchyKanban
-	 */
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			KanbanAccountHierarchy accountHierarchyKanban) {
+			ProjectHierarchy projectHierarchy, ProjectFilter projectFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;
 		this.parentId = parentId;
 		this.groupName = groupName;
-		this.accountHierarchyKanban = accountHierarchyKanban;
-		this.children = new ArrayList<>();
-	}
-
-	public Node(Object object, String childId, String name, String parentId, String groupName,
-			KanbanAccountHierarchy accountHierarchyKanban, ProjectFilter projectFilter) {
-		this.value = object;
-		this.id = childId;
-		this.name = name;
-		this.parentId = parentId;
-		this.groupName = groupName;
-		this.accountHierarchyKanban = accountHierarchyKanban;
+		this.projectHierarchy = projectHierarchy;
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
+	}
+
+	public Node(Object object, String childId, String name, String parentId, String hierarchyLevelId,
+			ProjectHierarchy projectHierarchy) {
+		this.value = object;
+		this.id = childId;
+		this.name = name;
+		this.parentId = parentId;
+		this.groupName = hierarchyLevelId;
+		this.projectHierarchy = projectHierarchy;
+		this.children = new ArrayList<>();
 	}
 
 	/**
@@ -282,6 +280,14 @@ public class Node implements Serializable {
 
 	public void setAccountHierarchy(AccountHierarchy accountHierarchy) {
 		this.accountHierarchy = accountHierarchy;
+	}
+
+	public ProjectHierarchy getProjectHierarchy() {
+		return projectHierarchy;
+	}
+
+	public void setProjectHierarchy(ProjectHierarchy projectHierarchy) {
+		this.projectHierarchy = projectHierarchy;
 	}
 
 	public KanbanAccountHierarchy getAccountHierarchyKanban() {

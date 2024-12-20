@@ -28,10 +28,13 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = Object.keys(this.filterData).map((item) => {
           return {
             nodeId: item,
-            nodeName: item
+            nodeName: item,
+            nodeDisplayName: item
           }
         });
-        this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
+        this.filterLevels = this.filterLevels.filter((level) => {
+          return !this.additionalFilterLevels.includes(level.nodeName)
+        })
 
         this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
@@ -50,9 +53,11 @@ export class ParentFilterComponent implements OnChanges {
         this.filterLevels = this.filterData[changes['parentFilterConfig'].currentValue['labelName']]?.map((item) => {
           return {
             nodeId: item.nodeId,
-            nodeName: item.nodeName
+            nodeName: item.nodeName,
+            nodeDisplayName: item.nodeDisplayName
           }
         });
+        console.log(this.filterLevels)
         this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
         this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');

@@ -401,7 +401,7 @@ public class NetOpenTicketCountStatusImpl
 			Set<KanbanIssueCustomHistory> kanbanJiraIssues, List<KPIExcelData> excelData, KpiRequest kpiRequest) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			String projectName = node.getAccountHierarchyKanban().getNodeName();
+			String projectName = node.getProjectHierarchy().getNodeDisplayName();
 			String date = getRange(
 					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
 					kpiRequest);
