@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -61,7 +63,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Service
@@ -325,8 +326,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setCreatedDate(LocalDateTime.now());
 		fieldMapping.setEpicLink(customField.get(CommonConstant.EPICLINK));
 
-		fieldMapping.setJiraIssueTypeNames(issueTypeMap
-				.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()).stream().toArray(String[]::new));
+		fieldMapping.setJiraIssueTypeNames(Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUETYPENAMES))
+				.orElse(new ArrayList<>()).stream().filter(Objects::nonNull).toArray(String[]::new));
 		fieldMapping.setJiraIssueTypeNamesKPI161(
 				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
 		fieldMapping.setJiraIssueTypeNamesKPI151(
@@ -363,12 +364,13 @@ public class CreateMetadataImpl implements CreateMetadata {
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYCATEGORYKPI40, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKPI164(
 				issueTypeMap.getOrDefault(CommonConstant.JIRA_STORY_IDENTIFICATION_KPI164, new ArrayList<>()));
-		fieldMapping.setJiraIssueEpicType(
-				issueTypeMap.get(CommonConstant.JIRAISSUEEPICTYPE).stream().collect(Collectors.toList()));
-		fieldMapping.setJiraIssueRiskTypeKPI176(
-				issueTypeMap.get(CommonConstant.JIRAISSUERISKTYPE).stream().collect(Collectors.toList()));
+		fieldMapping.setJiraIssueEpicType(Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUEEPICTYPE))
+				.orElse(new ArrayList<>()).stream().collect(Collectors.toList()));
+		fieldMapping.setJiraIssueRiskTypeKPI176(Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUERISKTYPE))
+				.orElse(new ArrayList<>()).stream().collect(Collectors.toList()));
 		fieldMapping.setJiraIssueDependencyTypeKPI176(
-				issueTypeMap.get(CommonConstant.JIRAISSUEDEPENDENCYTYPE).stream().collect(Collectors.toList()));
+				Optional.ofNullable(issueTypeMap.get(CommonConstant.JIRAISSUEDEPENDENCYTYPE)).orElse(new ArrayList<>())
+						.stream().collect(Collectors.toList()));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.JIRATECHDEBTISSUETYPE));
 		fieldMapping
 				.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPEKPI3, new ArrayList<>()));
@@ -658,8 +660,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKpi40(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryCategoryKpi40(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryCategoryKpi40(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKPI164(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraKPI82StoryIdentification(
@@ -919,8 +920,11 @@ public class CreateMetadataImpl implements CreateMetadata {
 	private Map<String, String> compareCustomField(List<Identifier> customFieldList,
 			Map<String, String> allCustomField) {
 		Map<String, String> customFieldMap = new HashMap<>();
-		customFieldList.forEach(identifier -> customFieldMap.put(identifier.getType(),
-				allCustomField.get(identifier.getValue().get(0))));
+		customFieldList.forEach(identifier -> {
+			if (!identifier.getValue().isEmpty()) {
+				customFieldMap.put(identifier.getType(), allCustomField.get(identifier.getValue().get(0)));
+			}
+		});
 		return customFieldMap;
 	}
 
