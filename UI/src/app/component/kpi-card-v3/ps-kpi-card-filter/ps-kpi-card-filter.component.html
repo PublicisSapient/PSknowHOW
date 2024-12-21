@@ -1,0 +1,32 @@
+<form [formGroup]="form" (ngSubmit)="handleChange()">
+  <div class="kpi-card-filter p-px-5 p-pt-5">
+    <div>
+      <p-selectButton
+      [options]="getSelectButtonOptions()"
+      (onChange)="onSelectButtonChange($event)"
+      [optionLabel]="getOptionLabel()"
+      [optionValue]="getOptionValue()"
+      formControlName="selectedKey"
+    >
+    </p-selectButton>
+    </div>
+    <div class="filterSection" *ngIf="kpiCardFilter?.chartType !== 'chartWithFilter'">
+      <ng-container
+        class="p-p-1"
+        *ngFor="let filter of kpiCardFilter?.filterGroup?.filterGroup1"
+      >
+        <p-multiSelect
+          [options]="getOptions(filter?.filterKey)"
+          [formControlName]="filter?.filterKey"
+          (onChange)="handleChange()"
+          (onClear)="clearFilters()"
+          [filter]="true"
+          [placeholder]="filter?.filterName"
+          [showClear]="true"
+          (onClear)="clearMultiSelect(filter?.filterKey)"
+        >
+        </p-multiSelect>
+      </ng-container>
+    </div>
+  </div>
+</form>

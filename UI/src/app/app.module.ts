@@ -141,6 +141,16 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
+import { StackedBarChartComponent } from './component/stacked-bar-chart/stacked-bar-chart.component';
+import { PsKpiCardHeaderComponent } from './component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
+import { PsKpiCardFilterComponent } from './component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
+import { PsKpiCardChartRendererComponent } from './component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
+import { KpiHelperService } from './services/kpi-helper.service';
+import { StackedBarComponent } from './component/stacked-bar/stacked-bar.component';
+import { SemiCircleDonutChartComponent } from './component/semi-circle-donut-chart/semi-circle-donut-chart.component';
+import { TabularKpiV2Component } from './component/tabular-kpi-v2/tabular-kpi-v2.component';
+import { GroupedBarChartComponent } from './component/grouped-bar-chart/grouped-bar-chart.component';
+import { TabularKpiWithDonutChartComponent } from './component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
 
 
 /******************************************************/
@@ -223,7 +233,16 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         RecommendationsComponent,
         ChartWithFiltersComponent,
         KpiAdditionalFilterComponent,
-        StickyHeaderV2Component
+        StickyHeaderV2Component,
+        StackedBarChartComponent,
+        PsKpiCardHeaderComponent,
+        PsKpiCardFilterComponent,
+        PsKpiCardChartRendererComponent,
+        StackedBarComponent,
+        SemiCircleDonutChartComponent,
+        TabularKpiV2Component,
+        GroupedBarChartComponent,
+        TabularKpiWithDonutChartComponent
     ],
     imports: [
         DropdownModule,
@@ -274,6 +293,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         FeatureFlagsService,
         AuthGuard,
         DialogService,
+        KpiHelperService,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,

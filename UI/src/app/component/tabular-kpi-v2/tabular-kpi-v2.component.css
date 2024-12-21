@@ -1,0 +1,33 @@
+.data-item {
+    padding: 5px;
+}
+
+.icon-container {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.icon {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background-color: #F5F9FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.data {
+    text-align: left;
+    align-content: center;
+}
+
+.tabularKPI-column-header {
+    margin-top: 15px;
+}
+
+.tabularKPI-column-value {
+    font-weight: bold;
+    margin-bottom: 15px;
+}

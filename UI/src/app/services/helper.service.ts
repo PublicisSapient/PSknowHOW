@@ -26,16 +26,18 @@ import { ExcelService } from './excel.service';
 import { SharedService } from './shared.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 @Injectable()
 export class HelperService {
     isKanban = false;
     grossMaturityObj = {};
     public passMaturityToFilter;
     selectedFilterArray: any = [];
-    selectedFilters: any = {}
+    selectedFilters: any = {};
+    selectedUrlFilters: string = '{}';
+    refreshCounter: number = 0;
 
-    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router) {
+    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router, private route: ActivatedRoute) {
         this.passMaturityToFilter = new EventEmitter();
     }
 
@@ -60,9 +62,9 @@ export class HelperService {
             }
         }
 
-        if(isKanban === true){
-                     downloadJson['selectedMap']['sprint'] = [];
-                 }
+        if (isKanban === true) {
+            downloadJson['selectedMap']['sprint'] = [];
+        }
 
         return this.httpService.downloadExcel(downloadJson, kpiId);
 
@@ -92,19 +94,19 @@ export class HelperService {
                 if (obj.videoLink) {
                     delete obj.videoLink;
                 }
-                // if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
-                //     if (obj.isEnabled && obj.shown) {
-                //         if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
-                //             kpiRequestObject.kpiList.push(obj)
-                //         }
-                //     }
-                // }
-                // else if (visibleKpis.includes(obj.kpiId)) {
-                //     if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
-                //         kpiRequestObject.kpiList.push(obj)
-                //     }
-                // }
-                kpiRequestObject.kpiList.push(obj);
+                if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
+                    if (obj.isEnabled && obj.shown) {
+                        if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                            kpiRequestObject.kpiList.push(obj)
+                        }
+                    }
+                }
+                else if (visibleKpis.includes(obj.kpiId)) {
+                    if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                        kpiRequestObject.kpiList.push(obj)
+                    }
+                }
+                // kpiRequestObject.kpiList.push(obj);
             }
         }
 
@@ -738,6 +740,41 @@ export class HelperService {
         } else {
             this.selectedFilters = null;
         }
+        if (!this.refreshCounter) {
+            ++this.refreshCounter;
+        } else if (this.refreshCounter) {
+            // this.removeQueryParams();
+
+            if (this.selectedFilters['primary_level']) {
+                if (this.selectedFilters['primary_level'][0]) {
+                    this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path.replace(/###/gi, '___');
+                }
+            }
+            this.setBackupOfUrlFilters('{}');
+            let stringified = btoa(JSON.stringify(this.selectedFilters));
+            // let stringified = (JSON.stringify(this.selectedFilters));
+
+            this.router.navigate([], {
+                queryParams: { 'stateFilters': stringified }, // Pass the object here
+                relativeTo: this.route,
+            });
+
+        }
+    }
+
+    setBackupOfUrlFilters(data) {
+        this.selectedUrlFilters = data;
+    }
+
+    getBackupOfUrlFilters() {
+        return this.selectedUrlFilters;
+    }
+
+
+    removeQueryParams() {
+        this.router.navigate([], {
+            queryParams: {}, // Clear query params
+        });
     }
 
     getBackupOfFilterSelectionState = (prop = null) => {
@@ -918,50 +955,50 @@ export class HelperService {
         return true;
     }
 
-    isDropdownElementSelected($event:any): boolean{
-        try{
-            if($event.originalEvent.type === 'click'){
+    isDropdownElementSelected($event: any): boolean {
+        try {
+            if ($event.originalEvent.type === 'click') {
                 return true;
-            }else{
+            } else {
                 return false;
             }
-        }catch (ex){
-            console.error(ex,'Not a Browser event');
+        } catch (ex) {
+            console.error(ex, 'Not a Browser event');
         }
     }
 
     transformDateToISO(value: Date | string): string {
         let matches = false
-        if(!value){
+        if (!value) {
             return '-';
-          }
+        }
 
-          let date:any;
-          let time = ''
+        let date: any;
+        let time = ''
 
-          if(typeof value === 'string'){
+        if (typeof value === 'string') {
             date = new Date(value);
             const regex = /^(\d{1,2}-(\d{2}|[a-zA-Z]{3})-\d{4}|\d{4}-\d{2}-\d{2})$/i
             matches = regex.test(value.trim());
-          }
-          if(value instanceof Date){
+        }
+        if (value instanceof Date) {
             date = value;
-          }
+        }
 
-          if(isNaN(date.getTime())){
+        if (isNaN(date.getTime())) {
             return '-';
-          }else{
+        } else {
             time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-          }
-          const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-          const year = date.getFullYear();
-          const month = monthNames[date.getMonth()];
-          const day = String(date.getDate()).padStart(2, '0');
+        }
+        const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const year = date.getFullYear();
+        const month = monthNames[date.getMonth()];
+        const day = String(date.getDate()).padStart(2, '0');
 
-          return `${day}-${month}-${year} ${(matches?'':time)}`;
-      }
+        return `${day}-${month}-${year} ${(matches ? '' : time)}`;
+    }
 
-      aggregationCycleTime(data) {
+    aggregationCycleTime(data) {
         // Object to store intermediate calculations
         const resultData = {};
 

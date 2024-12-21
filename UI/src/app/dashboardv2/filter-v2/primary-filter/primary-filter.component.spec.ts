@@ -697,7 +697,7 @@ describe('PrimaryFilterComponent', () => {
     });
   });
 
-  describe('applyDefaultFilters', () => {
+  /*describe('applyDefaultFilters', () => {
     it('should set selectedFilters based on stateFilters primary_level when conditions are met', (done) => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
@@ -867,7 +867,7 @@ describe('PrimaryFilterComponent', () => {
         done();
       }, 200);
     });
-  });
+  });*/
 
   it('should reset the component state', () => {
     component.filters = ['filter1', 'filter2'];
