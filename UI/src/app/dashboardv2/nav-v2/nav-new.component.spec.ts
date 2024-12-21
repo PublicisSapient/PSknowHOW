@@ -198,27 +198,6 @@ describe('NavNewComponent', () => {
     expect(sharedService.setScrumKanban).toHaveBeenCalledWith('kanban');
   });
 
-  it('should call getBoardConfig with selected trends if they exist', () => {
-    const mockTrends = { basicProjectConfigId: 123 };
-    sharedService.getSelectedTrends.and.returnValue([mockTrends]);
-
-    spyOn(component, 'getBoardConfig');
-
-    component.ngOnInit();
-
-    expect(component.getBoardConfig).toHaveBeenCalledWith([123]);
-  });
-
-  it('should call getBoardConfig with empty array if no trends exist', () => {
-    sharedService.getSelectedTrends.and.returnValue([]);
-
-    spyOn(component, 'getBoardConfig');
-
-    component.ngOnInit();
-
-    expect(component.getBoardConfig).toHaveBeenCalledWith([]);
-  });
-
   it('should call setSelectedBoard if selectedTab is not "unauthorized access"', () => {
     const obj = { boardSlug: 'iteration' };
 

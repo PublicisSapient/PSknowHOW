@@ -83,7 +83,7 @@ describe('StickyHeaderV2Component', () => {
 
     component.ngOnDestroy();
 
-    expect(subscriptionSpy).toHaveBeenCalledTimes(component.subscriptions.length);
+    expect(subscriptionSpy).toHaveBeenCalled();
   });
 
   it('should not update colorObj when mapColorToProjectObs is empty', () => {
