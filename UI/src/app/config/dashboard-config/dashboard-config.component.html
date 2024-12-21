@@ -56,11 +56,11 @@
                         <div class="p-grid board-name-block p-py-2 p-d-flex p-jc-between">
                             <div class="p-xl-6 p-md-12 p-pl-3 p-pr-3 p-text-left board-name">
                                 {{boardData.boardName}}
-                            </div>
-                            <div class="p-xl-6 p-md-12 p-pl-2 p-pr-2 p-text-right" formGroupName="kpiCategories">
-                                <p-inputSwitch [formControlName]="boardData.boardName" (onChange)="handleKpiCategoryChange($event, boardData)">
-                                </p-inputSwitch>
-                                <span class="all-selection p-px-2">All</span>
+                                <span formGroupName="kpiCategories">
+                                    <p-inputSwitch [formControlName]="boardData.boardName" (onChange)="handleKpiCategoryChange($event, boardData)">
+                                    </p-inputSwitch>
+                                    <span class="all-selection p-px-2">Tab Visibility</span>
+                                </span>
                             </div>
                         </div>
                         <div class="p-grid kpis-list  p-pl-2 p-pr-2 " formGroupName="kpis">
