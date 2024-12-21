@@ -143,47 +143,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
       this.radioOption = this.dropdownArr[0]?.options[0];
     }
-
-    //#region new card kpi
-    if (this.selectedTab === 'iteration') {
-      this.cardData = this.trendValueList;
-      const {
-        issueData,
-        kpiName,
-        kpiInfo,
-        kpiId,
-        dataGroup,
-        filterGroup,
-        categoryData
-      } = this.cardData;
-      this.kpiHeaderData = { issueData, kpiName, kpiInfo, kpiId };
-      this.kpiFilterData = { dataGroup, filterGroup, issueData, chartType: this.kpiData?.kpiDetail?.chartType, categoryData };
-      this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
-      this.currentChartData = this.prepareChartData(
-        this.cardData,
-        this.colorPalette,
-      );
-
-      this.subscriptions.push(this.kpiHelperService.headerAction$.subscribe(x => {
-        if (x.listView) {
-          console.log('*********listview***', x)
-          this.prepareData();
-        } else if (x.setting) {
-          console.log('*********settings***', x)
-          this.onOpenFieldMappingDialog();
-        } else if (x.explore) {
-          console.log('*********explore***', x)
-          this.exportToExcel();
-
-        } else if (x.comment) {
-          this.showComments = true;
-          console.log('*********comment***', x)
-          this.openCommentModal();
-        }
-      }))
-    }
-
-    //#endregion
   }
 
   initializeMenu() {
@@ -243,6 +202,47 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }
     }
+
+    //#region new card kpi
+    if (this.selectedTab === 'iteration' && !this.loader) {
+      this.cardData = this.trendValueList;
+      const {
+        issueData,
+        kpiName,
+        kpiInfo,
+        kpiId,
+        dataGroup,
+        filterGroup,
+        categoryData
+      } = this.cardData;
+      this.kpiHeaderData = { issueData, kpiName, kpiInfo, kpiId };
+      this.kpiFilterData = { dataGroup, filterGroup, issueData, chartType: this.kpiData?.kpiDetail?.chartType, categoryData };
+      this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
+      this.currentChartData = this.prepareChartData(
+        this.cardData,
+        this.colorPalette,
+      );
+
+      this.subscriptions.push(this.kpiHelperService.headerAction$.subscribe(x => {
+        if (x.listView) {
+          console.log('*********listview***', x)
+          this.prepareData();
+        } else if (x.setting) {
+          console.log('*********settings***', x)
+          this.onOpenFieldMappingDialog();
+        } else if (x.explore) {
+          console.log('*********explore***', x)
+          this.exportToExcel();
+
+        } else if (x.comment) {
+          this.showComments = true;
+          console.log('*********comment***', x)
+          this.openCommentModal();
+        }
+      }))
+    }
+
+    //#endregion
   }
 
   openCommentModal = () => {

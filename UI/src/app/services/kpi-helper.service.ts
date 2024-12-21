@@ -51,8 +51,12 @@ export class KpiHelperService {
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
 
+    // if (!dataGroup1 || dataGroup1.length === 0) {
+    //   throw new Error('Invalid data: Missing dataGroup1');
+    // }
+
     if (!dataGroup1 || dataGroup1.length === 0) {
-      throw new Error('Invalid data: Missing dataGroup1');
+      return { chartData: [] , totalCount: 0 };
     }
 
     const chartData: any = [];
@@ -83,10 +87,9 @@ export class KpiHelperService {
   stackedChartData(inputData: any, color: any, key: string) {
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
-    const categoryGroup = inputData.categoryData?.categoryGroup;
 
     if (!dataGroup1 || dataGroup1.length === 0) {
-      throw new Error('Invalid data: Missing dataGroup1');
+      return { chartData: [] , totalCount: 0 };
     }
 
     const chartData: any = [];
@@ -121,8 +124,8 @@ export class KpiHelperService {
 
   barChartData(json: any, color: any) {
     let chartData = [];
-    const issueData = json.issueData || [];
-    const dataGroup = json.dataGroup.dataGroup1; // Access the dataGroup from kpiFilterData
+    const issueData = json?.issueData || [];
+    const dataGroup = json?.dataGroup?.dataGroup1; // Access the dataGroup from kpiFilterData
 
     // Loop through each data group entry to calculate the sums
     for (const groupKey in dataGroup) {
@@ -163,7 +166,7 @@ export class KpiHelperService {
     let chartData = {};
     chartData['data'] = [];
     const issueData = json.issueData || [];
-    const dataGroup = json.dataGroup.dataGroup1;
+    const dataGroup = json.dataGroup?.dataGroup1;
     const categoryGroup = json.categoryData.categoryGroup2;
     let issueDataCopy;
 
@@ -207,9 +210,9 @@ export class KpiHelperService {
   }
 
   pieChartWithFiltersData(inputData: any) {
-    let chartData = inputData.issueData;
-    let filterGroup = inputData.filterGroup;
-    let categoryGroup = inputData.categoryData.categoryGroup;
+    let chartData = inputData?.issueData;
+    let filterGroup = inputData?.filterGroup;
+    let categoryGroup = inputData?.categoryData?.categoryGroup;
     let modifiedDataSet = {
       chartData: chartData,
       filterGroup: filterGroup,
@@ -220,7 +223,7 @@ export class KpiHelperService {
 
   filterLessKPI(inputData) {
     let result = [];
-    result = inputData.filter(kpiData => kpiData.filter1.toLowerCase() === 'overall');
+    result = inputData?.filter(kpiData => kpiData.filter1.toLowerCase() === 'overall');
     return { chartData: result };
   }
 

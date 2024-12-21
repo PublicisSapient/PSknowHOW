@@ -1,10 +1,11 @@
 <ng-container *ngIf="selectedTab === 'iteration'; else cardWithOutRawJsonTemplate">
   <div class="kpi-card-container-v2">
-    <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"></app-ps-kpi-card-header>
+    <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"
+    *ngIf="kpiHeaderData"></app-ps-kpi-card-header>
 
     <div class="kpi-card-body">
       <ng-container
-        *ngIf="(currentChartData?.chartData?.length || currentChartData?.chartData?.data?.length || currentChartData?.chartData?.chartData?.length); else noDataRawDataKPIs">
+        *ngIf="!loader && (currentChartData?.chartData?.length || currentChartData?.chartData?.data?.length || currentChartData?.chartData?.chartData?.length); else noDataRawDataKPIs">
         <div *ngIf="checkFilterPresence(kpiFilterData)">
           <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData"
             *ngIf="kpiData?.kpiDetail?.chartType !== 'chartWithFilter' && kpiData?.kpiDetail?.chartType !== 'CumulativeMultilineChart'"
@@ -297,10 +298,14 @@
 </p-dialog>
 
 <ng-template #noDataRawDataKPIs>
-  <div class="min-ht">
+  <div class="min-ht" *ngIf="!loader">
     <div class="p-w-100  p-d-flex p-justify-center">
-      <img alt="no-data" src="../../../assets/img/NoDataFound.svg" [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}"/>
+      <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
+        [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
     </div>
     <h4 class="p-text-center">No Data Available.</h4>
+  </div>
+  <div class="overlay loader" *ngIf="loader">
+    <div class="loading-img"></div>
   </div>
 </ng-template>

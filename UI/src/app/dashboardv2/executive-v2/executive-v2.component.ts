@@ -26,18 +26,6 @@ import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
-import iterationCommitment from '../../../assets/data/Iteration-committment-v2.json';
-import wastage from '../../../assets/data/Wastage-V2.json';
-import EstimateActual from '../../../assets/data/Estimate-Actual-V2.json';
-import Workremaining from '../../../assets/data/Work-remaining-V2.json';
-import DefectCountBy from '../../../test/resource/defect-count-by-v2_1.json';
-import IterationBurnUp from '../../../test/resource/iteration-burnup.json';
-import ClosurePossibleToday from '../../../test/resource/closure-possible-v2_1.json';
-import IssuesLikelyToSpill from '../../../test/resource/issue-to-spill-v2_1.json';
-import FTPR from '../../../test/resource/ftpr-v2_1.json';
-import QualityStatus from '../../../test/resource/quality-status-v2_1.json';
-import EstimateHygiene from '../../../test/resource/issue-hygiene-v2_1.json';
-import WorkStatus from '../../../test/resource/work-status-v2.json';
 
 @Component({
   selector: 'app-executive-v2',
@@ -525,6 +513,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     });
 
+    if (this.selectedTab === 'iteration') {
+      // check for Capacity KPI and sort
+      this.updatedConfigGlobalData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi176').sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
+    }
+
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
@@ -849,8 +842,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-          // check for Capacity KPI and sort
-          this.updatedConfigGlobalData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi176').sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
 
@@ -867,13 +858,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
                 }
               }
             };
-
-            if(this.iterationKPIData && this.iterationKPIData['kpi154']) {
-              this.dailyStandupKPIDetails = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi154')[0].kpiDetail;
-            }
             this.service.iterationCongifData.next(iterationConfigData);
           }
-
+          if (this.iterationKPIData && this.iterationKPIData['kpi154']) {
+            this.dailyStandupKPIDetails = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi154')[0].kpiDetail;
+          }
         } else {
           this.handleKPIError(postData);
         }
@@ -2858,13 +2847,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpi?.kpiDetail?.yaxisLabel;
   }
 
-  test() {
-    if (this.selectedTab === 'iteration') {
-      this.updatedConfigGlobalData = this.iterationKPIData;
-    }
-    return true;
-  }
-
   getkpiwidth(kpiwidth) {
     let retValue = '';
 
@@ -2891,11 +2873,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   checkKPIPresence(kpi) {
     if (this.tabsArr.size > 1) {
-      if (this.selectedTab !== 'iteration') {
-        return this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled'];
-      } else {
-        return this.iterationKPIData[kpi?.kpiId] && this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled'];
-      }
+      return this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled'];
     } else {
       return kpi['isEnabled'];
     }
