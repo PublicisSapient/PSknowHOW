@@ -167,10 +167,10 @@ export class KpiHelperService {
     chartData['data'] = [];
     const issueData = json.issueData || [];
     const dataGroup = json.dataGroup?.dataGroup1;
-    const categoryGroup = json.categoryData.categoryGroup2;
+    const categoryGroup = json.categoryData?.categoryGroup2;
     let issueDataCopy;
 
-    categoryGroup.forEach(categoryElem => {
+    categoryGroup?.forEach(categoryElem => {
       let test = {};
       test['category'] = categoryElem.categoryName;
       test['value1'] = 0;

@@ -344,6 +344,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
           this.timeRemaining = this.calcBusinessDays(today, endDate);
           this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+          this.iterationKPIData = {};
         }
       }
       if (!this.configGlobalData?.length && $event.dashConfigData) {
