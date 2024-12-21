@@ -214,20 +214,66 @@ public class ProjectAccessManager {
 	 *            listener
 	 */
 	public void createAccessRequest(AccessRequest accessRequest, AccessRequestListener listener) {
+
+		// Use guard clauses to return early for certain conditions
 		if (hasPendingAccessRequest(accessRequest)) {
 			listenAccessRequestFailure(listener, "Already has a pending request");
-		} else if (handelSuperAdminProjectLevelAccessRequest(accessRequest)) {
-			listenAccessRequestFailure(listener,
-					"SuperAdmin Role have all level of access, you can not request for any hierarchy or project level");
-		} else if (handleAccessRequest(accessRequest)) {
-			List<AccessRequest> requestList = getRequestList(accessRequest);
-			requestList = accessRequestsRepository.saveAll(requestList);
-			requestList.forEach(this::autoApproveOrNotify);
-			setRequestStatus(requestList, accessRequest);
-			listenAccessRequestSuccess(listener, accessRequest);
-		} else {
-			listenAccessRequestFailure(listener, "Already has an access to parent level");
+			return;
 		}
+
+		if (handelSuperAdminProjectLevelAccessRequest(accessRequest)) {
+			listenAccessRequestFailure(listener,
+					"SuperAdmin Role has all levels of access, you cannot request for any hierarchy or project level");
+			return;
+		}
+
+		List<AccessRequest> approvedRequests = accessRequestsRepository
+				.findByUsernameAndStatus(accessRequest.getUsername(), Constant.ACCESS_REQUEST_STATUS_APPROVED);
+
+		if (CollectionUtils.isNotEmpty(approvedRequests) && checkIfAlreadyHasAccess(accessRequest, approvedRequests)) {
+			listenAccessRequestFailure(listener, "Already has access of requested level");
+			return;
+		}
+
+		if (!handleAccessRequest(accessRequest)) {
+			listenAccessRequestFailure(listener, "Already has access to parent level");
+			return;
+		}
+
+		// Filter out already approved access items before proceeding
+		AccessRequest newAccessRequest = filterAlreadyApprovedAccessRequest(accessRequest, approvedRequests);
+
+		List<AccessRequest> requestList = getRequestList(newAccessRequest);
+		requestList = accessRequestsRepository.saveAll(requestList);
+		requestList.forEach(this::autoApproveOrNotify);
+		setRequestStatus(requestList, newAccessRequest);
+		listenAccessRequestSuccess(listener, newAccessRequest);
+	}
+
+	private AccessRequest filterAlreadyApprovedAccessRequest(AccessRequest accessRequest,
+															 List<AccessRequest> approvedRequests) {
+		List<AccessItem> filteredAccessItems = accessRequest.getAccessNode().getAccessItems().stream()
+				.filter(accessItem -> !checkIfAlreadyHasAccess(accessItem, approvedRequests))
+				.collect(Collectors.toList());
+
+		accessRequest.getAccessNode().setAccessItems(filteredAccessItems);
+		return accessRequest;
+	}
+
+	private boolean checkIfAlreadyHasAccess(AccessRequest accessRequest, List<AccessRequest> approvedRequests) {
+		Set<String> approvedIds = approvedRequests.stream()
+				.flatMap(ar -> ar.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId))
+				.collect(Collectors.toSet());
+
+		Set<String> requestIds = accessRequest.getAccessNode().getAccessItems().stream().map(AccessItem::getItemId)
+				.collect(Collectors.toSet());
+
+		return approvedIds.containsAll(requestIds);
+	}
+
+	private boolean checkIfAlreadyHasAccess(AccessItem accessItem, List<AccessRequest> approvedRequests) {
+		return (CollectionUtils.isNotEmpty(approvedRequests) && approvedRequests.stream()
+				.anyMatch(approvedRequest -> approvedRequest.getAccessNode().getAccessItems().contains(accessItem)));
 	}
 
 	/**
