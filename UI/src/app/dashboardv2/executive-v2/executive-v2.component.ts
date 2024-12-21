@@ -135,6 +135,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   durationFilter = 'Past 6 Months';
   selectedTrend: any = [];
   iterationKPIData = {};
+  dailyStandupKPIDetails = {};
   // iterationKPIData = [iterationCommitment, Workremaining, IterationBurnUp, wastage, EstimateActual, DefectCountBy,
   //   ClosurePossibleToday, IssuesLikelyToSpill, FTPR, QualityStatus, EstimateHygiene, WorkStatus];
 
@@ -341,12 +342,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.filterApplyData = $event.filterApplyData;
       this.globalConfig = $event.dashConfigData;
       this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
-      const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
-      const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
-      this.releaseEndDate = endDate;
-      const today = new Date().toISOString().split('T')[0];
-      this.timeRemaining = this.calcBusinessDays(today, endDate);
-      this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+      if (this.selectedTab === 'release') {
+        const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
+        const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
+        this.releaseEndDate = endDate;
+        const today = new Date().toISOString().split('T')[0];
+        this.timeRemaining = this.calcBusinessDays(today, endDate);
+        this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+      } else if (this.selectedTab === 'iteration') {
+        const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
+        if (selectedSprint) {
+          const today = new Date().toISOString().split('T')[0];
+          const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
+          this.timeRemaining = this.calcBusinessDays(today, endDate);
+          this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+        }
+      }
       if (!this.configGlobalData?.length && $event.dashConfigData) {
         this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         if (!this.configGlobalData) {
@@ -356,7 +367,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-      
+
       this.tooltip = $event.configDetails;
       this.additionalFiltersArr = {};
       this.noOfDataPoints = this.selectedTab.toLowerCase() !== 'developer' && this.coundMaxNoOfSprintSelectedForProject($event);
@@ -513,7 +524,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
-    
+
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
@@ -845,6 +856,24 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
           this.iterationKPIData = Object.assign({}, this.iterationKPIData, localVariable);
           this.removeLoaderFromKPIs(localVariable);
+
+          if (localVariable && localVariable['kpi121']) {
+            const iterationConfigData = {
+              daysLeft: this.timeRemaining,
+              capacity: {
+                kpiInfo: this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121')?.kpiDetail?.kpiInfo,
+                value: {
+                  value: 123
+                }
+              }
+            };
+
+            if(this.iterationKPIData && this.iterationKPIData['kpi154']) {
+              this.dailyStandupKPIDetails = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi154')[0].kpiDetail;
+            }
+            this.service.iterationCongifData.next(iterationConfigData);
+          }
+
         } else {
           this.handleKPIError(postData);
         }

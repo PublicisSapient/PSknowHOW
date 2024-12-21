@@ -3,30 +3,34 @@
     <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"></app-ps-kpi-card-header>
 
     <div class="kpi-card-body">
-      <div *ngIf="checkFilterPresence(kpiFilterData)">
-        <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData"
-          *ngIf="kpiData?.kpiDetail?.chartType !== 'chartWithFilter' && kpiData?.kpiDetail?.chartType !== 'CumulativeMultilineChart'"
-          (filterChange)="onFilterChange($event)" (filterClear)="onFilterClear()"></app-ps-kpi-card-filter>
-      </div>
-      <div
-        *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
-        class="p-pr-5 p-pl-5 p-pt-5 p-col-6">
-        <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
-        <h3 class="p-my-0">{{showCummalative()}}</h3>
-      </div>
-      <div class="p-d-flex">
-        <div class="{{ kpiData?.kpiDetail?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
-          <app-ps-kpi-card-chart-renderer [chartData]="currentChartData?.chartData"
-            [chartType]="kpiData?.kpiDetail?.chartType" [chartWidth]="cardData?.chartWidth"
-            [chartHeight]="cardData?.chartHeight" [kpiId]="kpiData?.kpiDetail?.kpiId"></app-ps-kpi-card-chart-renderer>
+      <ng-container
+        *ngIf="(currentChartData?.chartData?.length || currentChartData?.chartData?.data?.length || currentChartData?.chartData?.chartData?.length); else noDataRawDataKPIs">
+        <div *ngIf="checkFilterPresence(kpiFilterData)">
+          <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData"
+            *ngIf="kpiData?.kpiDetail?.chartType !== 'chartWithFilter' && kpiData?.kpiDetail?.chartType !== 'CumulativeMultilineChart'"
+            (filterChange)="onFilterChange($event)" (filterClear)="onFilterClear()"></app-ps-kpi-card-filter>
         </div>
-        <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="kpiData?.kpiDetail?.chartType ===  'bar-chart'">
-          <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
-            <p>{{dataGroup.name}}</p>
-            <h3>{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),dataGroup.unit)}}</h3>
+        <div
+          *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
+          class="p-pr-5 p-pl-5 p-pt-5 p-col-6">
+          <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
+          <h3 class="p-my-0">{{showCummalative()}}</h3>
+        </div>
+        <div class="p-d-flex">
+          <div class="{{ kpiData?.kpiDetail?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
+            <app-ps-kpi-card-chart-renderer [chartData]="currentChartData?.chartData"
+              [chartType]="kpiData?.kpiDetail?.chartType" [chartWidth]="cardData?.chartWidth"
+              [chartHeight]="cardData?.chartHeight"
+              [kpiId]="kpiData?.kpiDetail?.kpiId"></app-ps-kpi-card-chart-renderer>
+          </div>
+          <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="kpiData?.kpiDetail?.chartType ===  'bar-chart'">
+            <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
+              <p>{{dataGroup.name}}</p>
+              <h3>{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),dataGroup.unit)}}</h3>
+            </div>
           </div>
         </div>
-      </div>
+      </ng-container>
     </div>
     <div
       *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
@@ -38,7 +42,8 @@
       </ul>
     </div>
 
-    <div *ngIf="kpiData?.kpiDetail?.chartType === 'grouped-bar-chart'" class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
+    <div *ngIf="kpiData?.kpiDetail?.chartType === 'grouped-bar-chart'"
+      class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
       <ul class="legend" style="margin-top: -20px;">
         <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData?.data;let i = index;">
           <span [ngStyle]="{ 'background-color': footer['color' + (i+1)] }"></span>{{ footer['category' + (i+1)] }}
@@ -290,3 +295,12 @@
     </div>
   </ng-container>
 </p-dialog>
+
+<ng-template #noDataRawDataKPIs>
+  <div class="min-ht">
+    <div class="p-w-100  p-d-flex p-justify-center">
+      <img alt="no-data" src="../../../assets/img/NoDataFound.svg" [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}"/>
+    </div>
+    <h4 class="p-text-center">No Data Available.</h4>
+  </div>
+</ng-template>

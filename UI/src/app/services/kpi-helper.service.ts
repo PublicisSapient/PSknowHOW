@@ -250,7 +250,6 @@ export class KpiHelperService {
         }
       } else if (group.aggregation === 'sum') {
         if (filteredIssues?.length) {
-          console.log(filteredIssues);
           aggregateVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
             return sum + (issue[group.key] || 0); // Sum up the values for the key
           }, 0), group.unit);
@@ -290,7 +289,7 @@ export class KpiHelperService {
   convertToHoursIfTime(val, unit) {
     const isLessThanZero = val < 0;
     val = Math.abs(val);
-    const hours = unit === 'SP' ? val/8 : val / 60;
+    const hours = unit === 'SP' ? val : val / 60;
     const rhours = Math.floor(hours);
     const minutes = (hours - rhours) * 60;
     const rminutes = Math.round(minutes);
@@ -302,6 +301,7 @@ export class KpiHelperService {
       } else {
         val = '0d';
       }
+    } else if(unit === 'SP') {
     }
     if (isLessThanZero) {
       val = '-' + val;
