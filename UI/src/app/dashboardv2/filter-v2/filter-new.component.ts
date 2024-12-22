@@ -77,6 +77,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   squadLevel: any;
   noFilterApplyData: boolean = false;
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json'); 
+  buttonStyleClass = 'default';
 
   constructor(
     private httpService: HttpService,
@@ -1352,5 +1353,31 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
     return obj;
+  }
+
+  copyUrlToClipboard(event: Event) {
+    event.stopPropagation();
+    const url = window.location.href; // Get the current URL
+    navigator.clipboard.writeText(url).then(() => {
+      this.showSuccess();
+    }).catch(err => {
+      console.error('Failed to copy URL: ', err);
+    });
+  }
+
+  showSuccess() {
+    this.buttonStyleClass = 'success';
+    this.messageService.add({
+      severity: 'success',
+      summary: 'URL copied!',
+    });
+
+    setTimeout(() => {
+      this.resetButton();
+    }, 1500);
+  }
+
+  resetButton() {
+    this.buttonStyleClass = 'default';
   }
 }

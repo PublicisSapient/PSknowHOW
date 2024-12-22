@@ -2,7 +2,7 @@
   <div class="p-d-flex p-jc-between">
     <p-selectButton [options]="filters?.filterGroup1" [(ngModel)]="selectedMainFilter"
       (onOptionClick)="mainFilterSelect($event)" optionLabel="filterName"></p-selectButton>
-    <ng-container *ngIf="filters && filters?.length">
+    <ng-container *ngIf="filters?.filterGroup2">
       <p-button label="Apply Filters" icon="pi pi-filter" styleClass="filter-btn"
         (click)="op.toggle($event)"></p-button>
     </ng-container>
