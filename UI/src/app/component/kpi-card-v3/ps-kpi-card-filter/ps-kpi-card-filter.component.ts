@@ -36,12 +36,16 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   handleChange() {
-    const filterData = Object.fromEntries(
-      Object.entries(this.form.value).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined && (!Array.isArray(value) || value.length > 0),
-      ),
-    );
-    this.filterChange.emit({...this.form.value,selectedKeyObj:this.selectedKeyObj});
+    const transformedObject = {};
+
+    for (const [key, value] of Object.entries(this.form.value)) {
+      if (Array.isArray(value) && value.length === 0) {
+        transformedObject[key] = null;
+      } else {
+        transformedObject[key] = value;
+      }
+    }
+    this.filterChange.emit({...transformedObject,selectedKeyObj:this.selectedKeyObj});
   }
 
   clearFilters() {
