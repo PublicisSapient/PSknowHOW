@@ -159,6 +159,34 @@ public class WorkRemainingServiceImplTest {
 	}
 
 	@Test
+	public void testGetKpiDataProject_OriginalEstimate() throws ApplicationException {
+		fieldMappingMap.forEach((projectId, mapping) -> mapping.setEstimationCriteria("Original Estimate"));
+		configHelperService.setFieldMappingMap(fieldMappingMap);
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(historyList);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(workRemainingServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		try {
+			KpiElement kpiElement = workRemainingServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getIssueData());
+
+		} catch (ApplicationException enfe) {
+
+		}
+
+	}
+
+	@Test
 	public void testGetQualifierType() {
 		assertThat(workRemainingServiceImpl.getQualifierType(), equalTo("WORK_REMAINING"));
 	}
