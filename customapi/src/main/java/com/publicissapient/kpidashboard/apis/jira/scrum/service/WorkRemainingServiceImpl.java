@@ -60,9 +60,8 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 	private static final String FILTER_BY_STATUS = "Filter by status";
 	private static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue count";
-	private static final String STORY_POINT = "Story point";
 	private static final String REMAINING_WORK = "Remaining Work";
-	private static final String WORK_STATUS = "Work Status";
+	private static final String POTENTIAL_DELAY = "Potential Delay";
 	private static final String SPRINT_DETAILS = "sprint details";
 	private static final String FILTER_TYPE = "Multi";
 	private static final String SUM = "sum";
@@ -193,17 +192,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 		String markerValue = Constant.BLANK;
 		if (null != iterationPotentialDelay && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
-			final LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
-					DateUtil.TIME_FORMAT_WITH_SEC);
-			final LocalDate predictCompletionDate = LocalDate
-					.parse(iterationPotentialDelay.getPredictedCompletedDate());
-			if (!sprintEndDate.isBefore(predictCompletionDate)) {
-				if (ChronoUnit.DAYS.between(predictCompletionDate, sprintEndDate) < 2) {
-					markerValue = Constant.AMBER;
-				}
-			} else {
-				markerValue = Constant.RED;
-			}
+			markerValue = getMarkerValue(sprintDetails, iterationPotentialDelay, markerValue);
 			jiraIssueModalObject.setPredictedCompletionDate(
 					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
@@ -229,6 +218,21 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 		}
 		jiraIssueModalObject.setDelay(delay);
 		jiraIssueModalObject.setMarker(markerValue);
+	}
+
+	private static String getMarkerValue(SprintDetails sprintDetails, IterationPotentialDelay iterationPotentialDelay, String markerValue) {
+		final LocalDate sprintEndDate = DateUtil.stringToLocalDate(sprintDetails.getEndDate(),
+				DateUtil.TIME_FORMAT_WITH_SEC);
+		final LocalDate predictCompletionDate = LocalDate
+				.parse(iterationPotentialDelay.getPredictedCompletedDate());
+		if (!sprintEndDate.isBefore(predictCompletionDate)) {
+			if (ChronoUnit.DAYS.between(predictCompletionDate, sprintEndDate) < 2) {
+				markerValue = Constant.AMBER;
+			}
+		} else {
+			markerValue = Constant.RED;
+		}
+		return markerValue;
 	}
 
 	/**
@@ -291,7 +295,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 
 		List<KpiData> dataGroup2 = new ArrayList<>();
 		dataGroup2.add(createKpiData("Remaining Hours", REMAINING_WORK, 1, SUM, CommonConstant.DAY));
-		dataGroup2.add(createKpiData("Delay", WORK_STATUS, 2, SUM, CommonConstant.DAY));
+		dataGroup2.add(createKpiData("Delay", POTENTIAL_DELAY, 2, SUM, CommonConstant.DAY));
 
 		// For markerInfo
 		Map<String, String> markerInfo = new HashMap<>();
