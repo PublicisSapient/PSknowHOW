@@ -35,6 +35,7 @@ export class ExportExcelComponent implements OnInit {
   tableColumnForm = {};
   filteredColumn;
   excludeColumnFilter = [];
+  includeColumnFilter = [];
   selectedColumns = [] // store all columns which is default or shown in table 
   tableColumns = []; // store all table coumns with configurations
   isDisableSaveCOnfigurationBtn: boolean = false;
@@ -185,6 +186,7 @@ export class ExportExcelComponent implements OnInit {
 
   clearModalDataOnClose() {
     this.excludeColumnFilter = [];
+    this.includeColumnFilter = [];
     this.tableColumnData = {}
     this.tableColumnForm = {}
     this.displayModal = false;
@@ -212,11 +214,12 @@ export class ExportExcelComponent implements OnInit {
 
   generateColumnFilterData() {
     this.excludeColumnFilter = ['Linked Defect','Linked Stories'];
+    this.includeColumnFilter = ['Issue Id','Story ID','Defect ID']
     if (this.modalDetails['tableValues'].length > 0) {
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
           if (this.typeOf(colData)) {
-            if (!this.excludeColumnFilter.includes(colName) && colName?.toLowerCase() !== 'issue id') {
+            if (!this.excludeColumnFilter.includes(colName) &&  !this.includeColumnFilter.includes(colName)) {
               this.excludeColumnFilter.push(colName)
             }
             return { name: colData.text, value: colData }
