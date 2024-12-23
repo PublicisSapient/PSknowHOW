@@ -180,6 +180,35 @@ public class WorkStatusServiceImplTest {
 	}
 
 	@Test
+	public void testGetKpiDataProjectOriginalEstimate() throws ApplicationException {
+		fieldMappingMap.forEach((projectId, mapping) -> mapping.setEstimationCriteria("Original Estimate"));
+		configHelperService.setFieldMappingMap(fieldMappingMap);
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		storyList.stream().filter(jiraIssue -> jiraIssue.getNumber().equals("TEST-17768")).findFirst().get()
+				.setDueDate(String.valueOf(LocalDate.now().plusDays(3) + "T00:00:00.000Z"));
+		sprintDetails.setState(SprintDetails.SPRINT_STATE_ACTIVE);
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistoryList);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(workStatusService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		try {
+			KpiElement kpiElement = workStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getIssueData());
+
+		} catch (ApplicationException enfe) {
+
+		}
+
+	}
+
+	@Test
 	public void testGetQualifierType() {
 		assertThat(workStatusService.getQualifierType(), equalTo("WORK_STATUS"));
 	}
@@ -196,8 +225,8 @@ public class WorkStatusServiceImplTest {
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> returnMap = workStatusService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
-				endDate, kpiRequest);
+		Map<String, Object> returnMap = workStatusService.fetchKPIDataFromDb(leafNodeList.get(0), startDate, endDate,
+				kpiRequest);
 		assertNotNull(returnMap);
 	}
 
