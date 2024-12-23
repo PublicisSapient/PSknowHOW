@@ -625,6 +625,7 @@ public class KPIExcelUtilityTest {
 		List<IterationKpiModalValue> modalValues = new ArrayList<>();
 		modalValues.add(modelValue);
 
+		jiraIssues.get(0).setOriginalEstimateMinutes(480);
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
 		Map modalObjectMap = mock(Map.class);
@@ -1043,6 +1044,18 @@ public class KPIExcelUtilityTest {
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 
 		excelUtility.populateReleaseDefectWithTestPhasesRelatedExcelData(jiraIssues, kpiExcelData);
+
+		// Assert
+		assertEquals(48, kpiExcelData.size());
+
+	}
+
+	@Test
+	public void testPopulateBacklogDefectCountExcelData() {
+
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		excelUtility.populateBacklogDefectCountExcelData(jiraIssues, kpiExcelData);
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
