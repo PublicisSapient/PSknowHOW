@@ -211,21 +211,38 @@ export class ExportExcelComponent implements OnInit {
   }
 
   generateColumnFilterData() {
-    this.excludeColumnFilter = ['Linked Defect','Linked Stories'];
+    this.excludeColumnFilter = ['Linked Defect', 'Linked Stories'];
+  
+    // Define blank values to handle
+    const blankValues = ['', null, undefined, '-', 'NA'];
+  
     if (this.modalDetails['tableValues'].length > 0) {
+      // Update tableValues to replace blank values with '(Blanks)'
+      this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => {
+        const updatedRow = { ...row }; // Create a copy of the row
+        Object.keys(updatedRow).forEach(colName => {
+          if (blankValues.includes(updatedRow[colName])) {
+            updatedRow[colName] = ''; //
+          }
+        });
+        return updatedRow;
+      });
+  
+      // Generate column filter data
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
           if (this.typeOf(colData)) {
             if (!this.excludeColumnFilter.includes(colName) && colName?.toLowerCase() !== 'issue id') {
-              this.excludeColumnFilter.push(colName)
+              this.excludeColumnFilter.push(colName);
             }
-            return { name: colData.text, value: colData }
+            return { name:blankValues.includes(colData.text)?'(Blanks)':colData.text, value: colData };
           } else {
-            return { name: colData, value: colData }
+            return { name: blankValues.includes(colData)?'(Blanks)':colData, value: colData };
           }
         });
         this.tableColumnForm[colName] = [];
       });
+      console.log(this.tableColumnData)
     }
   }
 
