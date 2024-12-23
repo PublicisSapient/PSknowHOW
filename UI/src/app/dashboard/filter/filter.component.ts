@@ -32,7 +32,6 @@ import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { interval, Subject } from 'rxjs';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
-import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-filter',

@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -1816,7 +1816,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
           } else {
-            if (kpiId === 'kpi171') {
+            if(kpiId === 'kpi171'){
               this.kpiChartData[kpiId] = [this.helperService.aggregationCycleTime(preAggregatedValues)];
             } else {
               this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
@@ -2059,7 +2059,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
     this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
       if (response['success']) {
-        this.exportExcelComponent.dataTransformForIterationTableWidget([], [], response['data']['kpiColumnDetails'], tableValues, kpi?.kpiName + ' / ' + label, kpi.kpiId)
+        this.exportExcelComponent.dataTransformForIterationTableWidget([],[],response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
       }
     });
   }

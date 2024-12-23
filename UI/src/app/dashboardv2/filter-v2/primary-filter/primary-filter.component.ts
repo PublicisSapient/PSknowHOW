@@ -26,7 +26,7 @@ export class PrimaryFilterComponent implements OnChanges {
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   applyFilters: boolean = false;
 
-  constructor(private service: SharedService, public helperService: HelperService) {
+  constructor(public service: SharedService, public helperService: HelperService) {
     // This is required speecifically when filter is removed from removeFilter fn on filter-new
     this.service.selectedTrendsEvent.subscribe(filters => {
       if (filters?.length && this.primaryFilterConfig['type'] !== 'singleSelect') {
@@ -59,8 +59,8 @@ export class PrimaryFilterComponent implements OnChanges {
     setTimeout(() => {
       this.stateFilters = (this.helperService.getBackupOfUrlFilters() && JSON.parse(this.helperService.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.helperService.getBackupOfUrlFilters()) : this.helperService.getBackupOfFilterSelectionState();
       if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
-        if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
-          this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
+        if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
+          this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
           if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']?.length) {
             this.selectedFilters = [];
             if (this.filters[0].labelName === this.stateFilters['primary_level'][0].labelName) {
@@ -91,12 +91,12 @@ export class PrimaryFilterComponent implements OnChanges {
 
             }
           } else {
-            if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
+            if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
               this.selectedFilters = [];
               this.selectedFilters.push(this.stateFilters['parent_level']);
             } else {
-              if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName?.toLowerCase() ||
-                this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName?.toLowerCase())) {
+              if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() === this.filters[0]?.labelName.toLowerCase() ||
+                this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
                 // reset
                 this.selectedFilters = [];
                 this.selectedFilters.push(this.filters[0]);
@@ -185,7 +185,7 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.selectedFilters?.length && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
         this.service.setNoSprints(false);
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
-          let addtnlStateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())['additional_level'] || this.helperService.getBackupOfFilterSelectionState('additional_level');
+          let addtnlStateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())?.additional_level || this.helperService.getBackupOfFilterSelectionState('additional_level');
           if (addtnlStateFilters && (!this.previousSelectedFilters?.length || this.arraysEqual(this.selectedFilters, this.previousSelectedFilters)) && this.selectedTab !== 'developer') {
             let combinedEvent = {};
             combinedEvent['additional_level'] = addtnlStateFilters;
