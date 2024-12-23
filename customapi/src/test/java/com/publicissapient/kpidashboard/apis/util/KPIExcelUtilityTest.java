@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -49,11 +50,6 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
-import com.publicissapient.kpidashboard.apis.model.DSRValidationData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolValidationData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
@@ -84,7 +80,8 @@ public class KPIExcelUtilityTest {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		jiraIssues = jiraIssueDataFactory.getJiraIssues();
 		testCaseDetailsList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
-		storyList = jiraIssues.stream().filter(issue -> issue.getTypeName().equalsIgnoreCase("Story")).collect(Collectors.toList());
+		storyList = jiraIssues.stream().filter(issue -> issue.getTypeName().equalsIgnoreCase("Story"))
+				.collect(Collectors.toList());
 	}
 
 	@Test
@@ -94,7 +91,8 @@ public class KPIExcelUtilityTest {
 		List<KPIExcelData> kpiExcelData = new ArrayList<>();
 
 		Map<String, JiraIssue> issueData = jiraIssues.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
-		List<JiraIssue> defects = jiraIssues.stream().filter(i -> i.getTypeName().equalsIgnoreCase("Bug")).collect(Collectors.toList());
+		List<JiraIssue> defects = jiraIssues.stream().filter(i -> i.getTypeName().equalsIgnoreCase("Bug"))
+				.collect(Collectors.toList());
 
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
@@ -103,7 +101,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
-		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig, fieldMapping);
+		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig,
+				fieldMapping);
 
 		// Assert
 		assertEquals(2, kpiExcelData.size());
@@ -291,7 +290,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Call the method to populate data
-		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig, storyList);
+		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig,
+				storyList);
 
 		// Assert the result based on your logic
 		assertEquals(20, kpiExcelData.size());
@@ -316,7 +316,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Call the method to populate data
-		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig, storyList);
+		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig,
+				storyList);
 
 		// Assert the result based on your logic
 		assertEquals(20, kpiExcelData.size());
@@ -340,7 +341,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Call the method to populate data
-		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig, storyList);
+		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig,
+				storyList);
 
 		// Assert the result based on your logic
 		assertEquals(20, kpiExcelData.size());
@@ -364,7 +366,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Call the method to populate data
-		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig, storyList);
+		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig,
+				storyList);
 
 		// Assert the result based on your logic
 		assertEquals(20, kpiExcelData.size());
@@ -711,8 +714,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
-		KPIExcelUtility.populateDefectDensityExcelData(storyIds, defects, kpiExcelData, issueData,
-				fieldMapping, customApiConfig);
+		KPIExcelUtility.populateDefectDensityExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping,
+				customApiConfig);
 
 		// Assert
 		assertEquals(3, kpiExcelData.size());
@@ -747,8 +750,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
-		KPIExcelUtility.populateDefectDensityExcelData(storyIds, defects, kpiExcelData, issueData,
-				fieldMapping, customApiConfig);
+		KPIExcelUtility.populateDefectDensityExcelData(storyIds, defects, kpiExcelData, issueData, fieldMapping,
+				customApiConfig);
 
 		// Assert
 		assertEquals(4, kpiExcelData.size());
@@ -783,7 +786,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
-		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig, fieldMapping);
+		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig,
+				fieldMapping);
 		// Assert
 		assertEquals(3, kpiExcelData.size());
 		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
@@ -810,7 +814,8 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 
 		// Act
-		KPIExcelUtility.populateDefectSeepageRateExcelData(sprint, totalBugList, dsrValidationDataList, kpiExcelData, customApiConfig, storyList);
+		KPIExcelUtility.populateDefectSeepageRateExcelData(sprint, totalBugList, dsrValidationDataList, kpiExcelData,
+				customApiConfig, storyList);
 		// Assert
 		assertEquals(1, kpiExcelData.size());
 		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
@@ -930,5 +935,41 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateBackLogData(overAllmodalValues, modalValues, jiraIssue, issueCustomHistory, status);
 		Assert.assertNotNull(modalValues);
 		Assert.assertNotNull(overAllmodalValues);
+	}
+
+	@Test
+	public void testPopulateIssueModal() {
+
+		IssueKpiModalValue jiraIssueModalObject = new IssueKpiModalValue();
+		AdditionalFilterConfig config = new AdditionalFilterConfig();
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		when(fieldMapping.getAdditionalFilterConfig()).thenReturn(List.of(config));
+		Map<String, IssueKpiModalValue> modalObjectMap = mock(Map.class);
+		when(modalObjectMap.get(jiraIssues.get(0).getNumber())).thenReturn(jiraIssueModalObject);
+
+		// Act
+		KPIExcelUtility.populateIssueModal(jiraIssues.get(0), fieldMapping, modalObjectMap);
+		assertNotNull(modalObjectMap);
+	}
+
+	@Test
+	public void testPopulateIssueModalOriginalEstimate() {
+
+		IssueKpiModalValue jiraIssueModalObject = new IssueKpiModalValue();
+		AdditionalFilterConfig config = new AdditionalFilterConfig();
+		jiraIssues.get(0).setOriginalEstimateMinutes(480);
+		jiraIssues.get(0).setRemainingEstimateMinutes(null);
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
+		when(fieldMapping.getAdditionalFilterConfig()).thenReturn(List.of(config));
+		Map<String, IssueKpiModalValue> modalObjectMap = mock(Map.class);
+		when(modalObjectMap.get(jiraIssues.get(0).getNumber())).thenReturn(jiraIssueModalObject);
+
+		// Act
+		KPIExcelUtility.populateIssueModal(jiraIssues.get(0), fieldMapping, modalObjectMap);
+		assertNotNull(modalObjectMap);
 	}
 }
