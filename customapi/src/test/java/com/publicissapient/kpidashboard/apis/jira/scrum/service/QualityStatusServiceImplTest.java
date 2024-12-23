@@ -161,6 +161,7 @@ public class QualityStatusServiceImplTest {
 	public void testGetKpiDataProject_OriginalEstimate() throws ApplicationException {
 		fieldMappingMap.forEach((projectId, mapping) -> {
 			mapping.setEstimationCriteria("Original Estimate");
+			mapping.setJiraLabelsKPI133(List.of("label"));
 		});
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
