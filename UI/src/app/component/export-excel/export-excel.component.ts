@@ -242,7 +242,6 @@ export class ExportExcelComponent implements OnInit {
         });
         this.tableColumnForm[colName] = [];
       });
-      console.log(this.tableColumnData)
     }
   }
 
