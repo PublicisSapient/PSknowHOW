@@ -628,6 +628,7 @@ public class KPIExcelUtilityTest {
 		jiraIssues.get(0).setOriginalEstimateMinutes(480);
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
+		when(fieldMapping.getAdditionalFilterConfig()).thenReturn(List.of(new AdditionalFilterConfig()));
 		Map modalObjectMap = mock(Map.class);
 		when(modalObjectMap.get(jiraIssues.get(0).getNumber())).thenReturn(jiraIssueModalObject);
 
@@ -1059,6 +1060,44 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
+	}
 
+	@Test
+	public void testPopulateReleaseBurnUpExcelData() {
+
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+
+		Map<String, LocalDate> issueWiseReleaseTagDateMap = new HashMap<>();
+		Map<String, LocalDate> completeDateIssueMap = new HashMap<>();
+		Map<String, LocalDate> devCompleteDateIssueMap = new HashMap<>();
+
+		excelUtility.populateReleaseBurnUpExcelData(jiraIssues, issueWiseReleaseTagDateMap, completeDateIssueMap,
+				devCompleteDateIssueMap, kpiExcelData, fieldMapping);
+
+		// Assert
+		assertEquals(48, kpiExcelData.size());
+	}
+
+	@Test
+	public void testPopulateReleaseBurnUpExcelData2() {
+
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
+
+		jiraIssues.get(0).setAggregateTimeOriginalEstimateMinutes(480);
+		Map<String, LocalDate> issueWiseReleaseTagDateMap = new HashMap<>();
+		Map<String, LocalDate> completeDateIssueMap = new HashMap<>();
+		Map<String, LocalDate> devCompleteDateIssueMap = new HashMap<>();
+
+		excelUtility.populateReleaseBurnUpExcelData(jiraIssues, issueWiseReleaseTagDateMap, completeDateIssueMap,
+				devCompleteDateIssueMap, kpiExcelData, fieldMapping);
+
+		// Assert
+		assertEquals(48, kpiExcelData.size());
 	}
 }
