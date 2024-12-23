@@ -72,7 +72,7 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		if (null != leafNode) {
-			log.info("Estimation Hygiene -> Requested sprint : {}", leafNode.getName());
+			log.info("Issue Hygiene -> Requested sprint : {}", leafNode.getName());
 			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
 			SprintDetails sprintDetails;
 			if (null != dbSprintDetail) {

@@ -185,13 +185,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			allIssues.forEach(issue -> {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
 				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
-				data.setValue(0.0);
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					data.setValue(issue.getStoryPoints());
-				} else if (null != issue.getOriginalEstimateMinutes()) {
-					data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
-				}
+				setCommonData(issue, data, fieldMapping);
 				Set<String> category = new HashSet<>();
 				if (allIssuesWithDueDate.contains(issue)) {
 					Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping, sprintDetails,
@@ -210,13 +204,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 					setDataForDevCompletion(issue, sprintDetails, category, jiraIssueData, devCompletedIssues, data);
 					setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
 				}
-				if (allIssuesWithoutDueDate.contains(issue)) {
-					category.add(UNPLANNED);
-					category.add(PLANNED_COMPLETION);
-					if (allCompletedIssuesList.contains(issue.getNumber())) {
-						category.add(ACTUAL_COMPLETION);
-					}
-				}
+				setCategoryForUnplanned(issue, allIssuesWithoutDueDate, category, allCompletedIssuesList);
 				data.setCategory(category.stream().toList());
 			});
 
@@ -229,9 +217,29 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		}
 	}
 
+	private static void setCategoryForUnplanned(JiraIssue issue, List<JiraIssue> allIssuesWithoutDueDate, Set<String> category, List<String> allCompletedIssuesList) {
+		if (allIssuesWithoutDueDate.contains(issue)) {
+			category.add(UNPLANNED);
+			category.add(PLANNED_COMPLETION);
+			if (allCompletedIssuesList.contains(issue.getNumber())) {
+				category.add(ACTUAL_COMPLETION);
+			}
+		}
+	}
+
+	private static void setCommonData(JiraIssue issue, IssueKpiModalValue data, FieldMapping fieldMapping) {
+		data.setValue(0.0);
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			data.setValue(issue.getStoryPoints());
+		} else if (null != issue.getOriginalEstimateMinutes()) {
+			data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
+		}
+	}
+
 	/**
 	 * Creates data group that tells what kind of data will be shown on chart.
-	 * 
+	 *
 	 * @param fieldMapping
 	 * @return
 	 */
@@ -265,7 +273,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates kpi data object.
-	 * 
+	 *
 	 * @param key
 	 * @param name
 	 * @param order
@@ -286,7 +294,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates object to hold category related info.
-	 * 
+	 *
 	 * @return
 	 */
 	private CategoryData createCategoryData() {
@@ -309,7 +317,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates kpi data category object.
-	 * 
+	 *
 	 * @param categoryName
 	 * @param order
 	 * @return
@@ -323,7 +331,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates filter group.
-	 * 
+	 *
 	 * @return
 	 */
 	private FilterGroup createFilterGroup() {
@@ -339,7 +347,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 	/**
 	 * Creates individual filter object.
-	 * 
+	 *
 	 * @param type
 	 * @param name
 	 * @param key
@@ -371,45 +379,35 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			// Checking if dev due Date is < today date for active sprint
 			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					.isBefore(LocalDate.now())) {
-				category.add(DEV_COMPLETION);
-				category.add(PLANNED_COMPLETION);
-				if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
-					int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
-					delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
-				}
-				// Calculating actual work status for only completed issues
-				if (devCompletedIssues.containsKey(issue)) {
-					category.add(ACTUAL_COMPLETION);
-					if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isAfter(
-							LocalDate.now().minusDays(1)) && !jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
-						int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
-						delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
-					}
-				}
+				delay = getIssueDelay(issue, category, jiraIssueData, devCompletedIssues, delay);
 			} else {
 				// Checking if dev due Date is <= sprint End Date for closed sprint
 				if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isBefore(DateUtil
 						.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1))) {
-					category.add(DEV_COMPLETION);
-					category.add(PLANNED_COMPLETION);
-					if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
-						int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
-						delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
-					}
-					// Calculating actual work status for only completed issues
-					if (devCompletedIssues.containsKey(issue)) {
-						category.add(ACTUAL_COMPLETION);
-						if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-								.isAfter(LocalDate.now().minusDays(1))
-								&& !jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
-							int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
-							delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
-						}
-					}
+					delay = getIssueDelay(issue, category, jiraIssueData, devCompletedIssues, delay);
 				}
 			}
 		}
 		data.setDelay(delay);
+	}
+
+	private static int getIssueDelay(JiraIssue issue, Set<String> category, Map<String, Object> jiraIssueData, Map<JiraIssue, String> devCompletedIssues, int delay) {
+		category.add(DEV_COMPLETION);
+		category.add(PLANNED_COMPLETION);
+		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+			int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
+			delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
+		}
+		// Calculating actual work status for only completed issues
+		if (devCompletedIssues.containsKey(issue)) {
+			category.add(ACTUAL_COMPLETION);
+			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isAfter(
+					LocalDate.now().minusDays(1)) && !jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+				int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
+				delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
+			}
+		}
+		return delay;
 	}
 
 	/**
