@@ -972,4 +972,80 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateIssueModal(jiraIssues.get(0), fieldMapping, modalObjectMap);
 		assertNotNull(modalObjectMap);
 	}
+
+	@Test
+	public void testPopulateReleasePlanExcelData() {
+
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+
+		excelUtility.populateReleasePlanExcelData(jiraIssues, kpiExcelData, fieldMapping);
+
+		// Assert
+		assertEquals(48, kpiExcelData.size());
+
+	}
+
+	@Test
+	public void testPopulateReleasePlanExcelData2() {
+
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
+
+		jiraIssues.get(0).setAggregateTimeOriginalEstimateMinutes(480);
+
+		excelUtility.populateReleasePlanExcelData(jiraIssues, kpiExcelData, fieldMapping);
+
+		// Assert
+		assertEquals(48, kpiExcelData.size());
+
+	}
+
+	@Test
+	public void testPopulateIterationReadinessExcelData() {
+
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+
+		excelUtility.populateIterationReadinessExcelData(jiraIssues, kpiExcelData, fieldMapping);
+
+		// Assert
+		assertEquals(48, kpiExcelData.size());
+
+	}
+
+	@Test
+	public void testPopulateIterationReadinessExcelData2() {
+
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
+
+		jiraIssues.get(0).setAggregateTimeOriginalEstimateMinutes(480);
+
+		excelUtility.populateIterationReadinessExcelData(jiraIssues, kpiExcelData, fieldMapping);
+
+		// Assert
+		assertEquals(48, kpiExcelData.size());
+
+	}
+
+	@Test
+	public void testPopulateReleaseDefectWithTestPhasesRelatedExcelData() {
+
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		excelUtility.populateReleaseDefectWithTestPhasesRelatedExcelData(jiraIssues, kpiExcelData);
+
+		// Assert
+		assertEquals(48, kpiExcelData.size());
+
+	}
 }
