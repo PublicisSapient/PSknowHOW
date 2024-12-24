@@ -138,6 +138,38 @@ public class IterationCommitmentServiceImplTest {
 	}
 
 	@Test
+	public void testGetKpiDataProject_OriginalEstimate() throws ApplicationException {
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setEstimationCriteria("Original estimate");
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(iterationCommitmentServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		try {
+			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest,
+					kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getIssueData());
+
+		} catch (ApplicationException enfe) {
+
+		}
+
+	}
+
+	@Test
 	public void testGetQualifierType() {
 		assertThat(iterationCommitmentServiceImpl.getQualifierType(), equalTo("ITERATION_COMMITMENT"));
 	}

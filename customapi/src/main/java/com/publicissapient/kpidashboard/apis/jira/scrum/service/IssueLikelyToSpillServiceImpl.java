@@ -162,25 +162,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 					data.getCategory().add(ISSUE_AT_RISK);
 				}
 
-				data.setValue(0.0);
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					data.setValue(issue.getStoryPoints());
-				} else if (null != issue.getOriginalEstimateMinutes()) {
-					data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
-				}
-
-				if (issueWiseDelay.containsKey(issue.getNumber())) {
-					IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(issue.getNumber());
-					data.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
-					data.setPredictedCompletionDate(
-							DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
-									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-
-				} else {
-					data.setPotentialDelay("-");
-					data.setPredictedCompletionDate("-");
-				}
+				setKpiData(issue, data, fieldMapping, issueWiseDelay);
 			});
 
 			kpiElement.setSprint(sprintLeafNode.getName());
@@ -188,6 +170,29 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 			kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 			kpiElement.setFilterGroup(createFilterGroup());
 			kpiElement.setDataGroup(createDataGroup(fieldMapping));
+		}
+	}
+
+	private static void setKpiData(JiraIssue issue, IssueKpiModalValue data, FieldMapping fieldMapping,
+			Map<String, IterationPotentialDelay> issueWiseDelay) {
+		data.setValue(0.0);
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			data.setValue(issue.getStoryPoints());
+		} else if (null != issue.getOriginalEstimateMinutes()) {
+			data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
+		}
+
+		if (issueWiseDelay.containsKey(issue.getNumber())) {
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(issue.getNumber());
+			data.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
+			data.setPredictedCompletionDate(
+					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
+							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+
+		} else {
+			data.setPotentialDelay("-");
+			data.setPredictedCompletionDate("-");
 		}
 	}
 
