@@ -1,7 +1,5 @@
 FROM mongo:5.0.18
 
-# If psknowhow/mongo-base:4.4.1-bionic image is not downloadable follow README.md to generate new
-
 LABEL version "VERSION"
 LABEL description "Docker image of dashboard mongo database"
 LABEL keywords "infra-devops_mongodb"
@@ -18,10 +16,7 @@ ENV AUTH="yes" \
     CRONTAB_DIR="/bin/bbsuid" \
     CONF="/etc/"
 
-# Create a non-root user and group
-RUN groupadd -r mongodb && useradd -r -g mongodb -m -d /home/mongodb mongodb
-
-# Set permissions for the directories MongoDB will use
+# Set the appropriate permissions for MongoDB directories and scripts
 RUN mkdir -p /data/db /data/logs /docker-entrypoint-initdb.d && \
     chown -R mongodb:mongodb /data /docker-entrypoint-initdb.d && \
     chmod 777 /data/logs && \
