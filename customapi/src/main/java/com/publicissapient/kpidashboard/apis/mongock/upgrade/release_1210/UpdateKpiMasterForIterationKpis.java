@@ -36,6 +36,7 @@ public class UpdateKpiMasterForIterationKpis {
 	private static final String KPI_133 = "kpi133";
 	private static final String KPI_131 = "kpi131";
 	private static final String KPI_119 = "kpi119";
+	private static final String KPI_176 = "kpi176";
 	private static final String TABLE_V2 = "table-v2";
 
 	public UpdateKpiMasterForIterationKpis(MongoTemplate mongoTemplate) {
@@ -68,6 +69,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue(KPI_135, CHART_TYPE, "tabular-with-donut-chart", kpiMaster);
 		changeFieldValue(KPI_133, CHART_TYPE, "tableNonRawData", kpiMaster);
 		changeFieldValue(KPI_123, CHART_TYPE, TABLE_V2, kpiMaster);
+		changeFieldValue(KPI_176, CHART_TYPE, "tableNonRawData", kpiMaster);
 
 		//update KPI Width
 		changeFieldValue(KPI_120, KPI_WIDTH, 50, kpiMaster);
@@ -82,6 +84,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue(KPI_135, KPI_WIDTH, 33, kpiMaster);
 		changeFieldValue(KPI_133, KPI_WIDTH, 33, kpiMaster);
 		changeFieldValue(KPI_123, KPI_WIDTH, 33, kpiMaster);
+		changeFieldValue(KPI_176, KPI_WIDTH, 33, kpiMaster);
 
 		//update KPI Height
 		changeFieldValue(KPI_120, KPI_HEIGHT, 100, kpiMaster);
@@ -96,6 +99,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue(KPI_135, KPI_HEIGHT, 50, kpiMaster);
 		changeFieldValue(KPI_133, KPI_HEIGHT, 50, kpiMaster);
 		changeFieldValue(KPI_123, KPI_HEIGHT, 50, kpiMaster);
+		changeFieldValue(KPI_176, KPI_HEIGHT, 50, kpiMaster);
 
 		//update Display Order
 		changeFieldValue(KPI_120, DISPLAY_ORDER, 1, kpiMaster);
@@ -110,6 +114,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue(KPI_135, DISPLAY_ORDER, 10, kpiMaster);
 		changeFieldValue(KPI_133, DISPLAY_ORDER, 11, kpiMaster);
 		changeFieldValue(KPI_123, DISPLAY_ORDER, 12, kpiMaster);
+		changeFieldValue(KPI_176, DISPLAY_ORDER, 13, kpiMaster);
 
 		//update Raw data kpi flag
 		changeFieldValue(KPI_120, IS_RAW_DATA, true, kpiMaster);
@@ -124,6 +129,7 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue(KPI_135, IS_RAW_DATA, false, kpiMaster);
 		changeFieldValue(KPI_133, IS_RAW_DATA, false, kpiMaster);
 		changeFieldValue(KPI_123, IS_RAW_DATA, true, kpiMaster);
+		changeFieldValue(KPI_176, IS_RAW_DATA, false, kpiMaster);
 	}
 
 	@RollbackExecution
@@ -150,6 +156,7 @@ public class UpdateKpiMasterForIterationKpis {
 		removeField(KPI_135, CHART_TYPE, kpiMaster);
 		removeField(KPI_133, CHART_TYPE, kpiMaster);
 		removeField(KPI_123, CHART_TYPE, kpiMaster);
+		removeField(KPI_176, CHART_TYPE, kpiMaster);
 
 		//update KPI Width
 		changeFieldValue(KPI_120, KPI_WIDTH, 100, kpiMaster);
@@ -168,9 +175,10 @@ public class UpdateKpiMasterForIterationKpis {
 		changeFieldValue(KPI_135, DISPLAY_ORDER, 12, kpiMaster);
 		changeFieldValue(KPI_133, DISPLAY_ORDER, 13, kpiMaster);
 		changeFieldValue(KPI_123, DISPLAY_ORDER, 8, kpiMaster);
+		changeFieldValue(KPI_176, DISPLAY_ORDER, 6, kpiMaster);
 		
 		List<String> iterationKpis = Arrays.asList(KPI_120, KPI_119, KPI_125, KPI_131, KPI_75, KPI_136, KPI_128,
-				KPI_124, KPI_122, KPI_135, KPI_133, KPI_123);
+				KPI_124, KPI_122, KPI_135, KPI_133, KPI_123, KPI_176);
 		iterationKpis.forEach(kpiId -> {
 			removeField(kpiId, KPI_HEIGHT, kpiMaster);
 			removeField(kpiId, IS_RAW_DATA, kpiMaster);

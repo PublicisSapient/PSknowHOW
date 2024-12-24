@@ -35,4 +35,5 @@ public class KpiData {
 	private boolean showAsLegend;
 	private String key1;
 	private String value1;
+	private Double kpiValue1;
 }
