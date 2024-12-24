@@ -48,3 +48,6 @@ function running_js()
 	    echo "Waiting for mongo to initialize... ($COUNTER seconds so far)" 
 	done
 }
+fg
+
+/bin/bash
