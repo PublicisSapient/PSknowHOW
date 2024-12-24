@@ -1,4 +1,4 @@
-FROM psknowhow/mongo-base:5.0.18
+FROM mongo:5.0.18
 
 # If psknowhow/mongo-base:4.4.1-bionic image is not downloadable follow README.md to geneteate new
 
