@@ -19,14 +19,14 @@
 
     <div class="p-inputgroup" *ngSwitchCase="'text'">
         <input type="text" pInputText id="fieldConfig?.fieldName" placeholder="Enter {{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}"
-        styleClass="p-w-100" [(ngModel)]="value" (change)="setValue()" [required]="fieldConfig?.mandatory" [disabled]="fieldConfig?.readOnly">
+        styleClass="p-w-100" [(ngModel)]="value" (change)="setValue()" [disabled]="fieldConfig?.readOnly">
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
         (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
     </div>
 
     <div class="p-inputgroup" *ngSwitchCase="'chips'">
         <p-chips styleClass="p-w-100" [disabled]="fieldConfig?.readOnly" inputId="fieldConfig?.fieldName"
-            placeholder="Enter {{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}" addOnBlur="true" [required]="fieldConfig?.mandatory" [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
+            placeholder="Enter {{fieldConfig?.placeHolderText ? fieldConfig?.placeHolderText : fieldConfig?.fieldLabel}}" addOnBlur="true"  [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
         </p-chips>
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
         (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
@@ -61,7 +61,7 @@
             <p-inputSwitch  id="fieldConfig?.fieldName" [(ngModel)]="value" (onChange)="setValue()">
             </p-inputSwitch>
 
-            <label for="fieldConfig?.fieldName" class="p-ml-2" [ngClass]="{'link': fieldConfig?.redirectUrl}" style="font-family: 'FuturaNext_Medium', sans-serif;" (click)="fieldConfig?.redirectUrl ? navigate(fieldConfig?.redirectUrl) : ''"> {{ fieldConfig?.toggleLabelRight }} 
+            <label for="fieldConfig?.fieldName" class="p-ml-2" [ngClass]="{'link': fieldConfig?.redirectUrl}" style="font-family: 'FuturaNext_Medium', sans-serif;" (click)="fieldConfig?.redirectUrl ? navigate(fieldConfig?.redirectUrl) : ''"> {{ fieldConfig?.toggleLabelRight }}
               <span class="fa fa-info-circle" *ngIf="fieldConfig.tooltip.toggleDefinition" aria-hidden="true" pTooltip="<span>
                                             {{ fieldConfig.tooltip.toggleDefinition }}
                                             </span>" tooltipPosition="top" tooltipEvent="hover"
