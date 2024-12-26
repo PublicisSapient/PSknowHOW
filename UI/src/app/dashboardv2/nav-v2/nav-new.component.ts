@@ -37,6 +37,14 @@ export class NavNewComponent implements OnInit, OnDestroy {
     } else {
       this.getBoardConfig([]);
     }
+    
+    this.sharedService.primaryFilterChangeSubject.subscribe(x=>{
+      this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+    })
+
+    this.sharedService.onScrumKanbanSwitch.subscribe(type=>{
+      this.selectedType = type.selectedType
+    })
   }
 
   // unsubscribing all Kpi Request
@@ -102,7 +110,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
           this.dashConfigData = data;
         }
 
-        this.items = [...this.dashConfigData['scrum'], ...this.dashConfigData['others']].filter(board => 
+        this.items = [...this.dashConfigData[this.selectedType], ...this.dashConfigData['others']].filter(board => 
           board.kpis.some(kpi => kpi.shown === true) || board.kpis.length === 0
         ).map((obj) => {
           return {
