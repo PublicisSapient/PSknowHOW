@@ -11,6 +11,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import * as d3 from 'd3';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -182,6 +183,19 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     ];
   }
 
+  handleAction(event:any){
+     if (event.listView) {
+          this.prepareData();
+        } else if (event.setting) {
+          this.onOpenFieldMappingDialog();
+        } else if (event.explore) {
+          this.exportToExcel();
+        } else if (event.comment) {
+          this.showComments = true;
+          this.openCommentModal();
+        }
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     this.userRole = this.authService.getRole();
     this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
@@ -222,24 +236,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         this.cardData,
         this.colorPalette,
       );
-
-      this.subscriptions.push(this.kpiHelperService.headerAction$.subscribe(x => {
-        if (x.listView) {
-          console.log('*********listview***', x)
-          this.prepareData();
-        } else if (x.setting) {
-          console.log('*********settings***', x)
-          this.onOpenFieldMappingDialog();
-        } else if (x.explore) {
-          console.log('*********explore***', x)
-          this.exportToExcel();
-
-        } else if (x.comment) {
-          this.showComments = true;
-          console.log('*********comment***', x)
-          this.openCommentModal();
-        }
-      }))
     }
 
     //#endregion

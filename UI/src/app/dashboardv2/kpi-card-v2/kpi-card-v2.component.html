@@ -1,6 +1,6 @@
 <ng-container *ngIf="selectedTab === 'iteration'; else cardWithOutRawJsonTemplate">
   <div class="kpi-card-container-v2">
-    <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"
+    <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"  (actionTriggered)="handleAction($event)"
     *ngIf="kpiHeaderData"></app-ps-kpi-card-header>
 
     <div class="kpi-card-body">
