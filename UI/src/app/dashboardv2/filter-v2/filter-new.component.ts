@@ -17,6 +17,8 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 export class FilterNewComponent implements OnInit, OnDestroy {
   filterDataArr = {};
   masterData = {};
+  // used for show/Hide only
+  masterDataCopy = {};
   filterApplyData = {};
   selectedTab: string = '';
   previousSelectedTab: string = '';
@@ -58,7 +60,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   dashConfigData: any;
   filterApiData: any = []
   @ViewChild('showHideDdn') showHideDdn: MultiSelect;
-  enableShowHideApply: boolean = true;
+  disableShowHideApply: boolean = true;
   showHideSelectAll: boolean = false;
   showChart: string = 'chart';
   iterationConfigData = {};
@@ -68,11 +70,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   noSprint: boolean = false;
   projectList = null;
   blockUI: boolean = false;
-  isAzureProect : boolean = false;
+  isAzureProect: boolean = false;
 
   kanbanProjectsAvailable: boolean = true;
   scrumProjectsAvailable: boolean = true;
   squadLevel: any;
+  noFilterApplyData: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -160,6 +163,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     this.service.setScrumKanban(this.selectedType);
     this.service.setSelectedBoard(this.selectedTab);
+
+    this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
+      this.noFilterApplyData = res;
+    }));
   }
 
   setDateFilter() {
@@ -270,6 +277,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList.filter(kpi => kpi.shown);
+
+      this.masterDataCopy['kpiList'] = JSON.parse(JSON.stringify(this.masterData['kpiList']));
+
+      this.setSelectAll();
+
+      this.cdr.detectChanges();
       this.parentFilterConfig = { ...this.selectedBoard.filters.parentFilter };
       if (!this.parentFilterConfig || !Object.keys(this.parentFilterConfig).length) {
         this.selectedLevel = null;
@@ -426,6 +439,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.dashConfigData = data;
             this.service.setDashConfigData(data, false);
             this.masterData['kpiList'] = [];
+            this.masterDataCopy['kpiList'] = [];
             this.parentFilterConfig = {};
             this.primaryFilterConfig = {};
             this.additionalFilterConfig = [];
@@ -1217,21 +1231,24 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    */
   showHideKPIs() {
     const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
+    let enabledKPIs = [];
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
       if (kpiArray[i].boardSlug.toLowerCase() == this.selectedTab.toLowerCase()) {
         if (this.dashConfigData[this.selectedType][i]) {
-          this.dashConfigData[this.selectedType][i]['kpis'] = this.masterData['kpiList'];
+          enabledKPIs = this.findEnabledKPIs(this.dashConfigData[this.selectedType][i]['kpis'], this.masterDataCopy['kpiList']);
+          this.dashConfigData[this.selectedType][i]['kpis'] = JSON.parse(JSON.stringify(this.masterDataCopy['kpiList']));
         } else {
-          this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] = this.masterData['kpiList'];
+          enabledKPIs = this.findEnabledKPIs(this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'], this.masterDataCopy['kpiList']);
+          this.dashConfigData['others'].filter(board => board.boardSlug === this.selectedTab)[0]['kpis'] = JSON.parse(JSON.stringify(this.masterDataCopy['kpiList']));
           break;
         }
       }
     }
 
-
     let obj = Object.assign({}, this.dashConfigData);
     delete obj['configDetails'];
+    delete obj['enabledKPIs'];
     this.httpService.submitShowHideOnDashboard(obj).subscribe(
       (response) => {
         if (response.success === true) {
@@ -1240,7 +1257,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             summary: 'Successfully Saved',
             detail: '',
           });
-          this.service.setDashConfigData(this.dashConfigData);
+          if (enabledKPIs?.length) {
+            this.service.setDashConfigData(this.dashConfigData, true, enabledKPIs);
+          } else {
+            this.service.setDashConfigData(this.dashConfigData);
+          }
         } else {
           this.messageService.add({
             severity: 'error',
@@ -1257,9 +1278,19 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     );
   }
 
+  findEnabledKPIs(previousDashConfig, newMasterData) {
+    let result = [];
+    previousDashConfig.forEach((element, index) => {
+      if (!element.isEnabled && newMasterData[index].isEnabled) {
+        result.push(newMasterData[index]);
+      }
+    });
+    return result;
+  }
+
   assignUserNameForKpiData() {
-    delete this.masterData['kpiList'].id;
-    this.masterData['kpiList'] = this.masterData['kpiList'].map(element => {
+    delete this.masterDataCopy['kpiList'].id;
+    this.masterDataCopy['kpiList'] = this.masterDataCopy['kpiList'].map(element => {
       delete element?.kpiDetail?.id;
       return {
         kpiId: element.kpiId,
@@ -1273,6 +1304,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.dashConfigData['username'] = this.service.getCurrentUserDetails('user_name');
   }
 
+
+  setSelectAll() {
+    let visibleKPIs = this.masterDataCopy['kpiList'].filter(kpi => kpi.isEnabled);
+    if (visibleKPIs.length < this.masterDataCopy['kpiList'].length) {
+      this.showHideSelectAll = false;
+    } else if (visibleKPIs.length === this.masterDataCopy['kpiList'].length) {
+      this.showHideSelectAll = true;
+    }
+  }
+
   /**
    * Toggles the 'isEnabled' property of each element in the 'kpiList' based on the 'showHideSelectAll' flag.
    * @param {void} No parameters are accepted.
@@ -1280,7 +1321,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @throws {none} This function does not throw any exceptions.
    */
   showHideSelectAllApply() {
-    this.masterData['kpiList'].forEach(element => {
+    this.masterDataCopy['kpiList'].forEach(element => {
       if (this.showHideSelectAll) {
         element.isEnabled = true;
       } else {
@@ -1310,5 +1351,4 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     return obj;
   }
-
 }

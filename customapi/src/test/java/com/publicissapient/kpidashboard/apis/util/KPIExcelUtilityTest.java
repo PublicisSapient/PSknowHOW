@@ -77,13 +77,14 @@ public class KPIExcelUtilityTest {
 	CustomApiConfig customApiConfig;
 	private List<JiraIssue> jiraIssues;
 	private List<TestCaseDetails> testCaseDetailsList;
+	List<JiraIssue> storyList = new ArrayList<>();
 
 	@Before
 	public void setup() {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		jiraIssues = jiraIssueDataFactory.getJiraIssues();
-
 		testCaseDetailsList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
+		storyList = jiraIssues.stream().filter(issue -> issue.getTypeName().equalsIgnoreCase("Story")).collect(Collectors.toList());
 	}
 
 	@Test
@@ -97,13 +98,17 @@ public class KPIExcelUtilityTest {
 
 		FieldMapping fieldMapping = mock(FieldMapping.class);
 		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		when(customApiConfig.getpriorityP1()).thenReturn(Constant.P1);
+		when(customApiConfig.getpriorityP2()).thenReturn(Constant.P2);
+		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
+		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
 		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig, fieldMapping);
 
 		// Assert
 		assertEquals(2, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
 
 	@Test
@@ -246,7 +251,7 @@ public class KPIExcelUtilityTest {
 		excelUtility.populateRefinementRejectionExcelData(excelDataList, jiraIssues, weekAndTypeMap, jiraDateMap);
 
 		// Assert
-		assertEquals(47, excelDataList.size());
+		assertEquals(48, excelDataList.size());
 	}
 
 	@Test
@@ -286,10 +291,10 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Call the method to populate data
-		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig);
+		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig, storyList);
 
 		// Assert the result based on your logic
-		assertEquals(19, kpiExcelData.size());
+		assertEquals(20, kpiExcelData.size());
 		KPIExcelData excelData = kpiExcelData.get(0);
 
 		Map<String, String> defectIdDetails = excelData.getDefectId();
@@ -311,10 +316,10 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Call the method to populate data
-		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig);
+		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig, storyList);
 
 		// Assert the result based on your logic
-		assertEquals(19, kpiExcelData.size());
+		assertEquals(20, kpiExcelData.size());
 		KPIExcelData excelData = kpiExcelData.get(0);
 
 		Map<String, String> defectIdDetails = excelData.getDefectId();
@@ -335,10 +340,10 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Call the method to populate data
-		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig);
+		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig, storyList);
 
 		// Assert the result based on your logic
-		assertEquals(19, kpiExcelData.size());
+		assertEquals(20, kpiExcelData.size());
 		KPIExcelData excelData = kpiExcelData.get(0);
 
 		Map<String, String> defectIdDetails = excelData.getDefectId();
@@ -359,10 +364,10 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Call the method to populate data
-		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig);
+		KPIExcelUtility.populateDefectRelatedExcelData("abc", bug, jiraIssues, kpiExcelData, kpiId, customApiConfig, storyList);
 
 		// Assert the result based on your logic
-		assertEquals(19, kpiExcelData.size());
+		assertEquals(20, kpiExcelData.size());
 		KPIExcelData excelData = kpiExcelData.get(0);
 
 		Map<String, String> defectIdDetails = excelData.getDefectId();
@@ -522,7 +527,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssues, excelDataList, fieldMapping);
 
 		// Assert
-		assertEquals(47, excelDataList.size());
+		assertEquals(48, excelDataList.size());
 	}
 
 	@Test
@@ -537,7 +542,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssues, excelDataList, fieldMapping);
 
 		// Assert
-		assertEquals(47, excelDataList.size());
+		assertEquals(48, excelDataList.size());
 	}
 
 	@Test
@@ -552,7 +557,7 @@ public class KPIExcelUtilityTest {
 		KPIExcelUtility.populateBacklogCountExcelData(jiraIssues, excelDataList);
 
 		// Assert
-		assertEquals(47, excelDataList.size());
+		assertEquals(48, excelDataList.size());
 	}
 
 	@Test
@@ -677,8 +682,8 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(3, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
 
 	@Test
@@ -711,8 +716,8 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(3, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
 
 	@Test
@@ -747,8 +752,8 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(4, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 
 	}
 
@@ -781,8 +786,8 @@ public class KPIExcelUtilityTest {
 		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig, fieldMapping);
 		// Assert
 		assertEquals(3, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
 
 	@Test
@@ -805,7 +810,7 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 
 		// Act
-		KPIExcelUtility.populateDefectSeepageRateExcelData(sprint, totalBugList, dsrValidationDataList, kpiExcelData, customApiConfig);
+		KPIExcelUtility.populateDefectSeepageRateExcelData(sprint, totalBugList, dsrValidationDataList, kpiExcelData, customApiConfig, storyList);
 		// Assert
 		assertEquals(1, kpiExcelData.size());
 		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
@@ -838,7 +843,7 @@ public class KPIExcelUtilityTest {
 		when(customApiConfig.getpriorityP3()).thenReturn(Constant.P3);
 		when(customApiConfig.getpriorityP4()).thenReturn("p4-minor");
 		// Act
-		KPIExcelUtility.populateDefectRelatedExcelData(sprint, defects, kpiExcelData, customApiConfig);
+		KPIExcelUtility.populateDefectRelatedExcelData(sprint, defects, kpiExcelData, customApiConfig, storyList);
 
 		// Assert
 		assertEquals(1, kpiExcelData.size());
@@ -895,7 +900,7 @@ public class KPIExcelUtilityTest {
 		Map<String, JiraIssue> issueData = jiraIssue.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
 		// Act
 		KPIExcelUtility.populateCreatedVsResolvedExcelData(sprint, issueData, createdConditionStories, map,
-				kpiExcelData, customApiConfig);
+				kpiExcelData, customApiConfig, storyList);
 		// Assert
 		assertEquals(1, kpiExcelData.size());
 		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());

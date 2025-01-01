@@ -15,13 +15,15 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
-package com.publicissapient.kpidashboard.common.repository.rbac;
+package com.publicissapient.kpidashboard.common.repository.application;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UsersLoginHistory;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
-public interface UserLoginHistoryRepository extends CrudRepository<UsersLoginHistory, ObjectId> {
+@Repository
+public interface OrganizationHierarchyRepository extends MongoRepository<OrganizationHierarchy, ObjectId> {
+
 }

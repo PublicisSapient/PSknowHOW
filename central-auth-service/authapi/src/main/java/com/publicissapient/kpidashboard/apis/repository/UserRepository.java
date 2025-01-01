@@ -41,5 +41,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	List<User> findByUsernameIn(List<String> userName);
 
 	List<User> findByUserVerifiedAndApprovedOrderByIdDesc(Boolean userVerified, Boolean approved);
-
 }

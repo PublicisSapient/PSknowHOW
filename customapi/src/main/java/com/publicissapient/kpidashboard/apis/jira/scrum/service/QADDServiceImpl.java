@@ -30,16 +30,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -47,6 +45,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -204,7 +203,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 					List<String> totalStoryIdList = sprintWiseStoryMAP.get(currentNodeIdentifier);
 					Set<JiraIssue> sprintWiseDefectList = sprintWiseDefectListMap.get(currentNodeIdentifier);
 					KPIExcelUtility.populateDefectDensityExcelData(totalStoryIdList,
-							new ArrayList<>(sprintWiseDefectList), excelData, allStoryMap, fieldMapping, customApiConfig);
+							new ArrayList<>(sprintWiseDefectList), excelData, allStoryMap, fieldMapping,
+							customApiConfig);
 				}
 			} else {
 				qaddForCurrentLeaf = 0.0d;
@@ -232,7 +232,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		});
 
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_DENSITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.DEFECT_DENSITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 
 	}
 
@@ -433,8 +434,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI111(),KPICode.DEFECT_DENSITY.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI111(), KPICode.DEFECT_DENSITY.getKpiId());
 	}
 
 }

@@ -81,10 +81,12 @@ public class OutlierSprintStrategyImpl implements OutlierSprintStrategy {
 			LocalDateTime nextStartDate = DateUtil.stringToLocalDateTime(nextSprint.getStartDate(),
 					DateUtil.TIME_FORMAT_WITH_SEC);
 
-			if (currentEndDate.isAfter(nextStartDate)) {
+			if (!currentEndDate.toLocalDate().isEqual(nextStartDate.toLocalDate())
+					&& currentEndDate.isAfter(nextStartDate)) {
+				overlappingSprints.add(currentSprint);
 				overlappingSprints.add(nextSprint);
-				log.info("Outlier sprint: {} found for projectId: {}", nextSprint.getSprintName(),
-						basicProjectConfigId);
+				log.info("Overlapping sprints detected: {} and {} for projectId: {}", currentSprint.getSprintName(),
+						nextSprint.getSprintName(), basicProjectConfigId);
 			}
 		}
 

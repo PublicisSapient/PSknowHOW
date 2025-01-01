@@ -101,7 +101,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
-	
+
 	@Autowired
 	private CacheService cacheService;
 
@@ -131,7 +131,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.FIRST_TIME_PASS_RATE);
 		kpiElement.setTrendValueList(trendValues);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 		log.debug("[STORYCOUNT-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
@@ -208,9 +209,13 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Set<JiraIssue> linkedDefects = projectWiseDefect
 							.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
-					Optional.ofNullable(jiraIssues).ifPresent(jIssue -> jIssue.forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue)));
-					KPIExcelUtility.populateFTPRExcelData(totalStoryIdList,
-							ftpStoriesList, excelData, issueMapping, new ArrayList<>( linkedDefects != null ? linkedDefects : new ArrayList<>()), customApiConfig, fieldMapping);
+					Optional.ofNullable(jiraIssues).ifPresent(
+							jIssue -> jIssue.forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue)));
+					List<KPIExcelData> excelDatas = new ArrayList<>();
+					KPIExcelUtility.populateFTPRExcelData(totalStoryIdList, ftpStoriesList, excelDatas, issueMapping,
+							new ArrayList<>(linkedDefects != null ? linkedDefects : new ArrayList<>()), customApiConfig,
+							fieldMapping);
+					excelData.addAll(excelDatas);
 				}
 			} else {
 				ftprForCurrentLeaf = 0.0d;
@@ -320,7 +325,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				uniqueProjectMap);
 		// do not change the order of remove methods
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType, defectListWoDrop);
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType,
+				defectListWoDrop);
 
 		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
 		Set<JiraIssue> defectForExcel = new HashSet<>();
@@ -360,8 +366,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	 * @param defectForExcel
 	 */
 	private void removeStoriesWithDefect(List<JiraIssue> issuesBySprintAndType,
-										 Map<String, Map<String, Integer>> projectWisePriority, Map<String, Set<String>> projectWiseRCA,
-										 Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject, Set<JiraIssue> defectForExcel) {
+			Map<String, Map<String, Integer>> projectWisePriority, Map<String, Set<String>> projectWiseRCA,
+			Map<String, Map<String, List<String>>> statusConfigsOfRejectedStoriesByProject,
+			Set<JiraIssue> defectForExcel) {
 		List<JiraIssue> allDefects = jiraIssueRepository.findByTypeNameAndDefectStoryIDIn(
 				NormalizedJira.DEFECT_TYPE.getValue(), getIssueIds(issuesBySprintAndType));
 		Set<JiraIssue> defects = new HashSet<>();
@@ -371,9 +378,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				defects.add(d);
 			}
 		}));
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, new ArrayList<>(defects), defectListWoDrop);
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, new ArrayList<>(defects),
+				defectListWoDrop);
 
-		final List<JiraIssue> remainingDefects = KpiHelperService.excludeDefectByPriorityCount(projectWisePriority, defects);
+		final List<JiraIssue> remainingDefects = KpiHelperService.excludeDefectByPriorityCount(projectWisePriority,
+				defects);
 
 		List<JiraIssue> notFTPRDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {

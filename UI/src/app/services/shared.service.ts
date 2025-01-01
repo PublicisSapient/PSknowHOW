@@ -123,6 +123,9 @@ export class SharedService {
 
   selectedMap = {};
 
+  // KPI filter retention
+  selectedKPIFilterObj = {};
+
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -187,10 +190,15 @@ export class SharedService {
   }
 
   // setter dash config data
-  setDashConfigData(data, emit = true) {
+  setDashConfigData(data, emit = true, enabledKPIs = null) {
     this.dashConfigData = JSON.parse(JSON.stringify(data));
     if (emit) {
-      this.globalDashConfigData.emit(data);
+      if (enabledKPIs) {
+        data['enabledKPIs'] = enabledKPIs;
+        this.globalDashConfigData.emit(data);
+      } else {
+        this.globalDashConfigData.emit(data);
+      }
     }
   }
 
@@ -355,7 +363,18 @@ export class SharedService {
   }
 
   setKpiSubFilterObj(value: any) {
+    if(!value) {
+      this.selectedKPIFilterObj = {};
+    } else if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
+      Object.keys(value).forEach((key) => {
+        this.selectedKPIFilterObj[key] = value[key];
+      });
+    }
     this.selectedFilterOption.next(value);
+  }
+
+  getKpiSubFilterObj() {
+    return this.selectedKPIFilterObj;
   }
 
   setNoSprints(value) {

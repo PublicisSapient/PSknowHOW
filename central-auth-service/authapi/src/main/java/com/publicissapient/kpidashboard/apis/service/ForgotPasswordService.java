@@ -21,5 +21,4 @@ public interface ForgotPasswordService {
 	 * @return authentication
 	 */
 	ServiceResponseDTO validateUserAndSendForgotPasswordEmail(String email);
-
 }

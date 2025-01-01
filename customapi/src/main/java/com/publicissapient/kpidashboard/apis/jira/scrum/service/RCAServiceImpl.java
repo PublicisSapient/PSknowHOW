@@ -87,6 +87,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	private static final String TOTAL_DEFECT_DATA = "totalBugKey";
 	private static final String SPRINT_WISE_STORY_DATA = "storyData";
 	private static final String DEV = "DeveloperKpi";
+	public static final String STORY_LIST = "storyList";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -245,6 +246,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		setDbQueryLogger(storyIdList, null, null, defectListWoDrop);
 		resultListMap.put(SPRINT_WISE_STORY_DATA, sprintWiseStoryList);
 		resultListMap.put(TOTAL_DEFECT_DATA, defectListWoDrop);
+		resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 
 		return resultListMap;
 
@@ -280,6 +282,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap
 				.get(SPRINT_WISE_STORY_DATA);
+		List<JiraIssue> storyList = (List<JiraIssue>) storyDefectDataListMap.get(STORY_LIST);
 
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
@@ -337,7 +340,8 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 					Integer rcaCountHover = rcaMap.getOrDefault(rca, 0L).intValue();
 					overAllHoverValueMap.put(StringUtils.capitalize(rca), rcaCountHover);
 				});
-				populateExcelDataObject(requestTrackerId, excelData, jiraIssueList, node.getSprintFilter().getName());
+				populateExcelDataObject(requestTrackerId, excelData, jiraIssueList, node.getSprintFilter().getName(),
+						storyList);
 			}
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
 
@@ -367,12 +371,12 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> sprintWiseDefectDataList, String name) {
+			List<JiraIssue> sprintWiseDefectDataList, String name, List<JiraIssue> storyList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
-			KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData,
-					 customApiConfig);
+			KPIExcelUtility.populateDefectRelatedExcelData(name, sprintWiseDefectDataList, excelData, customApiConfig,
+					storyList);
 		}
 
 	}

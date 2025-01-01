@@ -22,5 +22,4 @@ import java.util.List;
 public interface RoleService {
 
 	List<String> getAllRolesByResourceName(String resourceName);
-
 }

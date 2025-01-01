@@ -40,8 +40,7 @@ public class SAMLAuthenticationServiceImpl implements SAMLAuthenticationService 
 
 		if (Objects.nonNull(username)) {
 			String jwt = this.tokenAuthenticationService.createJWT(username, AuthType.SAML,
-					this.tokenAuthenticationService
-							.createAuthorities(this.userRoleService.getRolesNamesByUsername(username)));
+					this.tokenAuthenticationService.createAuthorities(this.userRoleService.getRolesNamesByUsername(username)));
 
 			this.tokenAuthenticationService.addSamlCookies(username, jwt, response);
 

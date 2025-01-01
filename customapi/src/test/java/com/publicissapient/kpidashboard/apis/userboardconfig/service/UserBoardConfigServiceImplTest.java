@@ -304,7 +304,7 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban(anyString(), anyBoolean())).thenReturn(filteredMaster);
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig(listOfReqProjects);
-		assertEquals(userBoardConfigDTO.getOthers().size(), 3);
+		assertEquals(userBoardConfigDTO.getOthers().size(), 1);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -376,8 +376,8 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban("Iteration", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Iteration".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Kpi Maturity", false)).thenReturn(kpiMasters.stream()
-				.filter(master -> (!master.getKanban() && "Kpi Maturity".equalsIgnoreCase(master.getKpiCategory())))
+		when(kpiMasterRepository.findByKpiCategoryAndKanban("KPI Maturity", false)).thenReturn(kpiMasters.stream()
+				.filter(master -> (!master.getKanban() && "KPI Maturity".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 
 		when(kpiMasterRepository.findByKpiCategoryAndKanban("Backlog", false)).thenReturn(kpiMasters.stream()
@@ -469,8 +469,8 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban("Iteration", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Iteration".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Kpi Maturity", false)).thenReturn(kpiMasters.stream()
-				.filter(master -> (!master.getKanban() && "Kpi Maturity".equalsIgnoreCase(master.getKpiCategory())))
+		when(kpiMasterRepository.findByKpiCategoryAndKanban("KPI Maturity", false)).thenReturn(kpiMasters.stream()
+				.filter(master -> (!master.getKanban() && "KPI Maturity".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 
 		when(kpiMasterRepository.findByKpiCategoryAndKanban("Backlog", false)).thenReturn(kpiMasters.stream()
@@ -504,8 +504,8 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban("Iteration", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Iteration".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Kpi Maturity", false)).thenReturn(kpiMasters.stream()
-				.filter(master -> (!master.getKanban() && "Kpi Maturity".equalsIgnoreCase(master.getKpiCategory())))
+		when(kpiMasterRepository.findByKpiCategoryAndKanban("KPI Maturity", false)).thenReturn(kpiMasters.stream()
+				.filter(master -> (!master.getKanban() && "KPI Maturity".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 
 		when(kpiMasterRepository.findByKpiCategoryAndKanban("Backlog", false)).thenReturn(kpiMasters.stream()
@@ -539,8 +539,8 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban("Iteration", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Iteration".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Kpi Maturity", false)).thenReturn(kpiMasters.stream()
-				.filter(master -> (!master.getKanban() && "Kpi Maturity".equalsIgnoreCase(master.getKpiCategory())))
+		when(kpiMasterRepository.findByKpiCategoryAndKanban("KPI Maturity", false)).thenReturn(kpiMasters.stream()
+				.filter(master -> (!master.getKanban() && "KPI Maturity".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 		when(kpiMasterRepository.findByKpiCategoryAndKanban("Backlog", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Backlog".equalsIgnoreCase(master.getKpiCategory())))
@@ -639,7 +639,7 @@ public class UserBoardConfigServiceImplTest {
 	private Board createMyKnowHowKanbanBord() {
 		Board board = new Board();
 		board.setBoardId(4);
-		board.setBoardName("My KnowHow");
+		board.setBoardName("My KnowHOW");
 		List<BoardKpis> boardKpisList = new ArrayList<>();
 		boardKpisList.add(createKpi("kpi55", "Ticket Open vs Closed rate by type", true, true, 1));
 		boardKpisList.add(createKpi("kpi54", "Ticket Open vs Closed rate by Priority", true, true, 2));

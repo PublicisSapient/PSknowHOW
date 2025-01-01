@@ -64,5 +64,4 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 
 		return this.getAuthenticationManager().authenticate(new StandardAuthenticationToken(username.trim(), password));
 	}
-
 }

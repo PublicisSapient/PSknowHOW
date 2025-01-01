@@ -17,8 +17,8 @@ import lombok.Data;
 public class AuthEndpointsProperties {
 	private static final String[] NO_ENDPOINTS = {};
 	private static final String[] NO_EXTERNAL_ENDPOINTS = {};
-	private static final String[] DEFAULT_PUBLIC_ENDPOINTS = { "/api-docs", "/img/**", "/css/**", "/js/**", "/**.js**",
-			"/**.css**", "/**.png**", "/**.jpeg**", "/**.jpg**", "/**.ico**" };
+	private static final String[] DEFAULT_PUBLIC_ENDPOINTS = {"/api-docs", "/img/**", "/css/**", "/js/**", "/**.js**",
+			"/**.css**", "/**.png**", "/**.jpeg**", "/**.jpg**", "/**.ico**"};
 
 	private String[] publicEndpoints;
 

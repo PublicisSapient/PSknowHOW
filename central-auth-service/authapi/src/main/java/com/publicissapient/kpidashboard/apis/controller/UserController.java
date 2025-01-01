@@ -56,8 +56,7 @@ public class UserController {
 		UserDTO userDTO = userService.getCurrentUser(request);
 
 		if (Objects.nonNull(userDTO)) {
-			return ResponseEntity
-					.ok(new ServiceResponseDTO(true, messageService.getMessage(SUCCESS_VALID_TOKEN), userDTO));
+			return ResponseEntity.ok(new ServiceResponseDTO(true, messageService.getMessage(SUCCESS_VALID_TOKEN), userDTO));
 		} else {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN)
 					.body(new ServiceResponseDTO(false, messageService.getMessage(ERROR_INVALID_USER), null));
@@ -69,7 +68,10 @@ public class UserController {
 		boolean isSuccess = userService.updateUserProfile(request);
 
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponseDTO(isSuccess, isSuccess ? messageService.getMessage("success_profile_user")
-						: messageService.getMessage("error_update_profile"), null));
+				.body(new ServiceResponseDTO(isSuccess,
+						isSuccess
+								? messageService.getMessage("success_profile_user")
+								: messageService.getMessage("error_update_profile"),
+						null));
 	}
 }

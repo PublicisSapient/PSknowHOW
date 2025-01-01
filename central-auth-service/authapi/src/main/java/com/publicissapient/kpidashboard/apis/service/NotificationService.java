@@ -7,15 +7,13 @@ import java.util.Map;
 public interface NotificationService {
 
 	/**
-	 *
 	 * @param roles
-	 *            roles
+	 *          roles
 	 * @return list of email address based on roles
 	 */
 	List<String> getEmailAddressBasedOnRoles(List<String> roles);
 
 	/**
-	 *
 	 * @param emailAddresses
 	 * @param customData
 	 * @param subjectKey
@@ -35,10 +33,8 @@ public interface NotificationService {
 	void sendUserPreApprovalRequestEmailToAdmin(String username, String email);
 
 	/**
-	 *
 	 * @return String
 	 * @throws UnknownHostException
 	 */
 	String getApiHost() throws UnknownHostException;
-
 }

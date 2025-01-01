@@ -86,7 +86,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
       this.filterOptions = {};
-      if (Object.keys(x)?.length) {
+      if (x && Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
@@ -127,10 +127,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
-    /** assign 1st value to radio button by default */
-    if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
-      this.radioOption = this.dropdownArr[0]?.options[0];
-    }
   }
 
   initializeMenu() {
@@ -176,6 +172,20 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.disableSettings = (this.colors && (Object.keys(this.colors)?.length > 1 || (this.colors[Object.keys(this.colors)[0]]?.labelName !== 'project' && this.selectedTab !== 'iteration' && this.selectedTab !== 'release')))
       || this.checkIfViewer || !['superAdmin', 'projectAdmin'].includes(this.userRole);
     this.initializeMenu();
+
+    /** assign 1st value to radio button by default */
+    if (changes['dropdownArr'] && changes['dropdownArr'].currentValue?.length && this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
+      let backUpValue = this.service.getKpiSubFilterObj()[this.kpiData.kpiId];
+      if (!backUpValue || !Object.keys(backUpValue)?.length) {
+        this.radioOption = this.dropdownArr[0]?.options[0];
+      } else {
+        if (backUpValue.hasOwnProperty('filter1')) {
+          this.radioOption = backUpValue.filter1[0];
+        } else {
+          this.radioOption = backUpValue[0];
+        }
+      }
+    }
   }
 
   openCommentModal = () => {
@@ -198,21 +208,25 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   showWarning(val) {
     if (val) {
-      this.warning = 'Configure the missing mandatory field mappings in KPI Settings for accurate data display.';
+      if (this.kpiDataStatusCode === '201') {
+        this.warning = 'Configure the missing mandatory field mappings in KPI Settings for accurate data display.';
+      } else if (this.kpiDataStatusCode === '203') {
+        this.warning = 'Data may be inaccurate due to a failed processor run!';
+      }
     } else {
       this.warning = null;
     }
   }
 
-/**
- * Handles changes in dropdown selections, moving selected options to the top,
- * emitting the selected option, and triggering a Google Analytics event.
- * 
- * @param {string} type - The type of selection (e.g., 'radio', 'single').
- * @param {object|null} value - The selected value(s), can be an object or null.
- * @param {number} filterIndex - The index of the dropdown in the array.
- * @returns {void}
- */
+  /**
+   * Handles changes in dropdown selections, moving selected options to the top,
+   * emitting the selected option, and triggering a Google Analytics event.
+   *
+   * @param {string} type - The type of selection (e.g., 'radio', 'single').
+   * @param {object|null} value - The selected value(s), can be an object or null.
+   * @param {number} filterIndex - The index of the dropdown in the array.
+   * @returns {void}
+   */
   handleChange(type, value = null, filterIndex = 0) {
 
     // moving selected option to top
@@ -374,39 +388,39 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.ga.setKpiData(gaObj);
   }
 
-/**
- * Checks if data is present based on the provided status code and KPI ID.
- * Evaluates the trend value list and specific conditions to determine presence.
- * 
- * @param {string} data - The status code to check (e.g., '200', '201').
- * @returns {boolean} - Returns true if data is present, otherwise false.
- */
+  /**
+   * Checks if data is present based on the provided status code and KPI ID.
+   * Evaluates the trend value list and specific conditions to determine presence.
+   *
+   * @param {string} data - The status code to check (e.g., '200', '201').
+   * @returns {boolean} - Returns true if data is present, otherwise false.
+   */
   checkIfDataPresent(data) {
-    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
+    if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi148' || this.kpiData?.kpiId === 'kpi146')) {
       if (this.trendValueList?.length) {
         return true;
       }
     }
-    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')) {
+    else if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi139' || this.kpiData?.kpiId === 'kpi127')) {
       if (this.trendValueList?.length && this.trendValueList[0].value?.length) {
         return true;
       }
     }
-    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi168' || this.kpiData?.kpiId === 'kpi70' || this.kpiData?.kpiId === 'kpi153')) {
+    else if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi168' || this.kpiData?.kpiId === 'kpi70' || this.kpiData?.kpiId === 'kpi153' || this.kpiData?.kpiId === 'kpi35')) {
       if (this.trendValueList?.length && this.trendValueList[0]?.value?.length > 0) {
         return true;
       }
     }
 
-    if ((data === '200' || data === '201') && (this.kpiData?.kpiId === 'kpi171')) {
-      if (this.trendValueList?.length && this.trendValueList[0]?.data?.length > 0) {
+    else if ((data === '200' || data === '201' || data === '203') && (this.kpiData?.kpiId === 'kpi171')) {
+      if (this.trendValueList[0]?.data?.length > 0) {
         return true;
       } else {
         return false;
       }
+    } else {
+      return (data === '200' || data === '201' || data === '203') && this.helperService.checkDataAtGranularLevel(this.trendValueList, this.kpiData.kpiDetail.chartType, this.selectedTab);
     }
-
-    return (data === '200' || data === '201') && this.helperService.checkDataAtGranularLevel(this.trendValueList, this.kpiData.kpiDetail.chartType, this.selectedTab);
   }
 
   getColorCssClasses(index) {

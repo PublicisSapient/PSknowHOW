@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.errors;
 
 import java.util.HashMap;
@@ -51,9 +49,9 @@ public class ApplicationException extends Exception {
 	 * Instantiates a new application exception.
 	 *
 	 * @param message
-	 *            the message
+	 *          the message
 	 * @param errorCode
-	 *            the error code
+	 *          the error code
 	 */
 	public ApplicationException(String message, int errorCode) {
 		super(message);
@@ -64,9 +62,9 @@ public class ApplicationException extends Exception {
 	 * Instantiates a new CustomApiApplication exception.
 	 *
 	 * @param clazz
-	 *            the clazz
+	 *          the clazz
 	 * @param searchParamsMap
-	 *            the search params map
+	 *          the search params map
 	 */
 	public ApplicationException(Class clazz, String... searchParamsMap) {
 		super(ApplicationException.generateMessage(clazz.getSimpleName(),
@@ -74,7 +72,6 @@ public class ApplicationException extends Exception {
 	}
 
 	/**
-	 *
 	 * @param entity
 	 * @param searchParams
 	 * @return
@@ -84,7 +81,6 @@ public class ApplicationException extends Exception {
 	}
 
 	/**
-	 *
 	 * @param keyType
 	 * @param valueType
 	 * @param entries
@@ -99,5 +95,4 @@ public class ApplicationException extends Exception {
 		return IntStream.range(0, entries.length / 2).map(i -> i * 2).collect(HashMap::new,
 				(m, i) -> m.put(keyType.cast(entries[i]), valueType.cast(entries[i + 1])), Map::putAll);
 	}
-
 }

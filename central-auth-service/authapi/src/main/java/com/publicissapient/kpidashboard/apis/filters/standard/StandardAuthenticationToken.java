@@ -67,9 +67,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 		super.setAuthenticated(false);
 	}
 
-	/**
-	 * Erases credentials and sets credentials object to null
-	 */
+	/** Erases credentials and sets credentials object to null */
 	@Override
 	public void eraseCredentials() {
 		super.eraseCredentials();

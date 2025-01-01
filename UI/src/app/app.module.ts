@@ -54,12 +54,10 @@ import { LineBarChartComponent } from './component/line-bar-chart/line-bar-chart
 import { LineBarChartWithHowerComponent } from './component/line-bar-chart-with-hover/line-bar-chart-with-hover.component';
 import { GaugechartComponent } from './component/gaugechart/gaugechart.component';
 import { MultilineComponent } from './component/multiline/multiline.component';
-import { ExecutiveComponent } from './dashboard/executive/executive.component';
 import { MaturityComponent } from './dashboard/maturity/maturity.component';
 import { FilterComponent } from './dashboard/filter/filter.component';
 import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
 import { GroupstackchartComponentv2 } from './component/groupedstackchart-v2/groupstackchart-v2.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { PiechartComponent } from './component/piechart/piechart.component';
 import { ErrorComponent } from './dashboard/error/error.component';
 import { KpiComponent } from './component/kpi-line-gauge/kpi-line-gauge.component';
@@ -107,7 +105,6 @@ import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/una
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 import { CommentsComponent } from './component/comments/comments.component';
 import { CommentsV2Component } from './component/comments-v2/comments-v2.component';
-import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
 import { CumulativeLineChartComponent } from './component/cumulative-line-chart/cumulative-line-chart.component';
 import { InputTextModule } from 'primeng/inputtext';
@@ -121,8 +118,6 @@ import { IssueCardComponent } from './dashboard/issue-card/issue-card.component'
 import { IssueBodyComponent } from './dashboard/issue-body/issue-body.component';
 import { DailyScrumGraphComponent } from './component/daily-scrum-graph/daily-scrum-graph.component';
 import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
-import { DoraComponent } from './dashboard/dora/dora.component';
-import { DeveloperComponent } from './dashboard/developer/developer.component';
 import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -168,10 +163,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         LineBarChartWithHowerComponent,
         GaugechartComponent,
         MultilineComponent,
-        ExecutiveComponent,
         MaturityComponent,
         FilterComponent,
-        DashboardComponent,
         GroupstackchartComponent,
         GroupstackchartComponentv2,
         PiechartComponent,
@@ -195,7 +188,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent,
         GroupBarChartComponent,
-        MilestoneComponent,
         HorizontalPercentBarChartComponent,
         CumulativeLineChartComponent,
         StackedAreaChartComponent,
@@ -208,11 +200,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         IssueBodyComponent,
         DailyScrumGraphComponent,
         MultilineStyleComponent,
-        DoraComponent,
         FeedbackComponent,
-        DeveloperComponent,
         BarWithYAxisGroupComponent,
-        DeveloperComponent,
         PageNotFoundComponent,
         HeaderComponent,
         FilterNewComponent,
@@ -277,7 +266,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         ExcelService,
         SharedService,
         GetAuthService,
-        ExecutiveComponent,
         HelperService,
         GetAuthorizationService,
         JsonExportImportService,

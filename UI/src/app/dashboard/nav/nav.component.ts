@@ -151,7 +151,7 @@ export class NavComponent implements OnInit {
   }
 
   processKPIListData() {
-    this.configOthersData = this.kpiListData['others'].find(boardDetails => boardDetails.boardName === 'Kpi Maturity')?.kpis;
+    this.configOthersData = this.kpiListData['others'].find(boardDetails => boardDetails.boardName === 'KPI Maturity')?.kpis;
     this.service.setUpdatedBoardList(this.kpiListData, this.selectedType);
 
     // renamed tab name was not updating when navigating on iteration/backlog, issue fixed

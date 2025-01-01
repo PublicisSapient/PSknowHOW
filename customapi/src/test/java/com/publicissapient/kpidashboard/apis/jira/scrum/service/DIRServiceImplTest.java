@@ -209,7 +209,7 @@ public class DIRServiceImplTest {
 				kpiRequest);
 		assertThat("Total Story value :", ((List<JiraIssue>) (defectDataListMap.get("storyData"))).size(), equalTo(5));
 		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get("defectData"))).size(),
-				equalTo(19));
+				equalTo(20));
 	}
 
 }

@@ -11,7 +11,7 @@
             [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
         </span>
       </div>
-      <span class="warning-icon" *ngIf="kpiDataStatusCode === '201'" (mouseover)="showWarning(true)"
+      <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'" (mouseover)="showWarning(true)"
         (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
         <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
           src="../../../assets/img/Warning.svg" />

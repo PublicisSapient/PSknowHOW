@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -41,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -87,6 +87,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 
 	private static final String SEPARATOR_ASTERISK = "*************************************";
 	private static final String CREATED_VS_RESOLVED_KEY = "createdVsResolvedKey";
+	public static final String STORY_LIST = "storyList";
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
 	private static final String SPRINT_WISE_SUB_TASK_BUGS = "sprintWiseSubTaskBugs";
 	private static final String SUB_TASK_BUGS_HISTORY = "SubTaskBugsHistory";
@@ -261,6 +262,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, subTaskBugs);
 			resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
+			resultListMap.put(STORY_LIST, jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>(totalIssue)));
 
 		}
 		setDbQueryLogger((List<JiraIssue>) resultListMap.get(CREATED_VS_RESOLVED_KEY));
@@ -309,6 +311,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) createdVsResolvedMap.get(CREATED_VS_RESOLVED_KEY);
 
 		List<JiraIssue> allSubTaskBugs = (List<JiraIssue>) createdVsResolvedMap.get(SPRINT_WISE_SUB_TASK_BUGS);
+		List<JiraIssue> storyList = (List<JiraIssue>) createdVsResolvedMap.get(STORY_LIST);
 
 		List<JiraIssueCustomHistory> allSubTaskBugsHistory = (List<JiraIssueCustomHistory>) createdVsResolvedMap
 				.get(SUB_TASK_BUGS_HISTORY);
@@ -317,7 +320,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseCreatedIssues = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseClosedIssues = new HashMap<>();
-		Map<Pair<String, String>, Map<String,String>> sprintWiseClosedIssueStatus = new HashMap<>();
+		Map<Pair<String, String>, Map<String, String>> sprintWiseClosedIssueStatus = new HashMap<>();
 
 		if ((CollectionUtils.isNotEmpty(allJiraIssue) || CollectionUtils.isNotEmpty(allSubTaskBugs))
 				&& CollectionUtils.isNotEmpty(sprintDetails)) {
@@ -338,8 +341,9 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 						allJiraIssue.stream().filter(element -> completedSprintIssues.contains(element.getNumber()))
 								.collect(Collectors.toList()),
 						sd);
-				//to get the resolved status along with the completed jiraissue
-				Map<String, String> issueWiseDeliveredStatus = completedIssues.stream().collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getStatus, (e1, e2) -> e1));
+				// to get the resolved status along with the completed jiraissue
+				Map<String, String> issueWiseDeliveredStatus = completedIssues.stream()
+						.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getStatus, (e1, e2) -> e1));
 
 				FieldMapping fieldMapping = configHelperService.getFieldMapping(sd.getBasicProjectConfigId());
 				List<String> deliveredStatus = Optional.ofNullable(fieldMapping)
@@ -348,12 +352,11 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 				completedIssues.addAll(KpiDataHelper.getCompletedSubTasksByHistory(totalSubTask, allSubTaskBugsHistory,
 						sd, deliveredStatus, issueWiseDeliveredStatus));
 
-				Pair<String, String> nodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID());
-				sprintWiseCreatedIssues.put(nodeIdentifier,
-						totalIssues);
-				sprintWiseClosedIssues.put(nodeIdentifier,
-						completedIssues);
-				sprintWiseClosedIssueStatus.put(nodeIdentifier,issueWiseDeliveredStatus);
+				Pair<String, String> nodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
+						sd.getSprintID());
+				sprintWiseCreatedIssues.put(nodeIdentifier, totalIssues);
+				sprintWiseClosedIssues.put(nodeIdentifier, completedIssues);
+				sprintWiseClosedIssueStatus.put(nodeIdentifier, issueWiseDeliveredStatus);
 
 			});
 		}
@@ -374,7 +377,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			List<JiraIssue> totalCreatedIssues = new ArrayList<>();
 			List<JiraIssue> totalCreatedIssuesAfter = new ArrayList<>();
 			List<JiraIssue> totalClosedIssues = new ArrayList<>();
-			Map<String, String> closedIssuesWithStatus= new HashMap<>();
+			Map<String, String> closedIssuesWithStatus = new HashMap<>();
 
 			Optional<SprintDetails> jiraSprint = sprintDetails.stream()
 					.filter(sd -> sd.getSprintID().equalsIgnoreCase(currentSprintComponentId)).findFirst();
@@ -394,9 +397,8 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			}
 			createdVsResolvedDefectsMap = createCreatedVsResolvedMap(totalCreatedIssues, totalClosedIssues,
 					totalCreatedIssuesAfter, createdVsResolvedHoverMap);
-			populateExcelDataObject(requestTrackerId, excelData, node, totalCreatedIssues,
-					closedIssuesWithStatus,
-					totalCreatedIssuesAfter);
+			populateExcelDataObject(requestTrackerId, excelData, node, totalCreatedIssues, closedIssuesWithStatus,
+					totalCreatedIssuesAfter, storyList);
 
 			log.debug("[CREATED-VS-RESOLVED-SPRINT-WISE][{}]. Created Vs Resolved for sprint {}  is {} - {}",
 					requestTrackerId, node.getSprintFilter().getName(), createdVsResolvedDefectsMap.get(TAGGED_DEFECTS),
@@ -421,20 +423,21 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			mapTmp.get(node.getId()).setValue(dataCountMap);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.CREATED_VS_RESOLVED_DEFECTS.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(KPIExcelColumn.CREATED_VS_RESOLVED_DEFECTS.getColumns(sprintLeafNodeList,
+				cacheService, flterHelperService));
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData, Node node,
-										 List<JiraIssue> totalCreatedTickets,
-										 Map<String, String> closedIssuesWithStatus, List<JiraIssue> totalCreatedTicketsSprintStart) {
+			List<JiraIssue> totalCreatedTickets, Map<String, String> closedIssuesWithStatus,
+			List<JiraIssue> totalCreatedTicketsSprintStart, List<JiraIssue> storyList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			Map<String, JiraIssue> createdTicketMap = new HashMap<>();
 			totalCreatedTickets.stream()
 					.forEach(jiraIssue -> createdTicketMap.putIfAbsent(jiraIssue.getNumber(), jiraIssue));
-			KPIExcelUtility.populateCreatedVsResolvedExcelData(node.getSprintFilter().getName(), createdTicketMap
-					, totalCreatedTicketsSprintStart, closedIssuesWithStatus,excelData, customApiConfig);
+			KPIExcelUtility.populateCreatedVsResolvedExcelData(node.getSprintFilter().getName(), createdTicketMap,
+					totalCreatedTicketsSprintStart, closedIssuesWithStatus, excelData, customApiConfig, storyList);
 		}
 
 	}

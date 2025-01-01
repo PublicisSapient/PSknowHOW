@@ -189,7 +189,7 @@ public class ReleaseEpicProgressServiceImplTest {
 		EpicMetaData epicMetaData = new EpicMetaData("EPIC", "url", "2024-06-04T13:24:14.2500000");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueArrayList,
 				jiraIssueReleaseStatusList.get(0), epicMetaData, fieldMapping);
-		assertThat(dataCount.getData()).isEqualTo("47");
+		assertThat(dataCount.getData()).isEqualTo("48");
 		assertThat(dataCount.getSize()).isEqualTo("63.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
 		assertThat(toDoCount.getValue()).isEqualTo(5L);
@@ -201,7 +201,7 @@ public class ReleaseEpicProgressServiceImplTest {
 		assertThat(inProgressCount.getSubFilter()).isEqualTo(IN_PROGRESS);
 
 		DataCount doneCount = ((List<DataCount>) dataCount.getValue()).get(2);
-		assertThat(doneCount.getValue()).isEqualTo(42L);
+		assertThat(doneCount.getValue()).isEqualTo(43L);
 		assertThat(doneCount.getSize()).isEqualTo(59.0);
 		assertThat(doneCount.getSubFilter()).isEqualTo(DONE);
 	}

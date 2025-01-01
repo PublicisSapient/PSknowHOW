@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
  * Model for persisting global configuration Global configurations based on
  * environment can have all configurations mapped with their respective
  * keys(name of the configuration).
- * 
+ *
  * @author Hiren Babariya
  */
 @Builder
@@ -49,5 +49,4 @@ public class GlobalConfig {
 	private String emailHost;
 	private int emailPort;
 	private String fromEmail;
-
 }

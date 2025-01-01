@@ -19,11 +19,12 @@
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <div class="main p-pl-6 p-pr-6 p-pb-1">
   <div class="p-d-flex p-p-0 p-flex-column">
-    <div class="nav-container">
+    <div class="nav-container" *ngIf="clone === 'false'">
       <nav>
         <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
           <ng-container *ngIf="!last">
-            <a [routerLink]="breadcrumb.url" (click)="breadcrumb?.handleEvent()" class="cursor-pointer blue-hover-link">{{ breadcrumb.label }}</a> &gt;
+            <a [routerLink]="breadcrumb.url" (click)="breadcrumb?.handleEvent()"
+              class="cursor-pointer blue-hover-link">{{ breadcrumb.label }}</a> &gt;
           </ng-container>
           <ng-container *ngIf="last">
             <span class="cursor-pointer">{{ breadcrumb.label }}</span>
@@ -48,6 +49,15 @@
                   </div>
                 </ng-template>
               </p-messages>
+              <p-messages *ngIf="getConeStatusFlag() && form.get('developerKpiEnabled')?.value" severity="warn">
+                <ng-template pTemplate>
+                  <em class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #f39c12;"></em>
+                  <div class="p-ml-2">
+                    Tools config required for Developer dashboard are not supported for cloning.
+                    Please configure your SCM tools after completing the cloning step
+                  </div>
+                </ng-template>
+              </p-messages>
             </div>
           </div>
 
@@ -67,9 +77,8 @@
                 </div>
                 <div *ngSwitchCase="'text'">
                   <div class="p-mb-3 p-mt-3">
-                    <span class="p-float-label"
-                          pTooltip='{{ field.hierarchyLevelTooltip }}'
-                          tooltipPosition="bottom" tooltipEvent="hover">
+                    <span class="p-float-label" pTooltip='{{ field.hierarchyLevelTooltip }}' tooltipPosition="bottom"
+                      tooltipEvent="hover">
                       <input required id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
                         [style]="{'width':'500px'}" type="text" pInputText>
                       <label for="{{ field.hierarchyLevelId }}">Enter {{ field.hierarchyLevelName
@@ -100,8 +109,7 @@
                   <span class="p-float-label w-50 p-mr-3">
                     <p-autoComplete id="{{ field.hierarchyLevelId }}" [formControlName]="field.hierarchyLevelId"
                       [style]="{'width':'500px'}" [suggestions]="field.filteredSuggestions"
-                      (completeMethod)="search($event, field)" required="required" [dropdown]="true" field="name"
-                      [forceSelection]="isSpeedSuite === true ? true : false">
+                      (completeMethod)="search($event, field)" required="required" [dropdown]="true" field="name">
                       <ng-template let-country pTemplate="item">
                         <div class="country-item">
                           <div>{{country.name}}</div>
@@ -115,10 +123,10 @@
               </div>
             </div>
             <div class="p-text-right p-col-12">
-              <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back" icon="pi pi-angle-double-left" iconPos="left"
-                (click)="closeProjectSetupPopup.emit()"></button>
+              <button pButton pRipple class="p-button-lg p-button-success p-button-raised p-mr-3" label="Back"
+                icon="pi pi-angle-double-left" iconPos="left" (click)="backToProjectList()"></button>
               <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
-              icon="pi pi-save" iconPos="left" label="Finalize" [disabled]="!form.valid"></button>
+                icon="pi pi-save" iconPos="left" [label]="getButtonLabel()" [disabled]="!form.valid"></button>
             </div>
           </form>
 
@@ -127,8 +135,12 @@
       <ng-container *ngIf="isProjectCOmpletionPopup">
         <div class="p-p-0">
           <div class="p-d-flex p-jc-center p-pb-3">
-            <h5 class="card__primary__title__text p-mb-0">Project “{{selectedProject?.['name']}}” successfully added.
-              Connect Tools to sync KPI’s.</h5>
+            <h5 *ngIf = "!getConeStatusFlag()" class="card__primary__title__text p-mb-0">
+              Project “{{selectedProject?.['name']}}” successfully added. Connect Tools to sync KPI’s.</h5>
+            <h5 *ngIf = "getConeStatusFlag()" class="card__primary__title__text p-mb-0">
+              Cloned project “{{selectedProject?.['name']}}” successfully added. 
+              Proceed to Project Configuration to review and make any necessary changes.
+            </h5>
           </div>
           <div class="p-d-flex p-jc-center p-pb-3">
             <label>Here is what to do next in order to sync data for this project:</label>
@@ -136,12 +148,20 @@
           <div class="p-pb-3">
             <p-steps [model]="steps" [readonly]="false"></p-steps>
           </div>
-          <div class="p-d-flex p-jc-center p-pb-3">
-            <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]" [queryParams]="{tab: 1}" >Continue to Tool Connections</a></label>
+          <div *ngIf = "!getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
+            <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
+                [queryParams]="{tab: 1}">Continue to Tool Connections</a></label>
+          </div>
+
+          <div *ngIf = "getConeStatusFlag()" class="p-d-flex p-jc-center p-pb-3">
+            <label><a [routerLink]="['/dashboard/Config/ConfigSettings/'+ selectedProject?.id]"
+                      [queryParams]="{ type: selectedProject?.Type, tab: 2 }">
+                      Continue to Project Configuration</a></label>
           </div>
 
           <div class="p-d-flex p-jc-center p-pb-3">
-            <label><a routerLink="/dashboard/Config/ProjectList" (click)="closeProjectSetupPopup.emit()">Skip (continue to Projects dashboard)</a></label>
+            <label><a routerLink="/dashboard/Config/ProjectList" (click)="closeProjectSetupPopup.emit()">Skip (continue
+                to Projects dashboard)</a></label>
           </div>
         </div>
       </ng-container>
@@ -149,45 +169,6 @@
     <div>
 
     </div>
-    <!-- <div class="p-col-5 p-p-0 float-left w-40">
-      <p-messages severity="info" [hidden]="!selectedProject">
-        <ng-template pTemplate>
-          <em class="pi pi-spin pi-cog" style="font-size: 2rem"></em>
-          <div class="p-ml-2">
-            <a routerLink="/dashboard/Config/ToolMenu">Click here to configure/view all Tools</a>
-          </div>
-          <em class="pi pi-angle-double-right" style="font-size: 2rem"></em>
-        </ng-template>
-      </p-messages>
-      <p-table #dt [value]="configuredTools" dataKey="id" [rows]="3" [showCurrentPageReport]="true" [loading]="loading"
-        [paginator]="true" styleClass="p-datatable-gridlines w-100" [alwaysShowPaginator]="false"
-        [hidden]="!selectedProject" loadingIcon="loading-img">
-        <ng-template pTemplate="caption">
-          <div class="table-header">
-            Configured Tools
-          </div>
-        </ng-template>
-        <ng-template pTemplate="body" let-tool>
-          <tr>
-            <td>
-              {{tool.toolName}}
-            </td>
-            <td class="p-text-center">
-              <button pButton pRipple type="button" class="p-button-sm p-button-raised p-button-success"
-                icon="pi pi-cog" iconPos="left" label="Edit Configuration" routerLink="/dashboard/Config/JiraConfig"
-                [queryParams]="{toolName : tool.toolName}"></button>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage" let-columns>
-          <tr>
-            <td [attr.colspan]="2">
-              No Tools Configured
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div> -->
   </div>
 </div>
 <p-blockUI [blocked]="blocked"></p-blockUI>

@@ -623,10 +623,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     for (const kpi in localVariable) {
                         this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
                     }
-                    // if (localVariable && localVariable['kpi3'] && localVariable['kpi3'].maturityValue) {
-                    //     this.colorAccToMaturity(localVariable['kpi3'].maturityValue);
-                    // }
-
 
                     this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
                     this.createAllKpiArray(localVariable);
@@ -648,7 +644,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.httpService.postKpi(postData, source)
             .subscribe(getData => {
                 this.loaderBitBucket = false;
-                // getData = require('../../../test/resource/fakeKPI11.json');
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -670,7 +665,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.bitBucketKpiRequest = this.httpService.postKpiKanban(postData, source)
             .subscribe(getData => {
                 this.loaderBitBucket = false;
-                // getData = require('../../../test/resource/fakeKPI65.json');
                 if (getData !== null && getData[0] !== 'error' && !getData['error']) {
                     // creating array into object where key is kpi id
                     this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
@@ -1033,21 +1027,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
                 this.getDropdownArray(data[key]?.kpiId);
                 const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
-                if (formType?.toLowerCase() == 'radiobutton') {
-                    this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-                } else if (formType?.toLowerCase() == 'dropdown') {
-                    // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-                    this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-                    let initialC = trendValueList[0].filter1;
-                    if (data[key]?.kpiId === "kpi72") {
-                        this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [initialC], 'filter2': ['Overall'] };
-                    }
-                    else {
-                        this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
-                    }
-                } else {
-                    this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
-                }
+                this.fillKPISelectedFilterObj(formType, data, key, trendValueList);
                 this.kpiSelectedFilterObj['action'] = 'new';
                 this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
             }
@@ -1055,6 +1035,24 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             if (!inputIsChartData) {
                 this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1), agType);
             }
+        }
+    }
+
+    fillKPISelectedFilterObj(formType, data, key, trendValueList) {
+        if (formType?.toLowerCase() == 'radiobutton') {
+            this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+        } else if (formType?.toLowerCase() == 'dropdown') {
+            // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+            this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
+            let initialC = trendValueList[0].filter1;
+            if (data[key]?.kpiId === "kpi72") {
+                this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [initialC], 'filter2': ['Overall'] };
+            }
+            else {
+                this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
+            }
+        } else {
+            this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
         }
     }
 

@@ -109,8 +109,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 
 			if (user.checkPassword(password)) {
 				return new UsernamePasswordAuthenticationToken(userDTO, user.getPassword(),
-						this.tokenAuthenticationService
-								.createAuthorities(this.userRoleService.getRolesNamesByUsername(username)));
+						this.tokenAuthenticationService.createAuthorities(this.userRoleService.getRolesNamesByUsername(username)));
 			} else {
 				throw new BadCredentialsException(WRONG_CREDENTIALS_ERROR_MESSAGE);
 			}
@@ -205,7 +204,6 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 * validateEmailToken method checks the token received from request, exists in
 	 * the database.If the token is found in the database method will forward the
 	 * token to validate it
-	 * </p>
 	 *
 	 * @param token
 	 * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type
@@ -256,14 +254,13 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	 * the validity of the token. If the token is valid,searches for the username
 	 * from the <tt>forgotPasswordToken</tt> in the <tt>authentication</tt>
 	 * collection in the database. Saves the reset password if the username exists
-	 * </p>
 	 *
 	 * @param resetPasswordRequest
 	 * @return authentication if the <tt>token</tt> is valid and <tt>username</tt>
 	 *         from forgotPasswordToken exists in the database
 	 * @throws ApplicationException
-	 *             if either <tt>forgotPasswordToken</tt> is invalid or
-	 *             <tt>username</tt> doen't exist in the database.
+	 *           if either <tt>forgotPasswordToken</tt> is invalid or
+	 *           <tt>username</tt> doen't exist in the database.
 	 */
 	@Override
 	public UserDTO resetPassword(ResetPasswordRequestDTO resetPasswordRequest) throws ApplicationException {
@@ -280,18 +277,15 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 					log.error("User {} Does not Exist", forgotPasswordToken.getUsername());
 					throw new ApplicationException("User Does not Exist", ApplicationException.BAD_DATA);
 				} else {
-					validatePasswordRules(forgotPasswordToken.getUsername(), resetPasswordRequest.getPassword(),
-							user.get());
+					validatePasswordRules(forgotPasswordToken.getUsername(), resetPasswordRequest.getPassword(), user.get());
 					return userService.getUserDTO(user.get());
 				}
 			} else {
 				throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
 			}
 		} else {
-			throw new ApplicationException("Token is " + ResetPasswordTokenStatusEnum.INVALID,
-					ApplicationException.BAD_DATA);
+			throw new ApplicationException("Token is " + ResetPasswordTokenStatusEnum.INVALID, ApplicationException.BAD_DATA);
 		}
-
 	}
 
 	private boolean isPassContainUser(String reqPassword, String username) {
@@ -302,7 +296,6 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 	private boolean isOldPassword(String reqPassword, String savedPassword) {
 
 		return !(StringUtils.containsIgnoreCase(User.hash(reqPassword), savedPassword));
-
 	}
 
 	/**
@@ -325,10 +318,10 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 
 	/**
 	 * Validates if the given <tt>expiryDate</tt> is in the past
+	 *
 	 * <p>
 	 * isExpired method checks the validity of token by comparing the validity of
 	 * token expriy date with current Time and Date
-	 * </p>
 	 *
 	 * @param expiryDate
 	 * @return boolean <tt>true</tt> if expiryDate is invalid/expired,<tt>false</tt>
@@ -348,8 +341,7 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 					user.setPassword(password);
 					userService.save(user);
 				} else {
-					throw new ApplicationException("Password should not be old password",
-							ApplicationException.BAD_DATA);
+					throw new ApplicationException("Password should not be old password", ApplicationException.BAD_DATA);
 				}
 			} else {
 				throw new ApplicationException("Password should not contain userName", ApplicationException.BAD_DATA);
@@ -359,7 +351,6 @@ public class StandardAuthenticationServiceImpl implements StandardAuthentication
 					"At least 8 characters in length with Lowercase letters, Uppercase letters, Numbers and Special characters($,@,$,!,%,*,?,&)",
 					ApplicationException.BAD_DATA);
 		}
-
 	}
 
 	@Override
