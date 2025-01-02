@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -119,11 +118,23 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.CODE_VIOLATIONS);
 
+		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((statusType, dataCounts) -> {
+			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
+					.collect(Collectors.groupingBy(DataCount::getData));
+			statusTypeProjectWiseDc.put(statusType, projectWiseDc);
+		});
+
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
-		trendValuesMap.forEach((key, datewiseDataCount) -> {
+		statusTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
-			dataCountGroup.setFilter(key);
-			dataCountGroup.setValue(datewiseDataCount);
+			List<DataCount> dataList = new ArrayList<>();
+			projectWiseDc.entrySet().forEach(trend -> dataList.addAll(trend.getValue()));
+			// split for filters
+			String[] issueFilter = issueType.split("#");
+			dataCountGroup.setFilter1(issueFilter[0]);
+			dataCountGroup.setFilter2(issueFilter[1]);
+			dataCountGroup.setValue(dataList);
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
@@ -313,8 +324,14 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		referenceMap.forEach((key, value) -> evaluateViolations(metricMap.get(key), violationsMap, value));
 
 		return violationsMap.entrySet().stream()
+				.filter(entry -> entry.getValue() != null) // Exclude entries with null values
 				.sorted((i1, i2) -> ((Integer) i2.getValue()).compareTo((Integer) i1.getValue()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						Map.Entry::getValue,
+						(e1, e2) -> e1,
+						LinkedHashMap::new
+				));
 	}
 
 	/**
