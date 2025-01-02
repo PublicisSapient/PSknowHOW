@@ -15,11 +15,28 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "12.0.0"
-  mongodbtag: "5.0.18-nonrootuser"
+  mongodbtag: "5.0.18-rootuser"
 
 env:
   - name: DATABASE_URL
     value: "postgres://user:password@hostname:5432/dbname"
+
+## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
+
+jira-app:
+  enabled: true
+
+devops-app:
+  enabled: true
+
+azure-pipeline-app:
+  enabled: false
+
+azure-boart-app:
+  enabled: false
+
+mongodb:
+  enabled: false
 
 imagePullSecrets: []
 nameOverride: ""
