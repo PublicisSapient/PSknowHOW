@@ -45,7 +45,7 @@ spec:
             {{- end }}
           volumeMounts:
             - mountPath: /data/db
-            name: psknowhow-db-data-volume
+              name: psknowhow-db-data-volume
           livenessProbe:
             failureThreshold: 3
             initialDelaySeconds: 45
@@ -76,4 +76,24 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        {{- if eq .Values.mongodb.volumeType "hostPath" }}
+        - name: psknowhow-db-data-volume
+          hostPath:
+            path: /data/db
+            type: DirectoryOrCreate
+        {{- else if eq .Values.mongodb.volumeType "azureDisk" }}
+        - name: psknowhow-db-data-volume
+          azureDisk:
+            diskName: {{ .Values.mongodb.azureDisk.diskName }}
+            diskUri: {{ .Values.mongodb.azureDisk.diskUri }}
+        {{- else if eq .Values.mongodb.volumeType "efs" }}
+        - name: psknowhow-db-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.mongodb.pvcName }}
+        {{- else }}
+        - name: psknowhow-db-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.mongodb.pvcName }}
+        {{- end }}
 {{- end }}
