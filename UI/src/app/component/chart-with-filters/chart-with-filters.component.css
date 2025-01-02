@@ -109,3 +109,8 @@ td {
     background-color: #dedede;
     margin: auto;
 }
+
+.text-blue {
+    text-decoration: underline;
+    cursor: pointer;
+}

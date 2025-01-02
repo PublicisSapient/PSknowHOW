@@ -29,7 +29,9 @@ export class ChartWithFiltersComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['filters']) {
+      this.modalHeads = this.data.modalHeads || this.modalHeads;
       this.data = this.data.chartData || this.data;
+      
       if (this.selectedFilter2?.length) {
         this.selectedFilter2.forEach(filter => {
           filter.selectedValue = null;
@@ -148,6 +150,8 @@ export class ChartWithFiltersComponent implements OnChanges {
         color: color(Object.keys(element)[0])
       })
     });
+
+    this.legendData.sort((a,b) => b.percentage - a.percentage);
   }
 
   mainFilterSelect(event) {
@@ -161,7 +165,7 @@ export class ChartWithFiltersComponent implements OnChanges {
   exploreData(filterVal) {
     this.modalDetails = {
       header: this.kpiName + ' ' + this.selectedMainFilter.filterName,
-      tableHeadings: this.modalHeads,
+      tableHeadings: this.modalHeads.map(item => (item === 'Defect ID' ? 'Issue Id' : item)),
       tableValues: this.dataCopy.filter((d) => {
         if (this.selectedMainFilter.filterType === 'Single') {
           return d[this.selectedMainFilter.filterKey] === filterVal;

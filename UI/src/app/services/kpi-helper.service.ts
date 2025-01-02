@@ -34,6 +34,7 @@ export class KpiHelperService {
     'Story Linked Defects': 'Check.svg',
     'DIR': 'Watch.svg',
     'Story Point': 'PieChart.svg',
+    'Original Estimate': 'PieChart.svg',
     'Defect Density': 'visibility_on.svg',
     'Percentage': 'Check.svg',
     'Risks': 'Warning.svg',
@@ -143,9 +144,9 @@ export class KpiHelperService {
         }
         // Push the result into chartData array
         if (unit && unit === 'day') {
-          sum = sum / (60 * 8);
+          sum = sum / (60 * 8); // converting to 8hr days
         }
-        chartData.push({ category: name, value: sum, color: color[groupKey] }); // Default color if not specified
+        chartData.push({ category: name, value: sum, color: color[groupKey], unit: unit }); // Default color if not specified
       }
     }
 
@@ -153,8 +154,6 @@ export class KpiHelperService {
       return {
         ...item,
         tooltipValue: item.value,//this.convertToHoursIfTime(item.value, json.unit),
-        // value: Math.floor(item.value / 60),
-        unit: json.unit,
       };
     });
 
@@ -215,7 +214,8 @@ export class KpiHelperService {
     let modifiedDataSet = {
       chartData: chartData,
       filterGroup: filterGroup,
-      category: categoryGroup
+      category: categoryGroup,
+      modalHeads: inputData?.modalHeads
     }
     return { chartData: modifiedDataSet };
   }

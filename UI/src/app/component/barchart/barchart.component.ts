@@ -189,7 +189,7 @@ export class BarchartComponent implements OnInit {
       .style('font-size', '12px')
       .style('font-weight', 'bold')
       .style('fill', 'black')
-      .text((d) => `${d.value}${unit === 'Count' ? '' : 'hr'}`); // Add unit dynamically
+      .text((d) => `${parseFloat(d.value.toFixed(2))}${d.unit === 'Count' ? '' : d.unit}`); // Add unit dynamically
 
     // Add axes
     this.svg
