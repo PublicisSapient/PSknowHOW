@@ -1,0 +1,61 @@
+{{- if .Values.mongodb.enabled }}
+---
+# PersistentVolume for AWS EFS
+{{- if eq .Values.mongodb.volumeType "efs" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: psknowhow-db-pv-efs
+  labels:
+    type: efs
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  nfs:
+    server: {{ .Values.mongodb.efs.server }}
+    path: {{ .Values.mongodb.efs.path | default "/" }}
+{{- end }}
+
+---
+# PersistentVolume for Azure Disk (CSI Driver)
+{{- if eq .Values.mongodb.volumeType "azureDisk" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/provisioned-by: disk.csi.azure.com
+  name: knowhow-db-pv-azuredisk
+spec:
+  capacity:
+    storage: 16Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: managed-csi
+  csi:
+    driver: disk.csi.azure.com
+    volumeHandle: {{ .Values.mongodb.azureDisk.volumeHandle }}
+    volumeAttributes:
+      fsType: ext4
+{{- end }}
+
+---
+# PersistentVolumeClaim (PVC) Configuration
+{{- if not (eq .Values.mongodb.volumeType "hostPath") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.mongodb.pvcName }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: {{ .Values.mongodb.storageClassName | default "" }}
+{{- end }}
+{{- end }}

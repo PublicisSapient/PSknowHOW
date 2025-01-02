@@ -36,25 +36,20 @@ azure-boart-app:
   enabled: false
 
 mongodb:
-  enabled: false
-  volumeType: hostPath  # Options: efs, hostPath, azureDisk
-  
-  # hostPath-specific options
+  enabled: true
+  volumeType: efs  # Options: efs, hostPath, azureDisk
+  # HostPath-specific options
   hostPath:
     path: /data/db  # Path on the host
-  
   # EFS-specific options
   efs:
-    fileSystemId: "<your-efs-filesystem-id>"  # Specify EFS FileSystem ID
+    server: "<your-efs-server>"  # EFS server DNS name
     path: "/"  # Path in EFS to mount
-  
   # AzureDisk-specific options
   azureDisk:
-    diskName: "<your-azure-disk-name>"
-    diskUri: "<your-azure-disk-uri>"
-
-  # PVC name (optional)
+    volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/MC_myAKSCluster_myAKSCluster_eastus/providers/Microsoft.Compute/disks/myAKSDisk"  # Specify the full volume handle
   pvcName: "mongodb-pvc"  # Name for PVC if you have an existing PVC or suggested name for new PVC (optional)
+  storageClassName: "efs-sc"  # Specify the storage class name for EFS (optional)
 
 
 imagePullSecrets: []
