@@ -80,7 +80,7 @@ spec:
         {{- if eq .Values.mongodb.volumeType "hostPath" }}
         - name: psknowhow-db-data-volume
           hostPath:
-            path: /data/db
+            path: {{ .Values.mongodb.hostPath.path }}
             type: DirectoryOrCreate
         {{- else if eq .Values.mongodb.volumeType "azureDisk" }}
         - name: psknowhow-db-data-volume

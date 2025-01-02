@@ -38,17 +38,22 @@ azure-boart-app:
 mongodb:
   enabled: true
   volumeType: hostPath  # Options: efs, hostPath, azureDisk
+  
   # hostPath-specific options
   hostPath:
     path: /data/db  # Path on the host
+  
   # EFS-specific options
   efs:
     fileSystemId: "<your-efs-filesystem-id>"  # Specify EFS FileSystem ID
     path: "/"  # Path in EFS to mount
+  
   # AzureDisk-specific options
   azureDisk:
     diskName: "<your-azure-disk-name>"
     diskUri: "<your-azure-disk-uri>"
+
+  # PVC name (optional)
   pvcName: "mongodb-pvc"  # Name for PVC if you have an existing PVC or suggested name for new PVC (optional)
 
 
