@@ -36,6 +36,8 @@ export class KpiHelperService {
     'Story Point': 'PieChart.svg',
     'Defect Density': 'visibility_on.svg',
     'Percentage': 'Check.svg',
+    'Risks': 'Warning.svg',
+    'Dependencies': 'Warning.svg',
     '': 'Check.svg',
   };
 
@@ -49,7 +51,7 @@ export class KpiHelperService {
     // }
 
     if (!dataGroup1 || dataGroup1.length === 0) {
-      return { chartData: [] , totalCount: 0 };
+      return { chartData: [], totalCount: 0 };
     }
 
     const chartData: any = [];
@@ -82,7 +84,7 @@ export class KpiHelperService {
     const issueData = inputData.issueData;
 
     if (!dataGroup1 || dataGroup1.length === 0) {
-      return { chartData: [] , totalCount: 0 };
+      return { chartData: [], totalCount: 0 };
     }
 
     const chartData: any = [];
@@ -127,6 +129,7 @@ export class KpiHelperService {
 
         const key = groupItems.key;
         const name = groupItems.name;
+        const unit = groupItems.unit;
         const aggregation = groupItems.aggregation;
 
         // Calculate the sum based on the key
@@ -139,6 +142,9 @@ export class KpiHelperService {
           sum = issueData.length;
         }
         // Push the result into chartData array
+        if (unit && unit === 'day') {
+          sum = sum / (60 * 8);
+        }
         chartData.push({ category: name, value: sum, color: color[groupKey] }); // Default color if not specified
       }
     }
@@ -147,7 +153,7 @@ export class KpiHelperService {
       return {
         ...item,
         tooltipValue: item.value,//this.convertToHoursIfTime(item.value, json.unit),
-       // value: Math.floor(item.value / 60),
+        // value: Math.floor(item.value / 60),
         unit: json.unit,
       };
     });
@@ -297,7 +303,7 @@ export class KpiHelperService {
       } else {
         val = '0d';
       }
-    } else if(unit === 'SP') {
+    } else if (unit === 'SP') {
     }
     if (isLessThanZero) {
       val = '-' + val;

@@ -516,7 +516,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     if (this.selectedTab === 'iteration') {
       // check for Capacity KPI and sort
-      this.updatedConfigGlobalData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi176').sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
+      this.updatedConfigGlobalData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121').sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
     }
 
     // sending requests after grouping the the KPIs according to group Id
