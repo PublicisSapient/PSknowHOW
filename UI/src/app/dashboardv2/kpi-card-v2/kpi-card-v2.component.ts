@@ -434,6 +434,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   exportToExcel() {
+    if(!!this.cardData){
+      this.service.kpiExcelSubject.next({columns:this.cardData['modalHeads'],excelData:this.cardData['issueData']})
+    }
+   
     this.downloadExcel.emit(true);
   }
 
