@@ -307,11 +307,19 @@ export class BasicConfigComponent implements OnInit {
   }
 
   getButtonLabel(): string {
-    return this.clone === 'true' ? 'Clone' : 'Finalize';
+    return this.clone === 'true' ? 'Clone' : 'Save';
   }
 
   getConeStatusFlag(): boolean {
     return this.clone === 'true';
+  }
+
+  backToProjectList() {
+    if (this.clone === 'true') {
+      this.router.navigate(['./dashboard/Config/ProjectList']);
+    } else {
+      this.closeProjectSetupPopup.emit();
+    }
   }
 
 
