@@ -1,17 +1,25 @@
-# Default values for knowhow-ui.
+# Default values for knowhow-chart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-env: uat
+replicaCount: 1
 
-replicaCount: 2
-
-configmapname: knowhow-config
 image:
-  repository: speedtools.azurecr.io/knowhow-ui
-  pullPolicy: Always
+  apirepository: psknowhow/customapi
+  uirepository: psknowhow/ui
+  mongorepository: psknowhow/mongodb
+  jirarepository: psknowhow/jira-processor
+  devopsrepository: psknowhow/devops-processor
+  azurepipelinerepository: psknowhow/azure-pipeline-repo
+  azureboardrepository: psknowhow/azure-board-processor
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "8.1.1"
+  tag: "12.0.0"
+  mongodbtag: "5.0.18-nonrootuser"
+
+env:
+  - name: DATABASE_URL
+    value: "postgres://user:password@hostname:5432/dbname"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -19,7 +27,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -40,8 +48,8 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
-  port: 80
+  uitype: ClusterIP
+  backendtype: ClusterIP
 
 ingress:
   enabled: false
@@ -59,25 +67,17 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: 
+resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 500m
-    memory: 1024Mi
-  requests:
-    cpu: 300m
-    memory: 512Mi 
-
-ports:
-  - 80
-
-servicePorts:
-  - name: http
-    port: 80
-    targetPort: 80
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 autoscaling:
   enabled: false

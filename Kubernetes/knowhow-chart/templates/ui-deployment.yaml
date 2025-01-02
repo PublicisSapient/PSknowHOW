@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: knowhow-ui
-  namespace: {{ .Values.env}}-knowhow
   labels:
     app: knowhow-ui
 spec:
@@ -14,6 +13,10 @@ spec:
       app: knowhow-ui
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         app: knowhow-ui
     spec:
@@ -21,49 +24,44 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "knowhow-ui.serviceAccountName" . }}
+      serviceAccountName: {{ include "knowhow-chart.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: knowhow-ui
+        - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.uirepository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 80
               protocol: TCP
           env:
-            - name: API_HOST
-              value: customapi
-            - name: API_PORT
-              value: "8080"
-            - name: ENVIRONMENT
-              value: "prod"
-            - name: CENTRAL_LOGIN_URL
-              value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
-            - name: MAP_URL
-              value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
-            - name: RETROS_URL
-              value: "https://{{ .Values.env}}-retrospective.tools.publicis.sapient.com"
-          envFrom:
-          - configMapRef:
-              name: knowhow-config
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
           livenessProbe:
+            failureThreshold: 3
             httpGet:
               path: /
               port: 80
               scheme: HTTP
-            initialDelaySeconds: 15
-            periodSeconds: 10
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 1
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

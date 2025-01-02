@@ -2,13 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: customapi
-  namespace: {{ .Values.env}}-knowhow
   labels:
     app: customapi
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.service.backendtype }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: 8080
       targetPort: http
       protocol: TCP
       name: http
