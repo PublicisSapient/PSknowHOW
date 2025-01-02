@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -184,8 +185,10 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 					IssueKpiModalValue data = issueKpiModalObject.get(defect.getNumber());
 					List<String> category = new ArrayList<>();
 					category.add(TOTAL_ISSUES);
+					data.setCreatedDuringIteration(Constant.EMPTY_STRING);
 					if (createDuringIteration.contains(defect)) {
 						category.add(CREATED_DURING_ITERATION);
+						data.setCreatedDuringIteration(Constant.EXCEL_YES);
 					}
 					data.setCategory(category);
 				});
