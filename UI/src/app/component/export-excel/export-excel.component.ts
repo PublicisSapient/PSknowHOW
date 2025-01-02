@@ -40,6 +40,7 @@ export class ExportExcelComponent implements OnInit {
   isDisableSaveCOnfigurationBtn: boolean = false;
   markerInfo = [];
   forzenColumns = ['issue id'];
+  exportExcelRawVariable;
 
   constructor(
     private excelService: ExcelService,
@@ -49,14 +50,19 @@ export class ExportExcelComponent implements OnInit {
     private messageService: MessageService
   ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    this.sharedService.kpiExcelSubject.subscribe(x=>{
+      this.exportExcelRawVariable = x;
+    })
+  }
 
   // download excel functionality
-  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?,) {
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?,testKpi?) {
     const sprintIncluded = filterApplyData.sprintIncluded.length > 0 ? filterApplyData.sprintIncluded : ['CLOSED'];
     this.modalDetails['kpiId'] = kpiId;
     if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
       this.helperService.downloadExcel(kpiId, kpiName, isKanban, filterApplyData, filterData, sprintIncluded,).subscribe((getData) => {
+        getData = {...getData,...this.exportExcelRawVariable}
         this.isDisableSaveCOnfigurationBtn = !getData['saveDisplay'];
         if (getData?.['kpiColumnList']?.length && getData?.['excelData']?.length) {
           this.dataTransformatin(getData['kpiColumnList'], getData['excelData'], chartType, kpiName);
