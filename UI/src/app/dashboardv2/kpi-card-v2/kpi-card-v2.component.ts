@@ -229,7 +229,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         filterGroup,
         categoryData
       } = this.cardData;
-      this.kpiHeaderData = { issueData, kpiName, kpiInfo, kpiId };
+      let responseCode = this.kpiDataStatusCode;
+      this.kpiHeaderData = { issueData, kpiName, kpiInfo, kpiId, responseCode };
       this.kpiFilterData = { dataGroup, filterGroup, issueData, chartType: this.kpiData?.kpiDetail?.chartType, categoryData };
       this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
       this.currentChartData = this.prepareChartData(

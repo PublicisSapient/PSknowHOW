@@ -26,7 +26,7 @@
     </div>
     <span
       class="warning-icon"
-      *ngIf="cardHeaderData.responseCode === '201'"
+      *ngIf="cardHeaderData?.responseCode === '201'"
       (mouseover)="showWarning(true)"
       (mouseleave)="showWarning(false)"
       [style]="{ position: 'relative' }"
