@@ -1335,7 +1335,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
-    this.createTrendData(kpiId);
+    // this.createTrendData(kpiId);
+    if (kpiId !== 'kpi151' && kpiId !== 'kpi152' && kpiId !== 'kpi155' && kpiId !== 'kpi170') {
+      this.createTrendsData(kpiId);
+    }
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
         this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
@@ -1367,7 +1370,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpiChartData;
   }
 
-  createTrendData(kpiId) {
+/*   createTrendData(kpiId) {
     const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
     const trendingList = this.kpiChartData[kpiId];
     if (trendingList?.length) {
@@ -1387,7 +1390,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
 
-  }
+  } */
 
   getChartDataforRelease(kpiId, idx, aggregationType?, kpiFilterChange = false) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
@@ -1751,7 +1754,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (preAggregatedValues?.length > 1) {
           if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
-          } else { 
+          } else {
             if(kpiId === 'kpi171'){
               this.kpiChartData[kpiId] = [this.helperService.aggregationCycleTime(preAggregatedValues)];
             }else{
@@ -1996,7 +1999,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
       if (response['success']) {
         this.exportExcelComponent.dataTransformForIterationTableWidget([],[],response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
-      }     
+      }
     });
   }
 
