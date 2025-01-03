@@ -898,6 +898,42 @@
 
   {
     "basicProjectConfigId": null,
+    "kpiId": "kpi114",
+    "kpiColumnDetails": [{
+      "columnName": "Project Name",
+      "order": 0,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Cost of Delay",
+      "order": 1,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Epic ID",
+      "order": 2,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Epic Name",
+      "order": 3,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Epic End Date",
+      "order": 4,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Month",
+      "order": 5,
+      "isShown": true,
+      "isDefault": false
+    }]
+  },
+
+  {
+    "basicProjectConfigId": null,
     "kpiId": "kpi125",
     "kpiColumnDetails": [{
       "columnName": "Issue ID",
