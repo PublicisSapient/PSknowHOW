@@ -1,0 +1,21 @@
+{{- if .Values.azure-pipeline-repo-app.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-pipeline-repo
+  labels:
+    app: azure-pipeline-repo
+spec:
+  type: {{ .Values.service.backendtype }}
+  ports:
+    - name: azurepipeline
+      port: 50015
+      protocol: TCP
+      targetPort: 50015
+    - name: azurerepository
+      port: 50016
+      protocol: TCP
+      targetPort: 50016
+  selector:
+    app: azure-pipeline-repo
+{{- end }}

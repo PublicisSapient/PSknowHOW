@@ -29,7 +29,7 @@ jira-app:
 devops-app:
   enabled: true
 
-azure-pipeline-app:
+azure-pipeline-repo-app:
   enabled: false
 
 azure-board-app:
