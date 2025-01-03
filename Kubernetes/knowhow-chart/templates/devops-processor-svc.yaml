@@ -1,4 +1,4 @@
-{{- if .Values.devops-app.enabled }}
+{{- if .Values.DevOpsApp.enabled }}
 apiVersion: v1
 kind: Service
 metadata:

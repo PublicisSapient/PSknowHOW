@@ -23,16 +23,16 @@ env:
 
 ## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
 
-jira-app:
+JiraApp:
   enabled: true
 
-devops-app:
+DevOpsApp:
   enabled: true
 
-azure-pipeline-repo-app:
+AzurepiPelinerepoApp:
   enabled: false
 
-azure-board-app:
+AzureBoardApp:
   enabled: false
 
 mongodb:

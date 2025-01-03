@@ -1,4 +1,4 @@
-{{- if .Values.azure-pipeline-repo-app.enabled }}
+{{- if .Values.AzurepiPelinerepoApp.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
