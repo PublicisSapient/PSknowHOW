@@ -11,8 +11,7 @@ import * as d3 from 'd3';
 
 @Component({
   selector: 'app-stacked-bar-chart',
-  templateUrl: './stacked-bar-chart.component.html',
-  styleUrls: ['./stacked-bar-chart.component.css'],
+  templateUrl: './stacked-bar-chart.component.html'
 })
 export class StackedBarChartComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
