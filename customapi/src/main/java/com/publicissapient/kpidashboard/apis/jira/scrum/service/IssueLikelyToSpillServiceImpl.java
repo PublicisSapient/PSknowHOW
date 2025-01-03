@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -191,8 +192,8 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 
 		} else {
-			data.setPotentialDelay("-");
-			data.setPredictedCompletionDate("-");
+			data.setPotentialDelay(Constant.BLANK);
+			data.setPredictedCompletionDate(Constant.BLANK);
 		}
 	}
 
