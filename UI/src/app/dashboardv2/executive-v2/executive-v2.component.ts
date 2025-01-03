@@ -1336,7 +1336,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     // this.createTrendData(kpiId);
-    if (kpiId !== 'kpi151' && kpiId !== 'kpi152' && kpiId !== 'kpi155' && kpiId !== 'kpi170') {
+    if (kpiId !== 'kpi151' && kpiId !== 'kpi152' && kpiId !== 'kpi155') {
       this.createTrendsData(kpiId);
     }
     this.updatedConfigGlobalData.forEach(kpi => {
@@ -2572,16 +2572,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (this.kpiChartData[kpiId][i]?.value?.length > 0) {
             let trendObj = {};
             const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
-            trendObj = {
-              "hierarchyName": this.kpiChartData[kpiId][i]?.data,
-              "value": latest,
-              "trend": trend,
-              "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
-                this.checkMaturity(this.kpiChartData[kpiId][i])
-                : 'M' + this.kpiChartData[kpiId][i]?.maturity,
-              "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
-              "kpiUnit": unit
-            };
+            if(isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
+              trendObj = {
+                "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                "value": latest,
+                "trend": trend,
+                "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
+                  this.checkMaturity(this.kpiChartData[kpiId][i])
+                  : 'M' + this.kpiChartData[kpiId][i]?.maturity,
+                "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
+                "kpiUnit": unit
+              };
+            }
             if (kpiId === 'kpi997') {
               trendObj['value'] = 'NA';
             }
