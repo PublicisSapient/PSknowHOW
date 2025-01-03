@@ -7,7 +7,6 @@
  * You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,18 +19,21 @@ package com.publicissapient.kpidashboard.apis.urlshortener.service;
 
 import com.publicissapient.kpidashboard.apis.urlshortener.model.UrlMapping;
 import com.publicissapient.kpidashboard.apis.urlshortener.repository.UrlMappingRepository;
-import com.publicissapient.kpidashboard.apis.urlshortener.util.MurmurHash3;
+import com.publicissapient.kpidashboard.apis.urlshortener.util.UniqueShortKeyGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UrlMappingService {
 
+    private final UrlMappingRepository urlMappingRepository;
+
     @Autowired
-    private UrlMappingRepository urlMappingRepository;
+    public UrlMappingService(UrlMappingRepository urlMappingRepository) {
+        this.urlMappingRepository = urlMappingRepository;
+    }
 
     public UrlMapping createShortUrl(String longUrl) {
         Optional<UrlMapping> existingMapping = urlMappingRepository.findByLongUrl(longUrl);
@@ -51,6 +53,6 @@ public class UrlMappingService {
     }
 
     private String generateShortUrl(String longUrl) {
-        return Integer.toHexString(MurmurHash3.hash32x86(longUrl.getBytes()));
+        return Integer.toHexString(UniqueShortKeyGenerator.hash32x86(longUrl.getBytes()));
     }
 }
