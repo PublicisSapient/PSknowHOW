@@ -214,7 +214,7 @@ export class ExportExcelComponent implements OnInit {
     this.excludeColumnFilter = ['Linked Defect', 'Linked Stories'];
   
     // Define blank values to handle
-    const blankValues = ['', null, undefined, '-', 'NA'];
+    const blankValues = ['', null, undefined, '-', 'NA','N/A'];
   
     if (this.modalDetails['tableValues'].length > 0) {
       // Update tableValues to replace blank values with '(Blanks)'
