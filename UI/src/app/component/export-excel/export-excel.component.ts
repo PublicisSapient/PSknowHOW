@@ -214,7 +214,7 @@ export class ExportExcelComponent implements OnInit {
 
   generateColumnFilterData() {
     // Define blank values to handle
-    const blankValues = ['', null, undefined, '-', 'NA','N/A'];
+    const blankValues = ['', null, undefined, '-', 'NA','N/A','Undefined'];
     this.excludeColumnFilter = ['Linked Defect','Linked Stories'].map(item => item.toLowerCase());
     this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
     if (this.modalDetails['tableValues'].length > 0) {
