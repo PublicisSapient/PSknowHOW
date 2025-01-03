@@ -256,8 +256,7 @@ public class RepoToolsConfigServiceImpl {
 	 * @return
 	 */
 	public String createProjectCode(String basicProjectConfigId) {
-		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
-		return (projectBasicConfig.getProjectName() + "_" + basicProjectConfigId).replaceAll("\\s", "");
+		return (basicProjectConfigId).replaceAll("\\s", "");
 	}
 
 	/**
@@ -378,7 +377,7 @@ public class RepoToolsConfigServiceImpl {
 	 * @return
 	 */
 	public int deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
-		String projectCode = (projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId()).replaceAll("\\s",
+		String projectCode = (projectBasicConfig.getId().toString()).replaceAll("\\s",
 				"");
 		String deleteUrl = customApiConfig.getRepoToolURL()
 				+ String.format(customApiConfig.getRepoToolDeleteProjectUrl(), projectCode, onlyData);

@@ -103,6 +103,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 						CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
 			}
 			log.info("Fetched metadata");
 		} else {

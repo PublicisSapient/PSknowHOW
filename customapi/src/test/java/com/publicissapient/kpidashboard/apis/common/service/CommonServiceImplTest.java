@@ -341,7 +341,6 @@ public class CommonServiceImplTest {
 		acc.setAccessLevel("Project");
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("61e4f7852747353d4405c765");
-		accessItem.setItemName("project");
 		acc.setAccessItems(Lists.newArrayList(accessItem));
 		accessNodes.add(acc);
 		ProjectsAccess projectsAccess = new ProjectsAccess();

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azurerepo.processor;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 import java.io.File;
 import java.io.IOException;
@@ -203,7 +204,7 @@ public class AzureRepoProcessorJobExecutorTest {
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
-		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		Mockito.when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 
 		Mockito.when(azureRepoRepository.findActiveRepos(processorId)).thenReturn(azurerepoRepos);
 		Mockito.when(processorExecutionTraceLogRepository

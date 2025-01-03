@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -125,6 +126,14 @@ public class LeadTimeKanbanServiceImplTest {
 		maturityRangeMap.put("Complete-Live", new ArrayList<>(Arrays.asList("-30,30-15,15-5,5-2,2-")));
 
 		kpiWiseAggregation.put("kanban_Lead_Time", "average");
+
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		ProjectBasicConfig p1 = new ProjectBasicConfig();
+		p1.setId(new ObjectId("6335368249794a18e8a4479f"));
+		p1.setProjectName("Test");
+		p1.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 
 	}
 

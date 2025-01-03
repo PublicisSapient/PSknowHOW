@@ -50,7 +50,7 @@ import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
 /**
- * Repository for {@link JiraIssue} with custom methods implementation.
+ * Repository for {@link JiraIssue} with custom method's implementation.
  */
 @Service
 public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NOPMD
@@ -383,7 +383,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ASSET_STATE);
 		query.fields().include(NUMBER);
 		query.fields().include(STATUS);
-		query.fields().include(PROJECT_ID);
+		query.fields().include(CONFIG_ID);
 		query.fields().include(TICKET_CREATED_DATE_FIELD);
 		query.fields().include(NAME);
 		query.fields().include(PRIORITY);

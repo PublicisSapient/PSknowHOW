@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,9 +36,10 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.Filters;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
@@ -47,8 +49,9 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
@@ -81,7 +84,7 @@ public class ConfigHelperService {
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
 	@Autowired
-	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
+	private OrganizationHierarchyRepository organizationHierarchyRepository;
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
 	@Autowired
@@ -90,6 +93,9 @@ public class ConfigHelperService {
 	private UserBoardConfigRepository userBoardConfigRepository;
 	@Autowired
 	private FiltersRepository filtersRepository;
+
+	@Autowired
+	private HierarchyLevelRepository hierarchyLevelRepository;
 
 	@Autowired
 	private FieldMappingStructureRepository fieldMappingStructureRepository;
@@ -108,7 +114,13 @@ public class ConfigHelperService {
 		List<ProjectBasicConfig> projectList = projectConfigRepository.findAll();
 		List<FieldMapping> fieldMappingList = fieldMappingRepository.findAll();
 
+		List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
+
 		projectList.forEach(projectConfig -> {
+			//AN: This is to make sure UI doesn't break, to be removed after migration
+			if(CollectionUtils.isEmpty(projectConfig.getHierarchy())) {
+				projectConfig.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
+			}
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
 			FieldMapping mapping = fieldMappingList.stream()
 					.filter(x -> null != x.getBasicProjectConfigId()
@@ -334,15 +346,6 @@ public class ConfigHelperService {
 	}
 
 	/**
-	 * Load cache hierarchy level value Map.
-	 */
-	@Cacheable(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE)
-	public List<HierarchyLevelSuggestion> loadHierarchyLevelSuggestion() {
-		log.info("loading hierarchy level Master data");
-		return hierarchyLevelSuggestionRepository.findAll();
-	}
-
-	/**
 	 * Load KPI Field Mapping.
 	 */
 
@@ -368,5 +371,22 @@ public class ConfigHelperService {
 	public List<Filters> loadAllFilters() {
 		log.info("loading AllFilters");
 		return filtersRepository.findAll();
+	}
+
+	@Cacheable(CommonConstant.CACHE_ORGANIZATION_HIERARCHY)
+	public List<OrganizationHierarchy> loadAllOrganizationHierarchy() {
+		log.debug("loading cache organization Hierarchies");
+		return organizationHierarchyRepository.findAll();
+	}
+
+	/**
+	 * this method will update projectConfigMap and update cache object
+	 *
+	 * @param projectBasicConfig
+	 */
+	public void updateCacheProjectBasicConfig(ProjectBasicConfig projectBasicConfig) {
+		projectConfigMap.put(projectBasicConfig.getId().toString(), projectBasicConfig);
+		cacheService.updateCacheProjectConfigMapData();
+		cacheService.updateAllCacheProjectConfigMapData();
 	}
 }

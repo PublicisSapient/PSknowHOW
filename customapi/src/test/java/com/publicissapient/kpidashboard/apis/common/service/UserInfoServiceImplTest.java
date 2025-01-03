@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccessDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -115,6 +117,8 @@ public class UserInfoServiceImplTest {
 	private CookieUtil cookieUtil;
 	@Mock
 	private Cookie cookie;
+	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
 
 	@Before
 	public void setUp() {
@@ -270,9 +274,9 @@ public class UserInfoServiceImplTest {
 
 	@Test
 	public void validateHasRoleSuperadmin() {
-		ProjectsAccess pa = new ProjectsAccess();
+		ProjectsAccessDTO pa = new ProjectsAccessDTO();
 		pa.setRole(ROLE_SUPERADMIN);
-		List<ProjectsAccess> paList = new ArrayList<>();
+		List<ProjectsAccessDTO> paList = new ArrayList<>();
 		paList.add(pa);
 		UserInfoDTO u = new UserInfoDTO();
 		u.setProjectsAccess(paList);

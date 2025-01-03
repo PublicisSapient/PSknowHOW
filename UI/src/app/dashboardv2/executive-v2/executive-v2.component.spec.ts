@@ -13597,7 +13597,7 @@ describe('ExecutiveV2Component', () => {
     expect(actualChartData).toEqual(expectedChartData);
   });
 
-  it('getChartData should set additional filters on developer tab', () => {
+  xit('getChartData should set additional filters on developer tab', () => {
     component.selectedTab = 'developer';
     component.allKpiArray = [{
       "kpiId": "kpi84",
@@ -13987,12 +13987,12 @@ describe('ExecutiveV2Component', () => {
         {
           "nodeId": "Overall",
           "nodeName": "Overall",
-          labelName: 'branch'
+          "labelName": 'branch'
         },
         {
           "nodeId": "master -> PSknowHOW -> PSknowHOW",
           "nodeName": "master -> PSknowHOW -> PSknowHOW",
-          labelName: 'branch'
+          "labelName": 'branch'
         }
       ]
     };

@@ -89,7 +89,7 @@ describe('ParentFilterComponent', () => {
       }
     });
 
-    expect(component.filterLevels).toEqual([{ nodeId: 'Level1', nodeName: 'Level1' }]);
+    expect(component.filterLevels).toEqual([{ nodeId: 'Level1', nodeDisplayName: 'Level1', nodeName: 'Level1' }]); 
     // expect(component.selectedLevel).toEqual('LEVEL1');
     expect(helperService.getBackupOfFilterSelectionState).toHaveBeenCalledWith('parent_level');
     // expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': 'LEVEL1' });
@@ -220,15 +220,15 @@ describe('ParentFilterComponent', () => {
 
       expect(component.fillAdditionalFilterLevels).toHaveBeenCalled();
       expect(component.filterLevels).toEqual([
-        { nodeId: 'Level1', nodeName: 'Level1' },
-        { nodeId: 'Level2', nodeName: 'Level2' }
+        { nodeId: 'Level1', nodeDisplayName: 'Level1', nodeName: 'Level1' },
+        { nodeId: 'Level2', nodeDisplayName: 'Level2', nodeName: 'Level2' }
       ]);
     });
 
     it('should handle parentFilterConfig changes for other levels', () => {
       component.filterData = {
-        Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
-        Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+        Level1: [{ nodeId: 1, nodeDisplayName: 'Node 1' }],
+        Level2: [{ nodeId: 2, nodeDisplayName: 'Node 2' }]
       };
       const changes = {
         parentFilterConfig: {
@@ -254,8 +254,8 @@ describe('ParentFilterComponent', () => {
 
     it('should not handle changes if parentFilterConfig is not changed', () => {
       component.filterData = {
-        Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
-        Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+        Level1: [{ nodeId: 1, nodeDisplayName: 'Node 1' }],
+        Level2: [{ nodeId: 2, nodeDisplayName: 'Node 2' }]
       };
       const changes = {
         parentFilterConfig: null
@@ -275,10 +275,10 @@ describe('ParentFilterComponent', () => {
 
 
   it('should handle parentFilterConfig changes for Organization Level when statefilters are present', () => {
-    component.helperService.setBackupOfFilterSelectionState({ 'parent_level': {nodeId: 'Level1', nodeName: 'Level1'}, 'primary_level': null });
+    component.helperService.setBackupOfFilterSelectionState({ 'parent_level': {nodeId: 'Level1', nodeDisplayName: 'Level1'}, 'primary_level': null });
     component.filterData = {
-      Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
-      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+      Level1: [{ nodeId: 1, nodeDisplayName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeDisplayName: 'Node 2' }]
     };
     const changes = {
       parentFilterConfig: {
@@ -296,16 +296,16 @@ describe('ParentFilterComponent', () => {
 
     expect(component.fillAdditionalFilterLevels).toHaveBeenCalled();
     expect(component.filterLevels).toEqual([
-      { nodeId: 'Level1', nodeName: 'Level1' },
-      { nodeId: 'Level2', nodeName: 'Level2' }
+      { nodeId: 'Level1', nodeDisplayName: 'Level1', nodeName: 'Level1' },
+      { nodeId: 'Level2', nodeDisplayName: 'Level2', nodeName: 'Level2' }
     ]);
   });
 
   it('should handle parentFilterConfig changes for other levels  when statefilters are present', () => {
-    component.helperService.setBackupOfFilterSelectionState({ 'parent_level': {labelName: 'Level1'} });
+    component.helperService.setBackupOfFilterSelectionState({ 'parent_level': {labelName: 'Level1', nodeName: 'Level1'} });
     component.filterData = {
-      Level1: [{ nodeId: 1, nodeName: 'Node 1' }],
-      Level2: [{ nodeId: 2, nodeName: 'Node 2' }]
+      Level1: [{ nodeId: 1, nodeDisplayName: 'Node 1' }],
+      Level2: [{ nodeId: 2, nodeDisplayName: 'Node 2' }]
     };
     const changes = {
       parentFilterConfig: {

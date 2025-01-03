@@ -133,10 +133,16 @@ public class RepoToolCodeCommitServiceImplTest {
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
 		repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
-
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});

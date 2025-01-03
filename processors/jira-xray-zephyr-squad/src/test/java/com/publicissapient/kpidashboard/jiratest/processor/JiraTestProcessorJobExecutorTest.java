@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.jiratest.processor;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
@@ -145,10 +146,10 @@ public class JiraTestProcessorJobExecutorTest {
 	public void execute() {
 		JiraTestProcessor jiraProcessor = new JiraTestProcessor();
 		jiraProcessor.setId(PROCESSOR_ID);
-		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		Mockito.when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		jiraTestProcessorJobExecutor.setProjectsBasicConfigIds(
 				Arrays.asList("604092b52b424d5e90d39342", "604092b52b424d5e90d39343", "604092b52b424d5e90d39344"));
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(toolList);
 		when(jiraTestService.processesJiraIssues(any())).thenReturn(10);
 		when(projectConfigRepository.findById(any())).thenReturn(projectConfigList.stream().findFirst());

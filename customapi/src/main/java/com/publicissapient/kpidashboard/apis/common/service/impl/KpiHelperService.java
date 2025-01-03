@@ -1862,7 +1862,7 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * get kpi data from repo tools api
+	 * get kpi data from repo tools api, for project level hierarchy only
 	 *
 	 * @param endDate
 	 *            end date
@@ -1881,7 +1881,7 @@ public class KpiHelperService { // NOPMD
 
 		List<String> projectCodeList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(tools)) {
-			projectCodeList.add(node.getId());
+			projectCodeList.add(node.getProjectFilter().getBasicProjectConfigId().toString());
 		}
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();

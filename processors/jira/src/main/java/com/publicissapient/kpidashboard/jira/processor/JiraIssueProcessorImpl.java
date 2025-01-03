@@ -499,10 +499,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	private void setProjectSpecificDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue, Issue issue) {
 		String name = projectConfig.getProjectName();
-		String id = new StringBuffer(name).append(CommonConstant.UNDERSCORE)
-				.append(projectConfig.getBasicProjectConfigId().toString()).toString();
-
-		jiraIssue.setProjectID(id);
 		jiraIssue.setProjectName(name);
 		jiraIssue.setProjectKey(issue.getProject().getKey());
 		jiraIssue.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
@@ -816,12 +812,12 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			ProjectConfFieldMapping projectConfig) {
 		List<String> sprintsList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprints)) {
+			String projectNodeId = projectConfig.getProjectBasicConfig().getProjectNodeId();
 			for (SprintDetails sprint : sprints) {
 				sprintsList.add(sprint.getOriginalSprintId());
 				jiraIssue.setSprintIdList(sprintsList);
 				sprint.setSprintID(
-						sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName()
-								+ JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getBasicProjectConfigId());
+						sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + projectNodeId);
 			}
 			// Use the latest sprint
 			// if any sprint date is blank set that sprint to JiraIssue

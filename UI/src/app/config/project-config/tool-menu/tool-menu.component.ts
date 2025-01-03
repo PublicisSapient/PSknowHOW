@@ -371,9 +371,11 @@ export class ToolMenuComponent implements OnInit {
       'tools': [...toolArr]
     }
     const hierarchyData = JSON.parse(localStorage.getItem('hierarchyData'));
-    hierarchyData?.forEach((item) => {
-      gaObj['category' + item?.level] = this.selectedProject[item?.hierarchyLevelName];
-    })
+    if(Array.isArray(hierarchyData)) {
+      hierarchyData?.forEach((item) => {
+        gaObj['category' + item?.level] = this.selectedProject[item?.hierarchyLevelName];
+      })
+    }
     this.ga.setProjectToolsData(gaObj);
   }
 
