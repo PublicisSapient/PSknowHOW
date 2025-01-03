@@ -24,7 +24,7 @@ export class IsoDateFormatPipe implements PipeTransform {
       }
   
       if(isNaN(date.getTime())){
-        return '-';
+        return '';
       }else{
         time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
       }
