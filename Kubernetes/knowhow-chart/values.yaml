@@ -17,10 +17,6 @@ image:
   tag: "12.0.0"
   mongodbtag: "5.0.18-rootuser"
 
-env:
-  - name: DATABASE_URL
-    value: "postgres://user:password@hostname:5432/dbname"
-
 ## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
 
 JiraApp:
@@ -37,7 +33,7 @@ AzureBoardApp:
 
 mongodb:
   enabled: true
-  volumeType: "efs" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
+  volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
   storage: "16Gi"
   accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
 
@@ -56,6 +52,50 @@ mongodb:
     storageClassName: "" # Specify the storage class name for azDisk
 
   pvcName: "existing-pvc-name-here"  # Specify the name of an existing PVC to use. Leave mongodb.volumeType empty if using an existing PVC. (optional)
+
+env:
+  ## UI initialization settings
+  - name: DNS_SSL
+    value: "<Your IP/DNS Address>"  # LoadBalancer IP or DNS 
+  - name: API_HOST
+    value: "customapi"             #Custom API's K8s Service Name
+  - name: API_PORT
+    value: "8080"                   #Customapi port number
+
+  ### Uncomment and update the details below only during an upgrade
+  - name: mongock.start-system-version
+    value: "0.0.0" # Uncomment if needed
+  - name: mongock.end-system-version
+    value: "12.0.0" # Uncomment if needed. Find the latest version here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
+
+  # Installation-specific settings
+  - name: mongock.migration-scan-package
+    value: "com.publicissapient.kpidashboard.apis.mongock.installation" # Set to 'installation' for a new install, or 'upgrade' for an upgrade.
+  - name: forgotPassword.uiHost
+    value: "<DNS>" # DNS of the Knowhow server without https://
+  - name: corsFilterValidOrigin
+    value: "<DNS>" # DNS of the Knowhow server without https://
+  - name: spring.data.mongodb.uri
+    value: "mongodb://devuser:devpassword123@mongodb:27017/kpidashboard" # Pass the application MongoDB username, password and mongo hostname . URL-encode special characters in the password.
+  - name: aesEncryptionKey
+    value: "<aesEncryptionKey>" # AES encryption key. Generate using a tool like https://acte.ltd/utils/randomkeygen (min length - 8).
+  - name: auth.secret
+    value: "C0GNAIDS8upDNnkE" # Passphrase for signing JWT tokens (min length - 4).
+  - name: versionnumber
+    value: "12.0.0" # Find the latest version number here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
+  
+  # MongoDB Credentials is used when mongodb.enabled
+  - name: MONGODB_ADMIN_USER
+    value: "admin"                        # Pass the admin user name
+  - name: MONGODB_ADMIN_PASS
+    value: "admin123"                     # Pass the admin password
+  - name: MONGODB_APPLICATION_DATABASE
+    value: "kpidashboard"
+  - name: MONGODB_APPLICATION_USER
+    value: "devuser"                      # Pass the application user name, if you are changing this pass the value in "spring.data.mongodb.uri"
+  - name: MONGODB_APPLICATION_PASS
+    value: "devpassword123"               # Pass the application user password, if you are changing this pass the value in "spring.data.mongodb.uri"
+
 
 imagePullSecrets: []
 nameOverride: ""
