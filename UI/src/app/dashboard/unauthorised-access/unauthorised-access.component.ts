@@ -8,7 +8,7 @@ import { HelperService } from 'src/app/services/helper.service';
 })
 export class UnauthorisedAccessComponent {
 
-  constructor(private helperService : HelperService) { }
+  constructor(private helperService: HelperService) { }
 
   reloadApp(){
     this.helperService.windowReload();

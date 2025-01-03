@@ -6,6 +6,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { Router } from '@angular/router';
 
+
 @Component({
   selector: 'app-nav-new',
   templateUrl: './nav-new.component.html',
@@ -19,16 +20,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
+  dummyData = require('../../../test/resource/board-config-PSKnowHOW.json'); 
 
   constructor(public httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, public helperService: HelperService) {
   }
 
   ngOnInit(): void {
-    const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    this.selectedTab = this.selectedTab?.split(' ').join('-').toLowerCase();
-    
-    this.sharedService.setSelectedBoard(this.selectedTab);
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.sharedService.setScrumKanban(this.selectedType);
 
@@ -37,6 +34,11 @@ export class NavNewComponent implements OnInit, OnDestroy {
     } else {
       this.getBoardConfig([]);
     }
+
+    this.sharedService.onTabSwitch
+      .subscribe(data => {
+        this.selectedTab = data.selectedBoard;
+      });
   }
 
   // unsubscribing all Kpi Request
@@ -47,7 +49,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
   getBoardConfig(projectList) {
     this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
       (response) => {
+        
         this.setBoards(response);
+        // this.setBoards(this.dummyData);
       },
       (error) => {
         this.messageService.add({

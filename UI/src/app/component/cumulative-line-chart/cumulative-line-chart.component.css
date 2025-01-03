@@ -19,7 +19,7 @@
 #chart{
     position: relative;
     overflow-x: auto;
-    width: auto;
+    width: 100%;
 }
 
 .tooltip-container{

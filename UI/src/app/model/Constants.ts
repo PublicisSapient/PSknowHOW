@@ -27,4 +27,12 @@ export class Constants {
   public static FIELD_TYPE_RADIO = 'radio';
 
   public static FIELD_NAME_SEPARATOR = '_';
+  
 }
+
+export const KPI_HEADER_ACTION = {
+  setting: false,
+  listView: false,
+  explore: false,
+  comment: false,
+};

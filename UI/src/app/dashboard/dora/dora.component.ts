@@ -399,7 +399,7 @@ export class DoraComponent implements OnInit {
         } else if (formType?.toLowerCase() == 'dropdown') {
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-          let initialC = trendValueList[0].filter1;
+
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
         } else {
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
@@ -546,7 +546,7 @@ export class DoraComponent implements OnInit {
 
   showTooltip(event, val, kpiId) {
     if (event) {
-      const { top, left, width, height } = event.target.getBoundingClientRect();
+      const { top } = event.target.getBoundingClientRect();
       this.toolTipTop = top;
     } else {
       this.toolTipTop = 0;
@@ -574,7 +574,7 @@ export class DoraComponent implements OnInit {
       let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
 
       if (findIncrementalOrDecrementalRange === 'decremental') {
-        maturityRange = maturityRange.reverse();
+        maturityRange.reverse();
       } else {
         maturityLevel = maturityLevel.reverse();
         displayRange = displayRange.reverse();

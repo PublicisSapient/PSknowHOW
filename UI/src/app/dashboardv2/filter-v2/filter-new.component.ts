@@ -76,6 +76,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   scrumProjectsAvailable: boolean = true;
   squadLevel: any;
   noFilterApplyData: boolean = false;
+  dummyData = require('../../../test/resource/board-config-PSKnowHOW.json'); 
+  buttonStyleClass = 'default';
 
   constructor(
     private httpService: HttpService,
@@ -149,7 +151,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
         }),
 
-      this.service.iterationCongifData.subscribe((iterationDetails) => {
+      this.service.iterationConfigData.subscribe((iterationDetails) => {
         this.iterationConfigData = iterationDetails;
       })
     );
@@ -434,6 +436,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         (response) => {
           if (response.success === true) {
             let data = response.data.userBoardConfigDTO;
+            // let data = this.dummyData.data.userBoardConfigDTO;
             data = this.setLevelNames(data);
             data['configDetails'] = response.data.configDetails;
             this.dashConfigData = data;
@@ -502,12 +505,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
       data['others'].forEach((board) => {
         if (board?.filters) {
-          board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.primaryFilter.defaultLevel.labelName)[0].hierarchyLevelName;
+          board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.primaryFilter.defaultLevel.labelName.toLowerCase())[0].hierarchyLevelName;
           if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
-            board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
+            board.filters.parentFilter.labelName = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.parentFilter.labelName.toLowerCase())[0].hierarchyLevelName;
           }
           if (board.filters.parentFilter?.emittedLevel) {
-            board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId === board.filters.parentFilter.emittedLevel)[0].hierarchyLevelName;
+            board.filters.parentFilter.emittedLevel = levelDetails.filter(level => level.hierarchyLevelId.toLowerCase() === board.filters.parentFilter.emittedLevel.toLowerCase())[0].hierarchyLevelName;
           }
         }
       });
@@ -1350,5 +1353,31 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     }
     return obj;
+  }
+
+  copyUrlToClipboard(event: Event) {
+    event.stopPropagation();
+    const url = window.location.href; // Get the current URL
+    navigator.clipboard.writeText(url).then(() => {
+      this.showSuccess();
+    }).catch(err => {
+      console.error('Failed to copy URL: ', err);
+    });
+  }
+
+  showSuccess() {
+    this.buttonStyleClass = 'success';
+    this.messageService.add({
+      severity: 'success',
+      summary: 'URL copied!',
+    });
+
+    setTimeout(() => {
+      this.resetButton();
+    }, 1500);
+  }
+
+  resetButton() {
+    this.buttonStyleClass = 'default';
   }
 }

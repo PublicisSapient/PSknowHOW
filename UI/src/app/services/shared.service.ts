@@ -42,7 +42,7 @@ export class SharedService {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
-  iterationCongifData = new BehaviorSubject({});
+  iterationConfigData = new BehaviorSubject({});
   kpiListNewOrder = new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;
@@ -57,6 +57,7 @@ export class SharedService {
   private authToken = '';
   public sprintForRnR;
   public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
+  public kpiExcelSubject = new BehaviorSubject<{}>({});
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -244,7 +245,7 @@ export class SharedService {
   }
 
   clearLogoImage() {
-    this.subject.next();
+    this.subject.next(true);
   }
 
   getLogoImage(): Observable<any> {

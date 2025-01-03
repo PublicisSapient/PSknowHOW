@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -122,6 +122,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   selectedTrend: any = [];
+  iterationKPIData = {};
+  dailyStandupKPIDetails = {};
+  // iterationKPIData = [iterationCommitment, Workremaining, IterationBurnUp, wastage, EstimateActual, DefectCountBy,
+  //   ClosurePossibleToday, IssuesLikelyToSpill, FTPR, QualityStatus, EstimateHygiene, WorkStatus];
+
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
     const selectedTab = window.location.hash.substring(1);
@@ -233,7 +238,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setGlobalConfigData(globalConfig) {
-    this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    // this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    let dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
+    this.configGlobalData = dummyData.data.userBoardConfigDTO[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     if (!this.configGlobalData) {
       this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     }
@@ -265,7 +272,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (element.shown && element.isEnabled) {
         this.kpiConfigData[element.kpiId] = true;
         if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
-          this.createTrendsData(element.kpiId);
+          if (this.selectedTab !== 'iteration') {
+            this.createTrendsData(element.kpiId);
+          }
           this.handleMaturityTableLoader();
         }
       } else {
@@ -316,23 +325,35 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.hierarchyLevel = hierarchyData[this.selectedtype?.toLowerCase()];
       }
     }
-    if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
+    if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0) {
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
       this.globalConfig = $event.dashConfigData;
       this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
-      const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
-      const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
-      this.releaseEndDate = endDate;
-      const today = new Date().toISOString().split('T')[0];
-      this.timeRemaining = this.calcBusinessDays(today, endDate);
-      this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+      if (this.selectedTab === 'release') {
+        const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
+        const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
+        this.releaseEndDate = endDate;
+        const today = new Date().toISOString().split('T')[0];
+        this.timeRemaining = this.calcBusinessDays(today, endDate);
+        this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
+      } else if (this.selectedTab === 'iteration') {
+        const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
+        if (selectedSprint) {
+          const today = new Date().toISOString().split('T')[0];
+          const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
+          this.timeRemaining = this.calcBusinessDays(today, endDate);
+          this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
+          this.iterationKPIData = {};
+        }
+      }
       if (!this.configGlobalData?.length && $event.dashConfigData) {
         this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         if (!this.configGlobalData) {
           this.configGlobalData = $event.dashConfigData['others']?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         }
       }
+
 
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
 
@@ -492,6 +513,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
+
+    if (this.selectedTab === 'iteration') {
+      // check for Capacity KPI and sort
+      this.updatedConfigGlobalData = this.updatedConfigGlobalData.sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
+    }
 
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
@@ -766,7 +792,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
-    if (this.selectedTab !== 'release' && this.selectedTab !== 'backlog') {
+    if (this.selectedTab !== 'release' && this.selectedTab !== 'backlog' && this.selectedTab !== 'iteration') {
       this.jiraKpiRequest = this.httpService.postKpi(postData, source)
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -806,7 +832,44 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.postJiraKPIForRelease(postData, source);
     } else if (this.selectedTab === 'backlog') {
       this.postJiraKPIForBacklog(postData, source);
+    } else if (this.selectedTab === 'iteration') {
+      this.iterationKPIData = [];
+      this.postJiraKPIForIteration(postData, source);
     }
+  }
+
+  // post request of Jira(scrum) hygiene
+  postJiraKPIForIteration(postData, source): void {
+    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
+      .subscribe(getData => {
+        if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+          // creating array into object where key is kpi id
+          const localVariable = this.helperService.createKpiWiseId(getData);
+
+          this.iterationKPIData = Object.assign({}, this.iterationKPIData, localVariable);
+          this.removeLoaderFromKPIs(localVariable);
+
+          if (localVariable && localVariable['kpi121']) {
+            const iterationConfigData = {
+              daysLeft: this.timeRemaining,
+              capacity: {
+                value: {
+                  value: localVariable['kpi121'].trendValueList?.value ? localVariable['kpi121'].trendValueList?.value : 0
+                }
+              }
+            };
+            this.service.iterationConfigData.next(iterationConfigData);
+          }
+          if (this.iterationKPIData && this.iterationKPIData['kpi154']) {
+            this.dailyStandupKPIDetails = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi154')[0].kpiDetail;
+          }
+        } else {
+          this.handleKPIError(postData);
+        }
+      }, (error) => {
+        // Handle error
+        this.handleKPIError(postData);
+      });
   }
 
   postJiraKPIForBacklog(postData, source) {
@@ -1751,10 +1814,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (preAggregatedValues?.length > 1) {
           if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
-          } else { 
-            if(kpiId === 'kpi171'){
+          } else {
+            if (kpiId === 'kpi171') {
               this.kpiChartData[kpiId] = [this.helperService.aggregationCycleTime(preAggregatedValues)];
-            }else{
+            } else {
               this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
             }
           }
@@ -1995,8 +2058,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
     this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
       if (response['success']) {
-        this.exportExcelComponent.dataTransformForIterationTableWidget([],[],response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
-      }     
+        this.exportExcelComponent.dataTransformForIterationTableWidget([], [], response['data']['kpiColumnDetails'], tableValues, kpi?.kpiName + ' / ' + label, kpi.kpiId)
+      }
     });
   }
 
@@ -2783,4 +2846,37 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     return kpi?.kpiDetail?.yaxisLabel;
   }
+
+  getkpiwidth(kpiwidth) {
+    let retValue = '';
+
+    switch (kpiwidth) {
+      case 100:
+        retValue = 'p-col-12';
+        break;
+      case 50:
+        retValue = 'p-col-6';
+        break;
+      case 66:
+        retValue = 'p-col-8';
+        break;
+      case 33:
+        retValue = 'p-col-4';
+        break;
+      default:
+        retValue = 'p-col-6';
+        break;
+    }
+
+    return retValue;
+  }
+
+  checkKPIPresence(kpi) {
+    if (this.tabsArr.size > 1) {
+      return this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled'];
+    } else {
+      return kpi['isEnabled'];
+    }
+  }
+
 }

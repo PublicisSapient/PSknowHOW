@@ -33,8 +33,7 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 
 @Component({
   selector: 'app-developer',
-  templateUrl: './developer.component.html',
-  styleUrls: ['./developer.component.css']
+  templateUrl: './developer.component.html'
 })
 export class DeveloperComponent implements OnInit {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;

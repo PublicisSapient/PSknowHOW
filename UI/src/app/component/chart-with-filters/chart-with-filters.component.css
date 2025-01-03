@@ -5,8 +5,8 @@
 
 #legend {
     overflow-y: auto;
-    margin-top: 40px;
-    max-height: 250px;
+    margin-top: 20px;
+    max-height: 200px;
 }
 
 #legend table {
@@ -24,7 +24,7 @@ td {
     height: 10px;
     width: 10px;
     border-radius: 50%;
-    opacity: 0.7;
+    /* opacity: 0.7; */
 }
 
 #legend .legend_link {
@@ -108,4 +108,9 @@ td {
     text-align: center;
     background-color: #dedede;
     margin: auto;
+}
+
+.text-blue {
+    text-decoration: underline;
+    cursor: pointer;
 }

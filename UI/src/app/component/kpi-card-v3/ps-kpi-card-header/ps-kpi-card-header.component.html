@@ -1,0 +1,62 @@
+<div class="kpi-card-header">
+  <div
+    class="kpi-card-name-placeholder"
+    (mouseleave)="showTooltip(false)"
+    #kpiHeader
+  >
+    <div class="kpi-card-title-container">
+      <h3>{{ cardHeaderData?.kpiName }}</h3>
+      <span
+        *ngIf="cardHeaderData?.kpiInfo"
+        aria-hidden="true"
+        class="info-icon"
+        (mouseover)="showTooltip(true)"
+        (mouseleave)="showTooltip(false)"
+        [style]="{ position: 'relative' }"
+      >
+        <img alt="info" class="" src="../../../assets/img/Info.svg" />
+        <app-tooltip-v2
+          *ngIf="isTooltip"
+          class="p-mt-3"
+          [data]="cardHeaderData?.kpiInfo"
+          (mouseleave)="showTooltip(false)"
+          [kpiName]="cardHeaderData?.kpiName"
+        ></app-tooltip-v2>
+      </span>
+    </div>
+    <span
+      class="warning-icon"
+      *ngIf="cardHeaderData?.responseCode === '201'"
+      (mouseover)="showWarning(true)"
+      (mouseleave)="showWarning(false)"
+      [style]="{ position: 'relative' }"
+    >
+      <img
+        height="25px"
+        style="display: block; margin-top: -3px; margin-left: 2px"
+        alt="warning"
+        src="../../../assets/img/Warning.svg"
+      />
+      <app-tooltip-v2
+        *ngIf="warning"
+        class="p-mt-3 p-ml-1"
+        [data]="warning"
+        (mouseleave)="showWarning(false)"
+        [showChartView]="showChartView"
+        [kpiName]="cardHeaderData?.kpiName"
+        [allText]="true"
+      ></app-tooltip-v2>
+    </span>
+  </div>
+  <div class="kpi-menu-container" (click)="toggleMenu($event)">
+    <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
+  </div>
+  <p-menu #kpimenu id="menu-{{cardHeaderData?.kpiId}}" [popup]="true" [model]="menuItems">
+    <ng-template pTemplate="item" let-item>
+      <div>
+        <i [class]="item.icon"></i>
+        <span> {{ item.label }}</span>
+      </div>
+    </ng-template>
+  </p-menu>
+</div>

@@ -9,6 +9,9 @@ import { DatePipe } from '@angular/common';
 import { Menu } from 'primeng/menu';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
+import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import * as d3 from 'd3';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -78,9 +81,19 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() immediateLoader: boolean = true;
   @Input() partialData: boolean = false;
   warning = '';
+  //spal 
+  kpiHeaderData: {};
+  kpiFilterData: {};
+  copyCardData: any;
+  currentChartData;
+  KpiCategory;
+  colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];//d3.schemeCategory10;//['#167a26', '#4ebb1a', '#f53535'];
+  selectedButtonValue;
+  cardData;
+
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService,
+    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService, private kpiHelperService: KpiHelperService,
     private helperService: HelperService) { }
 
   ngOnInit(): void {
@@ -127,6 +140,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
+    /** assign 1st value to radio button by default */
+    if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
+      this.radioOption = this.dropdownArr[0]?.options[0];
+    }
   }
 
   initializeMenu() {
@@ -153,7 +170,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.exportToExcel();
         },
-        disabled: !this.kpiData.kpiDetail.chartType
+        disabled: !this.kpiData?.kpiDetail?.chartType
       },
       {
         label: 'Comments',
@@ -164,6 +181,19 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         },
       }
     ];
+  }
+
+  handleAction(event:any){
+     if (event.listView) {
+          this.prepareData();
+        } else if (event.setting) {
+          this.onOpenFieldMappingDialog();
+        } else if (event.explore) {
+          this.exportToExcel();
+        } else if (event.comment) {
+          this.showComments = true;
+          this.openCommentModal();
+        }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -186,6 +216,30 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }
     }
+
+    //#region new card kpi
+    if (this.selectedTab === 'iteration' && !this.loader) {
+      this.cardData = this.trendValueList;
+      const {
+        issueData,
+        kpiName,
+        kpiInfo,
+        kpiId,
+        dataGroup,
+        filterGroup,
+        categoryData
+      } = this.cardData;
+      let responseCode = this.kpiDataStatusCode;
+      this.kpiHeaderData = { issueData, kpiName, kpiInfo, kpiId, responseCode };
+      this.kpiFilterData = { dataGroup, filterGroup, issueData, chartType: this.kpiData?.kpiDetail?.chartType, categoryData };
+      this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
+      this.currentChartData = this.prepareChartData(
+        this.cardData,
+        this.colorPalette,
+      );
+    }
+
+    //#endregion
   }
 
   openCommentModal = () => {
@@ -381,6 +435,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   exportToExcel() {
+    if(!!this.cardData){
+      this.service.kpiExcelSubject.next({columns:this.cardData['modalHeads'],excelData:this.cardData['issueData']})
+    }
+   
     this.downloadExcel.emit(true);
   }
 
@@ -490,5 +548,136 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     });
     this.displaySprintDetailsModal = true;
+  }
+  //#region new card
+
+  onFilterChange(event) {
+    const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
+    if (selectedKeyObj && selectedKeyObj['Category'] !== 'Value') {
+      const filterIssues = this.applyDynamicfilter(
+        this.cardData.issueData,
+        [selectedKeyObj, ...Object.entries(updatedEvent).map(([key, value]) => {
+          return { [key]: value };
+        })]
+      );
+      this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+      this.currentChartData = this.prepareChartData(
+        this.copyCardData,
+        this.colorPalette,
+        selectedKey
+      );
+    } else {
+      const filterIssues = this.applyDynamicfilter(
+        this.cardData.issueData,
+        Object.entries(updatedEvent).map(([key, value]) => {
+          return { [key]: value };
+        })
+      );
+      this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+
+      this.currentChartData = this.prepareChartData(
+        this.copyCardData,
+        this.colorPalette,
+        'Value'
+      );
+    }
+    this.selectedButtonValue = selectedKeyObj;
+  }
+
+  onFilterClear() {
+    const filterIssues = this.cardData.issueData;
+    this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+    this.currentChartData = this.prepareChartData(
+      this.copyCardData,
+      this.colorPalette,
+    );
+  }
+
+  applyDynamicfilter(data: any[], filterArr: any) {
+    console.log(filterArr);
+    let filteredData = data;
+    // cleanup empty or null or undefined props
+    filterArr = this.sanitizeArray(filterArr);
+
+    if (filterArr.length) {
+      filterArr.forEach(element => {
+        let filterObj = Object.keys(element).map(x => {
+          return {
+            key: x,
+            value: element[x]
+          }
+        });
+        if (Array.isArray(filterObj[0].value)) {
+          filteredData = filteredData.filter(issue => filterObj[0].value.includes(issue[filterObj[0].key]));
+        } else {
+          filteredData = filteredData.filter(issue => issue[filterObj[0].key].includes(filterObj[0].value));
+        }
+      });
+    }
+    return filteredData;
+  }
+
+  // cleanup empty or null or undefined props
+  sanitizeArray(input) {
+    // Recursive function to handle nested structures
+    function sanitize(item) {
+      if (Array.isArray(item)) {
+        return item
+          .map(sanitize) // Recursively sanitize array elements
+          .filter((el) => el !== null && el !== undefined && Object.keys(el).length > 0); // Exclude null, undefined, or empty objects
+      } else if (typeof item === "object" && item !== null) {
+        const sanitizedObject = {};
+        for (const [key, value] of Object.entries(item)) {
+          if (value) sanitizedObject[key] = value; // Add key-value pairs with truthy values
+        }
+        return Object.keys(sanitizedObject).length > 0 ? sanitizedObject : null; // Remove empty objects
+      }
+      return null; // Exclude non-object and non-array elements
+    }
+
+    return sanitize(input);
+  }
+
+
+  prepareChartData(inputData: any, color: any, key?: any) {
+    return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color, key);
+  }
+
+  calculateValue(issueData, key: string): string {
+    const total = issueData.reduce((sum, issue) => {
+      const value = issue[key];
+      return sum + (typeof value === 'number' ? value : 0); // Only add numeric values
+    }, 0);
+
+    return total.toString(); // Convert to string for display
+  }
+
+  convertToHoursIfTime(val, unit) {
+    return this.kpiHelperService.convertToHoursIfTime(val, unit)
+  }
+
+  showCummalative() {
+    if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
+      return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
+    } else if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart') {
+      if (!!this.selectedButtonValue?.length && !!this.selectedButtonValue[0]?.key) {
+        const tempCount = this.selectedButtonValue[0].key
+        return this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
+      } else {
+        return this.currentChartData.totalCount
+      }
+    } else {
+      if (!!this.selectedButtonValue && !!this.selectedButtonValue[0].key) {
+        const totalValue = this.calculateValue(this.copyCardData.issueData, this.selectedButtonValue[0].key)
+        return this.kpiHelperService.convertToHoursIfTime(totalValue, this.selectedButtonValue[0].unit)
+      }
+      return this.currentChartData.totalCount
+    }
+  }
+
+  //#endregion
+
+  checkFilterPresence(filterData) {
+    return filterData?.filterGroup;
   }
 }
