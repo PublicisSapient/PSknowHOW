@@ -1,16 +1,17 @@
+{{- if .Values.azure-board-app.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
   name: azure-board-processor
-  namespace: {{ .Values.env}}-knowhow
   labels:
     app: azure-board-processor
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.service.backendtype }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: 50017
       targetPort: http
       protocol: TCP
       name: http
   selector:
     app: azure-board-processor
+{{- end }}
