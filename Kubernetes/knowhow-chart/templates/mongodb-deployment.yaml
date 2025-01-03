@@ -84,13 +84,12 @@ spec:
             type: DirectoryOrCreate
         {{- else if eq .Values.mongodb.volumeType "azureDisk" }}
         - name: psknowhow-db-data-volume
-          azureDisk:
-            diskName: {{ .Values.mongodb.azureDisk.diskName }}
-            diskUri: {{ .Values.mongodb.azureDisk.diskUri }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-azuredisk-pvc
         {{- else if eq .Values.mongodb.volumeType "efs" }}
         - name: psknowhow-db-data-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.mongodb.pvcName }}
+            claimName: {{ .Release.Name }}-efs-pvc
         {{- else }}
         - name: psknowhow-db-data-volume
           persistentVolumeClaim:

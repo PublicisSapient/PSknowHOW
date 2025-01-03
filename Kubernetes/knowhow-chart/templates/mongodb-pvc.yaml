@@ -6,7 +6,7 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.mongodb.accessMode }}
-  storageClassName: ""
+  storageClassName: {{ .Values.mongodb.efs.storageClassName }}
   resources:
     requests:
       storage: {{ .Values.mongodb.storage }}
@@ -20,7 +20,7 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.mongodb.accessMode }}
-  storageClassName: managed-csi
+  storageClassName: {{ .Values.mongodb.azureDisk.storageClassName}}
   resources:
     requests:
       storage: {{ .Values.mongodb.storage }}
