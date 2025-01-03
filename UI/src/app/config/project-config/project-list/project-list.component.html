@@ -96,3 +96,29 @@
         <button *ngIf="!projectConfirm" type="button" (click)="cd.reject()" pButton label="OK"></button>
     </p-footer>
 </p-confirmDialog>
+
+<p-dialog [(visible)]="isRenameProject" [modal]="true" (onHide)="isRenameProject = false;" [style]="{width:'600px'}">
+  <ng-template pTemplate="header">
+    <h1 class="p-my-0"> Rename Project</h1>
+  </ng-template>
+  <form #newProjectNameForm="ngForm" (ngSubmit)="onSubmit(newProjectNameForm)">
+    <div class="p-mb-3 p-mt-3 p-pl-1 form-container">
+      <div class="p-mb-3 p-mt-3">
+        <span class="p-float-label" pTooltip='Project Name' tooltipPosition="bottom"
+              tooltipEvent="hover">
+          <input required id="projectName" #projectName="ngModel" required pattern="^[a-zA-Z0-9][a-zA-Z0-9\s_-]*$"
+                 [style]="{'width':'500px'}" type="text" pInputText [(ngModel)]="newProjectName" [ngModelOptions]="{standalone: true}">
+          <label for="projectName">Enter Project Name</label>
+        </span>
+        <span class="p-invalid" *ngIf="projectName.errors?.pattern">
+          Special Characters are not allowed.</span>
+        <span class="p-invalid" *ngIf="submitted && newProjectName == selectedProject.name">
+          New Project name is same as old Project name.</span>
+      </div>
+    </div>
+    <div class="p-text-right p-col-12">
+      <button pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised"
+              icon="pi pi-save" iconPos="left" [label]="'Save'" [disabled]="projectName.errors" ></button>
+    </div>
+  </form>
+</p-dialog>

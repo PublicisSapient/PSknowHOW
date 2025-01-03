@@ -24,6 +24,8 @@ import { GetAuthorizationService } from '../../../services/get-authorization.ser
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 import { HelperService } from 'src/app/services/helper.service';
+import { BrowserModule } from '@angular/platform-browser';
+import {FormsModule, FormGroup, FormControl} from '@angular/forms';
 
 declare const require: any;
 @Component({
@@ -58,9 +60,15 @@ export class ProjectListComponent implements OnInit {
   globalSearchFilter: Array<string> = [];
   @ViewChild(Table) table: Table;
   isNewProject = false;
+  isRenameProject = false;
+  submitted = false;
+  newProjectName: string = "";
   items: MenuItem[];
   roleBasedItems: MenuItem[];
   selectedProductForExecutingAction: any;
+  projectGroup;
+  selectedProject: any;
+
 
   constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
     private getAuthorizationService: GetAuthorizationService, private helper: HelperService) { }
@@ -85,6 +93,11 @@ export class ProjectListComponent implements OnInit {
       {
         label: 'Clone Project', icon: 'pi pi-copy', command: () => {
           this.editProject(this.selectedProductForExecutingAction, true);
+        }
+      },
+      {
+        label: 'Rename Project', icon: 'pi pi-file-edit', command: () => {
+          this.renameProject(this.selectedProductForExecutingAction);
         }
       },
       {
@@ -292,4 +305,48 @@ export class ProjectListComponent implements OnInit {
     this.router.navigate([`/dashboard/Config/ConfigSettings/${project['id']}`], { queryParams: { 'type': project['type'].toLowerCase(), tab: tabNum } });
 
   }
+
+  renameProject(project) {
+    this.submitted = false;
+    this.selectedProject = project;
+    this.isRenameProject = true;
+    this.newProjectName = project.name;
+     this.projectGroup = new FormGroup({
+          projectName: new FormControl()
+      });
+  }
+
+  onSubmit(form: any) {
+    this.submitted = true;
+    if(this.newProjectName === this.selectedProject.name) {
+      return;
+    }
+    if (form.valid) {
+      const updatedDetails = {};
+      updatedDetails['projectName'] = this.newProjectName;
+      updatedDetails['kanban'] = this.selectedProject?.type === 'Kanban' ? true : false;
+      updatedDetails['hierarchy'] = [];
+      updatedDetails['saveAssigneeDetails'] = this.selectedProject?.saveAssigneeDetails;
+      updatedDetails['id'] = this.selectedProject?.id;
+      updatedDetails["developerKpiEnabled"] = this.selectedProject?.developerKpiEnabled;
+      updatedDetails["projectOnHold"] = this.selectedProject?.projectOnHold;
+      this.http.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
+            if (response && response.serviceResponse && response.serviceResponse.success) {
+              this.messenger.add({
+                severity: 'success',
+                summary: 'Project renamed successfully.'
+              });
+            } else {
+              this.messenger.add({
+                severity: 'error',
+                summary: 'Some error occurred. Please try again later.'
+              });
+            }
+          })
+      this.isRenameProject = false;
+      console.log('Form submitted:', this.newProjectName);
+    }
+
+  }
+
 }

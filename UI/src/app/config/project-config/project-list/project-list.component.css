@@ -75,3 +75,7 @@ div.main {
   ::ng-deep  .p-datatable.p-datatable-striped .p-datatable-tbody>tr>td {
     word-break: normal;
   }
+
+  .p-invalid {
+    color: red;
+  }
