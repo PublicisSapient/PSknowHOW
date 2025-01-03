@@ -53,22 +53,25 @@ azure-board-app:
 
 mongodb:
   enabled: false
-  volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk"
+  volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
   storage: "16Gi"
   accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
 
+  # HostPath-specific options
   hostPath:
     path: "/data/mongodb" # Host path for local storage
 
+  # AWS EFS-specific options
   efs:
     fileSystemId: "<your-efs-filesystem-id>" # Replace with your AWS EFS FileSystemId
     storageClassName: ""  # Specify the storage class name for EFS (optional)
-
+  
+  # AzureDisk-specific options
   azureDisk:
     volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.Compute/disks/<diskName>"
     storageClassName: "" # Specify the storage class name for azDisk
-    
-  pvcName: "mongodb-pvc"  # Name for PVC if you have an existing PVC or suggested name for new PVC (optional)
+
+  pvcName: "existing-pvc-name-here"  # Specify the name of an existing PVC to use. Leave mongodb.volumeType empty if using an existing PVC. (optional)
 
 imagePullSecrets: []
 nameOverride: ""
