@@ -1,0 +1,28 @@
+{{- if and .Values.mongodb.enabled (eq .Values.mongodb.volumeType "efs") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-efs-pvc
+spec:
+  accessModes:
+    - {{ .Values.mongodb.accessMode }}
+  storageClassName: ""
+  resources:
+    requests:
+      storage: {{ .Values.mongodb.storage }}
+{{- end }}
+
+{{- if and .Values.mongodb.enabled (eq .Values.mongodb.volumeType "azureDisk") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-azuredisk-pvc
+spec:
+  accessModes:
+    - {{ .Values.mongodb.accessMode }}
+  storageClassName: managed-csi
+  resources:
+    requests:
+      storage: {{ .Values.mongodb.storage }}
+  volumeName: {{ .Release.Name }}-azuredisk-pv
+{{- end }}

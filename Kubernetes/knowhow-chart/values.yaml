@@ -32,25 +32,43 @@ devops-app:
 azure-pipeline-app:
   enabled: false
 
-azure-boart-app:
+azure-board-app:
   enabled: false
 
-mongodb:
-  enabled: true
-  volumeType: efs  # Options: efs, hostPath, azureDisk
-  # HostPath-specific options
-  hostPath:
-    path: /data/db  # Path on the host
-  # EFS-specific options
-  efs:
-    server: "<your-efs-server>"  # EFS server DNS name
-    path: "/"  # Path in EFS to mount
-  # AzureDisk-specific options
-  azureDisk:
-    volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/MC_myAKSCluster_myAKSCluster_eastus/providers/Microsoft.Compute/disks/myAKSDisk"  # Specify the full volume handle
-  pvcName: "mongodb-pvc"  # Name for PVC if you have an existing PVC or suggested name for new PVC (optional)
-  storageClassName: "efs-sc"  # Specify the storage class name for EFS (optional)
+# mongodb:
+#   enabled: true
+#   volumeType: efs  # Options: efs, hostPath, azureDisk
+#   # HostPath-specific options
+#   hostPath:
+#     path: /data/db  # Path on the host
+#   # EFS-specific options
+#   efs:
+#     server: "<your-efs-server>"  # EFS server DNS name
+#     path: "/"  # Path in EFS to mount
+#   # AzureDisk-specific options
+#   azureDisk:
+#     volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/MC_myAKSCluster_myAKSCluster_eastus/providers/Microsoft.Compute/disks/myAKSDisk"  # Specify the full volume handle
+#   pvcName: "mongodb-pvc"  # Name for PVC if you have an existing PVC or suggested name for new PVC (optional)
+#   storageClassName: "efs-sc"  # Specify the storage class name for EFS (optional)
 
+mongodb:
+  enabled: false
+  volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk"
+  storage: "16Gi"
+  accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
+
+  hostPath:
+    path: "/data/mongodb" # Host path for local storage
+
+  efs:
+    fileSystemId: "<your-efs-filesystem-id>" # Replace with your AWS EFS FileSystemId
+    storageClassName: ""  # Specify the storage class name for EFS (optional)
+
+  azureDisk:
+    volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.Compute/disks/<diskName>"
+    storageClassName: "" # Specify the storage class name for azDisk
+    
+  pvcName: "mongodb-pvc"  # Name for PVC if you have an existing PVC or suggested name for new PVC (optional)
 
 imagePullSecrets: []
 nameOverride: ""
