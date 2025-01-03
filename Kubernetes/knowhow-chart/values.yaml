@@ -35,22 +35,6 @@ azure-pipeline-app:
 azure-board-app:
   enabled: false
 
-# mongodb:
-#   enabled: true
-#   volumeType: efs  # Options: efs, hostPath, azureDisk
-#   # HostPath-specific options
-#   hostPath:
-#     path: /data/db  # Path on the host
-#   # EFS-specific options
-#   efs:
-#     server: "<your-efs-server>"  # EFS server DNS name
-#     path: "/"  # Path in EFS to mount
-#   # AzureDisk-specific options
-#   azureDisk:
-#     volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/MC_myAKSCluster_myAKSCluster_eastus/providers/Microsoft.Compute/disks/myAKSDisk"  # Specify the full volume handle
-#   pvcName: "mongodb-pvc"  # Name for PVC if you have an existing PVC or suggested name for new PVC (optional)
-#   storageClassName: "efs-sc"  # Specify the storage class name for EFS (optional)
-
 mongodb:
   enabled: false
   volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
