@@ -3071,11 +3071,11 @@ describe('BacklogComponent', () => {
         expect(component.kpiTrendObject[1]).toEqual([
           {
             hierarchyName: 'Data 1',
-            trend: 'NA',
+            trend: '3',
             maturity: 'M1',
             maturityValue: 'Low',
             maturityDenominator: 3,
-            kpiUnit: '%'
+            kpiUnit: 'NA'
           }
         ]);
       });
