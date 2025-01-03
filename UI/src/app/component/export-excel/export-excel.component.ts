@@ -221,8 +221,11 @@ export class ExportExcelComponent implements OnInit {
       this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => {
         const updatedRow = { ...row }; // Create a copy of the row
         Object.keys(updatedRow).forEach(colName => {
+          if (typeof updatedRow[colName] === 'string') {
+            updatedRow[colName] = updatedRow[colName].trim();
+          }
           if (blankValues.includes(updatedRow[colName])) {
-            updatedRow[colName] = ''; //
+            updatedRow[colName] = '';
           }
         });
         return updatedRow;
