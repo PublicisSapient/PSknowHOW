@@ -577,23 +577,23 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 		String markerValue = Constant.BLANK;
 		String devDate = DateUtil.dateTimeConverter(
 				(String) jiraIssueData.get(DEV_COMPLETION_DATE), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
-		jiraIssueModalObject.setDevCompletionDate(StringUtils.isNotEmpty(devDate) ? devDate : Constant.DASH);
+		jiraIssueModalObject.setDevCompletionDate(StringUtils.isNotEmpty(devDate) ? devDate : Constant.BLANK);
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null)
 			jiraIssueModalObject.setActualCompletionDate(
 					DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_COMPLETE_DATE).toString(),
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		else
-			jiraIssueModalObject.setActualCompletionDate(" - ");
+			jiraIssueModalObject.setActualCompletionDate(Constant.BLANK);
 		if (actualCompletionData.get(ACTUAL_START_DATE) != null) {
 			jiraIssueModalObject.setActualStartDate(
 					DateUtil.dateTimeConverter(actualCompletionData.get(ACTUAL_START_DATE).toString(),
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		} else
-			jiraIssueModalObject.setActualStartDate(" - ");
+			jiraIssueModalObject.setActualStartDate(Constant.BLANK);
 		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
 			jiraIssueModalObject.setDelayInDays(String.valueOf(jiraIssueData.get(ISSUE_DELAY)) + "d");
 		} else {
-			jiraIssueModalObject.setDelayInDays(" - ");
+			jiraIssueModalObject.setDelayInDays(Constant.BLANK);
 		}
 		if (DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 				.isAfter(LocalDate.now().minusDays(1))) {
@@ -606,8 +606,8 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		} else {
-			jiraIssueModalObject.setPotentialDelay("-");
-			jiraIssueModalObject.setPredictedCompletionDate("-");
+			jiraIssueModalObject.setPotentialDelay(Constant.BLANK);
+			jiraIssueModalObject.setPredictedCompletionDate(Constant.BLANK);
 		}
 		jiraIssueModalObject.setMarker(markerValue);
 	}
