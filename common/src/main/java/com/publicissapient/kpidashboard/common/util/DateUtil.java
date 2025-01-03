@@ -362,7 +362,7 @@ public class DateUtil {
 				result += minutesPart + " Min";
 			}
 		} else {
-			result = "NA";
+			result = " ";
 		}
 		return result;
 	}
