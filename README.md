@@ -35,7 +35,7 @@ https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1966195/KnowHOW+-+In
     ```
     docker-compose up -d
     ```
-5. Your application will now be running and can be accessed from a browser using the DNS.
+5. Your application will now be running and can be accessed from a browser using the DNS..
 
 
 
