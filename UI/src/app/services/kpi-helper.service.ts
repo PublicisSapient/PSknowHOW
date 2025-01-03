@@ -89,6 +89,8 @@ export class KpiHelperService {
       chartData.forEach((d) => d.value = d.value / (60 * 8));
       chartData.sort((a, b) => a.value - b.value);
       totalCount = this.convertToHoursIfTime(totalCount, unit);
+    } else {
+      chartData.sort((a, b) => a.value - b.value);
     }
 
     return { chartData, totalCount };

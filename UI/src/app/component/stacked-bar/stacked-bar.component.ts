@@ -106,8 +106,8 @@ export class StackedBarComponent implements OnInit, OnChanges {
           // C${width},${(3 * chartHeight) / 4} ${width},${chartHeight / 4} ${width - radius},0
           // Z`;
 
-          return `M${x},0
-        C${x + radius},${chartHeight / 4} ${x + radius},${(3 * chartHeight) / 4} ${x},${chartHeight}
+          return `M${x - radius},0
+        C${x + radius},${chartHeight / 4} ${x },${(4 * chartHeight) / 4} ${x - radius},${chartHeight}
         L${x + width - radius},${chartHeight} 
         C${x + width},${(3 * chartHeight) / 4} ${x + width},${chartHeight / 4} ${x + width - radius},0
         Z`;
