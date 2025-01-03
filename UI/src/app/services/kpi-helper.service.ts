@@ -46,6 +46,12 @@ export class KpiHelperService {
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const categoryGroup = inputData.categoryData?.categoryGroup;
+    let selectedDataGroup;
+    let unit;
+    if (key) {
+      selectedDataGroup = dataGroup1.find((d) => d.key === key);
+      unit = selectedDataGroup.unit;
+    }
 
     // if (!dataGroup1 || dataGroup1.length === 0) {
     //   throw new Error('Invalid data: Missing dataGroup1');
@@ -55,7 +61,7 @@ export class KpiHelperService {
       return { chartData: [], totalCount: 0 };
     }
 
-    const chartData: any = [];
+    let chartData: any = [];
 
     // Handle categoryGroup if present
     // if (categoryGroup && dataGroup1[0]?.showAsLegend === false) {
@@ -68,15 +74,23 @@ export class KpiHelperService {
 
       chartData.push({
         category: category.categoryName,
-        value: (key ? filteredIssues.reduce((sum, issue) => sum + (issue[key] || 0), 0) : filteredIssues.length) * (category.categoryValue === '+' ? 1 : -1),
+        value: (key ? filteredIssues.reduce((sum, issue) => sum + (issue[key]), 0) : filteredIssues.length) * (category.categoryValue === '+' ? 1 : -1),
         color: color[index % color.length],
       });
     });
-    chartData.sort((a, b) => a.value - b.value);
 
-    const totalCount = chartData.reduce((sum: any, issue: any) => {
+    let totalCount = chartData.reduce((sum: any, issue: any) => {
       return sum + (issue.value || 0); // Sum up the values for the key
     }, 0);
+
+    if (!unit || !unit.length) {
+      chartData.sort((a, b) => a.value - b.value);
+    } else if (unit === 'day') {
+      chartData.forEach((d) => d.value = d.value / (60 * 8));
+      chartData.sort((a, b) => a.value - b.value);
+      totalCount = this.convertToHoursIfTime(totalCount, unit);
+    }
+
     return { chartData, totalCount };
   }
 
@@ -185,7 +199,9 @@ export class KpiHelperService {
           test['value2'] = issueDataCopy.reduce((acc: number, issue: any) => {
             return acc + (issue[dataGroupElem.key] || 0); // Use the key from the data group
           }, 0);
-
+          if (dataGroupElem.unit && dataGroupElem.unit === 'day') {
+            test['value2'] = test['value2'] / (60 * 8);
+          }
           test['category2'] = 'Story Points';
           test['color2'] = color[1];
         }
@@ -197,9 +213,15 @@ export class KpiHelperService {
 
     chartData['categoryData'] = categoryGroup;
     chartData['summaryHeader'] = json.dataGroup.dataGroup2[0].name;
-    chartData['summaryValue'] = this.convertToHoursIfTime(issueData.reduce((acc: number, issue: any) => {
-      return acc + (issue[json.dataGroup.dataGroup2[0].key] || 0); // Use the key from the data group
-    }, 0), 'day');
+    chartData['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
+      if(issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
+      return acc + issue[json.dataGroup.dataGroup2[0].key]/(60*8);
+      } else if(issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
+        return acc - issue[json.dataGroup.dataGroup2[0].key]/(60*8);
+      } else {
+        return acc;
+      }
+    }, 0);
     return { chartData: chartData };
   }
 
@@ -280,7 +302,7 @@ export class KpiHelperService {
     inputData?.forEach((group: any, index) => {
       chartData.push({
         category: group.name,
-        value: group.kpiValue,
+        value: group.unit?.length ? group.unit === 'day' || group.unit === 'SP' ? this.convertToHoursIfTime(group.kpiValue, group.unit) : group.kpiValue : group.kpiValue,
         icon: this.iconObj[group.name]
       });
     });

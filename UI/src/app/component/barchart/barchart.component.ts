@@ -204,7 +204,7 @@ export class BarchartComponent implements OnInit {
       .call(
         d3.axisLeft(yScale)
           .ticks(4)
-          .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
+          // .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
       );
 
     this.svg.selectAll('.xAxisG path, .xAxisG line, .yAxisG path, .yAxisG line')

@@ -41,15 +41,15 @@ export class PsKpiCardHeaderComponent implements OnInit {
         },
         // disabled: this.disableSettings || this.service.getSelectedType()?.toLowerCase() === 'kanban'
       },
-      {
-        label: 'List View',
-        icon: 'pi pi-align-justify',
-        command: ($event) => {
-          // this.prepareData();
-          this.actionTriggered.emit({...this.MenuValues,listView:true});
-        },
-        // disabled: this.selectedTab === 'release' || this.selectedTab === 'backlog'
-      },
+      // {
+      //   label: 'List View',
+      //   icon: 'pi pi-align-justify',
+      //   command: ($event) => {
+      //     // this.prepareData();
+      //     this.actionTriggered.emit({...this.MenuValues,listView:true});
+      //   },
+      //   disabled: this.selectedTab === 'iteration'
+      // },
       {
         label: 'Explore',
         icon: 'pi pi-table',
