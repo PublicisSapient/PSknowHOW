@@ -42,7 +42,7 @@ export class SharedService {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
-  iterationCongifData = new BehaviorSubject({});
+  iterationConfigData = new BehaviorSubject({});
   kpiListNewOrder = new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;

@@ -32,7 +32,7 @@
                             <ng-container
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-                                    <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154'"
+                                    <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121'"
                                         class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}"
                                         [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '414px') }">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"

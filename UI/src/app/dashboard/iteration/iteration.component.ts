@@ -143,7 +143,7 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
       this.noSprints = res;
-      this.service.iterationCongifData.next({});
+      this.service.iterationConfigData.next({});
       if (this.noSprints) {
         this.service.kpiListNewOrder.next([]);
       }
@@ -601,7 +601,7 @@ export class IterationComponent implements OnInit, OnDestroy {
           value: this.kpiChartData[kpiId][0]
         }
       };
-      this.service.iterationCongifData.next(iterationConfigData);
+      this.service.iterationConfigData.next(iterationConfigData);
     }
   }
 
