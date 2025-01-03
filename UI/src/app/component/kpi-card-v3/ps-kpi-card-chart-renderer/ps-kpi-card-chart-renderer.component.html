@@ -11,7 +11,8 @@
   [selectedTab]="'iteration'" [category]="chartData?.category" [kpiName]="abc">
   </app-chart-with-filters>
   <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'"
-    [data]="chartData" [filters]="[]">
+    [data]="chartData" [filters]="[]" [kpiId]="kpiId"
+    [xCaption]="kpiDetails?.xaxisLabel" [yCaption]="kpiDetails?.yaxisLabel">
   </app-cumulative-line-chart>
   <app-tabular-kpi-v2 *ngSwitchCase="'table-v2'"
   [data]="chartData" [kpiId]="kpiId" [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>

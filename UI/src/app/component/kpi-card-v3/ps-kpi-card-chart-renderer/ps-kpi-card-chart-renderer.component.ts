@@ -12,6 +12,7 @@ export class PsKpiCardChartRendererComponent implements OnInit {
   @Input() chartWidth: any;
   @Input() chartHeight: any;
   @Input() kpiId: string = '';
+  @Input() kpiDetails: any;
   constructor() { }
 
   ngOnInit(): void {

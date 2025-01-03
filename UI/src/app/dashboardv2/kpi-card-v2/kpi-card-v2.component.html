@@ -22,7 +22,7 @@
             <app-ps-kpi-card-chart-renderer [chartData]="currentChartData?.chartData"
               [chartType]="kpiData?.kpiDetail?.chartType" [chartWidth]="cardData?.chartWidth"
               [chartHeight]="cardData?.chartHeight"
-              [kpiId]="kpiData?.kpiDetail?.kpiId"></app-ps-kpi-card-chart-renderer>
+              [kpiId]="kpiData?.kpiDetail?.kpiId" [kpiDetails]="kpiData?.kpiDetail"></app-ps-kpi-card-chart-renderer>
           </div>
           <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="kpiData?.kpiDetail?.chartType ===  'bar-chart'">
             <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
