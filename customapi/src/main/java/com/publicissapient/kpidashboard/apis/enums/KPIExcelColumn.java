@@ -145,6 +145,9 @@ public enum KPIExcelColumn {
 	RELEASE_FREQUENCY("kpi73",
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
+	RELEASE_FREQUENCY_KANBAN("kpi74",
+			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
+
 	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Pipeline Name", "Weeks", "Environment")),
 	DEPLOYMENT_FREQUENCY_KANBAN("kpi183", Arrays.asList("Project Name", "Date", "Job Name", "Pipeline Name", "Weeks", "Environment")),
 
@@ -292,7 +295,8 @@ public enum KPIExcelColumn {
 							Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
 
 	FLOW_DISTRIBUTION("Kpi146",
-									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
+									Arrays.asList("Date")),
+	FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
 	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
 			"Priority", "Assignee", "Issue Status", "Release Tag Date (Latest)", "Dev Completion Date", "Completion Date")),
@@ -358,7 +362,7 @@ public enum KPIExcelColumn {
 
 	RELEASE_PLAN("kpi179", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
 			"Priority", "Assignee", "Issue Status", "Planned Completion Date (Due Date)")),
-	DEFECT_COUNT_BY("kpi178", Arrays.asList("Issue Id", "Issue Description", "Sprint Name", "Issue Type",
+	DEFECT_COUNT_BY("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
 			"Issue Status", "Root Cause List", "Priority", "Testing Phase", "Assignee")),
 
 	DEFECT_COUNT_BY_EXPORT("kpi178", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",

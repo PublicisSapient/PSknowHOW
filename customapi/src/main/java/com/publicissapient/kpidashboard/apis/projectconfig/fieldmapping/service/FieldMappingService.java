@@ -36,6 +36,8 @@ public interface FieldMappingService {
 
 	FieldMapping getFieldMapping(String projectToolConfigId);
 
+	FieldMapping getFieldMappingByBasicconfigId(String projectBasicConfigId);
+
 	FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping, ObjectId basicProjectConfigId);
 
 	/**
@@ -89,4 +91,6 @@ public interface FieldMappingService {
 	 *             IllegalAccessException
 	 */
 	boolean convertToFieldMappingAndCheckIsFieldPresent(List<FieldMappingResponse> fieldMappingResponseList, FieldMapping fieldMapping) throws IllegalAccessException;
+
+	void saveFieldMapping(FieldMapping fieldMapping);
 }

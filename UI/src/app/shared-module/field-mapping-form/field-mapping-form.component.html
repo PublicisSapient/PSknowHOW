@@ -82,8 +82,7 @@
 </form>
 <div class="save-container p-mt-5 p-mb-1">
     <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3" icon="pi pi-save"
-        iconPos="left" label="Save" (click)="save()" [disabled]=" form.invalid || !form.dirty"></button>
-</div>
+        iconPos="left" label="Save" (click)="save()" [disabled]=" (form.invalid && selectedToolConfig[0]?.toolName?.toLowerCase() === 'removingMandatoryValidationAsPartOfDTS-43148')|| !form.dirty"></button>
 
 <!-- Search Dialog -->
 <p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true"

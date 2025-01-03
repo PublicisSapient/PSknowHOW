@@ -130,6 +130,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	@Override
+	public FieldMapping getFieldMappingByBasicconfigId(String projectBasicConfigId) {
+		return fieldMappingRepository.findByProjectConfigId(projectBasicConfigId);
+	}
+
+	@Override
 	public FieldMapping addFieldMapping(String projectToolConfigId, FieldMapping fieldMapping,
 			ObjectId basicProjectConfigId) {
 
@@ -325,6 +330,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		return allfieldFound;
+	}
+
+	@Override
+	public void saveFieldMapping(FieldMapping fieldMapping) {
+		fieldMappingRepository.save(fieldMapping);
 	}
 
 	/**

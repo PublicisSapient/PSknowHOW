@@ -133,8 +133,8 @@ export class JiraConfigComponent implements OnInit {
     });
 
     Object.keys(this.selectedProject).forEach(key => {
-      if(levelDetails.map(x => x.id).includes(key)) {
-        let propertyName = levelDetails.filter(x=> x.id === key)[0].name;
+      if (levelDetails.map(x => x.id).includes(key)) {
+        let propertyName = levelDetails.filter(x => x.id === key)[0].name;
         this.selectedProject[propertyName] = this.selectedProject[key];
         delete this.selectedProject[key];
       }
@@ -316,7 +316,7 @@ export class JiraConfigComponent implements OnInit {
         }
         this.hideLoadingOnFormElement('jobName');
       } catch (error) {
-        console.log("getJenkinsJobNames in catch block ",error);
+        console.log("getJenkinsJobNames in catch block ", error);
         this.jenkinsJobNameList = [];
         this.hideLoadingOnFormElement('jobName');
         this.messenger.add({
@@ -486,8 +486,8 @@ export class JiraConfigComponent implements OnInit {
               });
             });
 
-            if(this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
-            || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure'){
+            if (this.urlParam?.toLowerCase() == 'jira' || this.urlParam?.toLowerCase() == 'jiratest'
+              || this.urlParam?.toLowerCase() == 'zephyr' || this.urlParam?.toLowerCase() == 'azure') {
               this.showAddNewBtn = false;
             }
           }
@@ -1035,7 +1035,7 @@ export class JiraConfigComponent implements OnInit {
                 label2: 'Use JQL Query',
                 id: 'queryEnabled',
                 model: 'queryEnabled',
-                onChangeEventHandler: this.jiraMethodChange,
+                onChangeEventHandler: (event) => this.jiraMethodChange(this, event),
                 validators: [],
                 containerClass: 'p-sm-12',
                 tooltip: ``,
@@ -1073,7 +1073,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'JIRA Configuration Template',
                 label2: '',
                 id: 'metadataTemplateCode',
-                onChangeEventHandler: this.jiraMethodChange,
+                onChangeEventHandler: (event) => this.jiraMethodChange(this, event),
                 validators: [],
                 containerClass: 'p-sm-6',
                 tooltip: ``,
@@ -2422,7 +2422,7 @@ export class JiraConfigComponent implements OnInit {
               const fakeEvent = {
                 checked: this.queryEnabled
               };
-              this.jiraMethodChange(fakeEvent, self);
+              this.jiraMethodChange(self, fakeEvent);
             }
           } else if (obj === 'team') {
             if (this.toolForm && this.toolForm.controls[obj]) {
@@ -2462,9 +2462,8 @@ export class JiraConfigComponent implements OnInit {
     self.fetchBoards(self);
   }
 
-  jiraMethodChange(event = null, self) {
+  jiraMethodChange(self, event = null) {
     this.submitted = false;
-    const group = {};
     if (self.urlParam === 'Jira') {
       if (event && event.checked) {
         self.toolForm.controls['boards'].setValue([]);
@@ -2491,6 +2490,10 @@ export class JiraConfigComponent implements OnInit {
       }
     }
 
+    this.fillToolForm(self);
+  }
+
+  fillToolForm(self) {
     if (self.selectedToolConfig && self.selectedToolConfig.length) {
       for (const obj in self.selectedToolConfig[0]) {
         if (obj !== 'queryEnabled') {
@@ -2503,6 +2506,7 @@ export class JiraConfigComponent implements OnInit {
       }
     }
   }
+
   // convenience getter for easy access to form fields
   get tool() {
     return this.toolForm.controls;
@@ -2804,7 +2808,12 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getJiraTemplate() {
-    const isKanban = this.selectedProject?.type?.toLowerCase() === 'kanban' ? true : false;
+    let isKanban;
+    if (this.selectedProject?.type) {
+      isKanban = this.selectedProject?.type?.toLowerCase() === 'kanban' ? true : false;
+    } else if(this.selectedProject?.Type) {
+      isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
+    }
     this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp => {
       this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
@@ -2873,12 +2882,12 @@ export class JiraConfigComponent implements OnInit {
 
   redirectToConnections() {
     const currProjId = this.sharedService.getSelectedProject();
-    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], {queryParams: { tab: 1, toolName: this.formTitle }});
+    this.router.navigate([`./dashboard/Config/ConfigSettings/${currProjId.id}`], { queryParams: { tab: 1, toolName: this.formTitle } });
   }
 
   handleToolConfiguration(type?) {
     this.isConfigureTool = true;
-    if(type == 'new'){
+    if (type == 'new') {
       this.isEdit = false;
     }
     setTimeout(() => {

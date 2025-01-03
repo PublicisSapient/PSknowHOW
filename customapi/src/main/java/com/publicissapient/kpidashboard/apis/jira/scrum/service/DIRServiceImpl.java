@@ -27,22 +27,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -51,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
@@ -81,6 +81,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -113,7 +114,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_INJECTION_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_INJECTION_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.DEFECT_INJECTION_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
@@ -237,8 +239,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
 					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
 
-					KPIExcelUtility.populateDirExcelData(totalStoryIdList, defectList,
-							excelData, issueMapping, fieldMapping, customApiConfig);
+					KPIExcelUtility.populateDirExcelData(totalStoryIdList, defectList, excelData, issueMapping,
+							fieldMapping, customApiConfig);
 				}
 			} else {
 				defectInjectionRateForCurrentLeaf = 0.0d;
@@ -261,7 +263,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			trendValueList.add(dataCount);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_INJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(
+				KPIExcelColumn.DEFECT_INJECTION_RATE.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
 	}
 
 	/**
@@ -299,7 +302,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI14(),KPICode.DEFECT_INJECTION_RATE.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI14(), KPICode.DEFECT_INJECTION_RATE.getKpiId());
 	}
 }

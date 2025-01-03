@@ -3046,7 +3046,7 @@
     "kpiName" : "Kpi Maturity" ,
     "isDeleted" : "False" ,
     "defaultOrder" : 1 ,
-    "kpiCategory" : "Kpi Maturity" ,
+    "kpiCategory" : "KPI Maturity" ,
     "isAdditionalFilterSupport" : false ,
     "calculateMaturity" : false ,
     "kanban" : false

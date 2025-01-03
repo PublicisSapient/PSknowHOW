@@ -59,6 +59,11 @@ export class HelperService {
                 downloadJson.selectedMap[filterData[0].label].push(filterData[0].filterData[i].nodeId);
             }
         }
+
+        if(isKanban === true){
+                     downloadJson['selectedMap']['sprint'] = [];
+                 }
+
         return this.httpService.downloadExcel(downloadJson, kpiId);
 
     }
@@ -87,18 +92,19 @@ export class HelperService {
                 if (obj.videoLink) {
                     delete obj.videoLink;
                 }
-                if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
-                    if (obj.isEnabled && obj.shown) {
-                        if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
-                            kpiRequestObject.kpiList.push(obj)
-                        }
-                    }
-                } 
-                else if (visibleKpis.includes(obj.kpiId)) {
-                    if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
-                        kpiRequestObject.kpiList.push(obj)
-                    }
-                }
+                // if (obj.hasOwnProperty('isEnabled') && obj.hasOwnProperty('shown')) {
+                //     if (obj.isEnabled && obj.shown) {
+                //         if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                //             kpiRequestObject.kpiList.push(obj)
+                //         }
+                //     }
+                // }
+                // else if (visibleKpis.includes(obj.kpiId)) {
+                //     if (!kpiRequestObject.kpiList.filter(kpi => kpi.kpiId === obj.kpiId)?.length) {
+                //         kpiRequestObject.kpiList.push(obj)
+                //     }
+                // }
+                kpiRequestObject.kpiList.push(obj);
             }
         }
 
@@ -886,8 +892,8 @@ export class HelperService {
     deepEqual(obj1: any, obj2: any): boolean {
         if (typeof obj1 === 'string' && typeof obj2 === 'string' && obj1.toLowerCase() === obj2.toLowerCase()) {
             return true;
-        } 
-        
+        }
+
         if (obj1 === obj2) {
             return true;
         }
@@ -929,19 +935,19 @@ export class HelperService {
         if(!value){
             return '-';
           }
-      
+
           let date:any;
           let time = ''
-      
+
           if(typeof value === 'string'){
             date = new Date(value);
             const regex = /^(\d{1,2}-(\d{2}|[a-zA-Z]{3})-\d{4}|\d{4}-\d{2}-\d{2})$/i
             matches = regex.test(value.trim());
-          } 
+          }
           if(value instanceof Date){
             date = value;
           }
-      
+
           if(isNaN(date.getTime())){
             return '-';
           }else{
@@ -951,7 +957,38 @@ export class HelperService {
           const year = date.getFullYear();
           const month = monthNames[date.getMonth()];
           const day = String(date.getDate()).padStart(2, '0');
-         
+
           return `${day}-${month}-${year} ${(matches?'':time)}`;
       }
+
+      aggregationCycleTime(data) {
+        // Object to store intermediate calculations
+        const resultData = {};
+
+        // Process each filter
+        data.forEach(filter => {
+            filter.data.forEach(record => {
+                const label = record.label;
+                if (!resultData[label]) {
+                    resultData[label] = { totalValue1: 0, weightedValue: 0 };
+                }
+                resultData[label].totalValue1 += record.value1;
+                resultData[label].weightedValue += record.value * record.value1;
+            });
+        });
+
+        // Construct the aggregated response
+        const aggregatedResponse = {
+            filter1: data[0]['filter1'],
+            data: Object.entries(resultData).map(([label, values]) => ({
+                label,
+                value: values['totalValue1'] > 0 ? Math.round(values['weightedValue'] / values['totalValue1']) : 0,
+                value1: values['totalValue1'],
+                unit: "d",
+                unit1: "issues"
+            }))
+        };
+
+        return aggregatedResponse;
+    }
 }

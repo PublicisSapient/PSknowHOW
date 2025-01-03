@@ -107,8 +107,8 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(2, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
 
 	@Test
@@ -682,8 +682,8 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(3, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
 
 	@Test
@@ -716,8 +716,8 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(3, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
 
 	@Test
@@ -752,8 +752,8 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(4, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 
 	}
 
@@ -786,8 +786,8 @@ public class KPIExcelUtilityTest {
 		excelUtility.populateFTPRExcelData(storyIds, jiraIssues, kpiExcelData, issueData, defects, customApiConfig, fieldMapping);
 		// Assert
 		assertEquals(3, kpiExcelData.size());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(0).getSprintName());
-		assertEquals("TEST| KnowHOW|PI_10|Opensource", kpiExcelData.get(1).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(0).getSprintName());
+		assertEquals("TEST| KnowHOW|PI_10|Opensource_Scrum Project", kpiExcelData.get(1).getSprintName());
 	}
 
 	@Test

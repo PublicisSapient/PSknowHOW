@@ -115,3 +115,7 @@ color: var(--color-black-dark)
 .blue-hover-link:hover {
   color: var(--color-blue)
 }
+
+.parent_span {
+  color: green;
+}
