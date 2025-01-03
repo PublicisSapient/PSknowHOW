@@ -296,14 +296,15 @@ export class KpiHelperService {
     return { chartData: chartData };
   }
 
-  tabularKPINonRawData(inputData) {
+  tabularKPINonRawData(inputData, issueData = []) {
     const chartData: any = [];
 
     inputData?.forEach((group: any, index) => {
       chartData.push({
         category: group.name,
         value: group.unit?.length ? group.unit === 'day' || group.unit === 'SP' ? this.convertToHoursIfTime(group.kpiValue, group.unit) : group.kpiValue : group.kpiValue,
-        icon: this.iconObj[group.name]
+        icon: this.iconObj[group.name],
+        totalIssues: issueData.length
       });
     });
 
@@ -376,13 +377,13 @@ export class KpiHelperService {
         returnDataSet = this.tabularKPI(inputData, color);
         break;
       case 'tableNonRawData':
-        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1);
+        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1, inputData?.issueData);
         break;
       case 'grouped-bar-chart':
         returnDataSet = this.groupedBarChartData(inputData, color);
         break;
       case 'tabular-with-donut-chart':
-        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1);
+        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1, inputData?.issueData);
         break;
       default:
         break;

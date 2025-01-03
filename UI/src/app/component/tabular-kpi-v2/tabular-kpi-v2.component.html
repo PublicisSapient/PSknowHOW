@@ -7,7 +7,7 @@
         </div>
         <div class="data">
             <p class="tabularKPI-column-header p-mb-0">{{ item.category }}</p>
-            <p class="tabularKPI-column-value p-mt-0">{{ item.value }}</p>
+            <p class="tabularKPI-column-value p-mt-0">{{ item.category === 'Issue Count' || item.category === 'Issue at Risk'? item.value + '/' + item.totalIssues : item.value}}</p>
         </div>
     </div>
 </div>
