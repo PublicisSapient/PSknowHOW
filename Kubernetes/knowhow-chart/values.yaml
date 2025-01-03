@@ -37,7 +37,7 @@ AzureBoardApp:
 
 mongodb:
   enabled: true
-  volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
+  volumeType: "efs" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
   storage: "16Gi"
   accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
 
@@ -47,7 +47,7 @@ mongodb:
 
   # AWS EFS-specific options
   efs:
-    fileSystemId: "<your-efs-filesystem-id>" # Replace with your AWS EFS FileSystemId
+    volumeHandle: "<your-efs-filesystem-id>" # Replace with your AWS EFS FileSystemId
     storageClassName: ""  # Specify the storage class name for EFS (optional)
   
   # AzureDisk-specific options

@@ -13,7 +13,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: {{ .Values.mongodb.efs.fileSystemId }}
+    volumeHandle: {{ .Values.mongodb.efs.volumeHandle }}
 {{- end }}
 
 {{- if and .Values.mongodb.enabled (eq .Values.mongodb.volumeType "azureDisk") }}
