@@ -239,7 +239,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 							- leadTimeValidationDataForKanban.getIntakeDate().getMillis();
 					openToTriageDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					openToTriageDay.add("NA");
+					openToTriageDay.add(" ");
 				}
 				if (leadTimeValidationDataForKanban.getTriageDate() != null
 						&& leadTimeValidationDataForKanban.getCompletedDate() != null) {
@@ -247,7 +247,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 							- leadTimeValidationDataForKanban.getTriageDate().getMillis();
 					triageToCompleteDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					triageToCompleteDay.add("NA");
+					triageToCompleteDay.add(" ");
 				}
 				if (leadTimeValidationDataForKanban.getCompletedDate() != null
 						&& leadTimeValidationDataForKanban.getLiveDate() != null) {
@@ -255,7 +255,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 							- leadTimeValidationDataForKanban.getCompletedDate().getMillis();
 					completeToLiveDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					completeToLiveDay.add("NA");
+					completeToLiveDay.add(" ");
 				}
 				if (leadTimeValidationDataForKanban.getIntakeDate() != null
 						&& leadTimeValidationDataForKanban.getLiveDate() != null) {
@@ -263,7 +263,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 							- leadTimeValidationDataForKanban.getIntakeDate().getMillis();
 					openToLiveDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					openToLiveDay.add("NA");
+					openToLiveDay.add(" ");
 				}
 
 			}
