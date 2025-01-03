@@ -176,7 +176,7 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
 
 				filterDataBasedOnJobAndRangeWise(kpiRequest, trendValueMap, codeBuildTimeInfo, dataCountAggList,
-						projectNodeId, buildMapJobWise);
+						node, buildMapJobWise);
 
 				List<DataCount> aggData = calculateAggregatedRangeWise(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(),
 						dataCountAggList);
@@ -200,11 +200,10 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 	}
 
 	private void filterDataBasedOnJobAndRangeWise(KpiRequest kpiRequest, Map<String, List<DataCount>> trendValueMap,
-			CodeBuildTimeInfo codeBuildTimeInfo, List<DataCount> dataCountAggList, String projectNodeId,
-			Map<String, List<Build>> buildMapJobWise) {
+												  CodeBuildTimeInfo codeBuildTimeInfo, List<DataCount> dataCountAggList, Node node,
+												  Map<String, List<Build>> buildMapJobWise) {
 
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
-
+		String projectName = node.getProjectFilter().getName();
 		for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
 			String jobName;
 			List<Build> buildList = entry.getValue();
@@ -225,7 +224,7 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 						dateRange, date, codeBuildTimeInfo, jobName, projectName);
 
 				populateProjectFilterWiseDataMap(projectWiseBuildTimeCountMap, trendValueMap, projectName,
-						projectNodeId, date, dataCountAggList);
+						node.getProjectFilter().getId(), date, dataCountAggList);
 
 				currentDate = getNextRangeDate(kpiRequest, currentDate);
 

@@ -14,38 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.publicissapient.kpidashboard.apis.datamigration.repository;
 
-package com.publicissapient.kpidashboard.common.model.rbac;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.mongodb.core.index.Indexed;
+import com.publicissapient.kpidashboard.apis.datamigration.model.MigrationLockLog;
 
-@Getter
-@Setter
-public class AccessItem {
-
-	@Indexed(unique = true)
-	private String itemId;
-	private String itemName;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-
-		AccessItem that = (AccessItem) o;
-
-		return itemId != null ? itemId.equals(that.itemId) : that.itemId == null;
-	}
-
-	@Override
-	public int hashCode() {
-		return itemId != null ? itemId.hashCode() : 0;
-	}
+@Repository
+public interface MigrationLogRepository extends MongoRepository<MigrationLockLog, ObjectId> {
 
 }

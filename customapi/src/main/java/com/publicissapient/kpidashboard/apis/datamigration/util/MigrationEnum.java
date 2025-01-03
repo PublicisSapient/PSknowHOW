@@ -14,38 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.publicissapient.kpidashboard.apis.datamigration.util;
 
-package com.publicissapient.kpidashboard.common.model.rbac;
+public enum MigrationEnum {
+    MIGRATION_STEP("migration step");
+    // @formatter:on
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.mongodb.core.index.Indexed;
+    private final String step;
 
-@Getter
-@Setter
-public class AccessItem {
+    MigrationEnum(String step) {
+        this.step = step;
+    }
 
-	@Indexed(unique = true)
-	private String itemId;
-	private String itemName;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-
-		AccessItem that = (AccessItem) o;
-
-		return itemId != null ? itemId.equals(that.itemId) : that.itemId == null;
-	}
-
-	@Override
-	public int hashCode() {
-		return itemId != null ? itemId.hashCode() : 0;
-	}
-
-}
+    }

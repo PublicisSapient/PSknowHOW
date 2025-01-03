@@ -191,16 +191,15 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	/**
 	 * Prepare sonar key name considering multiple project can have same sonar key
 	 *
-	 * @param projectNodeId
-	 *            projectNodeId
+	 * @param projectName
+	 *            projectName
 	 * @param sonarKeyName
 	 *            sonarKeyName
 	 * @param branchName
 	 *            sonar branch name
 	 * @return modified keyname
 	 */
-	public String prepareSonarKeyName(String projectNodeId, String sonarKeyName, String branchName) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+	public String prepareSonarKeyName(String projectName, String sonarKeyName, String branchName) {
 		String sonarKey = sonarKeyName + CommonConstant.ARROW + projectName;
 		if (StringUtils.isNotEmpty(branchName)) {
 			sonarKey = sonarKeyName + CommonConstant.ARROW + branchName + CommonConstant.ARROW + projectName;
