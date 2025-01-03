@@ -214,7 +214,7 @@ export class ExportExcelComponent implements OnInit {
 
   generateColumnFilterData() {
     this.excludeColumnFilter = ['Linked Defect','Linked Stories'].map(item => item.toLowerCase());
-    this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Create Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
+    this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
     if (this.modalDetails['tableValues'].length > 0) {
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
