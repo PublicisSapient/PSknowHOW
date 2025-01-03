@@ -30,13 +30,13 @@ DevOpsApp:
   enabled: true
 
 AzurepiPelinerepoApp:
-  enabled: false
+  enabled: true
 
 AzureBoardApp:
-  enabled: false
+  enabled: true
 
 mongodb:
-  enabled: false
+  enabled: true
   volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
   storage: "16Gi"
   accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
