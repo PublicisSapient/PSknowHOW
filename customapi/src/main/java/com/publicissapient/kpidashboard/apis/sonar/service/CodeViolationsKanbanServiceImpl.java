@@ -29,12 +29,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -82,6 +86,11 @@ public class CodeViolationsKanbanServiceImpl
 			Constant.CODE_SMELL, "code smells"
 	);
 
+	private static final String VIOLATION_TYPES = "RadioBtn";
+	private static final String JOB_FILTER = "Select a filter";
+	private static final String SEVERITY = "Severity";
+	private static final String TYPE = "Type";
+
 
 	@Override
 	public String getQualifierType() {
@@ -120,11 +129,23 @@ public class CodeViolationsKanbanServiceImpl
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.CODE_VIOLATIONS_KANBAN);
 
+		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((statusType, dataCounts) -> {
+			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
+					.collect(Collectors.groupingBy(DataCount::getData));
+			statusTypeProjectWiseDc.put(statusType, projectWiseDc);
+		});
+
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
-		trendValuesMap.forEach((key, datewiseDataCount) -> {
+		statusTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
-			dataCountGroup.setFilter(key);
-			dataCountGroup.setValue(datewiseDataCount);
+			List<DataCount> dataList = new ArrayList<>();
+			projectWiseDc.forEach((key, value) -> dataList.addAll(value));
+			// split for filters
+			String[] issueFilter = issueType.split("#");
+			dataCountGroup.setFilter1(issueFilter[0]);
+			dataCountGroup.setFilter2(issueFilter[1]);
+			dataCountGroup.setValue(dataList);
 			dataCountGroups.add(dataCountGroup);
 		});
 
@@ -183,6 +204,7 @@ public class CodeViolationsKanbanServiceImpl
 	private void kpiWithFilter(Map<String, List<SonarHistory>> sonarDetailsForAllProjects, Map<String, Node> mapTmp,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
 		List<KPIExcelData> excelData = new ArrayList<>();
+		Set<String> overAllJoblist = new HashSet<>();
 		sonarDetailsForAllProjects.forEach((projectName, projectData) -> {
 			if (CollectionUtils.isNotEmpty(projectData)) {
 				List<String> projectList = new ArrayList<>();
@@ -206,6 +228,7 @@ public class CodeViolationsKanbanServiceImpl
 
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 				}
+				overAllJoblist.addAll(projectList);
 				mapTmp.get(projectName).setValue(projectWiseDataMap);
 				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					KPIExcelUtility.populateSonarViolationsExcelData(mapTmp.get(projectName).getName(), projectList,
@@ -213,15 +236,19 @@ public class CodeViolationsKanbanServiceImpl
 				}
 			}
 		});
-
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(VIOLATION_TYPES,
+				new HashSet<>(Arrays.asList(SEVERITY, TYPE)));
+		IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(JOB_FILTER, overAllJoblist);
+		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+		kpiElement.setFilters(iterationKpiFilters);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_VIOLATIONS_KANBAN.getColumns());
 
 	}
 
 	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectNodeId,
-									   List<String> projectList, List<List<String>> violations, Map<String, List<DataCount>> projectWiseDataMap,
-									   List<String> versionDate) {
+			List<String> projectList, List<List<String>> violations, Map<String, List<DataCount>> projectWiseDataMap,
+			List<String> versionDate) {
 
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseViolationsList = new ArrayList<>();
@@ -245,13 +272,13 @@ public class CodeViolationsKanbanServiceImpl
 					.mapToLong(val -> val).sum();
 
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-			String kpiGroup = keyName + "#" + "Severity";
+			String kpiGroup = keyName + "#" + SEVERITY;
 			DataCount dcObjSeverety = getDataCountObject(sonarViolations, sonarViolationsHoverMapBySeverity,
 					projectName, date, kpiGroup);
 			projectWiseDataMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dcObjSeverety);
 			sonarViolations = sonarViolationsHoverMapByType.values().stream().map(Integer.class::cast)
 					.mapToLong(val -> val).sum();
-			kpiGroup = keyName + "#" + "Type";
+			kpiGroup = keyName + "#" + TYPE;
 			DataCount dcObjType = getDataCountObject(sonarViolations, sonarViolationsHoverMapByType,
 					projectName, date, kpiGroup);
 			projectWiseDataMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dcObjType);
@@ -267,13 +294,13 @@ public class CodeViolationsKanbanServiceImpl
 				calculateKpiValue(dateWiseViolationsList, KPICode.CODE_VIOLATIONS.getKpiId()),
 				calculateKpiValueForIntMap(globalSonarViolationsHoverMapBySeverity, KPICode.CODE_VIOLATIONS.getKpiId()),
 				projectName, date);
-		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL+"#"+"Severity", k -> new ArrayList<>()).add(dcObj);
+		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL + "#" + SEVERITY, k -> new ArrayList<>()).add(dcObj);
 
 		dcObj = getDataCountObject(
 				calculateKpiValue(dateWiseViolationsList, KPICode.CODE_VIOLATIONS.getKpiId()),
 				calculateKpiValueForIntMap(globalSonarViolationsHoverMapByType, KPICode.CODE_VIOLATIONS.getKpiId()),
 				projectName, date);
-		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL+"#"+"Type", k -> new ArrayList<>()).add(dcObj);
+		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL+"#"+TYPE, k -> new ArrayList<>()).add(dcObj);
 	}
 
 	/**
@@ -310,7 +337,7 @@ public class CodeViolationsKanbanServiceImpl
 	 * @return             A DataCount object populated with the provided values.
 	 */
 	public DataCount getDataCountObject(Long value, Map<String, Object> hoverValues, String projectName, String date,
-										String kpiGroup) {
+			String kpiGroup) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);

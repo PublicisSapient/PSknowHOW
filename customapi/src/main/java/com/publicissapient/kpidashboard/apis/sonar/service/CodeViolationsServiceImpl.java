@@ -25,12 +25,16 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -81,6 +85,11 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 			Constant.VULNERABILITIES, "vulnerabilities",
 			Constant.CODE_SMELL, "code smells"
 	);
+	
+	private static final String VIOLATION_TYPES = "RadioBtn";
+	private static final String JOB_FILTER = "Select a filter";
+	private static final String SEVERITY = "Severity";
+	private static final String TYPE = "Type";
 
 	public void setCustomApiConfig(CustomApiConfig customApiConfig) {
 		this.customApiConfig = customApiConfig;
@@ -129,7 +138,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		statusTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
 			List<DataCount> dataList = new ArrayList<>();
-			projectWiseDc.entrySet().forEach(trend -> dataList.addAll(trend.getValue()));
+			projectWiseDc.forEach((key, value) -> dataList.addAll(value));
 			// split for filters
 			String[] issueFilter = issueType.split("#");
 			dataCountGroup.setFilter1(issueFilter[0]);
@@ -144,7 +153,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
-
+		Set<String> overAllJoblist = new HashSet<>();
 		getSonarHistoryForAllProjects(pList,
 				getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
 				.forEach((projectNodeId, projectData) -> {
@@ -173,6 +182,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 
 							endDateTime = endDateTime.minusWeeks(1);
 						}
+						overAllJoblist.addAll(projectList);
 						tempMap.get(projectNodeId).setValue(projectWiseDataMap);
 						if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 							KPIExcelUtility.populateSonarViolationsExcelData(
@@ -181,7 +191,11 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 						}
 					}
 				});
-
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(VIOLATION_TYPES,
+				new HashSet<>(Arrays.asList(SEVERITY, TYPE)));
+		IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(JOB_FILTER, overAllJoblist);
+		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+		kpiElement.setFilters(iterationKpiFilters);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_VIOLATIONS.getColumns());
 	}
@@ -280,13 +294,13 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 					.mapToLong(val -> val).sum();
 
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-			String kpiGroup = keyName + "#" + "Severity";
+			String kpiGroup = keyName + "#" + SEVERITY;
 			DataCount dcObjSeverety = getDataCountObject(sonarViolations, sonarViolationsHoverMapBySeverity,
 					projectName, date, kpiGroup);
 			projectWiseDataMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dcObjSeverety);
 			sonarViolations = sonarViolationsHoverMapByType.values().stream().map(Integer.class::cast)
 					.mapToLong(val -> val).sum();
-			kpiGroup = keyName + "#" + "Type";
+			kpiGroup = keyName + "#" + TYPE;
 			DataCount dcObjType = getDataCountObject(sonarViolations, sonarViolationsHoverMapByType,
 					projectName, date, kpiGroup);
 			projectWiseDataMap.computeIfAbsent(kpiGroup, k -> new ArrayList<>()).add(dcObjType);
@@ -302,13 +316,13 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 				calculateKpiValue(dateWiseViolationsList, KPICode.CODE_VIOLATIONS.getKpiId()),
 				calculateKpiValueForIntMap(globalSonarViolationsHoverMapBySeverity, KPICode.CODE_VIOLATIONS.getKpiId()),
 				projectName, date);
-		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL+"#"+"Severity", k -> new ArrayList<>()).add(dcObj);
+		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL+"#"+SEVERITY, k -> new ArrayList<>()).add(dcObj);
 
 		dcObj = getDataCountObject(
 				calculateKpiValue(dateWiseViolationsList, KPICode.CODE_VIOLATIONS.getKpiId()),
 				calculateKpiValueForIntMap(globalSonarViolationsHoverMapByType, KPICode.CODE_VIOLATIONS.getKpiId()),
 				projectName, date);
-		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL+"#"+"Type", k -> new ArrayList<>()).add(dcObj);
+		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL+"#"+TYPE, k -> new ArrayList<>()).add(dcObj);
 	}
 
 	/**
