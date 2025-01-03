@@ -1,17 +1,17 @@
-{{- if .Values.mongodb.enabled }}
+{{- if .Values.jira-app.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb
+  name: jira-processor
   labels:
-    app: mongodb
+    app: jira-processor
 spec:
   type: {{ .Values.service.backendtype }}
   ports:
-    - port: 27017
+    - port: 50008
       targetPort: http
       protocol: TCP
       name: http
   selector:
-    app: mongodb
+    app: jira-processor
 {{- end }}
