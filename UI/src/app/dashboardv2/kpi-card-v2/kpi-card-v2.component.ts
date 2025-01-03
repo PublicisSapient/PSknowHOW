@@ -141,7 +141,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.onOpenFieldMappingDialog();
         },
-        disabled: this.disableSettings || this.service.getSelectedType()?.toLowerCase() === 'kanban'
+        disabled: this.disableSettings
       },
       {
         label: 'List View',
@@ -284,7 +284,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const selectedTab = this.service.getSelectedTab()?.toLowerCase();
     const selectedType = this.service.getSelectedType()?.toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedType === 'scrum' && selectedTrend.length == 1 || selectedTab === 'release') {
+    if (selectedTrend.length == 1 || selectedTab === 'release') {
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
