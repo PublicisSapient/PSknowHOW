@@ -2797,6 +2797,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return maxSprints;
   }
 
+/**
+   * Calculates the number of business days between two Date objects, inclusive.
+   * Business days are defined as weekdays (Monday to Friday), excluding weekends.
+   * Returns 0 if the second date is earlier than the first date.
+   * 
+   * @param dDate1 - The start date as a Date object.
+   * @param dDate2 - The end date as a Date object.
+   * @returns The number of business days between the two dates.
+   * @throws Returns 0 if dDate2 is earlier than dDate1.
+   */
   calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     let iWeeks; let iDateDiff; let iAdjust = 0;
     if (dDate2 < dDate1) {
@@ -2847,6 +2857,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpi?.kpiDetail?.yaxisLabel;
   }
 
+/**
+   * Determines the CSS class for column width based on the provided KPI width percentage.
+   * Accepts specific width values and defaults to 50% if an unrecognized value is given.
+   * @param kpiwidth - The width percentage (100, 50, 66, 33) to determine the column class.
+   * @returns A string representing the corresponding CSS class for the column width.
+   * No exceptions are thrown.
+   */
   getkpiwidth(kpiwidth) {
     let retValue = '';
 
