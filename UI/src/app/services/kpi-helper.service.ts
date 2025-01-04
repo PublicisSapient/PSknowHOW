@@ -207,19 +207,21 @@ export class KpiHelperService {
           test['category2'] = 'Story Points';
           test['color2'] = color[1];
         }
+
+
+        test['color'] = color;
+
+        test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
+          if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
+            return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+          } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
+            return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+          } else {
+            return acc;
+          }
+        }, 0) + ' ' + dataGroupElem.unit;
+
       });
-
-      test['color'] = color;
-
-      test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
-        if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
-          return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
-        } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
-          return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
-        } else {
-          return acc;
-        }
-      }, 0);
 
       chartData['data'].push(test);
     });
@@ -323,8 +325,8 @@ export class KpiHelperService {
     inputData?.forEach((group: any, index) => {
       chartData.push({
         category: group.name,
-        value: group.unit && (group.unit === 'day' || group.unit === 'SP') ? 
-        this.convertToHoursIfTime(group.kpiValue, group.unit) : !isNaN(group.kpiValue1) ? group.kpiValue1 + '/' + group.kpiValue : group.kpiValue,
+        value: group.unit && (group.unit === 'day' || group.unit === 'SP') ?
+          this.convertToHoursIfTime(group.kpiValue, group.unit) : !isNaN(group.kpiValue1) ? group.kpiValue1 + '/' + group.kpiValue : group.kpiValue,
         icon: this.iconObj[group.name],
         totalIssues: issueData.length
       });
