@@ -1,0 +1,61 @@
+{{- if .Values.DevOpsApp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-processor
+  labels:
+    app: devops-processor
+spec:
+  type: {{ .Values.service.backendtype }}
+  ports:
+    - name: zephyr
+      port: 50001
+      protocol: TCP
+      targetPort: 50001
+    - name: bamboo
+      port: 50002
+      protocol: TCP
+      targetPort: 50002
+    - name: bitbucket
+      port: 50003
+      protocol: TCP
+      targetPort: 50003
+    - name: excel
+      port: 50006
+      protocol: TCP
+      targetPort: 50006
+    - name: jenkins
+      port: 50007
+      protocol: TCP
+      targetPort: 50007
+    - name: sonar
+      port: 50011
+      protocol: TCP
+      targetPort: 50011
+    - name: teamcity
+      port: 50012
+      protocol: TCP
+      targetPort: 50012
+    - name: gitlab
+      port: 50014
+      protocol: TCP
+      targetPort: 50014
+    - name: github
+      port: 50019
+      protocol: TCP
+      targetPort: 50019
+    - name: jiratest
+      port: 50020
+      protocol: TCP
+      targetPort: 50020
+    - name: githubaction
+      port: 50022
+      protocol: TCP
+      targetPort: 50022
+    - name: argocd
+      port: 50023
+      protocol: TCP
+      targetPort: 50023
+  selector:
+    app: devops-processor
+{{- end }}

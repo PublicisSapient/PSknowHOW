@@ -1,0 +1,17 @@
+{{- if .Values.mongodb.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb
+spec:
+  type: {{ .Values.service.backendtype }}
+  ports:
+    - port: 27017
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: mongodb
+{{- end }}
