@@ -116,6 +116,12 @@ export class GroupedBarChartComponent implements OnInit {
               Z`;
     };
 
+    // Define the div for the tooltip
+    const div = d3.select(this.elem).select('#chart').append('div')
+      .attr('class', 'tooltip')
+      .style('display', 'none')
+      .style('opacity', 0);
+
     // Bar 1 (value1)
     groups.append("path")
       .attr("class", "bar")
@@ -130,7 +136,32 @@ export class GroupedBarChartComponent implements OnInit {
           );
         }
       })
-      .attr('fill', (d, i) => d.color[0]);
+      .attr('fill', (d, i) => d.color[0])
+      .on('mouseover', (event, d) => {
+        console.log(event)
+        div.style('display', 'block')
+          .style('top', `${event.clientY / 2}px`)
+          .style('left', `${event.clientX}px`)
+          .style('opacity', 1)
+          .html(
+            `<strong>${d.category}:</strong> ${d.value1}`
+          );
+      })
+      // .on('mousemove', (event, d) => {
+      //   div
+      //     .style('top', `${event.clientY / 2}px`)
+      //     .style('left', `${event.clientX}px`)
+      //     .style('opacity', 1);
+      // })
+      .on('mouseout', function (d) {
+        div.transition()
+          .duration(500)
+          .style('display', 'none')
+          .style('opacity', 0);
+      })
+      .transition()
+      .delay((d) => 200)
+      .duration(800)
 
     // Bar 2 (value2)
     groups.append("path")
@@ -146,7 +177,32 @@ export class GroupedBarChartComponent implements OnInit {
           );
         }
       })
-      .attr('fill', (d, i) => d.color[1]);
+      .attr('fill', (d, i) => d.color[1])
+      .on('mouseover', (event, d) => {
+        console.log(event)
+        div.style('display', 'block')
+          .style('top', `${event.clientY / 2}px`)
+          .style('left', `${event.clientX}px`)
+          .style('opacity', 1)
+          .html(
+            `<strong>${d.category}:</strong> ${d.value2}`
+          );
+      })
+      .on('mousemove', (event, d) => {
+        div
+          .style('top', `${event.clientY / 2}px`)
+          .style('left', `${event.clientX}px`)
+          .style('opacity', 1);
+      })
+      .on('mouseout', function (d) {
+        div.transition()
+          .duration(500)
+          .style('display', 'none')
+          .style('opacity', 0);
+      })
+      .transition()
+      .delay((d) => 200)
+      .duration(800);
 
     svg.selectAll('.yAxisG path, .yAxisG line, .xAxisG path, .xAxisG line')
       .attr('stroke', '#ccc');

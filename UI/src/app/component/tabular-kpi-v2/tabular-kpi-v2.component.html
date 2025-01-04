@@ -7,7 +7,7 @@
         </div>
         <div class="data">
             <p class="tabularKPI-column-header p-mb-0">{{ item.category }}</p>
-            <p class="tabularKPI-column-value p-mt-0">{{ item.category === 'Issue Count' || item.category === 'Issue at Risk'? item.value + '/' + item.totalIssues : item.value}}</p>
+            <p class="tabularKPI-column-value p-mt-0">{{ item.value}}</p>
         </div>
     </div>
 </div>
@@ -17,7 +17,7 @@
             <p class="tabularKPI-column-header p-my-0">{{ item.category }}</p>
         </div>
         <div class="p-col-8 donut-container">
-            <app-semi-circle-donut-chart [value]="item.value" [kpiId]="kpiId" [totalIssues]="item.totalIssues"  [color]="item.color"></app-semi-circle-donut-chart>
+            <app-semi-circle-donut-chart [value]="item.value.split('/')[0]" [kpiId]="kpiId" [totalIssues]="item.value.split('/')[1]"  [color]="item.color"></app-semi-circle-donut-chart>
         </div>
     </div>
 </div>
