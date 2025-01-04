@@ -183,6 +183,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     ];
   }
 
+/**
+   * Handles various actions based on the event type.
+   * Prepares data, opens dialogs, exports data, or shows comments as needed.
+   * 
+   * @param {any} event - The event object containing action indicators.
+   * @returns {void}
+   */
   handleAction(event:any){
      if (event.listView) {
           this.prepareData();
@@ -551,6 +558,15 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
   //#region new card
 
+/**
+     * Handles changes in filter selection, updates the issue data based on the selected filters,
+     * and prepares the chart data accordingly. It distinguishes between cases where the selected 
+     * key object has a specific category value.
+     * 
+     * @param event - The event object containing filter selection details.
+     * @returns void
+     * @throws None
+     */
   onFilterChange(event) {
     const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
     if (selectedKeyObj && selectedKeyObj['Category'] !== 'Value') {
@@ -584,6 +600,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     this.selectedButtonValue = selectedKeyObj;
   }
 
+/**
+     * Resets the filter by restoring the original issue data and preparing the chart data.
+     * 
+     * @param {void} No parameters are accepted.
+     * @returns {void} This function does not return a value.
+     * @throws {Error} Throws an error if chart data preparation fails.
+     */
   onFilterClear() {
     const filterIssues = this.cardData.issueData;
     this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
@@ -594,7 +617,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   applyDynamicfilter(data: any[], filterArr: any) {
-    console.log(filterArr);
     let filteredData = data;
     // cleanup empty or null or undefined props
     filterArr = this.sanitizeArray(filterArr);
@@ -608,9 +630,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           }
         });
         if (Array.isArray(filterObj[0].value)) {
-          filteredData = filteredData.filter(issue => filterObj[0].value.includes(issue[filterObj[0].key]));
+          filteredData = filteredData.filter(issue => filterObj[0]?.value.includes(issue[filterObj[0].key]));
         } else {
-          filteredData = filteredData.filter(issue => issue[filterObj[0].key].includes(filterObj[0].value));
+          filteredData = filteredData.filter(issue => issue[filterObj[0].key]?.includes(filterObj[0].value));
         }
       });
     }
@@ -618,6 +640,14 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   }
 
   // cleanup empty or null or undefined props
+/**
+     * Recursively sanitizes an array or object by removing null, undefined,
+     * and empty objects, returning a cleaned version of the input.
+     * 
+     * @param input - The array or object to sanitize.
+     * @returns A sanitized array or object, or null if the input is empty.
+     * @throws No exceptions are thrown.
+     */
   sanitizeArray(input) {
     // Recursive function to handle nested structures
     function sanitize(item) {
@@ -643,6 +673,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color, key);
   }
 
+/**
+   * Calculates the total sum of numeric values associated with a specified key in an array of issue data.
+   * @param issueData - An array of objects representing issues, each containing various key-value pairs.
+   * @param key - The key whose numeric values will be summed.
+   * @returns The total sum as a string.
+   * @throws No exceptions are explicitly thrown, but non-numeric values are ignored in the sum.
+   */
   calculateValue(issueData, key: string): string {
     const total = issueData.reduce((sum, issue) => {
       const value = issue[key];
@@ -652,16 +689,29 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     return total.toString(); // Convert to string for display
   }
 
+/**
+   * Converts a given value to hours if the specified unit represents time.
+   * @param val - The value to be converted.
+   * @param unit - The unit of the value, which determines if conversion is necessary.
+   * @returns The converted value in days/hours (unit).
+   */
   convertToHoursIfTime(val, unit) {
     return this.kpiHelperService.convertToHoursIfTime(val, unit)
   }
 
+/**
+   * Calculates and returns the cumulative value based on the chart type and selected button value.
+   * It converts the total count to hours if the chart type is 'stacked-bar' or 'stacked-bar-chart'.
+   * Returns the total count or a calculated value based on the selected button value otherwise.
+   * 
+   * @returns {number} The cumulative value or total count.
+   * @throws {Error} Throws an error if the data structure is not as expected.
+   */
   showCummalative() {
     if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
       return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
     } else if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart') {
       if (!!this.selectedButtonValue?.length && !!this.selectedButtonValue[0]?.key) {
-        const tempCount = this.selectedButtonValue[0].key
         return this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
       } else {
         return this.currentChartData.totalCount
@@ -677,6 +727,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   //#endregion
 
+/**
+ * Checks for the presence of a filter group in the provided filter data.
+ * @param filterData - An object containing filter information, which may include a filterGroup property.
+ * @returns The filterGroup property if it exists; otherwise, undefined.
+ * @throws No exceptions are thrown.
+ */
   checkFilterPresence(filterData) {
     return filterData?.filterGroup;
   }

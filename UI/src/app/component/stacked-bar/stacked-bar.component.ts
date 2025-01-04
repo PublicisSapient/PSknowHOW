@@ -47,7 +47,7 @@ export class StackedBarComponent implements OnInit, OnChanges {
     // If all values are zero, return early
     if (filteredData.length === 0) {
       console.warn('No valid data to render');
-      return;
+      // return;
     }
 
     // Calculate total value for percentage normalization
