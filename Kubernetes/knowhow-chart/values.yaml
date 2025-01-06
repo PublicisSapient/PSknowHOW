@@ -12,9 +12,9 @@ image:
   devopsrepository: psknowhow/devops-processor
   azurepipelinerepository: psknowhow/azure-pipeline-repo
   azureboardrepository: psknowhow/azure-board-processor
-  authapi: psknowhow/authnauth
-  authui: psknowhow/authnauth-ui
-  authdb: psknowhow/postgres-auth-scm
+  authapirepo: psknowhow/authnauth
+  authuirepo: psknowhow/authnauth-ui
+  authdbrepo: psknowhow/postgres-auth-scm
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   knowhowtag: "12.0.0"
@@ -58,7 +58,7 @@ mongodb:
   pvcName: "existing-pvc-name-here"  # Specify the name of an existing PVC to use. Leave mongodb.volumeType empty if using an existing PVC. (optional)
 
 authNauthApp:
-  enabled: false
+  enabled: true
 
 env:
   ## UI initialization settings
