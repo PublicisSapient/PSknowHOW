@@ -17,6 +17,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <div class="main">
+  <p-toast [style]="{marginTop: '80px'}"></p-toast>
     <p-table #dt [columns]="cols" dataKey="id" [value]="allProjectList" [rows]="10" [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[5,10,25]" [loading]="loading" [paginator]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"

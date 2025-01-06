@@ -341,7 +341,7 @@ export class ProjectListComponent implements OnInit {
             hierarchyLevelId: element.hierarchyLevelId,
             hierarchyLevelName: element.hierarchyLevelName
           },
-          value: this.selectedProject[element.hierarchyLevelName]
+          value: this.selectedProject[element.hierarchyLevelId]
         });
       }
       this.http.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
@@ -350,6 +350,7 @@ export class ProjectListComponent implements OnInit {
                 severity: 'success',
                 summary: 'Project renamed successfully.'
               });
+              this.getData();
             } else {
               this.messenger.add({
                 severity: 'error',
