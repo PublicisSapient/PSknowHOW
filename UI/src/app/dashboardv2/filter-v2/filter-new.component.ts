@@ -701,10 +701,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.populateAdditionalFilters(event);
       } else if (event && event[0] && event.map((e) => e.parentId)[0]) {
         this.populateAdditionalFilters(event.map((e) => e.parentId));
-      } else {
-        this.additionalFiltersArr = [];
-        this.service.setAdditionalFilters(this.additionalFiltersArr);
-      }
+      } 
+      // else {
+      //   this.additionalFiltersArr = [];
+      //   this.service.setAdditionalFilters(this.additionalFiltersArr);
+      // }
     } else {
       this.additionalFiltersArr = [];
     }
