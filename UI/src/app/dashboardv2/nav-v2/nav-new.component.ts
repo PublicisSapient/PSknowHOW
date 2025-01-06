@@ -111,7 +111,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
         }
 
         this.items = [...this.dashConfigData[this.selectedType], ...this.dashConfigData['others']].filter(board => 
-          board.kpis.some(kpi => kpi.shown === true) || board.kpis.length === 0
+          board.kpis.some(kpi => kpi.shown === true) && board.kpis.length > 0
         ).map((obj) => {
           return {
             label: obj['boardName'],
@@ -130,6 +130,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
           }
         });
       }
+      console.log(this.items)
     }
   }
 

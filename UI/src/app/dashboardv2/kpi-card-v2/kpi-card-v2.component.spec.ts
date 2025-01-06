@@ -548,46 +548,6 @@ describe('KpiCardV2Component', () => {
     expect(spy).toHaveBeenCalledWith(filterOptionMulti);
   });
 
-  // it('should set filter default option', fakeAsync(() => {
-  //   const response = {
-  //     kpi113: ['Overall']
-  //   };
-
-  //   // Mock sharedService behavior
-  //   // spyOn(sharedService, 'setKpiSubFilterObj').and.callFake(() => { });
-  //   spyOn(sharedService, 'getKpiSubFilterObj').and.returnValue({}); // Mock default sub-filter object
-
-  //   // Mock component data
-  //   component.kpiData = {
-  //     kpiId: 'kpi113',
-  //     kpiName: 'Value delivered (Cost of Delay)',
-  //     isEnabled: true,
-  //     order: 28,
-  //     kpiDetail: {
-  //       id: '633ed17f2c2d5abef2451ff3',
-  //       kpiId: 'kpi113',
-  //     },
-  //     shown: true
-  //   };
-
-  //   // Mock dropdown array
-  //   component.dropdownArr = [{ options: ['Overall', 'Detail'] }];
-
-  //   // Initialize component
-  //   component.ngOnInit();
-  //   tick();
-
-  //   // Verify that setKpiSubFilterObj was called
-  //   // expect(sharedService.setKpiSubFilterObj).toHaveBeenCalledWith(response);
-
-  //   // Verify HTTP calls (if any are expected)
-  //   const req = httpMock.expectOne('http://localhost:8080/api/connections');
-  //   expect(req.request.method).toBe('GET');
-  //   req.flush({}); // Mock empty response
-
-  //   httpMock.verify(); // Ensure no unexpected HTTP calls
-  // }));
-
   it('should set menuItems correctly', () => {
 
     component.selectedTab = 'release';
@@ -726,56 +686,6 @@ describe('KpiCardV2Component', () => {
     expect(component.filterOptions["filter1"]).toBe('Specific');
     expect(component.filterOptions["filter2"]).toBe('Other');
   });
-
-  // it('should handle Overall values correctly for kpi72', fakeAsync(() => {
-  //   const filterData = {
-  //     kpi72: {
-  //       filter2: ['Overall'],
-  //       filter3: ['Other'],
-  //       filter4: ['OtherFilters']
-  //     },
-  //     kpi113: {
-  //       filter1: ['Specific'],
-  //       filter2: ['Other']
-  //     }
-  //   };
-
-  //   const mockResponse = {}; // Mock response for the HTTP call.
-
-  //   // Mocking component dependencies
-  //   component.kpiData = {
-  //     kpiId: 'kpi72',
-  //     kpiName: 'Value delivered (Cost of Delay)',
-  //     isEnabled: true,
-  //     order: 28,
-  //     kpiDetail: {
-  //       id: '633ed17f2c2d5abef2451ff3',
-  //       kpiId: 'kpi72',
-  //     },
-  //     shown: true
-  //   };
-
-  //   // Mock shared service behavior
-  //   spyOn(sharedService, 'setKpiSubFilterObj').and.callFake(() => {});
-  //   mockService.getSelectedTab.and.returnValue('Tab1');
-
-  //   // Trigger ngOnInit and mock HTTP request
-  //   component.ngOnInit();
-  //   tick();
-
-  //   const req = httpMock.match((r) => r.url === 'http://localhost:8080/api/connections');
-  //   expect(req.length).toBe(1); // Ensure one request was made
-  //   expect(req[0].request.method).toBe('GET');
-  //   req[0].flush(mockResponse); // Mocking a successful response
-
-  //   // Verify behavior
-  //   sharedService.setKpiSubFilterObj(filterData);
-  //   expect(sharedService.setKpiSubFilterObj).toHaveBeenCalledWith(filterData);
-  //   expect(component.kpiSelectedFilterObj).toEqual(filterData);
-  //   expect(component.filterOptions['filter2']).toEqual('Overall');
-
-  //   httpMock.verify(); // Ensure no outstanding HTTP requests
-  // }));
 
 
   it('should handle Overall values in filter1 correctly for kpi72', () => {
