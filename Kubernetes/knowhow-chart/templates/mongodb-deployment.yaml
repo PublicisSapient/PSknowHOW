@@ -29,7 +29,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: mongodb
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.mongorepository }}:{{ .Values.image.mongodbtag | default .Chart.AppVersion }}"
