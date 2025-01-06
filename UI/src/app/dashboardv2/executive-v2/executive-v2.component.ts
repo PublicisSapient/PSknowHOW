@@ -345,14 +345,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.releaseEndDate = endDate;
         const today = new Date().toISOString().split('T')[0];
         this.timeRemaining = this.calcBusinessDays(today, endDate);
-        this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+        this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
       } else if (this.selectedTab === 'iteration') {
         const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
         if (selectedSprint) {
           const today = new Date().toISOString().split('T')[0];
           const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
           this.timeRemaining = this.calcBusinessDays(today, endDate);
-          this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+          this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
           this.iterationKPIData = {};
         }
       }
@@ -525,7 +525,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     if (this.selectedTab === 'iteration') {
       // check for Capacity KPI and sort
-      this.updatedConfigGlobalData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121').sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
+      this.updatedConfigGlobalData = this.updatedConfigGlobalData.sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
     }
 
     // sending requests after grouping the the KPIs according to group Id
@@ -862,13 +862,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             const iterationConfigData = {
               daysLeft: this.timeRemaining,
               capacity: {
-                kpiInfo: this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121')?.kpiDetail?.kpiInfo,
                 value: {
-                  value: 123
+                  value: localVariable['kpi121'].trendValueList?.value ? localVariable['kpi121'].trendValueList?.value : 0
                 }
               }
             };
-            this.service.iterationCongifData.next(iterationConfigData);
+            this.service.iterationConfigData.next(iterationConfigData);
           }
           if (this.iterationKPIData && this.iterationKPIData['kpi154']) {
             this.dailyStandupKPIDetails = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi154')[0].kpiDetail;
@@ -1825,7 +1824,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
           } else {
-            if(kpiId === 'kpi171'){
+            if (kpiId === 'kpi171') {
               this.kpiChartData[kpiId] = [this.helperService.aggregationCycleTime(preAggregatedValues)];
             } else {
               this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
@@ -2068,7 +2067,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
     this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
       if (response['success']) {
-        this.exportExcelComponent.dataTransformForIterationTableWidget([],[],response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
+        this.exportExcelComponent.dataTransformForIterationTableWidget([], [], response['data']['kpiColumnDetails'], tableValues, kpi?.kpiName + ' / ' + label, kpi.kpiId)
       }
     });
   }
@@ -2807,6 +2806,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return maxSprints;
   }
 
+/**
+   * Calculates the number of business days between two Date objects, inclusive.
+   * Business days are defined as weekdays (Monday to Friday), excluding weekends.
+   * Returns 0 if the second date is earlier than the first date.
+   * 
+   * @param dDate1 - The start date as a Date object.
+   * @param dDate2 - The end date as a Date object.
+   * @returns The number of business days between the two dates.
+   * @throws Returns 0 if dDate2 is earlier than dDate1.
+   */
   calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     let iWeeks; let iDateDiff; let iAdjust = 0;
     if (dDate2 < dDate1) {
@@ -2857,6 +2866,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpi?.kpiDetail?.yaxisLabel;
   }
 
+/**
+   * Determines the CSS class for column width based on the provided KPI width percentage.
+   * Accepts specific width values and defaults to 50% if an unrecognized value is given.
+   * @param kpiwidth - The width percentage (100, 50, 66, 33) to determine the column class.
+   * @returns A string representing the corresponding CSS class for the column width.
+   * No exceptions are thrown.
+   */
   getkpiwidth(kpiwidth) {
     let retValue = '';
 

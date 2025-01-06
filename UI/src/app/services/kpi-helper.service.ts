@@ -89,6 +89,8 @@ export class KpiHelperService {
       chartData.forEach((d) => d.value = d.value / (60 * 8));
       chartData.sort((a, b) => a.value - b.value);
       totalCount = this.convertToHoursIfTime(totalCount, unit);
+    } else {
+      chartData.sort((a, b) => a.value - b.value);
     }
 
     return { chartData, totalCount };
@@ -205,23 +207,36 @@ export class KpiHelperService {
           test['category2'] = 'Story Points';
           test['color2'] = color[1];
         }
+
+
+        test['color'] = color;
+
+        test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
+          if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
+            return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+          } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
+            return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+          } else {
+            return acc;
+          }
+        }, 0) + ' ' + dataGroupElem.unit;
+
       });
 
-      test['color'] = color;
       chartData['data'].push(test);
     });
 
     chartData['categoryData'] = categoryGroup;
     chartData['summaryHeader'] = json.dataGroup.dataGroup2[0].name;
-    chartData['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
-      if(issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
-      return acc + issue[json.dataGroup.dataGroup2[0].key]/(60*8);
-      } else if(issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
-        return acc - issue[json.dataGroup.dataGroup2[0].key]/(60*8);
-      } else {
-        return acc;
-      }
-    }, 0);
+    // chartData['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
+    //   if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
+    //     return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+    //   } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
+    //     return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+    //   } else {
+    //     return acc;
+    //   }
+    // }, 0);
     return { chartData: chartData };
   }
 
@@ -256,16 +271,16 @@ export class KpiHelperService {
 
     dataGroup1?.forEach((group: any, index) => {
       let filteredIssues;
+      let aggregateVal = 0;
       if (!group.key1 || group.key1 !== 'Category') {
-        filteredIssues = issueData.filter(
-          (issue: any) => issue[group.key] !== undefined,
-        );
+
       } else {
         filteredIssues = issueData.filter(
           (issue: any) => issue[group.key1].includes(group.value1)
         );
       }
-      let aggregateVal = 0;
+
+
       if (group.aggregation === 'count') {
         if (filteredIssues?.length) {
           aggregateVal = filteredIssues.length
@@ -284,26 +299,36 @@ export class KpiHelperService {
         }
       }
 
-      chartData.push({
-        category: group.name,
-        value: aggregateVal,
-        icon: this.iconObj[group.name],
-        totalIssues: issueData.length,
-        color: color[index]
-      });
+      if (group.key1) {
+        chartData.push({
+          category: group.name,
+          value: aggregateVal + '/' + issueData.length,
+          icon: this.iconObj[group.name],
+          color: color[index]
+        });
+      } else {
+        chartData.push({
+          category: group.name,
+          value: aggregateVal,
+          icon: this.iconObj[group.name],
+          color: color[index]
+        });
+      }
     });
 
     return { chartData: chartData };
   }
 
-  tabularKPINonRawData(inputData) {
+  tabularKPINonRawData(inputData, issueData = []) {
     const chartData: any = [];
 
     inputData?.forEach((group: any, index) => {
       chartData.push({
         category: group.name,
-        value: group.unit?.length ? group.unit === 'day' || group.unit === 'SP' ? this.convertToHoursIfTime(group.kpiValue, group.unit) : group.kpiValue : group.kpiValue,
-        icon: this.iconObj[group.name]
+        value: group.unit && (group.unit === 'day' || group.unit === 'SP') ?
+          this.convertToHoursIfTime(group.kpiValue, group.unit) : !isNaN(group.kpiValue1) ? group.kpiValue1 + '/' + group.kpiValue : group.kpiValue,
+        icon: this.iconObj[group.name],
+        totalIssues: issueData.length
       });
     });
 
@@ -376,13 +401,13 @@ export class KpiHelperService {
         returnDataSet = this.tabularKPI(inputData, color);
         break;
       case 'tableNonRawData':
-        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1);
+        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1, inputData?.issueData);
         break;
       case 'grouped-bar-chart':
         returnDataSet = this.groupedBarChartData(inputData, color);
         break;
       case 'tabular-with-donut-chart':
-        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1);
+        returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1, inputData?.issueData);
         break;
       default:
         break;

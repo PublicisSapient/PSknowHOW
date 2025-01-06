@@ -151,7 +151,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
         }),
 
-      this.service.iterationCongifData.subscribe((iterationDetails) => {
+      this.service.iterationConfigData.subscribe((iterationDetails) => {
         this.iterationConfigData = iterationDetails;
       })
     );

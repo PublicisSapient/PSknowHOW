@@ -11,8 +11,7 @@ import * as d3 from 'd3';
 
 @Component({
   selector: 'app-stacked-bar-chart',
-  templateUrl: './stacked-bar-chart.component.html',
-  styleUrls: ['./stacked-bar-chart.component.css'],
+  templateUrl: './stacked-bar-chart.component.html'
 })
 export class StackedBarChartComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
@@ -99,6 +98,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
 
     // Draw the stacked bar chart
     let cumulativeOffset = 0;
+    let minWidth = 35;
     let nonZeroBars = this.data.filter(d => parseInt(d.value) > 0);
     const g = svg.selectAll('.slice')
       .data(this.data)
@@ -106,7 +106,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .append('g')
       .attr('transform', (d, index) => {
         const offset = cumulativeOffset;
-        cumulativeOffset += Math.abs(xScale(d.value) - xScale(0));
+        cumulativeOffset += Math.abs(xScale(d.value) - xScale(0)) >= minWidth ? Math.abs(xScale(d.value) - xScale(0)) : minWidth;
         const isNegative = d.value < 0;
         if (isNegative) {
           return `translate(${Math.abs(offset) + margin.left}, ${margin.top})`
@@ -121,7 +121,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
       .attr('class', 'slice')
       .append('path')
       .attr("d", (d, index) => {
-        const width = Math.abs(xScale(d.value) - xScale(0));
+        const width = Math.abs(xScale(d.value) - xScale(0)) >= minWidth ? Math.abs(xScale(d.value) - xScale(0)) : minWidth;
         const isNegative = Math.abs(d.value) && d.value < 0;
         if (isNegative) {
           // Rounded corners on the left side

@@ -29,7 +29,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from '../../services/http.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { KpiHelperService } from '../../services/kpi-helper.service';
 import { of } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
@@ -44,6 +44,7 @@ describe('KpiCardV2Component', () => {
   let helperService: HelperService;
   let dialogService: DialogService;
   let mockService: jasmine.SpyObj<SharedService>;
+  let kpiHelperService;
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
@@ -92,6 +93,7 @@ describe('KpiCardV2Component', () => {
     helperService = TestBed.inject(HelperService);
     dialogService = TestBed.inject(DialogService);
     mockService = jasmine.createSpyObj(SharedService, ['selectedFilterOptionObs', 'getSelectedTab']);
+    kpiHelperService = TestBed.inject(KpiHelperService); //jasmine.createSpyObj(KpiHelperService, ['getChartDataSet']);
 
     component.kpiData = {
       kpiId: 'kpi72',
@@ -1148,7 +1150,7 @@ describe('KpiCardV2Component', () => {
       it('should return true when data is 200 and helperService returns true', () => {
         component.kpiData = { kpiDetail: { chartType: 'someType' } };
         component.selectedTab = 'someTab';
-        spyOn(helperService,'checkDataAtGranularLevel').and.returnValue(true);
+        spyOn(helperService, 'checkDataAtGranularLevel').and.returnValue(true);
         const result = component.checkIfDataPresent('200');
         expect(result).toBe(true);
       });
@@ -1170,7 +1172,7 @@ describe('KpiCardV2Component', () => {
       it('should return false when helperService returns false', () => {
         component.kpiData = { kpiDetail: { chartType: 'someType' } };
         component.selectedTab = 'someTab';
-        spyOn(helperService,'checkDataAtGranularLevel').and.returnValue(false);
+        spyOn(helperService, 'checkDataAtGranularLevel').and.returnValue(false);
         const result = component.checkIfDataPresent('200');
         expect(result).toBe(false);
       });
@@ -1218,8 +1220,506 @@ describe('KpiCardV2Component', () => {
 
     it('should move selected option to top', () => {
       component.dropdownArr[0].options = ['option1', 'option2'];
-      component.handleChange('multi', {value : ['option2']});
+      component.handleChange('multi', { value: ['option2'] });
       expect(component.dropdownArr[0].options).toEqual(['option2', 'option1'])
+    });
+  });
+
+  describe('Happy Path Tests', () => {
+    it('should call prepareData when event.listView is true', () => {
+      // Arrange
+      const prepareDataSpy = spyOn(component, 'prepareData' as any);
+      const event = { listView: true };
+
+      // Act
+      component.handleAction(event);
+
+      // Assert
+      expect(prepareDataSpy).toHaveBeenCalled();
+    });
+
+    it('should call onOpenFieldMappingDialog when event.setting is true', () => {
+      // Arrange
+      const onOpenFieldMappingDialogSpy = spyOn(component, 'onOpenFieldMappingDialog' as any);
+      const event = { setting: true };
+
+      // Act
+      component.handleAction(event);
+
+      // Assert
+      expect(onOpenFieldMappingDialogSpy).toHaveBeenCalled();
+    });
+
+    it('should call exportToExcel when event.explore is true', () => {
+      // Arrange
+      const exportToExcelSpy = spyOn(component, 'exportToExcel' as any);
+      const event = { explore: true };
+
+      // Act
+      component.handleAction(event);
+
+      // Assert
+      expect(exportToExcelSpy).toHaveBeenCalled();
+    });
+
+    it('should call openCommentModal when event.comment is true', () => {
+      // Arrange
+      const openCommentModalSpy = spyOn(component, 'openCommentModal' as any);
+      const event = { comment: true };
+
+      // Act
+      component.handleAction(event);
+
+      // Assert
+      expect(openCommentModalSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Edge Case Tests', () => {
+    it('should not call any method when event is empty', () => {
+      // Arrange
+      const prepareDataSpy = spyOn(component, 'prepareData' as any);
+      const onOpenFieldMappingDialogSpy = spyOn(component, 'onOpenFieldMappingDialog' as any);
+      const exportToExcelSpy = spyOn(component, 'exportToExcel' as any);
+      const openCommentModalSpy = spyOn(component, 'openCommentModal' as any);
+      const event = {};
+
+      // Act
+      component.handleAction(event);
+
+      // Assert
+      expect(prepareDataSpy).not.toHaveBeenCalled();
+      expect(onOpenFieldMappingDialogSpy).not.toHaveBeenCalled();
+      expect(exportToExcelSpy).not.toHaveBeenCalled();
+      expect(openCommentModalSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle unexpected event properties gracefully', () => {
+      // Arrange
+      const prepareDataSpy = spyOn(component, 'prepareData' as any);
+      const event = { unexpectedProperty: true };
+
+      // Act
+      component.handleAction(event);
+
+      // Assert
+      expect(prepareDataSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('KpiCardV2Component.checkFilterPresence() checkFilterPresence method', () => {
+    describe('Happy Paths', () => {
+      it('should return true when filterGroup is present', () => {
+        const filterData = { filterGroup: { someKey: 'someValue' } };
+        const result = component.checkFilterPresence(filterData);
+        expect(result).toEqual({ someKey: 'someValue' });
+      });
+
+      it('should return false when filterGroup is not present', () => {
+        const filterData = { someOtherKey: 'someValue' };
+        const result = component.checkFilterPresence(filterData);
+        expect(result).toBe(undefined);
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should return false when filterData is null', () => {
+        const result = component.checkFilterPresence(null);
+        expect(result).toBe(undefined);
+      });
+
+      it('should return false when filterData is undefined', () => {
+        const result = component.checkFilterPresence(undefined);
+        expect(result).toBe(undefined);
+      });
+
+      it('should return false when filterData is an empty object', () => {
+        const filterData = {};
+        const result = component.checkFilterPresence(filterData);
+        expect(result).toBe(undefined);
+      });
+
+      it('should return false when filterGroup is an empty object', () => {
+        const filterData = { filterGroup: {} };
+        const result = component.checkFilterPresence(filterData);
+        expect(result).toEqual({});
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.sanitizeArray() sanitizeArray method', () => {
+    describe('Happy paths', () => {
+      it('should remove null, undefined, and empty objects from an array', () => {
+        const input = [
+          { key1: 'value1' },
+          null,
+          { key2: 'value2' },
+          undefined,
+          {},
+          { key3: 'value3' }
+        ];
+        const expectedOutput = [
+          { key1: 'value1' },
+          { key2: 'value2' },
+          { key3: 'value3' }
+        ];
+
+        const result = component.sanitizeArray(input);
+        expect(result).toEqual(expectedOutput);
+      });
+    });
+
+    describe('Edge cases', () => {
+      it('should return an empty array when input is an empty array', () => {
+        const input: any[] = [];
+        const expectedOutput: any[] = [];
+
+        const result = component.sanitizeArray(input);
+        expect(result).toEqual(expectedOutput);
+      });
+
+      it('should return an empty array when input contains only null, undefined, or empty objects', () => {
+        const input = [null, undefined, {}];
+        const expectedOutput: any[] = [];
+
+        const result = component.sanitizeArray(input);
+        expect(result).toEqual(expectedOutput);
+      });
+
+      it('should handle arrays with only valid objects', () => {
+        const input = [{ key1: 'value1' }, { key2: 'value2' }];
+        const expectedOutput = [{ key1: 'value1' }, { key2: 'value2' }];
+
+        const result = component.sanitizeArray(input);
+        expect(result).toEqual(expectedOutput);
+      });
+    });
+  });
+
+
+  describe('KpiCardV2Component.calculateValue() calculateValue method', () => {
+    describe('Happy Path Tests', () => {
+      it('should calculate the total value correctly for numeric values', () => {
+        const issueData = [
+          { value: 10 },
+          { value: 20 },
+          { value: 30 },
+        ];
+        const result = component.calculateValue(issueData, 'value');
+        expect(result).toBe('60');
+      });
+
+      it('should return "0" when no numeric values are present', () => {
+        const issueData = [
+          { value: 'a' },
+          { value: 'b' },
+          { value: 'c' },
+        ];
+        const result = component.calculateValue(issueData, 'value');
+        expect(result).toBe('0');
+      });
+    });
+
+    describe('Edge Case Tests', () => {
+      it('should handle an empty issueData array gracefully', () => {
+        const issueData: any[] = [];
+        const result = component.calculateValue(issueData, 'value');
+        expect(result).toBe('0');
+      });
+
+      it('should handle mixed data types in issueData', () => {
+        const issueData = [
+          { value: 10 },
+          { value: '20' },
+          { value: null },
+          { value: undefined },
+          { value: 30 },
+        ];
+        const result = component.calculateValue(issueData, 'value');
+        expect(result).toBe('40');
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.onFilterClear() onFilterClear method', () => {
+    describe('Happy Paths', () => {
+      it('should reset copyCardData and currentChartData to initial state', () => {
+        // Arrange
+        component.cardData = {
+          issueData: [{ id: 1, name: 'Issue 1' }, { id: 2, name: 'Issue 2' }],
+        };
+        component.copyCardData = { issueData: [] };
+        component.currentChartData = { chartData: [], totalCount: 0 };
+
+        spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
+          chartData: [{ id: 1, name: 'Issue 1' }, { id: 2, name: 'Issue 2' }],
+          totalCount: 2,
+        });
+
+        // Act
+        component.onFilterClear();
+
+        // Assert
+        expect(component.copyCardData.issueData).toEqual(component.cardData.issueData);
+        expect(component.currentChartData.chartData).toEqual([{ id: 1, name: 'Issue 1' }, { id: 2, name: 'Issue 2' }]);
+        expect(component.currentChartData.totalCount).toBe(2);
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should handle empty issueData gracefully', () => {
+        // Arrange
+        component.cardData = { issueData: [] };
+        component.copyCardData = { issueData: [{ id: 1, name: 'Issue 1' }] };
+        component.currentChartData = { chartData: [{ id: 1, name: 'Issue 1' }], totalCount: 1 };
+
+        spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
+          chartData: [],
+          totalCount: 0,
+        });
+
+        // Act
+        component.onFilterClear();
+
+        // Assert
+        expect(component.copyCardData.issueData).toEqual([]);
+        expect(component.currentChartData.chartData).toEqual([]);
+        expect(component.currentChartData.totalCount).toBe(0);
+      });
+
+      it('should handle null issueData gracefully', () => {
+        // Arrange
+        component.cardData = { issueData: null };
+        component.copyCardData = { issueData: [{ id: 1, name: 'Issue 1' }] };
+        component.currentChartData = { chartData: [{ id: 1, name: 'Issue 1' }], totalCount: 1 };
+
+        spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
+          chartData: [],
+          totalCount: 0,
+        } as any);
+
+        // Act
+        component.onFilterClear();
+
+        // Assert
+        expect(component.copyCardData.issueData).toBeNull();
+        expect(component.currentChartData.chartData).toEqual([]);
+        expect(component.currentChartData.totalCount).toBe(0);
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.onFilterChange() onFilterChange method', () => {
+    describe('Happy Path Tests', () => {
+      it('should update chart data when a valid filter is applied', () => {
+        const mockEvent = {
+          selectedKeyObj: { Category: 'SomeCategory' },
+          selectedKey: 'SomeKey',
+          otherFilter: 'SomeValue'
+        };
+  
+        const mockIssueData = [
+          { Category: ['SomeCategory'], SomeKey: 10 },
+          { Category: ['OtherCategory'], SomeKey: 20 }
+        ];
+  
+        component.cardData = { issueData: mockIssueData };
+        component.copyCardData = { issueData: mockIssueData };
+        component.colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
+  
+        spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
+          chartData: [],
+          totalCount: 0
+        });
+  
+        component.onFilterChange(mockEvent);
+  
+        expect(component.copyCardData.issueData).toEqual([]);
+        expect(kpiHelperService.getChartDataSet).toHaveBeenCalled();
+      });
+    });
+  
+    describe('Edge Case Tests', () => {
+      it('should handle empty filter gracefully', () => {
+        const mockEvent = {
+          selectedKeyObj: { Category: 'Value' },
+          selectedKey: 'SomeKey'
+        };
+  
+        const mockIssueData = [
+          { Category: ['SomeCategory'], SomeKey: 10 },
+          { Category: ['OtherCategory'], SomeKey: 20 }
+        ];
+  
+        component.cardData = { issueData: mockIssueData };
+        component.copyCardData = { issueData: mockIssueData };
+        component.colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
+  
+        spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
+          chartData: [],
+          totalCount: 0
+        });
+  
+        component.onFilterChange(mockEvent);
+  
+        expect(component.copyCardData.issueData).toEqual(mockIssueData);
+        expect(kpiHelperService.getChartDataSet).toHaveBeenCalled();
+      });
+  
+      it('should handle null filter object', () => {
+        const mockEvent = {
+          selectedKeyObj: null,
+          selectedKey: 'SomeKey'
+        };
+  
+        const mockIssueData = [
+          { Category: ['SomeCategory'], SomeKey: 10 },
+          { Category: ['OtherCategory'], SomeKey: 20 }
+        ];
+  
+        component.cardData = { issueData: mockIssueData };
+        component.copyCardData = { issueData: mockIssueData };
+        component.colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
+  
+        spyOn(kpiHelperService, 'getChartDataSet').and.returnValue({
+          chartData: [],
+          totalCount: 0
+        });
+  
+        component.onFilterChange(mockEvent);
+  
+        expect(component.copyCardData.issueData).toEqual(mockIssueData);
+        expect(kpiHelperService.getChartDataSet).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.showCummalative() showCummalative method', () => {
+    describe('Happy Path Tests', () => {
+      it('should return cumulative value for stacked-bar chart type', () => {
+        component.kpiData = { kpiDetail: { chartType: 'stacked-bar' } };
+        component.currentChartData = { totalCount: 480 };
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('1d');
+  
+        const result = component.showCummalative();
+  
+        expect(result).toBe('1d');
+        expect(kpiHelperService.convertToHoursIfTime).toHaveBeenCalledWith(480, 'day');
+      });
+  
+      it('should return cumulative value for other chart types with selectedButtonValue', () => {
+        component.kpiData = { kpiDetail: { chartType: 'other-chart' } };
+        component.selectedButtonValue = [{ key: 'someKey', unit: 'hours' }];
+        component.copyCardData = { issueData: [{ someKey: 60 }, { someKey: 120 }] };
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('3h');
+  
+        const result = component.showCummalative();
+  
+        expect(result).toBe('3h');
+        expect(kpiHelperService.convertToHoursIfTime).toHaveBeenCalledWith('180', 'hours');
+      });
+    });
+  
+    describe('Edge Case Tests', () => {
+      it('should handle empty selectedButtonValue gracefully', () => {
+        component.kpiData = { kpiDetail: { chartType: 'stacked-bar-chart' } };
+        component.selectedButtonValue = [];
+        component.currentChartData = { totalCount: 100 };
+  
+        const result = component.showCummalative();
+  
+        expect(result).toBe(100);
+      });
+  
+      it('should handle undefined selectedButtonValue gracefully', () => {
+        component.kpiData = { kpiDetail: { chartType: 'other-chart' } };
+        component.selectedButtonValue = undefined;
+        component.currentChartData = { totalCount: 200 };
+  
+        const result = component.showCummalative();
+  
+        expect(result).toBe(200);
+      });
+  
+      it('should handle undefined kpiData gracefully', () => {
+        component.kpiData = undefined;
+        component.currentChartData = { totalCount: 300 };
+  
+        const result = component.showCummalative();
+  
+        expect(result).toBe(300);
+      });
+    });
+  });
+
+  describe('KpiCardV2Component.convertToHoursIfTime() convertToHoursIfTime method', () => {
+    describe('Happy paths', () => {
+      it('should convert minutes to hours and minutes correctly', () => {
+        // Arrange
+        const value = 150; // 2 hours and 30 minutes
+        const unit = 'hours';
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('2h 30m');
+  
+        // Act
+        const result = component.convertToHoursIfTime(value, unit);
+  
+        // Assert
+        expect(result).toBe('2h 30m');
+      });
+  
+      it('should return the same value if unit is not time-related', () => {
+        // Arrange
+        const value = 100;
+        const unit = 'points';
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('100');
+  
+        // Act
+        const result = component.convertToHoursIfTime(value, unit);
+  
+        // Assert
+        expect(result).toBe('100');
+      });
+    });
+  
+    describe('Edge cases', () => {
+      it('should handle zero value correctly', () => {
+        // Arrange
+        const value = 0;
+        const unit = 'hours';
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('0h');
+  
+        // Act
+        const result = component.convertToHoursIfTime(value, unit);
+  
+        // Assert
+        expect(result).toBe('0h');
+      });
+  
+      it('should handle negative values correctly', () => {
+        // Arrange
+        const value = -90; // -1 hour and 30 minutes
+        const unit = 'hours';
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('-1h 30m');
+  
+        // Act
+        const result = component.convertToHoursIfTime(value, unit);
+  
+        // Assert
+        expect(result).toBe('-1h 30m');
+      });
+  
+      it('should handle large values correctly', () => {
+        // Arrange
+        const value = 10000; // 166 hours and 40 minutes
+        const unit = 'hours';
+        spyOn(kpiHelperService, 'convertToHoursIfTime').and.returnValue('166h 40m');
+  
+        // Act
+        const result = component.convertToHoursIfTime(value, unit);
+  
+        // Assert
+        expect(result).toBe('166h 40m');
+      });
     });
   });
 });

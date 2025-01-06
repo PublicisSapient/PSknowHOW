@@ -41,7 +41,7 @@ describe('UnauthorisedAccessComponent', () => {
 
     fixture = TestBed.createComponent(UnauthorisedAccessComponent);
     component = fixture.componentInstance;
-    // helperService = TestBed.inject(HelperService);
+    helperService = TestBed.inject(HelperService);
   });
 
   it('should create', () => {

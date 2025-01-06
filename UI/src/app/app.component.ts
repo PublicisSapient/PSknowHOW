@@ -101,7 +101,6 @@ export class AppComponent implements OnInit {
 
           const urlPath = decodeURIComponent(window.location.hash);
           const queryParamsIndex = urlPath.indexOf('?');
-          const decodedPath = decodeURIComponent(urlPath);
 
           if (queryParamsIndex !== -1) {
             const queryString = urlPath.slice(queryParamsIndex + 1);
@@ -111,17 +110,9 @@ export class AppComponent implements OnInit {
 
             let param = urlParams.get('stateFilters');
             param = atob(param);
-            if (param.includes('###')) {
-              param = param.replace(/###/gi, '___');
-            }
+            param = param.replace(/###/gi, '___');
 
             this.helperService.setBackupOfUrlFilters(param);
-
-            // this.router.navigate([], {
-            //   queryParams: { 'stateFilters': param }, // Pass the object here
-            //   relativeTo: this.route,
-            //   queryParamsHandling: 'merge', // Merge with existing queryParams
-            // });
           }
         }
       }

@@ -8,7 +8,7 @@ export class IsoDateFormatPipe implements PipeTransform {
   transform(value: Date | string): string {
     let matches = false
     if(!value){
-        return '-';
+        return '';
       }
   
       let date:any;
@@ -24,7 +24,7 @@ export class IsoDateFormatPipe implements PipeTransform {
       }
   
       if(isNaN(date.getTime())){
-        return '-';
+        return '';
       }else{
         time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
       }

@@ -307,7 +307,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.getNotification();
       }),
 
-      this.service.iterationCongifData.subscribe((iterationDetails) => {
+      this.service.iterationConfigData.subscribe((iterationDetails) => {
         this.iterationConfigData = iterationDetails;
       }),
 

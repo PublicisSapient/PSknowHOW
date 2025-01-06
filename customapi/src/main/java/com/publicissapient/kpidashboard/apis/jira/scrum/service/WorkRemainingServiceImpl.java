@@ -198,8 +198,8 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 
 		} else {
-			jiraIssueModalObject.setPotentialOverallDelay("-");
-			jiraIssueModalObject.setPredictedCompletionDate("-");
+			jiraIssueModalObject.setPotentialOverallDelay(Constant.BLANK);
+			jiraIssueModalObject.setPredictedCompletionDate(Constant.BLANK);
 		}
 
 		int delay = 0;

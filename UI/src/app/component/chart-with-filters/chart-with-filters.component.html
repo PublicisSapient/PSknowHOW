@@ -72,7 +72,7 @@
         <tr>
           <td class="font-small" *ngFor="let column of modalDetails['tableHeadings']">
             <ng-container *ngIf="!checkIfArray(rowData[column]); else displayArrayData">
-              <a *ngIf="column === 'Issue Id'; else displayCellData" [href]="rowData['Issue URL']" class="text-blue"
+              <a *ngIf="column.toLowerCase() === 'issue id'; else displayCellData" [href]="rowData['Issue URL']" class="text-blue"
                 rel="noopener" target="_blank">{{rowData['Issue Id']}}</a>
               <ng-template #displayCellData>
                 <ng-container *ngIf="column.toLowerCase() === 'sprint rating'; else showOtherData">

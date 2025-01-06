@@ -79,20 +79,23 @@ export class SemiCircleDonutChartComponent implements OnInit {
 
     // Add central text
     if (this.kpiId !== 'kpi124') {
+
+      svg.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '-0.5em') // Adjust text position
+      .style('font-size', '18px')
+      .style('font-weight', 'bold')
+      .style('fill', '#627AD0')
+      .text(this.value);
+      
       svg.append('text')
         .attr('text-anchor', 'middle')
-        .attr('dy', '-0.5em') // Adjust text position
+        .attr('dy', '1em') // Adjust text position
         .style('font-size', '14px')
         .style('fill', '#627AD0')
         .text('%');
 
-      svg.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('dy', '1em') // Adjust text position
-        .style('font-size', '18px')
-        .style('font-weight', 'bold')
-        .style('fill', '#627AD0')
-        .text(this.value);
+
     } else {
       svg.append('text')
       .attr('text-anchor', 'middle')

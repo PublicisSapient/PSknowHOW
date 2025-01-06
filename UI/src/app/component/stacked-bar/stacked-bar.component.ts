@@ -4,8 +4,7 @@ import * as d3 from 'd3';
 
 @Component({
   selector: 'app-stacked-bar',
-  templateUrl: './stacked-bar.component.html',
-  styleUrls: ['./stacked-bar.component.css']
+  templateUrl: './stacked-bar.component.html'
 })
 export class StackedBarComponent implements OnInit, OnChanges {
   @Input() data: any[] = []; // Data to be passed from parent component
@@ -48,7 +47,7 @@ export class StackedBarComponent implements OnInit, OnChanges {
     // If all values are zero, return early
     if (filteredData.length === 0) {
       console.warn('No valid data to render');
-      return;
+      // return;
     }
 
     // Calculate total value for percentage normalization
@@ -106,8 +105,8 @@ export class StackedBarComponent implements OnInit, OnChanges {
           // C${width},${(3 * chartHeight) / 4} ${width},${chartHeight / 4} ${width - radius},0
           // Z`;
 
-          return `M${x},0
-        C${x + radius},${chartHeight / 4} ${x + radius},${(3 * chartHeight) / 4} ${x},${chartHeight}
+          return `M${x - radius},0
+        C${x + radius},${chartHeight / 4} ${x },${(4 * chartHeight) / 4} ${x - radius},${chartHeight}
         L${x + width - radius},${chartHeight} 
         C${x + width},${(3 * chartHeight) / 4} ${x + width},${chartHeight / 4} ${x + width - radius},0
         Z`;

@@ -105,17 +105,22 @@ export class BarchartComponent implements OnInit {
       .domain(this.data.map((d) => d.category))
       .range(this.data.map((d) => d.color));
 
+
+
     // Add Y-axis label
-    this.svg
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', -margin.left + 10)
-      .attr('x', -chartHeight / 2)
-      // .attr('dy', '-1.5em')
-      .style('text-anchor', 'middle')
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .text(unit); // Display the unit dynamically
+    let unitSet = new Set(this.data.map((d) => d.unit));
+    if (unitSet.size === 1) {
+      this.svg
+        .append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', -margin.left + 10)
+        .attr('x', -chartHeight / 2)
+        // .attr('dy', '-1.5em')
+        .style('text-anchor', 'middle')
+        .style('font-size', '12px')
+        .style('font-weight', 'bold')
+        .text(unit); // Display the unit dynamically
+    }
 
     // Tooltip
     this.tooltip = d3
@@ -204,7 +209,7 @@ export class BarchartComponent implements OnInit {
       .call(
         d3.axisLeft(yScale)
           .ticks(4)
-          // .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
+        // .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
       );
 
     this.svg.selectAll('.xAxisG path, .xAxisG line, .yAxisG path, .yAxisG line')

@@ -373,32 +373,3 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   position: relative;
   z-index: 1001;
 }
-
-.share-url-btn {
-  padding-top: 12px;
-}
-
-.success {
-  background-color: #15BA40;
-}
-
-.success img.ico-default {
-  display: none;
-}
-
-.success img.ico-active {
-  display: inline-block;
-}
-
-.default {
-  background-color: #fff;
-}
-
-.default img.ico-active {
-  display: none;
-}
-
-.default img.ico-default {
-  display: inline-block;
-}
-

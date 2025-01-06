@@ -18608,6 +18608,100 @@ describe('ExecutiveV2Component', () => {
       });
     });
   });
+
+  describe('ExecutiveV2Component.calcBusinessDays() calcBusinessDays method', () => {
+    describe('Happy paths', () => {
+      it('should return the correct number of business days between two weekdays', () => {
+        const startDate = new Date('2023-10-02'); // Monday
+        const endDate = new Date('2023-10-06'); // Friday
+        const result = component.calcBusinessDays(startDate, endDate);
+        expect(result).toBe(5);
+      });
+  
+      it('should return 1 when the start and end dates are the same weekday', () => {
+        const date = new Date('2023-10-04'); // Wednesday
+        const result = component.calcBusinessDays(date, date);
+        expect(result).toBe(1);
+      });
+  
+      it('should correctly calculate business days spanning a weekend', () => {
+        const startDate = new Date('2023-10-06'); // Friday
+        const endDate = new Date('2023-10-10'); // Tuesday
+        const result = component.calcBusinessDays(startDate, endDate);
+        expect(result).toBe(3);
+      });
+    });
+  
+    describe('Edge cases', () => {
+      it('should return 0 if the end date is before the start date', () => {
+        const startDate = new Date('2023-10-10'); // Tuesday
+        const endDate = new Date('2023-10-06'); // Friday
+        const result = component.calcBusinessDays(startDate, endDate);
+        expect(result).toBe(0);
+      });
+  
+      it('should handle dates that fall on a weekend', () => {
+        const startDate = new Date('2023-10-07'); // Saturday
+        const endDate = new Date('2023-10-08'); // Sunday
+        const result = component.calcBusinessDays(startDate, endDate);
+        expect(result).toBe(0);
+      });
+  
+      it('should handle a start date on a weekday and an end date on a weekend', () => {
+        const startDate = new Date('2023-10-06'); // Friday
+        const endDate = new Date('2023-10-08'); // Sunday
+        const result = component.calcBusinessDays(startDate, endDate);
+        expect(result).toBe(1);
+      });
+    });
+  });
+
+  describe('ExecutiveV2Component.getkpiwidth() getkpiwidth method', () => {
+    describe('Happy Paths', () => {
+      it('should return "p-col-12" for kpiwidth 100', () => {
+        const result = component.getkpiwidth(100);
+        expect(result).toBe('p-col-12');
+      });
+  
+      it('should return "p-col-6" for kpiwidth 50', () => {
+        const result = component.getkpiwidth(50);
+        expect(result).toBe('p-col-6');
+      });
+  
+      it('should return "p-col-8" for kpiwidth 66', () => {
+        const result = component.getkpiwidth(66);
+        expect(result).toBe('p-col-8');
+      });
+  
+      it('should return "p-col-4" for kpiwidth 33', () => {
+        const result = component.getkpiwidth(33);
+        expect(result).toBe('p-col-4');
+      });
+    });
+  
+    // Edge case tests
+    describe('Edge Cases', () => {
+      it('should return "p-col-6" for kpiwidth 0', () => {
+        const result = component.getkpiwidth(0);
+        expect(result).toBe('p-col-6');
+      });
+  
+      it('should return "p-col-6" for negative kpiwidth', () => {
+        const result = component.getkpiwidth(-10);
+        expect(result).toBe('p-col-6');
+      });
+  
+      it('should return "p-col-6" for kpiwidth greater than 100', () => {
+        const result = component.getkpiwidth(150);
+        expect(result).toBe('p-col-6');
+      });
+  
+      it('should return "p-col-6" for non-matching kpiwidth', () => {
+        const result = component.getkpiwidth(75);
+        expect(result).toBe('p-col-6');
+      });
+    });
+  });
 });
 
 

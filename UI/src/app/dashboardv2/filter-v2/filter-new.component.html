@@ -57,8 +57,9 @@
       <span class="text-container p-d-inline-block p-mr-2">Duration:</span>
       <span class="p-text-bold p-d-inline-block data-container p-mr-3">{{combinedDate}}</span>
     </div>
+
     <div class="p-d-inline-block p-mr-2"
-      *ngIf="iterationConfigData?.capacity !== undefined && selectedTab?.toLowerCase() !== 'release'">
+      *ngIf="iterationConfigData?.capacity && selectedTab?.toLowerCase() !== 'release'">
       <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-chart-line"></i></span>
       <span class="text-container p-d-inline-block p-mr-2">Capacity:</span>
       <span class="p-text-bold p-d-inline-block data-container p-mr-3">
