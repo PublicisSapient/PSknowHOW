@@ -445,7 +445,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.masterDataCopy['kpiList'] = [];
             this.parentFilterConfig = {};
             this.primaryFilterConfig = {};
-            // this.additionalFilterConfig = [];
             this.processBoardData(data);
             this.blockUI = false;
             if (event) {
