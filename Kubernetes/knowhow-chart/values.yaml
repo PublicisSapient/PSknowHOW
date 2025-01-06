@@ -14,12 +14,12 @@ image:
   azureboardrepository: psknowhow/azure-board-processor
   authapirepo: psknowhow/authnauth
   authuirepo: psknowhow/authnauth-ui
-  authdbrepo: psknowhow/postgres-auth-scm
+  authscmdbrepo: psknowhow/postgres-auth-scm
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   knowhowtag: "12.0.0"
   mongodbtag: "5.0.18-rootuser"
-  authtag: "2.0.0"
+  authscmtag: "2.0.0"
 
 ## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
 
@@ -59,6 +59,29 @@ mongodb:
 
 authNauthApp:
   enabled: true
+
+authNauthNSCMDB:
+  enabled: true
+  volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
+  storage: "16Gi"
+  accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
+
+  # HostPath-specific options
+  hostPath:
+    path: "/data/authscmdb" # Host path for local storage
+
+  # AWS EFS-specific options
+  efs:
+    volumeHandle: "<your-efs-filesystem-id>" # Replace with your AWS EFS FileSystemId
+    storageClassName: ""  # Specify the storage class name for EFS (optional)
+  
+  # AzureDisk-specific options
+  azureDisk:
+    volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.Compute/disks/<diskName>"
+    storageClassName: "" # Specify the storage class name for azDisk
+
+  pvcName: "existing-pvc-name-here"  # Specify the name of an existing PVC to use. Leave mongodb.volumeType empty if using an existing PVC. (optional)
+
 
 env:
   ## UI initialization settings
