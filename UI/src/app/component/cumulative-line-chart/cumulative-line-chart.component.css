@@ -29,7 +29,6 @@
 :host ::ng-deep.x-caption{
     display: flex;
     justify-content: center;
-    color: #437495;
     margin: 0.5rem 0rem;
     width: 100%;
 }
@@ -48,7 +47,6 @@
     height: 100%;
     justify-content: center;
     margin-bottom: 1rem;
-    color: #437495;
     width: max-content;
     transform: translateX(-16px);
 }
