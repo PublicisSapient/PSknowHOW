@@ -1,0 +1,29 @@
+{{- if .Values.SCMProcessor.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-rabbitmq
+  labels:
+    app: scm-rabbitmq
+spec:
+  type: {{ .Values.service.backendtype }}
+  ports:
+    - name: epmd
+      port: 4369
+      protocol: TCP
+      targetPort: epmd
+    - name: amqp
+      port: 5672
+      protocol: TCP
+      targetPort: amqp
+    - name: dist
+      port: 25672
+      protocol: TCP
+      targetPort: dist
+    - name: http-stats
+      port: 15672
+      protocol: TCP
+      targetPort: stats
+  selector:
+    app: scm-rabbitmq
+{{- end }}
