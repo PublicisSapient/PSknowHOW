@@ -66,7 +66,6 @@ import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecution
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
@@ -267,12 +266,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		configHelperService.loadConfigData();
 	}
 
-	private void clearAccHierarchyCache() {
-		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY);
-		configHelperService.loadConfigData();
-	}
-
-	/**
+    /**
 	 * Clone Tool Configurations, Field Mappings, and Board Metadata for Cloned
 	 * Project
 	 *
@@ -430,15 +424,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 				OrganizationHierarchy orgHierarchy = organizationHierarchyService
 						.findByNodeId(basicConfig.getProjectNodeId());
-				updateProjectNameInOrg(basicConfig, orgHierarchy);
+				updateProjectNameInOrgHierarchy(basicConfig, orgHierarchy);
 
-				List<ProjectHierarchy> pHByBasicProjectConfigId = projectHierarchyRepository
+				List<ProjectHierarchy> projectWiseHierarchyList = projectHierarchyRepository
 						.findByBasicProjectConfigId(basicConfig.getId());
-				updateProjectNameInPH(savedConfigOpt, basicConfig, pHByBasicProjectConfigId);
-
-				List<AccountHierarchy> accHierarchy = accountHierarchyRepository
-						.findByBasicProjectConfigId(basicConfig.getId());
-				updateProjectNameInAcc(savedConfigOpt, basicConfig, accHierarchy);
+				updateProjectNameInProjectHierch(savedConfigOpt, basicConfig, projectWiseHierarchyList);
 
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
@@ -451,59 +441,22 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return response;
 	}
 
-	private void updateProjectNameInPH(Optional<ProjectBasicConfig> savedConfigOpt,
-			ProjectBasicConfig basicConfig, List<ProjectHierarchy> pHByBasicProjectConfigId) {
-		if (CollectionUtils.isNotEmpty(pHByBasicProjectConfigId)) {
-			pHByBasicProjectConfigId.stream().forEach(projectHierarchy -> {
+	private void updateProjectNameInProjectHierch(Optional<ProjectBasicConfig> savedConfigOpt,
+                                                  ProjectBasicConfig basicConfig, List<ProjectHierarchy> projectHierarchyList) {
+		if (CollectionUtils.isNotEmpty(projectHierarchyList)) {
+			projectHierarchyList.stream().forEach(projectHierarchy -> {
 
-				if (projectHierarchy.getNodeId().contains(savedConfigOpt.get().getProjectName())) {
-					projectHierarchy.setNodeId(projectHierarchy.getNodeId()
-							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
-				}
-				if (projectHierarchy.getNodeName().contains(savedConfigOpt.get().getProjectName())) {
-					projectHierarchy.setNodeName(projectHierarchy.getNodeName()
-							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
-				}
 				if (projectHierarchy.getNodeDisplayName().contains(savedConfigOpt.get().getProjectName())) {
 					projectHierarchy.setNodeDisplayName(projectHierarchy.getNodeDisplayName()
 							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
 				}
 			});
 
-			projectHierarchyRepository.saveAll(pHByBasicProjectConfigId);
+			projectHierarchyRepository.saveAll(projectHierarchyList);
 		}
 	}
 
-	private void updateProjectNameInAcc(Optional<ProjectBasicConfig> savedConfigOpt, ProjectBasicConfig basicConfig,
-			List<AccountHierarchy> accHierarchy) {
-		if (CollectionUtils.isNotEmpty(accHierarchy)) {
-			accHierarchy.stream().forEach(accountHierarchy -> {
-
-				if (accountHierarchy.getNodeId().contains(savedConfigOpt.get().getProjectName())) {
-					accountHierarchy.setNodeId(accountHierarchy.getNodeId()
-							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
-				}
-				if (accountHierarchy.getNodeName().contains(savedConfigOpt.get().getProjectName())) {
-					accountHierarchy.setNodeName(accountHierarchy.getNodeName()
-							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
-				}
-				if (accountHierarchy.getParentId().contains(savedConfigOpt.get().getProjectName())) {
-					accountHierarchy.setParentId(accountHierarchy.getParentId()
-							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
-				}
-				if (accountHierarchy.getPath().contains(savedConfigOpt.get().getProjectName())) {
-					accountHierarchy.setPath(accountHierarchy.getPath().replace(savedConfigOpt.get().getProjectName(),
-							basicConfig.getProjectName()));
-				}
-			});
-
-			// Save the updated list back into the database
-			accountHierarchyRepository.saveAll(accHierarchy);
-			clearAccHierarchyCache();
-		}
-	}
-
-	private void updateProjectNameInOrg(ProjectBasicConfig basicConfig, OrganizationHierarchy orgHierarchy) {
+    private void updateProjectNameInOrgHierarchy(ProjectBasicConfig basicConfig, OrganizationHierarchy orgHierarchy) {
 		if (orgHierarchy != null) {
 			orgHierarchy.setNodeName(basicConfig.getProjectName());
 			orgHierarchy.setNodeDisplayName(basicConfig.getProjectDisplayName());
