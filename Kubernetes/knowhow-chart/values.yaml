@@ -12,12 +12,16 @@ image:
   devopsrepository: psknowhow/devops-processor
   azurepipelinerepository: psknowhow/azure-pipeline-repo
   azureboardrepository: psknowhow/azure-board-processor
+  scmapirepo: psknowhow/scm-processor-api
+  scmcorerepo: psknowhow/scm-processor-core
+  scmrabbitrepo: psknowhow/scm-processor-rabbitmq
   authapirepo: psknowhow/authnauth
   authuirepo: psknowhow/authnauth-ui
   authscmdbrepo: psknowhow/postgres-auth-scm
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   knowhowtag: "12.0.0"
+  scmtag: "11.0.0"
   mongodbtag: "5.0.18-rootuser"
   authtag: "2.0.0"
   authscmdbtag: "2.0.0"
@@ -34,6 +38,9 @@ AzurepiPelinerepoApp:
   enabled: true
 
 AzureBoardApp:
+  enabled: true
+
+SCMProcessor:
   enabled: true
 
 mongodb:
