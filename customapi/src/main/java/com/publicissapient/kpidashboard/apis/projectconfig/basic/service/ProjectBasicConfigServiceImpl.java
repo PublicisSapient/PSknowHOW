@@ -72,6 +72,7 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
@@ -83,6 +84,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
@@ -165,6 +167,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	private OrganizationHierarchyService organizationHierarchyService;
 	@Autowired
 	private AccountHierarchyRepository accountHierarchyRepository;
+	@Autowired
+	private ProjectHierarchyRepository projectHierarchyRepository;
 	@Autowired
 	private HierarchyLevelRepository hierarchyLevelRepository;
 
@@ -428,6 +432,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 						.findByNodeId(basicConfig.getProjectNodeId());
 				updateProjectNameInOrg(basicConfig, orgHierarchy);
 
+				List<ProjectHierarchy> pHByBasicProjectConfigId = projectHierarchyRepository
+						.findByBasicProjectConfigId(basicConfig.getId());
+				updateProjectNameInPH(savedConfigOpt, basicConfig, pHByBasicProjectConfigId);
+
 				List<AccountHierarchy> accHierarchy = accountHierarchyRepository
 						.findByBasicProjectConfigId(basicConfig.getId());
 				updateProjectNameInAcc(savedConfigOpt, basicConfig, accHierarchy);
@@ -443,7 +451,31 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return response;
 	}
 
-	private void updateProjectNameInAcc(Optional<ProjectBasicConfig> savedConfigOpt, ProjectBasicConfig basicConfig, List<AccountHierarchy> accHierarchy) {
+	private void updateProjectNameInPH(Optional<ProjectBasicConfig> savedConfigOpt,
+			ProjectBasicConfig basicConfig, List<ProjectHierarchy> pHByBasicProjectConfigId) {
+		if (CollectionUtils.isNotEmpty(pHByBasicProjectConfigId)) {
+			pHByBasicProjectConfigId.stream().forEach(projectHierarchy -> {
+
+				if (projectHierarchy.getNodeId().contains(savedConfigOpt.get().getProjectName())) {
+					projectHierarchy.setNodeId(projectHierarchy.getNodeId()
+							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
+				}
+				if (projectHierarchy.getNodeName().contains(savedConfigOpt.get().getProjectName())) {
+					projectHierarchy.setNodeName(projectHierarchy.getNodeName()
+							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
+				}
+				if (projectHierarchy.getNodeDisplayName().contains(savedConfigOpt.get().getProjectName())) {
+					projectHierarchy.setNodeDisplayName(projectHierarchy.getNodeDisplayName()
+							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
+				}
+			});
+
+			projectHierarchyRepository.saveAll(pHByBasicProjectConfigId);
+		}
+	}
+
+	private void updateProjectNameInAcc(Optional<ProjectBasicConfig> savedConfigOpt, ProjectBasicConfig basicConfig,
+			List<AccountHierarchy> accHierarchy) {
 		if (CollectionUtils.isNotEmpty(accHierarchy)) {
 			accHierarchy.stream().forEach(accountHierarchy -> {
 
@@ -460,8 +492,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
 				}
 				if (accountHierarchy.getPath().contains(savedConfigOpt.get().getProjectName())) {
-					accountHierarchy.setPath(accountHierarchy.getPath()
-							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
+					accountHierarchy.setPath(accountHierarchy.getPath().replace(savedConfigOpt.get().getProjectName(),
+							basicConfig.getProjectName()));
 				}
 			});
 
