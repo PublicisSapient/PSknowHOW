@@ -35,7 +35,6 @@ export class AdditionalFilterComponent implements OnChanges {
 
   ngOnInit() {
     this.subscriptions.push(this.service.populateAdditionalFilters
-      .asObservable()
       .pipe(distinctUntilChanged())
       .subscribe((data) => {
       if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
