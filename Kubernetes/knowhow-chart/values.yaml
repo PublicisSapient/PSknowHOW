@@ -19,7 +19,8 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   knowhowtag: "12.0.0"
   mongodbtag: "5.0.18-rootuser"
-  authscmtag: "2.0.0"
+  authtag: "2.0.0"
+  authscmdbtag: "2.0.0"
 
 ## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
 
