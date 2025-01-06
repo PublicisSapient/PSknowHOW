@@ -41,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl;
@@ -48,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.ser
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import org.bson.types.ObjectId;
@@ -183,6 +185,8 @@ public class ProjectBasicConfigServiceImplTest {
 	private TestExecutionService testExecutionService;
 	@Mock
 	private OrganizationHierarchyService organizationHierarchyService;
+	@Mock
+	private ProjectHierarchyRepository projectHierarchyRepository;
 	@Mock
 	private OrganizationHierarchyRepository organizationHierarchyRepository;
 	@Mock
@@ -422,8 +426,15 @@ public class ProjectBasicConfigServiceImplTest {
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
 		List<ProcessorExecutionTraceLog> traceLogs= new ArrayList<>();
 		traceLogs.add(new ProcessorExecutionTraceLog());
+		List<ProjectHierarchy> ph = new ArrayList<>();
+		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
+		projectHierarchy.setNodeId("ABCD12");
+		projectHierarchy.setNodeName("ABCD");
+		projectHierarchy.setNodeDisplayName("ABCD");
+		ph.add(projectHierarchy);
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),anyList())).thenReturn(traceLogs);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(new AssigneeDetails());
+		when(projectHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(ph);
 		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
 				basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
@@ -435,9 +446,17 @@ public class ProjectBasicConfigServiceImplTest {
 	@Test
 	public void updateConfigTest_kanbanHierarchy_success() {
 		basicConfig.setIsKanban(true);
+		List<ProjectHierarchy> ph = new ArrayList<>();
+		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
+		projectHierarchy.setNodeId("ABCD12");
+		projectHierarchy.setNodeName("ABCD");
+		projectHierarchy.setNodeDisplayName("ABCD");
+		ph.add(projectHierarchy);
+
 		when(basicConfigRepository.findById(any())).thenReturn(basicConfigOpt);
 		when(basicConfigRepository.findByProjectNameAndIdNot(any(), any())).thenReturn(null);
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
+		when(projectHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(ph);
 		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
 				basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
