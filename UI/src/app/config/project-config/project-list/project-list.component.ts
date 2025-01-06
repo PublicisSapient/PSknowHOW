@@ -330,6 +330,20 @@ export class ProjectListComponent implements OnInit {
       updatedDetails['id'] = this.selectedProject?.id;
       updatedDetails["developerKpiEnabled"] = this.selectedProject?.developerKpiEnabled;
       updatedDetails["projectOnHold"] = this.selectedProject?.projectOnHold;
+      let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject?.type?.toLowerCase()];
+      for (let element of hierarchyData) {
+        if (element.hierarchyLevelId == 'project') {
+          break;
+        }
+        updatedDetails['hierarchy'].push({
+          hierarchyLevel: {
+            level: element.level,
+            hierarchyLevelId: element.hierarchyLevelId,
+            hierarchyLevelName: element.hierarchyLevelName
+          },
+          value: this.selectedProject[element.hierarchyLevelName]
+        });
+      }
       this.http.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
             if (response && response.serviceResponse && response.serviceResponse.success) {
               this.messenger.add({
