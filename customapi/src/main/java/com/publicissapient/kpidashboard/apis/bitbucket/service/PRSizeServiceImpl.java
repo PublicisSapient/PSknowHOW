@@ -188,13 +188,6 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
-			Long overAllLinesChanged = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getPrLinesChanged)
-					.orElse(0L);
-			Long overAllMergeRequests = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getMergeRequests)
-					.orElse(0L);
-			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					overAllLinesChanged, overAllMergeRequests, aggDataMap);
-
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {

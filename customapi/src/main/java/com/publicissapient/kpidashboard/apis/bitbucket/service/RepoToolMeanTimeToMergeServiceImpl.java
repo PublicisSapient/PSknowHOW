@@ -175,10 +175,6 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			String date = KpiHelperService.getDateRange(weekRange, duration);
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricRespons.stream()
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
-			Double overAllMeanTimeToMerge = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getAverage)
-					.orElse(0.0d);
-			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					KpiHelperService.convertMilliSecondsToHours(overAllMeanTimeToMerge*1000), aggDataMap);
 
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)

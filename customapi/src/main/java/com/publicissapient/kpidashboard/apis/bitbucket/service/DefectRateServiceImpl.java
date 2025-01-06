@@ -204,13 +204,6 @@ public class DefectRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
-			int overallMrs = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getMergeRequestsNumber).orElse(0);
-			double overallDefectRate = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getProjectDefectMergeRequestPercentage).orElse(0.0d);
-
-			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					overallMrs, overallDefectRate, aggDataMap);
 			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
 					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
 			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
