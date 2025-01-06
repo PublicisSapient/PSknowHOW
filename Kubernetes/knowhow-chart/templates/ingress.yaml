@@ -58,4 +58,24 @@ spec:
               {{- end }}
           {{- end }}
     {{- end }}
+    {{- if .Values.authNauthApp.enabled }}
+    # Additional host for authnauth-ui
+    - host: {{ .Values.authNauthApp.host | quote }}
+      http:
+        paths:
+          - path: /
+            {{- if semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: authnauth-ui
+                port:
+                  number: 80
+              {{- else }}
+              serviceName: authnauth-ui
+              servicePort: 80
+              {{- end }}
+    {{- end }}
 {{- end }}
