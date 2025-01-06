@@ -724,6 +724,10 @@ describe('FieldMappingComponent', () => {
   });
 
   it('should get getKPIFieldMappingRelationships', fakeAsync(() => {
+    component.selectedConfig = {
+      id: '132123243234234',
+      type: 'Scrum'
+    }
     spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(of(fakeKpiFieldMappingList));
     component.getKPIFieldMappingRelationships();
     tick();
