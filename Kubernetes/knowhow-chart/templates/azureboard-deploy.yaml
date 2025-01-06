@@ -32,7 +32,7 @@ spec:
         - name: azure-board-processor
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.azureboardrepository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.azureboardrepository }}:{{ .Values.image.knowhowtag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 50017
