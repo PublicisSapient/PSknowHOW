@@ -227,6 +227,11 @@ export class ExportExcelComponent implements OnInit {
       // Update tableValues to replace blank values with '(Blanks)'
       this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => {
         const updatedRow = { ...row }; // Create a copy of the row
+
+        if ((updatedRow['Issue Id'] || updatedRow['Defect ID']) && updatedRow['Issue URL']) {
+          updatedRow['Issue Id'] = { text: updatedRow['Issue Id'] || updatedRow['Defect ID'], hyperlink: updatedRow['Issue URL'] };
+        }
+
         Object.keys(updatedRow).forEach(colName => {
           if (typeof updatedRow[colName] === 'string') {
             updatedRow[colName] = updatedRow[colName].trim();
