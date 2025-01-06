@@ -305,6 +305,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
       }));
     }
+
+    this.route.queryParams.subscribe(params => {
+      const kpiFilterParam = params['kpiFilters'];
+      if (kpiFilterParam) {
+        const kpiFilterParamDecoded = atob(kpiFilterParam);
+        const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+        this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+      }
+    });
   }
 
   // unsubscribing all Kpi Request

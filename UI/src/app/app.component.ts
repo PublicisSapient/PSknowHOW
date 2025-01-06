@@ -114,7 +114,6 @@ export class AppComponent implements OnInit {
             if (param.includes('###')) {
               param = param.replace(/###/gi, '___');
             }
-            console.log('Param:', param);
 
             this.helperService.setBackupOfUrlFilters(param);
 

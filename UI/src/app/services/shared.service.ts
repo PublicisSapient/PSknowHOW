@@ -18,6 +18,7 @@
 
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 /*************
 SharedService
@@ -127,7 +128,7 @@ export class SharedService {
   // KPI filter retention
   selectedKPIFilterObj = {};
 
-  constructor() {
+  constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
@@ -371,6 +372,14 @@ export class SharedService {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
+    const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
+
+    this.router.navigate([], {
+      queryParams: { 'kpiFilters': kpiFilterParamStr }, // Pass the object here
+      relativeTo: this.route,
+      queryParamsHandling: 'merge',
+    });
+
     this.selectedFilterOption.next(value);
   }
 
