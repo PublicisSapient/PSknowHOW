@@ -1696,6 +1696,7 @@ public class KPIExcelUtility {
 		issueKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		issueKpiModalValue.setPriority(jiraIssue.getPriority());
 		KPIExcelUtility.populateAssignee(jiraIssue, issueKpiModalValue);
+		issueKpiModalValue.setIssueSize(Constant.BLANK);
 		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			issueKpiModalValue.setIssueSize(df2.format(jiraIssue.getStoryPoints()));
@@ -1707,8 +1708,6 @@ public class KPIExcelUtility {
 			issueKpiModalValue
 					.setIssueSize(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/"
 							+ roundingOff(originalEstimateInHours) + " hrs");
-		} else {
-			issueKpiModalValue.setIssueSize(Constant.BLANK);
 		}
 		issueKpiModalValue.setDueDate(StringUtils.isNotEmpty(jiraIssue.getDueDate()) ? DateUtil.dateTimeConverter(
 				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : Constant.BLANK);
@@ -1727,8 +1726,9 @@ public class KPIExcelUtility {
 		if (CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())) {
 			List<ReleaseVersion> releaseVersions = jiraIssue.getReleaseVersions();
 			issueKpiModalValue.setReleaseName(releaseVersions.get(releaseVersions.size() - 1).getReleaseName());
-		} else
+		} else {
 			issueKpiModalValue.setReleaseName(Constant.BLANK);
+		}
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
 			issueKpiModalValue
 					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));

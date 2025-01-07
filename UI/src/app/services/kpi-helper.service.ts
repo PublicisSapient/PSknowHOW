@@ -227,7 +227,7 @@ export class KpiHelperService {
     });
 
     chartData['categoryData'] = categoryGroup;
-    chartData['summaryHeader'] = json.dataGroup.dataGroup2[0].name;
+    chartData['summaryHeader'] = json?.dataGroup?.dataGroup2[0]?.name;
     // chartData['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
     //   if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
     //     return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);

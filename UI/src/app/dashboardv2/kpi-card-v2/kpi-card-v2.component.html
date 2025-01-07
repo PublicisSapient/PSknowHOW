@@ -21,7 +21,7 @@
           <div class="{{ kpiData?.kpiDetail?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
             <app-ps-kpi-card-chart-renderer [chartData]="currentChartData?.chartData"
               [chartType]="kpiData?.kpiDetail?.chartType" [chartWidth]="cardData?.chartWidth"
-              [chartHeight]="cardData?.chartHeight"
+              [chartHeight]="cardData?.chartHeight" [kpiName]="kpiData?.kpiDetail?.kpiName"
               [kpiId]="kpiData?.kpiDetail?.kpiId" [kpiDetails]="kpiData?.kpiDetail"></app-ps-kpi-card-chart-renderer>
           </div>
           <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="kpiData?.kpiDetail?.chartType ===  'bar-chart'">

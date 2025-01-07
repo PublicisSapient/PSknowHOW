@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,9 +169,14 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 						.findFirst().orElse(new JiraIssueCustomHistory());
 				List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory, sprintDetail,
 						blockedStatusList, waitStatusList, flagIncluded);
-				data.setIssueBlockedTime(waitedTimeAndBlockedTime.get(1));
-				data.setIssueWaitTime(waitedTimeAndBlockedTime.get(0));
-
+				int jiraIssueWaitedTime = waitedTimeAndBlockedTime.get(0);
+				int jiraIssueBlockedTime = waitedTimeAndBlockedTime.get(1);
+				data.setIssueBlockedTime(jiraIssueBlockedTime);
+				data.setIssueWaitTime(jiraIssueWaitedTime);
+				data.setBlockedTime(CommonUtils.convertIntoDays(jiraIssueBlockedTime));
+				data.setWaitTime(CommonUtils.convertIntoDays(jiraIssueWaitedTime));
+				data.setWastage(
+						CommonUtils.convertIntoDays(jiraIssueBlockedTime + jiraIssueWaitedTime));
 			});
 
 			kpiElement.setSprint(sprintLeafNode.getName());

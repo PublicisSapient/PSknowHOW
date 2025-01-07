@@ -101,7 +101,7 @@ export class StackedBarChartComponent implements OnInit, OnChanges {
     let minWidth = 35;
     let nonZeroBars = this.data.filter(d => parseInt(d.value) > 0);
     const g = svg.selectAll('.slice')
-      .data(this.data)
+      .data(this.data.filter(x=>x.value !==0))
       .enter()
       .append('g')
       .attr('transform', (d, index) => {
