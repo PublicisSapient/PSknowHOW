@@ -52,8 +52,13 @@ export class ExportExcelComponent implements OnInit {
   ) { }
 
   ngOnInit(): void { 
-    this.sharedService.kpiExcelSubject.subscribe(x=>{
+    this.sharedService.kpiExcelSubject.subscribe((x:any)=>{
       this.exportExcelRawVariable = x;
+      if (x?.markerInfo) {
+        for (const key in x?.markerInfo) {
+          this.markerInfo.push({ color: key, info: x?.markerInfo[key] });
+        }
+      }
     })
   }
 
@@ -204,6 +209,7 @@ export class ExportExcelComponent implements OnInit {
     this.selectedColumns = []
     this.tableColumns = [];
     this.isDisableSaveCOnfigurationBtn = false;
+    this.markerInfo = [];
   }
 
   checkIfArray(arr) {
