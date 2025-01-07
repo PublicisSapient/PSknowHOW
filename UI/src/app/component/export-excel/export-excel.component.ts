@@ -228,7 +228,7 @@ export class ExportExcelComponent implements OnInit {
       this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => {
         const updatedRow = { ...row }; // Create a copy of the row
 
-        if ((updatedRow['Issue Id'] || updatedRow['Defect ID']) && updatedRow['Issue URL']) {
+        if (typeof updatedRow['Issue Id'] !=='object' &&  (updatedRow['Issue Id'] || updatedRow['Defect ID']) && updatedRow['Issue URL']) {
           updatedRow['Issue Id'] = { text: updatedRow['Issue Id'] || updatedRow['Defect ID'], hyperlink: updatedRow['Issue URL'] };
         }
 
