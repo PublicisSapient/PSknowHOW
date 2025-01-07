@@ -81,7 +81,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() immediateLoader: boolean = true;
   @Input() partialData: boolean = false;
   warning = '';
-  //spal 
+  //spal
   kpiHeaderData: {};
   kpiFilterData: {};
   copyCardData: any;
@@ -132,18 +132,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             }
           }
         }
-        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {
-          if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
-          }
+        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
+          this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
         }
       }
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
     /** assign 1st value to radio button by default */
-    if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
-      this.radioOption = this.dropdownArr[0]?.options[0];
-    }
+    // if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
+    //   console.log('default first radio')
+    //   this.radioOption = this.dropdownArr[0]?.options[0];
+    // }
   }
 
   initializeMenu() {
@@ -186,7 +185,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 /**
    * Handles various actions based on the event type.
    * Prepares data, opens dialogs, exports data, or shows comments as needed.
-   * 
+   *
    * @param {any} event - The event object containing action indicators.
    * @returns {void}
    */
@@ -445,7 +444,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if(!!this.cardData){
       this.service.kpiExcelSubject.next({columns:this.cardData['modalHeads'],excelData:this.cardData['issueData']})
     }
-   
+
     this.downloadExcel.emit(true);
   }
 
@@ -560,9 +559,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
 /**
      * Handles changes in filter selection, updates the issue data based on the selected filters,
-     * and prepares the chart data accordingly. It distinguishes between cases where the selected 
+     * and prepares the chart data accordingly. It distinguishes between cases where the selected
      * key object has a specific category value.
-     * 
+     *
      * @param event - The event object containing filter selection details.
      * @returns void
      * @throws None
@@ -602,7 +601,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
 /**
      * Resets the filter by restoring the original issue data and preparing the chart data.
-     * 
+     *
      * @param {void} No parameters are accepted.
      * @returns {void} This function does not return a value.
      * @throws {Error} Throws an error if chart data preparation fails.
@@ -643,7 +642,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 /**
      * Recursively sanitizes an array or object by removing null, undefined,
      * and empty objects, returning a cleaned version of the input.
-     * 
+     *
      * @param input - The array or object to sanitize.
      * @returns A sanitized array or object, or null if the input is empty.
      * @throws No exceptions are thrown.
@@ -703,7 +702,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
    * Calculates and returns the cumulative value based on the chart type and selected button value.
    * It converts the total count to hours if the chart type is 'stacked-bar' or 'stacked-bar-chart'.
    * Returns the total count or a calculated value based on the selected button value otherwise.
-   * 
+   *
    * @returns {number} The cumulative value or total count.
    * @throws {Error} Throws an error if the data structure is not as expected.
    */
