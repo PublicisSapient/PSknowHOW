@@ -6,7 +6,7 @@ import io.mongock.api.annotations.RollbackExecution;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-@ChangeUnit(id = "add_kpi_category_mapping", order = "12105", author = "aksshriv1", systemVersion = "12.1.0")
+@ChangeUnit(id = "add_kpi_category_mapping", order = "12107", author = "aksshriv1", systemVersion = "12.1.0")
 public class IncludeKPIInDashBoardKPI {
 
 	private final MongoTemplate mongoTemplate;
