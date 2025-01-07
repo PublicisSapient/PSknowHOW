@@ -435,6 +435,9 @@ export class SharedService {
     return this.selectedLevel;
   }
   setSelectedTrends(values) {
+    values.forEach(trend => {
+      trend.path = trend.path.replace(/___/g, '###');
+    });
     this.selectedTrends = values;
     // this.selectedTrendsEvent.emit(values);
     this.selectedTrendsEventSubject.next(values);
