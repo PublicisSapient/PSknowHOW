@@ -58,7 +58,7 @@
 		</sonar.test.exclusions>
 		<sonar.exclusions>
 			**src/test/java/**
-			**/com/publicissapient/kpidashboard/apis/mongock/**
+			**com/publicissapient/kpidashboard/apis/mongock/**/*
 		</sonar.exclusions>
 	</properties>
 
