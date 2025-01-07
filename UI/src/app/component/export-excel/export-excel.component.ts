@@ -227,7 +227,7 @@ export class ExportExcelComponent implements OnInit {
   generateColumnFilterData() {
     // Define blank values to handle
     const blankValues = ['', null, undefined, '-', 'NA','N/A','Undefined'];
-    this.excludeColumnFilter = ['Linked Defect','Linked Stories'].map(item => item.toLowerCase());
+    this.excludeColumnFilter = this.generateExcludeColumnsFilterList(this.modalDetails['tableValues']).map(item => item.toLowerCase());
     this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
     if (this.modalDetails['tableValues'].length > 0) {
       // Update tableValues to replace blank values with '(Blanks)'
@@ -237,6 +237,8 @@ export class ExportExcelComponent implements OnInit {
         if (typeof updatedRow['Issue Id'] !=='object' &&  (updatedRow['Issue Id'] || updatedRow['Defect ID']) && updatedRow['Issue URL']) {
           updatedRow['Issue Id'] = { text: updatedRow['Issue Id'] || updatedRow['Defect ID'], hyperlink: updatedRow['Issue URL'] };
         }
+
+        updatedRow['Linked Defect'] = (typeof updatedRow['Linked Defect'] ==='object' && updatedRow['Linked Defect'].hyperlink === 'N/A')?updatedRow['Linked Defect'].text:updatedRow['Linked Defect']
 
         Object.keys(updatedRow).forEach(colName => {
           if (typeof updatedRow[colName] === 'string') {
@@ -382,4 +384,13 @@ export class ExportExcelComponent implements OnInit {
     return [issueIdColumn, ...remainingColumns];
    }
 
+   generateExcludeColumnsFilterList(tableValue) {
+    let excludeColumnFilter = ['Linked Defect', 'Defect Priority', 'Linked Stories'];
+    for (const colunmName in tableValue) {
+      if (typeof tableValue[colunmName] == 'object' && !excludeColumnFilter.includes(colunmName.toLowerCase())) {
+        excludeColumnFilter.push(colunmName);
+      }
+    }
+    return excludeColumnFilter;
+   }
 }
