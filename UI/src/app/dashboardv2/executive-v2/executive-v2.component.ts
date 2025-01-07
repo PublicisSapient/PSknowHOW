@@ -124,8 +124,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
-  // iterationKPIData = [iterationCommitment, Workremaining, IterationBurnUp, wastage, EstimateActual, DefectCountBy,
-  //   ClosurePossibleToday, IssuesLikelyToSpill, FTPR, QualityStatus, EstimateHygiene, WorkStatus];
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
@@ -833,7 +831,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else if (this.selectedTab === 'backlog') {
       this.postJiraKPIForBacklog(postData, source);
     } else if (this.selectedTab === 'iteration') {
-      this.iterationKPIData = [];
+      //this.iterationKPIData = [];
       this.postJiraKPIForIteration(postData, source);
     }
   }
