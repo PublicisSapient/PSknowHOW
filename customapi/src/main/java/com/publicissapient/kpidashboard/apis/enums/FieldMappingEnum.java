@@ -41,11 +41,8 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraIssueTypeNames", "storyFirstStatus", "rootCauseIdentifier", "epicCostOfDelay",
 					"epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize",
 					"jiraIssueEpicType", "rootCause", "rootCauseValues", "additionalFilterConfig", "estimationCriteria",
-					"storyPointToHourMapping", "jiraStoryPointsCustomField", "jiraLiveStatusLTK", "jiraLiveStatusNOPK",
-					"jiraLiveStatusNOSK", "jiraLiveStatusNORK", "jiraLiveStatusOTA", "ticketCountIssueType",
-					"kanbanRCACountIssueType", "jiraTicketVelocityIssueType", "ticketDeliverdStatus",
-					"jiraTicketClosedStatus", "kanbanCycleTimeIssueType", "jiraTicketTriagedStatus",
-					"jiraTicketRejectedStatus", "jiraSubTaskDefectType")),
+					"storyPointToHourMapping", "jiraStoryPointsCustomField", "kanbanRCACountIssueType",
+					"jiraSubTaskDefectType")),
 
 	KPI40("Issue Count", KPISource.JIRA.name(),
 			Arrays.asList("jiraStoryIdentificationKpi40", "thresholdValueKPI40", "jiraStoryCategoryKpi40")),
@@ -206,11 +203,7 @@ public enum FieldMappingEnum {
 
 	KPI17("Unit Test Coverage", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI17")),
 
-	KPI62("Unit Test Coverage (Kanban) ", KPISource.SONARKANBAN.name(), Arrays.asList("thresholdValueKPI62")),
-
 	KPI38("Sonar Violations", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI38")),
-
-	KPI64("Sonar Violations (Kanban) ", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI64")),
 
 	KPI84("Mean Time To Merge", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI84")),
 
@@ -220,15 +213,9 @@ public enum FieldMappingEnum {
 
 	KPI158("Mean Time To Merge (Developer) ", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI158")),
 
-	KPI159("Number of Check-ins (Developer) ", KPISource.BITBUCKETKANBAN.name(), Arrays.asList("thresholdValueKPI159")),
-
 	KPI160("Pickup Time (Developer) ", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI160")),
 
-	KPI65("Check-Ins & Merge Requests (Kanban) ", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI65")),
-
 	KPI27("Sonar Tech Debt", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI27")),
-
-	KPI67("Sonar Tech Debt (Kanban)", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI67")),
 
 	KPI166("Mean Time to Recover", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI166","jiraDodKPI166","jiraProductionIncidentIdentification",
 			"jiraProdIncidentRaisedByCustomField" , "jiraProdIncidentRaisedByValue", "thresholdValueKPI166")),
@@ -257,7 +244,67 @@ public enum FieldMappingEnum {
 			"jiraIssueDependencyTypeKPI176", "jiraIssueRiskTypeKPI176")),
 	KPI182("PR Success Rate", KPISource.BITBUCKET.name(), Collections.singletonList("thresholdValueKPI182")),
 	KPI180("Revert Rate", KPISource.BITBUCKET.name(), Collections.singletonList("thresholdValueKPI180")),
-	KPI181("PR Decline Rate", KPISource.BITBUCKET.name(), Collections.singletonList("thresholdValueKPI181"));
+	KPI181("PR Decline Rate", KPISource.BITBUCKET.name(), Collections.singletonList("thresholdValueKPI181")),
+
+	/** Kanban fieldMapping Enum starts **/
+
+	KPI48("Net Open Ticket Count By Status", KPISource.JIRAKANBAN.name(),
+			Arrays.asList("jiraLiveStatusKPI48", "ticketCountIssueTypeKPI48", "kanbanRCACountIssueTypeKPI48",
+					"jiraTicketClosedStatusKPI48", "jiraTicketRejectedStatusKPI48", "thresholdValueKPI48")),
+
+	KPI49("Ticket Velocity", KPISource.JIRAKANBAN.name(),
+			Arrays.asList("jiraTicketVelocityIssueTypeKPI49", "ticketDeliveredStatusKPI49", "thresholdValueKPI49")),
+
+	KPI50("Net Open Ticket Count By Priority", KPISource.JIRAKANBAN.name(),
+			Arrays.asList("jiraLiveStatusKPI50", "ticketCountIssueTypeKPI50", "kanbanRCACountIssueTypeKPI50",
+					"jiraTicketClosedStatusKPI50", "jiraTicketRejectedStatusKPI50", "thresholdValueKPI50")),
+
+	KPI51("Net Open Ticket Count By Rca", KPISource.JIRAKANBAN.name(),
+			Arrays.asList("jiraLiveStatusKPI51", "ticketCountIssueTypeKPI51", "kanbanRCACountIssueTypeKPI51",
+					"jiraTicketClosedStatusKPI51", "jiraTicketRejectedStatusKPI151", "thresholdValueKPI51")),
+
+	KPI53("Lead Time Kanban", KPISource.JIRAKANBAN.name(),
+			Arrays.asList("jiraLiveStatusKPI53", "jiraTicketClosedStatusKPI53", "kanbanCycleTimeIssueTypeKPI53",
+					"jiraTicketTriagedStatusKPI53", "thresholdValueKPI53")),
+
+	KPI54("Ticket Open Vs Close By Priority", KPISource.JIRAKANBAN.name(), Arrays.asList("ticketCountIssueTypeKPI54",
+			"ticketCountIssueTypeKPI54", "jiraTicketClosedStatusKPI54", "thresholdValueKPI54")),
+
+	KPI55("Ticket Open Vs Close By Type", KPISource.JIRAKANBAN.name(), Arrays.asList("ticketCountIssueTypeKPI55",
+			"ticketCountIssueTypeKPI55", "jiraTicketClosedStatusKPI55", "thresholdValueKPI55")),
+
+	KPI58("Team Capacity", KPISource.JIRAKANBAN.name(), Arrays.asList("thresholdValueKPI58")),
+
+	KPI62("Unit Test Coverage (Kanban) ", KPISource.SONARKANBAN.name(), Arrays.asList("thresholdValueKPI62")),
+
+	KPI63("Regression Automation Coverage", KPISource.ZEPHYRKANBAN.name(), Arrays.asList("thresholdValueKPI63")),
+
+	KPI64("Sonar Violations (Kanban) ", KPISource.SONARKANBAN.name(), Arrays.asList("thresholdValueKPI64")),
+
+	KPI65("Check-Ins & Merge Requests (Kanban) ", KPISource.BITBUCKETKANBAN.name(),
+			Arrays.asList("thresholdValueKPI65")),
+
+	KPI66("Code Build Time", KPISource.JENKINSKANBAN.name(), Arrays.asList("thresholdValueKPI66")),
+
+	KPI67("Sonar Tech Debt (Kanban)", KPISource.SONARKANBAN.name(), Arrays.asList("thresholdValueKPI67")),
+
+	KPI71("Test Execution and pass percentage", KPISource.ZEPHYRKANBAN.name(), Arrays.asList("thresholdValueKPI71")),
+
+	KPI74("Release Frequency", KPISource.JIRAKANBAN.name(), Arrays.asList("thresholdValueKPI74")),
+
+	KPI114("Value delivered (Cost of Delay)", KPISource.JIRAKANBAN.name(), Arrays.asList("thresholdValueKPI114")),
+
+	KPI159("Number of Check-ins (Developer) ", KPISource.BITBUCKETKANBAN.name(), Arrays.asList("thresholdValueKPI159")),
+
+	KPI184("Change Failure Rate", KPISource.JENKINSKANBAN.name(), Arrays.asList("thresholdValueKPI184")),
+
+	KPI183("Deployment Frequency", KPISource.JENKINSKANBAN.name(), Arrays.asList("thresholdValueKPI183")),
+
+	KPI997("Open Ticket Aging By Priority", KPISource.JIRAKANBAN.name(),
+			Arrays.asList("jiraLiveStatusKPI997", "ticketCountIssueTypeKPI997", "jiraTicketClosedStatusKPI997",
+					"jiraTicketRejectedStatusKPI997", "thresholdValueKPI997"));
+
+	/** kanban field mapping enums end **/
 
 	private List<String> fields;
 	private String kpiName;

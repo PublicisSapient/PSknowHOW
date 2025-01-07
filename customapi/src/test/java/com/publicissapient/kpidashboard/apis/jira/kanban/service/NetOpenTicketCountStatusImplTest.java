@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -49,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
@@ -108,10 +108,10 @@ public class NetOpenTicketCountStatusImplTest {
 		kpiWiseAggregation.put(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name(), "sum");
 		setTreadValuesDataCount();
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraLiveStatusNOSK("");
-		fieldMapping.setJiraTicketClosedStatus(Collections.EMPTY_LIST);
-		fieldMapping.setKanbanRCACountIssueType(Collections.EMPTY_LIST);
-		fieldMapping.setTicketCountIssueType(Collections.EMPTY_LIST);
+		fieldMapping.setJiraLiveStatusKPI48("");
+		fieldMapping.setJiraTicketClosedStatusKPI48(Collections.EMPTY_LIST);
+		fieldMapping.setKanbanRCACountIssueTypeKPI48(Collections.EMPTY_LIST);
+		fieldMapping.setTicketCountIssueTypeKPI48(Collections.EMPTY_LIST);
 		fieldMapping.setStoryFirstStatus("");
 		fieldMappingMap.put(new ObjectId("6335368249794a18e8a4479f"), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);

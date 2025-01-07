@@ -54,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
@@ -239,6 +240,11 @@ public class CostOfDelayKanbanServiceImpl extends JiraKPIService<Double, List<Ob
 						f -> LocalDate.parse(f.getChangeDate().split("\\.")[0], DATE_TIME_FORMATTER).toString()
 
 				)));
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI114(), KPICode.COST_OF_DELAY_KANBAN.getKpiId());
 	}
 
 }

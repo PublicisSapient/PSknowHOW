@@ -1372,7 +1372,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "kanban" : true ,
     "chartType" : "grouped_column_plus_line" ,
     "kpiInfo" : {
@@ -1428,7 +1428,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "kanban" : true ,
     "chartType" : "grouped_column_plus_line" ,
     "kpiInfo" : {
@@ -1483,7 +1483,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "kanban" : true ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -1517,7 +1517,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "0" ,
     "kanban" : true ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -1552,7 +1552,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 2 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "0" ,
     "kanban" : true ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -1586,7 +1586,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 2 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "kanban" : true ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -1618,6 +1618,7 @@
     "kpiSource": "Zypher",
     "combinedKpiSource": "Zephyr/Zypher/JiraTest",
     "groupId" : 1 ,
+    "thresholdValue": "55",
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
     "kanban" : true ,
@@ -1803,6 +1804,7 @@
     "kpiSource": "Zypher",
     "combinedKpiSource": "Zephyr/Zypher/JiraTest",
     "groupId" : 1 ,
+    "thresholdValue": "55",
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
     "kanban" : true ,
@@ -1844,7 +1846,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "maxValue" : "300" ,
     "kpiUnit" : "SP" ,
     "kanban" : true ,
@@ -1879,7 +1881,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "kanban" : true ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -1919,7 +1921,7 @@
     "kpiSource": "Jenkins",
     "combinedKpiSource": "Jenkins/Bamboo/GitHubAction/AzurePipeline/Teamcity",
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "kanban" : true ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -2004,7 +2006,7 @@
       "Aggregated"
     ] ,
     "kpiBaseLine" : "0" ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "defaultOrder" : 16 ,
     "kpiUnit" : "Days" ,
     "kpiSource": "Jira",
@@ -2109,7 +2111,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 4 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "kanban" : true ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -2148,7 +2150,7 @@
     "kpiSource": "Jira",
     "combinedKpiSource": "Jira/Azure",
     "groupId" : 4 ,
-    "thresholdValue" : "" ,
+    "thresholdValue": "0",
     "kanban" : true ,
     "chartType" : "line" ,
     "kpiInfo" : {

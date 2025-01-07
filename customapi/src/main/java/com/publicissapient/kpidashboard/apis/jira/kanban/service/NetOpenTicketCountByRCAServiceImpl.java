@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -42,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -133,11 +133,11 @@ public class NetOpenTicketCountByRCAServiceImpl
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			Map<String, Object> fieldWise = new HashMap<>();
-			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusNORK());
-			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatus());
-			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatus());
-			fieldWise.put("RCA_Count_IssueType", fieldMapping.getKanbanRCACountIssueType());
-			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueType());
+			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusKPI51());
+			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatusKPI51());
+			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatusKPI151());
+			fieldWise.put("RCA_Count_IssueType", fieldMapping.getKanbanRCACountIssueTypeKPI51());
+			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueTypeKPI51());
 			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
 			projectWiseMapping.put(basicProjectConfigId, fieldWise);
 		});
@@ -379,4 +379,11 @@ public class NetOpenTicketCountByRCAServiceImpl
 
 		}
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI51(),
+				KPICode.NET_OPEN_TICKET_COUNT_BY_RCA.getKpiId());
+	}
+
 }
