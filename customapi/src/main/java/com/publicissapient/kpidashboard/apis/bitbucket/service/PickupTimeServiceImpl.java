@@ -195,10 +195,6 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
-							projectName, date, aggDataMap);
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -297,12 +293,12 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 				return mergeRequestsPT.size();
 			}).orElse(0);
 
-			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String branchName = getBranchSubFilter(repo, projectName);
 			String userKpiGroup = branchName + "#" + developerName;
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 					.optionalStart().appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
 					.optionalEnd().appendPattern("'Z'").toFormatter();
-			if (repoToolUserDetails.isPresent() && repo != null) {
+			if (repoToolUserDetails.isPresent()) {
 				repoToolUserDetails.get().getMergeRequestList().forEach(mr -> {
 					RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 					repoToolValidationData.setProjectName(projectName);

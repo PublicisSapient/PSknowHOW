@@ -212,11 +212,6 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 									date, aggDataMap));
 				}
 			});
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-
-			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
-					projectName, date, aggDataMap);
 
 			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
@@ -261,9 +256,9 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Long userPrSize = repoToolUserDetails.map(RepoToolUserDetails::getLinesChanged).orElse(0L);
 			Long userMrCount = repoToolUserDetails.map(RepoToolUserDetails::getMergeRequests).orElse(0L);
-			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String branchName = getBranchSubFilter(repo, projectName);
 			String userKpiGroup = branchName + "#" + developerName;
-			if(repoToolUserDetails.isPresent() && repo != null) {
+			if(repoToolUserDetails.isPresent()) {
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
 				repoToolValidationData.setBranchName(repo.getBranch());

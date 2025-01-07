@@ -216,10 +216,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 					setDataCount(projectName, date, overallKpiGroup, commitCount, mrCount, aggDataMap);
 				}
 			});
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
-							projectName, date, aggDataMap);
+
 			currentDate = KpiHelperService.getNextRangeDate(duration, currentDate);
 		}
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
@@ -286,9 +283,9 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Long commitCount = repoToolUserDetails.map(RepoToolUserDetails::getCount).orElse(0L);
 			Long mrCount = repoToolUserDetails.map(RepoToolUserDetails::getMrCount).orElse(0L);
-			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String branchName = getBranchSubFilter(repo, projectName);
 			String userKpiGroup = branchName + "#" + developerName;
-			if (repoToolUserDetails.isPresent() && repo != null) {
+			if (repoToolUserDetails.isPresent()) {
 				Optional<RepoToolValidationData> existingData = repoToolValidationDataList.stream()
 						.filter(data -> data.getBranchName().equals(repo.getBranch())
 								&& data.getDeveloperName().equals(developerName)
