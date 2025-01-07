@@ -2136,4 +2136,17 @@ public class KpiHelperService { // NOPMD
 
 	}
 
+	public String updateKPISource(ObjectId basicProjectConfId, ObjectId projectToolConfigId) {
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService.cacheProjectToolConfigMapData();
+
+		String source = "";
+		if (MapUtils.isNotEmpty(toolMap) && toolMap.get(basicProjectConfId) != null) {
+			List<ProjectToolConfig> allToolConfigs = new ArrayList<>();
+			toolMap.get(basicProjectConfId).values().forEach(allToolConfigs::addAll);
+			ProjectToolConfig projectToolConfig = allToolConfigs.stream().filter(a -> a.getId().equals(projectToolConfigId)).toList().get(0);
+			return projectToolConfig.getToolName();
+		}
+		return source;
+	}
+
 }

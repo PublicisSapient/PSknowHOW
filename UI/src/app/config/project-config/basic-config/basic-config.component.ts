@@ -257,7 +257,7 @@ export class BasicConfigComponent implements OnInit {
         this.form.reset();
         this.messenger.add({
           severity: 'success',
-          summary: 'Basic config submitted!!',
+          summary: 'Project setup initiated',
           detail: ''
         });
         this.isProjectSetupPopup = false;
@@ -305,5 +305,22 @@ export class BasicConfigComponent implements OnInit {
       this.getFields();
     });
   }
+
+  getButtonLabel(): string {
+    return this.clone === 'true' ? 'Clone' : 'Save';
+  }
+
+  getConeStatusFlag(): boolean {
+    return this.clone === 'true';
+  }
+
+  backToProjectList() {
+    if (this.clone === 'true') {
+      this.router.navigate(['./dashboard/Config/ProjectList']);
+    } else {
+      this.closeProjectSetupPopup.emit();
+    }
+  }
+
 
 }
