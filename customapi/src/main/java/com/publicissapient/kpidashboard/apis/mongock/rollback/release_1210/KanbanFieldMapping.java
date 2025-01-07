@@ -46,6 +46,25 @@ public class KanbanFieldMapping {
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
 	public static final String FIELD_NAME = "fieldName";
 	public static final String KPI_MASTER = "kpi_master";
+	public static final String JIRA_LIVE_STATUS_LTK = "jiraLiveStatusLTK";
+	public static final String JIRA_LIVE_STATUS_NOPK = "jiraLiveStatusNOPK";
+	public static final String JIRA_LIVE_STATUS_NOSK = "jiraLiveStatusNOSK";
+	public static final String JIRA_LIVE_STATUS_NORK = "jiraLiveStatusNORK";
+	public static final String JIRA_LIVE_STATUS_OTA = "jiraLiveStatusOTA";
+	public static final String TICKET_COUNT_ISSUE_TYPE = "ticketCountIssueType";
+	public static final String KANBAN_RCA_COUNT_ISSUE_TYPE = "kanbanRCACountIssueType";
+	public static final String JIRA_TICKET_VELOCITY_ISSUE_TYPE = "jiraTicketVelocityIssueType";
+	public static final String TICKET_DELIVERD_STATUS = "ticketDeliverdStatus";
+	public static final String JIRA_TICKET_CLOSED_STATUS = "jiraTicketClosedStatus";
+	public static final String KANBAN_CYCLE_TIME_ISSUE_TYPE = "kanbanCycleTimeIssueType";
+	public static final String JIRA_TICKET_TRIAGED_STATUS = "jiraTicketTriagedStatus";
+	public static final String JIRA_TICKET_REJECTED_STATUS = "jiraTicketRejectedStatus";
+	public static final String STATUS_TO_IDENTIFY_LIVE_TICKETS = "Status to identify Live tickets";
+	public static final String WORKFLOW_STATUS_USED_TO_IDENTIFY_TICKETS_IN_LIVE_STATE = "Workflow status used to identify tickets in Live state";
+	public static final String WORK_FLOW_STATUS_MAPPING = "WorkFlow Status Mapping";
+	public static final String ISSUE_TYPES_TO_CONSIDER = "Issue types to consider";
+	public static final String ISSUE_TYPES_MAPPING = "Issue Types Mapping";
+	public static final String PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED = "Provide any status from workflow on which Live is considered.";
 
 	private final MongoTemplate mongoTemplate;
 
@@ -57,33 +76,33 @@ public class KanbanFieldMapping {
 		// Map of original field to list of duplicate fields
 		Map<String, List<String>> fieldMappings = new HashMap<>();
 
-		fieldMappings.put("jiraLiveStatusLTK", List.of("jiraLiveStatusKPI53"));
-		fieldMappings.put("jiraLiveStatusNOPK", List.of("jiraLiveStatusKPI50"));
-		fieldMappings.put("jiraLiveStatusNOSK", List.of("jiraLiveStatusKPI48"));
-		fieldMappings.put("jiraLiveStatusNORK", List.of("jiraLiveStatusKPI51"));
-		fieldMappings.put("jiraLiveStatusOTA", List.of("jiraLiveStatusKPI997"));
+		fieldMappings.put(JIRA_LIVE_STATUS_LTK, List.of("jiraLiveStatusKPI53"));
+		fieldMappings.put(JIRA_LIVE_STATUS_NOPK, List.of("jiraLiveStatusKPI50"));
+		fieldMappings.put(JIRA_LIVE_STATUS_NOSK, List.of("jiraLiveStatusKPI48"));
+		fieldMappings.put(JIRA_LIVE_STATUS_NORK, List.of("jiraLiveStatusKPI51"));
+		fieldMappings.put(JIRA_LIVE_STATUS_OTA, List.of("jiraLiveStatusKPI997"));
 
-		fieldMappings.put("ticketCountIssueType",
+		fieldMappings.put(TICKET_COUNT_ISSUE_TYPE,
 				List.of("ticketCountIssueTypeKPI48", "ticketCountIssueTypeKPI50", "ticketCountIssueTypeKPI51",
 						"ticketCountIssueTypeKPI54", "ticketCountIssueTypeKPI55", "ticketCountIssueTypeKPI997"));
 
-		fieldMappings.put("kanbanRCACountIssueType", List.of("kanbanRCACountIssueTypeKPI50",
+		fieldMappings.put(KANBAN_RCA_COUNT_ISSUE_TYPE, List.of("kanbanRCACountIssueTypeKPI50",
 				"kanbanRCACountIssueTypeKPI51", "kanbanRCACountIssueTypeKPI48"));
 
-		fieldMappings.put("jiraTicketVelocityIssueType", List.of("jiraTicketVelocityIssueTypeKPI49"));
+		fieldMappings.put(JIRA_TICKET_VELOCITY_ISSUE_TYPE, List.of("jiraTicketVelocityIssueTypeKPI49"));
 
-		fieldMappings.put("ticketDeliverdStatus", List.of("ticketDeliveredStatusKPI49"));
+		fieldMappings.put(TICKET_DELIVERD_STATUS, List.of("ticketDeliveredStatusKPI49"));
 
-		fieldMappings.put("jiraTicketClosedStatus",
+		fieldMappings.put(JIRA_TICKET_CLOSED_STATUS,
 				List.of("jiraTicketClosedStatusKPI48", "jiraTicketClosedStatusKPI50", "jiraTicketClosedStatusKPI51",
 						"jiraTicketClosedStatusKPI53", "jiraTicketClosedStatusKPI54", "jiraTicketClosedStatusKPI55",
 						"jiraTicketClosedStatusKPI997"));
 
-		fieldMappings.put("kanbanCycleTimeIssueType", List.of("kanbanCycleTimeIssueTypeKPI53"));
+		fieldMappings.put(KANBAN_CYCLE_TIME_ISSUE_TYPE, List.of("kanbanCycleTimeIssueTypeKPI53"));
 
-		fieldMappings.put("jiraTicketTriagedStatus", List.of("jiraTicketTriagedStatusKPI53"));
+		fieldMappings.put(JIRA_TICKET_TRIAGED_STATUS, List.of("jiraTicketTriagedStatusKPI53"));
 
-		fieldMappings.put("jiraTicketRejectedStatus", List.of("jiraTicketRejectedStatusKPI50",
+		fieldMappings.put(JIRA_TICKET_REJECTED_STATUS, List.of("jiraTicketRejectedStatusKPI50",
 				"jiraTicketRejectedStatusKPI151", "jiraTicketRejectedStatusKPI48", "jiraTicketRejectedStatusKPI997"));
 
 		fieldMappings.put("thresholdValueKPI159",
@@ -102,6 +121,93 @@ public class KanbanFieldMapping {
 		rollbackDuplicateFieldMappingStruct();
 		rollbackThresholdAndBg();
 		rollbackFieldMappingStruct();
+	}
+
+	/**
+	 * Rollback the duplicate field mapping values
+	 */
+	public void rollbackDuplicateFieldMappingValue() {
+		final Map<String, List<String>> fieldToDuplicateMap = getFieldToDuplicateMap();
+
+		// Use aggregation pipeline to remove the duplicated fields
+		List<Bson> pipeline = new ArrayList<>();
+		fieldToDuplicateMap.forEach((originalValue, duplicateFields) -> duplicateFields.forEach(duplicateField -> {
+			Bson unsetOperation = Aggregates.unset(duplicateField);
+			pipeline.add(unsetOperation);
+		}));
+
+		// Define merge options
+		MergeOptions mergeOptions = new MergeOptions().whenMatched(MergeOptions.WhenMatched.REPLACE)
+				.whenNotMatched(MergeOptions.WhenNotMatched.INSERT);
+
+		pipeline.add(Aggregates.merge(FIELD_MAPPING, mergeOptions));
+
+		mongoTemplate.getCollection(FIELD_MAPPING).aggregate(pipeline).toCollection();
+	}
+
+	/**
+	 * Rollback the duplicated field mapping structure
+	 */
+	public void rollbackDuplicateFieldMappingStruct() {
+		final Map<String, List<String>> fieldToDuplicateMap = getFieldToDuplicateMap();
+
+		// Collect all duplicate field names
+		List<String> duplicateFieldNames = new ArrayList<>();
+		fieldToDuplicateMap.values().forEach(duplicateFieldNames::addAll);
+
+		// Delete all documents with field names in the collected list
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
+				.deleteMany(new Document(FIELD_NAME, new Document("$in", duplicateFieldNames)));
+	}
+
+	/**
+	 * Rollback the threshold value for kanban KPIs
+	 */
+	private void rollbackThresholdAndBg() {
+		List<String> kpiIds = Arrays.asList("kpi51", "kpi55", "kpi54", "kpi50", "kpi48", "kpi997", "kpi63", "kpi62",
+				"kpi64", "kpi67", "kpi71", "kpi49", "kpi58", "kpi66", "kpi65", "kpi53", "kpi74", "kpi114", "kpi159",
+				"kpi184", "kpi183");
+
+		Document filter = new Document("kpiId", new Document("$in", kpiIds));
+
+		Document update = new Document("$unset",
+				new Document("thresholdValue", "").append("lowerThresholdBG", "").append("upperThresholdBG", ""));
+
+		mongoTemplate.getCollection(KPI_MASTER).updateMany(filter, update);
+	}
+
+	public void rollbackFieldMappingStruct() {
+		updateField(JIRA_LIVE_STATUS_LTK, "Live Status - Lead Time",
+				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_LIVE_STATUS_NOPK, "Live Status - Net Open Ticket Count by Priority",
+				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_LIVE_STATUS_NOSK, "Live Status - Net Open Ticket by Status",
+				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_LIVE_STATUS_NORK, "Live Status - Net Open Ticket Count By RCA",
+				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_LIVE_STATUS_OTA, "Live Status - Open Ticket Ageing",
+				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(TICKET_COUNT_ISSUE_TYPE, "Ticket Count Issue Type", "", ISSUE_TYPES_MAPPING, false);
+		updateField(KANBAN_RCA_COUNT_ISSUE_TYPE, "Ticket RCA Count Issue Type", "", ISSUE_TYPES_MAPPING, false);
+		updateField(JIRA_TICKET_VELOCITY_ISSUE_TYPE, "Ticket Velocity Issue Type", "", ISSUE_TYPES_MAPPING, false);
+		updateField(KANBAN_CYCLE_TIME_ISSUE_TYPE, "Kanban Lead Time Issue Type", "", ISSUE_TYPES_MAPPING, false);
+		updateField(TICKET_DELIVERD_STATUS, "Ticket Delivered Status",
+				"Status from workflow on which ticket is considered as delivered.", WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_TICKET_CLOSED_STATUS, "Ticket Closed Status",
+				"Status from workflow on which ticket is considered as Resolved.", WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_TICKET_TRIAGED_STATUS, "Ticket Triaged Status",
+				"Status from workflow on which ticket is considered as Triaged.", WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_TICKET_REJECTED_STATUS, "Ticket Rejected/Dropped Status",
+				"Status from workflow on which ticket is considered as Rejected/Dropped.", WORK_FLOW_STATUS_MAPPING,
+				true);
+	}
+
+	@RollbackExecution
+	public void rollback() {
+		duplicateFieldMappingValue();
+		duplicateFieldMappingStruct();
+		addThresholdAndBackGroundColor();
+		updateFieldMappingStruct();
 	}
 
 	/**
@@ -189,131 +295,44 @@ public class KanbanFieldMapping {
 	}
 
 	public void updateFieldMappingStruct() {
-		updateField("jiraLiveStatusLTK", "Status to identify Live tickets",
-				"Workflow status used to identify tickets in Live state", "WorkFlow Status Mapping", true);
-		updateField("jiraLiveStatusNOPK", "Status to identify Live tickets",
-				"Workflow status used to identify tickets in Live state", "WorkFlow Status Mapping", true);
-		updateField("jiraLiveStatusNOSK", "Status to identify Live tickets",
-				"Workflow status used to identify tickets in Live state", "WorkFlow Status Mapping", true);
-		updateField("jiraLiveStatusNORK", "Status to identify Live tickets",
-				"Workflow status used to identify tickets in Live state", "WorkFlow Status Mapping", true);
-		updateField("jiraLiveStatusOTA", "Status to identify Live tickets",
-				"Workflow status used to identify tickets in Live state", "WorkFlow Status Mapping", true);
-		updateField("ticketCountIssueType", "Issue types to consider", "", "Issue Types Mapping", false);
-		updateField("kanbanRCACountIssueType", "Issue types to consider", "", "Issue Types Mapping", false);
-		updateField("jiraTicketVelocityIssueType", "Issue types to consider", "", "Issue Types Mapping", false);
-		updateField("kanbanCycleTimeIssueType", "Issue types to consider", "", "Issue Types Mapping", false);
-		updateField("ticketDeliverdStatus", "Status to identify Delivered tickets",
-				"Workflow status used to identify delivered tickets", "WorkFlow Status Mapping", true);
-		updateField("jiraTicketClosedStatus", "Status to identify Closed tickets",
-				"Workflow status used to identify resolved tickets", "WorkFlow Status Mapping", true);
-		updateField("jiraTicketTriagedStatus", "Status to identify Triaged tickets",
-				"Workflow status used to identify triaged tickets", "WorkFlow Status Mapping", true);
-		updateField("jiraTicketRejectedStatus", "Status to identify Rejected/Dropped tickets",
-				"Workflow status used to identify rejected/dropped tickets", "WorkFlow Status Mapping", true);
+		updateField(JIRA_LIVE_STATUS_LTK, STATUS_TO_IDENTIFY_LIVE_TICKETS,
+				WORKFLOW_STATUS_USED_TO_IDENTIFY_TICKETS_IN_LIVE_STATE, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_LIVE_STATUS_NOPK, STATUS_TO_IDENTIFY_LIVE_TICKETS,
+				WORKFLOW_STATUS_USED_TO_IDENTIFY_TICKETS_IN_LIVE_STATE, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_LIVE_STATUS_NOSK, STATUS_TO_IDENTIFY_LIVE_TICKETS,
+				WORKFLOW_STATUS_USED_TO_IDENTIFY_TICKETS_IN_LIVE_STATE, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_LIVE_STATUS_NORK, STATUS_TO_IDENTIFY_LIVE_TICKETS,
+				WORKFLOW_STATUS_USED_TO_IDENTIFY_TICKETS_IN_LIVE_STATE, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_LIVE_STATUS_OTA, STATUS_TO_IDENTIFY_LIVE_TICKETS,
+				WORKFLOW_STATUS_USED_TO_IDENTIFY_TICKETS_IN_LIVE_STATE, WORK_FLOW_STATUS_MAPPING, true);
+		updateField(TICKET_COUNT_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, "", ISSUE_TYPES_MAPPING, false);
+		updateField(KANBAN_RCA_COUNT_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, "", ISSUE_TYPES_MAPPING, false);
+		updateField(JIRA_TICKET_VELOCITY_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, "", ISSUE_TYPES_MAPPING, false);
+		updateField(KANBAN_CYCLE_TIME_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, "", ISSUE_TYPES_MAPPING, false);
+		updateField(TICKET_DELIVERD_STATUS, "Status to identify Delivered tickets",
+				"Workflow status used to identify delivered tickets", WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_TICKET_CLOSED_STATUS, "Status to identify Closed tickets",
+				"Workflow status used to identify resolved tickets", WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_TICKET_TRIAGED_STATUS, "Status to identify Triaged tickets",
+				"Workflow status used to identify triaged tickets", WORK_FLOW_STATUS_MAPPING, true);
+		updateField(JIRA_TICKET_REJECTED_STATUS, "Status to identify Rejected/Dropped tickets",
+				"Workflow status used to identify rejected/dropped tickets", WORK_FLOW_STATUS_MAPPING, true);
 	}
 
 	private void updateField(String fieldName, String fieldLabel, String tooltip, String section, boolean mandatory) {
-		Document query = new Document("fieldName", fieldName);
+		Document query = new Document(FIELD_NAME, fieldName);
 		Document update = new Document("$set", new Document("fieldLabel", fieldLabel)
 				.append("tooltip.definition", tooltip).append("section", section).append("mandatory", mandatory));
-		mongoTemplate.getCollection("field_mapping_structure").updateOne(query, update);
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(query, update);
 
 		// Check for duplicates and update them as well
 		Map<String, List<String>> fieldMappings = getFieldToDuplicateMap();
 		if (fieldMappings.containsKey(fieldName)) {
 			for (String duplicateFieldName : fieldMappings.get(fieldName)) {
-				Document duplicateQuery = new Document("fieldName", duplicateFieldName);
-				mongoTemplate.getCollection("field_mapping_structure").updateOne(duplicateQuery, update);
+				Document duplicateQuery = new Document(FIELD_NAME, duplicateFieldName);
+				mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(duplicateQuery, update);
 			}
 		}
-	}
-
-	@RollbackExecution
-	public void rollback() {
-		duplicateFieldMappingValue();
-		duplicateFieldMappingStruct();
-		addThresholdAndBackGroundColor();
-		updateFieldMappingStruct();
-	}
-
-	/**
-	 * Rollback the duplicate field mapping values
-	 */
-	public void rollbackDuplicateFieldMappingValue() {
-		final Map<String, List<String>> fieldToDuplicateMap = getFieldToDuplicateMap();
-
-		// Use aggregation pipeline to remove the duplicated fields
-		List<Bson> pipeline = new ArrayList<>();
-		fieldToDuplicateMap.forEach((originalValue, duplicateFields) -> duplicateFields.forEach(duplicateField -> {
-			Bson unsetOperation = Aggregates.unset(duplicateField);
-			pipeline.add(unsetOperation);
-		}));
-
-		// Define merge options
-		MergeOptions mergeOptions = new MergeOptions().whenMatched(MergeOptions.WhenMatched.REPLACE)
-				.whenNotMatched(MergeOptions.WhenNotMatched.INSERT);
-
-		pipeline.add(Aggregates.merge(FIELD_MAPPING, mergeOptions));
-
-		mongoTemplate.getCollection(FIELD_MAPPING).aggregate(pipeline).toCollection();
-	}
-
-	/**
-	 * Rollback the duplicated field mapping structure
-	 */
-	public void rollbackDuplicateFieldMappingStruct() {
-		final Map<String, List<String>> fieldToDuplicateMap = getFieldToDuplicateMap();
-
-		// Collect all duplicate field names
-		List<String> duplicateFieldNames = new ArrayList<>();
-		fieldToDuplicateMap.values().forEach(duplicateFieldNames::addAll);
-
-		// Delete all documents with field names in the collected list
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
-				.deleteMany(new Document(FIELD_NAME, new Document("$in", duplicateFieldNames)));
-	}
-
-	/**
-	 * Rollback the threshold value for kanban KPIs
-	 */
-	private void rollbackThresholdAndBg() {
-		List<String> kpiIds = Arrays.asList("kpi51", "kpi55", "kpi54", "kpi50", "kpi48", "kpi997", "kpi63", "kpi62",
-				"kpi64", "kpi67", "kpi71", "kpi49", "kpi58", "kpi66", "kpi65", "kpi53", "kpi74", "kpi114", "kpi159",
-				"kpi184", "kpi183");
-
-		Document filter = new Document("kpiId", new Document("$in", kpiIds));
-
-		Document update = new Document("$unset",
-				new Document("thresholdValue", "").append("lowerThresholdBG", "").append("upperThresholdBG", ""));
-
-		mongoTemplate.getCollection(KPI_MASTER).updateMany(filter, update);
-	}
-
-	public void rollbackFieldMappingStruct() {
-		updateField("jiraLiveStatusLTK", "Live Status - Lead Time",
-				"Provide any status from workflow on which Live is considered.", "WorkFlow Status Mapping", true);
-		updateField("jiraLiveStatusNOPK", "Live Status - Net Open Ticket Count by Priority",
-				"Provide any status from workflow on which Live is considered.", "WorkFlow Status Mapping", true);
-		updateField("jiraLiveStatusNOSK", "Live Status - Net Open Ticket by Status",
-				"Provide any status from workflow on which Live is considered.", "WorkFlow Status Mapping", true);
-		updateField("jiraLiveStatusNORK", "Live Status - Net Open Ticket Count By RCA",
-				"Provide any status from workflow on which Live is considered.", "WorkFlow Status Mapping", true);
-		updateField("jiraLiveStatusOTA", "Live Status - Open Ticket Ageing",
-				"Provide any status from workflow on which Live is considered.", "WorkFlow Status Mapping", true);
-		updateField("ticketCountIssueType", "Ticket Count Issue Type", "", "Issue Types Mapping", false);
-		updateField("kanbanRCACountIssueType", "Ticket RCA Count Issue Type", "", "Issue Types Mapping", false);
-		updateField("jiraTicketVelocityIssueType", "Ticket Velocity Issue Type", "", "Issue Types Mapping", false);
-		updateField("kanbanCycleTimeIssueType", "Kanban Lead Time Issue Type", "", "Issue Types Mapping", false);
-		updateField("ticketDeliverdStatus", "Ticket Delivered Status",
-				"Status from workflow on which ticket is considered as delivered.", "WorkFlow Status Mapping", true);
-		updateField("jiraTicketClosedStatus", "Ticket Closed Status",
-				"Status from workflow on which ticket is considered as Resolved.", "WorkFlow Status Mapping", true);
-		updateField("jiraTicketTriagedStatus", "Ticket Triaged Status",
-				"Status from workflow on which ticket is considered as Triaged.", "WorkFlow Status Mapping", true);
-		updateField("jiraTicketRejectedStatus", "Ticket Rejected/Dropped Status",
-				"Status from workflow on which ticket is considered as Rejected/Dropped.", "WorkFlow Status Mapping",
-				true);
 	}
 
 }
