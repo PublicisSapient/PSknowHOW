@@ -277,6 +277,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setJiraCanBeAutomatedTestValue(projectToolConfig.getJiraCanBeAutomatedTestValue());
 		projectTool.setTestCaseStatus(projectToolConfig.getTestCaseStatus());
 		projectTool.setMetadataTemplateCode(projectToolConfig.getMetadataTemplateCode());
+		projectTool.setOriginalTemplateCode(projectToolConfig.getOriginalTemplateCode());
 		projectTool.setGitLabSdmID(projectToolConfig.getGitLabSdmID());
 		projectTool.setAzureIterationStatusFieldUpdate(projectToolConfig.isAzureIterationStatusFieldUpdate());
 		projectTool.setProjectComponent(projectToolConfig.getProjectComponent());
@@ -435,6 +436,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setBoardQuery(e.getBoardQuery());
 			projectConfToolDto.setBoards(e.getBoards());
 			projectConfToolDto.setMetadataTemplateCode(e.getMetadataTemplateCode());
+			projectConfToolDto.setOriginalTemplateCode(e.getOriginalTemplateCode());
 			projectConfToolDto.setRegressionAutomationLabels(e.getRegressionAutomationLabels());
 			projectConfToolDto.setTestAutomationStatusLabel(e.getTestAutomationStatusLabel());
 			projectConfToolDto.setAutomatedTestValue(e.getAutomatedTestValue());

@@ -1072,7 +1072,7 @@ export class JiraConfigComponent implements OnInit {
                 type: 'basicDropdown',
                 label: 'JIRA Configuration Template',
                 label2: '',
-                id: 'metadataTemplateCode',
+                id: 'originalTemplateCode',
                 onChangeEventHandler: (event) => this.jiraMethodChange(this, event),
                 validators: [],
                 containerClass: 'p-sm-6',
@@ -2557,7 +2557,10 @@ export class JiraConfigComponent implements OnInit {
     }
 
     if (this.urlParam !== 'Jira') {
-      delete submitData['metadataTemplateCode'];
+      delete submitData['originalTemplateCode'];
+    }
+    else{
+      submitData['metadataTemplateCode']=this.selectedToolConfig[0].metadataTemplateCode;
     }
     if (this.urlParam === 'GitHubAction') {
       submitData['jobName'] = this.gitActionWorkflowNameList.filter(obj => obj.code === submitData['workflowID'])[0]?.name || "";
@@ -2817,13 +2820,13 @@ export class JiraConfigComponent implements OnInit {
     this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp => {
       this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
-        const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
-        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate?.templateCode);
+        const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['originalTemplateCode'])
+        this.toolForm.get('originalTemplateCode')?.setValue(selectedTemplate?.templateCode);
         if (selectedTemplate?.templateName === 'Custom Template') {
-          this.toolForm.get('metadataTemplateCode').disable();
+          this.toolForm.get('originalTemplateCode').disable();
         }
       } else {
-        this.toolForm.get('metadataTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
+        this.toolForm.get('originalTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
       }
     })
   }
