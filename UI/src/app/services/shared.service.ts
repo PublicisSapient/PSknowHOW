@@ -129,7 +129,7 @@ export class SharedService {
   // KPI filter retention
   selectedKPIFilterObj = {};
 
-  constructor(private helperService?: HelperService) {
+  constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
@@ -374,14 +374,13 @@ export class SharedService {
       });
     }
 
-    this.helperService.kpiFilterDataRetentionPolicy(this.selectedKPIFilterObj);
-    // const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
+    const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
-    // this.router.navigate([], {
-    //   queryParams: { 'kpiFilters': kpiFilterParamStr }, // Pass the object here
-    //   relativeTo: this.route,
-    //   queryParamsHandling: 'merge',
-    // });
+    this.router.navigate([], {
+      queryParams: { 'kpiFilters': kpiFilterParamStr }, // Pass the object here
+      relativeTo: this.route,
+      queryParamsHandling: 'merge',
+    });
 
     this.selectedFilterOption.next(value);
   }
