@@ -236,9 +236,9 @@ public class CodeViolationsKanbanServiceImpl
 				}
 			}
 		});
-		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(VIOLATION_TYPES,
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(JOB_FILTER, overAllJoblist);
+		IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(VIOLATION_TYPES,
 				new HashSet<>(Arrays.asList(SEVERITY, TYPE)));
-		IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(JOB_FILTER, overAllJoblist);
 		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 		kpiElement.setFilters(iterationKpiFilters);
 		kpiElement.setExcelData(excelData);
