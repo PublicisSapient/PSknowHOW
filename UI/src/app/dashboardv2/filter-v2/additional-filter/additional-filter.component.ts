@@ -50,7 +50,7 @@ export class AdditionalFilterComponent implements OnChanges {
             if (this.selectedTab === 'developer') {
               data[f].forEach(element => {
 
-                if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
+                if (element.nodeId && !this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
                   if (this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
                     this.filterData[index] = [];
                   }
@@ -174,8 +174,9 @@ export class AdditionalFilterComponent implements OnChanges {
           this.selectedFilters = ['Overall'];
         }
       }
-      
+      // Promise.resolve().then(() => {
         this.applyAdditionalFilter(fakeEvent, index + 1);
+      // });
 
     });
 
