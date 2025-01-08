@@ -1,0 +1,17 @@
+{{- if .Values.SCMProcessor.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-api
+  labels:
+    app: scm-api
+spec:
+  type: {{ .Values.service.backendtype }}
+  ports:
+    - port: 8000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: scm-api
+{{- end }}

@@ -1,0 +1,17 @@
+{{- if .Values.authNauthApp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: authnauth
+  labels:
+    app: authnauth
+spec:
+  type: {{ .Values.service.backendtype }}
+  ports:
+    - port: 8787
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: authnauth
+{{- end }}
