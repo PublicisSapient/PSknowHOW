@@ -165,10 +165,13 @@ public class RisksAndDependenciesServiceImpl extends JiraIterationKPIService {
 
 		for (JiraIssue issue : allIssues) {
 			KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
+			IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
 			if (isRiskOrDependency(fieldMapping.getJiraIssueRiskTypeKPI176(), issue)) {
 				riskIssue++;
+				data.setCategory(List.of("Risk"));
 			} else if (isRiskOrDependency(fieldMapping.getJiraIssueDependencyTypeKPI176(), issue)) {
 				dependencyIssue++;
+				data.setCategory(List.of("Dependency"));
 			}
 			if (issue.getNumber() == null || notCompletedIssues.contains(issue.getNumber())) {
 				if (isRiskOrDependency(fieldMapping.getJiraIssueRiskTypeKPI176(), issue)) {

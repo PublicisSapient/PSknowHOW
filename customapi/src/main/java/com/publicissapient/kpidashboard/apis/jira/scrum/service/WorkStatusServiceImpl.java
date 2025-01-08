@@ -209,7 +209,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			});
 
 			kpiElement.setSprint(sprintLeafNode.getName());
-			kpiElement.setExcelColumnInfo(KPIExcelColumn.PLANNED_WORK_STATUS.getKpiExcelColumnInfo());
+			kpiElement.setExcelColumnInfo(KPIExcelColumn.WORK_STATUS.getKpiExcelColumnInfo());
 			kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 			kpiElement.setFilterGroup(createFilterGroup());
 			kpiElement.setDataGroup(createDataGroup(fieldMapping));

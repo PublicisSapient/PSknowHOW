@@ -47,7 +47,7 @@ public class IterationKpiColumnConfigUpdate {
 	@Execution
 	public void execution() {
 		MongoCollection<Document> kpiColumnConfig = mongoTemplate.getCollection("kpi_column_configs");
-		//Iteration burnup KPI
+		// Iteration burnup KPI
 		Document filter = new Document("kpiId", "kpi125");
 		Document update = new Document("$set",
 				new Document("kpiColumnDetails",
@@ -71,38 +71,46 @@ public class IterationKpiColumnConfigUpdate {
 		// Perform the update
 		kpiColumnConfig.updateMany(filter, update);
 
-		//Defect Count by KPI
+		// Defect Count by KPI
 		Document filter1 = new Document("kpiId", "kpi125");
 		Document update1 = new Document("$set",
 				new Document("kpiColumnDetails",
 						List.of(new Document().append(COLUMN_NAME, "Issue Id").append(ORDER, 0).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Issue Description").append(ORDER, 1).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, true),
+								.append(IS_DEFAULT, true),
+								new Document().append(COLUMN_NAME, "Issue Description").append(ORDER, 1)
+										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
 								new Document().append(COLUMN_NAME, "Issue Status").append(ORDER, 2)
 										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Issue Type").append(ORDER, 3)
-										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Size(story point/hours)").append(ORDER, 4).append(IS_SHOWN, true)
+								new Document().append(COLUMN_NAME, "Issue Type").append(ORDER, 3).append(IS_SHOWN, true)
 										.append(IS_DEFAULT, true),
+								new Document().append(COLUMN_NAME, "Size(story point/hours)").append(ORDER, 4)
+										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
 								new Document().append(COLUMN_NAME, "Root Cause").append(ORDER, 5).append(IS_SHOWN, true)
 										.append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Priority").append(ORDER, 6)
-										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Assignee").append(ORDER, 7)
-										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Created during Iteration").append(ORDER, 8).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, true))));
+								new Document().append(COLUMN_NAME, "Priority").append(ORDER, 6).append(IS_SHOWN, true)
+										.append(IS_DEFAULT, true),
+								new Document().append(COLUMN_NAME, "Assignee").append(ORDER, 7).append(IS_SHOWN, true)
+										.append(IS_DEFAULT, true),
+								new Document().append(COLUMN_NAME, "Created during Iteration").append(ORDER, 8)
+										.append(IS_SHOWN, true).append(IS_DEFAULT, true))));
 
 		// Perform the update
 		kpiColumnConfig.updateMany(filter1, update1);
+
+		List.of("kpi176", "kpi124", "kpi128").forEach(kpiId -> {
+			Document filter2 = new Document("kpiId", kpiId);
+			Document categoryColumn = new Document("$push",
+					new Document("kpiColumnDetails", new Document().append(COLUMN_NAME, "Category").append(ORDER, 15)
+							.append(IS_SHOWN, true).append(IS_DEFAULT, true)));
+			kpiColumnConfig.updateMany(filter2, categoryColumn);
+		});
 
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		MongoCollection<Document> kpiColumnConfig = mongoTemplate.getCollection("kpi_column_configs");
-		//Iteration burnup KPI
+		// Iteration burnup KPI
 		Document filter = new Document("kpiId", "kpi125");
 		Document update = new Document("$set",
 				new Document("kpiColumnDetails",
@@ -132,31 +140,39 @@ public class IterationKpiColumnConfigUpdate {
 		// Perform the update
 		kpiColumnConfig.updateMany(filter, update);
 
-		//Defect Count by KPI
+		// Defect Count by KPI
 		Document filter1 = new Document("kpiId", "kpi125");
 		Document update1 = new Document("$set",
 				new Document("kpiColumnDetails",
 						List.of(new Document().append(COLUMN_NAME, "Defect ID").append(ORDER, 0).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Issue Description").append(ORDER, 1).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, true),
+								.append(IS_DEFAULT, true),
+								new Document().append(COLUMN_NAME, "Issue Description").append(ORDER, 1)
+										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
 								new Document().append(COLUMN_NAME, "Issue Status").append(ORDER, 2)
 										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Issue Type").append(ORDER, 3)
-										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Size(story point/hours)").append(ORDER, 4).append(IS_SHOWN, true)
+								new Document().append(COLUMN_NAME, "Issue Type").append(ORDER, 3).append(IS_SHOWN, true)
 										.append(IS_DEFAULT, true),
+								new Document().append(COLUMN_NAME, "Size(story point/hours)").append(ORDER, 4)
+										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
 								new Document().append(COLUMN_NAME, "Root Cause").append(ORDER, 5).append(IS_SHOWN, true)
 										.append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Priority").append(ORDER, 6)
-										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Assignee").append(ORDER, 7)
-										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Created during Iteration").append(ORDER, 8).append(IS_SHOWN, true)
-										.append(IS_DEFAULT, true))));
+								new Document().append(COLUMN_NAME, "Priority").append(ORDER, 6).append(IS_SHOWN, true)
+										.append(IS_DEFAULT, true),
+								new Document().append(COLUMN_NAME, "Assignee").append(ORDER, 7).append(IS_SHOWN, true)
+										.append(IS_DEFAULT, true),
+								new Document().append(COLUMN_NAME, "Created during Iteration").append(ORDER, 8)
+										.append(IS_SHOWN, true).append(IS_DEFAULT, true))));
 
 		// Perform the update
 		kpiColumnConfig.updateMany(filter1, update1);
+
+		List.of("kpi176", "kpi124", "kpi128").forEach(kpiId -> {
+			Document filter2 = new Document("kpiId", kpiId);
+			Document categoryColumn = new Document("$pull",
+					new Document("kpiColumnDetails", new Document().append(COLUMN_NAME, "Category").append(ORDER, 15)
+							.append(IS_SHOWN, true).append(IS_DEFAULT, true)));
+			kpiColumnConfig.updateMany(filter2, categoryColumn);
+		});
 	}
 
 }
