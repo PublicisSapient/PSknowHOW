@@ -74,7 +74,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	private static final String FILTER_TYPE = "Multi";
 	public static final String PLANNED = "Planned";
 	public static final String UNPLANNED = "Unplanned";
-	public static final String DEV_COMPLETION = "Dev Completion";
+	public static final String DEV_STATUS = "Dev Status";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -209,7 +209,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			});
 
 			kpiElement.setSprint(sprintLeafNode.getName());
-			kpiElement.setExcelColumnInfo(KPIExcelColumn.PLANNED_WORK_STATUS.getKpiExcelColumnInfo());
+			kpiElement.setExcelColumnInfo(KPIExcelColumn.WORK_STATUS.getKpiExcelColumnInfo());
 			kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 			kpiElement.setFilterGroup(createFilterGroup());
 			kpiElement.setDataGroup(createDataGroup(fieldMapping));
@@ -303,7 +303,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 		List<KpiDataCategory> categoryGroup = new ArrayList<>();
 		categoryGroup.add(createKpiDataCategory(PLANNED, 1));
-		categoryGroup.add(createKpiDataCategory(DEV_COMPLETION, 2));
+		categoryGroup.add(createKpiDataCategory(DEV_STATUS, 2));
 		categoryGroup.add(createKpiDataCategory(UNPLANNED, 3));
 		categoryData.setCategoryGroup(categoryGroup);
 
@@ -392,7 +392,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	}
 
 	private static int getIssueDelay(JiraIssue issue, Set<String> category, Map<String, Object> jiraIssueData, Map<JiraIssue, String> devCompletedIssues, int delay) {
-		category.add(DEV_COMPLETION);
+		category.add(DEV_STATUS);
 		category.add(PLANNED_COMPLETION);
 		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
 			int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
