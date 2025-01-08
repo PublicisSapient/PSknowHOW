@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +32,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,25 +59,31 @@ import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHiera
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
+import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
+import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
@@ -162,7 +164,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private OrganizationHierarchyService organizationHierarchyService;
-
+	@Autowired
+	private AccountHierarchyRepository accountHierarchyRepository;
+	@Autowired
+	private ProjectHierarchyRepository projectHierarchyRepository;
 	@Autowired
 	private HierarchyLevelRepository hierarchyLevelRepository;
 
@@ -217,8 +222,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					|| Constant.ROLE_PROJECT_ADMIN.equals(accessRoleOfParent)) {
 				ProjectBasicConfig savedProjectBasicConfig = saveBasicConfig(basicConfig);
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
-                cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
-                addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
+				cloneProjectToolConfigAndDependencies(savedProjectBasicConfig);
+				addProjectNodeToOrganizationHierarchy(projectBasicConfigDTO, basicConfig.getProjectNodeId());
 				response = new ServiceResponse(true, "Added Successfully.", savedProjectBasicConfig);
 
 			} else {
@@ -261,7 +266,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		configHelperService.loadConfigData();
 	}
 
-	/**
+    /**
 	 * Clone Tool Configurations, Field Mappings, and Board Metadata for Cloned
 	 * Project
 	 *
@@ -287,10 +292,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<ProjectToolConfig> toolConfigList = projectToolConfigService
 				.getProjectToolConfigsByProjectId(savedProjectBasicConfig.getClonedFrom());
 		List<ProjectToolConfig> clonedToolConfigs = new ArrayList<>();
-		List<String> scmToolList = Arrays.asList(Constant.TOOL_GITHUB, Constant.TOOL_GITLAB,
-				Constant.TOOL_BITBUCKET, Constant.TOOL_AZUREREPO);
+		List<String> scmToolList = Arrays.asList(Constant.TOOL_GITHUB, Constant.TOOL_GITLAB, Constant.TOOL_BITBUCKET,
+				Constant.TOOL_AZUREREPO);
 		for (ProjectToolConfig toolConfig : toolConfigList) {
-			if(savedProjectBasicConfig.isDeveloperKpiEnabled() && scmToolList.contains(toolConfig.getToolName()))
+			if (savedProjectBasicConfig.isDeveloperKpiEnabled() && scmToolList.contains(toolConfig.getToolName()))
 				continue;
 			try {
 				ProjectToolConfig clonedToolConfig = toolConfig.clone();
@@ -384,14 +389,14 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				ProjectBasicConfig savedConfig = savedConfigOpt.get();
 				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
-				//AP: Temporary workaround till UI passes the new field
-				if(StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
+				// AP: Temporary workaround till UI passes the new field
+				if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
 					basicConfig.setProjectNodeId(savedConfigOpt.get().getProjectNodeId());
 				}
-				if(StringUtils.isEmpty(projectBasicConfigDTO.getProjectDisplayName())) {
+				if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectDisplayName())) {
 					basicConfig.setProjectDisplayName(savedConfigOpt.get().getProjectDisplayName());
 				}
-				//AP: Temporary workaround end
+				// AP: Temporary workaround end
 				if (isAssigneeUpdated(basicConfig, savedConfig)) {
 					List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
 							.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
@@ -416,6 +421,15 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
+
+				OrganizationHierarchy orgHierarchy = organizationHierarchyService
+						.findByNodeId(basicConfig.getProjectNodeId());
+				updateProjectNameInOrgHierarchy(basicConfig, orgHierarchy);
+
+				List<ProjectHierarchy> projectWiseHierarchyList = projectHierarchyRepository
+						.findByBasicProjectConfigId(basicConfig.getId());
+				updateProjectNameInProjectHierch(savedConfigOpt, basicConfig, projectWiseHierarchyList);
+
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
 			} else {
@@ -427,58 +441,33 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return response;
 	}
 
+	private void updateProjectNameInProjectHierch(Optional<ProjectBasicConfig> savedConfigOpt,
+                                                  ProjectBasicConfig basicConfig, List<ProjectHierarchy> projectHierarchyList) {
+		if (CollectionUtils.isNotEmpty(projectHierarchyList)) {
+			projectHierarchyList.stream().forEach(projectHierarchy -> {
+
+				if (projectHierarchy.getNodeDisplayName().contains(savedConfigOpt.get().getProjectName())) {
+					projectHierarchy.setNodeDisplayName(projectHierarchy.getNodeDisplayName()
+							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
+				}
+			});
+
+			projectHierarchyRepository.saveAll(projectHierarchyList);
+		}
+	}
+
+    private void updateProjectNameInOrgHierarchy(ProjectBasicConfig basicConfig, OrganizationHierarchy orgHierarchy) {
+		if (orgHierarchy != null) {
+			orgHierarchy.setNodeName(basicConfig.getProjectName());
+			orgHierarchy.setNodeDisplayName(basicConfig.getProjectDisplayName());
+			organizationHierarchyService.save(orgHierarchy);
+			clearOrgHierarchyCache();
+		}
+	}
+
 	private boolean isAssigneeUpdated(ProjectBasicConfig unsavedBasicConfig, ProjectBasicConfig savedConfig) {
 
 		return unsavedBasicConfig.isSaveAssigneeDetails() != savedConfig.isSaveAssigneeDetails();
-	}
-
-	/**
-	 * method to perform filter operation
-	 *
-	 * @param basicConfig
-	 * @param filterCleanRequired
-	 */
-	private void performFilterOperation(final ProjectBasicConfigDTO basicConfig, boolean filterCleanRequired) {
-		if (filterCleanRequired) {
-			filterHelperService.cleanFilterData(basicConfig);
-		}
-		filterHelperService.filterCreation(basicConfig);
-		clearCache(basicConfig);
-	}
-
-	/**
-	 * Clears filter and jira related cache.
-	 *
-	 * @param basicConfig
-	 *            ProjectConfig
-	 */
-	private void clearCache(final ProjectBasicConfigDTO basicConfig) {
-		if (basicConfig.getIsKanban()) {
-			cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
-			cacheService.clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
-		} else {
-			cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
-			cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY);
-		}
-		cacheService.clearCache(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
-		cacheService.clearCache(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
-		cacheService.clearCache(CommonConstant.CACHE_PROJECT_BASIC_TREE);
-		if (basicConfig.getClonedFrom() != null) {
-			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
-			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
-			cacheService.clearCache(CommonConstant.CACHE_BOARD_META_DATA_MAP);
-		}
-	}
-
-	/**
-	 * method to add required fields for filter operation
-	 *
-	 * @param basicConfig
-	 * @param mapper
-	 */
-	private ProjectBasicConfigDTO basicConfigDtoCreation(final ProjectBasicConfig basicConfig, ModelMapper mapper) {
-		return mapper.map(basicConfig, ProjectBasicConfigDTO.class);
 	}
 
 	@Override
@@ -514,16 +503,13 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 				Map<String, ProjectBasicConfig> basicConfigMap = null;
 
-				if(includeAll) {
-					basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
-							.cacheAllProjectConfigMapData();
+				if (includeAll) {
+					basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService.cacheAllProjectConfigMapData();
 				} else {
-					basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
-							.cacheProjectConfigMapData();
+					basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService.cacheProjectConfigMapData();
 				}
 
-				List<ProjectBasicConfig> projectList = Optional.ofNullable(basicConfigMap)
-						.filter(MapUtils::isNotEmpty)
+				List<ProjectBasicConfig> projectList = Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
 						.map(map -> map.entrySet().stream()
 								.filter(entry -> basicProjectConfigIds.contains(entry.getKey())) // Filter by configIds
 								.map(Map.Entry::getValue) // Extract the value (ProjectBasicConfig)
@@ -542,12 +528,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 		Map<String, ProjectBasicConfig> basicConfigMap = null;
 
-		if(includeAll) {
-			basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
-					.cacheAllProjectConfigMapData();
+		if (includeAll) {
+			basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService.cacheAllProjectConfigMapData();
 		} else {
-			basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
-					.cacheProjectConfigMapData();
+			basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService.cacheProjectConfigMapData();
 		}
 
 		return Optional.ofNullable(basicConfigMap).filter(MapUtils::isNotEmpty)
@@ -849,7 +833,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * Method to find out all the parent nodes of a tree
 	 */
 	public void findParents(List<ProjectBasicConfigNode> nodes, List<ProjectBasicConfigNode> parents) {
-		if (CollectionUtils.isNotEmpty(nodes) && nodes.get(0) !=null) {
+		if (CollectionUtils.isNotEmpty(nodes) && nodes.get(0) != null) {
 			for (ProjectBasicConfigNode node : nodes) {
 				if (node.getParent() != null) {
 					parents.addAll(node.getParent());
