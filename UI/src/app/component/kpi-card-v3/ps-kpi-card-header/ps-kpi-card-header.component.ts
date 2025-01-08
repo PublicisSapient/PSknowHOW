@@ -53,9 +53,10 @@ export class PsKpiCardHeaderComponent implements OnInit {
       {
         label: 'Explore',
         icon: 'pi pi-table',
-        command: () => {
+        command: ($event) => {
           // this.exportToExcel(); modalHeads
-          this.actionTriggered.emit({...this.MenuValues,explore:true});
+          const id =$event?.originalEvent?.target?.parentElement?.parentElement?.parentElement?.parentElement?.id.substring(5);
+          this.actionTriggered.emit({...this.MenuValues,explore:true,kpiId:id});
         },
         // disabled: !this.kpiData.kpiDetail.chartType
       },
