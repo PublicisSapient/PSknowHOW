@@ -84,7 +84,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
       svg.append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '-0.5em') // Adjust text position
-      .style('font-size', '18px')
+      //.style('font-size', '18px')
       .style('font-weight', 'bold')
       .style('fill', '#627AD0')
       .text(this.value);
@@ -101,7 +101,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
       svg.append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '0.5em') // Adjust text position
-      .style('font-size', '18px')
+      //.style('font-size', '18px')
       .style('font-weight', 'bold')
       .style('fill', '#627AD0')
       .text(this.value + '/' + this.totalIssues);
