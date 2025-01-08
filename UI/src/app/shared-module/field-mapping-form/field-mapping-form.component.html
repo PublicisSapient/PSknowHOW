@@ -91,7 +91,7 @@
     <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
         <div *ngIf="singleSelectionDropdown">
             <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
-                [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px'}" [options]="fieldMappingMultiSelectValues"
+                [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px', 'textAlign': 'left'}" [options]="fieldMappingMultiSelectValues"
                 placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
                 filter="true" showClear="true">
             </p-dropdown>
