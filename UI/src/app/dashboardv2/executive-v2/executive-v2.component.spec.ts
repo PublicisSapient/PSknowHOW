@@ -2415,7 +2415,7 @@ describe('ExecutiveV2Component', () => {
   const fakeKpi171Data = require('../../../test/resource/fakeKpi171Data.json');
 
   beforeEach(() => {
-    service = new SharedService();
+    // service = new SharedService();
 
     const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
@@ -2474,6 +2474,7 @@ describe('ExecutiveV2Component', () => {
     component.selectedTab = 'developer';
     fixture.detectChanges();
 
+    service = TestBed.inject(SharedService);
     httpService = TestBed.get(HttpService);
     helperService = TestBed.get(HelperService);
     excelService = TestBed.inject(ExcelService);

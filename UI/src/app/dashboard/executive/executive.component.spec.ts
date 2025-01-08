@@ -2460,7 +2460,7 @@ describe('ExecutiveComponent', () => {
   ]
   beforeEach(() => {
 
-    service = new SharedService();
+    // service = new SharedService();
 
     const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
@@ -2514,7 +2514,7 @@ describe('ExecutiveComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiveComponent);
     component = fixture.componentInstance;
-
+    service = TestBed.inject(SharedService);
     const type = 'scrum';
     service.selectedtype = type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
@@ -7099,7 +7099,7 @@ describe('ExecutiveComponent', () => {
       spyOn(service, 'getSelectedType').and.returnValue('Kanban');
       const spyobj = spyOn(component,'postSonarKanbanKpi');
       component.reloadKPI(event);
-      
+
       expect(spyobj).toHaveBeenCalled();
     });
 
@@ -7116,7 +7116,7 @@ describe('ExecutiveComponent', () => {
       const spyobj = spyOn(component,'postJenkinsKanbanKpi');
       component.reloadKPI(event);
       expect(spyobj).toHaveBeenCalled();
-      
+
     });
 
     it('should reload zypher kanban KPI', () => {
@@ -7132,7 +7132,7 @@ describe('ExecutiveComponent', () => {
       const spyobj = spyOn(component,'postZypherKanbanKpi');
       component.reloadKPI(event);
       expect(spyobj).toHaveBeenCalled();
-      
+
     });
 
     it('should reload bitbucket kanban KPI', () => {
@@ -7148,7 +7148,7 @@ describe('ExecutiveComponent', () => {
       const spyobj = spyOn(component,'postBitBucketKanbanKpi');
       component.reloadKPI(event);
       expect(spyobj).toHaveBeenCalled();
-      
+
     });
 
     it('should reload sonar scrum KPI', () => {
@@ -7211,7 +7211,7 @@ describe('ExecutiveComponent', () => {
       expect(spyobj).toHaveBeenCalled();
     });
 
-    
+
   });
 
   describe('downloadGlobalExcel', () => {
@@ -7349,7 +7349,7 @@ it('should getchartdata for kpi when trendValueList is arry with two filter', ()
   component.allKpiArray = [{
     kpiId: 'kpi118',
     trendValueList: [
-       { 
+       {
           filter1 : "f1",
           filter2 : "f2",
 
@@ -7374,7 +7374,7 @@ it('should getchartdata for kpi when trendValueList is arry with any one i.e fil
   component.allKpiArray = [{
     kpiId: 'kpi118',
     trendValueList: [
-       { 
+       {
           filter1 : "f1",
 
        }
@@ -7397,7 +7397,7 @@ it('should getchartdata for kpi when kpiSelectedFilterObj do not have filter1 an
   component.allKpiArray = [{
     kpiId: 'kpi118',
     trendValueList: [
-       { 
+       {
           filter1 : "f1",
 
        }
@@ -7420,11 +7420,11 @@ it('should getchartdata for kpi17', () => {
   component.allKpiArray = [{
     kpiId: 'kpi17',
     trendValueList: [
-       { 
+       {
           filter : "f1",
           value : [{value : 5}]
        },
-       { 
+       {
         filter : "f2",
         value : [{value:10}]
      }
@@ -7445,11 +7445,11 @@ it('should getchartdata for kpi17 and filter is average coverage', () => {
   component.allKpiArray = [{
     kpiId: 'kpi17',
     trendValueList: [
-       { 
+       {
           filter : "average coverage",
           value : [{value : 5}]
        },
-       { 
+       {
         filter : "f2",
         value : [{value:10}]
      }
@@ -7549,13 +7549,13 @@ it('should preapare column of kpi3', () => {
   component.allKpiArray = [{
     kpiId: 'kpi3',
     trendValueList: [
-       { 
+       {
           filter : "average coverage",
           value : [{value : [
             {data : 0}
           ]}]
        },
-       { 
+       {
         filter : "f2",
         value : [{value:10}]
      }

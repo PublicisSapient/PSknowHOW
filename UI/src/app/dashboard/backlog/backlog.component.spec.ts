@@ -2049,7 +2049,7 @@ describe('BacklogComponent', () => {
         ]
     }
     beforeEach(() => {
-        service = new SharedService();
+        // service = new SharedService();
         TestBed.configureTestingModule({
             imports: [
                 HttpClientTestingModule,
@@ -2430,7 +2430,7 @@ describe('BacklogComponent', () => {
     }));
 
     it('postJiraKpi should call httpServicepost when reponse will give error', fakeAsync(() => {
-        
+
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
         const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(null));
@@ -2870,31 +2870,31 @@ describe('BacklogComponent', () => {
               {
                 "data": "27.33",
                 "value": 27.33,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "0.15",
                 "value": 0.15,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "8.66",
                 "value": 8.66,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "93.86",
                 "value": 93.86,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "15.1",
                 "value": 15.1,
-    
+
                 "sprojectName": "EU"
               }
             ],
@@ -2936,31 +2936,31 @@ describe('BacklogComponent', () => {
               {
                 "data": "27.33",
                 "value": 27.33,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "0.15",
                 "value": 0.15,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "8.66",
                 "value": 8.66,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "93.86",
                 "value": 93.86,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "15.1",
                 "value": 15.1,
-    
+
                 "sprojectName": "EU"
               }
             ],
@@ -2985,31 +2985,31 @@ describe('BacklogComponent', () => {
               {
                 "data": "0",
                 "value": 0,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "0",
                 "value": 0,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "0",
                 "value": 0,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "0",
                 "value": 0,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "0",
                 "value": 0,
-    
+
                 "sprojectName": "EU"
               }
             ],
@@ -3026,19 +3026,19 @@ describe('BacklogComponent', () => {
               {
                 "data": "0",
                 "value": 0,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "0",
                 "value": 0,
-    
+
                 "sprojectName": "EU"
               },
               {
                 "data": "0",
                 "value": 0,
-    
+
                 "sprojectName": "EU"
               },
             ],
@@ -3066,7 +3066,7 @@ describe('BacklogComponent', () => {
         spyOn(component, 'checkLatestAndTrendValue').and.returnValue(['3', 'NA', '%']);
         // call the method
         component.createTrendData(1);
-    
+
         // check if the kpiTrendObject was updated correctly
         expect(component.kpiTrendObject[1]).toEqual([
           {
@@ -3079,7 +3079,7 @@ describe('BacklogComponent', () => {
           }
         ]);
       });
-    
+
       it('should not create trend data for the given kpiId when the data does not exist', () => {
         component.configGlobalData = [
             { kpiId: 1, name: 'KPI 1' },
@@ -3087,7 +3087,7 @@ describe('BacklogComponent', () => {
         ];
         // call the method
         component.createTrendData(3);
-    
+
         // check if the kpiTrendObject remains empty
         expect(component.kpiTrendObject[3]).toBeUndefined();
     });
@@ -3163,7 +3163,7 @@ describe('BacklogComponent', () => {
         expect(spy).toHaveBeenCalled();
     })
 
-   
+
 
     it('should apply the aggregation logic correctly when the data is valid', () => {
         // create sample data
@@ -3181,10 +3181,10 @@ describe('BacklogComponent', () => {
             }
           ]
         };
-    
+
         // call the method
         const result = component.applyAggregationLogicForProgressBar(obj);
-    
+
         // check if the result is correct
         expect(result).toEqual([
           {
@@ -3199,7 +3199,7 @@ describe('BacklogComponent', () => {
           }
         ]);
       });
-    
+
       it('should not apply the aggregation logic when the data is invalid', () => {
         // create sample data
         const obj = {
@@ -3215,10 +3215,10 @@ describe('BacklogComponent', () => {
             }
           ]
         };
-    
+
         // call the method
         const result = component.applyAggregationLogicForProgressBar(obj);
-    
+
         // check if the result is correct
         expect(result).toEqual([
           {
@@ -3241,7 +3241,7 @@ describe('BacklogComponent', () => {
         spyOn(component, 'getChartDataForCard').and.callThrough();
         spyOn(service, 'setKpiSubFilterObj');
         component.handleSelectedOptionForCard(event, kpi);
-    
+
         // check if the kpiSelectedFilterObj was updated correctly
         expect(component.kpiSelectedFilterObj).toEqual({
           1: { filter1: 'value1', filter2: 'value2' }
@@ -3786,7 +3786,7 @@ describe('BacklogComponent', () => {
         component.getChartDataForCard('kpi124',0);
         expect(component.kpiChartData).toBeDefined();
       })
-      
+
 
       it('should prepare data from trending value list when have multi dropdown filter',()=>{
         component.allKpiArray = [{
@@ -3869,7 +3869,7 @@ describe('BacklogComponent', () => {
       })
 
       describe('getChartType', () => {
-      
+
         beforeEach(() => {
           component.updatedConfigGlobalData = [
             {
@@ -3892,37 +3892,37 @@ describe('BacklogComponent', () => {
             }
           ];
         });
-      
+
         it('should return the chartType of the specified kpiId', () => {
           // Arrange
           const kpiId = 'kpi2';
-      
+
           // Act
           const result = component.getChartType(kpiId);
-      
+
           // Assert
           expect(result).toBe('bar');
         });
-      
+
         it('should return undefined if the specified kpiId is not found', () => {
           // Arrange
           const kpiId = 'kpi4';
-      
+
           // Act
           const result = component.getChartType(kpiId);
-      
+
           // Assert
           expect(result).toBeUndefined();
         });
-      
+
         it('should return undefined if the kpiDetail property is undefined', () => {
           // Arrange
           const kpiId = 'kpi1';
           component.updatedConfigGlobalData[0].kpiDetail = undefined;
-      
+
           // Act
           const result = component.getChartType(kpiId);
-      
+
           // Assert
           expect(result).toBeUndefined();
         });
@@ -3931,17 +3931,17 @@ describe('BacklogComponent', () => {
             // Arrange
             const kpiId = 'kpi1';
             component.updatedConfigGlobalData[0] = undefined;
-        
+
             // Act
             const result = component.getChartType(kpiId);
-        
+
             // Assert
             expect(result).toBeUndefined();
           });
       });
 
       describe('checkSprint', () => {
-      
+
         beforeEach(() => {
           component.kpiSelectedFilterObj = {
             kpi1: {
@@ -3962,91 +3962,91 @@ describe('BacklogComponent', () => {
             }
           };
         });
-      
+
         it('should return "-" if filter1 is not "overall" and has values or filter2 is not "overall" and has values', () => {
           // Arrange
           const value = 10;
           const unit = 'units';
           const kpiId = 'kpi1';
-      
+
           // Act
           const result = component.checkSprint(value, unit, kpiId);
-      
+
           // Assert
           expect(result).toBe('-');
         });
-      
+
         it('should return formatted value with unit if filter1 is "overall" and filter2 is not "overall"', () => {
           // Arrange
           const value = 10.5;
           const unit = 'units';
           const kpiId = 'kpi2';
-      
+
           // Act
           const result = component.checkSprint(value, unit, kpiId);
-      
+
           // Assert
           expect(result).toBe('-');
         });
-      
+
         it('should return formatted value with unit if filter1 is not "overall" and filter2 is "overall"', () => {
           // Arrange
           const value = 10.2;
           const unit = 'units';
           const kpiId = 'kpi3';
-      
+
           // Act
           const result = component.checkSprint(value, unit, kpiId);
-      
+
           // Assert
           expect(result).toBe('-');
         });
-      
+
         it('should return formatted value with unit if both filter1 and filter2 are "overall"', () => {
           // Arrange
           const value = 10.8;
           const unit = 'units';
           const kpiId = 'kpi4';
-      
+
           // Act
           const result = component.checkSprint(value, unit, kpiId);
-      
+
           // Assert
           expect(result).toBe('11 units');
         });
       });
 
 
-describe('typeOf', () => {  
+describe('typeOf', () => {
     it('should return true if the value is an object and not null', () => {
 
       const value = { prop: 'value' };
-  
+
       // Act
       const result = component.typeOf(value);
-  
+
       // Assert
       expect(result).toBe(true);
     });
-  
+
     it('should return false if the value is not an object', () => {
 
       const value = 'string';
-  
+
       // Act
       const result = component.typeOf(value);
-  
+
       // Assert
       expect(result).toBe(false);
     });
-  
+
     it('should return false if the value is null', () => {
 
       const value = null;
-  
+
       // Act
       const result = component.typeOf(value);
-  
+
       // Assert
       expect(result).toBe(false);
     });
@@ -4063,7 +4063,7 @@ describe('typeOf', () => {
   });
 
   describe('checkLatestAndTrendValue', () => {
-  
+
     it('should return latest value and unit for an item with no trend data', () => {
       const kpiData = {
         kpiDetail: {
@@ -4105,7 +4105,7 @@ describe('typeOf', () => {
         expect(result[1]).toBe('NA');
         expect(result[2]).toBe('Units');
       });
-  
+
     it('should return latest value, trend value, and unit for a valid item with positive trend', () => {
       const kpiData = {
         kpiDetail: {
@@ -4126,7 +4126,7 @@ describe('typeOf', () => {
       expect(result[1]).toBe('+ve');
       expect(result[2]).toBe('Units');
     });
-  
+
     it('should return latest value, trend value, and unit for a valid item with negative trend', () => {
       const kpiData = {
         kpiDetail: {
@@ -4202,7 +4202,7 @@ describe('typeOf', () => {
       });
 
 
-  
+
     it('should return latest value, trend value, and unit for a valid item with no trend', () => {
       const kpiData = {
         kpiDetail: {
@@ -4218,7 +4218,7 @@ describe('typeOf', () => {
       };
       const result = component.checkLatestAndTrendValue(kpiData, item);
       expect(result[0]).toBe('10 Units');
-  
+
     });
     it('should return latest value, trend value, and unit for a valid item with custom unit', () => {
       const kpiData = {
@@ -4243,7 +4243,7 @@ describe('typeOf', () => {
   });
 
   describe('getDropdownArrayForCard', () => {
-  
+
     it('should set dropdown array for an existing kpi with filters', () => {
       const kpiId = 'kpi-1';
       component.allKpiArray = [
@@ -4252,7 +4252,7 @@ describe('typeOf', () => {
       component.getDropdownArrayForCard(kpiId);
       expect(component.kpiDropdowns[kpiId]).toEqual([['value1', 'value2'], ['value3']]);
     });
-  
+
     it('should set empty dropdown array for an existing kpi with empty filters object', () => {
       const kpiId = 'kpi-1';
       component.allKpiArray = [
@@ -4261,7 +4261,7 @@ describe('typeOf', () => {
       component.getDropdownArrayForCard(kpiId);
       expect(component.kpiDropdowns[kpiId]).toEqual([]);
     });
-  
+
     it('should set empty dropdown array for an existing kpi with undefined filters', () => {
       const kpiId = 'kpi-1';
       component.allKpiArray = [
@@ -4270,7 +4270,7 @@ describe('typeOf', () => {
       component.getDropdownArrayForCard(kpiId);
       expect(component.kpiDropdowns[kpiId]).toEqual([]);
     });
-  
+
     it('should set dropdown array for an existing kpi with filters and undefined values', () => {
       // Arrange
       const kpiId = 'kpi-1';
@@ -4424,7 +4424,7 @@ it('should get chart data when have no filter', () => {
     component.getChartData('kpi124', 0, 'sum')
     expect(component.kpiChartData).toBeDefined();
 })
-  
+
     it('should handle kpi171 without filter2', () => {
       const kpiId = 'kpi171';
       const trendValueList = { value: [
@@ -4469,16 +4469,16 @@ it('should get chart data when have no filter', () => {
             },
         ]},
       ] };
-  
+
         component.kpiSelectedFilterObj = {
             [kpiId]: {
                 filter1 : "Past Month",
                 filter2 : ['Enabler Story','bug']
             }
         };
-  
+
       component.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
-  
+
       expect(component.kpiChartData).toBeDefined();
     });
 
