@@ -176,7 +176,7 @@ export class KpiHelperService {
     return { chartData: modifiedDataSet };
   }
 
-  groupedBarChartData(json, color) {
+  groupedBarChartData(json, color,filter) {
     let chartData = {};
     chartData['data'] = [];
     const issueData = json.issueData || [];
@@ -211,15 +211,19 @@ export class KpiHelperService {
 
         test['color'] = color;
 
-        test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
-          if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
-            return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
-          } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
-            return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
-          } else {
-            return acc;
-          }
-        }, 0) + ' ' + dataGroupElem.unit;
+        if(filter==='Unplanned'){
+          test['summaryValue'] = 'NA'
+        }else{
+          test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
+            if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
+              return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+            } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
+              return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+            } else {
+              return acc;
+            }
+          }, 0) + ' ' + dataGroupElem.unit;
+        }
 
       });
 
@@ -404,7 +408,7 @@ export class KpiHelperService {
         returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1, inputData?.issueData);
         break;
       case 'grouped-bar-chart':
-        returnDataSet = this.groupedBarChartData(inputData, color);
+        returnDataSet = this.groupedBarChartData(inputData, color,key);
         break;
       case 'tabular-with-donut-chart':
         returnDataSet = this.tabularKPINonRawData(inputData.dataGroup?.dataGroup1, inputData?.issueData);

@@ -138,7 +138,6 @@ export class GroupedBarChartComponent implements OnInit {
       })
       .attr('fill', (d, i) => d.color[0])
       .on('mouseover', (event, d) => {
-        console.log(event)
         div.style('display', 'block')
           .style('top', `${event.clientY / 2}px`)
           .style('left', `${event.clientX}px`)
@@ -179,7 +178,6 @@ export class GroupedBarChartComponent implements OnInit {
       })
       .attr('fill', (d, i) => d.color[1])
       .on('mouseover', (event, d) => {
-        console.log(event)
         div.style('display', 'block')
           .style('top', `${event.clientY / 2}px`)
           .style('left', `${event.clientX}px`)
