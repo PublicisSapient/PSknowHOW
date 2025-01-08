@@ -276,25 +276,16 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 
 			// Creating map of modal Objects
 			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(totalStoryList);
-			double storyPoint = 0.0;
-			double originalEstimate = 0.0;
 			for (JiraIssue issue : totalStoryList) {
 				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
 				IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
 				setKPISpecificData(data, listOfStory, allDefects, ftprStory, issue);
-				if (null != issue.getStoryPoints()) {
-					storyPoint = storyPoint + issue.getStoryPoints();
-				}
-				if (null != issue.getOriginalEstimateMinutes()) {
-					originalEstimate = originalEstimate + issue.getOriginalEstimateMinutes();
-				}
 			}
 
 			kpiElement.setSprint(latestSprint.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.FIRST_TIME_PASS_RATE_ITERATION.getColumns());
 			kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
-			kpiElement.setDataGroup(createDataGroup((double) totalStoryList.size(), fieldMapping, storyPoint,
-					originalEstimate, (double) ftprStory.size()));
+			kpiElement.setDataGroup(createDataGroup((double) totalStoryList.size(), (double) ftprStory.size()));
 		}
 
 	}
@@ -302,32 +293,14 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 	/**
 	 * 
 	 * @param totalStories
-	 * @param fieldMapping
-	 * @param storyPoint
-	 * @param originalEstimate
 	 * @param ftpStoryCount
 	 * @return
 	 */
-	private KpiDataGroup createDataGroup(Double totalStories, FieldMapping fieldMapping, Double storyPoint,
-			Double originalEstimate, Double ftpStoryCount) {
-		String unit;
-		String displayName;
-		Double kpiValue;
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			unit = CommonConstant.SP;
-			displayName = CommonConstant.STORY_POINT;
-			kpiValue = storyPoint;
-		} else {
-			unit = CommonConstant.DAY;
-			displayName = CommonConstant.ORIGINAL_ESTIMATE;
-			kpiValue = originalEstimate;
-		}
-
+	private KpiDataGroup createDataGroup(Double totalStories, Double ftpStoryCount) {
 		KpiDataGroup dataGroup = new KpiDataGroup();
 		List<KpiData> dataGroup1 = new ArrayList<>();
-		dataGroup1.add(createKpiData("Issue count", 1, "", totalStories));
-		dataGroup1.add(createKpiData(displayName, 2, unit, kpiValue));
+		dataGroup1.add(createKpiData("First Time Pass Stories", 1, "", ftpStoryCount));
+		dataGroup1.add(createKpiData("Total Stories", 2, "", totalStories));
 		dataGroup1.add(createKpiData("%", 3, "", calculateFTPR(ftpStoryCount, totalStories)));
 		dataGroup.setDataGroup1(dataGroup1);
 		return dataGroup;

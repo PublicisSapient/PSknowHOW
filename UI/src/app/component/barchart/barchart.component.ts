@@ -62,10 +62,11 @@ export class BarchartComponent implements OnInit {
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
     const chartWidth = d3.select(this.elem).select('.chart-container').node().offsetWidth - margin.left - margin.right;
     const chartHeight = 300 - margin.top - margin.bottom - 50;
+    const isallValueZero = this.data.every(x=>x.value === 0);
 
     // Extract unit from the dataGroup or set default
-    const unit = this.data.map((d) => d.unit)[0] || 'hr'; //this.dataGroup?.unit ||
-
+    const unit = this.capitalizeAndPluralize(this.data.map((d) => d.unit)[0] || 'hr'); //this.dataGroup?.unit ||
+  
     // Append SVG container
     this.svg = d3
       .select(element)
@@ -93,8 +94,8 @@ export class BarchartComponent implements OnInit {
       .append('svg:line')
       .attr('x1', 0)
       .attr('x2', 300)
-      .attr('y1', (d) => yScale(d))
-      .attr('y2', (d) => yScale(d))
+      .attr('y1', (d) => isallValueZero ? chartHeight : yScale(d))
+      .attr('y2', (d) => isallValueZero ? chartHeight : yScale(d))
       .style('stroke', '#ccc')
       .style('stroke-width', 0.5)
       .style('fill', 'none')
@@ -189,7 +190,7 @@ export class BarchartComponent implements OnInit {
       .append('text')
       .attr('class', 'label')
       .attr('x', (d) => xScale(d.category)! + xScale.bandwidth() / 2)
-      .attr('y', (d) => yScale(d.value) - 10)
+      .attr('y', (d) => isallValueZero ? chartHeight - 10 : yScale(d.value) - 10)
       .attr('text-anchor', 'middle')
       .style('font-size', '12px')
       .style('font-weight', 'bold')
@@ -207,7 +208,7 @@ export class BarchartComponent implements OnInit {
       .append('g')
       .attr('class', 'yAxisG')
       .call(
-        d3.axisLeft(yScale)
+        d3.axisLeft(isallValueZero ? d3.scaleLinear().domain([0, 0]).range([chartHeight, chartHeight]) : yScale)
           .ticks(4)
         // .tickFormat((d) => `${d}${unit === 'Count' ? '' : 'hr'}`) // Add unit dynamically this.data.map((d) => d.unit)[0] ||
       );
@@ -223,6 +224,24 @@ export class BarchartComponent implements OnInit {
     // Clear previous chart
     d3.select(this.elRef.nativeElement).select('.chart-container').html('');
     this.createChart();
+  }
+
+  capitalizeAndPluralize(word) {
+    if (!word || typeof word !== 'string') {
+      return '';
+    }
+  
+    // Capitalize the first letter
+    const capitalizedWord = word.charAt(0).toUpperCase() + word.slice(1);
+  
+    // Convert to plural form (basic rule: add 's')
+    const pluralWord = capitalizedWord.endsWith('s')
+      ? capitalizedWord + 'es' // If it ends with 's', add 'es' (e.g., class -> classes)
+      : capitalizedWord.endsWith('y') && !/[aeiou]y$/.test(word)
+      ? capitalizedWord.slice(0, -1) + 'ies' // Replace 'y' with 'ies' (e.g., city -> cities)
+      : capitalizedWord + 's'; // Default case: add 's' (e.g., dog -> dogs)
+  
+    return pluralWord;
   }
 
 }

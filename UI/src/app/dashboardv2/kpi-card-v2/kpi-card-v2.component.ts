@@ -195,7 +195,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         } else if (event.setting) {
           this.onOpenFieldMappingDialog();
         } else if (event.explore) {
-          this.exportToExcel();
+          if(event.kpiId){
+            this.exportToExcel(event.kpiId);
+          }else{
+            this.exportToExcel();
+          }
         } else if (event.comment) {
           this.showComments = true;
           this.openCommentModal();
@@ -440,9 +444,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
   }
 
-  exportToExcel() {
+  exportToExcel(KpiId?:any) {
     if(!!this.cardData){
-      this.service.kpiExcelSubject.next({markerInfo:this.cardData?.dataGroup?.markerInfo,columns:this.cardData['modalHeads'],excelData:this.cardData['issueData']})
+      let exportData = this.cardData['issueData'];
+      if(KpiId === 'kpi176'){
+        exportData = exportData.filter(x => x['Issue Type'].includes('Dependency') || x['Issue Type'].includes('Risk'));
+      }
+      this.service.kpiExcelSubject.next({markerInfo:this.cardData?.dataGroup?.markerInfo,columns:this.cardData['modalHeads'],excelData:exportData})
     }
 
     this.downloadExcel.emit(true);

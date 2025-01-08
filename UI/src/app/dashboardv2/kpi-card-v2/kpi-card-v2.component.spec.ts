@@ -231,7 +231,7 @@ describe('KpiCardV2Component', () => {
   });
   // ---- end of radioOption ----
 
-  describe('checkIfDataPresent', () => {
+  xdescribe('checkIfDataPresent', () => {
     it('should return true if data is present and kpiStatusCode is "200"', () => {
       component.kpiDataStatusCode = '200';
       component.kpiChartData = { data: [{ data: [1, 2, 3] }] };

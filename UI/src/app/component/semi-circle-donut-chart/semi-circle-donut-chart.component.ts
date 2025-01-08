@@ -26,6 +26,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
     // Check if the value input has changed
     if (changes.value) {
       this.value = parseInt(this.value + '');
+      this.totalIssues = parseInt(this.totalIssues+'')
       this.createDonutChart();
     }
   }
@@ -51,7 +52,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
     const roundedArc = d3.arc()
       .innerRadius(radius - thickness)
       .outerRadius(radius)
-      .cornerRadius(thickness / 2); // rounded ends
+      // .cornerRadius(thickness / 2); // rounded ends
 
     // Create arc generator
     const arc = d3.arc()
@@ -65,8 +66,8 @@ export class SemiCircleDonutChartComponent implements OnInit {
 
     // Define the data (completed and remaining)
     const data = [
-      { value: this.value, color: this.color?.length ? this.color : '#627AD0' }, // Blue color for completed
-      { value: this.max - this.value, color: '#E5EAF2' } // Gray color for remaining
+      { value: this.calculatePercentage(+this.value,+this.totalIssues), color: this.color?.length ? this.color : '#627AD0' }, // Blue color for completed
+      { value: this.max - this.calculatePercentage(+this.value,+this.totalIssues), color: '#E5EAF2' } // Gray color for remaining
     ];
 
     // Append the arcs
@@ -83,7 +84,7 @@ export class SemiCircleDonutChartComponent implements OnInit {
       svg.append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '-0.5em') // Adjust text position
-      .style('font-size', '18px')
+      //.style('font-size', '18px')
       .style('font-weight', 'bold')
       .style('fill', '#627AD0')
       .text(this.value);
@@ -100,11 +101,18 @@ export class SemiCircleDonutChartComponent implements OnInit {
       svg.append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '0.5em') // Adjust text position
-      .style('font-size', '18px')
+      //.style('font-size', '18px')
       .style('font-weight', 'bold')
       .style('fill', '#627AD0')
       .text(this.value + '/' + this.totalIssues);
     }
   }
+
+  calculatePercentage(value, total) {
+    if (total === 0) {
+        return value;
+    }
+    return (value / total) * 100;
+}
 
 }
