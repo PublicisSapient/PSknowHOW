@@ -2,7 +2,11 @@
 
 {{- if and .Values.authNauthApp.enabled (not .Values.ingress.enabled) }}
 {{- if contains "NodePort" .Values.service.uitype }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "knowhow-chart.fullname" . }})
+  {{- if .Values.authNauthApp.enabled }}
+    export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services authnauth-ui)
+  {{- else }}
+    export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services knowhow-ui)
+  {{- end }}
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   echo "Application URL: http://$NODE_IP:$NODE_PORT"
 {{- else if contains "LoadBalancer" .Values.service.uitype }}
@@ -29,7 +33,11 @@
   {{- end }}
 {{- end }}
 {{- else if contains "NodePort" .Values.service.uitype }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "knowhow-chart.fullname" . }})
+  {{- if .Values.authNauthApp.enabled }}
+    export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services authnauth-ui)
+  {{- else }}
+    export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services knowhow-ui)
+  {{- end }}
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   echo "Application URL: http://$NODE_IP:$NODE_PORT"
 {{- else if contains "LoadBalancer" .Values.service.uitype }}

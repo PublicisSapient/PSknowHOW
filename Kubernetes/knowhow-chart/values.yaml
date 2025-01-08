@@ -67,7 +67,7 @@ mongodb:
 
 authNauthApp:
   enabled: true
-  host: auth.com
+  host: example-auth.com   #Pass the auth host name if authNauthApp is enabled
 
 authNauthNSCMDB:
   enabled: true
@@ -103,9 +103,9 @@ env:
 
   ### Uncomment and update the details below only during an upgrade
   - name: mongock.start-system-version
-    value: "0.0.0" # Uncomment if needed
+    value: "0.0.0" # In Case of upgrade specify the current Knowhow version installed in the cluster.
   - name: mongock.end-system-version
-    value: "0.0.0" # Uncomment if needed. Find the latest version here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
+    value: "0.0.0" # incase of upgrade specify the latest version Knowhow version which you want to install. Find the latest version here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
 
   # Installation-specific settings
   - name: mongock.migration-scan-package
@@ -117,7 +117,7 @@ env:
   - name: spring.data.mongodb.uri
     value: "mongodb://devuser:devpassword123@mongodb:27017/kpidashboard" # Pass the application MongoDB username, password and mongo hostname . URL-encode special characters in the password.
   - name: aesEncryptionKey
-    value: "<aesEncryptionKey>" # AES encryption key. Generate using a tool like https://acte.ltd/utils/randomkeygen (min length - 8).
+    value: "EYryQ1DulKf4AYEfBPgOotu0FxGKufIa" # AES encryption key. Generate using a tool like https://acte.ltd/utils/randomkeygen (min length - 8).
   - name: auth.secret
     value: "C0GNAIDS8upDNnkE" # Passphrase for signing JWT tokens (min length - 4).
   - name: versionnumber
@@ -173,7 +173,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: knh.com
+    - host: example-knowhow.com    # Pass your knowhow host name here
       paths:
         - path: /
           pathType: ImplementationSpecific
