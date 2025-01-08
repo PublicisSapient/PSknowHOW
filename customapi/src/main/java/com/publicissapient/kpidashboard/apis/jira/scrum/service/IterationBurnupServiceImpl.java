@@ -36,7 +36,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -51,10 +54,6 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -450,6 +449,12 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 				dataCountGroup.setValue(dataCountList);
 				dataCountGroups.add(dataCountGroup);
 			}
+			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(totalJiraIssueList);
+			totalJiraIssueList.forEach(issue -> {
+				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
+			});
+			kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
+			kpiElement.setModalHeads(KPIExcelColumn.ITERATION_BURNUP.getColumns());
 
 			IterationKpiValue iterationKpiValue = new IterationKpiValue();
 			iterationKpiValue.setDataGroup(dataCountGroups);
