@@ -5,7 +5,7 @@
             tooltipPosition="bottom"
             *ngIf="filterData?.length && filterData[i]?.length && config['type'] !== 'singleSelect'"
             style="margin-left: 10px;">
-            <p-multiSelect #multiSelect [inputId]="'multiselectFilter_' + i" [disabled]="squadLevel && squadLevel.hierarchyLevelName === config.defaultLevel.labelName && selectedTrends?.length > 1"
+            <p-multiSelect #multiSelect [inputId]="'multiselectFilter_' + i" [disabled]="squadLevel?.hierarchyLevelName === config.defaultLevel.labelName && selectedTrends?.length > 1"
                 [style]="{'width':'200px', 'max-width': '100%', 'height': '40px'}"
                 defaultLabel="Select" [optionLabel]="'nodeName'" [panelStyle]="{ 'min-width': 'min(100vw, 400px)' }"
                 [appendTo]="addnlFilterDiv" [(ngModel)]="selectedFilters[i]" [options]="filterData[i]"
