@@ -5,6 +5,8 @@ metadata:
   name: authnauth-ui
   labels:
     app: authnauth-ui
+    app.kubernetes.io/name: authnauth-ui
+    app.kubernetes.io/instance: authnauth
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -12,6 +14,8 @@ spec:
   selector:
     matchLabels:
       app: authnauth-ui
+      app.kubernetes.io/name: authnauth-ui
+      app.kubernetes.io/instance: authnauth
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -20,6 +24,8 @@ spec:
       {{- end }}
       labels:
         app: authnauth-ui
+        app.kubernetes.io/name: authnauth-ui
+        app.kubernetes.io/instance: authnauth
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

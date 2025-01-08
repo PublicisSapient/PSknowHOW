@@ -4,6 +4,8 @@ metadata:
   name: knowhow-ui
   labels:
     app: knowhow-ui
+    app.kubernetes.io/name: knowhow-ui
+    app.kubernetes.io/instance: knowhow
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -11,6 +13,8 @@ spec:
   selector:
     matchLabels:
       app: knowhow-ui
+      app.kubernetes.io/name: knowhow-ui
+      app.kubernetes.io/instance: knowhow
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,6 +23,8 @@ spec:
       {{- end }}
       labels:
         app: knowhow-ui
+        app.kubernetes.io/name: knowhow-ui
+    app.kubernetes.io/instance: knowhow
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

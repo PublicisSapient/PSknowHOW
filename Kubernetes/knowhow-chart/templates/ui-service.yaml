@@ -4,6 +4,8 @@ metadata:
   name: knowhow-ui
   labels:
     app: knowhow-ui
+    app.kubernetes.io/name: knowhow-ui
+    app.kubernetes.io/instance: knowhow
 spec:
   type: {{ .Values.service.uitype }}
   ports:
@@ -13,3 +15,5 @@ spec:
       name: http
   selector:
     app: knowhow-ui
+    app.kubernetes.io/name: knowhow-ui
+    app.kubernetes.io/instance: knowhow

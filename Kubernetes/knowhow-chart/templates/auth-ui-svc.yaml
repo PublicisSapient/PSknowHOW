@@ -5,6 +5,8 @@ metadata:
   name: authnauth-ui
   labels:
     app: authnauth-ui
+    app.kubernetes.io/name: authnauth-ui
+    app.kubernetes.io/instance: authnauth
 spec:
   type: {{ .Values.service.uitype }}
   ports:
@@ -14,4 +16,6 @@ spec:
       name: http
   selector:
     app: authnauth-ui
+    app.kubernetes.io/name: authnauth-ui
+    app.kubernetes.io/instance: authnauth
 {{- end }}
