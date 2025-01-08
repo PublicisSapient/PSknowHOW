@@ -330,6 +330,11 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				dataGroup1.add(createKpiData(UNLINKED_DEFECTS, 4, "", (double) unlinkedDefectList.size()));
 				dataGroup.setDataGroup1(dataGroup1);
 
+				Map<String, String> markerInfo = new HashMap<>();
+				markerInfo.put(Constant.GREEN, "Represent the open linked stories");
+				dataGroup.setMarkerInfo(markerInfo);
+				dataGroup.setMetaDataColumns(List.of("marker"));
+
 				kpiElement.setSprint(latestSprint.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.QUALITY_STATUS.getColumns());
 				kpiElement.setIssueData(issueData);
