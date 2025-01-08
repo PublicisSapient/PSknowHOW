@@ -31,7 +31,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Routes, ActivatedRoute, Router } from '@angular/router';
+import { Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 declare let $: any;
 import { CircularProgressComponent } from '../../component/circular-progress/circular-progress.component';
@@ -2414,11 +2414,8 @@ describe('ExecutiveV2Component', () => {
 
   const fakeKpi171Data = require('../../../test/resource/fakeKpi171Data.json');
 
-  const activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', ['snapshot']);
-  const routerMock = jasmine.createSpyObj('Router', ['navigate']);
-
   beforeEach(() => {
-    service = new SharedService(activatedRouteMock, routerMock);
+    service = new SharedService();
 
     const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },

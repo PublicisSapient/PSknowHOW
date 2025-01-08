@@ -1024,4 +1024,14 @@ export class HelperService {
 
     return aggregatedResponse;
   }
+
+  kpiFilterDataRetentionPolicy(selectedKPIFilterObj) {
+    const kpiFilterParamStr = btoa(Object.keys(selectedKPIFilterObj).length ? JSON.stringify(selectedKPIFilterObj) : '');
+
+    this.router.navigate([], {
+      queryParams: { 'kpiFilters': kpiFilterParamStr }, // Pass the object here
+      relativeTo: this.route,
+      queryParamsHandling: 'merge',
+    });
+  }
 }
