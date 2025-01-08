@@ -174,9 +174,8 @@ export class AdditionalFilterComponent implements OnChanges {
           this.selectedFilters = ['Overall'];
         }
       }
-      Promise.resolve().then(() => {
+      
         this.applyAdditionalFilter(fakeEvent, index + 1);
-      });
 
     });
 
