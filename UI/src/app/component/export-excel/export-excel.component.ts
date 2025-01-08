@@ -62,11 +62,11 @@ export class ExportExcelComponent implements OnInit {
     })
   }
 
-  // download excel functionality
+  // download excel functionality commetting out condition for additionalFilterSupport & iSAdditionalFilterSelected can be revisit 
   downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?,testKpi?) {
     const sprintIncluded = filterApplyData.sprintIncluded.length > 0 ? filterApplyData.sprintIncluded : ['CLOSED'];
     this.modalDetails['kpiId'] = kpiId;
-    if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
+    //if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
       this.helperService.downloadExcel(kpiId, kpiName, isKanban, filterApplyData, filterData, sprintIncluded,).subscribe((getData) => {
         getData = {...getData,...this.exportExcelRawVariable}
         this.isDisableSaveCOnfigurationBtn = !getData['saveDisplay'];
@@ -78,10 +78,10 @@ export class ExportExcelComponent implements OnInit {
         }
 
       });
-    } else {
-      this.modalDetails['header'] = kpiName;
-      this.displayModal = true;
-    }
+    // } else {
+    //   this.modalDetails['header'] = kpiName;
+    //   this.displayModal = true;
+    // }
   }
 
 
