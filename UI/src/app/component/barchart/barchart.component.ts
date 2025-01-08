@@ -65,8 +65,8 @@ export class BarchartComponent implements OnInit {
     const isallValueZero = this.data.every(x=>x.value === 0);
 
     // Extract unit from the dataGroup or set default
-    const unit = this.data.map((d) => d.unit)[0] || 'hr'; //this.dataGroup?.unit ||
-
+    const unit = this.capitalizeAndPluralize(this.data.map((d) => d.unit)[0] || 'hr'); //this.dataGroup?.unit ||
+  
     // Append SVG container
     this.svg = d3
       .select(element)
@@ -224,6 +224,24 @@ export class BarchartComponent implements OnInit {
     // Clear previous chart
     d3.select(this.elRef.nativeElement).select('.chart-container').html('');
     this.createChart();
+  }
+
+  capitalizeAndPluralize(word) {
+    if (!word || typeof word !== 'string') {
+      return '';
+    }
+  
+    // Capitalize the first letter
+    const capitalizedWord = word.charAt(0).toUpperCase() + word.slice(1);
+  
+    // Convert to plural form (basic rule: add 's')
+    const pluralWord = capitalizedWord.endsWith('s')
+      ? capitalizedWord + 'es' // If it ends with 's', add 'es' (e.g., class -> classes)
+      : capitalizedWord.endsWith('y') && !/[aeiou]y$/.test(word)
+      ? capitalizedWord.slice(0, -1) + 'ies' // Replace 'y' with 'ies' (e.g., city -> cities)
+      : capitalizedWord + 's'; // Default case: add 's' (e.g., dog -> dogs)
+  
+    return pluralWord;
   }
 
 }
