@@ -2418,7 +2418,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
         }
-      }else if(kpi.kpiId === "kpi38"){
+      }else if(kpi?.kpiDetail?.kpiFilter && kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multitypefilters' ){
         this.kpiSelectedFilterObj[kpi?.kpiId]  = event;
       }
       else {
