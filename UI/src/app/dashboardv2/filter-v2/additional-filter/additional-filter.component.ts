@@ -48,26 +48,10 @@ export class AdditionalFilterComponent implements OnChanges {
         Object.keys(data).forEach((f, index) => {
           if (this.filterData[index]) {
             if (this.selectedTab === 'developer') {
-              data[f].forEach(element => {
-
-                if (element.nodeId && !this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                  if (this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
-                    this.filterData[index] = [];
-                  }
-                  this.filterData[index].push(element);
-                }
-              });
-
-              this.filterData.forEach((filterSet, index) => {
-                if (!data[Object.keys(data)[index]]) {
-                  this.filterData.splice(index, 1);
-                }
-              });
-
+              this.populateFilterDataForDeveloper(f, index, data)
             } else {
               this.filterData[index] = data[f];
             }
-
 
           } else {
             this.filterData[index] = data[f];
@@ -90,6 +74,26 @@ export class AdditionalFilterComponent implements OnChanges {
         this.resetFilterData();
       }
     }));
+  }
+
+  populateFilterDataForDeveloper(f, index, data) {
+
+    data[f].forEach(element => {
+
+      if (element.nodeId && !this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
+        if (this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
+          this.filterData[index] = [];
+        }
+        this.filterData[index].push(element);
+      }
+    });
+
+    this.filterData.forEach((filterSet, index) => {
+      if (!data[Object.keys(data)[index]]) {
+        this.filterData.splice(index, 1);
+      }
+    });
+
   }
 
 
