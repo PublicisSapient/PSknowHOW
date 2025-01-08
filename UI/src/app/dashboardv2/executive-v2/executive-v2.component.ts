@@ -1211,7 +1211,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (this.kpiDropdowns[kpiId]?.length > 1) {
           this.kpiSelectedFilterObj[kpiId] = {};
           for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-            if (filterType.toLowerCase() === 'multitypefilters') {
+            if (filterType?.toLowerCase() === 'multitypefilters') {
               if (this.kpiDropdowns[kpiId][i].filterType.toLowerCase() === 'radiobtn') {
                 this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
               } else {
