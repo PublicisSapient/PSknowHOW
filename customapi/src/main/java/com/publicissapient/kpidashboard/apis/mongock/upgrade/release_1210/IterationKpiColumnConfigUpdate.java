@@ -72,7 +72,7 @@ public class IterationKpiColumnConfigUpdate {
 		kpiColumnConfig.updateMany(filter, update);
 
 		// Defect Count by KPI
-		Document filter1 = new Document("kpiId", "kpi125");
+		Document filter1 = new Document("kpiId", "kpi136");
 		Document update1 = new Document("$set",
 				new Document("kpiColumnDetails",
 						List.of(new Document().append(COLUMN_NAME, "Issue Id").append(ORDER, 0).append(IS_SHOWN, true)
@@ -85,7 +85,7 @@ public class IterationKpiColumnConfigUpdate {
 										.append(IS_DEFAULT, true),
 								new Document().append(COLUMN_NAME, "Size(story point/hours)").append(ORDER, 4)
 										.append(IS_SHOWN, true).append(IS_DEFAULT, true),
-								new Document().append(COLUMN_NAME, "Root Cause").append(ORDER, 5).append(IS_SHOWN, true)
+								new Document().append(COLUMN_NAME, "Root Cause List").append(ORDER, 5).append(IS_SHOWN, true)
 										.append(IS_DEFAULT, true),
 								new Document().append(COLUMN_NAME, "Priority").append(ORDER, 6).append(IS_SHOWN, true)
 										.append(IS_DEFAULT, true),
@@ -141,7 +141,7 @@ public class IterationKpiColumnConfigUpdate {
 		kpiColumnConfig.updateMany(filter, update);
 
 		// Defect Count by KPI
-		Document filter1 = new Document("kpiId", "kpi125");
+		Document filter1 = new Document("kpiId", "kpi136");
 		Document update1 = new Document("$set",
 				new Document("kpiColumnDetails",
 						List.of(new Document().append(COLUMN_NAME, "Defect ID").append(ORDER, 0).append(IS_SHOWN, true)

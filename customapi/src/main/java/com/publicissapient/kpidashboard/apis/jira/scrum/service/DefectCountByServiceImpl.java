@@ -33,7 +33,6 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
@@ -161,8 +160,6 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 	}
 
 	private void sprintWiseLeafNodeValue(Node latestSprint, KpiElement kpiElement, KpiRequest kpiRequest) {
-		String requestTrackerId = getRequestTrackerId();
-		List<KPIExcelData> excelData = new ArrayList<>();
 		if (latestSprint != null) {
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprint, null, null, kpiRequest);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -175,7 +172,7 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 								LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER),
 								LocalDate.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER),
 								LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER)))
-						.collect(Collectors.toList());
+						.toList();
 				log.info("DefectCountByServiceImpl -> allCompletedDefects ->  : {}", allCompletedDefects);
 				// Creating map of modal Objects
 				Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper
@@ -193,15 +190,9 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 					data.setCategory(category);
 				});
 
-				populateExcelDataObject(requestTrackerId, excelData, allCompletedDefects, createDuringIteration,
-						latestSprint.getSprintFilter().getName(), fieldMapping);
-
 				kpiElement.setSprint(latestSprint.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART
 						.getColumns(List.of(latestSprint), cacheService, filterHelperService));
-				kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART
-						.getColumns(List.of(latestSprint), cacheService, filterHelperService));
-				kpiElement.setExcelData(excelData);
 
 				kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 				kpiElement.setFilterGroup(createFilterGroup());
@@ -297,18 +288,6 @@ public class DefectCountByServiceImpl extends JiraIterationKPIService {
 		category.setCategoryValue(categoryValue);
 		category.setOrder(order);
 		return category;
-	}
-
-	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> sprintWiseDefectDataList, List<JiraIssue> createDuringIteration, String name,
-			FieldMapping fieldMapping) {
-
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& !Objects.isNull(sprintWiseDefectDataList) && !sprintWiseDefectDataList.isEmpty()) {
-			KPIExcelUtility.populateDefectRCAandStatusRelatedExcelData(name, sprintWiseDefectDataList,
-					createDuringIteration, excelData, fieldMapping);
-		}
-
 	}
 
 	private List<JiraIssue> filterDefects(Map<String, Object> resultMap, FieldMapping fieldMapping) {
