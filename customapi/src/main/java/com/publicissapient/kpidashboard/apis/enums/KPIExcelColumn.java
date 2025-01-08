@@ -117,7 +117,7 @@ public enum KPIExcelColumn {
 			"Defect Description", "Squad", "Story ID", "Story Description",
 			"Root Cause", "Defect Priority", "Defect Status", "Time Spent (in hours)", "Defect added after Sprint Start", "Resolved Status")),
 
-	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", Arrays.asList("Defect ID", "Issue Description", "Squad", "Issue Status",
+	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", Arrays.asList("Issue Id", "Issue Description", "Squad", "Issue Status",
 			"Issue Type", "Size(story point/hours)", "Root Cause", "Priority", "Assignee", "Created during Iteration")),
 
 	REGRESSION_AUTOMATION_COVERAGE("kpi42", Arrays.asList("Sprint Name", "Test Case ID", "Automated")),

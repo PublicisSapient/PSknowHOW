@@ -17,14 +17,8 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1210;
 
-import java.util.List;
-
-import com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1210.IterationBurnupKpiColumnConfigUpdate;
-import com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1210.UpdateKpiMasterForIterationKpis;
-import org.bson.Document;
+import com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1210.IterationKpiColumnConfigUpdate;
 import org.springframework.data.mongodb.core.MongoTemplate;
-
-import com.mongodb.client.MongoCollection;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -33,13 +27,13 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author prijain3
  */
-@ChangeUnit(id = "r_iteration_burnup_kpi_column_config_update", order = "012105", author = "prijain3", systemVersion = "12.1.0")
-public class IterationBurnupKpiColumnConfigUpdateR {
+@ChangeUnit(id = "r_iteration_kpi_column_config_update", order = "012105", author = "prijain3", systemVersion = "12.1.0")
+public class IterationKpiColumnConfigUpdateR {
 
-	IterationBurnupKpiColumnConfigUpdate kpiColumnConfigUpdate;
+	IterationKpiColumnConfigUpdate kpiColumnConfigUpdate;
 
-	public IterationBurnupKpiColumnConfigUpdateR(MongoTemplate mongoTemplate) {
-		kpiColumnConfigUpdate = new IterationBurnupKpiColumnConfigUpdate(mongoTemplate);
+	public IterationKpiColumnConfigUpdateR(MongoTemplate mongoTemplate) {
+		kpiColumnConfigUpdate = new IterationKpiColumnConfigUpdate(mongoTemplate);
 	}
 
 	@Execution
