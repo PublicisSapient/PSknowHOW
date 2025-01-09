@@ -53,11 +53,7 @@ export class PrimaryFilterComponent implements OnChanges {
   applyDefaultFilters() {
     this.populateFilters();
     setTimeout(() => {
-      console.log('PrF getBackupOfUrlFilters ', this.helperService.getBackupOfUrlFilters());
-      console.log('PrF getBackupOfFilterSelectionState ', this.helperService.getBackupOfFilterSelectionState());
       this.stateFilters = (this.helperService.getBackupOfUrlFilters() && JSON.parse(this.helperService.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.helperService.getBackupOfUrlFilters()) : this.helperService.getBackupOfFilterSelectionState();
-      console.log('PrF stateFilters ', this.stateFilters);
-      console.log('PrF primaryFilterConfig ', this.primaryFilterConfig);
       if (Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
         if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
           this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
