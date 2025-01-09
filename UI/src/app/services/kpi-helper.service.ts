@@ -52,7 +52,7 @@ export class KpiHelperService {
     let unit;
     if (key) {
       selectedDataGroup = dataGroup1.find((d) => d.key === key);
-      unit = selectedDataGroup.unit;
+      unit = selectedDataGroup?.unit;
     }
 
     // if (!dataGroup1 || dataGroup1.length === 0) {

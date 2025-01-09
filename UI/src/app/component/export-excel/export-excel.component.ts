@@ -240,15 +240,17 @@ export class ExportExcelComponent implements OnInit {
 
         updatedRow['Linked Defect'] = (typeof updatedRow['Linked Defect'] ==='object' && updatedRow['Linked Defect'].hyperlink === 'N/A')?updatedRow['Linked Defect'].text:updatedRow['Linked Defect']
 
-        Object.keys(updatedRow).forEach(colName => {
-          if (updatedRow[colName] instanceof Array) {
-            updatedRow[colName] = updatedRow[colName].join(', ')
-          } 
-          if (typeof updatedRow[colName] === 'string') {
-            updatedRow[colName] = updatedRow[colName].trim();
-          }
-          if (blankValues.includes(updatedRow[colName])) {
-            updatedRow[colName] = '';
+        Object.keys(updatedRow).forEach((key) => {
+          const value = updatedRow[key];
+          // Check if the value is in blankValues or is a falsy value
+          if (blankValues.includes(value?.toString().toLowerCase()) || value == null || value === '') {
+            updatedRow[key] = ''; // Replace blank or invalid value with an empty string
+          } else if (Array.isArray(value)) {
+            // If the value is an array, join the values into a string
+            updatedRow[key] = value.join(',');
+          } else if (typeof value === 'string') {
+            // Trim and clean up string values
+            updatedRow[key] = value.trim();
           }
         });
         return updatedRow;

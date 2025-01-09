@@ -230,6 +230,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
     //#region new card kpi
     if (this.selectedTab === 'iteration' && !this.loader) {
+    //  console.log(this.trendValueList)
       this.cardData = this.trendValueList;
       const {
         issueData,
@@ -448,6 +449,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   exportToExcel(KpiId?:any) {
     if(!!this.cardData){
       let exportData = this.cardData['issueData'];
+      // const uniqueCategory = [[...new Set(exportData.map(item => item.Category))]];
+      // console.log(uniqueCategory)
       if(KpiId === 'kpi176'){
         exportData = exportData.filter(x => x['Issue Type'].includes('Dependency') || x['Issue Type'].includes('Risk'));
       }
@@ -577,7 +580,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
      */
   onFilterChange(event) {
     const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
-    if (selectedKeyObj && selectedKeyObj['Category'] !== 'Value') {
+    if (selectedKeyObj && selectedKeyObj['Category'] !== 'value') {
       const filterIssues = this.applyDynamicfilter(
         this.cardData.issueData,
         [selectedKeyObj, ...Object.entries(updatedEvent).map(([key, value]) => {
@@ -602,7 +605,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.currentChartData = this.prepareChartData(
         this.copyCardData,
         this.colorPalette,
-        'Value'
+        'value'
       );
     }
     this.selectedButtonValue = selectedKeyObj;
