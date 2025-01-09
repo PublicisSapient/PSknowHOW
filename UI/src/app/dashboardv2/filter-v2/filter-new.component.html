@@ -46,6 +46,7 @@
       </ng-container>
     </ng-container>
   </ul>
+  <ng-container  *ngIf="!noSprint"> 
   <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 duration-container" *ngIf="additionalData">
     <div class="p-d-inline-block p-mr-2">
       <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-clock"></i></span>
@@ -161,6 +162,7 @@
       </div>
     </div>
   </div>
+</ng-container>
 </div>
 
 <p-dialog [(visible)]="displayModal" [modal]="true">
