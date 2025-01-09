@@ -253,7 +253,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
 		dataGroup1.add(createKpiData("", ISSUE_AT_RISK, 1, "count", "", "Category", ISSUE_AT_RISK, true));
-		dataGroup1.add(createKpiData("Value", displayName, 2, "sum", unit,"Category", ISSUE_AT_RISK, false));
+		dataGroup1.add(createKpiData("value", displayName, 2, "sum", unit,"Category", ISSUE_AT_RISK, false));
 
 		dataGroup.setDataGroup1(dataGroup1);
 		return dataGroup;
