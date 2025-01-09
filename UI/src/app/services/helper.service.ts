@@ -735,7 +735,6 @@ export class HelperService {
     } else {
       this.selectedFilters = null;
     }
-    console.log('refreshCounter ',this.refreshCounter);
     if (!this.refreshCounter) {
       ++this.refreshCounter;
     } else if (this.refreshCounter) {
@@ -747,7 +746,6 @@ export class HelperService {
       //     this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path?.replace(/###/gi, '___');
       //   }
       // }
-      console.log('this.selectedFilters', this.selectedFilters);
       this.setBackupOfUrlFilters('{}');
       const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters));
 
@@ -760,12 +758,10 @@ export class HelperService {
   }
 
   setBackupOfUrlFilters(data) {
-    console.log('setBackupOfUrlFilters', data);
     this.selectedUrlFilters = data;
   }
 
   getBackupOfUrlFilters() {
-    console.log('getBackupOfUrlFilters', this.selectedUrlFilters);
     return this.selectedUrlFilters;
   }
 

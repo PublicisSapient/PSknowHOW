@@ -22,7 +22,7 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
@@ -126,7 +126,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   dailyStandupKPIDetails = {};
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
-    private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
+    private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef, private router: Router) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
@@ -316,6 +316,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
       }
     });
+
+    this.subscriptions.push(this.service.kpiFilterQueryParamObs.subscribe((data) => {
+      this.router.navigate([], {
+        queryParams: { 'kpiFilters': data }, // Pass the object here
+        relativeTo: this.route,
+        queryParamsHandling: 'merge',
+      });
+    }));
   }
 
   // unsubscribing all Kpi Request

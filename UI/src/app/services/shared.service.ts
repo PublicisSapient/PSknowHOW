@@ -18,7 +18,6 @@
 
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
 
 /*************
 SharedService
@@ -109,6 +108,8 @@ export class SharedService {
   selectedTrendsEvent;
   selectedTrendsEventSubject;
   projectList = [];
+  public kpiFilterParamSubject = new BehaviorSubject<any>(null);
+  public kpiFilterQueryParamObs = this.kpiFilterParamSubject.asObservable();
 
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
@@ -128,7 +129,7 @@ export class SharedService {
   // KPI filter retention
   selectedKPIFilterObj = {};
 
-  constructor(private router?: Router, private route?: ActivatedRoute) {
+  constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
@@ -374,12 +375,7 @@ export class SharedService {
     }
 
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
-
-    this.router.navigate([], {
-      queryParams: { 'kpiFilters': kpiFilterParamStr }, // Pass the object here
-      relativeTo: this.route,
-      queryParamsHandling: 'merge',
-    });
+    this.kpiFilterParamSubject.next(kpiFilterParamStr);
 
     this.selectedFilterOption.next(value);
   }
@@ -437,7 +433,7 @@ export class SharedService {
   }
   setSelectedTrends(values) {
     values.forEach(trend => {
-      trend.path = trend.path.replace(/___/g, '###');
+      trend.path = trend.path?.replace(/___/g, '###');
     });
     this.selectedTrends = values;
     // this.selectedTrendsEvent.emit(values);
@@ -599,11 +595,11 @@ export class SharedService {
   }
 
   //#region  can be remove after iteraction component removal
-  
+
    isTrendValueListValid(trendValueList: any[]): boolean {
     return trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1');
   }
-  
+
    populateDropdownFromTrendValues(trendValueList: any[], dropdownArr: any[]): void {
     trendValueList.forEach(item => {
       if (!dropdownArr.includes(item?.filter1)) {
@@ -611,8 +607,8 @@ export class SharedService {
       }
     });
   }
-  
-  
+
+
    shouldRemoveOverallFilter(kpiObj: any): boolean {
     return (
       kpiObj &&
@@ -625,14 +621,14 @@ export class SharedService {
       )
     );
   }
-  
+
    removeOverallFilter(dropdownArr: any[]): void {
     const index = dropdownArr.findIndex(x => x?.toLowerCase() === 'overall');
     if (index > -1) {
       dropdownArr.splice(index, 1);
     }
   }
-  
+
    createFilterObject(dropdownArr: any[]): any[] {
     return [
       {
@@ -641,7 +637,7 @@ export class SharedService {
       }
     ];
   }
-  
+
   //#endregion
 }
 
