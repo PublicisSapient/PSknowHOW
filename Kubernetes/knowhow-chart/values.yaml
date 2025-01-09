@@ -59,10 +59,10 @@ AzureBoardApp:
   enabled: true
 
 SCMProcessor:
-  enabled: true
+  enabled: false
 
 mongodb:
-  enabled: true
+  enabled: false
   volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
   storage: "16Gi"
   accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
