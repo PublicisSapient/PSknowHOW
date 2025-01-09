@@ -33,11 +33,18 @@ ui:
   - name: DNS_SSL
     value: "sapient.com"  # LoadBalancer IP or DNS 
   - name: API_HOST
-    value: "customapi"             #Custom API's K8s Service Name
+    value: "customapi"             #Custom API's Service Name
   - name: API_PORT
-    value: "8080"                   #Customapi port number
-  - name: PROTOCOL
-    value: "http"
+    value: "8080"                   #Customapi service port number
+  - name: PROTOCOL           
+    value: "http"         
+# Choose "http" or "https" for your UI pod configuration.
+# If using "http", the app will run on port 80.
+# If using "https", the app will run on port 443.
+# For "https", you need to provide SSL certificates by attaching them as volumes to the following paths:
+# - /etc/ssl/certs/knowhow_ssl.cer (SSL certificate)
+# - /etc/ssl/certs/knowhow_ssl.key (SSL key)
+# - /etc/ssl/certs/knowhow_ssl_passphrase.txt (SSL passphrase)
 
 JiraApp:
   enabled: true

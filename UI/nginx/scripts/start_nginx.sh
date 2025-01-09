@@ -21,7 +21,7 @@
 API_HOST=${API_HOST:-customapi}
 API_PORT=${API_PORT:-8080}
 # Determine the PROTOCOL (http or https) based on an environment variable
-PROTOCOL=${PROTOCOL:-https} # default to https you can pass external var to change to http
+PROTOCOL=${PROTOCOL:-http} # default to https you can pass external var to change to http
 
 if [ "$PROTOCOL" = "http" ]; then
    cp /tmp/nginx_http.conf ${CONF_LOC}/nginx.conf

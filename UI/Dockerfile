@@ -21,7 +21,7 @@ ENV PID_LOC="/run/nginx" \
     ERRORPAGE_ASSETS_ARCHIVE="ErrorPage.tar" \
     ASSETS_ARCHIVE="*.tar" \
     CERT_LOC="/etc/ssl/certs" \
-    PROTOCOL="https"
+    PROTOCOL="http"
 
 # Create necessary directories
 RUN mkdir -p ${PID_LOC} ${UI2_LOC}
