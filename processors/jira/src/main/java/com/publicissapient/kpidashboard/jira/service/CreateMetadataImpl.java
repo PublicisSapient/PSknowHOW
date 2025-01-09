@@ -774,8 +774,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setTicketCountIssueTypeKPI50(
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setTicketCountIssueTypeKPI51(
-					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setTicketCountIssueTypeKPI48(
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setTicketCountIssueTypeKPI997(
@@ -785,10 +783,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setTicketCountIssueTypeKPI55(
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setKanbanRCACountIssueType(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setKanbanRCACountIssueTypeKPI48(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setKanbanRCACountIssueTypeKPI50(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setKanbanRCACountIssueTypeKPI51(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
@@ -808,8 +802,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 					.setTicketCountIssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setTicketCountIssueTypeKPI50(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setTicketCountIssueTypeKPI51(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setTicketCountIssueTypeKPI48(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setTicketCountIssueTypeKPI997(
@@ -819,8 +811,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setTicketCountIssueTypeKPI55(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setKanbanRCACountIssueType(Arrays.asList(JiraConstants.ISSUE_TYPE_DEFECT));
-			fieldMapping.setKanbanRCACountIssueTypeKPI48(Arrays.asList(JiraConstants.ISSUE_TYPE_DEFECT));
-			fieldMapping.setKanbanRCACountIssueTypeKPI50(Arrays.asList(JiraConstants.ISSUE_TYPE_DEFECT));
 			fieldMapping.setKanbanRCACountIssueTypeKPI51(Arrays.asList(JiraConstants.ISSUE_TYPE_DEFECT));
 			fieldMapping.setJiraTicketVelocityIssueTypeKPI49(
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_VELOCITY_ISSUE_TYPE, new ArrayList<>()));

@@ -180,16 +180,13 @@ public class FieldMappingDTO extends FieldMappingHistory {
 
 	private List<String> ticketCountIssueType;
 	private List<String> ticketCountIssueTypeKPI50;
-	private List<String> ticketCountIssueTypeKPI51;
 	private List<String> ticketCountIssueTypeKPI48;
 	private List<String> ticketCountIssueTypeKPI997;
 	private List<String> ticketCountIssueTypeKPI54;
 	private List<String> ticketCountIssueTypeKPI55;
 
 	private List<String> kanbanRCACountIssueType;
-	private List<String> kanbanRCACountIssueTypeKPI50;
 	private List<String> kanbanRCACountIssueTypeKPI51;
-	private List<String> kanbanRCACountIssueTypeKPI48;
 
 	private List<String> jiraTicketVelocityIssueTypeKPI49;
 

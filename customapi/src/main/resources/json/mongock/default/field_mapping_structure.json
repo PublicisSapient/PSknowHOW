@@ -4167,33 +4167,7 @@
     "nodeSpecific": false
   },
   {
-    "fieldName": "kanbanRCACountIssueTypeKPI50",
-    "fieldLabel": "Issue types to consider",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "processorCommon": false,
-    "tooltip": {
-      "definition": ""
-    },
-    "mandatory": false,
-    "nodeSpecific": false
-  },
-  {
     "fieldName": "kanbanRCACountIssueTypeKPI51",
-    "fieldLabel": "Issue types to consider",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "processorCommon": false,
-    "tooltip": {
-      "definition": ""
-    },
-    "mandatory": false,
-    "nodeSpecific": false
-  },
-  {
-    "fieldName": "kanbanRCACountIssueTypeKPI48",
     "fieldLabel": "Issue types to consider",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -4311,19 +4285,6 @@
   },
   {
     "fieldName": "ticketCountIssueTypeKPI50",
-    "fieldLabel": "Issue types to consider",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "processorCommon": false,
-    "tooltip": {
-      "definition": ""
-    },
-    "mandatory": false,
-    "nodeSpecific": false
-  },
-  {
-    "fieldName": "ticketCountIssueTypeKPI51",
     "fieldLabel": "Issue types to consider",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",

@@ -364,8 +364,6 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping
 				.setTicketCountIssueTypeKPI50(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping
-				.setTicketCountIssueTypeKPI51(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-		fieldMapping
 				.setTicketCountIssueTypeKPI48(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping
 				.setTicketCountIssueTypeKPI997(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
@@ -375,10 +373,6 @@ public class MetaDataClientImpl implements MetadataClient {
 				.setTicketCountIssueTypeKPI55(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping
 				.setKanbanRCACountIssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-		fieldMapping.setKanbanRCACountIssueTypeKPI48(
-				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-		fieldMapping.setKanbanRCACountIssueTypeKPI50(
-				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping.setKanbanRCACountIssueTypeKPI51(
 				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping.setJiraTicketVelocityIssueTypeKPI49(

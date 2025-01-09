@@ -249,19 +249,19 @@ public enum FieldMappingEnum {
 	/** Kanban fieldMapping Enum starts **/
 
 	KPI48("Net Open Ticket Count By Status", KPISource.JIRAKANBAN.name(),
-			Arrays.asList("jiraLiveStatusKPI48", "ticketCountIssueTypeKPI48", "kanbanRCACountIssueTypeKPI48",
-					"jiraTicketClosedStatusKPI48", "jiraTicketRejectedStatusKPI48", "thresholdValueKPI48")),
+			Arrays.asList("jiraLiveStatusKPI48", "ticketCountIssueTypeKPI48", "jiraTicketClosedStatusKPI48",
+					"jiraTicketRejectedStatusKPI48", "thresholdValueKPI48")),
 
 	KPI49("Ticket Velocity", KPISource.JIRAKANBAN.name(),
 			Arrays.asList("jiraTicketVelocityIssueTypeKPI49", "ticketDeliveredStatusKPI49", "thresholdValueKPI49")),
 
 	KPI50("Net Open Ticket Count By Priority", KPISource.JIRAKANBAN.name(),
-			Arrays.asList("jiraLiveStatusKPI50", "ticketCountIssueTypeKPI50", "kanbanRCACountIssueTypeKPI50",
-					"jiraTicketClosedStatusKPI50", "jiraTicketRejectedStatusKPI50", "thresholdValueKPI50")),
+			Arrays.asList("jiraLiveStatusKPI50", "ticketCountIssueTypeKPI50", "jiraTicketClosedStatusKPI50",
+					"jiraTicketRejectedStatusKPI50", "thresholdValueKPI50")),
 
 	KPI51("Net Open Ticket Count By Rca", KPISource.JIRAKANBAN.name(),
-			Arrays.asList("jiraLiveStatusKPI51", "ticketCountIssueTypeKPI51", "kanbanRCACountIssueTypeKPI51",
-					"jiraTicketClosedStatusKPI51", "jiraTicketRejectedStatusKPI151", "thresholdValueKPI51")),
+			Arrays.asList("jiraLiveStatusKPI51", "kanbanRCACountIssueTypeKPI51", "jiraTicketClosedStatusKPI51",
+					"jiraTicketRejectedStatusKPI151", "thresholdValueKPI51")),
 
 	KPI53("Lead Time Kanban", KPISource.JIRAKANBAN.name(),
 			Arrays.asList("jiraLiveStatusKPI53", "jiraTicketClosedStatusKPI53", "kanbanCycleTimeIssueTypeKPI53",

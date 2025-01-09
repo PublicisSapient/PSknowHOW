@@ -166,16 +166,13 @@ public class FieldMappingHistory extends BasicModel {
 
 	private List<ConfigurationHistoryChangeLog> historyticketCountIssueType;
 	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI50;
-	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI51;
 	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI48;
 	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI997;
 	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI54;
 	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI55;
 
 	private List<ConfigurationHistoryChangeLog> historykanbanRCACountIssueType;
-	private List<ConfigurationHistoryChangeLog> historykanbanRCACountIssueTypeKPI50;
 	private List<ConfigurationHistoryChangeLog> historykanbanRCACountIssueTypeKPI51;
-	private List<ConfigurationHistoryChangeLog> historykanbanRCACountIssueTypeKPI48;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraTicketVelocityIssueTypeKPI49;
 

@@ -82,12 +82,10 @@ public class KanbanFieldMapping {
 		fieldMappings.put(JIRA_LIVE_STATUS_NORK, List.of("jiraLiveStatusKPI51"));
 		fieldMappings.put(JIRA_LIVE_STATUS_OTA, List.of("jiraLiveStatusKPI997"));
 
-		fieldMappings.put(TICKET_COUNT_ISSUE_TYPE,
-				List.of("ticketCountIssueTypeKPI48", "ticketCountIssueTypeKPI50", "ticketCountIssueTypeKPI51",
-						"ticketCountIssueTypeKPI54", "ticketCountIssueTypeKPI55", "ticketCountIssueTypeKPI997"));
+		fieldMappings.put(TICKET_COUNT_ISSUE_TYPE, List.of("ticketCountIssueTypeKPI48", "ticketCountIssueTypeKPI50",
+				"ticketCountIssueTypeKPI54", "ticketCountIssueTypeKPI55", "ticketCountIssueTypeKPI997"));
 
-		fieldMappings.put(KANBAN_RCA_COUNT_ISSUE_TYPE, List.of("kanbanRCACountIssueTypeKPI50",
-				"kanbanRCACountIssueTypeKPI51", "kanbanRCACountIssueTypeKPI48"));
+		fieldMappings.put(KANBAN_RCA_COUNT_ISSUE_TYPE, List.of("kanbanRCACountIssueTypeKPI51"));
 
 		fieldMappings.put(JIRA_TICKET_VELOCITY_ISSUE_TYPE, List.of("jiraTicketVelocityIssueTypeKPI49"));
 

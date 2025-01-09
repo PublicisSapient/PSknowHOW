@@ -139,7 +139,6 @@ public class NetOpenTicketCountByPriorityServiceImpl
 			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusKPI50());
 			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatusKPI50());
 			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatusKPI50());
-			fieldWise.put("RCA_Count_IssueType", fieldMapping.getKanbanRCACountIssueTypeKPI50());
 			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueTypeKPI50());
 			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
 		 	projectWiseMapping.put(basicProjectConfigId, fieldWise);

@@ -110,7 +110,6 @@ public class NetOpenTicketCountStatusImplTest {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setJiraLiveStatusKPI48("");
 		fieldMapping.setJiraTicketClosedStatusKPI48(Collections.EMPTY_LIST);
-		fieldMapping.setKanbanRCACountIssueTypeKPI48(Collections.EMPTY_LIST);
 		fieldMapping.setTicketCountIssueTypeKPI48(Collections.EMPTY_LIST);
 		fieldMapping.setStoryFirstStatus("");
 		fieldMappingMap.put(new ObjectId("6335368249794a18e8a4479f"), fieldMapping);
