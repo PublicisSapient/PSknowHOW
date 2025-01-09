@@ -735,23 +735,24 @@ export class HelperService {
     } else {
       this.selectedFilters = null;
     }
+    console.log('refreshCounter ',this.refreshCounter);
     if (!this.refreshCounter) {
       ++this.refreshCounter;
     } else if (this.refreshCounter) {
       console.log('User Navigation Detected');
       // this.removeQueryParams();
 
-      if (this.selectedFilters['primary_level']) {
-        if (this.selectedFilters['primary_level'][0]) {
-          this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path?.replace(/###/gi, '___');
-        }
-      }
+      // if (this.selectedFilters['primary_level']) {
+      //   if (this.selectedFilters['primary_level'][0]) {
+      //     this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path?.replace(/###/gi, '___');
+      //   }
+      // }
+      console.log('this.selectedFilters', this.selectedFilters);
       this.setBackupOfUrlFilters('{}');
-      let stringified = btoa(JSON.stringify(this.selectedFilters));
-      // let stringified = (JSON.stringify(this.selectedFilters));
+      const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters));
 
       this.router.navigate([], {
-        queryParams: { 'stateFilters': stringified }, // Pass the object here
+        queryParams: { 'stateFilters': stateFilterEnc }, // Pass the object here
         relativeTo: this.route,
       });
 
@@ -759,10 +760,12 @@ export class HelperService {
   }
 
   setBackupOfUrlFilters(data) {
+    console.log('setBackupOfUrlFilters', data);
     this.selectedUrlFilters = data;
   }
 
   getBackupOfUrlFilters() {
+    console.log('getBackupOfUrlFilters', this.selectedUrlFilters);
     return this.selectedUrlFilters;
   }
 

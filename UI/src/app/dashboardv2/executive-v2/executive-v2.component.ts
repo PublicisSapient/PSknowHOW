@@ -208,7 +208,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.selectedTrendsEventSubject.subscribe(trend => {
       const selectedTrendFromLS = localStorage.getItem('selectedTrend') && JSON.parse(localStorage.getItem('selectedTrend'));
-      if ((trend.length !== this.selectedTrend.length || !this.arrayDeepCompare(trend, selectedTrendFromLS)) && (selectedTrendFromLS.length > 0)) {
+      if ((selectedTrendFromLS?.length > 0) && (trend.length !== selectedTrendFromLS?.length || !this.arrayDeepCompare(trend, selectedTrendFromLS))) {
         this.selectedTrend = trend;
         localStorage.setItem('selectedTrend', JSON.stringify(this.selectedTrend));
         this.kpiSelectedFilterObj = {};

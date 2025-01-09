@@ -36,17 +36,13 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedLevel'] && !this.helperService.deepEqual(changes['selectedLevel']?.currentValue, changes['selectedLevel'].previousValue)) {
-      this.applyDefaultFilters();
-      return;
-    } else if (changes['primaryFilterConfig'] && Object.keys(changes['primaryFilterConfig'].currentValue).length && !changes['primaryFilterConfig']?.firstChange) {
-      this.applyDefaultFilters();
-      return;
-    }
+    const selectedLevelChanged = changes['selectedLevel'] && !this.helperService.deepEqual(changes['selectedLevel']?.currentValue, changes['selectedLevel'].previousValue);
+    const primaryFilterConfigChanged = changes['primaryFilterConfig'] && Object.keys(changes['primaryFilterConfig'].currentValue).length && !changes['primaryFilterConfig']?.firstChange;
+    const selectedTypeChanged = changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange;
 
-    if (changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange) {
-      this.applyDefaultFilters();
-      return;
+    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged) {
+        this.applyDefaultFilters();
+        return;
     }
 
     let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
@@ -57,8 +53,12 @@ export class PrimaryFilterComponent implements OnChanges {
   applyDefaultFilters() {
     this.populateFilters();
     setTimeout(() => {
+      console.log('PrF getBackupOfUrlFilters ', this.helperService.getBackupOfUrlFilters());
+      console.log('PrF getBackupOfFilterSelectionState ', this.helperService.getBackupOfFilterSelectionState());
       this.stateFilters = (this.helperService.getBackupOfUrlFilters() && JSON.parse(this.helperService.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.helperService.getBackupOfUrlFilters()) : this.helperService.getBackupOfFilterSelectionState();
-      if (this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
+      console.log('PrF stateFilters ', this.stateFilters);
+      console.log('PrF primaryFilterConfig ', this.primaryFilterConfig);
+      if (Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
         if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
           this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
           if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']?.length) {
@@ -91,7 +91,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
             }
           } else {
-            if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase()) {
+            if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase()) {
               this.selectedFilters = [];
               this.selectedFilters.push(this.stateFilters['parent_level']);
             } else {

@@ -19,7 +19,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HelperService } from './helper.service';
 
 /*************
 SharedService
@@ -129,7 +128,7 @@ export class SharedService {
   // KPI filter retention
   selectedKPIFilterObj = {};
 
-  constructor(private router: Router, private route: ActivatedRoute) {
+  constructor(private router?: Router, private route?: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
