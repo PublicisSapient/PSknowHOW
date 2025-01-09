@@ -65,7 +65,7 @@ describe('RecommendationsComponent', () => {
     }]
 
   beforeEach(async () => {
-    // service = new SharedService();
+    service = new SharedService();
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule

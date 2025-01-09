@@ -252,7 +252,7 @@ describe('DeveloperComponent', () => {
   ];
 
   beforeEach(async () => {
-    // service = new SharedService();
+    service = new SharedService();
     await TestBed.configureTestingModule({
       imports: [
         FormsModule,

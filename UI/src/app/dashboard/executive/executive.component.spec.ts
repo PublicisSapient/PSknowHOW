@@ -2460,7 +2460,7 @@ describe('ExecutiveComponent', () => {
   ]
   beforeEach(() => {
 
-    // service = new SharedService();
+    service = new SharedService();
 
     const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },

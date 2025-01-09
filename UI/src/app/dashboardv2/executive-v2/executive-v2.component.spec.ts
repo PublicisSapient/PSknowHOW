@@ -31,7 +31,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Routes } from '@angular/router';
+import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 declare let $: any;
 import { CircularProgressComponent } from '../../component/circular-progress/circular-progress.component';
@@ -2415,7 +2415,7 @@ describe('ExecutiveV2Component', () => {
   const fakeKpi171Data = require('../../../test/resource/fakeKpi171Data.json');
 
   beforeEach(() => {
-    // service = new SharedService();
+    service = new SharedService();
 
     const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
@@ -2453,7 +2453,7 @@ describe('ExecutiveV2Component', () => {
         { provide: APP_CONFIG, useValue: AppConfig },
         HttpService,
         { provide: SharedService, useValue: service }
-        , ExcelService, DatePipe
+        , ExcelService, DatePipe,
 
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -2466,6 +2466,7 @@ describe('ExecutiveV2Component', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiveV2Component);
     component = fixture.componentInstance;
+    service = TestBed.inject(SharedService);
 
     const type = 'scrum';
     service.selectedtype = type;
@@ -2474,7 +2475,6 @@ describe('ExecutiveV2Component', () => {
     component.selectedTab = 'developer';
     fixture.detectChanges();
 
-    service = TestBed.inject(SharedService);
     httpService = TestBed.get(HttpService);
     helperService = TestBed.get(HelperService);
     excelService = TestBed.inject(ExcelService);

@@ -685,7 +685,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !selectedFilterBackup.hasOwnProperty('filter2')) {
       this.handleSingleSelectKPIFilter(event, kpi);
       /** When we have multi dropdown */
-    } else if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && 
+    } else if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' &&
     !Array.isArray(selectedFilterBackup) && selectedFilterBackup.hasOwnProperty('filter2')) {
       this.handleMultiSelectKPIFilter(event, kpi);
     } else {
@@ -806,7 +806,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
     return aggregatedArr;
   }
-  
+
   generateExcel() {
     const kpiData = {
       headerNames: [],
