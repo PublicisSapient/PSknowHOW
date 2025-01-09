@@ -3152,7 +3152,7 @@
   },
   {
     "fieldName": "ticketCountIssueType",
-    "fieldLabel": "Ticket Count Issue Type",
+    "fieldLabel": "Issue types to consider",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -3162,7 +3162,7 @@
   },
   {
     "fieldName": "kanbanRCACountIssueType",
-    "fieldLabel": "Ticket RCA Count Issue Type",
+    "fieldLabel": "Issue types to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -3172,7 +3172,7 @@
   },
   {
     "fieldName": "jiraTicketVelocityIssueType",
-    "fieldLabel": "Ticket Velocity Issue Type",
+    "fieldLabel": "Issue types to consider",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -3182,7 +3182,7 @@
   },
   {
     "fieldName": "kanbanCycleTimeIssueType",
-    "fieldLabel": "Kanban Lead Time Issue Type",
+    "fieldLabel": "Issue types to consider  ",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -3192,7 +3192,7 @@
   },
   {
     "fieldName": "ticketDeliverdStatus",
-    "fieldLabel": "Ticket Delivered Status",
+    "fieldLabel": "Issue types to consider",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -3202,7 +3202,7 @@
   },
   {
     "fieldName": "jiraTicketClosedStatus",
-    "fieldLabel": "Ticket Closed Status",
+    "fieldLabel": "Status to identify Closed tickets",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -3212,7 +3212,7 @@
   },
   {
     "fieldName": "jiraTicketTriagedStatus",
-    "fieldLabel": "Ticket Triaged Status",
+    "fieldLabel": "Status to identify Triaged tickets",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -3222,7 +3222,7 @@
   },
   {
     "fieldName": "jiraTicketRejectedStatus",
-    "fieldLabel": "Ticket Rejected/Dropped Status",
+    "fieldLabel": "Status to identify Rejected/Dropped tickets",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
