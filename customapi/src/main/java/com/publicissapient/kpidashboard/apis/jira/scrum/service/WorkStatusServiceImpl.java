@@ -228,7 +228,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	}
 
 	private static void setCommonData(JiraIssue issue, IssueKpiModalValue data, FieldMapping fieldMapping) {
-		data.setValue(0.0);
+		data.setValue(0d);
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			data.setValue(issue.getStoryPoints());
@@ -260,7 +260,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		}
 
 		dataGroup1.add(createKpiData("", "", 1, "count", ""));
-		dataGroup1.add(createKpiData("Value", "", 2, "sum", unit));
+		dataGroup1.add(createKpiData("value", "", 2, "sum", unit));
 
 		List<KpiData> dataGroup2 = new ArrayList<>();
 		dataGroup2.add(createKpiData(DELAY, DELAY, 1, "sum", ""));

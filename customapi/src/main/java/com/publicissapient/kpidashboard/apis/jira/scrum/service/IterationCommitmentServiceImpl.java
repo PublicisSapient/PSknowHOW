@@ -219,7 +219,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		} else {
 			data.getCategory().add(category);
 		}
-		data.setValue(0.0);
+		data.setValue(0d);
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			if (null != issue.getStoryPoints()) {
@@ -290,7 +290,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 		}
 
 		dataGroup1.add(createKpiData("", "Issues", 1, "count", ""));
-		dataGroup1.add(createKpiData("Value", displayName, 2, "sum", unit));
+		dataGroup1.add(createKpiData("value", displayName, 2, "sum", unit));
 
 		dataGroup.setSummary(summary);
 		dataGroup.setDataGroup1(dataGroup1);
