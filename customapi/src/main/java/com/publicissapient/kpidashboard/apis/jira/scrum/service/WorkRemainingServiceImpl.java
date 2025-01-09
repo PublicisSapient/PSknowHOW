@@ -207,7 +207,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 			delay = getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
 		}
 
-		jiraIssueModalObject.setValue(0.0);
+		jiraIssueModalObject.setValue(0d);
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			if (null != jiraIssue.getStoryPoints()) {
@@ -290,7 +290,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 			name = CommonConstant.ORIGINAL_ESTIMATE;
 		}
 
-		dataGroup1.add(createKpiData("Value", name, 1, SUM, unit));
+		dataGroup1.add(createKpiData("value", name, 1, SUM, unit));
 		dataGroup1.add(createKpiData("", ISSUE_COUNT, 2, "count", ""));
 
 		List<KpiData> dataGroup2 = new ArrayList<>();

@@ -148,7 +148,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 						.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
 					KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
 					IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
-					data.setValue(0.0);
+					data.setValue(0d);
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 						data.setValue(issue.getStoryPoints());
@@ -222,7 +222,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
 		dataGroup1.add(createKpiData("", ISSUE_COUNT, 1, "count", ""));
-		dataGroup1.add(createKpiData("Value", displayName, 2, "sum", unit));
+		dataGroup1.add(createKpiData("value", displayName, 2, "sum", unit));
 
 		dataGroup.setDataGroup1(dataGroup1);
 		return dataGroup;

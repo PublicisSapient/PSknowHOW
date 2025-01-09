@@ -176,7 +176,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 
 	private static void setKpiData(JiraIssue issue, IssueKpiModalValue data, FieldMapping fieldMapping,
 			Map<String, IterationPotentialDelay> issueWiseDelay) {
-		data.setValue(0.0);
+		data.setValue(0d);
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			data.setValue(issue.getStoryPoints());
