@@ -40,6 +40,8 @@ export class KpiHelperService {
     'Risks': 'Warning.svg',
     'Dependencies': 'Warning.svg',
     '': 'Check.svg',
+    'First Time Pass Stories': 'Warning.svg',
+    'Total Stories': 'Warning.svg',
   };
 
   stackedBarChartData(inputData: any, color: any, key: string) {
@@ -268,60 +270,63 @@ export class KpiHelperService {
   }
 
   tabularKPI(inputData, color) {
-
     const dataGroup1 = inputData.dataGroup?.dataGroup1;
     const issueData = inputData.issueData;
     const chartData: any = [];
-
     dataGroup1?.forEach((group: any, index) => {
-      let filteredIssues;
-      let aggregateVal = 0;
-      if (!group.key1 || group.key1 !== 'Category') {
-
-      } else {
-        filteredIssues = issueData.filter(
-          (issue: any) => issue[group.key1].includes(group.value1)
-        );
-      }
-
-
-      if (group.aggregation === 'count') {
-        if (filteredIssues?.length) {
-          aggregateVal = filteredIssues.length
-        } else {
-          aggregateVal = issueData.length
+        let filteredIssues;
+        let aggregateVal = 0;
+        let filteredVal = 0;
+        if (!group.key1 || group.key1 !== 'Category') {} else {
+            filteredIssues = issueData.filter((issue: any) => issue[group.key1].includes(group.value1));
+            if (group.aggregation === 'count') {
+                if (filteredIssues?.length) {
+                    filteredVal = filteredIssues.length;
+                }
+            } else if (group.aggregation === 'sum') {
+                if (filteredIssues?.length) {
+                    filteredVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
+                        return sum + (issue[group.key] || 0); // Sum up the values for the key          
+                    }, 0), group.unit);
+                }
+            }
         }
-      } else if (group.aggregation === 'sum') {
-        if (filteredIssues?.length) {
-          aggregateVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
-            return sum + (issue[group.key] || 0); // Sum up the values for the key
-          }, 0), group.unit);
-        } else {
-          aggregateVal = this.convertToHoursIfTime(issueData.reduce((sum: any, issue: any) => {
-            return sum + (issue[group.key] || 0); // Sum up the values for the key
-          }, 0), group.unit);
+        if (group.aggregation === 'count') {
+            aggregateVal = issueData.length;
+        } else if (group.aggregation === 'sum') {
+            aggregateVal = this.convertToHoursIfTime(issueData.reduce((sum: any, issue: any) => {
+                return sum + (issue[group.key] || 0); // Sum up the values for the key     
+            }, 0), group.unit);
         }
-      }
-
-      if (group.key1) {
-        chartData.push({
-          category: group.name,
-          value: aggregateVal + '/' + issueData.length,
-          icon: this.iconObj[group.name],
-          color: color[index]
-        });
-      } else {
-        chartData.push({
-          category: group.name,
-          value: aggregateVal,
-          icon: this.iconObj[group.name],
-          color: color[index]
-        });
-      }
+        if (group.key1) {
+            if (group.showDenominator) {
+                chartData.push({
+                    category: group.name,
+                    value: filteredVal + '/' + aggregateVal,
+                    icon: this.iconObj[group.name],
+                    color: color[index]
+                });
+            } else {
+                chartData.push({
+                    category: group.name,
+                    value: filteredVal,
+                    icon: this.iconObj[group.name],
+                    color: color[index]
+                });
+            }
+        } else {
+            chartData.push({
+                category: group.name,
+                value: aggregateVal,
+                icon: this.iconObj[group.name],
+                color: color[index]
+            });
+        }
     });
-
-    return { chartData: chartData };
-  }
+    return {
+        chartData: chartData
+    };
+}
 
   tabularKPINonRawData(inputData, issueData = []) {
     const chartData: any = [];

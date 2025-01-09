@@ -171,12 +171,10 @@ public class IssueKpiModalValue implements Serializable {
 	@JsonProperty("Category")
 	private List<String> category;
 
-	@JsonProperty("Value")
-	private Double value;
-
 	@JsonProperty("Created during Iteration")
 	private String createdDuringIteration;
 
+	private Double value;
 	private Integer issueBlockedTime;
 	private Integer issueWaitTime;
 	private Integer estimateTime;

@@ -108,8 +108,6 @@ public class DefectCountByServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		try {
 			String kpiRequestTrackerId = "Jira-Excel-RCA-track001";
-			when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-					.thenReturn(kpiRequestTrackerId);
 			when(jiraServiceR.getCurrentSprintDetails()).thenReturn(sprintDetails);
 			when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 			when(jiraServiceR.getJiraIssuesForCurrentSprint()).thenReturn(storyList);

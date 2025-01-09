@@ -3,6 +3,7 @@ import { MultiSelect } from 'primeng/multiselect';
 import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { TooltipModule } from 'primeng/tooltip';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-additional-filter',
@@ -33,7 +34,9 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnInit() {
-    this.subscriptions.push(this.service.populateAdditionalFilters.subscribe((data) => {
+    this.subscriptions.push(this.service.populateAdditionalFilters
+      .pipe(distinctUntilChanged())
+      .subscribe((data) => {
       if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
         this.selectedFilters = [];
         this.selectedTrends = this.service.getSelectedTrends();
@@ -272,5 +275,7 @@ export class AdditionalFilterComponent implements OnChanges {
     }
   }
 
-
+  ngOnDestroy() {
+    this.subscriptions?.forEach(subscription => subscription?.unsubscribe());
+  }
 }

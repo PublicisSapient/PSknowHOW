@@ -176,7 +176,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 
 	private static void setKpiData(JiraIssue issue, IssueKpiModalValue data, FieldMapping fieldMapping,
 			Map<String, IterationPotentialDelay> issueWiseDelay) {
-		data.setValue(0.0);
+		data.setValue(0d);
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			data.setValue(issue.getStoryPoints());
@@ -252,8 +252,8 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 		}
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
-		dataGroup1.add(createKpiData("", ISSUE_AT_RISK, 1, "count", "", "Category", ISSUE_AT_RISK));
-		dataGroup1.add(createKpiData("Value", displayName, 2, "sum", unit, null, null));
+		dataGroup1.add(createKpiData("", ISSUE_AT_RISK, 1, "count", "", "Category", ISSUE_AT_RISK, true));
+		dataGroup1.add(createKpiData("value", displayName, 2, "sum", unit,"Category", ISSUE_AT_RISK, false));
 
 		dataGroup.setDataGroup1(dataGroup1);
 		return dataGroup;
@@ -270,7 +270,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 	 * @return
 	 */
 	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit, String key1,
-			String value1) {
+			String value1, boolean showDenominator) {
 		KpiData data = new KpiData();
 		data.setKey(key);
 		data.setName(name);
@@ -280,6 +280,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraIterationKPIService {
 		data.setShowAsLegend(false);
 		data.setKey1(key1);
 		data.setValue1(value1);
+		data.setShowDenominator(showDenominator);
 		return data;
 	}
 

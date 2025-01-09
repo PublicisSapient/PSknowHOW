@@ -651,43 +651,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.getDropdownArray(kpiId);
   }
 
-  getDropdownArray(kpiId) {
-    const idx = this.ifKpiExist(kpiId);
-    let filters = {};
-    const dropdownArr = [];
-    let trendValueList = this.allKpiArray[idx]?.trendValueList;
-    if (idx != -1) {
-      filters = this.allKpiArray[idx]?.filters;
-      if (filters && Object.keys(filters).length !== 0) {
-        Object.keys(filters)?.forEach(x => {
-          dropdownArr.push(filters[x]);
-        });
-        this.kpiDropdowns[kpiId] = [...dropdownArr];
-      }
-      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-        const obj = {};
-        for (let i = 0; i < trendValueList?.length; i++) {
-          let ifExist = dropdownArr.findIndex(x => x == trendValueList[i]?.filter1);
-          if (ifExist == -1) {
-            dropdownArr?.push(trendValueList[i]?.filter1);
-          }
-        }
-        const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
-        if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
-          const index = dropdownArr?.findIndex(x => x?.toLowerCase() == 'overall');
-          if (index > -1) {
-            dropdownArr?.splice(index, 1);
-          }
-        }
-        obj['filterType'] = 'Select a filter';
-        obj['options'] = dropdownArr;
-        this.kpiDropdowns[kpiId] = [];
-        this.kpiDropdowns[kpiId].push(obj);
-      }
-    }
-
-  }
-
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
 
@@ -993,4 +956,78 @@ export class IterationComponent implements OnInit, OnDestroy {
   //   });
   // }
 
+  getDropdownArray1(kpiId) {
+    const idx = this.ifKpiExist(kpiId);
+    let filters = {};
+    const dropdownArr = [];
+    let trendValueList = this.allKpiArray[idx]?.trendValueList;
+    if (idx != -1) {
+      filters = this.allKpiArray[idx]?.filters;
+      if (filters && Object.keys(filters).length !== 0) {
+        Object.keys(filters)?.forEach(x => {
+          dropdownArr.push(filters[x]);
+        });
+        this.kpiDropdowns[kpiId] = [...dropdownArr];
+      }
+      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+        const obj = {};
+        for (let i = 0; i < trendValueList?.length; i++) {
+          let ifExist = dropdownArr.findIndex(x => x == trendValueList[i]?.filter1);
+          if (ifExist == -1) {
+            dropdownArr?.push(trendValueList[i]?.filter1);
+          }
+        }
+        const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
+        if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
+          const index = dropdownArr?.findIndex(x => x?.toLowerCase() == 'overall');
+          if (index > -1) {
+            dropdownArr?.splice(index, 1);
+          }
+        }
+        obj['filterType'] = 'Select a filter';
+        obj['options'] = dropdownArr;
+        this.kpiDropdowns[kpiId] = [];
+        this.kpiDropdowns[kpiId].push(obj);
+      }
+    }
+
+  }
+
+  //#region sonar fixing here as this component is no longer in use
+  getDropdownArray(kpiId) {
+    const idx = this.ifKpiExist(kpiId);
+    if (idx === -1) return;
+  
+    const filters = this.getFilters(idx);
+    const trendValueList = this.allKpiArray[idx]?.trendValueList;
+    const dropdownArr = [];
+  
+    if (filters && Object.keys(filters).length !== 0) {
+      this.populateDropdownFromFilters(filters, dropdownArr, kpiId);
+    } else if (this.service.isTrendValueListValid(trendValueList)) {
+      this.service.populateDropdownFromTrendValues(trendValueList, dropdownArr);
+      this.applyKpiFilterConfig(kpiId, dropdownArr);
+    }
+  }
+
+   getFilters(idx: number): any {
+    return this.allKpiArray[idx]?.filters || {};
+  }
+  
+   populateDropdownFromFilters(filters: any, dropdownArr: any[], kpiId: string): void {
+    Object.keys(filters).forEach(x => {
+      dropdownArr.push(filters[x]);
+    });
+    this.kpiDropdowns[kpiId] = [...dropdownArr];
+  }
+
+   applyKpiFilterConfig(kpiId: string, dropdownArr: any[]): void {
+    const kpiObj = this.updatedConfigGlobalData?.find(x => x['kpiId'] === kpiId);
+    if (this.service.shouldRemoveOverallFilter(kpiObj)) {
+      this.service.removeOverallFilter(dropdownArr);
+    }
+    this.kpiDropdowns[kpiId] = this.service.createFilterObject(dropdownArr);
+  }
+
+  //#endregion
 }

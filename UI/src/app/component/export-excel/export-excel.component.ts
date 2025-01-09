@@ -241,6 +241,9 @@ export class ExportExcelComponent implements OnInit {
         updatedRow['Linked Defect'] = (typeof updatedRow['Linked Defect'] ==='object' && updatedRow['Linked Defect'].hyperlink === 'N/A')?updatedRow['Linked Defect'].text:updatedRow['Linked Defect']
 
         Object.keys(updatedRow).forEach(colName => {
+          if (updatedRow[colName] instanceof Array) {
+            updatedRow[colName] = updatedRow[colName].join(', ')
+          } 
           if (typeof updatedRow[colName] === 'string') {
             updatedRow[colName] = updatedRow[colName].trim();
           }

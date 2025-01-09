@@ -597,6 +597,52 @@ export class SharedService {
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
   }
+
+  //#region  can be remove after iteraction component removal
+  
+   isTrendValueListValid(trendValueList: any[]): boolean {
+    return trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1');
+  }
+  
+   populateDropdownFromTrendValues(trendValueList: any[], dropdownArr: any[]): void {
+    trendValueList.forEach(item => {
+      if (!dropdownArr.includes(item?.filter1)) {
+        dropdownArr.push(item?.filter1);
+      }
+    });
+  }
+  
+  
+   shouldRemoveOverallFilter(kpiObj: any): boolean {
+    return (
+      kpiObj &&
+      kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') &&
+      (
+        kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'multiselectdropdown' ||
+        (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'dropdown' &&
+          kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') &&
+          kpiObj['kpiDetail']['hideOverallFilter'])
+      )
+    );
+  }
+  
+   removeOverallFilter(dropdownArr: any[]): void {
+    const index = dropdownArr.findIndex(x => x?.toLowerCase() === 'overall');
+    if (index > -1) {
+      dropdownArr.splice(index, 1);
+    }
+  }
+  
+   createFilterObject(dropdownArr: any[]): any[] {
+    return [
+      {
+        filterType: 'Select a filter',
+        options: dropdownArr
+      }
+    ];
+  }
+  
+  //#endregion
 }
 
 

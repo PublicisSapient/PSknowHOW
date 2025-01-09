@@ -136,8 +136,8 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
-						fieldMapping.getJiraIterationIssuetypeKPI125(),
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI125(),
 						fieldMapping.getJiraIterationCompletionStatusKPI125(),
 						leafNode.getAccountHierarchy().getBasicProjectConfigId());
 
@@ -161,9 +161,10 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 					sprintIssues.addAll(checkNullList(sprintDetails.getTotalIssues()));
 					sprintIssues.addAll(checkNullList(sprintDetails.getPuntedIssues()));
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
-							sprintDetails, sprintIssues, IterationKpiHelper.getFilteredJiraIssue(allIssues, totalJiraIssueList));
-					List<JiraIssueCustomHistory> allIssuesHistory = IterationKpiHelper.getFilteredJiraIssueHistory(allIssues,
-							totalHistoryList);
+							sprintDetails, sprintIssues,
+							IterationKpiHelper.getFilteredJiraIssue(allIssues, totalJiraIssueList));
+					List<JiraIssueCustomHistory> allIssuesHistory = IterationKpiHelper
+							.getFilteredJiraIssueHistory(allIssues, totalHistoryList);
 					Map<LocalDate, List<JiraIssue>> fullSprintIssues = new HashMap<>();
 					Map<LocalDate, List<JiraIssue>> addedIssues = new HashMap<>();
 					Map<LocalDate, List<JiraIssue>> removedIssues = new HashMap<>();
@@ -449,10 +450,10 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 				dataCountGroup.setValue(dataCountList);
 				dataCountGroups.add(dataCountGroup);
 			}
-			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(totalJiraIssueList);
-			totalJiraIssueList.forEach(issue -> {
-				KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
-			});
+			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper
+					.createMapOfIssueModal(totalJiraIssueList);
+			totalJiraIssueList
+					.forEach(issue -> KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject));
 			kpiElement.setIssueData(new HashSet<>(issueKpiModalObject.values()));
 			kpiElement.setModalHeads(KPIExcelColumn.ITERATION_BURNUP.getColumns());
 
