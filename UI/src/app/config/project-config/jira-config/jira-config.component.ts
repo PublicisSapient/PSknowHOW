@@ -2560,7 +2560,12 @@ export class JiraConfigComponent implements OnInit {
       delete submitData['originalTemplateCode'];
     }
     else{
-      submitData['metadataTemplateCode']=this.selectedToolConfig[0].metadataTemplateCode;
+      if(this.selectedToolConfig && this.selectedToolConfig.length){
+        submitData['metadataTemplateCode']=this.selectedToolConfig[0].metadataTemplateCode;
+      }
+      else{
+        submitData['metadataTemplateCode']=0;
+      }
     }
     if (this.urlParam === 'GitHubAction') {
       submitData['jobName'] = this.gitActionWorkflowNameList.filter(obj => obj.code === submitData['workflowID'])[0]?.name || "";
@@ -2822,9 +2827,14 @@ export class JiraConfigComponent implements OnInit {
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['originalTemplateCode'])
         this.toolForm.get('originalTemplateCode')?.setValue(selectedTemplate?.templateCode);
-        if (selectedTemplate?.templateName === 'Custom Template') {
-          this.toolForm.get('originalTemplateCode').disable();
-        }
+        if(!this.selectedToolConfig.originalTemplateCode){
+            this.toolForm.get('originalTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
+          }
+        else{
+            this.toolForm.get('originalTemplateCode')?.setValue(selectedTemplate.templateCode);
+          }
+        this.toolForm.get('originalTemplateCode').disable();
+
       } else {
         this.toolForm.get('originalTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
       }
