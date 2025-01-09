@@ -535,10 +535,7 @@ public class KPIExcelUtility {
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId())) {
 					excelData.setTechDebt(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS.getKpiId())
-						|| kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS_KANBAN.getKpiId())) {
-//					excelData.setSonarViolation(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
+				}else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
 					excelData.setCodeQuality(kpiSpecificDataList.get(i) + " unit");
 				}
 				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
