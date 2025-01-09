@@ -1004,72 +1004,30 @@ export class IterationComponent implements OnInit, OnDestroy {
   
     if (filters && Object.keys(filters).length !== 0) {
       this.populateDropdownFromFilters(filters, dropdownArr, kpiId);
-    } else if (this.isTrendValueListValid(trendValueList)) {
-      this.populateDropdownFromTrendValues(trendValueList, dropdownArr);
+    } else if (this.service.isTrendValueListValid(trendValueList)) {
+      this.service.populateDropdownFromTrendValues(trendValueList, dropdownArr);
       this.applyKpiFilterConfig(kpiId, dropdownArr);
     }
   }
-  
-  private getFilters(idx: number): any {
+
+   getFilters(idx: number): any {
     return this.allKpiArray[idx]?.filters || {};
   }
   
-  private populateDropdownFromFilters(filters: any, dropdownArr: any[], kpiId: string): void {
+   populateDropdownFromFilters(filters: any, dropdownArr: any[], kpiId: string): void {
     Object.keys(filters).forEach(x => {
       dropdownArr.push(filters[x]);
     });
     this.kpiDropdowns[kpiId] = [...dropdownArr];
   }
-  
-  private isTrendValueListValid(trendValueList: any[]): boolean {
-    return trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1');
-  }
-  
-  private populateDropdownFromTrendValues(trendValueList: any[], dropdownArr: any[]): void {
-    trendValueList.forEach(item => {
-      if (!dropdownArr.includes(item?.filter1)) {
-        dropdownArr.push(item?.filter1);
-      }
-    });
-  }
-  
-  private applyKpiFilterConfig(kpiId: string, dropdownArr: any[]): void {
+
+   applyKpiFilterConfig(kpiId: string, dropdownArr: any[]): void {
     const kpiObj = this.updatedConfigGlobalData?.find(x => x['kpiId'] === kpiId);
-    if (this.shouldRemoveOverallFilter(kpiObj)) {
-      this.removeOverallFilter(dropdownArr);
+    if (this.service.shouldRemoveOverallFilter(kpiObj)) {
+      this.service.removeOverallFilter(dropdownArr);
     }
-    this.kpiDropdowns[kpiId] = this.createFilterObject(dropdownArr);
+    this.kpiDropdowns[kpiId] = this.service.createFilterObject(dropdownArr);
   }
-  
-  private shouldRemoveOverallFilter(kpiObj: any): boolean {
-    return (
-      kpiObj &&
-      kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') &&
-      (
-        kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'multiselectdropdown' ||
-        (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'dropdown' &&
-          kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') &&
-          kpiObj['kpiDetail']['hideOverallFilter'])
-      )
-    );
-  }
-  
-  private removeOverallFilter(dropdownArr: any[]): void {
-    const index = dropdownArr.findIndex(x => x?.toLowerCase() === 'overall');
-    if (index > -1) {
-      dropdownArr.splice(index, 1);
-    }
-  }
-  
-  private createFilterObject(dropdownArr: any[]): any[] {
-    return [
-      {
-        filterType: 'Select a filter',
-        options: dropdownArr
-      }
-    ];
-  }
-  
 
   //#endregion
 }
