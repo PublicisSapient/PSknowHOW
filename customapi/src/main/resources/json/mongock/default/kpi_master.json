@@ -641,7 +641,7 @@
     "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "multiTypeFilters" ,
     "aggregationCriteria" : "sum" ,
     "isAdditionalFilterSupport" : false ,
     "calculateMaturity" : false
@@ -1757,7 +1757,7 @@
     "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "multiTypeFilters" ,
     "aggregationCriteria" : "sum" ,
     "isAdditionalFilterSupport" : false ,
     "calculateMaturity" : false

@@ -119,9 +119,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             }
           }
         }
-        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton') {
+        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' || this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters') ) {
           if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters' ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0]) : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
           }
         }
       }
@@ -239,7 +239,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (typeof value === 'object') {
       value = value?.value;
     }
-    if (value && type?.toLowerCase() == 'radio') {
+    if(this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters'){
+      if(value && type?.toLowerCase() === 'radio'){
+        this.filterOptions['filter'+(filterIndex+1)] = [value];
+      }
+    }
+    if (value && type?.toLowerCase() == 'radio' && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters') {
       this.optionSelected.emit(value);
     } else if (type?.toLowerCase() == 'single') {
       this.optionSelected.emit(this.filterOptions);
@@ -267,6 +272,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }
       this.optionSelected.emit(['Overall']);
+    }else if(this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters'){
+      this.filterOptions[event] = [];
+      this.optionSelected.emit(this.filterOptions);
     } else {
       // hacky way - clear All sets null value, which we want to avoid
       for (const key in this.filterOptions) {

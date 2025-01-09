@@ -750,13 +750,18 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Sonar Violations",
-      "order": 2,
-      "isShown": true,
-      "isDefault": false
+      "columnName" : "Violation Type",
+      "order" : 2,
+      "isShown" : true,
+      "isDefault" : false
+    }, {
+        "columnName" : "Violation Severity",
+        "order" : 3,
+        "isShown" : true,
+        "isDefault" : false
     }, {
       "columnName": "Weeks",
-      "order": 3,
+      "order": 4,
       "isShown": true,
       "isDefault": false
     }]
@@ -1194,13 +1199,19 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Sonar Violations",
-      "order": 2,
-      "isShown": true,
-      "isDefault": false
+      "columnName" : "Violation Type",
+      "order" : 2,
+      "isShown" : true,
+      "isDefault" : false
+    },
+    {
+      "columnName" : "Violation Severity",
+      "order" : 3,
+      "isShown" : true,
+      "isDefault" : false
     }, {
       "columnName": "Day/Week/Month",
-      "order": 3,
+      "order": 4,
       "isShown": true,
       "isDefault": false
     }]

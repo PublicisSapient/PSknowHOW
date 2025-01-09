@@ -72,6 +72,31 @@
           (onChange)="handleChange('radio', $event)"></p-selectButton>
       </ng-container>
     </ng-container>
+
+    <ng-container *ngSwitchCase="'multitypefilters'">
+      <div class="multi-filter-section">
+        <ng-container *ngFor="let filter of dropdownArr;let k = index">
+          <ng-container *ngIf="filter.filterType?.toLowerCase() === 'radiobtn'; else dropdown">
+            <ng-container *ngIf="filter?.options && filter?.options.length ">
+              <p-selectButton [options]="filter?.options" [(ngModel)]="radioOption"
+                (onChange)="handleChange('radio', $event,k)"></p-selectButton>
+            </ng-container>
+          </ng-container>
+          <ng-template #dropdown>
+            <div>
+              <p-multiSelect *ngIf="filter?.options?.length" #multiSelect1
+              inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
+              [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
+              (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
+              [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
+              [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+            </p-multiSelect>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </ng-container>
+    
   </div>
   <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : kpiData.kpiDetail.chartType === 'stacked-area' ? '270px' : '220px',
   'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
