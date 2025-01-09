@@ -1396,7 +1396,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
-    this.createTrendData(kpiId);
+    // this.createTrendData(kpiId);
+    if (kpiId !== 'kpi151' && kpiId !== 'kpi152' && kpiId !== 'kpi155') {
+      this.createTrendsData(kpiId);
+    }
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
         this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
@@ -1428,7 +1431,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpiChartData;
   }
 
-  createTrendData(kpiId) {
+/*   createTrendData(kpiId) {
     const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
     const trendingList = this.kpiChartData[kpiId];
     if (trendingList?.length) {
@@ -1448,7 +1451,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
 
-  }
+  } */
 
   getChartDataforRelease(kpiId, idx, aggregationType?, kpiFilterChange = false) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
@@ -2630,16 +2633,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (this.kpiChartData[kpiId][i]?.value?.length > 0) {
             let trendObj = {};
             const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
-            trendObj = {
-              "hierarchyName": this.kpiChartData[kpiId][i]?.data,
-              "value": latest,
-              "trend": trend,
-              "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
-                this.checkMaturity(this.kpiChartData[kpiId][i])
-                : 'M' + this.kpiChartData[kpiId][i]?.maturity,
-              "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
-              "kpiUnit": unit
-            };
+            if(isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
+              trendObj = {
+                "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                "value": latest,
+                "trend": trend,
+                "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
+                  this.checkMaturity(this.kpiChartData[kpiId][i])
+                  : 'M' + this.kpiChartData[kpiId][i]?.maturity,
+                "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
+                "kpiUnit": unit
+              };
+            }
             if (kpiId === 'kpi997') {
               trendObj['value'] = 'NA';
             }

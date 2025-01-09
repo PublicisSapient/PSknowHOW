@@ -144,6 +144,12 @@
     "kanban": false
   },
   {
+    "kpiId": "kpi149",
+    "categoryId": "categoryThree",
+    "kpiOrder": 7,
+    "kanban": false
+  },
+  {
     "kpiId": "kpi49",
     "categoryId": "categoryOne",
     "kpiOrder": 1,

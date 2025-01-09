@@ -1,0 +1,100 @@
+{{- if .Values.authNauthNSCMDB.enabled  }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-scm-db
+  labels:
+    app: auth-scm-db
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: auth-scm-db
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: auth-scm-db
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "knowhow-chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: auth-scm-db
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.authscmdbrepo }}:{{ .Values.image.authscmdbtag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5432
+              protocol: TCP
+          env:
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: auth-scm-db-data-volume
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            successThreshold: 1
+            tcpSocket:
+              port: 5432
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            successThreshold: 1
+            tcpSocket:
+              port: 5432
+            timeoutSeconds: 1
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if eq .Values.authNauthNSCMDB.volumeType "hostPath" }}
+        - name: auth-scm-db-data-volume
+          hostPath:
+            path: {{ .Values.authNauthNSCMDB.hostPath.path }}
+            type: DirectoryOrCreate
+        {{- else if eq .Values.authNauthNSCMDB.volumeType "azureDisk" }}
+        - name: auth-scm-db-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-azuredisk-pvc
+        {{- else if eq .Values.authNauthNSCMDB.volumeType "efs" }}
+        - name: auth-scm-db-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-efs-pvc
+        {{- else }}
+        - name: auth-scm-db-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.authNauthNSCMDB.pvcName }}
+        {{- end }}
+
+{{- end }}

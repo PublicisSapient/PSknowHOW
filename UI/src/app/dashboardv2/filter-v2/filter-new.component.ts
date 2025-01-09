@@ -129,8 +129,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.filterDataArr = {};
             this.setHierarchyLevels();
           }, 0);
-        }),
+        })
+    );
 
+    this.subscriptions.push(
       this.service.onTabSwitch
         .subscribe(data => {
           setTimeout(() => {
@@ -156,6 +158,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.iterationConfigData = iterationDetails;
       })
     );
+
 
     this.subscriptions.push(this.service.dateFilterSelectedDateType.subscribe(date => {
       this.selectedDayType = date;
@@ -446,7 +449,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             this.masterDataCopy['kpiList'] = [];
             this.parentFilterConfig = {};
             this.primaryFilterConfig = {};
-            this.additionalFilterConfig = [];
             this.processBoardData(data);
             this.blockUI = false;
             if (event) {
@@ -705,10 +707,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.populateAdditionalFilters(event);
       } else if (event && event[0] && event.map((e) => e.parentId)[0]) {
         this.populateAdditionalFilters(event.map((e) => e.parentId));
-      } else {
-        this.additionalFiltersArr = [];
-        this.service.setAdditionalFilters(this.additionalFiltersArr);
       }
+      // else {
+      //   this.additionalFiltersArr = [];
+      //   this.service.setAdditionalFilters(this.additionalFiltersArr);
+      // }
     } else {
       this.additionalFiltersArr = [];
     }
