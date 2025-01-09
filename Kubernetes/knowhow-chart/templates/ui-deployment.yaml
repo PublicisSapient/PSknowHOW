@@ -24,7 +24,7 @@ spec:
       labels:
         app: knowhow-ui
         app.kubernetes.io/name: knowhow-ui
-    app.kubernetes.io/instance: knowhow
+        app.kubernetes.io/instance: knowhow
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -43,8 +43,11 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
           env:
-            {{- range .Values.env }}
+            {{- range .Values.ui.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}

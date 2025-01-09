@@ -13,7 +13,7 @@ RUN apk add openssl --no-cache \
 
 # Set environment variables
 ENV PID_LOC="/run/nginx" \
-    CONF_LOC="/etc/nginx/conf.d" \
+    CONF_LOC="/etc/nginx" \
     HTML_LOC="/var/lib/nginx/" \
     UI2_LOC="/var/lib/nginx/ui2" \
     START_SCRIPT_LOC="/etc/init.d" \
@@ -25,6 +25,7 @@ ENV PID_LOC="/run/nginx" \
 
 # Create necessary directories
 RUN mkdir -p ${PID_LOC} ${UI2_LOC}
+RUN rm -f ${CONF_LOC}/nginx.conf ${CONF_LOC}/conf.d/default.conf ${HTML_LOC}index.html
 
 # Copy files
 COPY nginx/files/nginx-dev.conf /tmp/nginx_dev.conf

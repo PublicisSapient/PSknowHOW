@@ -27,6 +27,17 @@ image:
   authscmdbtag: "2.0.0"
 
 ## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
+ui: 
+  env:
+  ## UI initialization settings
+  - name: DNS_SSL
+    value: "sapient.com"  # LoadBalancer IP or DNS 
+  - name: API_HOST
+    value: "customapi"             #Custom API's K8s Service Name
+  - name: API_PORT
+    value: "8080"                   #Customapi port number
+  - name: ENVIRONMENT
+    value: "prod"
 
 JiraApp:
   enabled: true
@@ -66,7 +77,7 @@ mongodb:
   pvcName: "existing-pvc-name-here"  # Specify the name of an existing PVC to use. Leave mongodb.volumeType empty if using an existing PVC. (optional)
 
 authNauthApp:
-  enabled: true
+  enabled: false
   host: example-auth.com   #Pass the auth host name if authNauthApp is enabled
 
 authNauthNSCMDB:
@@ -93,13 +104,6 @@ authNauthNSCMDB:
 
 
 env:
-  ## UI initialization settings
-  - name: DNS_SSL
-    value: "<Your IP/DNS Address>"  # LoadBalancer IP or DNS 
-  - name: API_HOST
-    value: "customapi"             #Custom API's K8s Service Name
-  - name: API_PORT
-    value: "8080"                   #Customapi port number
 
   ### Uncomment and update the details below only during an upgrade
   - name: mongock.start-system-version
@@ -111,9 +115,9 @@ env:
   - name: mongock.migration-scan-package
     value: "com.publicissapient.kpidashboard.apis.mongock.installation" # Set to 'installation' for a new install, or 'upgrade' for an upgrade.
   - name: forgotPassword.uiHost
-    value: "<DNS>" # DNS of the Knowhow server without https://
+    value: "localhost" # DNS/IP of the Knowhow server without https://
   - name: corsFilterValidOrigin
-    value: "<DNS>" # DNS of the Knowhow server without https://
+    value: "localhost" # DNS/IP of the Knowhow server without https://
   - name: spring.data.mongodb.uri
     value: "mongodb://devuser:devpassword123@mongodb:27017/kpidashboard" # Pass the application MongoDB username, password and mongo hostname . URL-encode special characters in the password.
   - name: aesEncryptionKey
