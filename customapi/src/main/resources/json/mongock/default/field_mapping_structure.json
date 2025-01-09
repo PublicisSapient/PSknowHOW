@@ -3162,7 +3162,7 @@
   },
   {
     "fieldName": "kanbanRCACountIssueType",
-    "fieldLabel": "Issue types to be included",
+    "fieldLabel": "Issue types to be included for RCA",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
