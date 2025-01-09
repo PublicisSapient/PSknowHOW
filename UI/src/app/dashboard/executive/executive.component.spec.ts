@@ -2514,7 +2514,6 @@ describe('ExecutiveComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiveComponent);
     component = fixture.componentInstance;
-    service = TestBed.inject(SharedService);
     const type = 'scrum';
     service.selectedtype = type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);

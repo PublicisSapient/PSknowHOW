@@ -280,7 +280,6 @@ describe('DeveloperComponent', () => {
     exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
     fixture.detectChanges();
 
-    service = TestBed.inject(SharedService);
     const type = 'Scrum';
     service.selectedtype = type;
     localStorage?.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));

@@ -31,7 +31,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 declare let $: any;
 import { CircularProgressComponent } from '../../component/circular-progress/circular-progress.component';
@@ -2466,7 +2466,6 @@ describe('ExecutiveV2Component', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiveV2Component);
     component = fixture.componentInstance;
-    service = TestBed.inject(SharedService);
 
     const type = 'scrum';
     service.selectedtype = type;
