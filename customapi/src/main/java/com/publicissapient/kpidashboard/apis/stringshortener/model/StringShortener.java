@@ -16,12 +16,17 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.urlshortener.dto;
+package com.publicissapient.kpidashboard.apis.stringshortener.model;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-public class UrlMappingDTO {
-    private String longUrl;
-    private String shortUrl;
+@Document(collection = "string_shorteners")
+public class StringShortener {
+    @Id
+    private String id;
+    private String longString;
+    private String shortString;
 }
