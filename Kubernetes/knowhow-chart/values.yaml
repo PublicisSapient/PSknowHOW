@@ -36,8 +36,8 @@ ui:
     value: "customapi"             #Custom API's K8s Service Name
   - name: API_PORT
     value: "8080"                   #Customapi port number
-  - name: ENVIRONMENT
-    value: "prod"
+  - name: PROTOCOL
+    value: "http"
 
 JiraApp:
   enabled: true
