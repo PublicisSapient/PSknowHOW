@@ -225,6 +225,7 @@ public class IssueHygieneServiceImpl extends JiraIterationKPIService {
 		data.setShowAsLegend(false);
 		data.setKey1(key1);
 		data.setValue1(value1);
+		data.setShowDenominator(true);
 		return data;
 	}
 

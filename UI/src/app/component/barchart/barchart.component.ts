@@ -71,7 +71,7 @@ export class BarchartComponent implements OnInit {
     this.svg = d3
       .select(element)
       .append('svg')
-      .attr('width', 300)
+      .attr('width', 350)
       .attr('height', 300)
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
