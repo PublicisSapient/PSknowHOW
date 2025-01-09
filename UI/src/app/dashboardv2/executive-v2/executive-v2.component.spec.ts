@@ -7699,23 +7699,32 @@ describe('ExecutiveV2Component', () => {
 
 
   // --------- checking for backup data, if not use default values --------------
-  it('should update selectedTrend and reset filters when a new trend is emitted', () => {
-    // Arrange: Mock the behavior of the service
-    const mockTrend = { trendId: 1, trendName: 'New Trend' };
-    const previousTrend = { trendId: 2, trendName: 'Old Trend' };
+  it('should handle selectedTrendsEventSubject subscription', () => {
+    const trend = [{ id: 1 }];
+    const selectedTrendFromLS = [{ id: 2 }];
+    spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(selectedTrendFromLS));
+    spyOn(localStorage, 'setItem');
+    spyOn(service, 'setKpiSubFilterObj');
+    helperService.deepEqual.and.returnValue(false);
 
-    component.selectedTrend = previousTrend; // Set the previous trend
-    spyOn(component, 'arrayDeepCompare').and.returnValue(false); // Simulate a difference in trends
-    spyOn(service, 'setKpiSubFilterObj').and.callThrough(); // Spy on the service method
+    service.selectedTrendsEventSubject.next(trend);
 
-    // Act: Emit a new trend via the subject
-    service.selectedTrendsEventSubject.next(mockTrend);
-
-    // Assert: Verify that the logic inside the subscription executed correctly
-    expect(component.arrayDeepCompare).toHaveBeenCalledWith(mockTrend, previousTrend);
-    expect(component.selectedTrend).toEqual(mockTrend);
+    expect(component.selectedTrend).toEqual(trend);
+    expect(localStorage.setItem).toHaveBeenCalledWith('selectedTrend', JSON.stringify(trend));
     expect(component.kpiSelectedFilterObj).toEqual({});
     expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(null);
+  });
+
+  it('should handle selectedTrendsEventSubject subscription with equal trends', () => {
+    const trend = [{ id: 1 }];
+    spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(trend));
+    spyOn(service, 'setKpiSubFilterObj');
+    helperService.deepEqual.and.returnValue(true);
+
+    service.selectedTrendsEventSubject.next(trend);
+
+    expect(component.selectedTrend).toEqual([]);
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(service.getKpiSubFilterObj());
   });
 
   // --------- end of checking for backup data, if not use default values -------

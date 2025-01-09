@@ -27,7 +27,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 describe('ProjectSettingsComponent', () => {
   let component: ProjectSettingsComponent;
@@ -42,6 +42,14 @@ describe('ProjectSettingsComponent', () => {
   const baseUrl = environment.baseUrl;
   const navigateSpy = jasmine.createSpyObj('Router', ['navigate']);
   const projectListData = require('../../../../test/resource/projectListData.json');
+  const activatedRouteMock = {
+    snapshot: {
+      params: {},
+      root: {
+        children: []
+      }
+    }
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -54,6 +62,7 @@ describe('ProjectSettingsComponent', () => {
         HttpService,
         GetAuthorizationService,
         { provide: APP_CONFIG, useValue: AppConfig },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: Router, useValue: navigateSpy }
       ]
     }).compileComponents();
@@ -799,7 +808,7 @@ describe('ProjectSettingsComponent', () => {
             }
           ]
         };
-        
+
         spyOn(sharedService, 'getCurrentUserDetails').and.returnValue([
           {
             "role": "ROLE_PROJECT_VIEWER",
@@ -920,7 +929,7 @@ describe('ProjectSettingsComponent', () => {
           level1: 'Value 1',
           level2: 'Value 2',
         };
-  
+
         // Act
         component.hierarchyLabelNameChange();
         tick(0);
@@ -931,19 +940,19 @@ describe('ProjectSettingsComponent', () => {
         expect(component.selectedProject['level2']).toBeUndefined();
       }));
     });
-  
+
     describe('Edge Cases', () => {
       it('should handle empty selectedProject gracefully', () => {
         // Arrange
         component.selectedProject = {};
-  
+
         // Act
         component.hierarchyLabelNameChange();
-  
+
         // Assert
         expect(component.selectedProject).toEqual({});
       });
-  
+
       it('should not modify selectedProject if type is not Scrum or Kanban', () => {
         // Arrange
         const mockHierarchyData = {
@@ -957,10 +966,10 @@ describe('ProjectSettingsComponent', () => {
           type: 'Other',
           level1: 'Value 1',
         };
-  
+
         // Act
         component.hierarchyLabelNameChange();
-  
+
         // Assert
         expect(component.selectedProject['level1']).toBe('Value 1');
       });

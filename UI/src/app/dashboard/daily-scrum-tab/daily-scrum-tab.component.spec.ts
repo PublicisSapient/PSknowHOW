@@ -2,16 +2,24 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DailyScrumTabComponent } from './daily-scrum-tab.component';
 import { SharedService } from 'src/app/services/shared.service';
 import { DailyScrumComponent } from '../daily-scrum/daily-scrum.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 describe('DailyScrumTabComponent', () => {
   let component: DailyScrumTabComponent;
   let fixture: ComponentFixture<DailyScrumTabComponent>;
   let sharedService: SharedService;
+  const routerMock = {
+    navigate: jasmine.createSpy('navigate')
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ DailyScrumTabComponent, DailyScrumComponent ],
-      providers: [ SharedService ]
+      providers: [
+        SharedService,
+        { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
+        { provide: Router, useValue: routerMock }
+      ],
     })
     .compileComponents();
   });
