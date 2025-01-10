@@ -28,7 +28,9 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "knowhow-chart.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        runAsUser: 0  # UID for the user
+        runAsGroup: 0 # GID for the group
+        fsGroup: 0    # GID for mounted volume ownership
       containers:
         - name: auth-scm-db
           securityContext:
@@ -40,12 +42,13 @@ spec:
               containerPort: 5432
               protocol: TCP
           env:
-            {{- range .Values.env }}
+            {{- range .Values.authNauthNSCMDB.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
+              subPath: pgdata
               name: auth-scm-db-data-volume
           livenessProbe:
             failureThreshold: 3

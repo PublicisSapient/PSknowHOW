@@ -26,7 +26,39 @@ image:
   authtag: "2.0.0"
   authscmdbtag: "2.0.0"
 
-## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
+# Pass the environment variables for the API and processors below.
+
+env:
+
+  ### Update the details below only during an upgrade
+  - name: mongock.start-system-version
+    value: "0.0.0" # In Case of upgrade specify the current Knowhow version installed in the cluster.
+  - name: mongock.end-system-version
+    value: "0.0.0" # incase of upgrade specify the latest version Knowhow version which you want to install. Find the latest version here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
+
+  # Installation-specific settings
+  - name: mongock.migration-scan-package
+    value: "com.publicissapient.kpidashboard.apis.mongock.installation" # Set to 'installation' for a new install, or 'upgrade' for an upgrade.
+  - name: forgotPassword.uiHost
+    value: "localhost" # DNS/IP of the Knowhow server without https://
+  - name: corsFilterValidOrigin
+    value: "localhost" # DNS/IP of the Knowhow server without https://
+  - name: spring.data.mongodb.uri
+    value: "mongodb://devuser:devpassword123@mongodb:27017/kpidashboard" # Pass the application MongoDB username, password and mongo hostname . URL-encode special characters in the password.
+  - name: aesEncryptionKey
+    value: "EYryQ1DulKf4AYEfBPgOotu0FxGKufIa" # AES encryption key. Generate using a tool like https://acte.ltd/utils/randomkeygen (min length - 8).
+  - name: auth.secret
+    value: "C0GNAIDS8upDNnkE" # Passphrase for signing JWT tokens (min length - 4).
+  - name: versionnumber
+    value: "12.0.0" # Find the latest version number here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
+
+  # SCM specific env only required when SCMProcessor.enabled
+  - name: repoToolAPIKey
+    value: "ENaYzG7C.sp5aFtnj21O9moHTvGGtwN3YGoc8EBXa"
+  - name: exposed_api_key
+    value: "RlByoGVbGYPYbOyhpb3VDPE7k"
+
+
 ui: 
   env:
   ## UI initialization settings
@@ -46,26 +78,74 @@ ui:
 # - /etc/ssl/certs/knowhow_ssl.key (SSL key)
 # - /etc/ssl/certs/knowhow_ssl_passphrase.txt (SSL passphrase)
 
+
+## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
 JiraApp:
-  enabled: true
+  enabled: false
 
 DevOpsApp:
-  enabled: true
+  enabled: false
 
 AzurepiPelinerepoApp:
-  enabled: true
+  enabled: false
 
 AzureBoardApp:
-  enabled: true
+  enabled: false
 
 SCMProcessor:
   enabled: false
+  env:
+    - name: DEBUG
+      value: "True"
+    - name: DEBUG_TOOLBAR
+      value: "True"
+    - name: ALLOWED_HOSTS
+      value: "*"
+    - name: DATABASE_URL
+      value: "postgres://admin:admin123@auth-scm-db:5432/debbie?sslmode=require"  # Pass the DB username, password, Host and DB name
+    - name: CORS_ORIGIN_WHITELIST
+      value: "http://localhost"
+    - name: RESULT_SEND_TYPE
+      value: "mq"
+    - name: RABBITMQ_DEFAULT_USER
+      value: "admin"
+    - name: RABBITMQ_DEFAULT_PASS
+      value: "mypass"
+    - name: RABBITMQ_DEFAULT_VHOST
+      value: "debbie"
+    - name: RABBIT_BROKER_HOST
+      value: "repotool-rabbitmq"
+    - name: RABBIT_BROKER_PORT
+      value: "5672"
+    - name: RABBIT_QUEUE
+      value: "repos"
+    - name: BASE_HOST_URL
+      value: "https://4bdf-89-136-52-54.ngrok-free.app"
+    - name: SCAN_STATUS_APIS
+      value: "http://customapi:8080/api/processor/saveRepoToolsStatus"
+    - name: SCAN_STATUS_APIS_TOKEN
+      value: "RlByoGVbGYPYbOyhpb3VDPE7k"
+    - name: DEBBIE_INTERNAL_API_KEY
+      value: "ENaYzG7C.sp5aFtnj21O9moHTvGGtwN3YGoc8EBXa"
+
 
 mongodb:
   enabled: false
   volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
   storage: "16Gi"
   accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
+  env:
+    - name: MONGODB_ADMIN_USER
+      value: "admin"                        # Pass the admin user name
+    - name: MONGODB_ADMIN_PASS
+      value: "admin123"                     # Pass the admin password
+    - name: MONGODB_APPLICATION_DATABASE
+      value: "kpidashboard"
+    - name: MONGODB_APPLICATION_USER
+      value: "devuser"                      # Pass the application user name, if you are changing this pass the value in "spring.data.mongodb.uri"
+    - name: MONGODB_APPLICATION_PASS
+      value: "devpassword123"               # Pass the application user password, if you are changing this pass the value in "spring.data.mongodb.uri"
+
 
   # HostPath-specific options
   hostPath:
@@ -92,10 +172,19 @@ authNauthNSCMDB:
   volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
   storage: "16Gi"
   accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
+  env:
+    - name: POSTGRES_USER
+      value: "admin"                        # Pass the admin user name
+    - name: POSTGRES_PASSWORD
+      value: "admin123"                     # Pass the admin password
+    - name: POSTGRES_DB
+      value: "debbie"
+    - name: PGDATA
+      value: "/var/lib/postgresql/data/pgdata"
 
   # HostPath-specific options
   hostPath:
-    path: "/data/authscmdb" # Host path for local storage
+    path: "/pgsql/authscmdb" # Host path for local storage
 
   # AWS EFS-specific options
   efs:
@@ -108,43 +197,6 @@ authNauthNSCMDB:
     storageClassName: "" # Specify the storage class name for azDisk
 
   pvcName: "existing-pvc-name-here"  # Specify the name of an existing PVC to use. Leave mongodb.volumeType empty if using an existing PVC. (optional)
-
-
-env:
-
-  ### Uncomment and update the details below only during an upgrade
-  - name: mongock.start-system-version
-    value: "0.0.0" # In Case of upgrade specify the current Knowhow version installed in the cluster.
-  - name: mongock.end-system-version
-    value: "0.0.0" # incase of upgrade specify the latest version Knowhow version which you want to install. Find the latest version here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
-
-  # Installation-specific settings
-  - name: mongock.migration-scan-package
-    value: "com.publicissapient.kpidashboard.apis.mongock.installation" # Set to 'installation' for a new install, or 'upgrade' for an upgrade.
-  - name: forgotPassword.uiHost
-    value: "localhost" # DNS/IP of the Knowhow server without https://
-  - name: corsFilterValidOrigin
-    value: "localhost" # DNS/IP of the Knowhow server without https://
-  - name: spring.data.mongodb.uri
-    value: "mongodb://devuser:devpassword123@mongodb:27017/kpidashboard" # Pass the application MongoDB username, password and mongo hostname . URL-encode special characters in the password.
-  - name: aesEncryptionKey
-    value: "EYryQ1DulKf4AYEfBPgOotu0FxGKufIa" # AES encryption key. Generate using a tool like https://acte.ltd/utils/randomkeygen (min length - 8).
-  - name: auth.secret
-    value: "C0GNAIDS8upDNnkE" # Passphrase for signing JWT tokens (min length - 4).
-  - name: versionnumber
-    value: "12.0.0" # Find the latest version number here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
-  
-  # MongoDB Credentials is used when mongodb.enabled
-  - name: MONGODB_ADMIN_USER
-    value: "admin"                        # Pass the admin user name
-  - name: MONGODB_ADMIN_PASS
-    value: "admin123"                     # Pass the admin password
-  - name: MONGODB_APPLICATION_DATABASE
-    value: "kpidashboard"
-  - name: MONGODB_APPLICATION_USER
-    value: "devuser"                      # Pass the application user name, if you are changing this pass the value in "spring.data.mongodb.uri"
-  - name: MONGODB_APPLICATION_PASS
-    value: "devpassword123"               # Pass the application user password, if you are changing this pass the value in "spring.data.mongodb.uri"
 
 
 imagePullSecrets: []

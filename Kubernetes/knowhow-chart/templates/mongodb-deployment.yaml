@@ -39,7 +39,7 @@ spec:
               containerPort: 27017
               protocol: TCP
           env:
-            {{- range .Values.env }}
+            {{- range .Values.mongodb.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
