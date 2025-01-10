@@ -133,13 +133,13 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 				.newInstance("/json/kanban/kanban_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 
-		List<String> jiraTicketClosedStatus = fieldMapping.getJiraTicketClosedStatus();
-		jiraTicketClosedStatus.add(fieldMapping.getJiraLiveStatusOTA());
-		jiraTicketClosedStatus.addAll(fieldMapping.getJiraTicketRejectedStatus());
+		List<String> jiraTicketClosedStatus = fieldMapping.getJiraTicketClosedStatusKPI997();
+		jiraTicketClosedStatus.add(fieldMapping.getJiraLiveStatusKPI997());
+		jiraTicketClosedStatus.addAll(fieldMapping.getJiraTicketRejectedStatusKPI997());
 
 		KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory.newInstance();
 		kanbanJiraIssueList = kanbanJiraIssueDataFactory.getKanbanJiraIssueDataListByTypeNameandStatus(
-				fieldMapping.getTicketCountIssueType(), jiraTicketClosedStatus);
+				fieldMapping.getTicketCountIssueTypeKPI997(), jiraTicketClosedStatus);
 		kanbanJiraIssueRepository.saveAll(kanbanJiraIssueList);
 
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);

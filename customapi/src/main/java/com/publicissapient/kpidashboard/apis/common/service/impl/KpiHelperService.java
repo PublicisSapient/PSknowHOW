@@ -852,12 +852,12 @@ public class KpiHelperService { // NOPMD
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			projectList.add(basicProjectConfigId.toString());
-			if (Optional.ofNullable(fieldMapping.getJiraTicketVelocityIssueType()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraTicketVelocityIssueTypeKPI49()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraTicketVelocityIssueType()));
+						CommonUtils.convertToPatternList(fieldMapping.getJiraTicketVelocityIssueTypeKPI49()));
 			}
 			mapOfProjectFilters.put(JiraFeatureHistory.HISTORY_STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getTicketDeliverdStatus()));
+					CommonUtils.convertToPatternList(fieldMapping.getTicketDeliveredStatusKPI49()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});

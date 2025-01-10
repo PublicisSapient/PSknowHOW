@@ -94,12 +94,16 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getKPIFieldMappingRelationships() {
-    const finalMappingURL = this.selectedConfig?.type?.toLowerCase() === 'kanban' ? `${this.selectedConfig.id}/kpi1` : `${this.selectedConfig.id}/kpi0`
-    this.http.getKPIFieldMappingConfig(finalMappingURL).subscribe(response => {
-      if (response && response['success']) {
-        this.fieldMappingConfig = response?.data.fieldConfiguration;
-      }
-    });
+    if (this.selectedConfig && Object.keys(this.selectedConfig)?.length) {
+      const finalMappingURL = this.selectedConfig?.type?.toLowerCase() === 'kanban' ? `${this.selectedConfig.id}/kpi1` : `${this.selectedConfig.id}/kpi0`
+      this.http.getKPIFieldMappingConfig(finalMappingURL).subscribe(response => {
+        if (response && response['success']) {
+          this.fieldMappingConfig = response?.data.fieldConfiguration;
+        }
+      });
+    } else {
+      this.router.navigate(['./dashboard/Config/ProjectList']);
+    }
   }
 
   getDropdownData() {

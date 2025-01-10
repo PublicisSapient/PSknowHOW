@@ -43,21 +43,23 @@ public final class MongockUtil {
 		MongoCollection<Document> collection = getOrCreateCollection(mongoTemplate, collectionName);
 		if (collection.countDocuments() == 0) {
 			List<Document> documentList = new ArrayList<>();
-			dataList.forEach(data -> {
-				Document document = new Document();
-				for (Field field : data.getClass().getDeclaredFields()) {
-					field.setAccessible(true);
-					try {
-						Object value = field.get(data);
-						document.append(field.getName(), value);
-					} catch (IllegalAccessException e) {
-						LOGGER.info(e.getMessage());
-					}
-				}
-				documentList.add(document);
-			});
-			mongoTemplate.insert(documentList, collectionName);
+			dataList.forEach(data -> prepDocList(data, documentList));
+            mongoTemplate.insert(documentList, collectionName);
 		}
+	}
+
+	private static void prepDocList(Object data, List<Document> documentList) {
+		Document document = new Document();
+		for (Field field : data.getClass().getDeclaredFields()) {
+			field.setAccessible(true);
+			try {
+				Object value = field.get(data);
+				document.append(field.getName(), value);
+			} catch (IllegalAccessException e) {
+				LOGGER.info(e.getMessage());
+			}
+		}
+		documentList.add(document);
 	}
 
 	/**
@@ -84,4 +86,10 @@ public final class MongockUtil {
 				.append("tooltip", new Document("definition", tooltipDefinition));
 	}
 
+
+	public static void insertFilteredListToDB(List<?> dataList, String collectionName, MongoTemplate mongoTemplate) {
+		List<Document> documentList = new ArrayList<>();
+		dataList.forEach(data -> prepDocList(data, documentList));
+		mongoTemplate.insert(documentList, collectionName);
+	}
 }

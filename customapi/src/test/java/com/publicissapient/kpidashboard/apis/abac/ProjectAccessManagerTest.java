@@ -576,6 +576,22 @@ public class ProjectAccessManagerTest {
 		return accessRequest;
 	}
 
+	AccessRequest accessRequestObj(String role, String status, String accessLevel, String itemId) {
+		AccessRequest accessRequest = new AccessRequest();
+		accessRequest.setUsername("user");
+		accessRequest.setRole(role);
+		accessRequest.setId(new ObjectId("61e4f7852747353d4405c761"));
+		accessRequest.setStatus(status);
+		AccessNode accessNode = new AccessNode();
+		AccessItem accessItem = new AccessItem();
+		accessItem.setItemId(itemId);
+		accessItem.setItemName("hierarchyLevel3Value");
+		accessNode.setAccessLevel(accessLevel);
+		accessNode.setAccessItems(Lists.newArrayList(accessItem));
+		accessRequest.setAccessNode(accessNode);
+		return accessRequest;
+	}
+
 	RoleData roleDataObj() {
 		RoleData roleData = new RoleData();
 		roleData.setRoleName(Constant.ROLE_PROJECT_ADMIN);
@@ -635,6 +651,47 @@ public class ProjectAccessManagerTest {
 		boolean result = projectAccessManager.canTriggerProcessorFor(projectBasicConfigIds, "test");
 		assertFalse(result);
 
+	}
+
+	@Test
+	public void testCreateAccessRequest_hasAccessOfRequestedLevel() throws UnknownHostException {
+		when(accessRequestsRepository.findByUsernameAndStatus("user", Constant.ACCESS_REQUEST_STATUS_PENDING))
+				.thenReturn(null);
+		when(accessRequestsRepository.findByUsernameAndStatus("user", Constant.ACCESS_REQUEST_STATUS_APPROVED))
+				.thenReturn(List.of(accessRequestObj(Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_APPROVED,
+						"hierarchyLevel3Id")));
+		projectAccessManager.createAccessRequest(accessRequestObj(Constant.ROLE_PROJECT_ADMIN,
+				Constant.ACCESS_REQUEST_STATUS_APPROVED, "hierarchyLevel3Id"), accessRequestListener);
+		assertNotNull(accessRequestObj(Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING,
+				"hierarchyLevel3Id"));
+	}
+
+	@Test
+	public void testCreateAccessRequest_has() throws UnknownHostException {
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("user");
+		userInfo.setId(new ObjectId("61e4f7852747353d4405c762"));
+		userInfo.setAuthorities(Lists.newArrayList());
+		ProjectsAccess projectsAccess = new ProjectsAccess();
+		projectsAccess.setRole(Constant.ROLE_PROJECT_ADMIN);
+		AccessItem accessItem = new AccessItem();
+		accessItem.setItemId("hierarchyLevel3Id");
+		accessItem.setItemName("hierarchyLevel3Id");
+		AccessNode accessNode = new AccessNode();
+		accessNode.setAccessLevel("hierarchyLevel3Id");
+		accessNode.setAccessItems(Lists.newArrayList(accessItem));
+		projectsAccess.setAccessNodes(Lists.newArrayList(accessNode));
+		userInfo.setProjectsAccess(Lists.newArrayList(projectsAccess));
+		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
+		when(accessRequestsRepository.findByUsernameAndStatus("user", Constant.ACCESS_REQUEST_STATUS_PENDING))
+				.thenReturn(null);
+		when(accessRequestsRepository.findByUsernameAndStatus("user", Constant.ACCESS_REQUEST_STATUS_APPROVED))
+				.thenReturn(List.of(accessRequestObj(Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_APPROVED,
+						"hierarchyLevel3Id")));
+		projectAccessManager.createAccessRequest(accessRequestObj(Constant.ROLE_PROJECT_ADMIN,
+				Constant.ACCESS_REQUEST_STATUS_APPROVED, "hierarchyLevel3Id", "hierarchyLevel4Value"), accessRequestListener);
+		assertNotNull(accessRequestObj(Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING,
+				"hierarchyLevel3Id"));
 	}
 
 }

@@ -1103,9 +1103,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
             const preAggregatedValues = [];
             for (let i = 0; i < tempArr?.length; i++) {
-              preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
+              preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == (tempArr[i]?.filter1.length ? tempArr[i]?.filter1 : 'Overall') && k['filter2'] == tempArr[i]?.filter2));
             }
-            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
+            if(preAggregatedValues && preAggregatedValues.length >1){
+              const transformFilter = {}
+              preAggregatedValues.forEach(obj=>{
+                transformFilter[obj.filter1+'and'+obj.filter2] = obj.value
+              })
+              this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(transformFilter, aggregationType, this.tooltip.percentile);
+            }else{
+              this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
+            }
           }
           else if (filterPropArr.includes('filter1')
             || filterPropArr.includes('filter2')) {
@@ -1204,7 +1212,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (this.kpiDropdowns[kpiId]?.length > 1) {
           this.kpiSelectedFilterObj[kpiId] = {};
           for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-            this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+            if (filterType?.toLowerCase() === 'multitypefilters') {
+              if (this.kpiDropdowns[kpiId][i].filterType.toLowerCase() === 'radiobtn') {
+                this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+              } else {
+                this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [];
+              }
+            } else {
+              this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+            }
           }
         }
       }
@@ -1336,7 +1352,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
-    this.createTrendData(kpiId);
+    // this.createTrendData(kpiId);
+    if (kpiId !== 'kpi151' && kpiId !== 'kpi152' && kpiId !== 'kpi155') {
+      this.createTrendsData(kpiId);
+    }
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
         this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
@@ -1368,7 +1387,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpiChartData;
   }
 
-  createTrendData(kpiId) {
+/*   createTrendData(kpiId) {
     const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
     const trendingList = this.kpiChartData[kpiId];
     if (trendingList?.length) {
@@ -1388,7 +1407,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
 
-  }
+  } */
 
   getChartDataforRelease(kpiId, idx, aggregationType?, kpiFilterChange = false) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
@@ -1636,11 +1655,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   createCombinations(arr1, arr2) {
     let arr = [];
-    for (let i = 0; i < arr1?.length; i++) {
-      for (let j = 0; j < arr2?.length; j++) {
-        arr.push({ filter1: arr1[i], filter2: arr2[j] });
+    if (arr1?.length > 0) {
+      for (let i = 0; i < arr1?.length; i++) {
+        for (let j = 0; j < arr2?.length; j++) {
+          arr.push({ filter1: arr1[i], filter2: arr2[j] });
+        }
       }
+    } else {
+      /** Handled for Multi Type Dropdown */
+      return [
+        {
+          filter1: [],
+          filter2: arr2
+        }
+      ]
     }
+    
     return arr;
   }
 
@@ -1752,7 +1782,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (preAggregatedValues?.length > 1) {
           if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
-          } else { 
+          } else {
             if(kpiId === 'kpi171'){
               this.kpiChartData[kpiId] = [this.helperService.aggregationCycleTime(preAggregatedValues)];
             }else{
@@ -1997,7 +2027,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
       if (response['success']) {
         this.exportExcelComponent.dataTransformForIterationTableWidget([],[],response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
-      }     
+      }
     });
   }
 
@@ -2246,12 +2276,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
 
         this.kpiDropdowns[kpiId] = [];
-        dropdownArr.forEach(arr => {
+        dropdownArr.forEach((arr,i) => {
           arr = Array.from(arr);
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
           if (this.selectedTab.toLowerCase() !== 'developer' || kpiId !== 'kpi168') {
-            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown')) {
+            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && ((kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown') || kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multitypefilters')) {
               const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
               if (index > -1) {
                 arr?.splice(index, 1);
@@ -2259,7 +2289,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           }
 
-          obj['filterType'] = 'Select a filter';
+          if(this.allKpiArray[idx]?.filters){
+            const filterConfig = this.allKpiArray[idx].filters;
+            obj['filterType'] = filterConfig['filter'+(i+1)]?.filterType ? filterConfig['filter'+(i+1)]?.filterType : 'Select a filter';
+          }else{
+            obj['filterType'] = 'Select a filter';
+          }
           if (arr.length > 0) {
             arr.sort((a, b) => {
               if (a === "Overall") {
@@ -2384,6 +2419,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
         }
+      }else if(kpi?.kpiDetail?.kpiFilter && kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multitypefilters' ){
+        this.kpiSelectedFilterObj[kpi?.kpiId]  = event;
       }
       else {
         if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {
@@ -2570,16 +2607,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (this.kpiChartData[kpiId][i]?.value?.length > 0) {
             let trendObj = {};
             const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
-            trendObj = {
-              "hierarchyName": this.kpiChartData[kpiId][i]?.data,
-              "value": latest,
-              "trend": trend,
-              "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
-                this.checkMaturity(this.kpiChartData[kpiId][i])
-                : 'M' + this.kpiChartData[kpiId][i]?.maturity,
-              "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
-              "kpiUnit": unit
-            };
+            if(isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
+              trendObj = {
+                "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                "value": latest,
+                "trend": trend,
+                "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
+                  this.checkMaturity(this.kpiChartData[kpiId][i])
+                  : 'M' + this.kpiChartData[kpiId][i]?.maturity,
+                "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
+                "kpiUnit": unit
+              };
+            }
             if (kpiId === 'kpi997') {
               trendObj['value'] = 'NA';
             }

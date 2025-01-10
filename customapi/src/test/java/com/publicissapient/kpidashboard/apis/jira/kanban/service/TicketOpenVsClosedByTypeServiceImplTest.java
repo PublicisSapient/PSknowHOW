@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +43,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
@@ -175,18 +175,18 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 
 		FieldMapping projectOne = new FieldMapping();
 		projectOne.setBasicProjectConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
-		projectOne.setTicketCountIssueType(Arrays.asList("bug"));
-		projectOne.setJiraTicketClosedStatus(Arrays.asList("CLOSED"));
+		projectOne.setTicketCountIssueTypeKPI55(Arrays.asList("bug"));
+		projectOne.setJiraTicketClosedStatusKPI55(Arrays.asList("CLOSED"));
 
 		FieldMapping projectTwo = new FieldMapping();
 		projectTwo.setBasicProjectConfigId(new ObjectId("5b719d06a500d00814bfb2b9"));
-		projectTwo.setTicketCountIssueType(Arrays.asList("Story"));
-		projectTwo.setJiraTicketClosedStatus(Arrays.asList("CLOSED"));
+		projectTwo.setTicketCountIssueTypeKPI55(Arrays.asList("Story"));
+		projectTwo.setJiraTicketClosedStatusKPI55(Arrays.asList("CLOSED"));
 
 		FieldMapping projectThree = new FieldMapping();
 		projectThree.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		projectThree.setTicketCountIssueType(Arrays.asList("Story"));
-		projectThree.setJiraTicketClosedStatus(Arrays.asList("CLOSED"));
+		projectThree.setTicketCountIssueTypeKPI55(Arrays.asList("Story"));
+		projectThree.setJiraTicketClosedStatusKPI55(Arrays.asList("CLOSED"));
 
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);

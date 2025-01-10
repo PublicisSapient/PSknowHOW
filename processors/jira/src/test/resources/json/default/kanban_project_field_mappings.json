@@ -44,12 +44,12 @@
     "kanbanRCACountIssueType": [
       "Defect"
     ],
-    "jiraTicketVelocityIssueType": [
+    "jiraTicketVelocityIssueTypeKPI49": [
       "Issue",
       "Defect",
       "Story"
     ],
-    "ticketDeliverdStatus": [
+    "ticketDeliveredStatusKPI49": [
       "Closed",
       "Ready for Delivery"
     ],

@@ -136,11 +136,10 @@ public class NetOpenTicketCountByPriorityServiceImpl
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			Map<String, Object> fieldWise = new HashMap<>();
-			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusNOPK());
-			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatus());
-			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatus());
-			fieldWise.put("RCA_Count_IssueType", fieldMapping.getKanbanRCACountIssueType());
-			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueType());
+			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusKPI50());
+			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatusKPI50());
+			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatusKPI50());
+			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueTypeKPI50());
 			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
 		 	projectWiseMapping.put(basicProjectConfigId, fieldWise);
 		});
@@ -392,6 +391,12 @@ public class NetOpenTicketCountByPriorityServiceImpl
 		} else {
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI50(),
+				KPICode.TICKET_COUNT_BY_PRIORITY.getKpiId());
 	}
 
 }

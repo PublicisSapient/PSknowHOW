@@ -103,18 +103,18 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 			projectList.add(basicProjectConfigId.toString());
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			if (Optional.ofNullable(fieldMapping.getTicketCountIssueType()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getTicketCountIssueTypeKPI997()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
+						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueTypeKPI997()));
 			}
-			if (Optional.ofNullable(fieldMapping.getJiraTicketClosedStatus()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraTicketClosedStatusKPI997()).isPresent()) {
 				List<String> closedStatusList = new ArrayList<>();
-				closedStatusList.addAll(fieldMapping.getJiraTicketClosedStatus());
-				if (Optional.ofNullable(fieldMapping.getJiraLiveStatusOTA()).isPresent()) {
-					closedStatusList.add(fieldMapping.getJiraLiveStatusOTA());
+				closedStatusList.addAll(fieldMapping.getJiraTicketClosedStatusKPI997());
+				if (Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI997()).isPresent()) {
+					closedStatusList.add(fieldMapping.getJiraLiveStatusKPI997());
 				}
-				if (Optional.ofNullable(fieldMapping.getJiraTicketRejectedStatus()).isPresent()) {
-					closedStatusList.addAll(fieldMapping.getJiraTicketRejectedStatus());
+				if (Optional.ofNullable(fieldMapping.getJiraTicketRejectedStatusKPI997()).isPresent()) {
+					closedStatusList.addAll(fieldMapping.getJiraTicketRejectedStatusKPI997());
 				}
 				mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(closedStatusList));
@@ -405,4 +405,11 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI997(),
+				KPICode.OPEN_TICKET_AGING_BY_PRIORITY.getKpiId());
+	}
+
 }

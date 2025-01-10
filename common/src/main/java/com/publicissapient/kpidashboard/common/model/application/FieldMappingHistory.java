@@ -158,19 +158,25 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI152;
 	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI151;
 	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI3;
-	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusLTK;
-	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusNOPK;
-	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusNOSK;
-	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusNORK;
-	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusOTA;
+	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI53;
+	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI50;
+	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI48;
+	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI51;
+	private List<ConfigurationHistoryChangeLog> historyjiraLiveStatusKPI997;
 
 	private List<ConfigurationHistoryChangeLog> historyticketCountIssueType;
+	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI50;
+	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI48;
+	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI997;
+	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI54;
+	private List<ConfigurationHistoryChangeLog> historyticketCountIssueTypeKPI55;
 
 	private List<ConfigurationHistoryChangeLog> historykanbanRCACountIssueType;
+	private List<ConfigurationHistoryChangeLog> historykanbanRCACountIssueTypeKPI51;
 
-	private List<ConfigurationHistoryChangeLog> historyjiraTicketVelocityIssueType;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketVelocityIssueTypeKPI49;
 
-	private List<ConfigurationHistoryChangeLog> historyticketDeliverdStatus;
+	private List<ConfigurationHistoryChangeLog> historyticketDeliveredStatusKPI49;
 
 	private List<ConfigurationHistoryChangeLog> historyticketReopenStatus;
 
@@ -178,10 +184,23 @@ public class FieldMappingHistory extends BasicModel {
 
 	private List<ConfigurationHistoryChangeLog> historyjiraTicketResolvedStatus;
 	private List<ConfigurationHistoryChangeLog> historyjiraTicketClosedStatus;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketClosedStatusKPI48;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketClosedStatusKPI50;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketClosedStatusKPI51;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketClosedStatusKPI53;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketClosedStatusKPI54;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketClosedStatusKPI55;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketClosedStatusKPI997;
 	private List<ConfigurationHistoryChangeLog> historykanbanCycleTimeIssueType;
+	private List<ConfigurationHistoryChangeLog> historykanbanCycleTimeIssueTypeKPI53;
 	private List<ConfigurationHistoryChangeLog> historyjiraTicketTriagedStatus;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketTriagedStatusKPI53;
 	private List<ConfigurationHistoryChangeLog> historyjiraTicketWipStatus;
 	private List<ConfigurationHistoryChangeLog> historyjiraTicketRejectedStatus;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketRejectedStatusKPI50;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketRejectedStatusKPI151;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketRejectedStatusKPI48;
+	private List<ConfigurationHistoryChangeLog> historyjiraTicketRejectedStatusKPI997;
 	private List<ConfigurationHistoryChangeLog> historyexcludeStatusKpi129;
 
 	private List<ConfigurationHistoryChangeLog> historyjiraStatusMappingCustomField;
@@ -409,13 +428,8 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI72;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI84;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI11;
-	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI62;
-	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI64;
-	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI67;
-	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI65;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI157;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI158;
-	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI159;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI160;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI164;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI3;
@@ -445,10 +459,34 @@ public class FieldMappingHistory extends BasicModel {
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI180;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI181;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI182;
-	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI183;
-	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI184;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI185;
 	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI186;
+
+	/** kanban kpis threshold fields history starts **/
+
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI51;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI55;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI54;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI50;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI48;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI997;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI63;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI62;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI64;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI67;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI71;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI49;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI58;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI66;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI65;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI53;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI74;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI114;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI159;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI184;
+	private List<ConfigurationHistoryChangeLog> historythresholdValueKPI183;
+
+	/** kanban kpi threshold fields history ends **/
 
 	// Production Incident Mapping
 	private List<ConfigurationHistoryChangeLog> historyjiraProductionIncidentIdentification;

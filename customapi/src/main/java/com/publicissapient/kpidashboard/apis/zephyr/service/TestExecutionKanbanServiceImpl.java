@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanTestExecutionRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -340,4 +341,10 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI71(), KPICode.TEST_EXECUTION_KANBAN.getKpiId());
+	}
+
 }

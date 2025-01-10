@@ -51,6 +51,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -408,6 +409,12 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 	 */
 	private String createDurationString(long minutes, long seconds) {
 		return minutes == 0L ? seconds + Constant.SEC : minutes + Constant.MIN + seconds + Constant.SEC;
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI66(),
+				KPICode.CODE_BUILD_TIME_KANBAN.getKpiId());
 	}
 
 }

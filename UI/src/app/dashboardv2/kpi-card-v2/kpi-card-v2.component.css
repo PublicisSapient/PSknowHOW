@@ -366,3 +366,10 @@
 :host ::ng-deep .p-overflowlabel {
   word-break: break-all;
 }
+
+.multi-filter-section {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  width: -webkit-fill-available
+}

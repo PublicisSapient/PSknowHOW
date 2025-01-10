@@ -368,13 +368,14 @@ public class ScrumAzureIssueClientImplTest {
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
 				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
-		fieldMapping.setJiraTicketVelocityIssueType(jiraType);
+		fieldMapping.setJiraTicketVelocityIssueTypeKPI49(jiraType);
 		fieldMapping.setKanbanJiraTechDebtIssueType(jiraType);
 		fieldMapping.setKanbanCycleTimeIssueType(jiraType);
+		fieldMapping.setKanbanCycleTimeIssueTypeKPI53(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Resolved");
-		fieldMapping.setTicketDeliverdStatus(jiraType);
+		fieldMapping.setTicketDeliveredStatusKPI49(jiraType);
 		fieldMapping.setJiraTicketResolvedStatus(jiraType);
 
 		jiraType = new ArrayList<>();

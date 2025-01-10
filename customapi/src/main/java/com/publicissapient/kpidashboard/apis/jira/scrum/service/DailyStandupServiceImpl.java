@@ -638,7 +638,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 		} else {
 			jiraIssueModalObject.setPotentialOverallDelay("-");
 			jiraIssueModalObject.setPredictedCompletionDate("-");
-			jiraIssueModalObject.setPotentialDelay(Constant.DASH);
+			jiraIssueModalObject.setPotentialDelay(Constant.BLANK);
 		}
 	}
 
@@ -702,7 +702,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 			}
 
 		} else
-			lastTimeInString = Constant.DASH;
+			lastTimeInString = Constant.BLANK;
 		return lastTimeInString;
 	}
 
@@ -726,8 +726,8 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				&& StringUtils.isEmpty(iterationKpiModalValue.getActualCompletionDateInTime())
 				&& closedStatus.contains(iterationKpiModalValue.getIssueStatus())) {
 			iterationKpiModalValue.setPreClosed(true);
-			iterationKpiModalValue.setTimeWithUser(Constant.DASH);
-			iterationKpiModalValue.setTimeWithStatus(Constant.DASH);
+			iterationKpiModalValue.setTimeWithUser(Constant.BLANK);
+			iterationKpiModalValue.setTimeWithStatus(Constant.BLANK);
 			Map<String, LocalDateTime> closedStatusDateMap = new HashMap<>();
 			if (CollectionUtils.isNotEmpty(issueHistory.getStatusUpdationLog())) {
 				for (JiraHistoryChangeLog statusUpdationLog : issueHistory.getStatusUpdationLog()) {
