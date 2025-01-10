@@ -93,7 +93,7 @@ AzureBoardApp:
   enabled: false
 
 SCMProcessor:
-  enabled: false
+  enabled: true
   env:
     - name: DEBUG
       value: "True"
@@ -102,7 +102,7 @@ SCMProcessor:
     - name: ALLOWED_HOSTS
       value: "*"
     - name: DATABASE_URL
-      value: "postgres://admin:admin123@auth-scm-db:5432/debbie?sslmode=require"  # Pass the DB username, password, Host and DB name
+      value: "postgres://admin:admin123@auth-scm-db:5432/debbie"  # Pass the DB username, password, Host and DB name
     - name: CORS_ORIGIN_WHITELIST
       value: "http://localhost"
     - name: RESULT_SEND_TYPE
@@ -127,6 +127,38 @@ SCMProcessor:
       value: "RlByoGVbGYPYbOyhpb3VDPE7k"
     - name: DEBBIE_INTERNAL_API_KEY
       value: "ENaYzG7C.sp5aFtnj21O9moHTvGGtwN3YGoc8EBXa"
+    - name: SECRET_KEY
+      value: "+j69)9@l7yak_f^n5c(tk(1@i6439uc)$6p_-c!z7qldi)y(_x"
+    - name: EMAIL_USE_TLS
+      value: "True"
+    - name: EMAIL_HOST
+      value: "smtp.gmail.com"
+    - name: EMAIL_PORT
+      value: "587"
+    - name: EMAIL_HOST_USER
+      value: "user@user.com"
+    - name: EMAIL_HOST_PASSWORD
+      value: "secure-password"
+    - name: GITLAB_URL
+      value: "https://gitlab.tremend.com"
+    - name: TENGINE_QUERY_USERNAME
+      value: "xyz"
+    - name: TENGINE_QUERY_PASSWORD
+      value: "123"
+    - name: TENGINE_AUTH_TOKEN
+      value: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1N2QxMDBlYmVhNGZiZDc3MDAyNDM2NmIiLCJhY2Nlc3NSb2xlIjoidXNlciIsImlhdCI6MTUwMjI2MzM3NSwiZXhwIjoxNTMzNzk5Mzc1fQ.P3zEfsdjRx9am26hFl11Q9gf8foidCBtQwBWjuFo8nc"
+    - name: PYTHONPATH
+      value: "${PYTHONPATH}:/code/utils:/code/scanner:/code/mq:/code"
+    - name: RUN_SONARQUBE
+      value: "True"
+    - name: GIT_PYTHON_TRACE
+      value: "1"
+    - name: GIT_PROCESS_ONLY_ONE_COMMIT
+      value: "true"
+    - name: GIT_WITHOUT_MODIFICATIONS
+      value: "true"
+    - name: DEBUG_TOOLBAR
+      value: "false"
 
 
 mongodb:

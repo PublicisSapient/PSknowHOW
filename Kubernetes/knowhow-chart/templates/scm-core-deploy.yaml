@@ -38,7 +38,7 @@ spec:
             - containerPort: 8090
               protocol: TCP
           env:
-            {{- range .Values.env }}
+            {{- range .Values.SCMProcessor.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
