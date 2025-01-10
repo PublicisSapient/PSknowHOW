@@ -90,9 +90,8 @@ export class AppComponent implements OnInit {
         };
         this.ga.setPageLoad(data);
 
-        if (!this.refreshCounter) {
+        // if (!this.refreshCounter) {
           ++this.refreshCounter;
-
           let selectedTab = this.location.path();
           selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
           selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
@@ -109,13 +108,15 @@ export class AppComponent implements OnInit {
             const urlParams = new URLSearchParams(queryString);
 
             let param = urlParams.get('stateFilters');
-            param = atob(param);
-            console.log('param', param);
-            // param = param.replace(/###/gi, '___');
-
-            this.helperService.setBackupOfUrlFilters(param);
+            if(param){
+              param = atob(param);
+              console.log('param', param);
+              // param = param.replace(/###/gi, '___');
+  
+              this.helperService.setBackupOfUrlFilters(param);
+            }
           }
-        }
+      // }
       }
 
     });
