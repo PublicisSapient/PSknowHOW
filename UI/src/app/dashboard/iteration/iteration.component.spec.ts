@@ -3694,10 +3694,10 @@ describe('IterationComponent', () => {
         ];
         component.selectedProjectId = 'project1';
         component.navigationTabs = []
-        
+
         // Mock the response from featureFlagService.isFeatureEnabled()
         spyOn(featureFlagService, 'isFeatureEnabled').and.returnValue(Promise.resolve(true));
-        
+
         // Set up initial values
         service.setCurrentSelectedSprint({ sprintState: 'Active' });
         // spyOn(service, 'currentSelectedSprint').and.returnValue({ sprintState: 'Active' });
@@ -3708,10 +3708,10 @@ describe('IterationComponent', () => {
           { subCategoryBoard: 'Board1', kpiDetail: { kpiWidth: 50 } }
         ];
         component.commitmentReliabilityKpi = { isEnabled: true };
-      
+
         // Call the method
         await component.checkForAssigneeDataAndSetupTabs();
-      
+
         // Assert the navigationTabs
         expect(component.navigationTabs.length).toEqual(3);
       });

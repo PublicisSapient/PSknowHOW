@@ -20,7 +20,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
-  dummyData = require('../../../test/resource/board-config-PSKnowHOW.json'); 
+  dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
 
   constructor(public httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, public helperService: HelperService) {
   }
@@ -49,7 +49,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   getBoardConfig(projectList) {
     this.httpService.getShowHideOnDashboardNewUI({ basicProjectConfigIds: projectList?.length && projectList[0] ? projectList : [] }).subscribe(
       (response) => {
-        
+
         this.setBoards(response);
         // this.setBoards(this.dummyData);
       },

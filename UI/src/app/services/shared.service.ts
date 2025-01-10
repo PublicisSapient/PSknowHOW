@@ -108,6 +108,8 @@ export class SharedService {
   selectedTrendsEvent;
   selectedTrendsEventSubject;
   projectList = [];
+  public kpiFilterParamSubject = new BehaviorSubject<any>(null);
+  public kpiFilterQueryParamObs = this.kpiFilterParamSubject.asObservable();
 
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
@@ -371,6 +373,10 @@ export class SharedService {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
+
+    const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
+    this.kpiFilterParamSubject.next(kpiFilterParamStr);
+
     this.selectedFilterOption.next(value);
   }
 
@@ -426,6 +432,9 @@ export class SharedService {
     return this.selectedLevel;
   }
   setSelectedTrends(values) {
+    values.forEach(trend => {
+      trend.path = trend.path?.replace(/___/g, '###');
+    });
     this.selectedTrends = values;
     // this.selectedTrendsEvent.emit(values);
     this.selectedTrendsEventSubject.next(values);
@@ -586,11 +595,11 @@ export class SharedService {
   }
 
   //#region  can be remove after iteraction component removal
-  
+
    isTrendValueListValid(trendValueList: any[]): boolean {
     return trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1');
   }
-  
+
    populateDropdownFromTrendValues(trendValueList: any[], dropdownArr: any[]): void {
     trendValueList.forEach(item => {
       if (!dropdownArr.includes(item?.filter1)) {
@@ -598,8 +607,8 @@ export class SharedService {
       }
     });
   }
-  
-  
+
+
    shouldRemoveOverallFilter(kpiObj: any): boolean {
     return (
       kpiObj &&
@@ -612,14 +621,14 @@ export class SharedService {
       )
     );
   }
-  
+
    removeOverallFilter(dropdownArr: any[]): void {
     const index = dropdownArr.findIndex(x => x?.toLowerCase() === 'overall');
     if (index > -1) {
       dropdownArr.splice(index, 1);
     }
   }
-  
+
    createFilterObject(dropdownArr: any[]): any[] {
     return [
       {
@@ -628,7 +637,7 @@ export class SharedService {
       }
     ];
   }
-  
+
   //#endregion
 }
 

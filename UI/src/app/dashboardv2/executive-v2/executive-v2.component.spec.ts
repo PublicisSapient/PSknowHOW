@@ -2453,7 +2453,7 @@ describe('ExecutiveV2Component', () => {
         { provide: APP_CONFIG, useValue: AppConfig },
         HttpService,
         { provide: SharedService, useValue: service }
-        , ExcelService, DatePipe
+        , ExcelService, DatePipe,
 
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -7699,23 +7699,32 @@ describe('ExecutiveV2Component', () => {
 
 
   // --------- checking for backup data, if not use default values --------------
-  it('should update selectedTrend and reset filters when a new trend is emitted', () => {
-    // Arrange: Mock the behavior of the service
-    const mockTrend = { trendId: 1, trendName: 'New Trend' };
-    const previousTrend = { trendId: 2, trendName: 'Old Trend' };
+  it('should handle selectedTrendsEventSubject subscription', () => {
+    const trend = [{ id: 1 }];
+    const selectedTrendFromLS = [{ id: 2 }];
+    spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(selectedTrendFromLS));
+    spyOn(localStorage, 'setItem');
+    spyOn(service, 'setKpiSubFilterObj');
+    helperService.deepEqual.and.returnValue(false);
 
-    component.selectedTrend = previousTrend; // Set the previous trend
-    spyOn(component, 'arrayDeepCompare').and.returnValue(false); // Simulate a difference in trends
-    spyOn(service, 'setKpiSubFilterObj').and.callThrough(); // Spy on the service method
+    service.selectedTrendsEventSubject.next(trend);
 
-    // Act: Emit a new trend via the subject
-    service.selectedTrendsEventSubject.next(mockTrend);
-
-    // Assert: Verify that the logic inside the subscription executed correctly
-    expect(component.arrayDeepCompare).toHaveBeenCalledWith(mockTrend, previousTrend);
-    expect(component.selectedTrend).toEqual(mockTrend);
+    expect(component.selectedTrend).toEqual(trend);
+    expect(localStorage.setItem).toHaveBeenCalledWith('selectedTrend', JSON.stringify(trend));
     expect(component.kpiSelectedFilterObj).toEqual({});
     expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(null);
+  });
+
+  it('should handle selectedTrendsEventSubject subscription with equal trends', () => {
+    const trend = [{ id: 1 }];
+    spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(trend));
+    spyOn(service, 'setKpiSubFilterObj');
+    helperService.deepEqual.and.returnValue(true);
+
+    service.selectedTrendsEventSubject.next(trend);
+
+    expect(component.selectedTrend).toEqual([]);
+    expect(service.setKpiSubFilterObj).toHaveBeenCalledWith(service.getKpiSubFilterObj());
   });
 
   // --------- end of checking for backup data, if not use default values -------
@@ -7818,85 +7827,6 @@ describe('ExecutiveV2Component', () => {
     expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
   });
   // ---------- end of getBackupKPIFilters -------
-
-  // ----------- getBackupKPIFiltersForRelease -----------
-  it('should update kpiSelectedFilterObj when kpiId is found in service.getKpiSubFilterObj()', () => {
-    const kpiId = 'kpi123';
-    const filterPropArr = ['filter'];
-    const serviceKpiSubFilterObj = { [kpiId]: 'some value' };
-    spyOn(service, 'getKpiSubFilterObj').and.returnValue(serviceKpiSubFilterObj);
-    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
-    expect(component.kpiSelectedFilterObj[kpiId]).toBe('some value');
-  });
-
-  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is not multiselectdropdown', () => {
-    const kpiId = 'kpi123';
-    const filterPropArr = ['filter'];
-    const filterType = 'dropdown';
-    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
-    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
-    component.kpiDropdowns = kpiDropdowns;
-    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
-    expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
-  });
-
-  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is multiselectdropdown', () => {
-    const kpiId = 'kpi123';
-    const filterPropArr = ['filter'];
-    const filterType = 'multiselectdropdown';
-    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
-    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: { kpiFilter: filterType } }];
-    component.kpiDropdowns = kpiDropdowns;
-    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
-    expect(component.kpiSelectedFilterObj[kpiId]).toEqual([]);
-  });
-
-  it('should update kpiSelectedFilterObj when filterPropArr includes filter1 and filter2', () => {
-    const kpiId = 'kpi123';
-    const filterPropArr = ['filter1', 'filter2'];
-    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }, { options: ['option2'] }] };
-    component.kpiDropdowns = kpiDropdowns;
-    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
-    expect(component.kpiSelectedFilterObj[kpiId]).toEqual({ filter1: ['option1'], filter2: ['option2'] });
-  });
-
-  it('should update kpiSelectedFilterObj when filterPropArr does not include filter or filter1 or filter2', () => {
-    const kpiId = 'kpi123';
-    const filterPropArr = ['other'];
-    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
-    component.kpiDropdowns = kpiDropdowns;
-    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
-    expect(component.kpiSelectedFilterObj[kpiId]).toEqual({ filter1: ['option1'] });
-  });
-
-  it('should not update kpiSelectedFilterObj when kpiDropdowns[kpiId] is empty', () => {
-    const kpiId = 'kpi123';
-    const filterPropArr = ['filter'];
-    const kpiDropdowns = { [kpiId]: [] };
-    component.kpiDropdowns = kpiDropdowns;
-    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
-    expect(component.kpiSelectedFilterObj[kpiId]).toBeUndefined();
-  });
-
-  it('should not update kpiSelectedFilterObj when kpiDropdowns[kpiId][0][\'options\'] is empty', () => {
-    const kpiId = 'kpi123';
-    const filterPropArr = ['filter'];
-    const kpiDropdowns = { [kpiId]: [{ options: [] }] };
-    component.kpiDropdowns = kpiDropdowns;
-    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
-    expect(component.kpiSelectedFilterObj[kpiId]).toBeUndefined();
-  });
-
-  it('should update kpiSelectedFilterObj when filterPropArr includes filter and filterType is undefined', () => {
-    const kpiId = 'kpi123';
-    const filterPropArr = ['filter'];
-    const kpiDropdowns = { [kpiId]: [{ options: ['option1'] }] };
-    component.updatedConfigGlobalData = [{ kpiId, kpiDetail: {} }]; // filterType is undefined
-    component.kpiDropdowns = kpiDropdowns;
-    component.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
-    expect(component.kpiSelectedFilterObj[kpiId]).toEqual(['option1']);
-  });
-  // ----------- end of getBackupKPIFiltersForRelease -------
 
   // ----------- getBackupKPIFiltersForBacklog -------
   it('should set kpiSelectedFilterObj when kpiId exists in getKpiSubFilterObj', () => {
@@ -18617,13 +18547,13 @@ describe('ExecutiveV2Component', () => {
         const result = component.calcBusinessDays(startDate, endDate);
         expect(result).toBe(5);
       });
-  
+
       it('should return 1 when the start and end dates are the same weekday', () => {
         const date = new Date('2023-10-04'); // Wednesday
         const result = component.calcBusinessDays(date, date);
         expect(result).toBe(1);
       });
-  
+
       it('should correctly calculate business days spanning a weekend', () => {
         const startDate = new Date('2023-10-06'); // Friday
         const endDate = new Date('2023-10-10'); // Tuesday
@@ -18631,7 +18561,7 @@ describe('ExecutiveV2Component', () => {
         expect(result).toBe(3);
       });
     });
-  
+
     describe('Edge cases', () => {
       it('should return 0 if the end date is before the start date', () => {
         const startDate = new Date('2023-10-10'); // Tuesday
@@ -18639,14 +18569,14 @@ describe('ExecutiveV2Component', () => {
         const result = component.calcBusinessDays(startDate, endDate);
         expect(result).toBe(0);
       });
-  
+
       it('should handle dates that fall on a weekend', () => {
         const startDate = new Date('2023-10-07'); // Saturday
         const endDate = new Date('2023-10-08'); // Sunday
         const result = component.calcBusinessDays(startDate, endDate);
         expect(result).toBe(0);
       });
-  
+
       it('should handle a start date on a weekday and an end date on a weekend', () => {
         const startDate = new Date('2023-10-06'); // Friday
         const endDate = new Date('2023-10-08'); // Sunday
@@ -18662,40 +18592,40 @@ describe('ExecutiveV2Component', () => {
         const result = component.getkpiwidth(100);
         expect(result).toBe('p-col-12');
       });
-  
+
       it('should return "p-col-6" for kpiwidth 50', () => {
         const result = component.getkpiwidth(50);
         expect(result).toBe('p-col-6');
       });
-  
+
       it('should return "p-col-8" for kpiwidth 66', () => {
         const result = component.getkpiwidth(66);
         expect(result).toBe('p-col-8');
       });
-  
+
       it('should return "p-col-4" for kpiwidth 33', () => {
         const result = component.getkpiwidth(33);
         expect(result).toBe('p-col-4');
       });
     });
-  
+
     // Edge case tests
     describe('Edge Cases', () => {
       it('should return "p-col-6" for kpiwidth 0', () => {
         const result = component.getkpiwidth(0);
         expect(result).toBe('p-col-6');
       });
-  
+
       it('should return "p-col-6" for negative kpiwidth', () => {
         const result = component.getkpiwidth(-10);
         expect(result).toBe('p-col-6');
       });
-  
+
       it('should return "p-col-6" for kpiwidth greater than 100', () => {
         const result = component.getkpiwidth(150);
         expect(result).toBe('p-col-6');
       });
-  
+
       it('should return "p-col-6" for non-matching kpiwidth', () => {
         const result = component.getkpiwidth(75);
         expect(result).toBe('p-col-6');

@@ -110,7 +110,8 @@ export class AppComponent implements OnInit {
 
             let param = urlParams.get('stateFilters');
             param = atob(param);
-            param = param.replace(/###/gi, '___');
+            console.log('param', param);
+            // param = param.replace(/###/gi, '___');
 
             this.helperService.setBackupOfUrlFilters(param);
           }

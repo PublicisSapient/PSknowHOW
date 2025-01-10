@@ -23,7 +23,6 @@ This files contain common methods that can be use in application
 import { Injectable } from '@angular/core';
 @Injectable()
 export class KpiHelperService {
-  constructor() { }
   iconObj = {
     'Issue count': 'Warning.svg',
     'Issue Count': 'Warning.svg',
@@ -286,7 +285,7 @@ export class KpiHelperService {
             } else if (group.aggregation === 'sum') {
                 if (filteredIssues?.length) {
                     filteredVal = this.convertToHoursIfTime(filteredIssues.reduce((sum: any, issue: any) => {
-                        return sum + (issue[group.key] || 0); // Sum up the values for the key          
+                        return sum + (issue[group.key] || 0); // Sum up the values for the key
                     }, 0), group.unit);
                 }
             }
@@ -295,7 +294,7 @@ export class KpiHelperService {
             aggregateVal = issueData.length;
         } else if (group.aggregation === 'sum') {
             aggregateVal = this.convertToHoursIfTime(issueData.reduce((sum: any, issue: any) => {
-                return sum + (issue[group.key] || 0); // Sum up the values for the key     
+                return sum + (issue[group.key] || 0); // Sum up the values for the key
             }, 0), group.unit);
         }
         if (group.key1) {

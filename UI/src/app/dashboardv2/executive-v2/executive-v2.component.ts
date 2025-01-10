@@ -22,7 +22,7 @@ import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
@@ -126,7 +126,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   dailyStandupKPIDetails = {};
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
-    private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
+    private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef, private router: Router) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
@@ -207,10 +207,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.selectedTrend = JSON.parse(JSON.stringify(this.service.getSelectedTrends()));
 
     this.subscriptions.push(this.service.selectedTrendsEventSubject.subscribe(trend => {
-      if (trend.length !== this.selectedTrend.length || !this.arrayDeepCompare(trend, this.selectedTrend)) {
+      const selectedTrendFromLS = localStorage.getItem('selectedTrend') && JSON.parse(localStorage.getItem('selectedTrend'));
+      if ((selectedTrendFromLS?.length > 0) && (trend.length !== selectedTrendFromLS?.length || !this.arrayDeepCompare(trend, selectedTrendFromLS))) {
         this.selectedTrend = trend;
+        localStorage.setItem('selectedTrend', JSON.stringify(this.selectedTrend));
         this.kpiSelectedFilterObj = {};
         this.service.setKpiSubFilterObj(null);
+      } else {
+        this.service.setKpiSubFilterObj(this.service.getKpiSubFilterObj());
       }
     }));
   }
@@ -303,6 +307,23 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
       }));
     }
+
+    this.route.queryParams.subscribe(params => {
+      const kpiFilterParam = params['kpiFilters'];
+      if (kpiFilterParam) {
+        const kpiFilterParamDecoded = atob(kpiFilterParam);
+        const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+        this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+      }
+    });
+
+    this.subscriptions.push(this.service.kpiFilterQueryParamObs.subscribe((data) => {
+      this.router.navigate([], {
+        queryParams: { 'kpiFilters': data }, // Pass the object here
+        relativeTo: this.route,
+        queryParamsHandling: 'merge',
+      });
+    }));
   }
 
   // unsubscribing all Kpi Request
@@ -1267,44 +1288,47 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
           }
         }
-      }
-    }
-  }
-
-  getBackupKPIFiltersForRelease(kpiId, filterPropArr) {
-    const filterType = this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === kpiId)?.kpiDetail?.kpiFilter?.toLowerCase();
-    if (Object.keys(this.service.getKpiSubFilterObj()).includes(kpiId)) {
-      this.kpiSelectedFilterObj[kpiId] = this.service.getKpiSubFilterObj()[kpiId];
-    } else {
-      this.getDefaultKPIFiltersForRelease(kpiId, filterPropArr, filterType);
-    }
-    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-  }
-
-  getDefaultKPIFiltersForRelease(kpiId, filterPropArr, filterType) {
-    if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
-      if (filterPropArr.includes('filter')) {
-        if (filterType && filterType !== 'multiselectdropdown') {
-          this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-        } else if (!filterType) {
-          this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
-        } else {
-          this.kpiSelectedFilterObj[kpiId] = [];
-        }
-      } else if (filterPropArr.includes('filter1')
-        && filterPropArr.includes('filter2')) {
-        if (this.kpiDropdowns[kpiId]?.length > 1) {
-          this.kpiSelectedFilterObj[kpiId] = {};
-          for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-            this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
-          }
-        }
       } else {
         this.kpiSelectedFilterObj[kpiId] = {};
         this.kpiSelectedFilterObj[kpiId]['filter1'] = [this.kpiDropdowns[kpiId][0]['options'][0]];
       }
     }
   }
+
+  // getBackupKPIFiltersForRelease(kpiId, filterPropArr) {
+  //   const filterType = this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === kpiId)?.kpiDetail?.kpiFilter?.toLowerCase();
+  //   if (Object.keys(this.service.getKpiSubFilterObj()).includes(kpiId)) {
+  //     this.kpiSelectedFilterObj[kpiId] = this.service.getKpiSubFilterObj()[kpiId];
+  //   } else {
+  //     this.getDefaultKPIFiltersForRelease(kpiId, filterPropArr, filterType);
+  //   }
+  //   this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+  // }
+
+  // getDefaultKPIFiltersForRelease(kpiId, filterPropArr, filterType) {
+  //   if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
+  //     if (filterPropArr.includes('filter')) {
+  //       if (filterType && filterType !== 'multiselectdropdown') {
+  //         this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+  //       } else if (!filterType) {
+  //         this.kpiSelectedFilterObj[kpiId] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+  //       } else {
+  //         this.kpiSelectedFilterObj[kpiId] = [];
+  //       }
+  //     } else if (filterPropArr.includes('filter1')
+  //       && filterPropArr.includes('filter2')) {
+  //       if (this.kpiDropdowns[kpiId]?.length > 1) {
+  //         this.kpiSelectedFilterObj[kpiId] = {};
+  //         for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
+  //           this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+  //         }
+  //       }
+  //     } else {
+  //       this.kpiSelectedFilterObj[kpiId] = {};
+  //       this.kpiSelectedFilterObj[kpiId]['filter1'] = [this.kpiDropdowns[kpiId][0]['options'][0]];
+  //     }
+  //   }
+  // }
 
   getBackupKPIFiltersForBacklog(kpiId) {
     const trendValueList = this.allKpiArray[this.ifKpiExist(kpiId)]?.trendValueList;
@@ -1461,7 +1485,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       let filterPropArr = Object.keys(trendValueList[0])?.filter((prop) => prop.includes('filter'));
 
       // get backup KPI filters
-      this.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+      // this.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+      this.getBackupKPIFilters(kpiId, filterPropArr);
     }
 
     if (kpiId === 'kpi178') {
@@ -2804,7 +2829,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
    * Calculates the number of business days between two Date objects, inclusive.
    * Business days are defined as weekdays (Monday to Friday), excluding weekends.
    * Returns 0 if the second date is earlier than the first date.
-   * 
+   *
    * @param dDate1 - The start date as a Date object.
    * @param dDate2 - The end date as a Date object.
    * @returns The number of business days between the two dates.

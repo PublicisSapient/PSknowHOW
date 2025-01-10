@@ -61,7 +61,7 @@ describe('RecommendationsComponent', () => {
             "recommendationType": "Critical",
             "filter": "Overall"
           },
-        ] 
+        ]
     }]
 
   beforeEach(async () => {
@@ -108,7 +108,7 @@ describe('RecommendationsComponent', () => {
     expect(component.maturities.length).toBe(2);
     expect(component.recommendationsData.length).toBe(3);
   }))
-  
+
   it('should display error message on error', fakeAsync(() => {
     component.filterData = filterData;
     // Arrange
@@ -116,11 +116,11 @@ describe('RecommendationsComponent', () => {
     // spyOn(component, 'handleClick').and.callThrough();
     const spy = spyOn(httpService, 'getRecommendations').and.returnValue(throwError(errorMessage));
     const messageSpy = spyOn(messageService, 'add');
-  
+
     // Act
     component.handleClick();
     tick();
-  
+
     // Assert
     expect(spy).toHaveBeenCalled();
     expect(messageSpy).toHaveBeenCalledWith({ severity: 'error', summary: errorMessage });
