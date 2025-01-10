@@ -70,21 +70,11 @@ export class AppComponent implements OnInit {
             this.selectedTab = selectedTab.split('?statefilters=')[0];
             this.service.setSelectedBoard(this.selectedTab);
 
-            // const urlPath = decodeURIComponent(window.location.hash);
-            // const queryParamsIndex = urlPath.indexOf('?');
-
-            // if (queryParamsIndex !== -1) {
-            //   const queryString = urlPath.slice(queryParamsIndex + 1);
-
-            //   // Parse query string into key-value pairs
-            //   const urlParams = new URLSearchParams(queryString);
-
-
             param = atob(param);
             console.log('param', param);
             // param = param.replace(/###/gi, '___');
 
-            this.helperService.setBackupOfUrlFilters(param);
+            this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
             this.refreshCounter++;
           }
         }

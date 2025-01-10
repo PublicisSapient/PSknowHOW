@@ -738,26 +738,13 @@ export class HelperService {
     if (!this.refreshCounter) {
       ++this.refreshCounter;
     } else if (this.refreshCounter) {
-      console.log('User Navigation Detected');
-      // this.removeQueryParams();
-
-      // if (this.selectedFilters['primary_level']) {
-      //   if (this.selectedFilters['primary_level'][0]) {
-      //     this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path?.replace(/###/gi, '___');
-      //   }
-      // }
       
-      
-      // this.setBackupOfUrlFilters('{}');
       const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters));
-
+      this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters));
       this.router.navigate([], {
         queryParams: { 'stateFilters': stateFilterEnc }, // Pass the object here
         relativeTo: this.route,
       });
-
-      // this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters));
-
     }
   }
 

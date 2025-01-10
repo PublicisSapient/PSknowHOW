@@ -41,10 +41,8 @@ export class PrimaryFilterComponent implements OnChanges {
     const selectedTypeChanged = changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange;
 
     if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged) {
-      if(this.primaryFilterConfig?.defaultLevel) {
-        this.applyDefaultFilters();
-        return;
-      }
+      this.applyDefaultFilters();
+      return;
     }
 
     let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
