@@ -103,7 +103,6 @@ export class AppInitializerService {
             if (!environment['production']) {
                 this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
                 this.validateToken(loc);
-                localStorage.setItem('shared_link',loc)
             } else {
                 const env$ = this.http.get('assets/env.json').pipe(
                     tap(env => {
@@ -116,7 +115,6 @@ export class AppInitializerService {
                         environment['RETROS_URL'] = env['RETROS_URL'] || '';
                         environment['SPEED_SUITE'] = env['SPEED_SUITE'] === 'true' ? true : false;
                         this.validateToken(loc);
-                        localStorage.setItem('shared_link',loc)
                     }));
                 env$.toPromise().then(async res => {
                     this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);

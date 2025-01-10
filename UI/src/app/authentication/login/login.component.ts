@@ -118,11 +118,7 @@ export class LoginComponent implements OnInit {
             if (this.redirectToProfile()) {
                 this.router.navigate(['./dashboard/Config/Profile']);
             } else {
-                if (localStorage.getItem('shared_link')) {
-                    this.router.navigate([JSON.parse(JSON.stringify(localStorage.getItem('shared_link')))]);
-                } else {
-                    this.router.navigate(['./dashboard/']);
-                }
+                this.router.navigate(['./dashboard/']);
             }
         }
     }
