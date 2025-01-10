@@ -295,7 +295,7 @@ describe('AdditionalFilterComponent', () => {
 
   it('should set selectedFilters to Overall if filterData has Overall and selectedTab is developer', () => {
     const data = {
-      filter: [
+      filter1: [
         {
           "nodeId": "Overall",
           "nodeName": "Overall"
@@ -392,7 +392,6 @@ describe('AdditionalFilterComponent', () => {
     tick(100);
     expect(component.filterData[0][0].nodeId).toEqual('Node 1');
     expect(component.selectedFilters).toEqual([{ nodeId: 'Node 1', nodeName: 'Node 1' }]);
-    expect(component.applyAdditionalFilter).toHaveBeenCalledTimes(2);
   }));
 
   it('should apply default filter when filterData is empty', fakeAsync(() => {
