@@ -41,7 +41,11 @@ spec:
           image: "{{ .Values.image.authuirepo }}:{{ .Values.image.authtag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 80
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
               protocol: TCP
           env:
             {{- range .Values.env }}

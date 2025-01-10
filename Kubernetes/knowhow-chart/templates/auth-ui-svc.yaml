@@ -10,10 +10,14 @@ metadata:
 spec:
   type: {{ .Values.service.uitype }}
   ports:
-    - port: 80
-      targetPort: http
+    - name: http # Unique name for port 80
+      port: 80
+      targetPort: 80
       protocol: TCP
-      name: http
+    - name: https # Unique name for port 443
+      port: 443
+      targetPort: 443
+      protocol: TCP
   selector:
     app: authnauth-ui
     app.kubernetes.io/name: authnauth-ui
