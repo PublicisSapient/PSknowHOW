@@ -34,7 +34,9 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
   ngOnInit() {
-    this.subscriptions.push(this.service.populateAdditionalFilters.pipe(distinctUntilChanged()).subscribe((data) => {
+    this.subscriptions.push(this.service.populateAdditionalFilters
+      .pipe(distinctUntilChanged())
+      .subscribe((data) => {
       if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
         this.selectedFilters = [];
         this.selectedTrends = this.service.getSelectedTrends();
@@ -103,9 +105,9 @@ export class AdditionalFilterComponent implements OnChanges {
 
 /**
  * Resets the filter data based on the currently selected tab and trends.
- * If the selected tab is not 'developer', filterData is cleared; otherwise, 
+ * If the selected tab is not 'developer', filterData is cleared; otherwise,
  * it checks if the selected trends have changed and resets filterData accordingly.
- * 
+ *
  * @returns {void} - No return value.
  */
   resetFilterData() {
@@ -123,7 +125,7 @@ export class AdditionalFilterComponent implements OnChanges {
  * Sets the correct level for filters based on the additional filter levels,
  * excluding 'release' and 'sprint' levels, and restores the filter selection state
  * after a brief delay.
- * 
+ *
  * @returns {void} - This function does not return a value.
  */
   setCorrectLevel() {
@@ -274,9 +276,9 @@ export class AdditionalFilterComponent implements OnChanges {
   }
 
 /**
- * Handles the change event of a dropdown element. 
+ * Handles the change event of a dropdown element.
  * If the selected element is valid, it applies an additional filter based on the event and index provided.
- * 
+ *
  * @param {any} $event - The event object from the dropdown change.
  * @param {number} index - The index of the dropdown element being changed.
  * @returns {void}
@@ -287,5 +289,7 @@ export class AdditionalFilterComponent implements OnChanges {
     }
   }
 
-
+  ngOnDestroy() {
+    this.subscriptions?.forEach(subscription => subscription?.unsubscribe());
+  }
 }
