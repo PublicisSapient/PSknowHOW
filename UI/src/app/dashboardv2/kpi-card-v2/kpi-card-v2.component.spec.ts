@@ -1542,7 +1542,7 @@ describe('KpiCardV2Component', () => {
     describe('Edge Case Tests', () => {
       it('should handle empty filter gracefully', () => {
         const mockEvent = {
-          selectedKeyObj: { Category: 'Value' },
+          selectedKeyObj: { Category: 'value' },
           selectedKey: 'SomeKey'
         };
 
