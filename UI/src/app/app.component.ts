@@ -57,16 +57,26 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     localStorage.removeItem('newUI');
+
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
       .subscribe(params => {
-        let nodeId = params.projectId;
-        let sprintId = params.sprintId;
-        if (nodeId) {
-          this.service.setProjectQueryParamInFilters(nodeId)
-        }
-        if (sprintId) {
-          this.service.setSprintQueryParamInFilters(sprintId)
+        if (!this.refreshCounter) {
+          let param = params['stateFilters'];
+          if (param?.length) {
+            let selectedTab = this.location.path();
+            selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+            this.selectedTab = selectedTab.split('?statefilters=')[0];
+            this.service.setSelectedBoard(this.selectedTab);
+
+            param = atob(param);
+            console.log('param', param);
+            // param = param.replace(/###/gi, '___');
+
+            this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
+            this.refreshCounter++;
+          }
         }
       });
 
@@ -89,34 +99,6 @@ export class AppComponent implements OnInit {
           uiType: 'New'
         };
         this.ga.setPageLoad(data);
-
-        // if (!this.refreshCounter) {
-          ++this.refreshCounter;
-          let selectedTab = this.location.path();
-          selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-          selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
-          this.selectedTab = selectedTab.split('?statefilters=')[0];
-          this.service.setSelectedBoard(this.selectedTab);
-
-          const urlPath = decodeURIComponent(window.location.hash);
-          const queryParamsIndex = urlPath.indexOf('?');
-
-          if (queryParamsIndex !== -1) {
-            const queryString = urlPath.slice(queryParamsIndex + 1);
-
-            // Parse query string into key-value pairs
-            const urlParams = new URLSearchParams(queryString);
-
-            let param = urlParams.get('stateFilters');
-            if(param){
-              param = atob(param);
-              console.log('param', param);
-              // param = param.replace(/###/gi, '___');
-  
-              this.helperService.setBackupOfUrlFilters(param);
-            }
-          }
-      // }
       }
 
     });

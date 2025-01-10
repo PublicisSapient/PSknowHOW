@@ -104,7 +104,7 @@ export class ParentFilterComponent implements OnChanges {
     if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
       this.onSelectedLevelChange.emit(this.selectedLevel?.nodeName);
       if (parentLevelChanged) {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName, 'primary_level': null });
+        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName });
       } else {
         this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName });
       }
@@ -113,7 +113,7 @@ export class ParentFilterComponent implements OnChanges {
       if (selectedNode && selectedNode[0]) {
         this.onSelectedLevelChange.emit({ nodeId: selectedNode[0]?.nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
         if (parentLevelChanged) {
-          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0], 'primary_level': null });
+          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0] });
         } else {
           this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0] });
         }

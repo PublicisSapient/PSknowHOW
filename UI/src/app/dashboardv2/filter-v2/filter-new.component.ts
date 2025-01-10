@@ -653,6 +653,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousFilterEvent['primary_level'] = event['primary_level'];
       this.helperService.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
       Object.keys(event['additional_level']).forEach(key => {
+        this.setColors(event['primary_level']);
         this.handleAdditionalChange({ [key]: event['additional_level'][key] })
       });
     } else if (!event.length || event[0].labelName.toLowerCase() !== this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase()) {
