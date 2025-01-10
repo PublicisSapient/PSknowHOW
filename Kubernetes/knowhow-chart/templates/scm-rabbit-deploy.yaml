@@ -35,7 +35,7 @@ spec:
           image: "{{ .Values.image.scmrabbitrepo }}:{{ .Values.image.scmtag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            {{- range .Values.env }}
+            {{- range .Values.SCMProcessor.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
