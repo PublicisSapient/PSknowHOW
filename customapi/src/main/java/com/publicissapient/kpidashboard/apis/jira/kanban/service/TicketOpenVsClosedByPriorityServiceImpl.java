@@ -186,25 +186,25 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 			projectList.add(basicProjectConfigId.toString());
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			if (Optional.ofNullable(fieldMapping.getTicketCountIssueType()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getTicketCountIssueTypeKPI54()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
+						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueTypeKPI54()));
 
 				projectWiseIssueTypeMap.put(basicProjectConfigId.toString(),
-						fieldMapping.getTicketCountIssueType().stream().distinct().collect(Collectors.toList()));
+						fieldMapping.getTicketCountIssueTypeKPI54().stream().distinct().collect(Collectors.toList()));
 			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			if (Optional.ofNullable(fieldMapping.getJiraTicketClosedStatus()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraTicketClosedStatusKPI54()).isPresent()) {
 				closedStatusFilters.put(JiraFeatureHistory.HISTORY_STATUS.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraTicketClosedStatus()));
+						CommonUtils.convertToPatternList(fieldMapping.getJiraTicketClosedStatusKPI54()));
 
 				closedStatusFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
+						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueTypeKPI54()));
 
 				closedStatusProjectMap.put(basicProjectConfigId.toString(), closedStatusFilters);
 
 				projectWiseClosedStatusMap.put(basicProjectConfigId.toString(),
-						fieldMapping.getJiraTicketClosedStatus().stream().distinct().collect(Collectors.toList()));
+						fieldMapping.getJiraTicketClosedStatusKPI54().stream().distinct().collect(Collectors.toList()));
 			}
 		});
 
@@ -440,4 +440,11 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI54(),
+				KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY.getKpiId());
+	}
+
 }
