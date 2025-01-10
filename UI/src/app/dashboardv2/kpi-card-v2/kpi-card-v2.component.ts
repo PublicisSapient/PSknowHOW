@@ -499,9 +499,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
   }
 
-  getColorCssClasses(index) {
+  getColorCssClasses(index: number): string | undefined {
+    if (!Array.isArray(this.colorCssClassArray)) {
+      console.warn('colorCssClassArray is not initialized or is not an array.');
+      return undefined;
+    }
+    if (index < 0 || index >= this.colorCssClassArray.length) {
+      console.warn(`Index ${index} is out of bounds for colorCssClassArray.`);
+      return undefined;
+    }
     return this.colorCssClassArray[index];
   }
+  
 
   hasData(field: string): boolean {
     return this.sprintDetailsList[this.selectedTabIndex]['hoverList'].some(rowData => rowData[field] !== null && rowData[field] !== undefined);
