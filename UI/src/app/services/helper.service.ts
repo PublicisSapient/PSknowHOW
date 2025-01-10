@@ -746,13 +746,17 @@ export class HelperService {
       //     this.selectedFilters['primary_level'][0].path = this.selectedFilters['primary_level'][0].path?.replace(/###/gi, '___');
       //   }
       // }
-      this.setBackupOfUrlFilters('{}');
+      
+      
+      // this.setBackupOfUrlFilters('{}');
       const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters));
 
       this.router.navigate([], {
         queryParams: { 'stateFilters': stateFilterEnc }, // Pass the object here
         relativeTo: this.route,
       });
+
+      // this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters));
 
     }
   }

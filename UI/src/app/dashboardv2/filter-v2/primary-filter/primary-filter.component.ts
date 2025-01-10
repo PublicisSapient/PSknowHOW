@@ -11,7 +11,7 @@ import { HelperService } from 'src/app/services/helper.service';
 export class PrimaryFilterComponent implements OnChanges {
   @Input() filterData = null;
   @Input() selectedLevel: any = '';
-  @Input() primaryFilterConfig: {};
+  @Input() primaryFilterConfig: any;
   @Input() selectedType: string = '';
   @Input() selectedTab: string = '';
   filters = [];
@@ -41,8 +41,10 @@ export class PrimaryFilterComponent implements OnChanges {
     const selectedTypeChanged = changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange;
 
     if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged) {
+      if(this.primaryFilterConfig?.defaultLevel) {
         this.applyDefaultFilters();
         return;
+      }
     }
 
     let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
