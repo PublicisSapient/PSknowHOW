@@ -125,7 +125,7 @@ export class AdditionalFilterComponent implements OnChanges {
     let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release');
     this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
     setTimeout(() => {
-      this.stateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())['additional_level'] || this.helperService.getBackupOfFilterSelectionState('additional_level');
+      this.stateFilters = JSON.parse(this.service.getBackupOfUrlFilters())['additional_level'] || this.service.getBackupOfFilterSelectionState('additional_level');
       if (this.stateFilters && Object.keys(this.stateFilters)) {
         Object.keys(this.stateFilters).forEach((key) => {
           let correctIndex = 0;
@@ -214,10 +214,10 @@ export class AdditionalFilterComponent implements OnChanges {
             this.onAdditionalFilterChange.emit({ [this.selectedAdditionalFilterLevel[i]]: e[i] });
           }
         }
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
+        this.service.setBackupOfFilterSelectionState({ 'additional_level': obj });
       } else {
         this.onAdditionalFilterChange.emit(e);
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
+        this.service.setBackupOfFilterSelectionState({ 'additional_level': e });
       }
     } else {
       this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];

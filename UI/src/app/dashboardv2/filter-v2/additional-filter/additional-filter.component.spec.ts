@@ -418,7 +418,7 @@ describe('AdditionalFilterComponent', () => {
         filter2: ['value2'],
       },
     };
-    spyOn(component.helperService, 'setBackupOfFilterSelectionState');
+    spyOn(component.service, 'setBackupOfFilterSelectionState');
     const mockOnAdditionalFilterChange = spyOn(component.onAdditionalFilterChange, 'emit');
     component.appliedFilters = {};
     component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
@@ -659,7 +659,7 @@ describe('AdditionalFilterComponent', () => {
           { defaultLevel: { labelName: 'Level 1' } },
           { defaultLevel: { labelName: 'Level 2' } },
         ];
-        spyOn(helperService,'getBackupOfFilterSelectionState').and.returnValue({
+        spyOn(component.service,'getBackupOfFilterSelectionState').and.returnValue({
           level1: [{ nodeId: 'node1' }],
           level2: [{ nodeId: 'node2' }],
         });
@@ -684,7 +684,7 @@ describe('AdditionalFilterComponent', () => {
         component.additionalFilterConfig = [
           { defaultLevel: { labelName: 'Level 1' } },
         ];
-        spyOn(helperService,'getBackupOfFilterSelectionState').and.returnValue({});
+        spyOn(component.service,'getBackupOfFilterSelectionState').and.returnValue({});
   
         // Act
         component.setCorrectLevel();

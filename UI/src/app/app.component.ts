@@ -74,7 +74,14 @@ export class AppComponent implements OnInit {
             console.log('param', param);
             // param = param.replace(/###/gi, '___');
 
-            this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
+            const kpiFilterParam = params['kpiFilters'];
+            if (kpiFilterParam) {
+              const kpiFilterParamDecoded = atob(kpiFilterParam);
+              const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+              this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+            }
+
+            this.service.setBackupOfFilterSelectionState(JSON.parse(param));
             this.refreshCounter++;
           }
         }
