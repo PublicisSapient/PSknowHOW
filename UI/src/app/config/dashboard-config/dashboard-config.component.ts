@@ -106,10 +106,10 @@
 
      handleTabChange(event) {
         this.selectedTab = this.tabHeaders[event.index];
-        if(this.selectedTab?.toLowerCase() === 'kanban'){
-          this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
+        if(this.selectedTab?.toLowerCase() === 'others'){
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === 'scrum') || (project.type === 'common') || (project.type === 'kanban'))
         }else{
-          this.userProjects = this.backupUserProjects.filter(project=> (project.type === 'scrum') || (project.type === 'common'))
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
         }
         if(this.userProjects != null && this.userProjects.length > 0) {
           this.noProjectsForSelectedCategory = false;
@@ -119,7 +119,7 @@
         }else{
           this.noProjectsForSelectedCategory = true;
           this.selectedProject = {}
-        }
+        } 
         this.setFormControlData();
         this.kpiChangesObj = {};  
      }
@@ -253,6 +253,7 @@
     this.noProjectsForSelectedCategory = false;
     this.httpService.getUserProjects()
       .subscribe(response => {
+        console.log('dashboard config',response)
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
             that.userProjects = [];

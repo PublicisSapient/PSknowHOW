@@ -130,7 +130,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
           }
         });
       }
-      console.log(this.items)
     }
   }
 
