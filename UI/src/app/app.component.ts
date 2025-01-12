@@ -63,19 +63,29 @@ export class AppComponent implements OnInit {
       .subscribe(params => {
         if (!this.refreshCounter) {
           let param = params['stateFilters'];
+          // let kpiParam = params['kpiFilters'];
           if (param?.length) {
-            let selectedTab = this.location.path();
-            selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
-            this.selectedTab = selectedTab.split('?statefilters=')[0];
-            this.service.setSelectedBoard(this.selectedTab);
+            try {
+              let selectedTab = this.location.path();
+              selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+              selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+              this.selectedTab = selectedTab.split('?statefilters=')[0];
+              this.service.setSelectedBoard(this.selectedTab);
 
-            param = atob(param);
-            console.log('param', param);
-            // param = param.replace(/###/gi, '___');
+              param = atob(param);
+              // kpiParam = kpiParam && atob(kpiParam);
+              console.log('param', param);
+              // param = param.replace(/###/gi, '___');
 
-            this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
-            this.refreshCounter++;
+              if (!param) {
+                throw new Error('Invalid query params');
+              }
+
+              this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
+              this.refreshCounter++;
+            } catch (error) {
+              this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+            }
           }
         }
       });
