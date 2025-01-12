@@ -32,11 +32,7 @@ export class HelperService {
   isKanban = false;
   grossMaturityObj = {};
   public passMaturityToFilter;
-  selectedFilterArray: any = [];
-  selectedFilters: any = {};
-  selectedUrlFilters: string = '{}';
-  refreshCounter: number = 0;
-
+  
   constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router, private route: ActivatedRoute) {
     this.passMaturityToFilter = new EventEmitter();
   }
@@ -714,113 +710,68 @@ export class HelperService {
     return kpiCommentsCountObj
   }
 
-  createBackupOfFiltersSelection(filterbackup, tab, subFilter) {
-    let savedDetails = this.sharedService.getAddtionalFilterBackup();
-    if (tab === 'backlog') {
-      let tabSpecfic = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab]) ? savedDetails['kpiFilters'][tab] : {}
-      savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { ...tabSpecfic, ...filterbackup } } } };
-    } else {
-      const subFilterValues = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab] && savedDetails['kpiFilters'][tab][subFilter]) ? savedDetails['kpiFilters'][tab][subFilter] : {};
-      const combineSubFilterValues = { ...subFilterValues, ...filterbackup };
-      savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { [subFilter]: combineSubFilterValues } } } };
-    }
-    this.sharedService.setAddtionalFilterBackup(savedDetails);
-  }
 
-  setBackupOfFilterSelectionState = (selectedFilterObj) => {
-    if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
-      this.selectedFilters = { ...selectedFilterObj };
-    } else if (selectedFilterObj) {
-      this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
-    } else {
-      this.selectedFilters = null;
-    }
-    if (!this.refreshCounter) {
-      ++this.refreshCounter;
-    } else if (this.refreshCounter) {
-      
-      const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters));
-      this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters));
-      this.router.navigate([], {
-        queryParams: { 'stateFilters': stateFilterEnc }, // Pass the object here
-        relativeTo: this.route,
-      });
-    }
-  }
+  // old UI method, removing
+  // createBackupOfFiltersSelection(filterbackup, tab, subFilter) {
+  //   let savedDetails = this.sharedService.getAddtionalFilterBackup();
+  //   if (tab === 'backlog') {
+  //     let tabSpecfic = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab]) ? savedDetails['kpiFilters'][tab] : {}
+  //     savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { ...tabSpecfic, ...filterbackup } } } };
+  //   } else {
+  //     const subFilterValues = (savedDetails['kpiFilters'] && savedDetails['kpiFilters'][tab] && savedDetails['kpiFilters'][tab][subFilter]) ? savedDetails['kpiFilters'][tab][subFilter] : {};
+  //     const combineSubFilterValues = { ...subFilterValues, ...filterbackup };
+  //     savedDetails = { ...savedDetails, kpiFilters: { ...savedDetails['kpiFilters'], ...{ [tab]: { [subFilter]: combineSubFilterValues } } } };
+  //   }
+  //   this.sharedService.setAddtionalFilterBackup(savedDetails);
+  // }
 
-  setBackupOfUrlFilters(data) {
-    this.selectedUrlFilters = data;
-  }
+    // old UI Method, removing
+  // setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {
+  //   let haveBackup = {}
 
-  getBackupOfUrlFilters() {
-    return this.selectedUrlFilters;
-  }
+  //   if (tab === 'backlog') {
+  //     if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(kpiId)) {
+  //       haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][kpiId];
+  //     }
+  //   } else {
+  //     if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(subFilter)) {
+  //       haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][subFilter][kpiId];
+  //     }
+  //   }
 
+  //   kpiSelectedFilterObj[kpiId] = refreshValue;
+  //   if (haveBackup && Object.keys(haveBackup).length) {
+  //     if (filters) {
+  //       const tempObj = {};
+  //       for (const key in haveBackup) {
+  //         tempObj[key] = haveBackup[key];
+  //       }
+  //       kpiSelectedFilterObj[kpiId] = { ...tempObj };
+  //     }
+  //     else if (Array.isArray(refreshValue)) {
+  //       kpiSelectedFilterObj[kpiId] = haveBackup;
+  //     } else {
+  //       kpiSelectedFilterObj[kpiId] = { 'filter1': haveBackup['filter1'] };;
+  //     }
 
-  removeQueryParams() {
-    this.router.navigate([], {
-      queryParams: {}, // Clear query params
-    });
-  }
-
-  getBackupOfFilterSelectionState = (prop = null) => {
-    if (this.selectedFilters) {
-      if (prop) {
-        return this.selectedFilters[prop];
-      } else {
-        return this.selectedFilters;
-      }
-    } else {
-      return null;
-    }
-  }
-
-  setFilterValueIfAlreadyHaveBackup(kpiId, kpiSelectedFilterObj, tab, refreshValue, initialValue, subFilter, filters?) {
-    let haveBackup = {}
-
-    if (tab === 'backlog') {
-      if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(kpiId)) {
-        haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][kpiId];
-      }
-    } else {
-      if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(tab) && this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab].hasOwnProperty(subFilter)) {
-        haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][tab][subFilter][kpiId];
-      }
-    }
-
-    kpiSelectedFilterObj[kpiId] = refreshValue;
-    if (haveBackup && Object.keys(haveBackup).length) {
-      if (filters) {
-        const tempObj = {};
-        for (const key in haveBackup) {
-          tempObj[key] = haveBackup[key];
-        }
-        kpiSelectedFilterObj[kpiId] = { ...tempObj };
-      }
-      else if (Array.isArray(refreshValue)) {
-        kpiSelectedFilterObj[kpiId] = haveBackup;
-      } else {
-        kpiSelectedFilterObj[kpiId] = { 'filter1': haveBackup['filter1'] };;
-      }
-
-    } else {
-      if (filters) {
-        const tempObj = {};
-        for (const key in filters) {
-          tempObj[key] = initialValue;
-        }
-        kpiSelectedFilterObj[kpiId] = { ...tempObj };
-      }
-      else if (Array.isArray(refreshValue)) {
-        kpiSelectedFilterObj[kpiId]?.push(initialValue);
-      } else {
-        kpiSelectedFilterObj[kpiId] = { 'filter1': initialValue }
-      }
-    }
-    this.createBackupOfFiltersSelection(kpiSelectedFilterObj, tab, subFilter);
-    this.sharedService.setKpiSubFilterObj(kpiSelectedFilterObj);
-    return kpiSelectedFilterObj;
-  }
+  //   } else {
+  //     if (filters) {
+  //       const tempObj = {};
+  //       for (const key in filters) {
+  //         tempObj[key] = initialValue;
+  //       }
+  //       kpiSelectedFilterObj[kpiId] = { ...tempObj };
+  //     }
+  //     else if (Array.isArray(refreshValue)) {
+  //       kpiSelectedFilterObj[kpiId]?.push(initialValue);
+  //     } else {
+  //       kpiSelectedFilterObj[kpiId] = { 'filter1': initialValue }
+  //     }
+  //   }
+  //   this.createBackupOfFiltersSelection(kpiSelectedFilterObj, tab, subFilter);
+  //   this.sharedService.setKpiSubFilterObj(kpiSelectedFilterObj);
+  //   return kpiSelectedFilterObj;
+  // }
 
   logoutHttp() {
     this.httpService.logout().subscribe((responseData) => {

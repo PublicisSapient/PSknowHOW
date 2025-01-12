@@ -92,7 +92,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.selectedTab = this.service.getSelectedTab() || 'iteration';
-    this.selectedType = this.helperService.getBackupOfFilterSelectionState('selected_type') ? this.helperService.getBackupOfFilterSelectionState('selected_type') : 'scrum';
+    this.selectedType = this.service.getBackupOfFilterSelectionState('selected_type') ? this.service.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
 
     this.dateRangeFilter = {
@@ -252,7 +252,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
     this.filterApplyData = {};
     this.service.setSelectedType(this.selectedType);
-    this.helperService.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
+    this.service.setBackupOfFilterSelectionState({ 'selected_type': this.selectedType })
     this.service.setScrumKanban(this.selectedType);
   }
 
@@ -299,7 +299,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.additionalFilterConfig = [...this.selectedBoard.filters.additionalFilters];
       } else {
         this.additionalFilterConfig = null;
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+        this.service.setBackupOfFilterSelectionState({ 'additional_level': null });
       }
       this.cdr.detectChanges();
     }
@@ -390,7 +390,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   callBoardConfigAsPerStateFilters() {
-    let stateFilters = this.helperService.getBackupOfFilterSelectionState();
+    let stateFilters = this.service.getBackupOfFilterSelectionState();
     if (stateFilters && stateFilters['primary_level']) {
       let selectedProject;
       if (stateFilters['primary_level'][0].labelName === 'project') {
@@ -565,14 +565,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @returns {void}
    */
   removeFilter(id) {
-    let stateFilters = this.helperService.getBackupOfFilterSelectionState();
+    let stateFilters = this.service.getBackupOfFilterSelectionState();
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
       if (!stateFilters['additional_level']) {
         let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         this.handlePrimaryFilterChange(selectedFilters);
         this.service.setSelectedTrends(selectedFilters);
-        this.helperService.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
+        this.service.setBackupOfFilterSelectionState({ 'primary_level': selectedFilters });
       } else {
         if (typeof this.selectedLevel === 'string') {
           stateFilters['primary_level'] = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
@@ -587,7 +587,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.setSelectedTrends(stateFilters['primary_level']);
 
         this.handlePrimaryFilterChange(stateFilters['primary_level']);
-        this.helperService.setBackupOfFilterSelectionState(stateFilters);
+        this.service.setBackupOfFilterSelectionState(stateFilters);
       }
     }
   }
@@ -651,7 +651,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
       this.previousFilterEvent['additional_level'] = event['additional_level'];
       this.previousFilterEvent['primary_level'] = event['primary_level'];
-      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
+      this.service.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
       Object.keys(event['additional_level']).forEach(key => {
         this.setColors(event['primary_level']);
         this.handleAdditionalChange({ [key]: event['additional_level'][key] })

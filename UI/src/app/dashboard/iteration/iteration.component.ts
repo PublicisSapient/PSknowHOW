@@ -647,7 +647,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
-    this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, 'iteration', refreshValue, initialValue, this.filterApplyData['ids'][0], filters)
+    // this.kpiSelectedFilterObj = this.helperService.setFilterValueIfAlreadyHaveBackup(kpiId, this.kpiSelectedFilterObj, 'iteration', refreshValue, initialValue, this.filterApplyData['ids'][0], filters)
     this.getDropdownArray(kpiId);
   }
 
@@ -666,7 +666,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
-    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'iteration', this.filterApplyData['ids'][0]);
+    // this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj, 'iteration', this.filterApplyData['ids'][0]);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
   }

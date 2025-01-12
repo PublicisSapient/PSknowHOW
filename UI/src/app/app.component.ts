@@ -63,7 +63,6 @@ export class AppComponent implements OnInit {
       .subscribe(params => {
         if (!this.refreshCounter) {
           let param = params['stateFilters'];
-          // let kpiParam = params['kpiFilters'];
           if (param?.length) {
             try {
               let selectedTab = this.location.path();
@@ -73,19 +72,24 @@ export class AppComponent implements OnInit {
               this.service.setSelectedBoard(this.selectedTab);
 
               param = atob(param);
-              // kpiParam = kpiParam && atob(kpiParam);
               console.log('param', param);
               // param = param.replace(/###/gi, '___');
 
-              if (!param) {
-                throw new Error('Invalid query params');
-              }
-
-              this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
-              this.refreshCounter++;
-            } catch (error) {
-              this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+            const kpiFilterParam = params['kpiFilters'];
+            if (kpiFilterParam) {
+              const kpiFilterParamDecoded = atob(kpiFilterParam);
+              const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+              this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
             }
+
+            if (!param) {
+              throw new Error('Invalid query params');
+            }
+
+            this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
+            this.refreshCounter++;
+          } catch (error) {
+            this.router.navigate(['/dashboard/Error']); // Redirect to the error page
           }
         }
       });

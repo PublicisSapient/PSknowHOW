@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MultiSelect } from 'primeng/multiselect';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-primary-filter',
@@ -53,7 +54,7 @@ export class PrimaryFilterComponent implements OnChanges {
   applyDefaultFilters() {
     this.populateFilters();
     setTimeout(() => {
-      this.stateFilters = (this.helperService.getBackupOfUrlFilters() && JSON.parse(this.helperService.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.helperService.getBackupOfUrlFilters()) : this.helperService.getBackupOfFilterSelectionState();
+      this.stateFilters = (this.service.getBackupOfUrlFilters() && JSON.parse(this.service.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.service.getBackupOfUrlFilters()) : this.service.getBackupOfFilterSelectionState();
       if (Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
         if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
           this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
@@ -68,7 +69,7 @@ export class PrimaryFilterComponent implements OnChanges {
                 // in case project in state filters has been deleted
                 if (!this.selectedFilters?.length || !this.selectedFilters[0]) {
                   this.selectedFilters = [this.filters[0]];
-                  this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
+                  this.service.setBackupOfFilterSelectionState({ 'primary_level': null });
                 }
               } else {
                 this.selectedFilters = [this.filters?.filter((project) => project.nodeId === this.stateFilters['primary_level'][0].nodeId)[0]];
@@ -96,7 +97,7 @@ export class PrimaryFilterComponent implements OnChanges {
                 // reset
                 this.selectedFilters = [];
                 this.selectedFilters.push(this.filters[0]);
-                this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null });
+                this.service.setBackupOfFilterSelectionState({ 'primary_level': null });
                 this.applyPrimaryFilters({});
                 return;
               } else {
@@ -108,7 +109,7 @@ export class PrimaryFilterComponent implements OnChanges {
           }
         } else {
           if (this.stateFilters['parent_level'] && Object.keys(this.stateFilters['parent_level'])?.length) {
-            this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [this.stateFilters['parent_level']] });
+            this.service.setBackupOfFilterSelectionState({ 'primary_level': [this.stateFilters['parent_level']] });
           }
           this.service.setNoSprints(true);
           this.onPrimaryFilterChange.emit([]);
@@ -124,7 +125,7 @@ export class PrimaryFilterComponent implements OnChanges {
   reset() {
     this.selectedFilters = [];
     this.selectedFilters.push(this.filters[0]);
-    this.helperService.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
+    this.service.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
     this.applyPrimaryFilters({});
   }
 
@@ -181,7 +182,7 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.selectedFilters?.length && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
         this.service.setNoSprints(false);
         if (this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() !== 'sprint' || (this.selectedFilters?.length && this.selectedFilters[0]?.sprintState?.toLowerCase() === 'active')) {
-          let addtnlStateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())?.additional_level || this.helperService.getBackupOfFilterSelectionState('additional_level');
+          let addtnlStateFilters = JSON.parse(this.service.getBackupOfUrlFilters())?.additional_level || this.service.getBackupOfFilterSelectionState('additional_level');
           if (addtnlStateFilters && (!this.previousSelectedFilters?.length || this.arraysEqual(this.selectedFilters, this.previousSelectedFilters)) && this.selectedTab !== 'developer') {
             let combinedEvent = {};
             combinedEvent['additional_level'] = addtnlStateFilters;
@@ -192,7 +193,7 @@ export class PrimaryFilterComponent implements OnChanges {
             this.previousSelectedFilters = [...this.selectedFilters];
             this.onPrimaryFilterChange.emit([...this.selectedFilters]);
             // project selection changed, reset addtnl. filters
-            this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+            this.service.setBackupOfFilterSelectionState({ 'additional_level': null });
           } else {
             this.reset();
           }
@@ -200,11 +201,11 @@ export class PrimaryFilterComponent implements OnChanges {
         } else {
           this.service.setNoSprints(true);
           this.onPrimaryFilterChange.emit([]);
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': null })
+          this.service.setBackupOfFilterSelectionState({ 'primary_level': null })
         }
 
         if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
-          this.helperService.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
+          this.service.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
           this.applyFilters = false;
         }
       }

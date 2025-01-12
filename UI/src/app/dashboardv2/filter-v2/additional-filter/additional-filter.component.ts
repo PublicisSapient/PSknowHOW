@@ -37,72 +37,72 @@ export class AdditionalFilterComponent implements OnChanges {
     this.subscriptions.push(this.service.populateAdditionalFilters
       .pipe(distinctUntilChanged())
       .subscribe((data) => {
-      if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
-        this.selectedFilters = [];
-        this.selectedTrends = this.service.getSelectedTrends();
+        if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
+          this.selectedFilters = [];
+          this.selectedTrends = this.service.getSelectedTrends();
 
-        if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
-          this.filterData = [];
-          this.previousSelectedTrends = [...this.selectedTrends];
-          // project changed, reset addtnl. filters
-          // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
-        }
+          if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
+            this.filterData = [];
+            this.previousSelectedTrends = [...this.selectedTrends];
+            // project changed, reset addtnl. filters
+            // this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+          }
 
-        Object.keys(data).forEach((f, index) => {
-          if (this.filterData[index]) {
-            if (this.selectedTab === 'developer') {
-              data[f].forEach(element => {
+          Object.keys(data).forEach((f, index) => {
+            if (this.filterData[index]) {
+              if (this.selectedTab === 'developer') {
+                data[f].forEach(element => {
 
-                if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
-                  if (this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
-                    this.filterData[index] = [];
+                  if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
+                    if (this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
+                      this.filterData[index] = [];
+                    }
+                    this.filterData[index].push(element);
                   }
-                  this.filterData[index].push(element);
-                }
-              });
+                });
 
-              this.filterData.forEach((filterSet, index) => {
-                if (!data[Object.keys(data)[index]]) {
-                  this.filterData.splice(index, 1);
-                }
-              });
+                this.filterData.forEach((filterSet, index) => {
+                  if (!data[Object.keys(data)[index]]) {
+                    this.filterData.splice(index, 1);
+                  }
+                });
+
+              } else {
+                this.filterData[index] = data[f];
+              }
+
 
             } else {
               this.filterData[index] = data[f];
             }
-
-
-          } else {
-            this.filterData[index] = data[f];
-          }
-        });
-
-        if (this.selectedTab !== 'developer') {
-          this.filterData.forEach(filterGroup => {
-            if (filterGroup) {
-              filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
-            }
           });
 
-          this.setCorrectLevel();
-        } else {
-          this.applyDefaultFilter();
+          if (this.selectedTab !== 'developer') {
+            this.filterData.forEach(filterGroup => {
+              if (filterGroup) {
+                filterGroup = this.helperService.sortByField(filterGroup, ['nodeName', 'parentId']);
+              }
+            });
+
+            this.setCorrectLevel();
+          } else {
+            this.applyDefaultFilter();
+          }
         }
-      }
-      else {
-        this.resetFilterData();
-      }
-    }));
+        else {
+          this.resetFilterData();
+        }
+      }));
   }
 
 
-/**
- * Resets the filter data based on the currently selected tab and trends.
- * If the selected tab is not 'developer', filterData is cleared; otherwise, 
- * it checks if the selected trends have changed and resets filterData accordingly.
- * 
- * @returns {void} - No return value.
- */
+  /**
+   * Resets the filter data based on the currently selected tab and trends.
+   * If the selected tab is not 'developer', filterData is cleared; otherwise, 
+   * it checks if the selected trends have changed and resets filterData accordingly.
+   * 
+   * @returns {void} - No return value.
+   */
   resetFilterData() {
     if (this.selectedTab !== 'developer') {
       this.filterData = [];
@@ -114,18 +114,18 @@ export class AdditionalFilterComponent implements OnChanges {
     }
   }
 
-/**
- * Sets the correct level for filters based on the additional filter levels,
- * excluding 'release' and 'sprint' levels, and restores the filter selection state
- * after a brief delay.
- * 
- * @returns {void} - This function does not return a value.
- */
+  /**
+   * Sets the correct level for filters based on the additional filter levels,
+   * excluding 'release' and 'sprint' levels, and restores the filter selection state
+   * after a brief delay.
+   * 
+   * @returns {void} - This function does not return a value.
+   */
   setCorrectLevel() {
     let correctLevelMapping = this.additionalFilterLevelArr.filter(f => f.hierarchyLevelId.toLowerCase() !== 'release');
     this.squadLevel = correctLevelMapping.filter(x => x['hierarchyLevelId'].toLowerCase() !== 'sprint')[0];
     setTimeout(() => {
-      this.stateFilters = JSON.parse(this.helperService.getBackupOfUrlFilters())['additional_level'] || this.helperService.getBackupOfFilterSelectionState('additional_level');
+      this.stateFilters = JSON.parse(this.service.getBackupOfUrlFilters())['additional_level'] || this.service.getBackupOfFilterSelectionState('additional_level');
       if (this.stateFilters && Object.keys(this.stateFilters)) {
         Object.keys(this.stateFilters).forEach((key) => {
           let correctIndex = 0;
@@ -137,7 +137,9 @@ export class AdditionalFilterComponent implements OnChanges {
             }
           }
           if (this.stateFilters[key].length) {
-            this.selectedFilters[correctIndex] = this.stateFilters[key];
+            // why is sqd filter not showing
+            console.log(this.filterData[correctIndex]);
+            this.selectedFilters[correctIndex] = this.filterData[correctIndex].filter(f=> this.stateFilters[key].map(x=> x.nodeId).includes(f.nodeId));
           }
         });
       }
@@ -212,10 +214,10 @@ export class AdditionalFilterComponent implements OnChanges {
             this.onAdditionalFilterChange.emit({ [this.selectedAdditionalFilterLevel[i]]: e[i] });
           }
         }
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': obj });
+        this.service.setBackupOfFilterSelectionState({ 'additional_level': obj });
       } else {
         this.onAdditionalFilterChange.emit(e);
-        this.helperService.setBackupOfFilterSelectionState({ 'additional_level': e });
+        this.service.setBackupOfFilterSelectionState({ 'additional_level': e });
       }
     } else {
       this.appliedFilters[filterKey] = e && e.value ? [e.value] : [];
@@ -261,16 +263,16 @@ export class AdditionalFilterComponent implements OnChanges {
     }
   }
 
-/**
- * Handles the change event of a dropdown element. 
- * If the selected element is valid, it applies an additional filter based on the event and index provided.
- * 
- * @param {any} $event - The event object from the dropdown change.
- * @param {number} index - The index of the dropdown element being changed.
- * @returns {void}
- */
-  onDropDownChange($event:any,index){
-    if(this.helperService.isDropdownElementSelected($event)){
+  /**
+   * Handles the change event of a dropdown element. 
+   * If the selected element is valid, it applies an additional filter based on the event and index provided.
+   * 
+   * @param {any} $event - The event object from the dropdown change.
+   * @param {number} index - The index of the dropdown element being changed.
+   * @returns {void}
+   */
+  onDropDownChange($event: any, index) {
+    if (this.helperService.isDropdownElementSelected($event)) {
       this.applyAdditionalFilter($event, index)
     }
   }
