@@ -31,6 +31,7 @@ export class AppInitializerService {
     }
     commonRoutes: Routes = [
         { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+        { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
         // {
         //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
         //     // data: {
