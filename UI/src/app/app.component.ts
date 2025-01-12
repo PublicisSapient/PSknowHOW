@@ -86,7 +86,7 @@ export class AppComponent implements OnInit {
                 throw new Error('Invalid query params');
               }
 
-              this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
+              this.service.setBackupOfFilterSelectionState(JSON.parse(param));
               this.refreshCounter++;
             } catch (error) {
               this.router.navigate(['/dashboard/Error']); // Redirect to the error page
