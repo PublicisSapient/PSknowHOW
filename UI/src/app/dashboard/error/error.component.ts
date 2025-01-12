@@ -40,6 +40,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // for getting error from Shared service
     this.service.passErrorToErrorPage.subscribe((error) => {
+      console.log(error);
       switch (error.status) {
         case 0: this.errorMsg = 'Server not available';
           this.redirectButtonText = 'Go to homepage';
@@ -63,6 +64,11 @@ export class ErrorComponent implements OnInit, OnDestroy {
           this.pollForAvailability(this.redirectButtonRoute);
           break;
         case 500: this.errorMsg = 'Internal Server error';
+          this.redirectButtonText = 'Go to homepage';
+          this.redirectButtonRoute = '/';
+          this.pollForAvailability(this.redirectButtonRoute);
+          break;
+        case 900: this.errorMsg = 'Invalid URL.';
           this.redirectButtonText = 'Go to homepage';
           this.redirectButtonRoute = '/';
           this.pollForAvailability(this.redirectButtonRoute);

@@ -82,14 +82,16 @@ export class AppComponent implements OnInit {
                 this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
               }
 
-              if (!param) {
-                throw new Error('Invalid query params');
-              }
-
               this.service.setBackupOfFilterSelectionState(JSON.parse(param));
               this.refreshCounter++;
             } catch (error) {
               this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+              setTimeout(() => {
+                this.service.raiseError({
+                  status: 900,
+                  message: 'Invalid URL.'
+                });
+              }, 100);
             }
           }
         }
