@@ -75,21 +75,22 @@ export class AppComponent implements OnInit {
               console.log('param', param);
               // param = param.replace(/###/gi, '___');
 
-            const kpiFilterParam = params['kpiFilters'];
-            if (kpiFilterParam) {
-              const kpiFilterParamDecoded = atob(kpiFilterParam);
-              const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
-              this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
-            }
+              const kpiFilterParam = params['kpiFilters'];
+              if (kpiFilterParam) {
+                const kpiFilterParamDecoded = atob(kpiFilterParam);
+                const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+                this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+              }
 
-            if (!param) {
-              throw new Error('Invalid query params');
-            }
+              if (!param) {
+                throw new Error('Invalid query params');
+              }
 
-            this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
-            this.refreshCounter++;
-          } catch (error) {
-            this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+              this.helperService.setBackupOfFilterSelectionState(JSON.parse(param));
+              this.refreshCounter++;
+            } catch (error) {
+              this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+            }
           }
         }
       });
