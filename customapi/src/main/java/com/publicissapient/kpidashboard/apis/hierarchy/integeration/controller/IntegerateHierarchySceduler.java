@@ -26,10 +26,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.service.HierarchyDetailParser;
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.service.IntegerationService;
 
-public class IntegerationController {
+public class IntegerateHierarchySceduler {
 
 	@Autowired
 	private HierarchyDetailParser hierarchyDetailParser;
@@ -37,8 +38,10 @@ public class IntegerationController {
 	private IntegerationService integerationService;
 	@Autowired
 	RestTemplate restTemplate;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
-	// @Scheduled(fixedRate = 10000)
+	// @Scheduled(cron = "${hierarchySync.cron}")
 	public void callApi() {
 		String apiUrl = "http://example.com/api";
 		HttpEntity<?> httpEntity = new HttpEntity<>(new HttpHeaders());
