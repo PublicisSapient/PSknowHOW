@@ -40,7 +40,7 @@ public class StringShortenerController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<StringShortenerDTO> createShortUrl(@RequestBody StringShortenerDTO stringShortenerDTO) {
+    public ResponseEntity<StringShortenerDTO> createShortString(@RequestBody StringShortenerDTO stringShortenerDTO) {
         StringShortener stringShortener = stringShortenerService.createShortString(stringShortenerDTO.getLongString());
         StringShortenerDTO responseDTO = new StringShortenerDTO();
         responseDTO.setLongString(stringShortener.getLongString());
@@ -48,10 +48,13 @@ public class StringShortenerController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/{shortString}")
-    public ResponseEntity<String> getLongUrl(@PathVariable String shortString) {
+    @GetMapping("/longString")
+    public ResponseEntity<String> getLongString(@RequestParam String shortString) {
         Optional<StringShortener> stringShortener = stringShortenerService.getLongString(shortString);
-        return stringShortener.map(mapping -> ResponseEntity.ok(mapping.getLongString()))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (stringShortener.isPresent()) {
+            return stringShortener.map(mapping -> ResponseEntity.ok(mapping.getLongString()))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        }
+        return ResponseEntity.notFound().build();
     }
 }
