@@ -185,7 +185,6 @@ export class AdditionalFilterComponent implements OnChanges {
         }
 
       }
-      this.changeDetector.detectChanges();
       let filterKey = 'filter'+(index+1)
       let e = fakeEvent
       this.appliedFilters[filterKey] = e && e['value'] ? [e['value']] : [];
