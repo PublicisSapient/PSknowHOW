@@ -56,6 +56,9 @@ public final class Constant {
 	public static final String MAJOR_VIOLATIONS = "major_violations";
 	public static final String MINOR_VIOLATIONS = "minor_violations";
 	public static final String INFO_VIOLATIONS = "info_violations";
+	public static final String CODE_SMELL = "code_smells";
+	public static final String BUGS = "bugs";
+	public static final String VULNERABILITIES = "vulnerabilities";
 
 	public static final String SPEEDY_ROOT = "Root";
 	public static final String PROJECT = "Project";

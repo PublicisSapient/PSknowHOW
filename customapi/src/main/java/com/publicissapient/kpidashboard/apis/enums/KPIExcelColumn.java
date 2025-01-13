@@ -126,7 +126,7 @@ public enum KPIExcelColumn {
 
 	UNIT_TEST_COVERAGE("kpi17", Arrays.asList("Project", "Job Name", "Unit Coverage", "Weeks")),
 
-	SONAR_VIOLATIONS("kpi38", Arrays.asList("Project", "Job Name", "Sonar Violations", "Weeks")),
+	SONAR_VIOLATIONS("kpi38", Arrays.asList("Project", "Job Name", "Violation Type", "Violation Severity", "Weeks")),
 
 	SONAR_TECH_DEBT("kpi27", Arrays.asList("Project", "Job Name", "Tech Debt (in days)", "Weeks")),
 
