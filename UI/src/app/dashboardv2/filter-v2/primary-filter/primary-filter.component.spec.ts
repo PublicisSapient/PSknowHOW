@@ -49,11 +49,11 @@ describe('PrimaryFilterComponent', () => {
     helperService = TestBed.inject(HelperService);
     component.multiSelect = mockMultiSelect as any;
 
-    spyOn(helperService, 'getBackupOfUrlFilters').and.returnValue(null);
-    spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({
+    spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(null);
+    spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({
       primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }]
     });
-    spyOn(helperService, 'setBackupOfFilterSelectionState').and.callThrough();
+    spyOn(sharedService, 'setBackupOfFilterSelectionState').and.callThrough();
 
     component.primaryFilterConfig = {
       defaultLevel: {
@@ -362,6 +362,8 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
 
+      // spyOn(sharedService, 'setBackupOfFilterSelectionState');
+
       // Call the method under test
       component.selectedFilters = [];
 
@@ -377,14 +379,14 @@ describe('PrimaryFilterComponent', () => {
         // Handle case where no valid selected filters are found
         if (!component.selectedFilters?.length || !component.selectedFilters[0]) {
           component.selectedFilters = [component.filters[0]]; // Default to the first filter
-          helperService.setBackupOfFilterSelectionState({ primary_level: null });
+          sharedService.setBackupOfFilterSelectionState({ primary_level: null });
         }
       }
 
       // Expectations
       expect(component.selectedFilters.length).toBe(1);
       expect(component.selectedFilters[0]).toEqual({ nodeId: '1', labelName: 'Project 1' });
-      expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
+      expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
         primary_level: null,
       });
     });
@@ -880,7 +882,7 @@ describe('PrimaryFilterComponent', () => {
     component.reset();
 
     expect(component.selectedFilters).toEqual(['filter1']);
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
+    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
   });
 

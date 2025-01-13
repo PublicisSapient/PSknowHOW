@@ -55,7 +55,6 @@ import { LineBarChartWithHowerComponent } from './component/line-bar-chart-with-
 import { GaugechartComponent } from './component/gaugechart/gaugechart.component';
 import { MultilineComponent } from './component/multiline/multiline.component';
 import { MaturityComponent } from './dashboard/maturity/maturity.component';
-import { FilterComponent } from './dashboard/filter/filter.component';
 import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
 import { GroupstackchartComponentv2 } from './component/groupedstackchart-v2/groupstackchart-v2.component';
 import { PiechartComponent } from './component/piechart/piechart.component';
@@ -84,7 +83,6 @@ import { APP_CONFIG, AppConfig } from './services/app.config';
 import { HelperService } from './services/helper.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { JsonExportImportService } from './services/json-export-import.service';
-import { IterationComponent } from './dashboard/iteration/iteration.component';
 import { OverlappedProgressbarComponent } from './component/overlapped-progressbar/overlapped-progressbar.component';
 import { HorizontalStackProgressbarComponent } from './component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
 import { CircularProgressWithLegendsComponent } from './component/circular-progress-with-legends/circular-progress-with-legends.component';
@@ -174,14 +172,12 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         GaugechartComponent,
         MultilineComponent,
         MaturityComponent,
-        FilterComponent,
         GroupstackchartComponent,
         GroupstackchartComponentv2,
         PiechartComponent,
         KpiComponent,
         ErrorComponent,
         // FooterComponent,
-        IterationComponent,
         OverlappedProgressbarComponent,
         HorizontalStackProgressbarComponent,
         CircularProgressWithLegendsComponent,

@@ -369,7 +369,7 @@ export class SharedService {
     this.mapColorToProject.next(value);
   }
 
-  setBackupOfFilterSelectionState = (selectedFilterObj) => {
+  setBackupOfFilterSelectionState(selectedFilterObj) {
     if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
       this.selectedFilters = { ...selectedFilterObj };
     } else if (selectedFilterObj) {
@@ -391,7 +391,7 @@ export class SharedService {
     }
   }
 
-  getBackupOfFilterSelectionState = (prop = null) => {
+  getBackupOfFilterSelectionState(prop = null) {
     if (this.selectedFilters) {
       if (prop) {
         return this.selectedFilters[prop];
@@ -505,17 +505,6 @@ export class SharedService {
   // calls when sidenav refresh
   setSideNav(flag) {
     this.isSideNav.emit(flag);
-  }
-
-  setCurrentUserDetails(details) {
-
-    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
-      this.currentUserDetails = details;
-    } else {
-      this.currentUserDetails = { ...this.currentUserDetails, ...details };
-    }
-    localStorage.setItem('currentUserDetails', JSON.stringify(this.currentUserDetails));
-    this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
   getCurrentUserDetails(key = null) {

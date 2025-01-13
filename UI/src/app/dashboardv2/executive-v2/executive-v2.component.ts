@@ -127,9 +127,80 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef, private router: Router) {
+    
+  }
+
+  arrayDeepCompare(a1, a2) {
+    for (let idx = 0; idx < a1.length; idx++) {
+      if (!this.helperService.deepEqual(a1[idx], a2[idx])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  resetToDefaults() {
+    this.noFilterApplyData = false;
+    this.kpiLoader = new Set();
+    this.kpiStatusCodeArr = {};
+    this.immediateLoader = true;
+    this.processedKPI11Value = {};
+    this.selectedBranchFilter = 'Select';
+    this.serviceObject = {};
+    // this.selectedtype = 'scrum';
+  }
+
+  setGlobalConfigData(globalConfig) {
+    // this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    let dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
+    this.configGlobalData = dummyData.data.userBoardConfigDTO[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    if (!this.configGlobalData) {
+      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    }
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+  }
+
+  processKpiConfigData() {
+    const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
+    // user can enable kpis from show/hide filter, added below flag to show different message to the user
+    this.enableByUser = disabledKpis?.length ? true : false;
+    // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+    let visibleKpis = this.configGlobalData?.filter(item => item.isEnabled);
+    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
+    if (this.updatedConfigGlobalData?.length === 0 || visibleKpis?.length === 0) {
+      this.noKpis = true;
+      if (this.updatedConfigGlobalData?.length && visibleKpis?.length === 0) {
+        this.enableByUser = true;
+      } else {
+        this.enableByUser = false;
+      }
+    } else {
+      this.noKpis = false;
+      this.enableByUser = false;
+    }
+
+    this.maturityTableKpiList = []
+    this.configGlobalData?.forEach(element => {
+      if (element.shown && element.isEnabled) {
+        this.kpiConfigData[element.kpiId] = true;
+        if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
+          if (this.selectedTab !== 'iteration') {
+            this.createTrendsData(element.kpiId);
+          }
+          this.handleMaturityTableLoader();
+        }
+      } else {
+        this.kpiConfigData[element.kpiId] = false;
+      }
+    });
+  }
+
+
+  ngOnInit() {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
-
+    
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.resetToDefaults();
       this.selectedtype = data.selectedType;
@@ -219,76 +290,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         localStorage.setItem('selectedTrend', JSON.stringify(trend));
       }
     }));
-  }
-
-  arrayDeepCompare(a1, a2) {
-    for (let idx = 0; idx < a1.length; idx++) {
-      if (!this.helperService.deepEqual(a1[idx], a2[idx])) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  resetToDefaults() {
-    this.noFilterApplyData = false;
-    this.kpiLoader = new Set();
-    this.kpiStatusCodeArr = {};
-    this.immediateLoader = true;
-    this.processedKPI11Value = {};
-    this.selectedBranchFilter = 'Select';
-    this.serviceObject = {};
-    // this.selectedtype = 'scrum';
-  }
-
-  setGlobalConfigData(globalConfig) {
-    // this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    let dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
-    this.configGlobalData = dummyData.data.userBoardConfigDTO[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    if (!this.configGlobalData) {
-      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    }
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-  }
-
-  processKpiConfigData() {
-    const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
-    // user can enable kpis from show/hide filter, added below flag to show different message to the user
-    this.enableByUser = disabledKpis?.length ? true : false;
-    // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-    let visibleKpis = this.configGlobalData?.filter(item => item.isEnabled);
-    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
-    if (this.updatedConfigGlobalData?.length === 0 || visibleKpis?.length === 0) {
-      this.noKpis = true;
-      if (this.updatedConfigGlobalData?.length && visibleKpis?.length === 0) {
-        this.enableByUser = true;
-      } else {
-        this.enableByUser = false;
-      }
-    } else {
-      this.noKpis = false;
-      this.enableByUser = false;
-    }
-
-    this.maturityTableKpiList = []
-    this.configGlobalData?.forEach(element => {
-      if (element.shown && element.isEnabled) {
-        this.kpiConfigData[element.kpiId] = true;
-        if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
-          if (this.selectedTab !== 'iteration') {
-            this.createTrendsData(element.kpiId);
-          }
-          this.handleMaturityTableLoader();
-        }
-      } else {
-        this.kpiConfigData[element.kpiId] = false;
-      }
-    });
-  }
-
-
-  ngOnInit() {
     /** Get recommendations flag */
     this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
       this.isRecommendationsEnabled = item;

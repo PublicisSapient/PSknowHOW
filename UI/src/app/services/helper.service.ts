@@ -780,7 +780,7 @@ export class HelperService {
         this.isKanban = false;
         // Set blank selectedProject after logged out state
         this.sharedService.setSelectedProject(null);
-        this.sharedService.setCurrentUserDetails({});
+        this.httpService.setCurrentUserDetails({});
         this.sharedService.setVisibleSideBar(false);
         this.sharedService.setAddtionalFilterBackup({});
         this.sharedService.setKpiSubFilterObj({});

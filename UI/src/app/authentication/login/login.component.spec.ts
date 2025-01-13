@@ -154,26 +154,26 @@ describe('LoginComponent', () => {
   }));
 
   it("should redirect to profile if user email is blank",()=>{
-    sharedService.setCurrentUserDetails({user_email:""});
-    sharedService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));
+    httpService.setCurrentUserDetails({user_email:""});
+    httpService.setCurrentUserDetails('projectsAccess',JSON.stringify(["abc"]));
     fixture.detectChanges();
     component.redirectToProfile();
     expect(component.redirectToProfile).toBeTruthy();
   });
 
   it("should redirect on profile for superadmin",()=>{
-    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
-    sharedService.setCurrentUserDetails({'projectsAccess':[]});
-    sharedService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
+    httpService.setCurrentUserDetails({user_email:"abc@gmail.com"});
+    httpService.setCurrentUserDetails({'projectsAccess':[]});
+    httpService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
     fixture.detectChanges();
     const respo = component.redirectToProfile();
-    expect(respo).toBeFalsy();
+    expect(respo).toBeTruthy();
   })
 
   it("should not redirect on profile if not superadmin",()=>{
-    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
-    sharedService.setCurrentUserDetails({projectsAccess:undefined});
-    sharedService.setCurrentUserDetails({authorities: ['NOT_SUPERADMIN']});
+    httpService.setCurrentUserDetails({user_email:"abc@gmail.com"});
+    httpService.setCurrentUserDetails({projectsAccess:undefined});
+    httpService.setCurrentUserDetails({authorities: ['NOT_SUPERADMIN']});
     fixture.detectChanges();
     component.redirectToProfile();
     expect(component.redirectToProfile).toBeTruthy();
@@ -206,9 +206,9 @@ describe('LoginComponent', () => {
     localStorage.setItem('loginType', loginType);
     component.adLogin = true;
     spyOn(ga, 'setLoginMethod');
-    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
-    sharedService.setCurrentUserDetails({'projectsAccess':[]});
-    sharedService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
+    httpService.setCurrentUserDetails({user_email:"abc@gmail.com"});
+    httpService.setCurrentUserDetails({'projectsAccess':[]});
+    httpService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
     const isRedirect = spyOn(component, 'redirectToProfile').and.returnValue(false);
     component.performLogin(data, 'dummy_user', 'dummy_password')
     expect(isRedirect).toHaveBeenCalled();

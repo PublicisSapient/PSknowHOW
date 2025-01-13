@@ -493,7 +493,7 @@ describe('ParentFilterComponent', () => {
         // Assert
         expect(
           sharedService.setBackupOfFilterSelectionState,
-        ).toHaveBeenCalledWith({ parent_level: 'Level1', primary_level: null });
+        ).toHaveBeenCalledWith({ parent_level: 'Level1' });
       });
   
       it('should handle parentLevelChanged flag correctly for non-Organization Level', () => {
@@ -511,8 +511,7 @@ describe('ParentFilterComponent', () => {
         expect(
           sharedService.setBackupOfFilterSelectionState,
         ).toHaveBeenCalledWith({
-          parent_level: { nodeId: 'node1', nodeName: 'Node1' },
-          primary_level: null,
+          parent_level: { nodeId: 'node1', nodeName: 'Node1' }
         });
       });
   

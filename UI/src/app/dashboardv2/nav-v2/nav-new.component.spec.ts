@@ -136,6 +136,7 @@ describe('NavNewComponent', () => {
       'setSelectedType',
       'setCurrentUserDetails',
       'currentUserDetailsSubject',
+      'setBackupOfFilterSelectionState'
     ]);
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);

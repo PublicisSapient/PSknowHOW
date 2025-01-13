@@ -34,7 +34,7 @@ describe('AdditionalFilterComponent', () => {
 
     fixture = TestBed.createComponent(AdditionalFilterComponent);
     component = fixture.componentInstance;
-    getAuth = TestBed.get(GetAuthService);
+    getAuth = TestBed.inject(GetAuthService);
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
     helperService = TestBed.inject(HelperService);
@@ -418,10 +418,10 @@ describe('AdditionalFilterComponent', () => {
         filter2: ['value2'],
       },
     };
-    spyOn(component.service, 'setBackupOfFilterSelectionState');
+    // spyOn(sharedService, 'setBackupOfFilterSelectionState');
     const mockOnAdditionalFilterChange = spyOn(component.onAdditionalFilterChange, 'emit');
     component.appliedFilters = {};
-    component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
+    // component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
     component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
     const mockEvent = [
       [{ labelName: 'filter1' }],
@@ -459,10 +459,10 @@ describe('AdditionalFilterComponent', () => {
         filter2: ['value2'],
       },
     };
-    component.helperService = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState']);
+    // component.helperService = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState']);
     const mockAdditionalFilterChange = spyOn(component.onAdditionalFilterChange, 'emit');
     component.appliedFilters = {};
-    component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
+    // component.service = jasmine.createSpyObj('Service', ['applyAdditionalFilters']);
     component.multiSelect = jasmine.createSpyObj('MultiSelect', ['close']);
 
     const mockEvent = [{ labelName: 'filter1' }];
@@ -659,10 +659,15 @@ describe('AdditionalFilterComponent', () => {
           { defaultLevel: { labelName: 'Level 1' } },
           { defaultLevel: { labelName: 'Level 2' } },
         ];
-        spyOn(component.service,'getBackupOfFilterSelectionState').and.returnValue({
+        spyOn(sharedService,'getBackupOfFilterSelectionState').and.returnValue({
           level1: [{ nodeId: 'node1' }],
           level2: [{ nodeId: 'node2' }],
         });
+
+        component.filterData = [
+          [{ nodeId: 'node1' }],
+          [{ nodeId: 'node2' }],
+        ];
   
         // Act
         component.setCorrectLevel();

@@ -11,7 +11,6 @@ import { Logged } from '../services/logged.guard';
 import { SSOGuard } from '../services/sso.guard';
 import { FeatureGuard } from '../services/feature.guard';
 import { AccessGuard } from '../services/access.guard';
-import { IterationComponent } from '../dashboard/iteration/iteration.component';
 import { MaturityComponent } from '../dashboard/maturity/maturity.component';
 import { ErrorComponent } from '../dashboard/error/error.component';
 import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
@@ -148,7 +147,7 @@ export class AppInitializerService {
             // Make API call or initialization logic here...
             this.httpService.getUserDetailsForCentral().subscribe((response) => {
                   if (response?.['success']) {
-                      this.sharedService.setCurrentUserDetails(response?.['data']);
+                      this.httpService.setCurrentUserDetails(response?.['data']);
                       this.router.resetConfig([...this.routesAuth]);
                       localStorage.setItem("user_name", response?.['data']?.user_name);
                       localStorage.setItem("user_email", response?.['data']?.user_email);
