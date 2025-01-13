@@ -67,6 +67,18 @@ public class OrganizationHierarchy extends BasicModel implements Serializable {
 	@Indexed(unique = true)
 	private String externalId;
 
+	public OrganizationHierarchy(String nodeId, String nodeName, String nodeDisplayName, String hierarchyLevelId,
+			String parentId, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+		this.nodeId = nodeId;
+		this.nodeName = nodeName;
+		this.nodeDisplayName = nodeDisplayName;
+		this.hierarchyLevelId = hierarchyLevelId;
+		this.createdDate = createdDate;
+		this.modifiedDate = modifiedDate;
+		this.parentId = parentId;
+
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)

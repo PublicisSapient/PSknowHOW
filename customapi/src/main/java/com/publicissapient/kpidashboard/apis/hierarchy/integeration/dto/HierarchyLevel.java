@@ -16,9 +16,22 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.hierarchy.integeration.service;
+package com.publicissapient.kpidashboard.apis.hierarchy.integeration.dto;
 
-public interface HierarchyDetailParser {
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
-	void convertToHierachyDetail(String jsonResponse);
+@Data
+public class HierarchyLevel {
+	@JsonProperty("id")
+	private int id;
+
+	@JsonProperty("name")
+	private String name;
+
+	@JsonProperty("displayName")
+	private String displayName;
+
+	@JsonProperty("level")
+	private int level;
 }

@@ -22,31 +22,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.service.HierarchyDetailParser;
 import com.publicissapient.kpidashboard.apis.hierarchy.integeration.service.IntegerationService;
+import com.publicissapient.kpidashboard.apis.hierarchy.integeration.service.SF360Parser;
 
-public class IntegerationController {
+@Service
+public class IntegerateHierarchySceduler {
 
-	@Autowired
-	private HierarchyDetailParser hierarchyDetailParser;
 	@Autowired
 	private IntegerationService integerationService;
 	@Autowired
 	RestTemplate restTemplate;
 
-	// @Scheduled(fixedRate = 10000)
+	// @Scheduled(cron = "${hierarchySync.cron}")
 	public void callApi() {
-		String apiUrl = "http://example.com/api";
-		HttpEntity<?> httpEntity = new HttpEntity<>(new HttpHeaders());
-		try {
-			ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.GET, httpEntity, String.class);
-			// json response to central hierarchy list
-			hierarchyDetailParser.convertToHieracyDetail(response.getBody());
+		String apiUrl = "https://hierarchy.tools.publicis.sapient.com/api/data/fetch/hierarchy/MAP/SF360Hierarchy";
 
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("x-api-key", "m3CX00mSp+Nh5pKddkp5XpQQxHXCGg6U");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.GET, requestEntity,
+					String.class);
+			// json response to central hierarchy list
+			HierarchyDetailParser hierarchyDetailParser = new SF360Parser();
+			hierarchyDetailParser.convertToHierachyDetail(response.getBody());
 			integerationService
 					.syncOrganizationHierarchy(integerationService.convertHieracyResponseToOrganizationHierachy());
 		} catch (HttpClientErrorException exception) {

@@ -21,7 +21,9 @@ package com.publicissapient.kpidashboard.apis.hierarchy.integeration.adapter;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrganizationHierarchyAdapterImpl implements OrganizationHierarchyAdapter {
 
 	/*
