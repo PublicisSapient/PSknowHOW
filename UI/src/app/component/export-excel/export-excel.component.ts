@@ -34,8 +34,8 @@ export class ExportExcelComponent implements OnInit {
   tableColumnData = {};
   tableColumnForm = {};
   filteredColumn;
-  excludeColumnFilter = [];
-  includeColumnFilter = [];
+  //excludeColumnFilter = [];
+  //includeColumnFilter = [];
   selectedColumns = [] // store all columns which is default or shown in table 
   tableColumns = []; // store all table coumns with configurations
   isDisableSaveCOnfigurationBtn: boolean = false;
@@ -185,8 +185,8 @@ export class ExportExcelComponent implements OnInit {
   }
 
   clearModalDataOnClose() {
-    this.excludeColumnFilter = [];
-    this.includeColumnFilter = [];
+    //this.excludeColumnFilter = [];
+    //this.includeColumnFilter = [];
     this.tableColumnData = {}
     this.tableColumnForm = {}
     this.displayModal = false;
@@ -215,8 +215,8 @@ export class ExportExcelComponent implements OnInit {
   generateColumnFilterData() {
     // Define blank values to handle
     const blankValues = ['', null, undefined, '-', 'NA','N/A','Undefined'];
-    this.excludeColumnFilter = ['Linked Defect','Linked Stories'].map(item => item.toLowerCase());
-    this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
+   // this.excludeColumnFilter = ['Linked Defect','Linked Stories'].map(item => item.toLowerCase());
+   // this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
     if (this.modalDetails['tableValues'].length > 0) {
       // Update tableValues to replace blank values with '(Blanks)'
       this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => {
@@ -239,9 +239,9 @@ export class ExportExcelComponent implements OnInit {
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
           if (this.typeOf(colData)) {
-            if (!this.excludeColumnFilter.includes(colName.toLowerCase()) &&  !this.includeColumnFilter.includes(colName.toLowerCase())) {
-              this.excludeColumnFilter.push(colName)
-            }
+            // if (!this.excludeColumnFilter.includes(colName.toLowerCase()) &&  !this.includeColumnFilter.includes(colName.toLowerCase())) {
+            //   this.excludeColumnFilter.push(colName)
+            // }
             return { name:blankValues.includes(colData.text)?'(Blanks)':colData.text, value: colData };
           } else {
             return { name: blankValues.includes(colData)?'(Blanks)':colData, value: colData };

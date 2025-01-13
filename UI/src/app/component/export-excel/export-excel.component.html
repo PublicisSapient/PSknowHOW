@@ -46,9 +46,9 @@
             [frozen]="forzenColumns?.includes(item?.toLowerCase())" [ngClass]="{'overlap': filteredColumn === item,'move-top':forzenColumns?.includes(item?.toLowerCase())}" 
             [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4  ? '380px' : '190px'}">
               <div class="table-head" >
-                <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
+                <span [ngStyle]="{'width':'max-content'}">{{item}}</span>
                 <div class="p-d-flex">
-                  <p-columnFilter [field]="item" matchMode="in" *ngIf="!excludeColumnFilter.includes(item)"
+                  <p-columnFilter [field]="item" matchMode="in"
                     [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
                     [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
@@ -62,7 +62,7 @@
                       </p-multiSelect>
                     </ng-template>
                   </p-columnFilter>
-                  <p-sortIcon [field]="sortableColumn(item,modalDetails)" *ngIf="!excludeColumnFilter.includes(item)" ></p-sortIcon>
+                  <p-sortIcon [field]="sortableColumn(item,modalDetails)" ></p-sortIcon>
                 </div>
               </div>
             </th>
