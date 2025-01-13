@@ -15,21 +15,12 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.common.repository.application;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
-import org.springframework.stereotype.Repository;
+package com.publicissapient.kpidashboard.apis.hierarchy.integeration.service;
 
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+public class HierarchyDetailParser {
 
-import java.util.List;
+	public void convertToHieracyDetail(String jsonResponse) {
 
-@Repository
-public interface OrganizationHierarchyRepository extends MongoRepository<OrganizationHierarchy, ObjectId> {
-
-    @Query("{ 'externalId': { $in: ?0 } }")
-    List<OrganizationHierarchy> findByExternalIds(List<String> externalIds);
-
+	}
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.apis.datamigration;
+package com.publicissapient.kpidashboard.apis.datamigration.rest;
 
 import java.util.List;
 
