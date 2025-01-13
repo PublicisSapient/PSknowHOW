@@ -130,32 +130,33 @@ export class LoginComponent implements OnInit {
               const decodedStateFilters = atob(stateFilters);
               const stateFiltersObj = JSON.parse(decodedStateFilters);
 
-              console.log('Decoded State Filters Object:', stateFiltersObj);
-              let hasAccess = false;
+              // console.log('Decoded State Filters Object:', stateFiltersObj);
+              let stateFilterObj = [];
 
-              currentUserProjectAccess.forEach(project => {
-                stateFiltersObj['primary_level'].some(filter => {
-                  if (project.projectId === filter.basicProjectConfigId) {
-                    this.router.navigate([JSON.parse(JSON.stringify(url))]);
-                    hasAccess = true;
-                    return true;
-                  }
-                  return false;
-                });
+              if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
+                stateFilterObj = [stateFiltersObj['parent_level']];
+              } else {
+                stateFilterObj = stateFiltersObj['primary_level'];
+              }
 
-                if (!hasAccess) {
-                  this.router.navigate(['/dashboard/Error']);
-                  setTimeout(() => {
-                    this.sharedService.raiseError({
-                      status: 901,
-                      message: 'No project access.'
-                    });
-                  }, 100);
-                }
-              });
+              // Check if user has access to all project in stateFiltersObj['primary_level']
+              const hasAccessToAll = stateFilterObj.every(filter =>
+                currentUserProjectAccess.some(project => project.projectId === filter.basicProjectConfigId)
+              );
 
+              if (hasAccessToAll) {
+                this.router.navigate([JSON.parse(JSON.stringify(url))]);
+              } else {
+                this.router.navigate(['/dashboard/Error']);
+                setTimeout(() => {
+                  this.sharedService.raiseError({
+                    status: 901,
+                    message: 'No project access.',
+                  });
+                }, 100);
+              }
             } catch (error) {
-              this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+              this.router.navigate(['/dashboard/Error']);
               setTimeout(() => {
                 this.sharedService.raiseError({
                   status: 900,
