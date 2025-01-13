@@ -178,9 +178,9 @@ export class AdditionalFilterComponent implements OnChanges {
       } else {
         if (filter?.length && filter[0]?.nodeId) {
           fakeEvent['value'] = filter[0].nodeId;
-          Promise.resolve().then(() => {
+          setTimeout(() => {
             this.selectedFilters[index] = filter[0];
-          });
+          }, 100);
 
         }
 
