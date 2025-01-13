@@ -64,25 +64,35 @@ export class AppComponent implements OnInit {
         if (!this.refreshCounter) {
           let param = params['stateFilters'];
           if (param?.length) {
-            let selectedTab = this.location.path();
-            selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
-            this.selectedTab = selectedTab.split('?statefilters=')[0];
-            this.service.setSelectedBoard(this.selectedTab);
+            try {
+              let selectedTab = this.location.path();
+              selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+              selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+              this.selectedTab = selectedTab.split('?statefilters=')[0];
+              this.service.setSelectedBoard(this.selectedTab);
 
-            param = atob(param);
-            console.log('param', param);
-            // param = param.replace(/###/gi, '___');
+              param = atob(param);
+              console.log('param', param);
+              // param = param.replace(/###/gi, '___');
 
-            const kpiFilterParam = params['kpiFilters'];
-            if (kpiFilterParam) {
-              const kpiFilterParamDecoded = atob(kpiFilterParam);
-              const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
-              this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+              const kpiFilterParam = params['kpiFilters'];
+              if (kpiFilterParam) {
+                const kpiFilterParamDecoded = atob(kpiFilterParam);
+                const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+                this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+              }
+
+              this.service.setBackupOfFilterSelectionState(JSON.parse(param));
+              this.refreshCounter++;
+            } catch (error) {
+              this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+              setTimeout(() => {
+                this.service.raiseError({
+                  status: 900,
+                  message: 'Invalid URL.'
+                });
+              }, 100);
             }
-
-            this.service.setBackupOfFilterSelectionState(JSON.parse(param));
-            this.refreshCounter++;
           }
         }
       });
