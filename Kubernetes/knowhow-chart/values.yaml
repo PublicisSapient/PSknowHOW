@@ -1,0 +1,304 @@
+# Default values for knowhow-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1 # This is for all the pods in the application. Currently Application works with single replica.
+
+image:
+  apirepository: psknowhow/customapi
+  uirepository: psknowhow/ui
+  mongorepository: psknowhow/mongodb
+  jirarepository: psknowhow/jira-processor
+  devopsrepository: psknowhow/devops-processor
+  azurepipelinerepository: psknowhow/azure-pipeline-repo
+  azureboardrepository: psknowhow/azure-board-processor
+  scmapirepo: psknowhow/scm-processor-api
+  scmcorerepo: psknowhow/scm-processor-core
+  scmrabbitrepo: psknowhow/scm-processor-rabbitmq
+  authapirepo: psknowhow/authnauth
+  authuirepo: psknowhow/authnauth-ui
+  authscmdbrepo: psknowhow/postgres-auth-scm
+
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  knowhowtag: "12.0.0"
+  scmtag: "11.0.0"
+  mongodbtag: "5.0.18-rootuser"
+  authtag: "2.0.0"
+  authscmdbtag: "2.0.0"
+
+# Pass the environment variables for the API and processors below.
+
+env:
+
+  ### Update the details below only during an upgrade
+  - name: mongock.start-system-version
+    value: "0.0.0" # In Case of upgrade specify the current Knowhow version installed in the cluster.
+  - name: mongock.end-system-version
+    value: "0.0.0" # incase of upgrade specify the latest version Knowhow version which you want to install. Find the latest version here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
+
+  # Installation-specific settings
+  - name: mongock.migration-scan-package
+    value: "com.publicissapient.kpidashboard.apis.mongock.installation" # Set to 'installation' for a new install, or 'upgrade' for an upgrade.
+  - name: forgotPassword.uiHost
+    value: "localhost" # DNS/IP of the Knowhow server without https://
+  - name: corsFilterValidOrigin
+    value: "localhost" # DNS/IP of the Knowhow server without https://
+  - name: spring.data.mongodb.uri
+    value: "mongodb://devuser:devpassword123@mongodb:27017/kpidashboard" # Pass the application MongoDB username, password and mongo hostname . URL-encode special characters in the password.
+  - name: aesEncryptionKey
+    value: "EYryQ1DulKf4AYEfBPgOotu0FxGKufIa" # AES encryption key. Generate using a tool like https://acte.ltd/utils/randomkeygen (min length - 8).
+  - name: auth.secret
+    value: "C0GNAIDS8upDNnkE" # Passphrase for signing JWT tokens (min length - 4).
+  - name: versionnumber
+    value: "12.0.0" # Find the latest version number here: https://hub.docker.com/repository/docker/psknowhow/customapi/tags
+
+  # SCM specific env only required when SCMProcessor.enabled
+  - name: repoToolAPIKey
+    value: "ENaYzG7C.sp5aFtnj21O9moHTvGGtwN3YGoc8EBXa"
+  - name: exposed_api_key
+    value: "RlByoGVbGYPYbOyhpb3VDPE7k"
+
+
+ui: 
+  env:
+  ## UI initialization settings
+  - name: DNS_SSL
+    value: "sapient.com"  # LoadBalancer IP or DNS 
+  - name: API_HOST
+    value: "customapi"             #Custom API's Service Name
+  - name: API_PORT
+    value: "8080"                   #Customapi service port number
+  - name: PROTOCOL           
+    value: "http"         
+# Choose "http" or "https" for your UI pod configuration.
+# If using "http", the app will run on port 80.
+# If using "https", the app will run on port 443.
+# For "https", you need to provide SSL certificates by attaching them as volumes to the following paths:
+# - /etc/ssl/certs/knowhow_ssl.cer (SSL certificate)
+# - /etc/ssl/certs/knowhow_ssl.key (SSL key)
+# - /etc/ssl/certs/knowhow_ssl_passphrase.txt (SSL passphrase)
+
+
+## Enable or disable applications: Jira, DevOps, Azure Pipeline, Azure Board, MongoDB
+JiraApp:
+  enabled: true
+
+DevOpsApp:
+  enabled: true
+
+AzurepiPelinerepoApp:
+  enabled: false
+
+AzureBoardApp:
+  enabled: false
+
+SCMProcessor:
+  enabled: false
+  env:
+    - name: DEBUG
+      value: "True"
+    - name: DEBUG_TOOLBAR
+      value: "True"
+    - name: ALLOWED_HOSTS
+      value: "*"
+    - name: DATABASE_URL
+      value: "postgres://admin:admin123@auth-scm-db:5432/debbie"  # Pass the DB username, password, Host and DB name
+    - name: CORS_ORIGIN_WHITELIST
+      value: "http://localhost"
+    - name: RESULT_SEND_TYPE
+      value: "mq"
+    - name: RABBITMQ_DEFAULT_USER
+      value: "admin"
+    - name: RABBITMQ_DEFAULT_PASS
+      value: "mypass"
+    - name: RABBITMQ_DEFAULT_VHOST
+      value: "debbie"
+    - name: RABBIT_BROKER_HOST
+      value: "repotool-rabbitmq"
+    - name: RABBIT_BROKER_PORT
+      value: "5672"
+    - name: RABBIT_QUEUE
+      value: "repos"
+    - name: BASE_HOST_URL
+      value: "https://4bdf-89-136-52-54.ngrok-free.app"
+    - name: SCAN_STATUS_APIS
+      value: "http://customapi:8080/api/processor/saveRepoToolsStatus"
+    - name: SCAN_STATUS_APIS_TOKEN
+      value: "RlByoGVbGYPYbOyhpb3VDPE7k"
+    - name: DEBBIE_INTERNAL_API_KEY
+      value: "ENaYzG7C.sp5aFtnj21O9moHTvGGtwN3YGoc8EBXa"
+    - name: SECRET_KEY
+      value: "+j69)9@l7yak_f^n5c(tk(1@i6439uc)$6p_-c!z7qldi)y(_x"
+    - name: EMAIL_USE_TLS
+      value: "True"
+    - name: EMAIL_HOST
+      value: "smtp.gmail.com"
+    - name: EMAIL_PORT
+      value: "587"
+    - name: EMAIL_HOST_USER
+      value: "user@user.com"
+    - name: EMAIL_HOST_PASSWORD
+      value: "secure-password"
+    - name: GITLAB_URL
+      value: "https://gitlab.tremend.com"
+    - name: TENGINE_QUERY_USERNAME
+      value: "xyz"
+    - name: TENGINE_QUERY_PASSWORD
+      value: "123"
+    - name: TENGINE_AUTH_TOKEN
+      value: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1N2QxMDBlYmVhNGZiZDc3MDAyNDM2NmIiLCJhY2Nlc3NSb2xlIjoidXNlciIsImlhdCI6MTUwMjI2MzM3NSwiZXhwIjoxNTMzNzk5Mzc1fQ.P3zEfsdjRx9am26hFl11Q9gf8foidCBtQwBWjuFo8nc"
+    - name: PYTHONPATH
+      value: "${PYTHONPATH}:/code/utils:/code/scanner:/code/mq:/code"
+    - name: RUN_SONARQUBE
+      value: "True"
+    - name: GIT_PYTHON_TRACE
+      value: "1"
+    - name: GIT_PROCESS_ONLY_ONE_COMMIT
+      value: "true"
+    - name: GIT_WITHOUT_MODIFICATIONS
+      value: "true"
+    - name: DEBUG_TOOLBAR
+      value: "false"
+
+
+mongodb:
+  enabled: false
+  volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
+  storage: "16Gi"
+  accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
+  env:
+    - name: MONGODB_ADMIN_USER
+      value: "admin"                        # Pass the admin user name
+    - name: MONGODB_ADMIN_PASS
+      value: "admin123"                     # Pass the admin password
+    - name: MONGODB_APPLICATION_DATABASE
+      value: "kpidashboard"
+    - name: MONGODB_APPLICATION_USER
+      value: "devuser"                      # Pass the application user name, if you are changing this pass the value in "spring.data.mongodb.uri"
+    - name: MONGODB_APPLICATION_PASS
+      value: "devpassword123"               # Pass the application user password, if you are changing this pass the value in "spring.data.mongodb.uri"
+
+
+  # HostPath-specific options
+  hostPath:
+    path: "/data/mongodb" # Host path for local storage
+
+  # AWS EFS-specific options
+  efs:
+    volumeHandle: "<your-efs-filesystem-id>" # Replace with your AWS EFS FileSystemId
+    storageClassName: ""  # Specify the storage class name for EFS (optional)
+  
+  # AzureDisk-specific options
+  azureDisk:
+    volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.Compute/disks/<diskName>"
+    storageClassName: "" # Specify the storage class name for azDisk
+
+  pvcName: "existing-pvc-name-here"  # Specify the name of an existing PVC to use. Leave mongodb.volumeType empty if using an existing PVC. (optional)
+
+authNauthApp:
+  enabled: false
+  host: example-auth.com   #Pass the auth host name if authNauthApp is enabled
+
+authNauthNSCMDB:
+  enabled: false
+  volumeType: "hostPath" # Options: "hostPath", "efs", "azureDisk" or leave empty to use an existing PVC specified in pvcName
+  storage: "16Gi"
+  accessMode: "ReadWriteOnce" # Options: "ReadWriteMany", "ReadWriteOnce"
+  env:
+    - name: POSTGRES_USER
+      value: "admin"                        # Pass the admin user name
+    - name: POSTGRES_PASSWORD
+      value: "admin123"                     # Pass the admin password
+    - name: POSTGRES_DB
+      value: "debbie"
+    - name: PGDATA
+      value: "/var/lib/postgresql/data/pgdata"
+
+  # HostPath-specific options
+  hostPath:
+    path: "/pgsql/authscmdb" # Host path for local storage
+
+  # AWS EFS-specific options
+  efs:
+    volumeHandle: "<your-efs-filesystem-id>" # Replace with your AWS EFS FileSystemId
+    storageClassName: ""  # Specify the storage class name for EFS (optional)
+  
+  # AzureDisk-specific options
+  azureDisk:
+    volumeHandle: "/subscriptions/<subscriptionID>/resourceGroups/<resourceGroupName>/providers/Microsoft.Compute/disks/<diskName>"
+    storageClassName: "" # Specify the storage class name for azDisk
+
+  pvcName: "existing-pvc-name-here"  # Specify the name of an existing PVC to use. Leave mongodb.volumeType empty if using an existing PVC. (optional)
+
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  uitype: ClusterIP
+  backendtype: ClusterIP
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: example-knowhow.com    # Pass your knowhow host name here
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

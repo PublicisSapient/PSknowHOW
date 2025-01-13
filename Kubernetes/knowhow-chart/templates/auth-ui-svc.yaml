@@ -1,0 +1,25 @@
+{{- if .Values.authNauthApp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: authnauth-ui
+  labels:
+    app: authnauth-ui
+    app.kubernetes.io/name: authnauth-ui
+    app.kubernetes.io/instance: authnauth
+spec:
+  type: {{ .Values.service.uitype }}
+  ports:
+    - name: http # Unique name for port 80
+      port: 80
+      targetPort: 80
+      protocol: TCP
+    - name: https # Unique name for port 443
+      port: 443
+      targetPort: 443
+      protocol: TCP
+  selector:
+    app: authnauth-ui
+    app.kubernetes.io/name: authnauth-ui
+    app.kubernetes.io/instance: authnauth
+{{- end }}

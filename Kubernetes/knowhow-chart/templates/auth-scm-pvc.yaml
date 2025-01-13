@@ -1,0 +1,28 @@
+{{- if and .Values.authNauthNSCMDB.enabled (eq .Values.authNauthNSCMDB.volumeType "efs") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-efs-pvc
+spec:
+  accessModes:
+    - {{ .Values.authNauthNSCMDB.accessMode }}
+  storageClassName: {{ .Values.authNauthNSCMDB.efs.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.authNauthNSCMDB.storage }}
+{{- end }}
+
+{{- if and .Values.authNauthNSCMDB.enabled (eq .Values.authNauthNSCMDB.volumeType "azureDisk") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-azuredisk-pvc
+spec:
+  accessModes:
+    - {{ .Values.authNauthNSCMDB.accessMode }}
+  storageClassName: {{ .Values.authNauthNSCMDB.azureDisk.storageClassName}}
+  resources:
+    requests:
+      storage: {{ .Values.authNauthNSCMDB.storage }}
+  volumeName: {{ .Release.Name }}-azuredisk-pv
+{{- end }}

@@ -212,6 +212,9 @@ label.btn-import-label {
 .pt-3{
   padding-top: 3px;
 }
+:host ::ng-deep .p-multiselect-header {
+  display: flex;
+}
 
 
 
