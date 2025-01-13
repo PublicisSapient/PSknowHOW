@@ -49,16 +49,12 @@ export class AdditionalFilterComponent implements OnChanges {
         }
 
         Object.keys(data).forEach((f, index) => {
-          if (this.filterData[index]) {
+
             if (this.selectedTab === 'developer') {
               this.populateFilterDataForDeveloper(f, index, data)
             } else {
               this.filterData[index] = data[f];
             }
-
-          } else {
-            this.filterData[index] = data[f];
-          }
         });
 
         if (this.selectedTab !== 'developer') {
@@ -85,7 +81,9 @@ export class AdditionalFilterComponent implements OnChanges {
   populateFilterDataForDeveloper(f, index, data) {
 
     data[f].forEach(element => {
-
+      if(!this.filterData[index]) {
+        this.filterData[index] = [];
+      }
       if (!this.filterData[index].map(x => x.nodeId).includes(element.nodeId)) {
         if (this.filterData[index]?.length && this.filterData[index][0].labelName !== this.additionalFilterConfig[index]?.defaultLevel?.labelName) {
           this.filterData[index] = [];
@@ -114,6 +112,7 @@ export class AdditionalFilterComponent implements OnChanges {
     if (this.selectedTab !== 'developer') {
       this.filterData = [];
     } else {
+      this.selectedTrends = this.service.getSelectedTrends();
       if (!this.arrayCompare(this.selectedTrends.map(x => x.nodeId).sort(), this.previousSelectedTrends.map(x => x.nodeId).sort())) {
         this.filterData = [];
         this.previousSelectedTrends = [...this.selectedTrends];
@@ -173,17 +172,20 @@ export class AdditionalFilterComponent implements OnChanges {
       if (filter.map(f => f.nodeName).includes('Overall')) {
 
         fakeEvent['value'] = 'Overall';
-
+        Promise.resolve().then(() => {
         this.selectedFilters[index] = filter[filter.findIndex(x => x.nodeName === 'Overall')];
+        });
       } else {
-        if (this.filterData[0]?.length && this.filterData[0][0]?.nodeId) {
-          fakeEvent['value'] = this.filterData[0][0].nodeId;
-          this.selectedFilters = [this.filterData[0][0]];
-        } else {
-          fakeEvent['value'] = 'Overall';
-          this.selectedFilters = ['Overall'];
+        if (filter?.length && filter[0]?.nodeId) {
+          fakeEvent['value'] = filter[0].nodeId;
+          Promise.resolve().then(() => {
+            this.selectedFilters[index] = filter[0];
+          });
+
         }
+
       }
+      this.changeDetector.detectChanges();
       let filterKey = 'filter'+(index+1)
       let e = fakeEvent
       this.appliedFilters[filterKey] = e && e['value'] ? [e['value']] : [];
@@ -192,16 +194,15 @@ export class AdditionalFilterComponent implements OnChanges {
       const nodeId = {};
       nodeId['value'] = filterValue?.nodeId || filterValue;
       nodeId['index'] = index+1;
-
-      this.service.applyAdditionalFilters(nodeId);
+        this.service.applyAdditionalFilters(nodeId);
 
     });
 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['additionalFilterConfig'] && changes['additionalFilterConfig'].previousValue && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue)) {
-      this.filterSet = new Set();
+    if ((changes['additionalFilterConfig'] && changes['additionalFilterConfig'].previousValue && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue))
+    || (changes['selectedLevel'])) {
       this.filterData = [];
       this.selectedFilters = [];
     }
