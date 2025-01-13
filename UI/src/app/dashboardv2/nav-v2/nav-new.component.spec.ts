@@ -222,7 +222,7 @@ describe('NavNewComponent', () => {
 
     component.handleMenuTabFunctionality(obj);
 
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
+    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/iteration']);
   });
 
@@ -231,7 +231,7 @@ describe('NavNewComponent', () => {
 
     component.handleMenuTabFunctionality(obj);
 
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
+    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/release']);
   });
 
@@ -240,7 +240,7 @@ describe('NavNewComponent', () => {
 
     component.handleMenuTabFunctionality(obj);
 
-    expect(helperService.setBackupOfFilterSelectionState).not.toHaveBeenCalled();
+    expect(sharedService.setBackupOfFilterSelectionState).not.toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/some-other-tab']);
   });
 
@@ -337,7 +337,7 @@ describe('NavNewComponent', () => {
 
       component.handleMenuTabFunctionality(mockObj);
 
-      expect(component.helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
+      expect(component.sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'additional_level': null });
     });
   });
 

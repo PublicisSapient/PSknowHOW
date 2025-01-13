@@ -2026,7 +2026,6 @@ describe('IterationComponent', () => {
         ]
     }
     beforeEach(() => {
-        service = new SharedService();
         TestBed.configureTestingModule({
             imports: [
                 HttpClientTestingModule,

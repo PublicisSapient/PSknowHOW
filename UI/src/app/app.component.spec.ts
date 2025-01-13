@@ -154,6 +154,6 @@ describe('AppComponent', () => {
 
   xit('should decode and set state filters from URL hash', () => {
     component.ngOnInit();
-    expect(helperService.setBackupOfUrlFilters).toHaveBeenCalledWith('SomeEncodedData');
+    expect(sharedService.setBackupOfUrlFilters).toHaveBeenCalledWith('SomeEncodedData');
   });
 });
