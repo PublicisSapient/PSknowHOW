@@ -220,8 +220,11 @@ export class ExportExcelComponent implements OnInit {
     if (this.modalDetails['tableValues'].length > 0) {
       // Update tableValues to replace blank values with '(Blanks)'
       this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => {
-        const updatedRow = { ...row }; // Create a copy of the row
+        let updatedRow = { ...row }; // Create a copy of the row
         Object.keys(updatedRow).forEach(colName => {
+          if(updatedRow[colName]?.hasOwnProperty('hyperlink')){
+            updatedRow = {...updatedRow,text:updatedRow[colName]?.text||''}
+            }
           if (typeof updatedRow[colName] === 'string') {
             updatedRow[colName] = updatedRow[colName].trim();
           }
@@ -363,6 +366,14 @@ export class ExportExcelComponent implements OnInit {
   
     // Return the updated array with "issue id" at the top
     return [issueIdColumn, ...remainingColumns];
+   }
+
+   sortableColumn(columnName,tableDataSet){
+    if(tableDataSet['tableValues'][0][columnName]?.hasOwnProperty('hyperlink')){
+      return Object.keys(tableDataSet['tableValues'][0][columnName])[0]
+    } else{
+      return columnName;
+    }
    }
 
 }
