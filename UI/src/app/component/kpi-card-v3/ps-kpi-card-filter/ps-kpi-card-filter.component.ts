@@ -56,11 +56,12 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   onSelectButtonChange(event) {
-    this.form.controls['selectedKey']?.setValue(event.value); // Update selectedKey in the form
+    this.form.get('selectedKey')?.setValue(event.value); // Update selectedKey in the form
     const tempObject = {
       [this.kpiCardFilter.categoryData.categoryKey]: event.value
     }
     this.selectedKeyObj = tempObject;
+    // this.selectedKeyObj = event.value;
     this.handleChange();
   }
 
@@ -68,9 +69,13 @@ export class PsKpiCardFilterComponent implements OnInit {
   setDefaultFilter(filter: any) {
     filter.kpiFilters = this.service.getKpiSubFilterObj()[this.kpiId];
     if(filter.kpiFilters && filter.kpiFilters.selectedKey){
-      this.form.controls['selectedKey']?.setValue(filter.kpiFilters.selectedKey);
-      this.selectedKeyObj = filter.kpiFilters.selectedKey;
+      this.form.get('selectedKey')?.setValue(filter.kpiFilters.selectedKey);
+      const tempObject = {
+        [this.kpiCardFilter.categoryData.categoryKey]: filter.kpiFilters.selectedKey
+      }
+      this.selectedKeyObj = tempObject;
     }
+
     if (filter.kpiFilters) {
       Object.entries(filter.kpiFilters).forEach(([key, value]) => {
         this.form.get(key)?.setValue(value);
