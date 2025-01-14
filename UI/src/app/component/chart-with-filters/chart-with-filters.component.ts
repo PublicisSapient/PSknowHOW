@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnChanges, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 import { ExportExcelComponent } from '../export-excel/export-excel.component';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-chart-with-filters',
@@ -17,6 +18,7 @@ export class ChartWithFiltersComponent implements OnChanges {
   @Input() modalHeads;
   @Input() selectedTab;
   @Input() category;
+  @Input() kpiId;
   displayModal: boolean = false;
   selectedMainFilter;
   modalDetails;
@@ -25,13 +27,13 @@ export class ChartWithFiltersComponent implements OnChanges {
   selectedMainCategory: string = '';
   psColors = ['#FBCF5F', '#A4F6A5', '#FFB688', '#D38EEC', '#ED8888', '#6079C5', '#9FE8FA', '#D4CEB0', '#99CDA9', '#6079C5'];
 
-  constructor(private viewContainerRef: ViewContainerRef) { }
+  constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['filters']) {
       this.modalHeads = this.data.modalHeads || this.modalHeads;
       this.data = this.data.chartData || this.data;
-      
+
       if (this.selectedFilter2?.length) {
         this.selectedFilter2.forEach(filter => {
           filter.selectedValue = null;
@@ -42,9 +44,13 @@ export class ChartWithFiltersComponent implements OnChanges {
       this.modifiedData = this.groupData(this.data, 'Issue Status');
       this.dataCopy = Object.assign([], this.data);
 
-      this.selectedMainFilter = this.filters.filterGroup1[0];
+      this.selectedMainFilter = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] ? 
+      this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] : 
+      this.filters.filterGroup1[0];
       if (this.category && this.category.length && this.category[1]) {
-        this.selectedMainCategory = this.category[1];
+        this.selectedMainCategory = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] ? 
+        this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] : 
+        this.category[1];
       }
       this.populateLegend(this.modifiedData);
 
@@ -151,7 +157,7 @@ export class ChartWithFiltersComponent implements OnChanges {
       })
     });
 
-    this.legendData.sort((a,b) => b.percentage - a.percentage);
+    this.legendData.sort((a, b) => b.percentage - a.percentage);
   }
 
   mainFilterSelect(event) {
@@ -160,6 +166,8 @@ export class ChartWithFiltersComponent implements OnChanges {
     this.draw(this.modifiedData);
     this.legendData = [];
     this.populateLegend(this.modifiedData);
+    this.service.setKpiSubFilterObj({ [this.kpiId]: { selectedMainCategory: this.selectedMainCategory,  selectedMainFilter: this.selectedMainFilter } });
+
   }
 
   exploreData(filterVal) {
@@ -224,6 +232,7 @@ export class ChartWithFiltersComponent implements OnChanges {
     this.draw(this.modifiedData);
     this.legendData = [];
     this.populateLegend(this.modifiedData);
+    this.service.setKpiSubFilterObj({ [this.kpiId]: { selectedMainCategory: event.option,  selectedMainFilter: this.selectedMainFilter } });
   }
 
   clearAdditionalFilters() {

@@ -13,6 +13,7 @@ export class PsKpiCardFilterComponent implements OnInit {
   @Output() filterChange = new EventEmitter<any>();
   @Output() filterClear = new EventEmitter<any>();
   selectedKeyObj;
+  selectedKey: any = {};
 
 
   form: FormGroup;
@@ -56,21 +57,36 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   onSelectButtonChange(event) {
-    this.form.controls['selectedKey']?.setValue(event.value); // Update selectedKey in the form
+    // this.form.get('selectedKey')?.setValue(event.value); // Update selectedKey in the form
     const tempObject = {
       [this.kpiCardFilter.categoryData.categoryKey]: event.value
     }
     this.selectedKeyObj = tempObject;
+    let label = this.getOptionValue();
+    let options = this.getSelectButtonOptions();
+    let selectedOption = options.find(f => f[label] === event.value);
+    this.service.setKpiSubFilterObj({ [this.kpiId]: { ...selectedOption } });
     this.handleChange();
+
   }
 
 
   setDefaultFilter(filter: any) {
-    filter.kpiFilters = this.service.getKpiSubFilterObj()[this.kpiId];
-    if(filter.kpiFilters && filter.kpiFilters.selectedKey){
-      this.form.controls['selectedKey']?.setValue(filter.kpiFilters.selectedKey);
-      this.selectedKeyObj = filter.kpiFilters.selectedKey;
+    filter.kpiFilters = this.service.getKpiSubFilterObj()[this.kpiId] || filter.kpiFilters;
+    if (filter.kpiFilters && filter.kpiFilters.selectedKey) {
+      this.form.get('selectedKey')?.setValue(filter.kpiFilters.selectedKey);
+      const tempObject = {
+        [this.kpiCardFilter.categoryData.categoryKey]: filter.kpiFilters.selectedKey
+      }
+      this.selectedKeyObj = tempObject;
+      let label = this.getOptionValue();
+      let options = this.getSelectButtonOptions();
+      let selectedOption = options.find(f => f[label] === filter.kpiFilters.selectedKey);
+
+      this.selectedKey = selectedOption[this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'] || 
+      this.getSelectButtonOptions()[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'];
     }
+
     if (filter.kpiFilters) {
       Object.entries(filter.kpiFilters).forEach(([key, value]) => {
         this.form.get(key)?.setValue(value);
