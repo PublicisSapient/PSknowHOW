@@ -48,11 +48,12 @@
      private getAuthorizationService : GetAuthorizationService) {
      }
      ngOnInit() {
-         this.service.currentUserDetailsObs.subscribe(details=>{
-          if(details){
-            this.userName = details['user_name'];
-          }
-        });
+      this.userName = this.service.getCurrentUserDetails('user_name');
+        //  this.service.currentUserDetailsObs.subscribe(details=>{
+        //   if(details){
+        //     this.userName = details['user_name'];
+        //   }
+        // });
         this.getProjects();
     }
     getKpisData(projectID) {

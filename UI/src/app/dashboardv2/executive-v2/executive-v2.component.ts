@@ -151,9 +151,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   setGlobalConfigData(globalConfig) {
-    // this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    let dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
-    this.configGlobalData = dummyData.data.userBoardConfigDTO[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     if (!this.configGlobalData) {
       this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
     }
