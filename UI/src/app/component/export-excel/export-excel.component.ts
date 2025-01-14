@@ -71,7 +71,7 @@ export class ExportExcelComponent implements OnInit {
         getData = {...getData,...this.exportExcelRawVariable}
         this.isDisableSaveCOnfigurationBtn = !getData['saveDisplay'];
         if (getData?.['kpiColumnList']?.length && getData?.['excelData']?.length) {
-          this.dataTransformatin(getData['kpiColumnList'], getData['excelData'], chartType, kpiName);
+          (this.sharedService.selectedTab === 'iteration')?this.dataTransformForIterationTableWidget([], [], getData['kpiColumnList'], getData['excelData'], kpiName, kpiId):this.dataTransformatin(getData['kpiColumnList'], getData['excelData'], chartType, kpiName);
         } else {
           this.modalDetails['header'] = kpiName;
           this.displayModal = true;
