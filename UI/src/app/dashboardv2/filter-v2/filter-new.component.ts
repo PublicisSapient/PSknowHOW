@@ -679,6 +679,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.noSprint = false;
     }
     this.compileGAData(event);
+    this.service.primaryFilterChangeSubject.next(true)
   }
 
 
