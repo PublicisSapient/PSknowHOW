@@ -72,27 +72,42 @@ export class PsKpiCardFilterComponent implements OnInit {
 
 
   setDefaultFilter(filter: any) {
-    filter.kpiFilters = this.service.getKpiSubFilterObj()[this.kpiId] || filter.kpiFilters;
+    if (this.service.getKpiSubFilterObj()[this.kpiId]) {
+      filter.kpiFilters = this.service.getKpiSubFilterObj()[this.kpiId];
+    }
     if (filter.kpiFilters && filter.kpiFilters.selectedKey) {
       this.form.get('selectedKey')?.setValue(filter.kpiFilters.selectedKey);
-      const tempObject = {
-        [this.kpiCardFilter.categoryData.categoryKey]: filter.kpiFilters.selectedKey
+
+      if (this.kpiCardFilter.categoryData?.categoryKey) {
+        const tempObject = {
+          [this.kpiCardFilter.categoryData.categoryKey]: filter.kpiFilters.selectedKey
+        }
+        this.selectedKeyObj = tempObject;
+        let label = this.getOptionValue();
+        let options = this.getSelectButtonOptions();
+        let selectedOption = options.find(f => f[label] === filter.kpiFilters.selectedKey);
+
+        this.selectedKey = selectedOption ? selectedOption[this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'] :
+          this.getSelectButtonOptions()[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'];
+      } else {
+        let options = this.getSelectButtonOptions();
+        if (options.length && options[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName']) {
+          this.selectedKey = options[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'];
+        }
       }
-      this.selectedKeyObj = tempObject;
-      let label = this.getOptionValue();
+    } else {
       let options = this.getSelectButtonOptions();
-      let selectedOption = options.find(f => f[label] === filter.kpiFilters.selectedKey);
-
-      this.selectedKey = selectedOption[this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'] || 
-      this.getSelectButtonOptions()[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'];
+      if (options.length && options[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName']) {
+        this.selectedKey = options[0][this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName'];
+      }
     }
-
     if (filter.kpiFilters) {
       Object.entries(filter.kpiFilters).forEach(([key, value]) => {
         this.form.get(key)?.setValue(value);
       });
       this.handleChange();
     }
+
   }
 
   clearMultiSelect(controlName: string) {
