@@ -427,7 +427,7 @@ export class SharedService {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
-
+    console.log('kpiFiltes', this.selectedKPIFilterObj);
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
     this.router.navigate([], {

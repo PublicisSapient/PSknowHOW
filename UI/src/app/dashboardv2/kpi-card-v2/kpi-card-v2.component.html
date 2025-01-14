@@ -7,7 +7,7 @@
       <ng-container
         *ngIf="!loader && (currentChartData?.chartData?.length || currentChartData?.chartData?.data?.length || currentChartData?.chartData?.chartData?.length); else noDataRawDataKPIs">
         <div *ngIf="checkFilterPresence(kpiFilterData)">
-          <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData"
+          <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData" [kpiId]="kpiData?.kpiId"
             *ngIf="kpiData?.kpiDetail?.chartType !== 'chartWithFilter' && kpiData?.kpiDetail?.chartType !== 'CumulativeMultilineChart'"
             (filterChange)="onFilterChange($event)" (filterClear)="onFilterClear()"></app-ps-kpi-card-filter>
         </div>

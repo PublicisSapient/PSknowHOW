@@ -102,7 +102,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       if (x && Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
-          if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
+          if (Array.isArray(x[this.kpiData?.kpiId][key]) && x[this.kpiData?.kpiId][key]?.includes('Overall')) {
             if (this.kpiData?.kpiId === "kpi72") {
               if (key === "filter1") {
                 this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-ps-kpi-card-filter',
@@ -8,15 +9,16 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class PsKpiCardFilterComponent implements OnInit {
   @Input() kpiCardFilter: any;
+  @Input() kpiId: string = '';
   @Output() filterChange = new EventEmitter<any>();
   @Output() filterClear = new EventEmitter<any>();
   selectedKeyObj;
-  
+
 
   form: FormGroup;
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private service: SharedService) {
     this.form = this.fb.group({
-        selectedKey: [],
+      selectedKey: [],
     });
   }
 
@@ -45,7 +47,8 @@ export class PsKpiCardFilterComponent implements OnInit {
         transformedObject[key] = value;
       }
     }
-    this.filterChange.emit({...transformedObject,selectedKeyObj:this.selectedKeyObj});
+    this.service.setKpiSubFilterObj({ [this.kpiId]: { ...transformedObject } });
+    this.filterChange.emit({ ...transformedObject, selectedKeyObj: this.selectedKeyObj });
   }
 
   clearFilters() {
@@ -53,16 +56,21 @@ export class PsKpiCardFilterComponent implements OnInit {
   }
 
   onSelectButtonChange(event) {
-    this.form.get('selectedKey')?.setValue(event.value); // Update selectedKey in the form
+    this.form.controls['selectedKey']?.setValue(event.value); // Update selectedKey in the form
     const tempObject = {
-      [this.kpiCardFilter.categoryData.categoryKey] : event.value
+      [this.kpiCardFilter.categoryData.categoryKey]: event.value
     }
     this.selectedKeyObj = tempObject;
     this.handleChange();
   }
 
-  
+
   setDefaultFilter(filter: any) {
+    filter.kpiFilters = this.service.getKpiSubFilterObj()[this.kpiId];
+    if(filter.kpiFilters && filter.kpiFilters.selectedKey){
+      this.form.controls['selectedKey']?.setValue(filter.kpiFilters.selectedKey);
+      this.selectedKeyObj = filter.kpiFilters.selectedKey;
+    }
     if (filter.kpiFilters) {
       Object.entries(filter.kpiFilters).forEach(([key, value]) => {
         this.form.get(key)?.setValue(value);
@@ -71,7 +79,7 @@ export class PsKpiCardFilterComponent implements OnInit {
     }
   }
 
-  clearMultiSelect(controlName: string){
+  clearMultiSelect(controlName: string) {
     this.form.get(controlName)?.reset();
     this.handleChange();
   }
@@ -88,18 +96,18 @@ export class PsKpiCardFilterComponent implements OnInit {
   getOptionLabel(): string {
     return this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'name' : 'categoryName';
   }
-  
+
   getOptionValue(): string {
     return this.kpiCardFilter?.chartType === 'stacked-bar-chart' ? 'key' : 'categoryName';
   }
 
-  setDefaultForm(){
+  setDefaultForm() {
     let returnVal = '';
     if (this.kpiCardFilter?.chartType === 'stacked-bar-chart') {
-      returnVal = this.kpiCardFilter?.dataGroup?.dataGroup1?.[0]?.key 
-      
+      returnVal = this.kpiCardFilter?.dataGroup?.dataGroup1?.[0]?.key
+
     } else if (this.kpiCardFilter?.chartType === 'grouped-bar-chart') {
-      returnVal =this.kpiCardFilter?.categoryData?.categoryGroup[0].categoryName
+      returnVal = this.kpiCardFilter?.categoryData?.categoryGroup[0].categoryName
     }
     this.form.get('selectedKey')?.setValue(returnVal);
   }

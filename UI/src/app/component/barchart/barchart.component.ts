@@ -173,7 +173,6 @@ export class BarchartComponent implements OnInit {
           );
       })
       .on('mousemove', (event, d) => {
-        console.log(d)
         this.tooltip
           .style('top', `${chartHeight - xScale.bandwidth()}px`)
           .style('left', `${xScale.bandwidth()}px`);

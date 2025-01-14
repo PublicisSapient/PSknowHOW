@@ -88,7 +88,6 @@ import { CircularProgressWithLegendsComponent } from './component/circular-progr
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { DialogService } from 'primeng/dynamicdialog';
-import { KpiCardComponent } from './dashboard/kpi-card/kpi-card.component';
 import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indicator.component';
 import { NoAccessComponent } from './component/no-access/no-access.component';
 import { TooltipComponent } from './component/tooltip/tooltip.component';
@@ -178,7 +177,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         OverlappedProgressbarComponent,
         HorizontalStackProgressbarComponent,
         CircularProgressWithLegendsComponent,
-        KpiCardComponent,
         TrendIndicatorComponent,
         TooltipComponent,
         NoAccessComponent,
