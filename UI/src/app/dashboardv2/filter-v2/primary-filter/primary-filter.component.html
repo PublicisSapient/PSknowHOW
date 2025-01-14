@@ -45,7 +45,7 @@
             </ng-template>
         </p-dropdown>
         
-        <label class="floating-label" for="singleselectFilter" [hidden]="selectedTab === 'iteration' || !selectedFilters?.length">
+        <label class="floating-label" for="singleselectFilter">
           Select
           <ng-container *ngIf="!selectedLevel || isString(selectedLevel); else objectTemplate">
             {{ selectedLevel || 'Project' }}
