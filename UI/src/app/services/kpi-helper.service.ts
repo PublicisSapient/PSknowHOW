@@ -191,7 +191,7 @@ export class KpiHelperService {
       test['value1'] = 0;
       test['value2'] = 0;
 
-      issueDataCopy = issueData.filter(issue => issue.Category.includes(categoryElem.categoryName));
+      issueDataCopy = issueData.filter(issue => issue.Category.includes(filter));
 
       dataGroup.forEach(dataGroupElem => {
         if (dataGroupElem.aggregation === 'count') {
@@ -336,7 +336,7 @@ export class KpiHelperService {
         value: group.unit && (group.unit === 'day' || group.unit === 'SP') ?
           this.convertToHoursIfTime(group.kpiValue, group.unit) : !isNaN(group.kpiValue1) ? group.kpiValue1 + '/' + group.kpiValue : group.kpiValue,
         icon: this.iconObj[group.name],
-        totalIssues: issueData.length
+        totalIssues: 100
       });
     });
 

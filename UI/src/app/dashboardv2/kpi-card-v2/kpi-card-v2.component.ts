@@ -247,6 +247,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.currentChartData = this.prepareChartData(
         this.cardData,
         this.colorPalette,
+        this.cardData.kpiId === "kpi128"?this.cardData?.categoryData?.categoryGroup[0]?.categoryName:''
       );
     }
 
@@ -586,38 +587,29 @@ export class KpiCardV2Component implements OnInit, OnChanges {
      * @returns void
      * @throws None
      */
-  onFilterChange(event) {
-    const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
-    if (selectedKeyObj && selectedKeyObj['Category'] !== 'value') {
-      const filterIssues = this.applyDynamicfilter(
-        this.cardData.issueData,
-        [selectedKeyObj, ...Object.entries(updatedEvent).map(([key, value]) => {
-          return { [key]: value };
-        })]
-      );
-      this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
-      this.currentChartData = this.prepareChartData(
-        this.copyCardData,
-        this.colorPalette,
-        selectedKey
-      );
-    } else {
-      const filterIssues = this.applyDynamicfilter(
-        this.cardData.issueData,
-        Object.entries(updatedEvent).map(([key, value]) => {
-          return { [key]: value };
-        })
-      );
-      this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+onFilterChange(event) {
+  const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
 
-      this.currentChartData = this.prepareChartData(
-        this.copyCardData,
-        this.colorPalette,
-        'value'
-      );
-    }
-    this.selectedButtonValue = selectedKeyObj;
-  }
+  // Dynamically determine the exclusion value
+  const exclusionValue = selectedKeyObj?.Category;
+
+  const filters = [
+    ...Object.entries({ ...updatedEvent, ...selectedKeyObj }).map(([key, value]) => ({ [key]: value }))
+  ];
+
+  // Apply dynamic filters
+  const filterIssues = this.applyDynamicfilter(this.cardData.issueData, filters.filter(item => !(item.Category && item.Category === exclusionValue)));
+
+  // Update filtered data
+  this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+
+  // Prepare chart data using the appropriate key
+  const chartKey = selectedKeyObj?.Category !== exclusionValue ? selectedKey : exclusionValue;
+  this.currentChartData = this.prepareChartData(this.copyCardData, this.colorPalette, chartKey);
+
+  // Update selected button value
+  this.selectedButtonValue = selectedKeyObj;
+}
 
 /**
      * Resets the filter by restoring the original issue data and preparing the chart data.
