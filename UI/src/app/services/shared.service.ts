@@ -57,6 +57,7 @@ export class SharedService {
   private authToken = '';
   public sprintForRnR;
   public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
+  primaryFilterChangeSubject = new BehaviorSubject(false);
   public kpiExcelSubject = new BehaviorSubject<{}>({});
 
   // make filterdata and masterdata persistent across dashboards
@@ -426,7 +427,7 @@ export class SharedService {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
-
+    console.log('kpiFiltes', this.selectedKPIFilterObj);
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
     this.router.navigate([], {

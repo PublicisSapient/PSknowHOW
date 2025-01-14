@@ -13,7 +13,7 @@ RUN apk add openssl --no-cache \
 
 # Set environment variables
 ENV PID_LOC="/run/nginx" \
-    CONF_LOC="/etc/nginx/conf.d" \
+    CONF_LOC="/etc/nginx" \
     HTML_LOC="/var/lib/nginx/" \
     UI2_LOC="/var/lib/nginx/ui2" \
     START_SCRIPT_LOC="/etc/init.d" \
@@ -21,14 +21,15 @@ ENV PID_LOC="/run/nginx" \
     ERRORPAGE_ASSETS_ARCHIVE="ErrorPage.tar" \
     ASSETS_ARCHIVE="*.tar" \
     CERT_LOC="/etc/ssl/certs" \
-    ENVIRONMENT="dev"
+    PROTOCOL="http"
 
 # Create necessary directories
 RUN mkdir -p ${PID_LOC} ${UI2_LOC}
+RUN rm -f ${CONF_LOC}/nginx.conf ${CONF_LOC}/conf.d/default.conf ${HTML_LOC}index.html
 
 # Copy files
-COPY nginx/files/nginx-dev.conf /tmp/nginx_dev.conf
-COPY nginx/files/nginx-prod.conf /tmp/nginx_prod.conf
+COPY nginx/files/nginx_https.conf /tmp/nginx_https.conf
+COPY nginx/files/nginx_http.conf /tmp/nginx_http.conf
 COPY nginx/files/${ASSETS_ARCHIVE} ${HTML_LOC}
 COPY nginx/scripts/start_nginx.sh ${START_SCRIPT_LOC}/start_nginx.sh
 COPY nginx/files/certs/* ${CERT_LOC}/

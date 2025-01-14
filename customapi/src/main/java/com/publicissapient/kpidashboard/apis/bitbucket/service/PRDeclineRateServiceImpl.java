@@ -191,14 +191,6 @@ public class PRDeclineRateServiceImpl extends BitBucketKPIService<Double, List<O
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
-			Double overallPickupTime = repoToolKpiMetricResponse.map(RepoToolKpiMetricResponse::getProjectPercentage)
-					.orElse(0.0d);
-
-			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					overallPickupTime, aggDataMap);
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse
-					.map(RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null, projectName, date, aggDataMap);
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 						&& repo.getProcessorItemList().get(0).getId() != null) {
@@ -285,9 +277,9 @@ public class PRDeclineRateServiceImpl extends BitBucketKPIService<Double, List<O
 					.findFirst();
 			String developerName = assignee.isPresent() ? assignee.get().getAssigneeName() : userEmail;
 			Double prDeclineRate = repoToolUserDetails.map(RepoToolUserDetails::getPercentage).orElse(0.0d);
-			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String branchName = getBranchSubFilter(repo, projectName);
 			String userKpiGroup = branchName + "#" + developerName;
-			if (repoToolUserDetails.isPresent() && repo != null) {
+			if (repoToolUserDetails.isPresent()) {
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
 				repoToolValidationData.setBranchName(repo.getBranch());

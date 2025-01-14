@@ -44,7 +44,6 @@ import { ScrollTopModule } from 'primeng/scrolltop';
 import { AppComponent } from './app.component';
 import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
 import { HeaderComponent } from './dashboardv2/header-v2/header.component';
-import { NavComponent } from './dashboard/nav/nav.component';
 import { CircularProgressComponent } from './component/circular-progress/circular-progress.component';
 import { ProgressbarComponent } from './component/progressbar/progressbar.component';
 import { CircularchartComponent } from './component/circularchart/circularchart.component';
@@ -89,12 +88,10 @@ import { CircularProgressWithLegendsComponent } from './component/circular-progr
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { DialogService } from 'primeng/dynamicdialog';
-import { KpiCardComponent } from './dashboard/kpi-card/kpi-card.component';
 import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indicator.component';
 import { NoAccessComponent } from './component/no-access/no-access.component';
 import { TooltipComponent } from './component/tooltip/tooltip.component';
 import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
-import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
@@ -161,7 +158,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
 @NgModule({
     declarations: [
         AppComponent,
-        NavComponent,
         CircularProgressComponent,
         ProgressbarComponent,
         CircularchartComponent,
@@ -181,12 +177,10 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         OverlappedProgressbarComponent,
         HorizontalStackProgressbarComponent,
         CircularProgressWithLegendsComponent,
-        KpiCardComponent,
         TrendIndicatorComponent,
         TooltipComponent,
         NoAccessComponent,
         GroupedColumnPlusLineChartComponent,
-        BacklogComponent,
         TableComponent,
         ExportExcelComponent,
         CommentsComponent,
