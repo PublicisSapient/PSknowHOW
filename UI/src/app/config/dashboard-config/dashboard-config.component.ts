@@ -90,31 +90,26 @@
      let list = [];
      this.kpiData = [...this.kpiListData[this.selectedTab]];
      this.kpiData.forEach((item) => {
-       let trueShowCount = 0;
-       let allShownFlag = false;
        if ((item?.boardName && item?.kpis)) {
           item.kpis.forEach((kpi) => {
            kpiObj[kpi.kpiId] = new UntypedFormControl(kpi.shown);
-           trueShowCount = kpi.shown ? ++trueShowCount : trueShowCount;
          });
-         if (trueShowCount === item?.kpis?.length) {
-           allShownFlag = true;
-         }
-         boardNames[item.boardName] = new UntypedFormControl(allShownFlag);
-       }
+         boardNames[item.boardName] = new UntypedFormControl(Object.values(item.kpis).some((kpi:any) => kpi?.shown === true));
+        }
      });
         this.kpiForm = new UntypedFormGroup({
           kpiCategories: new UntypedFormGroup(boardNames),
           kpis: new UntypedFormGroup(kpiObj)
         });
+
      }
 
      handleTabChange(event) {
         this.selectedTab = this.tabHeaders[event.index];
-        if(this.selectedTab?.toLowerCase() === 'kanban'){
-          this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
+        if(this.selectedTab?.toLowerCase() === 'others'){
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === 'scrum') || (project.type === 'common') || (project.type === 'kanban'))
         }else{
-          this.userProjects = this.backupUserProjects.filter(project=> (project.type === 'scrum') || (project.type === 'common'))
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
         }
         if(this.userProjects != null && this.userProjects.length > 0) {
           this.noProjectsForSelectedCategory = false;
@@ -124,7 +119,7 @@
         }else{
           this.noProjectsForSelectedCategory = true;
           this.selectedProject = {}
-        }
+        } 
         this.setFormControlData();
         this.kpiChangesObj = {};  
      }
@@ -170,6 +165,8 @@
         iterationKpis.kpis = iterationData.kpis;
       }
     }
+    
+
      this.httpService.submitShowHideKpiData(kpiListPayload,this.selectedProject['id'])
        .subscribe(response => {
          this.loader = false;
@@ -188,57 +185,60 @@
      handleKpiChange(event, kpi, boardName, kpis) {
        const kpiObj = {...kpi};
        kpiObj.shown = event.checked;
+       const kpiTempArray =[]
        const kpiIds = kpis.map(function(item){
-return item.kpiId;
-});
-       let showCount = 0;
+          return item.kpiId;
+        });
+
+        Object.entries(this.kpiFormValue.kpis.value).forEach(([key,value])=>{
+          if(kpiIds.includes(key)){
+            kpiTempArray.push(this.kpiFormValue.kpis.value[key])
+          }
+        })
+
        if (!event.checked) {
-         this.kpiFormValue.kpiCategories['controls'][boardName].setValue(false);
          this.setMainDashboardKpiShowHideStatus(kpi.kpiId,false);
+        this.kpiFormValue.kpiCategories['controls'][boardName].setValue(!kpiTempArray.every(val => val === false));       
        } else {
         this.setMainDashboardKpiShowHideStatus(kpi.kpiId,true);
-        kpiIds.forEach((id) => {
-          if (this.kpiFormValue.kpis['controls'][id] && this.kpiFormValue.kpis['controls'][id].value){
-            ++showCount;
-          }
-         });
-         if (kpiIds.length === showCount) {
-          this.kpiFormValue.kpiCategories['controls'][boardName].setValue(true);
-         }
+        this.kpiFormValue.kpiCategories['controls'][boardName].setValue(kpiTempArray.some(val => val === false));
        }
+      
        if(this.kpiChangesObj[boardName]) {
          this.kpiChangesObj[boardName].push(kpiObj);
        } else {
          this.kpiChangesObj[boardName] = [kpiObj];
        }
      }
+     
      // on kpicategory flag change,  setting all of its kpi flag
-     handleKpiCategoryChange(event, boardData) { 
-       const modifiedObj = {...boardData};
-       const targetSelector = event.originalEvent?.target?.closest('.kpi-category-header')?.querySelector('.kpis-list');
-       if(modifiedObj.boardName?.toLowerCase() === 'iteration'){
-        modifiedObj.kpis = [...modifiedObj.kpis, ...this.kpiToBeHidden];
-       }
-       if (event.checked) {
-        if(targetSelector?.classList.contains('hide-kpisList')) {
-          targetSelector?.classList.remove('hide-kpisList');
-        }
-        modifiedObj.kpis.forEach((item) => {
-          item.shown = true;
-          this.kpiFormValue.kpis['controls'][item.kpiId].setValue(true);
-          this.setMainDashboardKpiShowHideStatus(item.kpiId,true);
-          return item;
-        });
-       } else {
-        targetSelector?.classList.add('hide-kpisList');     
-        modifiedObj.kpis.forEach((item) => {
-          item.shown = false;
-          this.kpiFormValue.kpis['controls'][item.kpiId].setValue(false);
-          this.setMainDashboardKpiShowHideStatus(item.kpiId,false);
-          return item;
-        });
-       }
-     }
+    handleKpiCategoryChange(event, boardData) { 
+         const boardSlug = boardData.boardName;
+         const modifiedObj = {...boardData};
+         const targetSelector = event.originalEvent?.target?.closest('.kpi-category-header')?.querySelector('.kpis-list');
+         if(modifiedObj.boardName?.toLowerCase() === 'iteration'){
+          modifiedObj.kpis = [...modifiedObj.kpis, ...this.kpiToBeHidden];
+         }
+         if (event.checked) {
+          if(targetSelector?.classList.contains('hide-kpisList')) {
+            targetSelector?.classList.remove('hide-kpisList');
+          }
+          modifiedObj.kpis.forEach((item) => {
+            item.shown = true;
+            this.kpiFormValue.kpis['controls'][item.kpiId].setValue(true);
+            this.setMainDashboardKpiShowHideStatus(item.kpiId,true);
+            return item;
+          });
+         } else {
+          targetSelector?.classList.add('hide-kpisList');     
+          modifiedObj.kpis.forEach((item) => {
+            item.shown = false;
+            this.kpiFormValue.kpis['controls'][item.kpiId].setValue(false);
+            this.setMainDashboardKpiShowHideStatus(item.kpiId,false);
+            return item;
+          });
+         }
+    }
 
      setMainDashboardKpiShowHideStatus(kpiId,shown){
       const selectedKpi = this.tabListContent[this.selectedTab][0].kpis.find(kpiDetail => kpiDetail.kpiId === kpiId);
@@ -253,6 +253,7 @@ return item.kpiId;
     this.noProjectsForSelectedCategory = false;
     this.httpService.getUserProjects()
       .subscribe(response => {
+        console.log('dashboard config',response)
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
             that.userProjects = [];

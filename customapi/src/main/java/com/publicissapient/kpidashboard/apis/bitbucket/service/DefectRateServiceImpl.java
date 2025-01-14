@@ -204,17 +204,6 @@ public class DefectRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			Optional<RepoToolKpiMetricResponse> repoToolKpiMetricResponse = repoToolKpiMetricResponseList.stream()
 					.filter(value -> value.getDateLabel().equals(weekRange.getStartDate().toString())).findFirst();
 
-			int overallMrs = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getMergeRequestsNumber).orElse(0);
-			double overallDefectRate = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getProjectDefectMergeRequestPercentage).orElse(0.0d);
-
-			setDataCount(projectName, date, Constant.AGGREGATED_VALUE + "#" + Constant.AGGREGATED_VALUE,
-					overallMrs, overallDefectRate, aggDataMap);
-			List<RepoToolUserDetails> repoToolUserDetails = repoToolKpiMetricResponse.map(
-					RepoToolKpiMetricResponse::getUsers).orElse(new ArrayList<>());
-			setUserDataCounts(overAllUsers, repoToolUserDetails, assignees, null,
-					projectName, date, aggDataMap);
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList()) && repo.getProcessorItemList().get(0)
 						.getId() != null) {
@@ -306,9 +295,9 @@ public class DefectRateServiceImpl extends BitBucketKPIService<Double, List<Obje
 			int defectMrs = repoToolUserDetails.map(RepoToolUserDetails::getMergeRequestsNumber).orElse(0);
 			double defectRate = repoToolUserDetails.map(RepoToolUserDetails::getMemberDefectMergeRequestPercentage)
 					.orElse(0.0d);
-			String branchName = repo != null ? getBranchSubFilter(repo, projectName) : CommonConstant.OVERALL;
+			String branchName = getBranchSubFilter(repo, projectName);
 			String userKpiGroup = branchName + "#" + developerName;
-			if(repoToolUserDetails.isPresent() && repo != null) {
+			if(repoToolUserDetails.isPresent()) {
 				RepoToolValidationData repoToolValidationData = new RepoToolValidationData();
 				repoToolValidationData.setProjectName(projectName);
 				repoToolValidationData.setBranchName(repo.getBranch());
