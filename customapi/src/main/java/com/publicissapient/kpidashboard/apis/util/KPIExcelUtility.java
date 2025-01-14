@@ -535,12 +535,25 @@ public class KPIExcelUtility {
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId())) {
 					excelData.setTechDebt(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS.getKpiId())
-						|| kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS_KANBAN.getKpiId())) {
-					excelData.setSonarViolation(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
+				}else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
 					excelData.setCodeQuality(kpiSpecificDataList.get(i) + " unit");
 				}
+				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
+				kpiExcelData.add(excelData);
+			}
+		}
+	}
+
+	public static void populateSonarViolationsExcelData(String projectName, List<String> jobList,
+			List<List<String>> kpiSpecificDataList, List<String> versionDate, List<KPIExcelData> kpiExcelData,
+			String kpiId) {
+		if (CollectionUtils.isNotEmpty(jobList)) {
+			for (int i = 0; i < jobList.size(); i++) {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(projectName);
+				excelData.setJobName(jobList.get(i));
+				excelData.setSonarViolationSeverity(kpiSpecificDataList.get(i).get(0));
+				excelData.setSonarViolationType(kpiSpecificDataList.get(i).get(1));
 				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
 				kpiExcelData.add(excelData);
 			}
