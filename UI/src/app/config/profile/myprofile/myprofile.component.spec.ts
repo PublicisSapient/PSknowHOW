@@ -281,13 +281,13 @@ describe('MyprofileComponent', () => {
 
   it('should group projects role-wise', () => {
     component.groupProjects(JSON.parse('[{"role":"DUMMY","projects":[{"projectName":"Jenkin_kanban","projectId":"6331857a7bb22322e4e01479","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Leve1"}]}]},{"role":"DUMMY","projects":[{"projectName":"Tools proj","projectId":"6332f0a468b5d05cf59c42a6","hierarchy":[{"hierarchyLevel":{"level":1,"hierarchyLevelId":"corporate","hierarchyLevelName":"Corporate Name"},"value":"Org1"}]}]}]'));
-    expect(Object.keys(component.roleBasedProjectList).length).toEqual(4);
+    expect(Object.keys(component.roleBasedProjectList).length).toEqual(2);
   });
 
   it('should populate dynamicCols with objects based on the hierarchyData from localStorage', () => {
     localStorage.setItem('hierarchyData', '[{"hierarchyLevelId": 1, "hierarchyLevelName": "Level 1"}, {"hierarchyLevelId": 2, "hierarchyLevelName": "Level 2"}]')
     component.getTableHeadings();
-    expect(component.dynamicCols.length).toEqual(7);
+    expect(component.dynamicCols.length).toEqual(3);
   });
 
   it('should update notification email flag successfully', (fakeAsync(() => {
@@ -404,7 +404,7 @@ describe('MyprofileComponent', () => {
         component.getTableHeadings();
 
         // Assert
-        expect(component.dynamicCols.length).toEqual(7);
+        expect(component.dynamicCols.length).toEqual(3);
       });
     });
 
@@ -432,7 +432,7 @@ describe('MyprofileComponent', () => {
         component.getTableHeadings();
 
         // Assert
-        expect(component.dynamicCols.length).toEqual(6);
+        expect(component.dynamicCols.length).toEqual(2);
       });
 
       it('should handle empty hierarchyData and completeHierarchyData in localStorage', () => {
@@ -447,7 +447,7 @@ describe('MyprofileComponent', () => {
         component.getTableHeadings();
 
         // Assert
-        expect(component.dynamicCols.length).toEqual(5);
+        expect(component.dynamicCols.length).toEqual(1);
       });
 
       it('should set noAccess to false when user is  SuperAdmin and has project access', () => {

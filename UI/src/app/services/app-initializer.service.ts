@@ -79,7 +79,7 @@ export class AppInitializerService {
         {
             path: 'dashboard', component: DashboardV2Component,
             children: [
-            ...this.commonRoutes,
+                ...this.commonRoutes,
                 { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
                 { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
                 {
@@ -103,7 +103,9 @@ export class AppInitializerService {
             if (!environment['production']) {
                 this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
                 this.validateToken(loc);
-                localStorage.setItem('shared_link',loc)
+                if (loc.indexOf('authentication') === -1) {
+                    localStorage.setItem('shared_link', loc)
+                }
             } else {
                 const env$ = this.http.get('assets/env.json').pipe(
                     tap(env => {
@@ -116,7 +118,9 @@ export class AppInitializerService {
                         environment['RETROS_URL'] = env['RETROS_URL'] || '';
                         environment['SPEED_SUITE'] = env['SPEED_SUITE'] === 'true' ? true : false;
                         this.validateToken(loc);
-                        localStorage.setItem('shared_link',loc)
+                        if (loc.indexOf('authentication') === -1) {
+                            localStorage.setItem('shared_link', loc)
+                        }
                     }));
                 env$.toPromise().then(async res => {
                     this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
@@ -138,31 +142,31 @@ export class AppInitializerService {
         })
     }
 
-  validateToken(location) {
-    return new Promise<void>((resolve, reject) => {
-        if (!environment['AUTHENTICATION_SERVICE']) {
-            this.router.resetConfig([...this.routes]);
-            this.router.navigate([location]);
-        } else {
-            // Make API call or initialization logic here...
-            this.httpService.getUserDetailsForCentral().subscribe((response) => {
-                  if (response?.['success']) {
-                      this.httpService.setCurrentUserDetails(response?.['data']);
-                      this.router.resetConfig([...this.routesAuth]);
-                      localStorage.setItem("user_name", response?.['data']?.user_name);
-                      localStorage.setItem("user_email", response?.['data']?.user_email);
-                      this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
-                  }
+    validateToken(location) {
+        return new Promise<void>((resolve, reject) => {
+            if (!environment['AUTHENTICATION_SERVICE']) {
+                this.router.resetConfig([...this.routes]);
+                this.router.navigate([location]);
+            } else {
+                // Make API call or initialization logic here...
+                this.httpService.getUserDetailsForCentral().subscribe((response) => {
+                    if (response?.['success']) {
+                        this.httpService.setCurrentUserDetails(response?.['data']);
+                        this.router.resetConfig([...this.routesAuth]);
+                        localStorage.setItem("user_name", response?.['data']?.user_name);
+                        localStorage.setItem("user_email", response?.['data']?.user_email);
+                        this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
+                    }
 
-                  if (location) {
-                      let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
-                      if (redirect_uri) {
-                          localStorage.removeItem('redirect_uri');
-                      }
-                      this.router.navigateByUrl(location);
-                  } else {
-                      this.router.navigate(['/dashboard/iteration']);
-                  }
+                    if (location) {
+                        let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
+                        if (redirect_uri) {
+                            localStorage.removeItem('redirect_uri');
+                        }
+                        this.router.navigateByUrl(location);
+                    } else {
+                        this.router.navigate(['/dashboard/iteration']);
+                    }
                 }, error => {
                     console.log(error);
                 });

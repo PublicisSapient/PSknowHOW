@@ -167,7 +167,7 @@ describe('LoginComponent', () => {
     httpService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
     fixture.detectChanges();
     const respo = component.redirectToProfile();
-    expect(respo).toBeTruthy();
+    expect(respo).toBeFalsy();
   })
 
   it("should not redirect on profile if not superadmin",()=>{

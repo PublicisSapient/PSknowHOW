@@ -508,6 +508,7 @@ export class SharedService {
   }
 
   getCurrentUserDetails(key = null) {
+    this.currentUserDetails = JSON.parse(localStorage.getItem('currentUserDetails'));
     if (key) {
       if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
         return this.currentUserDetails[key];
