@@ -58,6 +58,7 @@ export class SharedService {
   public sprintForRnR;
   public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
   primaryFilterChangeSubject = new BehaviorSubject(false);
+  public kpiExcelSubject = new BehaviorSubject<{}>({});
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
