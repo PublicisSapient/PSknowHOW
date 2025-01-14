@@ -683,7 +683,7 @@ describe('PrimaryFilterComponent', () => {
     });
   });
 
-  /*describe('applyDefaultFilters', () => {
+  describe('applyDefaultFilters', () => {
     it('should set selectedFilters based on stateFilters primary_level when conditions are met', (done) => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
@@ -771,12 +771,12 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
 
       setTimeout(() => {
-        expect(component.selectedFilters).toEqual([{ nodeId: 1, labelName: 'Level 1', path: undefined }]);
+        expect(component.selectedFilters).toEqual([{ nodeId: 1, labelName: 'Level 1' }]);
         expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith({
           additional_level: {
             primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }]
           },
-          primary_level: [{ nodeId: 1, labelName: 'Level 1', path: undefined }]
+          primary_level: [{ nodeId: 1, labelName: 'Level 1' }]
         });
         done();
       }, 200);
@@ -814,7 +814,7 @@ describe('PrimaryFilterComponent', () => {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',
       };
-      component.helperService.setBackupOfFilterSelectionState({
+      component.service.setBackupOfFilterSelectionState({
         primary_level: [{ labelName: 'sprint', nodeId: 1 }],
       });
       spyOn(component, 'applyPrimaryFilters');
@@ -871,7 +871,7 @@ describe('PrimaryFilterComponent', () => {
         done();
       }, 200);
     });
-  });*/
+  });
 
   it('should reset the component state', () => {
     component.filters = ['filter1', 'filter2'];
