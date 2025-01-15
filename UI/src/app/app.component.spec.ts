@@ -32,6 +32,7 @@ describe('AppComponent', () => {
       'setSprintQueryParamInFilters',
       'getSelectedType',
       'setSelectedBoard',
+      'raiseError'
     ]);
 
     const getAuthServiceMock = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
@@ -57,6 +58,7 @@ describe('AppComponent', () => {
       }),
     };
 
+    localStorage.clear();
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
       providers: [
@@ -155,5 +157,55 @@ describe('AppComponent', () => {
   xit('should decode and set state filters from URL hash', () => {
     component.ngOnInit();
     expect(sharedService.setBackupOfUrlFilters).toHaveBeenCalledWith('SomeEncodedData');
+  });
+
+  it('should navigate to dashboard if no shared link exists', () => {
+    localStorage.removeItem('shared_link');
+
+    component.ngOnInit();
+
+    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
+  });
+
+  it('should navigate to error page if user lacks project access', () => {
+    const validStateFilters = btoa(JSON.stringify({ primary_level: [{ basicProjectConfigId: '123' }] }));
+    localStorage.setItem('shared_link', `http://example.com?stateFilters=${validStateFilters}`);
+    localStorage.setItem(
+      'currentUserDetails',
+      JSON.stringify({
+        projectsAccess: [
+          {
+            projects: [{ projectId: '456' }],
+          },
+        ],
+      })
+    );
+
+    component.ngOnInit();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+    /* expect(sharedService.raiseError).toHaveBeenCalledWith({
+      status: 901,
+      message: 'No project access.',
+    }); */
+  });
+
+  it('should navigate to shared link if user has access to all projects', () => {
+    const validStateFilters = btoa(JSON.stringify({ primary_level: [{ basicProjectConfigId: '123' }] }));
+    localStorage.setItem('shared_link', `http://example.com?stateFilters=${validStateFilters}`);
+    localStorage.setItem(
+      'currentUserDetails',
+      JSON.stringify({
+        projectsAccess: [
+          {
+            projects: [{ projectId: '123' }],
+          },
+        ],
+      })
+    );
+
+    component.ngOnInit();
+
+    expect(router.navigate).toHaveBeenCalledWith([`http://example.com?stateFilters=${validStateFilters}`]);
   });
 });

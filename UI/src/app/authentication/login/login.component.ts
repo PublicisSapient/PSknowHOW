@@ -70,12 +70,8 @@ export class LoginComponent implements OnInit {
     this.submitted = true;
     this.error = '';
 
-    console.log('Form Valid:', !this.loginForm.invalid); // Add this log
-    console.log('Form Controls:', this.loginForm.controls); // Add this log
-
     /* stop here if form is invalid*/
     if (this.loginForm.invalid) {
-      console.log('Form is invalid. Exiting onSubmit.');
       return;
     }
 
