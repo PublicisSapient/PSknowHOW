@@ -292,7 +292,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.selectedTab.toLowerCase() === 'developer') {
       this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
         Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
-          this.handleSelectedOption(data, kpi);
+          Promise.resolve().then(() => {
+            this.handleSelectedOption(data, kpi);
+          });
         });
       }));
     }
