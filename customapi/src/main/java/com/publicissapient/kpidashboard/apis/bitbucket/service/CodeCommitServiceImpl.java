@@ -206,9 +206,6 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 				}
 			}
 		});
-		List<DataCount> dayWiseCount = setDayWiseCountForProject(aggMergeCountForRepo, aggCommitCountForRepo, null,
-				projectName, new ArrayList<>(), duration, dataPoints);
-		aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
 
 		mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
 		populateExcelData(requestTrackerId, repoToolValidationDataList, excelData);
