@@ -127,7 +127,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef, private router: Router) {
-    
+
   }
 
   arrayDeepCompare(a1, a2) {
@@ -198,7 +198,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ngOnInit() {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
-    
+
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.resetToDefaults();
       this.selectedtype = data.selectedType;
@@ -301,15 +301,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     });
 
-    if (this.selectedTab.toLowerCase() === 'developer') {
-      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
-        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
-          Promise.resolve().then(() => {
-            this.handleSelectedOption(data, kpi);
-          });
+
+    this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+      Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
+        Promise.resolve().then(() => {
+          this.handleSelectedOption(data, kpi);
         });
-      }));
-    }
+      });
+    }));
+
   }
 
   // unsubscribing all Kpi Request
@@ -1170,13 +1170,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             for (let i = 0; i < tempArr?.length; i++) {
               preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == (tempArr[i]?.filter1.length ? tempArr[i]?.filter1 : 'Overall') && k['filter2'] == tempArr[i]?.filter2));
             }
-            if(preAggregatedValues && preAggregatedValues.length >1){
+            if (preAggregatedValues && preAggregatedValues.length > 1) {
               const transformFilter = {}
-              preAggregatedValues.forEach(obj=>{
-                transformFilter[obj.filter1+'and'+obj.filter2] = obj.value
+              preAggregatedValues.forEach(obj => {
+                transformFilter[obj.filter1 + 'and' + obj.filter2] = obj.value
               })
               this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(transformFilter, aggregationType, this.tooltip.percentile);
-            }else{
+            } else {
               this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
             }
           }
@@ -1305,15 +1305,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
-/**
-   * Sets the default KPI filters based on the provided KPI ID, filter properties, and filter type.
-   * It populates the kpiSelectedFilterObj with default options from kpiDropdowns.
-   * 
-   * @param {string} kpiId - The ID of the KPI for which to set filters.
-   * @param {string[]} filterPropArr - An array of filter property names to determine filter behavior.
-   * @param {string} [filterType] - The type of filter to apply (optional).
-   * @returns {void}
-   */
+  /**
+     * Sets the default KPI filters based on the provided KPI ID, filter properties, and filter type.
+     * It populates the kpiSelectedFilterObj with default options from kpiDropdowns.
+     * 
+     * @param {string} kpiId - The ID of the KPI for which to set filters.
+     * @param {string[]} filterPropArr - An array of filter property names to determine filter behavior.
+     * @param {string} [filterType] - The type of filter to apply (optional).
+     * @returns {void}
+     */
   getDefaultKPIFiltersForRelease(kpiId, filterPropArr, filterType) {
     if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
       if (filterPropArr.includes('filter')) {
@@ -1464,27 +1464,27 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpiChartData;
   }
 
-/*   createTrendData(kpiId) {
-    const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
-    const trendingList = this.kpiChartData[kpiId];
-    if (trendingList?.length) {
-      this.kpiTrendObject[kpiId] = [];
-      if (trendingList[0]?.value?.length > 0 && kpiDetail) {
-        let trendObj = {};
-        const [latest, trend, unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
-        trendObj = {
-          "hierarchyName": trendingList[0]?.data,
-          "trend": trend,
-          "maturity": 'M' + trendingList[0]?.maturity,
-          "maturityValue": trendingList[0]?.maturityValue,
-          "maturityDenominator": trendingList[0]?.value.length,
-          "kpiUnit": unit
-        };
-        this.kpiTrendObject[kpiId]?.push(trendObj);
+  /*   createTrendData(kpiId) {
+      const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
+      const trendingList = this.kpiChartData[kpiId];
+      if (trendingList?.length) {
+        this.kpiTrendObject[kpiId] = [];
+        if (trendingList[0]?.value?.length > 0 && kpiDetail) {
+          let trendObj = {};
+          const [latest, trend, unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
+          trendObj = {
+            "hierarchyName": trendingList[0]?.data,
+            "trend": trend,
+            "maturity": 'M' + trendingList[0]?.maturity,
+            "maturityValue": trendingList[0]?.maturityValue,
+            "maturityDenominator": trendingList[0]?.value.length,
+            "kpiUnit": unit
+          };
+          this.kpiTrendObject[kpiId]?.push(trendObj);
+        }
       }
-    }
-
-  } */
+  
+    } */
 
   getChartDataforRelease(kpiId, idx, aggregationType?, kpiFilterChange = false) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
@@ -1748,7 +1748,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         }
       ]
     }
-    
+
     return arr;
   }
 
@@ -2354,7 +2354,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
 
         this.kpiDropdowns[kpiId] = [];
-        dropdownArr.forEach((arr,i) => {
+        dropdownArr.forEach((arr, i) => {
           arr = Array.from(arr);
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
@@ -2367,10 +2367,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           }
 
-          if(this.allKpiArray[idx]?.filters){
+          if (this.allKpiArray[idx]?.filters) {
             const filterConfig = this.allKpiArray[idx].filters;
-            obj['filterType'] = filterConfig['filter'+(i+1)]?.filterType ? filterConfig['filter'+(i+1)]?.filterType : 'Select a filter';
-          }else{
+            obj['filterType'] = filterConfig['filter' + (i + 1)]?.filterType ? filterConfig['filter' + (i + 1)]?.filterType : 'Select a filter';
+          } else {
             obj['filterType'] = 'Select a filter';
           }
           if (arr.length > 0) {
@@ -2497,8 +2497,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
         }
-      }else if(kpi?.kpiDetail?.kpiFilter && kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multitypefilters' ){
-        this.kpiSelectedFilterObj[kpi?.kpiId]  = event;
+      } else if (kpi?.kpiDetail?.kpiFilter && kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multitypefilters') {
+        this.kpiSelectedFilterObj[kpi?.kpiId] = event;
       }
       else {
         if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {
@@ -2590,7 +2590,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-    
+
     this.getChartDataForBacklog(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
   }
 
@@ -2686,7 +2686,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (this.kpiChartData[kpiId][i]?.value?.length > 0) {
             let trendObj = {};
             const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
-            if(isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
+            if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
               trendObj = {
                 "hierarchyName": this.kpiChartData[kpiId][i]?.data,
                 "value": latest,
@@ -2853,16 +2853,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return maxSprints;
   }
 
-/**
-   * Calculates the number of business days between two Date objects, inclusive.
-   * Business days are defined as weekdays (Monday to Friday), excluding weekends.
-   * Returns 0 if the second date is earlier than the first date.
-   *
-   * @param dDate1 - The start date as a Date object.
-   * @param dDate2 - The end date as a Date object.
-   * @returns The number of business days between the two dates.
-   * @throws Returns 0 if dDate2 is earlier than dDate1.
-   */
+  /**
+     * Calculates the number of business days between two Date objects, inclusive.
+     * Business days are defined as weekdays (Monday to Friday), excluding weekends.
+     * Returns 0 if the second date is earlier than the first date.
+     *
+     * @param dDate1 - The start date as a Date object.
+     * @param dDate2 - The end date as a Date object.
+     * @returns The number of business days between the two dates.
+     * @throws Returns 0 if dDate2 is earlier than dDate1.
+     */
   calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     let iWeeks; let iDateDiff; let iAdjust = 0;
     if (dDate2 < dDate1) {
@@ -2913,13 +2913,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpi?.kpiDetail?.yaxisLabel;
   }
 
-/**
-   * Determines the CSS class for column width based on the provided KPI width percentage.
-   * Accepts specific width values and defaults to 50% if an unrecognized value is given.
-   * @param kpiwidth - The width percentage (100, 50, 66, 33) to determine the column class.
-   * @returns A string representing the corresponding CSS class for the column width.
-   * No exceptions are thrown.
-   */
+  /**
+     * Determines the CSS class for column width based on the provided KPI width percentage.
+     * Accepts specific width values and defaults to 50% if an unrecognized value is given.
+     * @param kpiwidth - The width percentage (100, 50, 66, 33) to determine the column class.
+     * @returns A string representing the corresponding CSS class for the column width.
+     * No exceptions are thrown.
+     */
   getkpiwidth(kpiwidth) {
     let retValue = '';
 
