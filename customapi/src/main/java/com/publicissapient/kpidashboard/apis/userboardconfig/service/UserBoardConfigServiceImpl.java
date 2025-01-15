@@ -179,10 +179,10 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 		if (CollectionUtils.isNotEmpty(listOfBasicProjIds)) {
 			List<UserBoardConfig> filteredUserBoard = new ArrayList<>();
-			//fetching admins of all the projects
+			// fetching admins of all the projects
 			List<UserInfo> adminUsers = userInfoCustomRepository.findAdminUserOfProject(listOfBasicProjIds);
 
-			//creating map of project id and its admin users
+			// creating map of project id and its admin users
 			Map<String, List<String>> itemIdToUsernames = adminUsers.stream()
 					.flatMap(user -> user.getProjectsAccess().stream()
 							.flatMap(access -> access.getAccessNodes().stream().flatMap(node -> node.getAccessItems()
@@ -191,13 +191,14 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 					.collect(Collectors.groupingBy(Map.Entry::getKey,
 							Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
 
-			itemIdToUsernames.forEach((configId, users) -> {
-				users.add("SUPERADMIN");
-				filteredUserBoard.addAll(adminProjectBoardConfig.stream()
-						.filter(userBoard -> userBoard.getBasicProjectConfigId().equalsIgnoreCase(configId)
-								&& users.contains(userBoard.getUsername()))
-						.toList());
-			});
+			listOfBasicProjIds.forEach(projectId -> itemIdToUsernames
+					.computeIfAbsent(projectId, key -> new ArrayList<>()).add("SUPERADMIN"));
+
+			itemIdToUsernames.forEach((configId,
+					users) -> filteredUserBoard.addAll(adminProjectBoardConfig.stream()
+							.filter(userBoard -> userBoard.getBasicProjectConfigId().equalsIgnoreCase(configId)
+									&& users.contains(userBoard.getUsername()))
+							.toList()));
 
 			long fetchProjBoardConfigsSize = filteredUserBoard.stream().map(UserBoardConfig::getBasicProjectConfigId)
 					.distinct().count();

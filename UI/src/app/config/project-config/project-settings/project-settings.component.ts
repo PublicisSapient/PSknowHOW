@@ -64,7 +64,7 @@ export class ProjectSettingsComponent implements OnInit {
     public sharedService: SharedService,
     public router: Router,
     private confirmationService: ConfirmationService,
-    private httpService: HttpService,
+    public httpService: HttpService,
     private messageService: MessageService,
     public getAuthorizationService: GetAuthorizationService,
   ) { }
@@ -308,7 +308,7 @@ export class ProjectSettingsComponent implements OnInit {
             });
             arr = arr?.filter(item => item.projects?.length > 0);
 
-            this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
+            this.httpService.setCurrentUserDetails({ projectsAccess: arr });
           }
         }, error => {
           this.projectDeletionStatus(error);

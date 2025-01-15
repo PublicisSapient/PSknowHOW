@@ -50,7 +50,7 @@ export class AuthGuard implements CanActivate {
         } else {
             return this.httpService.getCurrentUserDetails().pipe(map(details => {
                 if (details['success']) {
-                    this.sharedService.setCurrentUserDetails(details['data']);
+                    this.httpService.setCurrentUserDetails(details['data']);
                     if (details['data']['authorities']) {
                         return true;
                     }

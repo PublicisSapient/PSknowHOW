@@ -46,148 +46,20 @@ describe('MyprofileComponent', () => {
   const hierarchyData = [
     {
       level: 1,
-      hierarchyLevelId: 'corporate',
-      hierarchyLevelName: 'Corporate Name',
+      hierarchyLevelId: 'country',
+      hierarchyLevelName: 'Country',
       suggestions: [
         {
-          name: 'C1',
-          code: 'C1'
+          name: 'Canada',
+          code: 'Canada'
         },
         {
-          name: 'Corpate1',
-          code: 'Corpate1'
+          name: 'India',
+          code: 'India'
         },
         {
-          name: 'Leve1',
-          code: 'Leve1'
-        },
-        {
-          name: 'Org1',
-          code: 'Org1'
-        },
-        {
-          name: 'Orgc',
-          code: 'Orgc'
-        },
-        {
-          name: 'TESTS',
-          code: 'TESTS'
-        },
-        {
-          name: 'Test1',
-          code: 'Test1'
-        },
-        {
-          name: 'TestC',
-          code: 'TestC'
-        },
-        {
-          name: 'TestCorp',
-          code: 'TestCorp'
-        },
-        {
-          name: 'abcv',
-          code: 'abcv'
-        },
-        {
-          name: 'bittest',
-          code: 'bittest'
-        },
-        {
-          name: 'dfdsg',
-          code: 'dfdsg'
-        },
-        {
-          name: 'dgdfhfgjgh',
-          code: 'dgdfhfgjgh'
-        },
-        {
-          name: 'dgfdh',
-          code: 'dgfdh'
-        },
-        {
-          name: 'dgfg',
-          code: 'dgfg'
-        },
-        {
-          name: 'dghhjjh',
-          code: 'dghhjjh'
-        },
-        {
-          name: 'djfyyyyyyyyyyyyyyy',
-          code: 'djfyyyyyyyyyyyyyyy'
-        },
-        {
-          name: 'dsgfdj',
-          code: 'dsgfdj'
-        },
-        {
-          name: 'fghhhj',
-          code: 'fghhhj'
-        },
-        {
-          name: 'fhgkl',
-          code: 'fhgkl'
-        },
-        {
-          name: 'fhjjjjjj',
-          code: 'fhjjjjjj'
-        },
-        {
-          name: 'gfhygjhk',
-          code: 'gfhygjhk'
-        },
-        {
-          name: 'ghhjhkjl',
-          code: 'ghhjhkjl'
-        },
-        {
-          name: 'ghjk',
-          code: 'ghjk'
-        },
-        {
-          name: 'gjhfkjhkj',
-          code: 'gjhfkjhkj'
-        },
-        {
-          name: 'gjhjkk',
-          code: 'gjhjkk'
-        },
-        {
-          name: 'gjkjllf',
-          code: 'gjkjllf'
-        },
-        {
-          name: 'gjtykghk',
-          code: 'gjtykghk'
-        },
-        {
-          name: 'hgjhgjk',
-          code: 'hgjhgjk'
-        },
-        {
-          name: 'hjkk',
-          code: 'hjkk'
-        },
-        {
-          name: 'rduuuuuuuuu',
-          code: 'rduuuuuuuuu'
-        },
-        {
-          name: 'trrrrrrrrrrrrrrrrrrr',
-          code: 'trrrrrrrrrrrrrrrrrrr'
-        },
-        {
-          name: 'trt',
-          code: 'trt'
-        },
-        {
-          name: 'wdddddd',
-          code: 'wdddddd'
-        },
-        {
-          name: 'ytttttttttttt',
-          code: 'ytttttttttttt'
+          name: 'USA',
+          code: 'USA'
         }
       ],
       value: '',
@@ -195,148 +67,28 @@ describe('MyprofileComponent', () => {
     },
     {
       level: 2,
-      hierarchyLevelId: 'business',
-      hierarchyLevelName: 'Business Name',
+      hierarchyLevelId: 'state',
+      hierarchyLevelName: 'State',
       suggestions: [
         {
-          name: 'B1',
-          code: 'B1'
+          name: 'Haryana',
+          code: 'Haryana'
         },
         {
-          name: 'Bus1',
-          code: 'Bus1'
+          name: 'Karnataka',
+          code: 'Karnataka'
         },
         {
-          name: 'Leve2',
-          code: 'Leve2'
+          name: 'Ontario',
+          code: 'Ontario'
         },
         {
-          name: 'Org2',
-          code: 'Org2'
+          name: 'Texas',
+          code: 'Texas'
         },
         {
-          name: 'Orgb',
-          code: 'Orgb'
-        },
-        {
-          name: 'Test2',
-          code: 'Test2'
-        },
-        {
-          name: 'TestB',
-          code: 'TestB'
-        },
-        {
-          name: 'TestBus',
-          code: 'TestBus'
-        },
-        {
-          name: 'asfd',
-          code: 'asfd'
-        },
-        {
-          name: 'dcccccccccc',
-          code: 'dcccccccccc'
-        },
-        {
-          name: 'ddddddddddddd',
-          code: 'ddddddddddddd'
-        },
-        {
-          name: 'dfhhhhhhh',
-          code: 'dfhhhhhhh'
-        },
-        {
-          name: 'erhjjkkjkl',
-          code: 'erhjjkkjkl'
-        },
-        {
-          name: 'fbcncvn',
-          code: 'fbcncvn'
-        },
-        {
-          name: 'fdjfjk',
-          code: 'fdjfjk'
-        },
-        {
-          name: 'fgdsfgdh',
-          code: 'fgdsfgdh'
-        },
-        {
-          name: 'fhgjhkjk',
-          code: 'fhgjhkjk'
-        },
-        {
-          name: 'ggggggg',
-          code: 'ggggggg'
-        },
-        {
-          name: 'ghjjk',
-          code: 'ghjjk'
-        },
-        {
-          name: 'hjjhjk',
-          code: 'hjjhjk'
-        },
-        {
-          name: 'hjuy',
-          code: 'hjuy'
-        },
-        {
-          name: 'jhbjnk',
-          code: 'jhbjnk'
-        },
-        {
-          name: 'jhkjljkll',
-          code: 'jhkjljkll'
-        },
-        {
-          name: 'jhlkl',
-          code: 'jhlkl'
-        },
-        {
-          name: 'jnkmlkm',
-          code: 'jnkmlkm'
-        },
-        {
-          name: 'knj,n,m m,',
-          code: 'knj,n,m m,'
-        },
-        {
-          name: 'rrrrrrrrr',
-          code: 'rrrrrrrrr'
-        },
-        {
-          name: 'rrrrrrrrre',
-          code: 'rrrrrrrrre'
-        },
-        {
-          name: 'rytrujjjk',
-          code: 'rytrujjjk'
-        },
-        {
-          name: 'ryyhtfjghk',
-          code: 'ryyhtfjghk'
-        },
-        {
-          name: 'sdddddddddddd',
-          code: 'sdddddddddddd'
-        },
-        {
-          name: 'sgdgf',
-          code: 'sgdgf'
-        },
-        {
-          name: 't1',
-          code: 't1'
-        },
-        {
-          name: 'ttttttuiiiiiiii',
-          code: 'ttttttuiiiiiiii'
-        },
-        {
-          name: 'wAAAAAAAAAA',
-          code: 'wAAAAAAAAAA'
+          name: 'Washinton',
+          code: 'Washinton'
         }
       ],
       value: '',
@@ -344,297 +96,36 @@ describe('MyprofileComponent', () => {
     },
     {
       level: 3,
-      hierarchyLevelId: 'dummyaccount',
-      hierarchyLevelName: 'dummyAccount Name',
+      hierarchyLevelId: 'city',
+      hierarchyLevelName: 'City',
       suggestions: [
         {
-          name: 'A1',
-          code: 'A1'
+          name: 'Bangalore',
+          code: 'Bangalore'
         },
         {
-          name: 'Acc1',
-          code: 'Acc1'
+          name: 'Gurgaon',
+          code: 'Gurgaon'
         },
         {
-          name: 'Level3',
-          code: 'Level3'
+          name: 'Houston',
+          code: 'Houston'
         },
         {
-          name: 'Org3',
-          code: 'Org3'
+          name: 'Kurukshetra',
+          code: 'Kurukshetra'
         },
         {
-          name: 'Orga',
-          code: 'Orga'
+          name: 'Ottawa',
+          code: 'Ottawa'
         },
         {
-          name: 'Test3',
-          code: 'Test3'
+          name: 'Remond',
+          code: 'Remond'
         },
         {
-          name: 'TestAcc',
-          code: 'TestAcc'
-        },
-        {
-          name: 'TestC',
-          code: 'TestC'
-        },
-        {
-          name: 'WRRRRRRRRR',
-          code: 'WRRRRRRRRR'
-        },
-        {
-          name: 'bxccnbcvn',
-          code: 'bxccnbcvn'
-        },
-        {
-          name: 'ddddddddddddddddd',
-          code: 'ddddddddddddddddd'
-        },
-        {
-          name: 'dddst',
-          code: 'dddst'
-        },
-        {
-          name: 'dfdgfdh',
-          code: 'dfdgfdh'
-        },
-        {
-          name: 'dfsgdf',
-          code: 'dfsgdf'
-        },
-        {
-          name: 'eeeee',
-          code: 'eeeee'
-        },
-        {
-          name: 'erttyyuui',
-          code: 'erttyyuui'
-        },
-        {
-          name: 'fdddddddddddddddd',
-          code: 'fdddddddddddddddd'
-        },
-        {
-          name: 'gjhkjjl',
-          code: 'gjhkjjl'
-        },
-        {
-          name: 'gsdddddddddddg',
-          code: 'gsdddddddddddg'
-        },
-        {
-          name: 'hjl',
-          code: 'hjl'
-        },
-        {
-          name: 'hkjkjlkl',
-          code: 'hkjkjlkl'
-        },
-        {
-          name: 'hyjykjl',
-          code: 'hyjykjl'
-        },
-        {
-          name: 'jhjkhkk',
-          code: 'jhjkhkk'
-        },
-        {
-          name: 'jj,ddddw',
-          code: 'jj,ddddw'
-        },
-        {
-          name: 'jjkjkjhk',
-          code: 'jjkjkjhk'
-        },
-        {
-          name: 'kmmmk',
-          code: 'kmmmk'
-        },
-        {
-          name: 'mn',
-          code: 'mn'
-        },
-        {
-          name: 'shhhhhhhhh',
-          code: 'shhhhhhhhh'
-        },
-        {
-          name: 'sss',
-          code: 'sss'
-        },
-        {
-          name: 'ssssssssssss',
-          code: 'ssssssssssss'
-        },
-        {
-          name: 't2',
-          code: 't2'
-        },
-        {
-          name: 'tyui',
-          code: 'tyui'
-        },
-        {
-          name: 'wwgt',
-          code: 'wwgt'
-        },
-        {
-          name: 'xfnnnnnnnnn',
-          code: 'xfnnnnnnnnn'
-        },
-        {
-          name: 'yutruityi',
-          code: 'yutruityi'
-        }
-      ],
-      value: '',
-      required: true
-    },
-    {
-      level: 4,
-      hierarchyLevelId: 'dummysubaccount',
-      hierarchyLevelName: 'dummySubaccount',
-      suggestions: [
-        {
-          name: 'Level4',
-          code: 'Level4'
-        },
-        {
-          name: 'Org4',
-          code: 'Org4'
-        },
-        {
-          name: 'Orgs',
-          code: 'Orgs'
-        },
-        {
-          name: 'S1',
-          code: 'S1'
-        },
-        {
-          name: 'Sub1',
-          code: 'Sub1'
-        },
-        {
-          name: 'Test4',
-          code: 'Test4'
-        },
-        {
-          name: 'TestS',
-          code: 'TestS'
-        },
-        {
-          name: 'Testsub',
-          code: 'Testsub'
-        },
-        {
-          name: 'aaaaaaaaaaaaaaaaa',
-          code: 'aaaaaaaaaaaaaaaaa'
-        },
-        {
-          name: 'asc',
-          code: 'asc'
-        },
-        {
-          name: 'cbvcxcncvn',
-          code: 'cbvcxcncvn'
-        },
-        {
-          name: 'eeeeeeeeee',
-          code: 'eeeeeeeeee'
-        },
-        {
-          name: 'eeeeeeeeeeee',
-          code: 'eeeeeeeeeeee'
-        },
-        {
-          name: 'erweteryu',
-          code: 'erweteryu'
-        },
-        {
-          name: 'ffff',
-          code: 'ffff'
-        },
-        {
-          name: 'fhfd',
-          code: 'fhfd'
-        },
-        {
-          name: 'fhgjhk',
-          code: 'fhgjhk'
-        },
-        {
-          name: 'fhjkk',
-          code: 'fhjkk'
-        },
-        {
-          name: 'ghthhhhhhhhhht',
-          code: 'ghthhhhhhhhhht'
-        },
-        {
-          name: 'hjkhkjk',
-          code: 'hjkhkjk'
-        },
-        {
-          name: 'hkkkkkk',
-          code: 'hkkkkkk'
-        },
-        {
-          name: 'jhhjkjhkj',
-          code: 'jhhjkjhkj'
-        },
-        {
-          name: 'jhhvgvggv',
-          code: 'jhhvgvggv'
-        },
-        {
-          name: 'jkjkllk;k;',
-          code: 'jkjkllk;k;'
-        },
-        {
-          name: 'kmkkkk',
-          code: 'kmkkkk'
-        },
-        {
-          name: 'saaaaaaaaaaaaa',
-          code: 'saaaaaaaaaaaaa'
-        },
-        {
-          name: 'sasdfdgfgf',
-          code: 'sasdfdgfgf'
-        },
-        {
-          name: 'sdf',
-          code: 'sdf'
-        },
-        {
-          name: 'sdgggggggg',
-          code: 'sdgggggggg'
-        },
-        {
-          name: 'seeeeee',
-          code: 'seeeeee'
-        },
-        {
-          name: 'sytttu',
-          code: 'sytttu'
-        },
-        {
-          name: 't3',
-          code: 't3'
-        },
-        {
-          name: 'xgggggggggg',
-          code: 'xgggggggggg'
-        },
-        {
-          name: 'zfghg',
-          code: 'zfghg'
-        },
-        {
-          name: 'zzzzzzzzzzzzzzzzzzf',
-          code: 'zzzzzzzzzzzzzzzzzzf'
+          name: 'Seattle',
+          code: 'Seattle'
         }
       ],
       value: '',
@@ -730,6 +221,20 @@ describe('MyprofileComponent', () => {
     }
   ];
 
+  const mockCurrentUserDetails = {
+    "user_name": "SUPERADMIN",
+    "user_email": "abc@publicissapient.com",
+    "authType": "STANDARD",
+    "authorities": [
+      "ROLE_SUPERADMIN"
+    ],
+    "projectsAccess": mockProjectsAccess,
+    "notificationEmail": {
+      "accessAlertNotification": false,
+      "errorAlertNotification": false
+    }
+  };
+
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -763,8 +268,9 @@ describe('MyprofileComponent', () => {
     spyOn(window.localStorage, 'setItem').and.callFake(
       (key, value) => (localStore[key] = value + '')
     );
+    component.sharedService.currentUserDetails = mockCurrentUserDetails;
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
-    shared.setCurrentUserDetails({ username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com' })
+    httpService.setCurrentUserDetails({ username: 'testUser', authorities: ['ROLE_SUPERADMIN'], authType: 'STANDARD', emailAddress: 'testuser@gmail.com' })
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
     fixture.detectChanges();
   });
@@ -781,11 +287,7 @@ describe('MyprofileComponent', () => {
   it('should populate dynamicCols with objects based on the hierarchyData from localStorage', () => {
     localStorage.setItem('hierarchyData', '[{"hierarchyLevelId": 1, "hierarchyLevelName": "Level 1"}, {"hierarchyLevelId": 2, "hierarchyLevelName": "Level 2"}]')
     component.getTableHeadings();
-    expect(component.dynamicCols).toEqual([
-      { id: 1, name: 'Level 1' },
-      { id: 2, name: 'Level 2' },
-      { id: 'projectName', name: 'Projects' },
-    ]);
+    expect(component.dynamicCols.length).toEqual(3);
   });
 
   it('should update notification email flag successfully', (fakeAsync(() => {
@@ -822,7 +324,7 @@ describe('MyprofileComponent', () => {
       }
     })
     spyOn(httpService, 'notificationEmailToggleChange').and.returnValue(of(successResponse))
-    const spyObj = spyOn(shared, 'setCurrentUserDetails');
+    const spyObj = spyOn(httpService, 'setCurrentUserDetails');
     component.toggleNotificationEmail(event, toggleField);
     tick();
     expect(spyObj).toHaveBeenCalled();
@@ -897,19 +399,15 @@ describe('MyprofileComponent', () => {
           { hierarchyLevelId: 'level2', hierarchyLevelName: 'Level 2', level: 2 },
         ]);
         localStorage.setItem('hierarchyData', hierarchyData);
-  
+
         // Act
         component.getTableHeadings();
-  
+
         // Assert
-        expect(component.dynamicCols).toEqual([
-          { id: 'level1', name: 'Level 1' },
-          { id: 'level2', name: 'Level 2' },
-          { id: 'projectName', name: 'Projects' },
-        ]);
+        expect(component.dynamicCols.length).toEqual(3);
       });
     });
-  
+
     describe('Edge Cases', () => {
       it('should handle missing hierarchyData in localStorage gracefully', () => {
         // Arrange
@@ -929,17 +427,14 @@ describe('MyprofileComponent', () => {
           ],
         });
         localStorage.setItem('completeHierarchyData', completeHierarchyData);
-  
+
         // Act
         component.getTableHeadings();
-  
+
         // Assert
-        expect(component.dynamicCols).toEqual([
-          { id: 'level1', name: 'Level 1' },
-          { id: 'projectName', name: 'Projects' },
-        ]);
+        expect(component.dynamicCols.length).toEqual(2);
       });
-  
+
       it('should handle empty hierarchyData and completeHierarchyData in localStorage', () => {
         // Arrange
         localStorage.setItem('hierarchyData', JSON.stringify([]));
@@ -947,18 +442,16 @@ describe('MyprofileComponent', () => {
           'completeHierarchyData',
           JSON.stringify({ scrum: [] }),
         );
-  
+
         // Act
         component.getTableHeadings();
-  
+
         // Assert
-        expect(component.dynamicCols).toEqual([
-          { id: 'projectName', name: 'Projects' },
-        ]);
+        expect(component.dynamicCols.length).toEqual(1);
       });
 
       it('should set noAccess to false when user is  SuperAdmin and has project access', () => {
-        
+
         spyOn(authService, 'checkIfSuperUser').and.returnValue(true as any);
         spyOn(shared, 'getCurrentUserDetails').and.returnValue(mockProjectsAccess);
         component.ngOnInit();

@@ -25,6 +25,7 @@ import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { environment } from 'src/environments/environment';
 import { FieldMappingFormComponent } from './field-mapping-form.component';
 import { of } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 const fakeKpiFieldMappingConfigList = require('../../../test/resource/fakeMappingFieldConfig.json');
@@ -135,7 +136,7 @@ const fakeSelectedFieldMapping = [
       'Chenge From' : ["abc"]
     }]
   },
-  
+
   {
     fieldName : "jiraDefectRejectionStatusDIR23",
     originalValue : ["abcd"],
@@ -245,16 +246,20 @@ const successResponse = {
       'Closed',
       'Resolved'
     ],
-   
+
     jiraBugRaisedByQACustomField: '',
     jiraBugRaisedByQAIdentification: '',
     jiraBugRaisedByQAValue: [],
     jiraDefectDroppedStatus: [],
     epicCostOfDelay: 'customfield_58102',
     epicRiskReduction: 'customfield_58101',
-   
-    
+
+
   }
+};
+
+const routerMock = {
+  navigate: jasmine.createSpy('navigate')
 };
 
 describe('FieldMappingFormComponent', () => {
@@ -265,13 +270,15 @@ describe('FieldMappingFormComponent', () => {
   let httpService: HttpService;
   let messageService: MessageService;
   let confirmationService
- 
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ FieldMappingFormComponent ],
       imports: [HttpClientTestingModule, ReactiveFormsModule],
       providers: [SharedService, HttpService, MessageService,ConfirmationService,
-        { provide: APP_CONFIG, useValue: AppConfig }]
+        { provide: APP_CONFIG, useValue: AppConfig },
+        { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
+        { provide: Router, useValue: routerMock }]
     })
     .compileComponents();
   });
@@ -287,7 +294,7 @@ describe('FieldMappingFormComponent', () => {
 
     localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
    });
-  
+
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -407,7 +414,7 @@ describe('FieldMappingFormComponent', () => {
     component.fieldMappingMetaData = dropDownMetaData.data;
     component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'workflow'});
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
+
     component.fieldMappingMetaData = dropDownMetaData;
     component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'workflow'});
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
@@ -415,7 +422,7 @@ describe('FieldMappingFormComponent', () => {
     component.fieldMappingMetaData = dropDownMetaData.data;
     component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'Issue_Link'});
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
+
     component.fieldMappingMetaData = dropDownMetaData;
     component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'Issue_Link'});
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
@@ -423,7 +430,7 @@ describe('FieldMappingFormComponent', () => {
     component.fieldMappingMetaData = dropDownMetaData.data;
     component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'Issue_Type'});
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
+
     component.fieldMappingMetaData = dropDownMetaData;
     component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'Issue_Type'});
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
@@ -496,7 +503,7 @@ describe('FieldMappingFormComponent', () => {
         fieldName : "jiraDefectDroppedStatusKPI127",
         originalValue : ['Dropped', 'Canceled'],
       },
-      
+
     ]
 
     component.selectedConfig = {
@@ -521,7 +528,7 @@ describe('FieldMappingFormComponent', () => {
     spyOn(httpService, 'getMappingTemplateFlag').and.returnValue(of(response));
     const spy = spyOn(component, 'saveFieldMapping')
     component.save();
-   
+
     spyOn<any>(confirmationService, 'confirm').and.callFake((params: any) => {
       params.accept();
       expect(spy).toHaveBeenCalled();
@@ -538,7 +545,7 @@ describe('FieldMappingFormComponent', () => {
         fieldName : "jiraDefectDroppedStatusKPI127",
         originalValue : ['Dropped', 'Canceled'],
       },
-      
+
     ]
 
     component.selectedConfig = {
@@ -576,7 +583,7 @@ describe('FieldMappingFormComponent', () => {
         fieldName : "jiraDefectDroppedStatusKPI127",
         originalValue : ['Dropped', 'Canceled'],
       },
-      
+
     ]
 
     component.selectedConfig = {

@@ -18,7 +18,7 @@
 
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-
+import { ActivatedRoute, Router } from '@angular/router';
 /*************
 SharedService
 This Service is used for sharing data and also let filter component know that
@@ -42,7 +42,7 @@ export class SharedService {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
-  iterationCongifData = new BehaviorSubject({});
+  iterationConfigData = new BehaviorSubject({});
   kpiListNewOrder = new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;
@@ -57,6 +57,8 @@ export class SharedService {
   private authToken = '';
   public sprintForRnR;
   public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
+  primaryFilterChangeSubject = new BehaviorSubject(false);
+  public kpiExcelSubject = new BehaviorSubject<{}>({});
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -126,7 +128,13 @@ export class SharedService {
   // KPI filter retention
   selectedKPIFilterObj = {};
 
-  constructor() {
+  // URL Sharing
+  selectedFilterArray: any = [];
+  selectedFilters: any = {};
+  selectedUrlFilters: string = '{}';
+  refreshCounter: number = 0;
+
+  constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
     this.passErrorToErrorPage = new EventEmitter();
@@ -244,7 +252,7 @@ export class SharedService {
   }
 
   clearLogoImage() {
-    this.subject.next();
+    this.subject.next(true);
   }
 
   getLogoImage(): Observable<any> {
@@ -362,14 +370,72 @@ export class SharedService {
     this.mapColorToProject.next(value);
   }
 
+  setBackupOfFilterSelectionState(selectedFilterObj) {
+    if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
+      this.selectedFilters = { ...selectedFilterObj };
+    } else if (selectedFilterObj) {
+      this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
+    } else {
+      this.selectedFilters = null;
+    }
+    if (!this.refreshCounter) {
+      ++this.refreshCounter;
+    } else if (this.refreshCounter) {
+
+      const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters));
+      this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters));
+      // this.setBackupOfUrlFilters('{}');
+      this.router.navigate([], {
+        queryParams: { 'stateFilters': stateFilterEnc }, // Pass the object here
+        relativeTo: this.route,
+      });
+    }
+  }
+
+  getBackupOfFilterSelectionState(prop = null) {
+    if (this.selectedFilters) {
+      if (prop) {
+        return this.selectedFilters[prop];
+      } else {
+        return this.selectedFilters;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  setBackupOfUrlFilters(data) {
+    this.selectedUrlFilters = data;
+  }
+
+  getBackupOfUrlFilters() {
+    return this.selectedUrlFilters;
+  }
+
+
+  removeQueryParams() {
+    this.router.navigate([], {
+      queryParams: {}, // Clear query params
+    });
+  }
+
   setKpiSubFilterObj(value: any) {
-    if(!value) {
+    if (!value) {
       this.selectedKPIFilterObj = {};
     } else if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
       Object.keys(value).forEach((key) => {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
+    console.log('kpiFiltes', this.selectedKPIFilterObj);
+    const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
+
+    this.router.navigate([], {
+      queryParams: { 'kpiFilters': kpiFilterParamStr }, // Pass the object here
+      relativeTo: this.route,
+      queryParamsHandling: 'merge'
+    });
+
     this.selectedFilterOption.next(value);
   }
 
@@ -425,6 +491,9 @@ export class SharedService {
     return this.selectedLevel;
   }
   setSelectedTrends(values) {
+    values.forEach(trend => {
+      trend.path = trend.path?.replace(/___/g, '###');
+    });
     this.selectedTrends = values;
     // this.selectedTrendsEvent.emit(values);
     this.selectedTrendsEventSubject.next(values);
@@ -439,18 +508,8 @@ export class SharedService {
     this.isSideNav.emit(flag);
   }
 
-  setCurrentUserDetails(details) {
-
-    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
-      this.currentUserDetails = details;
-    } else {
-      this.currentUserDetails = { ...this.currentUserDetails, ...details };
-    }
-    localStorage.setItem('currentUserDetails', JSON.stringify(this.currentUserDetails));
-    this.currentUserDetailsSubject.next(this.currentUserDetails);
-  }
-
   getCurrentUserDetails(key = null) {
+    this.currentUserDetails = JSON.parse(localStorage.getItem('currentUserDetails'));
     if (key) {
       if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
         return this.currentUserDetails[key];
@@ -583,6 +642,52 @@ export class SharedService {
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
   }
+
+  //#region  can be remove after iteraction component removal
+
+  isTrendValueListValid(trendValueList: any[]): boolean {
+    return trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1');
+  }
+
+  populateDropdownFromTrendValues(trendValueList: any[], dropdownArr: any[]): void {
+    trendValueList.forEach(item => {
+      if (!dropdownArr.includes(item?.filter1)) {
+        dropdownArr.push(item?.filter1);
+      }
+    });
+  }
+
+
+  shouldRemoveOverallFilter(kpiObj: any): boolean {
+    return (
+      kpiObj &&
+      kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') &&
+      (
+        kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'multiselectdropdown' ||
+        (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() === 'dropdown' &&
+          kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') &&
+          kpiObj['kpiDetail']['hideOverallFilter'])
+      )
+    );
+  }
+
+  removeOverallFilter(dropdownArr: any[]): void {
+    const index = dropdownArr.findIndex(x => x?.toLowerCase() === 'overall');
+    if (index > -1) {
+      dropdownArr.splice(index, 1);
+    }
+  }
+
+  createFilterObject(dropdownArr: any[]): any[] {
+    return [
+      {
+        filterType: 'Select a filter',
+        options: dropdownArr
+      }
+    ];
+  }
+
+  //#endregion
 }
 
 

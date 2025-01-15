@@ -103,13 +103,13 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         if (err.status === 401) {
                             if (requestArea === 'internal') {
                                 if (environment?.['SSO_LOGIN']) {
-                                    this.service.setCurrentUserDetails({});
+                                    this.httpService.setCurrentUserDetails({});
                                     console.log('SSO_LOGIN', true)
                                 } else {
                                     if (environment.AUTHENTICATION_SERVICE) {
                                         this.redirectToLogin();
                                     } else {
-                                        this.service.setCurrentUserDetails({});
+                                        this.httpService.setCurrentUserDetails({});
                                         this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                                     }
                                 }

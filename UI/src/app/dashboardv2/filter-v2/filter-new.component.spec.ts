@@ -68,7 +68,7 @@ describe('FilterNewComponent', () => {
         describe('Happy Path', () => {
             it('should initialize selectedTab and selectedType correctly', async () => {
                 spyOn(sharedService, 'getSelectedTab').and.returnValue('iteration');
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue(
                     'scrum',
                 );
                 spyOn(featureFlagsService, 'isFeatureEnabled').and.returnValue(true);
@@ -87,7 +87,7 @@ describe('FilterNewComponent', () => {
         describe('Edge Cases', () => {
             it('should handle null selectedTab and selectedType gracefully', async () => {
                 spyOn(sharedService, 'getSelectedTab').and.returnValue(null);
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(null);
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue(null);
                 spyOn(featureFlagsService, 'isFeatureEnabled').and.returnValue(false);
                 spyOn(sharedService, 'setRecommendationsFlag');
                 await component.ngOnInit();
@@ -379,7 +379,7 @@ describe('FilterNewComponent', () => {
             it('should set selectedType to "kanban" and update related properties', () => {
                 // Arrange
                 const type = 'kanban';
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 spyOn(sharedService, 'setScrumKanban');
                 spyOn(sharedService, 'setSelectedType');
                 // Act
@@ -391,7 +391,7 @@ describe('FilterNewComponent', () => {
                 expect(component.filterApplyData).toEqual({});
                 expect(sharedService.setSelectedType).toHaveBeenCalledWith('kanban');
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).toHaveBeenCalledWith({ selected_type: 'kanban' });
                 expect(sharedService.setScrumKanban).toHaveBeenCalledWith('kanban');
             });
@@ -399,7 +399,7 @@ describe('FilterNewComponent', () => {
             it('should set selectedType to "scrum" and update related properties', () => {
                 // Arrange
                 const type = 'scrum';
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 spyOn(sharedService, 'setScrumKanban');
                 spyOn(sharedService, 'setSelectedType');
                 // Act
@@ -411,7 +411,7 @@ describe('FilterNewComponent', () => {
                 expect(component.filterApplyData).toEqual({});
                 expect(sharedService.setSelectedType).toHaveBeenCalledWith('scrum');
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).toHaveBeenCalledWith({ selected_type: 'scrum' });
                 expect(sharedService.setScrumKanban).toHaveBeenCalledWith('scrum');
             });
@@ -421,7 +421,7 @@ describe('FilterNewComponent', () => {
             it('should handle empty string type gracefully', () => {
                 // Arrange
                 const type = '';
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 spyOn(sharedService, 'setScrumKanban');
                 spyOn(sharedService, 'setSelectedType');
 
@@ -434,7 +434,7 @@ describe('FilterNewComponent', () => {
                 expect(component.filterApplyData).toEqual({});
                 expect(sharedService.setSelectedType).toHaveBeenCalledWith('');
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).toHaveBeenCalledWith({ selected_type: '' });
                 expect(sharedService.setScrumKanban).toHaveBeenCalledWith('');
             });
@@ -835,13 +835,13 @@ describe('FilterNewComponent', () => {
                 const stateFilters = {
                     primary_level: [{ nodeId: '1', labelName: 'Project' }],
                 };
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue(
                     stateFilters,
                 );
 
                 spyOn(sharedService, 'setSelectedTrends');
 
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
 
                 // Act
                 component.removeFilter('1');
@@ -852,7 +852,7 @@ describe('FilterNewComponent', () => {
                 }));
                 expect(sharedService.setSelectedTrends).toHaveBeenCalled();
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).toHaveBeenCalled();
             });
         });
@@ -864,7 +864,7 @@ describe('FilterNewComponent', () => {
                     '1': { nodeId: '1', nodeName: 'Filter1' },
                 };
                 spyOn(sharedService, 'setSelectedTrends');
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 // Act
                 component.removeFilter('1');
 
@@ -874,7 +874,7 @@ describe('FilterNewComponent', () => {
                 }));
                 expect(sharedService.setSelectedTrends).not.toHaveBeenCalled();
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).not.toHaveBeenCalled();
             });
 
@@ -884,7 +884,7 @@ describe('FilterNewComponent', () => {
                     '1': { nodeId: '1', nodeName: 'Filter1' },
                 };
                 spyOn(sharedService, 'setSelectedTrends');
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 // Act
                 component.removeFilter('2');
 
@@ -894,7 +894,7 @@ describe('FilterNewComponent', () => {
                 }));
                 expect(sharedService.setSelectedTrends).not.toHaveBeenCalled();
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).not.toHaveBeenCalled();
             });
         });
@@ -1122,7 +1122,7 @@ describe('FilterNewComponent', () => {
                 const mockStateFilters = {
                     primary_level: [{ labelName: 'project', basicProjectConfigId: '123' }],
                 };
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue(
                     mockStateFilters as any,
                 );
                 component.filterDataArr = {
@@ -1142,7 +1142,7 @@ describe('FilterNewComponent', () => {
 
             it('should call getBoardConfig with first project ID when no state filters are available', () => {
                 // Arrange
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(null);
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue(null);
                 component.filterDataArr = {
                     scrum: {
                         Project: [{ nodeId: '123', basicProjectConfigId: '123' }],
@@ -1165,7 +1165,7 @@ describe('FilterNewComponent', () => {
                 const mockStateFilters = {
                     primary_level: [{ labelName: 'sprint', basicProjectConfigId: '123', parentId: '234' }],
                 };
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(mockStateFilters as any,);
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue(mockStateFilters as any,);
                 component.filterDataArr = {
                     scrum: {
                         Project: [{ nodeId: '234', basicProjectConfigId: '234' }],
@@ -1185,7 +1185,7 @@ describe('FilterNewComponent', () => {
                 // Arrange
                 // Arrange
                 const mockStateFilters = null;
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue(mockStateFilters as any,);
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue(mockStateFilters as any,);
                 component.filterDataArr = {
                     scrum: {
                         Project: [{ nodeId: '123', basicProjectConfigId: '123', nodeName: 'def' },
@@ -1582,9 +1582,9 @@ describe('FilterNewComponent', () => {
                         ],
                     },
                 };
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({});
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({});
                 spyOn(sharedService, 'setSelectedTrends');
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 // Act
                 component.removeFilter('1');
 
@@ -1592,7 +1592,7 @@ describe('FilterNewComponent', () => {
                 // expect(component.colorObj).not.toHaveProperty('1');
                 expect(sharedService.setSelectedTrends).toHaveBeenCalled();
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).toHaveBeenCalled();
             });
 
@@ -1612,13 +1612,13 @@ describe('FilterNewComponent', () => {
                         ],
                     },
                 };
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({
                     additional_level: {
                         nodeId: '3', nodeName: 'sprint1', labelName: 'Sprint', parentId: '1'
                     }
                 });
                 spyOn(sharedService, 'setSelectedTrends');
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 // Act
                 component.removeFilter('1');
 
@@ -1626,7 +1626,7 @@ describe('FilterNewComponent', () => {
                 // expect(component.colorObj).not.toHaveProperty('1');
                 expect(sharedService.setSelectedTrends).toHaveBeenCalled();
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).toHaveBeenCalled();
             });
 
@@ -1648,13 +1648,13 @@ describe('FilterNewComponent', () => {
                     },
                 };
                 component.filterApplyData['selectedMap'] = {};
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({
                     additional_level: {
                         nodeId: '3', nodeName: 'sprint1', labelName: 'Sprint', parentId: '1'
                     }
                 });
                 spyOn(sharedService, 'setSelectedTrends');
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 // Act
                 component.removeFilter('1');
 
@@ -1662,7 +1662,7 @@ describe('FilterNewComponent', () => {
                 // expect(component.colorObj).not.toHaveProperty('1');
                 expect(sharedService.setSelectedTrends).toHaveBeenCalled();
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).toHaveBeenCalled();
             });
         });
@@ -1680,9 +1680,9 @@ describe('FilterNewComponent', () => {
                         Project: [{ nodeId: '1', nodeName: 'Filter1', labelName: 'Project' }],
                     },
                 };
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({});
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({});
                 spyOn(sharedService, 'setSelectedTrends');
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 // Act
                 component.removeFilter('1');
 
@@ -1690,7 +1690,7 @@ describe('FilterNewComponent', () => {
                 // expect(component.colorObj).not.toHaveProperty('1');
                 expect(sharedService.setSelectedTrends).not.toHaveBeenCalled();
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).not.toHaveBeenCalled();
             });
 
@@ -1706,9 +1706,9 @@ describe('FilterNewComponent', () => {
                         Project: [{ nodeId: '1', nodeName: 'Filter1' }],
                     },
                 };
-                spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({});
+                spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({});
                 spyOn(sharedService, 'setSelectedTrends');
-                spyOn(helperService, 'setBackupOfFilterSelectionState');
+                spyOn(sharedService, 'setBackupOfFilterSelectionState');
                 // Act
                 component.removeFilter('2');
 
@@ -1716,7 +1716,7 @@ describe('FilterNewComponent', () => {
                 // expect(component.colorObj).toHaveProperty('1');
                 expect(sharedService.setSelectedTrends).not.toHaveBeenCalled();
                 expect(
-                    helperService.setBackupOfFilterSelectionState,
+                    sharedService.setBackupOfFilterSelectionState,
                 ).not.toHaveBeenCalled();
             });
         });

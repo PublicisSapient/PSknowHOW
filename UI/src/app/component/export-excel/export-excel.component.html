@@ -42,18 +42,18 @@
       <ng-template pTemplate="header">
         <tr>
           <ng-container *ngFor="let item of modalDetails['tableHeadings']">
-            <th [pSortableColumn]="item" id="{{item}}" scope="item" class="min-max-width" pReorderableColumn [pReorderableColumnDisabled]="forzenColumns.includes(item?.toLowerCase())" pFrozenColumn alignFrozen="left"
+            <th [pSortableColumn]="sortableColumn(item,modalDetails)" id="{{item}}" scope="item" class="min-max-width" pReorderableColumn [pReorderableColumnDisabled]="forzenColumns.includes(item?.toLowerCase())" pFrozenColumn alignFrozen="left"
             [frozen]="forzenColumns?.includes(item?.toLowerCase())" [ngClass]="{'overlap': filteredColumn === item,'move-top':forzenColumns?.includes(item?.toLowerCase())}" 
             [ngStyle]="{'min-width': modalDetails['tableHeadings']?.length < 4  ? '380px' : '190px'}">
               <div class="table-head" >
-                <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
+                <span [ngStyle]="{'width':'max-content'}">{{item}}</span>
                 <div class="p-d-flex">
-                  <p-columnFilter [field]="item" matchMode="in" *ngIf="!excludeColumnFilter.includes(item)"
+                  <p-columnFilter [field]="item" matchMode="in"
                     [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
                     [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
                       <p-multiSelect resetFilterOnHide="true" autofocusFilter="true" (onPanelShow)="onFilterClick(item)"
-                        (onPanelHide)="onFilterBlur(item)" [options]="this.tableColumnData[item]"
+                        (onPanelHide)="onFilterBlur(item)" [options]="tableColumnData[item]"
                         [placeholder]="'Select '+ item" (onChange)="filter($event.value)" [optionValue]="'value'"
                         [optionLabel]="'name'" [ngModel]="tableColumnForm[item]" styleClass="column-filter">
                         <ng-template pTemplate="selectedItems">
@@ -62,7 +62,7 @@
                       </p-multiSelect>
                     </ng-template>
                   </p-columnFilter>
-                  <p-sortIcon [field]="item" *ngIf="!excludeColumnFilter.includes(item)" ></p-sortIcon>
+                  <p-sortIcon [field]="sortableColumn(item,modalDetails)" ></p-sortIcon>
                 </div>
               </div>
             </th>

@@ -1,0 +1,24 @@
+<div class="p-px-3 p-py-0" [ngSwitch]="chartType">
+  <app-stacked-bar-chart *ngSwitchCase="'stacked-bar-chart'" [data]="chartData" [width]="chartWidth"
+    [height]="chartHeight"></app-stacked-bar-chart>
+  <app-barchart [data]="chartData" [height]="chartHeight" [width]="chartWidth"
+    *ngSwitchCase="'bar-chart'"></app-barchart>
+  <app-stacked-bar *ngSwitchCase="'stacked-bar'" [data]="chartData" [width]="chartWidth"
+    [height]="chartHeight"></app-stacked-bar>
+  <app-semi-circle-donut-chart *ngSwitchCase="'semi-circle-donut-chart'" [value]="chartData" [max]="100"
+    [width]="chartWidth" [height]="chartHeight"></app-semi-circle-donut-chart>
+  <app-chart-with-filters [data]="chartData" *ngSwitchCase="'chartWithFilter'" [filters]="chartData?.filterGroup"
+  [selectedTab]="'iteration'" [category]="chartData?.category" [kpiName]="kpiName" [kpiId]="kpiId">
+  </app-chart-with-filters>
+  <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'"
+    [data]="chartData" [filters]="[]" [kpiId]="kpiId"
+    [xCaption]="kpiDetails?.xaxisLabel" [yCaption]="kpiDetails?.yaxisLabel">
+  </app-cumulative-line-chart>
+  <app-tabular-kpi-v2 *ngSwitchCase="'table-v2'"
+  [data]="chartData" [kpiId]="kpiId" [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
+  <app-tabular-kpi-v2 *ngSwitchCase="'tableNonRawData'"
+  [data]="chartData" [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
+  <app-tabular-kpi-with-donut-chart *ngSwitchCase="'tabular-with-donut-chart'" [data]="chartData"></app-tabular-kpi-with-donut-chart>
+  <app-grouped-bar-chart *ngSwitchCase="'grouped-bar-chart'" [filters]="chartData.categoryData.categoryGroup" [data]="chartData"></app-grouped-bar-chart>
+  <div *ngSwitchDefault>{{ chartType }}</div>
+</div>
