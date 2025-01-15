@@ -1305,6 +1305,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
+/**
+   * Sets the default KPI filters based on the provided KPI ID, filter properties, and filter type.
+   * It populates the kpiSelectedFilterObj with default options from kpiDropdowns.
+   * 
+   * @param {string} kpiId - The ID of the KPI for which to set filters.
+   * @param {string[]} filterPropArr - An array of filter property names to determine filter behavior.
+   * @param {string} [filterType] - The type of filter to apply (optional).
+   * @returns {void}
+   */
   getDefaultKPIFiltersForRelease(kpiId, filterPropArr, filterType) {
     if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
       if (filterPropArr.includes('filter')) {

@@ -13727,6 +13727,62 @@ describe('ExecutiveV2Component', () => {
       });
     });
   });
+
+  it('should set the default filter for a single option when filterPropArr includes "filter" and filterType is not "multiselectdropdown"', () => {
+    component.kpiDropdowns = {
+      'kpi1': [{ options: ['option1', 'option2'] }],
+      'kpi2': [{ options: ['option1'] }, { options: ['option2'] }]
+    };
+    component.kpiSelectedFilterObj = {};
+    component.getDefaultKPIFiltersForRelease('kpi1', ['filter'], 'singleselect');
+    expect(component.kpiSelectedFilterObj['kpi1']).toEqual(['option1']);
+  });
+
+  it('should set the default filter for a single option when filterPropArr includes "filter" and filterType is undefined', () => {
+    component.kpiDropdowns = {
+      'kpi1': [{ options: ['option1', 'option2'] }],
+      'kpi2': [{ options: ['option1'] }, { options: ['option2'] }]
+    };
+    component.kpiSelectedFilterObj = {};
+    component.getDefaultKPIFiltersForRelease('kpi1', ['filter'], undefined);
+    expect(component.kpiSelectedFilterObj['kpi1']).toEqual(['option1']);
+  });
+
+  it('should set the default filter for multiple options when filterPropArr includes "filter1" and "filter2"', () => {
+    component.kpiDropdowns = {
+      'kpi1': [{ options: ['option1', 'option2'] }],
+      'kpi2': [{ options: ['option1'] }, { options: ['option2'] }]
+    };
+    component.kpiSelectedFilterObj = {};
+    component.getDefaultKPIFiltersForRelease('kpi2', ['filter1', 'filter2'], undefined);
+    expect(component.kpiSelectedFilterObj['kpi2']).toEqual({
+      'filter1': ['option1'],
+      'filter2': ['option2']
+    });
+  });
+
+  // Edge Case Tests
+  it('should set an empty array when filterPropArr includes "filter" and filterType is "multiselectdropdown"', () => {
+    component.kpiDropdowns = {
+      'kpi1': [{ options: ['option1', 'option2'] }],
+      'kpi2': [{ options: ['option1'] }, { options: ['option2'] }]
+    };
+    component.kpiSelectedFilterObj = {};
+    component.getDefaultKPIFiltersForRelease('kpi1', ['filter'], 'multiselectdropdown');
+    expect(component.kpiSelectedFilterObj['kpi1']).toEqual([]);
+  });
+
+  it('should handle empty kpiDropdowns gracefully', () => {
+    component.kpiDropdowns = {};
+    component.getDefaultKPIFiltersForRelease('kpi1', ['filter'], undefined);
+    expect(component.kpiSelectedFilterObj['kpi1']).toBeUndefined();
+  });
+
+  it('should handle missing options in kpiDropdowns gracefully', () => {
+    component.kpiDropdowns = { 'kpi1': [{}] };
+    component.getDefaultKPIFiltersForRelease('kpi1', ['filter'], undefined);
+    expect(component.kpiSelectedFilterObj['kpi1']).toBeUndefined();
+  });
 });
 
 
