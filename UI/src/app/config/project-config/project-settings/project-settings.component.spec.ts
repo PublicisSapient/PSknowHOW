@@ -411,7 +411,7 @@ describe('ProjectSettingsComponent', () => {
   });
 
   it('should call sharedService.setCurrentUserDetails with updated projects when deletion is successful', () => {
-    const setCurrentUserDetailsSpy = spyOn(sharedService, 'setCurrentUserDetails');
+    const setCurrentUserDetailsSpy = spyOn(httpService, 'setCurrentUserDetails');
     component.deleteProject({ id: 1, name: 'Test Project' });
     confirmationService.confirm({
       message: component.getAlertMessageOnClickDelete(),
@@ -696,7 +696,7 @@ describe('ProjectSettingsComponent', () => {
         params.accept();
       });
       spyOn(component.sharedService, 'getCurrentUserDetails').and.returnValue({ projectsAccess: [{ projects: [{ projectId: 1 }] }] });
-      spyOn(component.sharedService, 'setCurrentUserDetails');
+      spyOn(component.httpService, 'setCurrentUserDetails');
 
       component.deleteProject({ name: 'Test Project', id: 1 });
 
@@ -830,7 +830,7 @@ describe('ProjectSettingsComponent', () => {
             ]
           }
         ]);
-        spyOn(sharedService, 'setCurrentUserDetails');
+        spyOn(httpService, 'setCurrentUserDetails');
         spyOn<any>(
           confirmationService,
           'confirm',
@@ -846,7 +846,7 @@ describe('ProjectSettingsComponent', () => {
         expect(confirmationService.confirm).toHaveBeenCalled();
         expect(httpService.deleteProject).toHaveBeenCalledWith(project);
         expect(routerSpy.navigate).toHaveBeenCalled();
-        expect(sharedService.setCurrentUserDetails).toHaveBeenCalledWith({
+        expect(httpService.setCurrentUserDetails).toHaveBeenCalledWith({
           projectsAccess: [
             {
               "role": "ROLE_PROJECT_VIEWER",

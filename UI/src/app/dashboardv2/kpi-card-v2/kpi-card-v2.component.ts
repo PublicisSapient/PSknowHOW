@@ -102,7 +102,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       if (x && Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
-          if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
+          if (Array.isArray(x[this.kpiData?.kpiId][key]) && x[this.kpiData?.kpiId][key]?.includes('Overall')) {
             if (this.kpiData?.kpiId === "kpi72") {
               if (key === "filter1") {
                 this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
@@ -132,8 +132,10 @@ export class KpiCardV2Component implements OnInit, OnChanges {
             }
           }
         }
-        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
-          this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+        if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' || this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters') ) {
+          if (this.kpiSelectedFilterObj[this.kpiData?.kpiId]) {
+            this.radioOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]?.hasOwnProperty('filter1') ? (this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters' ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0]) : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+          }
         }
       }
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
@@ -153,7 +155,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.onOpenFieldMappingDialog();
         },
-        disabled: this.disableSettings || this.service.getSelectedType()?.toLowerCase() === 'kanban'
+        disabled: this.disableSettings
       },
       {
         label: 'List View',
@@ -247,6 +249,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.currentChartData = this.prepareChartData(
         this.cardData,
         this.colorPalette,
+        this.cardData.kpiId === "kpi128"?this.cardData?.categoryData?.categoryGroup[0]?.categoryName:''
       );
     }
 
@@ -304,7 +307,12 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     if (typeof value === 'object') {
       value = value?.value;
     }
-    if (value && type?.toLowerCase() == 'radio') {
+    if(this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'multitypefilters'){
+      if(value && type?.toLowerCase() === 'radio'){
+        this.filterOptions['filter'+(filterIndex+1)] = [value];
+      }
+    }
+    if (value && type?.toLowerCase() == 'radio' && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters') {
       this.optionSelected.emit(value);
     } else if (type?.toLowerCase() == 'single') {
       this.optionSelected.emit(this.filterOptions);
@@ -332,6 +340,9 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }
       this.optionSelected.emit(['Overall']);
+    }else if(this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() !== 'multitypefilters'){
+      this.filterOptions[event] = [];
+      this.optionSelected.emit(this.filterOptions);
     } else {
       // hacky way - clear All sets null value, which we want to avoid
       for (const key in this.filterOptions) {
@@ -359,7 +370,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     const selectedTab = this.service.getSelectedTab()?.toLowerCase();
     const selectedType = this.service.getSelectedType()?.toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedType === 'scrum' && selectedTrend.length == 1 || selectedTab === 'release') {
+    if (selectedTrend.length == 1 || selectedTab === 'release') {
       this.loadingKPIConfig = true;
       this.noDataKPIConfig = false;
       this.displayConfigModel = true;
@@ -586,38 +597,29 @@ export class KpiCardV2Component implements OnInit, OnChanges {
      * @returns void
      * @throws None
      */
-  onFilterChange(event) {
-    const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
-    if (selectedKeyObj && selectedKeyObj['Category'] !== 'value') {
-      const filterIssues = this.applyDynamicfilter(
-        this.cardData.issueData,
-        [selectedKeyObj, ...Object.entries(updatedEvent).map(([key, value]) => {
-          return { [key]: value };
-        })]
-      );
-      this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
-      this.currentChartData = this.prepareChartData(
-        this.copyCardData,
-        this.colorPalette,
-        selectedKey
-      );
-    } else {
-      const filterIssues = this.applyDynamicfilter(
-        this.cardData.issueData,
-        Object.entries(updatedEvent).map(([key, value]) => {
-          return { [key]: value };
-        })
-      );
-      this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+onFilterChange(event) {
+  const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
 
-      this.currentChartData = this.prepareChartData(
-        this.copyCardData,
-        this.colorPalette,
-        'value'
-      );
-    }
-    this.selectedButtonValue = selectedKeyObj;
-  }
+  // Dynamically determine the exclusion value
+  const exclusionValue = selectedKeyObj?.Category;
+
+  const filters = [
+    ...Object.entries({ ...updatedEvent, ...selectedKeyObj }).map(([key, value]) => ({ [key]: value }))
+  ];
+
+  // Apply dynamic filters
+  const filterIssues = this.applyDynamicfilter(this.cardData.issueData, filters.filter(item => !(item.Category && item.Category === exclusionValue)));
+
+  // Update filtered data
+  this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+
+  // Prepare chart data using the appropriate key
+  const chartKey = selectedKeyObj?.Category !== exclusionValue ? selectedKey : exclusionValue;
+  this.currentChartData = this.prepareChartData(this.copyCardData, this.colorPalette, chartKey);
+
+  // Update selected button value
+  this.selectedButtonValue = selectedKeyObj;
+}
 
 /**
      * Resets the filter by restoring the original issue data and preparing the chart data.

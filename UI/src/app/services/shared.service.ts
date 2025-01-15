@@ -57,6 +57,7 @@ export class SharedService {
   private authToken = '';
   public sprintForRnR;
   public dateFilterSelectedDateType = new BehaviorSubject<String>('Weeks');
+  primaryFilterChangeSubject = new BehaviorSubject(false);
   public kpiExcelSubject = new BehaviorSubject<{}>({});
 
   // make filterdata and masterdata persistent across dashboards
@@ -369,7 +370,7 @@ export class SharedService {
     this.mapColorToProject.next(value);
   }
 
-  setBackupOfFilterSelectionState = (selectedFilterObj) => {
+  setBackupOfFilterSelectionState(selectedFilterObj) {
     if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
       this.selectedFilters = { ...selectedFilterObj };
     } else if (selectedFilterObj) {
@@ -391,7 +392,7 @@ export class SharedService {
     }
   }
 
-  getBackupOfFilterSelectionState = (prop = null) => {
+  getBackupOfFilterSelectionState(prop = null) {
     if (this.selectedFilters) {
       if (prop) {
         return this.selectedFilters[prop];
@@ -426,7 +427,7 @@ export class SharedService {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
-
+    console.log('kpiFiltes', this.selectedKPIFilterObj);
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
     this.router.navigate([], {
@@ -507,18 +508,8 @@ export class SharedService {
     this.isSideNav.emit(flag);
   }
 
-  setCurrentUserDetails(details) {
-
-    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
-      this.currentUserDetails = details;
-    } else {
-      this.currentUserDetails = { ...this.currentUserDetails, ...details };
-    }
-    localStorage.setItem('currentUserDetails', JSON.stringify(this.currentUserDetails));
-    this.currentUserDetailsSubject.next(this.currentUserDetails);
-  }
-
   getCurrentUserDetails(key = null) {
+    this.currentUserDetails = JSON.parse(localStorage.getItem('currentUserDetails'));
     if (key) {
       if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
         return this.currentUserDetails[key];

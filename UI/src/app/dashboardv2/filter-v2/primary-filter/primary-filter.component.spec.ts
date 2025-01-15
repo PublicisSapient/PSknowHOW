@@ -49,11 +49,11 @@ describe('PrimaryFilterComponent', () => {
     helperService = TestBed.inject(HelperService);
     component.multiSelect = mockMultiSelect as any;
 
-    spyOn(helperService, 'getBackupOfUrlFilters').and.returnValue(null);
-    spyOn(helperService, 'getBackupOfFilterSelectionState').and.returnValue({
+    spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(null);
+    spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({
       primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }]
     });
-    spyOn(helperService, 'setBackupOfFilterSelectionState').and.callThrough();
+    spyOn(sharedService, 'setBackupOfFilterSelectionState').and.callThrough();
 
     component.primaryFilterConfig = {
       defaultLevel: {
@@ -362,6 +362,8 @@ describe('PrimaryFilterComponent', () => {
         ],
       };
 
+      // spyOn(sharedService, 'setBackupOfFilterSelectionState');
+
       // Call the method under test
       component.selectedFilters = [];
 
@@ -377,14 +379,14 @@ describe('PrimaryFilterComponent', () => {
         // Handle case where no valid selected filters are found
         if (!component.selectedFilters?.length || !component.selectedFilters[0]) {
           component.selectedFilters = [component.filters[0]]; // Default to the first filter
-          helperService.setBackupOfFilterSelectionState({ primary_level: null });
+          sharedService.setBackupOfFilterSelectionState({ primary_level: null });
         }
       }
 
       // Expectations
       expect(component.selectedFilters.length).toBe(1);
       expect(component.selectedFilters[0]).toEqual({ nodeId: '1', labelName: 'Project 1' });
-      expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
+      expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({
         primary_level: null,
       });
     });
@@ -681,7 +683,7 @@ describe('PrimaryFilterComponent', () => {
     });
   });
 
-  /*describe('applyDefaultFilters', () => {
+  describe('applyDefaultFilters', () => {
     it('should set selectedFilters based on stateFilters primary_level when conditions are met', (done) => {
       component.hierarchyLevels = ['Level 1', 'Level 2'];
       component.selectedLevel = 'Level 1';
@@ -769,12 +771,12 @@ describe('PrimaryFilterComponent', () => {
       component.applyDefaultFilters();
 
       setTimeout(() => {
-        expect(component.selectedFilters).toEqual([{ nodeId: 1, labelName: 'Level 1', path: undefined }]);
+        expect(component.selectedFilters).toEqual([{ nodeId: 1, labelName: 'Level 1' }]);
         expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith({
           additional_level: {
             primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }]
           },
-          primary_level: [{ nodeId: 1, labelName: 'Level 1', path: undefined }]
+          primary_level: [{ nodeId: 1, labelName: 'Level 1' }]
         });
         done();
       }, 200);
@@ -812,7 +814,7 @@ describe('PrimaryFilterComponent', () => {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',
       };
-      component.helperService.setBackupOfFilterSelectionState({
+      component.service.setBackupOfFilterSelectionState({
         primary_level: [{ labelName: 'sprint', nodeId: 1 }],
       });
       spyOn(component, 'applyPrimaryFilters');
@@ -869,7 +871,7 @@ describe('PrimaryFilterComponent', () => {
         done();
       }, 200);
     });
-  });*/
+  });
 
   it('should reset the component state', () => {
     component.filters = ['filter1', 'filter2'];
@@ -880,7 +882,7 @@ describe('PrimaryFilterComponent', () => {
     component.reset();
 
     expect(component.selectedFilters).toEqual(['filter1']);
-    expect(helperService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
+    expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ 'parent_level': null, 'primary_level': null });
     expect(component.applyPrimaryFilters).toHaveBeenCalledWith({});
   });
 

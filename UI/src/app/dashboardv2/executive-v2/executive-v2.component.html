@@ -424,7 +424,8 @@
 
 <app-export-excel #exportExcel></app-export-excel>
 
-<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2">
+<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2 && this.filterApplyData?.label === 'project' && 
+!(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer')" >
     <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
 </ng-container>
 

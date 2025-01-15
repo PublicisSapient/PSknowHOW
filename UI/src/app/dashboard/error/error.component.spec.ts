@@ -27,7 +27,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { Subscription, timer } from 'rxjs';
 import { ExecutiveV2Component } from 'src/app/dashboardv2/executive-v2/executive-v2.component';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ErrorComponent', () => {
   const routes: Routes = [
@@ -45,7 +45,7 @@ describe('ErrorComponent', () => {
         FormsModule,
         CommonModule,
         RouterTestingModule.withRoutes(routes),
-
+        HttpClientTestingModule
       ],
       providers: [HttpService, SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },

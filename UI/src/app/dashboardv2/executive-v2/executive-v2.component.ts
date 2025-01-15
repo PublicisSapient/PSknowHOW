@@ -127,9 +127,78 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef, private router: Router) {
+    
+  }
+
+  arrayDeepCompare(a1, a2) {
+    for (let idx = 0; idx < a1.length; idx++) {
+      if (!this.helperService.deepEqual(a1[idx], a2[idx])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  resetToDefaults() {
+    this.noFilterApplyData = false;
+    this.kpiLoader = new Set();
+    this.kpiStatusCodeArr = {};
+    this.immediateLoader = true;
+    this.processedKPI11Value = {};
+    this.selectedBranchFilter = 'Select';
+    this.serviceObject = {};
+    // this.selectedtype = 'scrum';
+  }
+
+  setGlobalConfigData(globalConfig) {
+    this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    if (!this.configGlobalData) {
+      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    }
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+  }
+
+  processKpiConfigData() {
+    const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
+    // user can enable kpis from show/hide filter, added below flag to show different message to the user
+    this.enableByUser = disabledKpis?.length ? true : false;
+    // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+    let visibleKpis = this.configGlobalData?.filter(item => item.isEnabled);
+    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
+    if (this.updatedConfigGlobalData?.length === 0 || visibleKpis?.length === 0) {
+      this.noKpis = true;
+      if (this.updatedConfigGlobalData?.length && visibleKpis?.length === 0) {
+        this.enableByUser = true;
+      } else {
+        this.enableByUser = false;
+      }
+    } else {
+      this.noKpis = false;
+      this.enableByUser = false;
+    }
+
+    this.maturityTableKpiList = []
+    this.configGlobalData?.forEach(element => {
+      if (element.shown && element.isEnabled) {
+        this.kpiConfigData[element.kpiId] = true;
+        if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
+          if (this.selectedTab !== 'iteration') {
+            this.createTrendsData(element.kpiId);
+          }
+          this.handleMaturityTableLoader();
+        }
+      } else {
+        this.kpiConfigData[element.kpiId] = false;
+      }
+    });
+  }
+
+
+  ngOnInit() {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
-
+    
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.resetToDefaults();
       this.selectedtype = data.selectedType;
@@ -219,76 +288,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         localStorage.setItem('selectedTrend', JSON.stringify(trend));
       }
     }));
-  }
-
-  arrayDeepCompare(a1, a2) {
-    for (let idx = 0; idx < a1.length; idx++) {
-      if (!this.helperService.deepEqual(a1[idx], a2[idx])) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  resetToDefaults() {
-    this.noFilterApplyData = false;
-    this.kpiLoader = new Set();
-    this.kpiStatusCodeArr = {};
-    this.immediateLoader = true;
-    this.processedKPI11Value = {};
-    this.selectedBranchFilter = 'Select';
-    this.serviceObject = {};
-    // this.selectedtype = 'scrum';
-  }
-
-  setGlobalConfigData(globalConfig) {
-    // this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    let dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
-    this.configGlobalData = dummyData.data.userBoardConfigDTO[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    if (!this.configGlobalData) {
-      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    }
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-  }
-
-  processKpiConfigData() {
-    const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
-    // user can enable kpis from show/hide filter, added below flag to show different message to the user
-    this.enableByUser = disabledKpis?.length ? true : false;
-    // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-    let visibleKpis = this.configGlobalData?.filter(item => item.isEnabled);
-    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
-    if (this.updatedConfigGlobalData?.length === 0 || visibleKpis?.length === 0) {
-      this.noKpis = true;
-      if (this.updatedConfigGlobalData?.length && visibleKpis?.length === 0) {
-        this.enableByUser = true;
-      } else {
-        this.enableByUser = false;
-      }
-    } else {
-      this.noKpis = false;
-      this.enableByUser = false;
-    }
-
-    this.maturityTableKpiList = []
-    this.configGlobalData?.forEach(element => {
-      if (element.shown && element.isEnabled) {
-        this.kpiConfigData[element.kpiId] = true;
-        if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
-          if (this.selectedTab !== 'iteration') {
-            this.createTrendsData(element.kpiId);
-          }
-          this.handleMaturityTableLoader();
-        }
-      } else {
-        this.kpiConfigData[element.kpiId] = false;
-      }
-    });
-  }
-
-
-  ngOnInit() {
     /** Get recommendations flag */
     this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
       this.isRecommendationsEnabled = item;
@@ -305,7 +304,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (this.selectedTab.toLowerCase() === 'developer') {
       this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
         Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
-          this.handleSelectedOption(data, kpi);
+          Promise.resolve().then(() => {
+            this.handleSelectedOption(data, kpi);
+          });
         });
       }));
     }
@@ -1167,9 +1168,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
             const preAggregatedValues = [];
             for (let i = 0; i < tempArr?.length; i++) {
-              preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
+              preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == (tempArr[i]?.filter1.length ? tempArr[i]?.filter1 : 'Overall') && k['filter2'] == tempArr[i]?.filter2));
             }
-            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
+            if(preAggregatedValues && preAggregatedValues.length >1){
+              const transformFilter = {}
+              preAggregatedValues.forEach(obj=>{
+                transformFilter[obj.filter1+'and'+obj.filter2] = obj.value
+              })
+              this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(transformFilter, aggregationType, this.tooltip.percentile);
+            }else{
+              this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
+            }
           }
           else if (filterPropArr.includes('filter1')
             || filterPropArr.includes('filter2')) {
@@ -1268,7 +1277,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (this.kpiDropdowns[kpiId]?.length > 1) {
           this.kpiSelectedFilterObj[kpiId] = {};
           for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-            this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+            if (filterType?.toLowerCase() === 'multitypefilters') {
+              if (this.kpiDropdowns[kpiId][i].filterType.toLowerCase() === 'radiobtn') {
+                this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+              } else {
+                this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [];
+              }
+            } else {
+              this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+            }
           }
         }
       } else {
@@ -1288,6 +1305,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
+/**
+   * Sets the default KPI filters based on the provided KPI ID, filter properties, and filter type.
+   * It populates the kpiSelectedFilterObj with default options from kpiDropdowns.
+   * 
+   * @param {string} kpiId - The ID of the KPI for which to set filters.
+   * @param {string[]} filterPropArr - An array of filter property names to determine filter behavior.
+   * @param {string} [filterType] - The type of filter to apply (optional).
+   * @returns {void}
+   */
   getDefaultKPIFiltersForRelease(kpiId, filterPropArr, filterType) {
     if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
       if (filterPropArr.includes('filter')) {
@@ -1707,11 +1733,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   createCombinations(arr1, arr2) {
     let arr = [];
-    for (let i = 0; i < arr1?.length; i++) {
-      for (let j = 0; j < arr2?.length; j++) {
-        arr.push({ filter1: arr1[i], filter2: arr2[j] });
+    if (arr1?.length > 0) {
+      for (let i = 0; i < arr1?.length; i++) {
+        for (let j = 0; j < arr2?.length; j++) {
+          arr.push({ filter1: arr1[i], filter2: arr2[j] });
+        }
       }
+    } else {
+      /** Handled for Multi Type Dropdown */
+      return [
+        {
+          filter1: [],
+          filter2: arr2
+        }
+      ]
     }
+    
     return arr;
   }
 
@@ -2317,12 +2354,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
 
         this.kpiDropdowns[kpiId] = [];
-        dropdownArr.forEach(arr => {
+        dropdownArr.forEach((arr,i) => {
           arr = Array.from(arr);
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
           if (this.selectedTab.toLowerCase() !== 'developer' || kpiId !== 'kpi168') {
-            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown')) {
+            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && ((kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown') || kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multitypefilters')) {
               const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
               if (index > -1) {
                 arr?.splice(index, 1);
@@ -2330,7 +2367,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           }
 
-          obj['filterType'] = 'Select a filter';
+          if(this.allKpiArray[idx]?.filters){
+            const filterConfig = this.allKpiArray[idx].filters;
+            obj['filterType'] = filterConfig['filter'+(i+1)]?.filterType ? filterConfig['filter'+(i+1)]?.filterType : 'Select a filter';
+          }else{
+            obj['filterType'] = 'Select a filter';
+          }
           if (arr.length > 0) {
             arr.sort((a, b) => {
               if (a === "Overall") {
@@ -2455,6 +2497,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
         }
+      }else if(kpi?.kpiDetail?.kpiFilter && kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multitypefilters' ){
+        this.kpiSelectedFilterObj[kpi?.kpiId]  = event;
       }
       else {
         if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {

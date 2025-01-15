@@ -8,6 +8,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { APP_CONFIG, AppConfig } from 'src/app/services/app.config';
 import { SharedService } from '../../services/shared.service';
 import { MessageService } from 'primeng/api';
+import { ActivatedRoute } from '@angular/router';
 
 describe('RecommendationsComponent', () => {
   let component: RecommendationsComponent;
@@ -31,55 +32,60 @@ describe('RecommendationsComponent', () => {
     "label": "sprint"
   };
   const recommendationsRes = [{
-      "projectId": "xyz",
-      "sprintId": "xyz_123",
-      "recommendations": [
-          {
-              "kpiId": "kpi14",
-              "kpiName": "KPI name for kpi14",
-              "maturity": 3,
-              "recommendationSummary": "The project quality can be improved!",
-              "recommendationDetails": "The last data has showed a decrease in the quality of the project for the last sprints!",
-              "recommendationType": "Warnings",
-              "filter": "Overall"
-          },
-          {
-              "kpiId": "kpi35",
-              "kpiName": "KPI name for kpi35",
-              "maturity": 5,
-              "recommendationSummary": "Nice job!",
-              "recommendationDetails": "The team did a great job during the last sprints!",
-              "recommendationType": "Good Practices",
-              "filter": "Overall"
-          },
-          {
-            "kpiId": "kpi11",
-            "kpiName": "KPI name for kpi11",
-            "maturity": 5,
-            "recommendationSummary": "Nice job!",
-            "recommendationDetails": "The team did a great job during the last sprints!",
-            "recommendationType": "Critical",
-            "filter": "Overall"
-          },
-        ]
-    }]
+    "projectId": "xyz",
+    "sprintId": "xyz_123",
+    "recommendations": [
+      {
+        "kpiId": "kpi14",
+        "kpiName": "KPI name for kpi14",
+        "maturity": 3,
+        "recommendationSummary": "The project quality can be improved!",
+        "recommendationDetails": "The last data has showed a decrease in the quality of the project for the last sprints!",
+        "recommendationType": "Warnings",
+        "filter": "Overall"
+      },
+      {
+        "kpiId": "kpi35",
+        "kpiName": "KPI name for kpi35",
+        "maturity": 5,
+        "recommendationSummary": "Nice job!",
+        "recommendationDetails": "The team did a great job during the last sprints!",
+        "recommendationType": "Good Practices",
+        "filter": "Overall"
+      },
+      {
+        "kpiId": "kpi11",
+        "kpiName": "KPI name for kpi11",
+        "maturity": 5,
+        "recommendationSummary": "Nice job!",
+        "recommendationDetails": "The team did a great job during the last sprints!",
+        "recommendationType": "Critical",
+        "filter": "Overall"
+      },
+    ]
+  }]
 
   beforeEach(async () => {
-    service = new SharedService();
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule
       ],
-      declarations: [ RecommendationsComponent ],
+      declarations: [RecommendationsComponent],
       providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParams: of({ toolName: 'Jira', tab: '2' }),
+          },
+        },
         HttpService,
-        { provide: SharedService, useValue: service },
+        SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },
         MessageService
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
     service = TestBed.inject(SharedService);
     messageService = TestBed.inject(MessageService);
     fixture = TestBed.createComponent(RecommendationsComponent);
@@ -94,7 +100,7 @@ describe('RecommendationsComponent', () => {
 
   it('should get recommendations based on kpiIdList', fakeAsync(() => {
     component.selectedSprint = {};
-    const sprintObj = { nodeId: 'xyz_123', 'nodeName':'xyz' };
+    const sprintObj = { nodeId: 'xyz_123', 'nodeName': 'xyz' };
     spyOn(service, 'getSprintForRnR').and.returnValue(sprintObj);
     component.filterData = filterData;
     component.displayModal = true;
@@ -116,7 +122,8 @@ describe('RecommendationsComponent', () => {
     // spyOn(component, 'handleClick').and.callThrough();
     const spy = spyOn(httpService, 'getRecommendations').and.returnValue(throwError(errorMessage));
     const messageSpy = spyOn(messageService, 'add');
-
+    const sprintObj = { nodeId: 'xyz_123', 'nodeName': 'xyz' };
+    spyOn(service, 'getSprintForRnR').and.returnValue(sprintObj);
     // Act
     component.handleClick();
     tick();
