@@ -45,7 +45,8 @@ public class IntegerateHierarchySceduler {
 		String apiUrl = "https://hierarchy.tools.publicis.sapient.com/api/data/fetch/hierarchy/MAP/SF360Hierarchy";
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("x-api-key", "m3CX00mSp+Nh5pKddkp5XpQQxHXCGg6U");
+		//add x-api-key
+	
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
