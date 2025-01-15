@@ -13783,6 +13783,49 @@ describe('ExecutiveV2Component', () => {
     component.getDefaultKPIFiltersForRelease('kpi1', ['filter'], undefined);
     expect(component.kpiSelectedFilterObj['kpi1']).toBeUndefined();
   });
+
+  describe('ExecutiveV2Component.ngOnInit() ngOnInit method', () => {
+    describe('Happy paths', () => {    
+      it('should subscribe to globalDashConfigData and process KPI config data', (done) => {
+        // Arrange
+        component.selectedtype = 'scrum';
+        const globalConfig = { scrum: [
+          { boardName: 'Tab1', boardSlug: 'Tab1', kpis: [] }],
+          kanban: [], others: [], enabledKPIs: [
+           'kpi1', 'kpi2'
+            ] };
+        spyOn(component, 'processKpiConfigData' as any);
+        spyOn(component, 'setUpTabs' as any);
+        spyOn(component, 'reloadKPI' as any);
+  
+        // Act
+        component.ngOnInit();
+        service.globalDashConfigData.next(globalConfig);
+  
+        // Assert
+        setTimeout(() => {
+          expect(component.processKpiConfigData).toHaveBeenCalled();
+          expect(component.setUpTabs).toHaveBeenCalled();
+          expect(component.reloadKPI).toHaveBeenCalledWith('kpi1');
+          expect(component.reloadKPI).toHaveBeenCalledWith('kpi2');
+          done();
+        }, 500);
+      });
+    });
+  
+    describe('Edge cases', () => {
+      it('should handle empty selectedTrends from localStorage', () => {
+        // Arrange
+        spyOn(localStorage, 'getItem').and.returnValue(null);
+  
+        // Act
+        component.ngOnInit();
+  
+        // Assert
+        expect(component.selectedTrend).toEqual([]);
+      });
+    });
+  });
 });
 
 
