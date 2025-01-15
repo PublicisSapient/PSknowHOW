@@ -86,7 +86,6 @@ export class PrimaryFilterComponent implements OnChanges {
               // reset
               this.reset();
               return;
-
             }
           } else {
             if (this.stateFilters && this.stateFilters['parent_level'] && this.stateFilters['parent_level']?.labelName?.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase()) {

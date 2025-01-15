@@ -915,6 +915,16 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     if (this.selectedTab?.toLowerCase() === 'backlog') {
       this.filterApplyData['selectedMap']['sprint'] = [];
       this.filterApplyData['selectedMap']['sprint']?.push(...this.filterDataArr[this.selectedType]['sprint']?.filter((x) => x['parentId']?.includes(event[0].nodeId) && x['sprintState']?.toLowerCase() == 'closed').map(de => de.nodeId));
+    } else {
+      if (this.selectedTab?.toLowerCase() === 'iteration') {
+        this.filterApplyData['selectedMap']['sprint'] = [];
+        let sprints = this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['parentId'] === event[0].parentId && x['sprintState']?.toLowerCase() == 'active');
+        sprints = this.helperService.sortByField(sprints, [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
+        
+        if (sprints.length) {
+          this.filterApplyData['selectedMap']['sprint'].push(...sprints[0].map(de => de.nodeId));
+        }
+      }
     }
 
     this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
