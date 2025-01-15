@@ -119,6 +119,47 @@ export class AppComponent implements OnInit {
       }
 
     });
+
+    const url = localStorage.getItem('shared_link');
+    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects;
+    if (url) {
+      // Extract query parameters
+      const queryParams = new URLSearchParams(url.split('?')[1]);
+      const stateFilters = queryParams.get('stateFilters');
+
+      if (stateFilters) {
+        const decodedStateFilters = atob(stateFilters);
+        const stateFiltersObj = JSON.parse(decodedStateFilters);
+
+        // console.log('Decoded State Filters Object:', stateFiltersObj);
+        let stateFilterObj = [];
+
+        if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
+          stateFilterObj = [stateFiltersObj['parent_level']];
+        } else {
+          stateFilterObj = stateFiltersObj['primary_level'];
+        }
+
+        // Check if user has access to all project in stateFiltersObj['primary_level']
+        const hasAccessToAll = stateFilterObj.every(filter =>
+          currentUserProjectAccess.some(project => project.projectId === filter.basicProjectConfigId)
+        );
+
+        if (hasAccessToAll) {
+          this.router.navigate([JSON.parse(JSON.stringify(url))]);
+        } else {
+          this.router.navigate(['/dashboard/Error']);
+          setTimeout(() => {
+            this.service.raiseError({
+              status: 901,
+              message: 'No project access.',
+            });
+          }, 100);
+        }
+      }
+    } else {
+      this.router.navigate(['./dashboard/']);
+    }
   }
 
 }

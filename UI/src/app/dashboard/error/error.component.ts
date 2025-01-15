@@ -74,6 +74,11 @@ export class ErrorComponent implements OnInit, OnDestroy {
           this.redirectButtonRoute = '/';
           this.pollForAvailability(this.redirectButtonRoute);
           break;
+        case 901: this.errorMsg = 'No project access.';
+          this.redirectButtonText = 'Go to homepage';
+          this.redirectButtonRoute = '/';
+          this.pollForAvailability(this.redirectButtonRoute);
+          break;
         default: this.errorMsg = 'Some error occurred';
           this.redirectButtonText = 'Go to homepage';
           this.redirectButtonRoute = '/';
