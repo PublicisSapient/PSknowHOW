@@ -64,4 +64,7 @@ public interface KpiDataCacheService {
 	 */
 	Map<String, Object> fetchIssueCountData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId);
+
+	Map<String, Object> fetchSprintCapacityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId);
 }

@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -108,6 +109,9 @@ public class SprintCapacityServiceImplTest {
 	CapacityKpiDataRepository capacityKpiDataRepository;
 	@Mock
 	FieldMapping fieldMapping;
+	@Mock
+	KpiDataCacheService kpiDataCacheService;
+
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private Map<String, Object> resultMap = new HashMap<>();
 	private KpiRequest kpiRequest;

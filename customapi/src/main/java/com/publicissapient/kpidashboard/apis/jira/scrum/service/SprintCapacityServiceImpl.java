@@ -26,9 +26,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -78,6 +82,8 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	private final DecimalFormat df2 = new DecimalFormat(".##");
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
 
+	private volatile List<String> sprintIdList = new ArrayList<>();
+
 	@Autowired
 	private KpiHelperService kpiHelperService;
 	@Autowired
@@ -90,6 +96,10 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
 
 	/**
 	 * Gets Qualifier Type
@@ -120,6 +130,8 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
@@ -230,12 +242,40 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	 *            kpiRequest
 	 * @return {@code Map<String, Object>}
 	 */
+	@SuppressWarnings(UNCHECKED)
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-												  KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
+			KpiRequest kpiRequest) {
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			String sprint = leaf.getSprintFilter().getId();
+			projectWiseSprints.computeIfAbsent(basicProjectConfigId, k -> new ArrayList<>()).add(sprint);
+		});
+		List<SprintDetails> sprintDetails = new ArrayList<>();
+		List<JiraIssue> issueList = new ArrayList<>();
+		List<JiraIssueCustomHistory> issueCustomHistoryList = new ArrayList<>();
+		boolean fetchCachedData = flterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		projectWiseSprints.forEach((basicProjectConfigId, sprints) -> {
+			Map<String, Object> result;
+			if (fetchCachedData) {
+				result = kpiDataCacheService.fetchSprintCapacityData(kpiRequest, basicProjectConfigId, sprints,
+						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
+			} else {
+				result = kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprints,
+						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
+			}
+			sprintDetails.addAll((List<SprintDetails>) result.get(SPRINTSDETAILS));
+			issueList.addAll((List<JiraIssue>) result.get(STORY_LIST));
+			issueCustomHistoryList.addAll((List<JiraIssueCustomHistory>) result.get(JIRA_ISSUE_HISTORY_DATA));
+
+		});
+		Map<String, Object> resultListMap = new HashMap<>();
 		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(kpiRequest, leafNodeList);
 		resultListMap.put(ESTIMATE_TIME, estimateTimeList);
+		resultListMap.put(STORY_LIST, issueList);
+		resultListMap.put(SPRINTSDETAILS, sprintDetails);
+		resultListMap.put(JIRA_ISSUE_HISTORY_DATA, issueCustomHistoryList);
 		return resultListMap;
 
 	}
