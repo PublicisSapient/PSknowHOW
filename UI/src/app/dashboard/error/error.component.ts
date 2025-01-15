@@ -20,6 +20,7 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { Router } from '@angular/router';
 import { timer } from 'rxjs/internal/observable/timer';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-error',
@@ -34,12 +35,13 @@ export class ErrorComponent implements OnInit, OnDestroy {
   interval = null;
   source = null;
 
-  constructor(private service: SharedService, public router: Router) {
+  constructor(private service: SharedService, public router: Router, public http: HttpService) {
   }
 
   ngOnInit() {
     // for getting error from Shared service
     this.service.passErrorToErrorPage.subscribe((error) => {
+      console.log(error);
       switch (error.status) {
         case 0: this.errorMsg = 'Server not available';
           this.redirectButtonText = 'Go to homepage';
@@ -47,7 +49,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
           this.pollForAvailability(this.redirectButtonRoute);
           break;
         case 401:
-          this.service.setCurrentUserDetails({});
+          this.http.setCurrentUserDetails({});
           this.errorMsg = 'Session Expired';
           this.redirectButtonText = 'Go to Login';
           this.redirectButtonRoute = './authentication/login';
@@ -63,6 +65,16 @@ export class ErrorComponent implements OnInit, OnDestroy {
           this.pollForAvailability(this.redirectButtonRoute);
           break;
         case 500: this.errorMsg = 'Internal Server error';
+          this.redirectButtonText = 'Go to homepage';
+          this.redirectButtonRoute = '/';
+          this.pollForAvailability(this.redirectButtonRoute);
+          break;
+        case 900: this.errorMsg = 'Invalid URL.';
+          this.redirectButtonText = 'Go to homepage';
+          this.redirectButtonRoute = '/';
+          this.pollForAvailability(this.redirectButtonRoute);
+          break;
+        case 901: this.errorMsg = 'No project access.';
           this.redirectButtonText = 'Go to homepage';
           this.redirectButtonRoute = '/';
           this.pollForAvailability(this.redirectButtonRoute);

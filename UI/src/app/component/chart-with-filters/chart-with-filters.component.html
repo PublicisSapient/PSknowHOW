@@ -2,16 +2,23 @@
   <div class="p-d-flex p-jc-between">
     <p-selectButton [options]="filters?.filterGroup1" [(ngModel)]="selectedMainFilter"
       (onOptionClick)="mainFilterSelect($event)" optionLabel="filterName"></p-selectButton>
-    <p-button label="Apply Filters" icon="pi pi-filter" styleClass="filter-btn" (click)="op.toggle($event)"></p-button>
+    <ng-container *ngIf="filters?.filterGroup2">
+      <p-button label="Apply Filters" icon="pi pi-filter" styleClass="filter-btn"
+        (click)="op.toggle($event)"></p-button>
+    </ng-container>
+    <ng-container *ngIf="category && category?.length">
+      <p-selectButton [options]="category" [(ngModel)]="selectedMainCategory"
+      (onOptionClick)="categorySelect($event)" optionLabel="categoryName"></p-selectButton>
+    </ng-container>
   </div>
   <p-overlayPanel #op>
-    <app-kpi-additional-filter [data]="data" [dataCopy]="dataCopy" [modifiedData]="modifiedData" 
-    [selectedFilter2]="selectedFilter2" [selectedMainFilter]="selectedMainFilter" [filters]="filters"
-    (modifiedDataResult)="applyAdditionalFilters($event)"></app-kpi-additional-filter>
+    <app-kpi-additional-filter [data]="data" [dataCopy]="dataCopy" [modifiedData]="modifiedData"
+      [selectedFilter2]="selectedFilter2" [selectedMainFilter]="selectedMainFilter" [filters]="filters"
+      (modifiedDataResult)="applyAdditionalFilters($event)"></app-kpi-additional-filter>
   </p-overlayPanel>
   <div class="p-d-flex p-jc-between" *ngIf="modifiedData?.length">
-    <div id="legend">
-      <table>
+    <div id="legend" [ngStyle]="{'width': selectedTab === 'iteration' ? '400px' : '250px'}">
+      <table style="width: 100%;">
         <thead>
           <tr>
             <th></th>
@@ -34,7 +41,7 @@
         </tbody>
       </table>
     </div>
-    <div id="chart">
+    <div id="chart" [ngStyle]="{'margin-top': selectedTab === 'iteration' ? '20px' : '0'}">
 
     </div>
   </div>
@@ -65,7 +72,7 @@
         <tr>
           <td class="font-small" *ngFor="let column of modalDetails['tableHeadings']">
             <ng-container *ngIf="!checkIfArray(rowData[column]); else displayArrayData">
-              <a *ngIf="column === 'Issue Id'; else displayCellData" [href]="rowData['Issue URL']" class="text-blue"
+              <a *ngIf="column.toLowerCase() === 'issue id'; else displayCellData" [href]="rowData['Issue URL']" class="text-blue"
                 rel="noopener" target="_blank">{{rowData['Issue Id']}}</a>
               <ng-template #displayCellData>
                 <ng-container *ngIf="column.toLowerCase() === 'sprint rating'; else showOtherData">

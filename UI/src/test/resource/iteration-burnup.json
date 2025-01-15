@@ -1,0 +1,531 @@
+{
+  "kpiId": "kpi125",
+  "kpiName": "Iteration Burnup",
+  "unit": "Count",
+  "chartType": "CumulativeMultilineChart",
+  "id": "65793ddb127be336160bc0f6",
+  "isDeleted": "False",
+  "kpiCategory": "Iteration",
+  "kpiUnit": "Count",
+  "kanban": false,
+  "kpiSource": "Jira",
+  "groupId": 20,
+  "responseCode": "200",
+  "trendValueList": [
+    {
+      "filter1": "OVERALL",
+      "dataGroup": [
+        {
+          "filter": "2024-12-04",
+          "value": [
+            {
+              "data": "46",
+              "kpiGroup": "Overall Scope",
+              "value": 46,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "0",
+              "kpiGroup": "Planned Completion",
+              "value": 0,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "1",
+              "kpiGroup": "Completion Till Date",
+              "value": 1,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-05",
+          "value": [
+            {
+              "data": "51",
+              "kpiGroup": "Overall Scope",
+              "value": 51,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "1",
+              "kpiGroup": "Planned Completion",
+              "value": 1,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "5",
+              "kpiGroup": "Completion Till Date",
+              "value": 5,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-06",
+          "value": [
+            {
+              "data": "51",
+              "kpiGroup": "Overall Scope",
+              "value": 51,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "4",
+              "kpiGroup": "Planned Completion",
+              "value": 4,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "6",
+              "kpiGroup": "Completion Till Date",
+              "value": 6,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-07",
+          "value": [
+            {
+              "data": "51",
+              "kpiGroup": "Overall Scope",
+              "value": 51,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "4",
+              "kpiGroup": "Planned Completion",
+              "value": 4,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "6",
+              "kpiGroup": "Completion Till Date",
+              "value": 6,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-08",
+          "value": [
+            {
+              "data": "51",
+              "kpiGroup": "Overall Scope",
+              "value": 51,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "4",
+              "kpiGroup": "Planned Completion",
+              "value": 4,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "6",
+              "kpiGroup": "Completion Till Date",
+              "value": 6,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-09",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "4",
+              "kpiGroup": "Planned Completion",
+              "value": 4,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "13",
+              "kpiGroup": "Completion Till Date",
+              "value": 13,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-10",
+          "value": [
+            {
+              "data": "55",
+              "kpiGroup": "Overall Scope",
+              "value": 55,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "6",
+              "kpiGroup": "Planned Completion",
+              "value": 6,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "14",
+              "kpiGroup": "Completion Till Date",
+              "value": 14,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-11",
+          "value": [
+            {
+              "data": "56",
+              "kpiGroup": "Overall Scope",
+              "value": 56,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "9",
+              "kpiGroup": "Planned Completion",
+              "value": 9,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "18",
+              "kpiGroup": "Completion Till Date",
+              "value": 18,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-12",
+          "value": [
+            {
+              "data": "53",
+              "kpiGroup": "Overall Scope",
+              "value": 53,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "16",
+              "kpiGroup": "Planned Completion",
+              "value": 16,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "21",
+              "kpiGroup": "Completion Till Date",
+              "value": 21,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-13",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Planned Completion",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Completion Till Date",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-14",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Planned Completion",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Completion Till Date",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-15",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Planned Completion",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Completion Till Date",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-16",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Planned Completion",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "23",
+              "kpiGroup": "Completion Till Date",
+              "value": 23,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "20",
+              "kpiGroup": "Predicted Completion",
+              "value": 20,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-17",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Planned Completion",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "25",
+              "kpiGroup": "Predicted Completion",
+              "value": 25,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-18",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Planned Completion",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "30",
+              "kpiGroup": "Predicted Completion",
+              "value": 30,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-19",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "22",
+              "kpiGroup": "Planned Completion",
+              "value": 22,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "30",
+              "kpiGroup": "Predicted Completion",
+              "value": 30,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-20",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "31",
+              "kpiGroup": "Planned Completion",
+              "value": 31,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "35",
+              "kpiGroup": "Predicted Completion",
+              "value": 35,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-21",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "31",
+              "kpiGroup": "Planned Completion",
+              "value": 31,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "35",
+              "kpiGroup": "Predicted Completion",
+              "value": 35,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-22",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "31",
+              "kpiGroup": "Planned Completion",
+              "value": 31,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "35",
+              "kpiGroup": "Predicted Completion",
+              "value": 35,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-23",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "31",
+              "kpiGroup": "Planned Completion",
+              "value": 31,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "39",
+              "kpiGroup": "Predicted Completion",
+              "value": 39,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        },
+        {
+          "filter": "2024-12-24",
+          "value": [
+            {
+              "data": "54",
+              "kpiGroup": "Overall Scope",
+              "value": 54,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "33",
+              "kpiGroup": "Planned Completion",
+              "value": 33,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            },
+            {
+              "data": "39",
+              "kpiGroup": "Predicted Completion",
+              "value": 39,
+              "sprojectName": "54058_PSknowHOW_65118da7965fbb0d14bce23c"
+            }
+          ]
+        }
+      ],
+      "additionalGroup": [
+        "Gap Between Completed and Predicted"
+      ]
+    }
+  ],
+  "maxValue": "",
+  "kpiInfo": {
+    "definition": "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration.",
+    "details": [
+      {
+        "type": "link",
+        "kpiLinkDetail": {
+          "text": "Detailed Information at",
+          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680577/Iteration+Burnup"
+        }
+      }
+    ]
+  },
+  "isEnabled": true,
+  "kpiDetail": {
+    "kpiSubCategory": "Iteration Review",
+    "kpiWidth": 66
+  }
+}

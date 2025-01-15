@@ -21,6 +21,7 @@ import { MessageService } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 
 import { AdditionalFilterFieldComponent } from './additional-filter-field.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 const completeHierarchyData = {
   kanban: [
@@ -106,12 +107,20 @@ describe('AdditionalFilterFieldComponent', () => {
   let component: AdditionalFilterFieldComponent;
   let fixture: ComponentFixture<AdditionalFilterFieldComponent>;
   let sharedService: SharedService;
+  const routerMock = {
+    navigate: jasmine.createSpy('navigate')
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ AdditionalFilterFieldComponent ],
       imports:[ReactiveFormsModule, FormsModule],
-      providers:[MessageService, SharedService]
+      providers: [
+        MessageService,
+        SharedService,
+        { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
+        { provide: Router, useValue: routerMock }
+      ]
     })
     .compileComponents();
 
@@ -235,7 +244,7 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     component.fieldMappingMetaData = dropDownMetaData.data;
     component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','workflow');
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
+
     component.fieldMappingMetaData = dropDownMetaData;
     component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','workflow');
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
@@ -243,7 +252,7 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     component.fieldMappingMetaData = dropDownMetaData.data;
     component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Link');
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
+
     component.fieldMappingMetaData = dropDownMetaData;
     component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Link');
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
@@ -251,7 +260,7 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     component.fieldMappingMetaData = dropDownMetaData.data;
     component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Type');
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
-    
+
     component.fieldMappingMetaData = dropDownMetaData;
     component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Type');
     expect(component.fieldMappingMultiSelectValues).not.toBeNull();
@@ -310,9 +319,9 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
   it('should record scroll position', () => {
     const scrollPosition = 100;
     spyOnProperty(document.documentElement, 'scrollTop', 'get').and.returnValue(scrollPosition);
-  
+
     component.recordScrollPosition();
-  
+
     expect(component.bodyScrollPosition).toEqual(scrollPosition);
   });
 
@@ -324,23 +333,23 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     component.fieldMappingForm = new UntypedFormGroup({
       'fieldName': new UntypedFormControl()
     });
-  
+
     component.saveDialog();
 
     expect(component.handleAdditionalFilters).toHaveBeenCalled();
     expect(component.populateDropdowns).toBeFalsy();
     expect(component.displayDialog).toBeFalsy();
   });
-  
+
   it('should save dialog without single selection dropdown', () => {
     component.singleSelectionDropdown = false;
     spyOn(component, 'handleAdditionalFilters');
     component.fieldMappingForm = new UntypedFormGroup({
       'fieldName': new UntypedFormControl()
     });
-  
+
     component.saveDialog();
-  
+
     expect(component.handleAdditionalFilters).toHaveBeenCalled();
     expect(component.populateDropdowns).toBeFalsy();
     expect(component.displayDialog).toBeFalsy();
@@ -359,7 +368,7 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     expect(component.fieldMappingForm.controls['sqdIdentMultiValue']).toBeTruthy();
     expect(spy).toHaveBeenCalled();
   });
-  
+
   it('should add control for multi-value selection', () => {
     const event = {
       value: "Component"
@@ -373,7 +382,7 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     expect(component.fieldMappingForm.controls['sqdIdentMultiValue']).toBeTruthy();
     expect(spy).toHaveBeenCalled();
   });
-  
+
   it('should add control for single-value selection', () => {
     const event = {
       value: "Other"
@@ -387,5 +396,5 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     expect(component.fieldMappingForm.controls['sqdIdentSingleValue']).toBeTruthy();
     expect(spy).toHaveBeenCalled();
   });
-  
+
 });
