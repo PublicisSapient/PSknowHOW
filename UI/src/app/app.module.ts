@@ -141,6 +141,7 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
+import { PsCustomLibraryModule } from '@ps-speed-suite/global-components';
 
 
 /******************************************************/
@@ -260,7 +261,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         BlockUIModule,
         SharedModuleModule,
         InputTextModule,
-        ScrollTopModule
+        ScrollTopModule,
+        PsCustomLibraryModule
     ],
     providers: [
         ExcelService,
