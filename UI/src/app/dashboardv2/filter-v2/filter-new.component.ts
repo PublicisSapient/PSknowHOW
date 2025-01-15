@@ -919,7 +919,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       if (this.selectedTab?.toLowerCase() === 'iteration') {
         this.filterApplyData['selectedMap']['sprint'] = [];
         let sprints = this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['parentId'] === event[0].parentId && x['sprintState']?.toLowerCase() == 'active');
-        sprints = this.helperService.sortByField(sprints, [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']);
+        sprints = this.helperService.sortByField(sprints, ['sprintState', 'sprintStartDate']);
         
         if (sprints.length) {
           this.filterApplyData['selectedMap']['sprint'].push(...sprints[0].map(de => de.nodeId));
