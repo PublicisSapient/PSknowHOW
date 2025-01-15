@@ -49,7 +49,7 @@ describe('PrimaryFilterComponent', () => {
     helperService = TestBed.inject(HelperService);
     component.multiSelect = mockMultiSelect as any;
 
-    spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(null);
+    // spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(null);
     spyOn(sharedService, 'getBackupOfFilterSelectionState').and.returnValue({
       primary_level: [{ labelName: 'Label 1', nodeId: 'node-1' }]
     });
@@ -964,4 +964,80 @@ describe('PrimaryFilterComponent', () => {
     });
 
   });
+
+  describe('PrimaryFilterComponent.applyDefaultFilters() applyDefaultFilters method', () => {
+    describe('Happy paths', () => {
+      it('should apply default filters when state filters are available', fakeAsync(() => {
+        // Arrange
+        component.hierarchyLevels = ['Project', 'Level 2'];
+        component.primaryFilterConfig = {
+          defaultLevel: { labelName: 'Project' },
+          type: 'multiSelect'
+        };
+        component.filterData = {
+          Project: [
+            { labelName: 'Project', nodeId: 1 }
+          ],
+        };
+        component.filters = [{ labelName: 'Project', nodeId: 1 }];
+        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(JSON.stringify({ primary_level: [{ labelName: 'Project', nodeId: 1 }] }) as any);
+
+        // Act
+        component.applyDefaultFilters();
+
+        // Assert
+        tick(100);
+        expect(component.selectedFilters).toEqual([{ labelName: 'Project', nodeId: 1 }]);
+        expect(sharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ primary_level: [{ labelName: 'Project', nodeId: 1 }] });
+      }));
+
+      it('should reset filters when no state filters are available', fakeAsync(() => {
+        // Arrange
+        component.hierarchyLevels = ['Project', 'Level 2'];
+        component.primaryFilterConfig = {
+          defaultLevel: { labelName: 'Project' },
+          type: 'multiSelect'
+        };
+        component.selectedLevel = 'Project';
+        component.filterData = {
+          Project: [
+            { labelName: 'Project', nodeId: 1 }
+          ],
+        };
+        component.filters = [{ labelName: 'Project', nodeId: 1 }];
+        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(null as any);
+
+        // Act
+        component.applyDefaultFilters();
+
+        // Assert
+        tick(100);
+        expect(component.selectedFilters).toEqual([{ labelName: 'Project', nodeId: 1 }]);
+      }));
+    });
+    describe('Edge cases', () => {
+      it('should handle empty filters gracefully', fakeAsync(() => {
+        // Arrange
+        component.hierarchyLevels = ['Project', 'Level 2'];
+        component.primaryFilterConfig = {
+          defaultLevel: { labelName: 'Project' },
+          type: 'multiSelect'
+        };
+        component.filters = [];
+        spyOn(sharedService, 'getBackupOfUrlFilters').and.returnValue(JSON.stringify({ primary_level: [] }));
+        spyOn(sharedService, 'setNoSprints');
+
+        // Act
+        component.applyDefaultFilters();
+
+        // Assert
+        tick(100);
+        expect(component.selectedFilters).toBe(undefined);
+        expect(sharedService.setNoSprints).toHaveBeenCalledWith(true);
+
+
+      }));
+    });
+  });
+
 });

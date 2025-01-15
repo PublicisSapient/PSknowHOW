@@ -15,7 +15,7 @@ export class PrimaryFilterComponent implements OnChanges {
   @Input() primaryFilterConfig: any;
   @Input() selectedType: string = '';
   @Input() selectedTab: string = '';
-  filters = [];
+  filters: any[];
   previousSelectedFilters: any = [];
   selectedFilters: any;
   selectedAdditionalFilters: any;
@@ -55,7 +55,8 @@ export class PrimaryFilterComponent implements OnChanges {
     this.populateFilters();
     setTimeout(() => {
       this.stateFilters = (this.service.getBackupOfUrlFilters() && JSON.parse(this.service.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.service.getBackupOfUrlFilters()) : this.service.getBackupOfFilterSelectionState();
-      if (Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig && this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
+      if (Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig &&
+        this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
         if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
           this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
           if (this.stateFilters && Object.keys(this.stateFilters).length && this.stateFilters['primary_level']?.length) {
