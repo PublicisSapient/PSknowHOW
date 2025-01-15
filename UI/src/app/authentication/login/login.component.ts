@@ -69,8 +69,13 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     this.error = '';
+
+    console.log('Form Valid:', !this.loginForm.invalid); // Add this log
+    console.log('Form Controls:', this.loginForm.controls); // Add this log
+
     /* stop here if form is invalid*/
     if (this.loginForm.invalid) {
+      console.log('Form is invalid. Exiting onSubmit.');
       return;
     }
 
@@ -126,41 +131,31 @@ export class LoginComponent implements OnInit {
           const stateFilters = queryParams.get('stateFilters');
 
           if (stateFilters) {
-            try {
-              const decodedStateFilters = atob(stateFilters);
-              const stateFiltersObj = JSON.parse(decodedStateFilters);
+            const decodedStateFilters = atob(stateFilters);
+            const stateFiltersObj = JSON.parse(decodedStateFilters);
 
-              // console.log('Decoded State Filters Object:', stateFiltersObj);
-              let stateFilterObj = [];
+            // console.log('Decoded State Filters Object:', stateFiltersObj);
+            let stateFilterObj = [];
 
-              if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
-                stateFilterObj = [stateFiltersObj['parent_level']];
-              } else {
-                stateFilterObj = stateFiltersObj['primary_level'];
-              }
+            if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
+              stateFilterObj = [stateFiltersObj['parent_level']];
+            } else {
+              stateFilterObj = stateFiltersObj['primary_level'];
+            }
 
-              // Check if user has access to all project in stateFiltersObj['primary_level']
-              const hasAccessToAll = stateFilterObj.every(filter =>
-                currentUserProjectAccess.some(project => project.projectId === filter.basicProjectConfigId)
-              );
+            // Check if user has access to all project in stateFiltersObj['primary_level']
+            const hasAccessToAll = stateFilterObj.every(filter =>
+              currentUserProjectAccess.some(project => project.projectId === filter.basicProjectConfigId)
+            );
 
-              if (hasAccessToAll) {
-                this.router.navigate([JSON.parse(JSON.stringify(url))]);
-              } else {
-                this.router.navigate(['/dashboard/Error']);
-                setTimeout(() => {
-                  this.sharedService.raiseError({
-                    status: 901,
-                    message: 'No project access.',
-                  });
-                }, 100);
-              }
-            } catch (error) {
+            if (hasAccessToAll) {
+              this.router.navigate([JSON.parse(JSON.stringify(url))]);
+            } else {
               this.router.navigate(['/dashboard/Error']);
               setTimeout(() => {
                 this.sharedService.raiseError({
-                  status: 900,
-                  message: 'Invalid URL.'
+                  status: 901,
+                  message: 'No project access.',
                 });
               }, 100);
             }
