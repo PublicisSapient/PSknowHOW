@@ -40,9 +40,9 @@ export class NavNewComponent implements OnInit, OnDestroy {
         this.selectedTab = data.selectedBoard;
       });
 
-    this.sharedService.primaryFilterChangeSubject.subscribe(x => {
-      this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
-    })
+    // this.sharedService.primaryFilterChangeSubject.subscribe(x => {
+    //   this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+    // })
 
     this.sharedService.onScrumKanbanSwitch.subscribe(type => {
       this.selectedType = type.selectedType
