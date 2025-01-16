@@ -46,7 +46,7 @@
       </ng-container>
     </ng-container>
   </ul>
-  <ng-container  *ngIf="!noSprint">
+  <ng-container>
     <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 duration-container" *ngIf="additionalData">
       <div class="p-d-inline-block p-mr-2">
         <span class="icon-container p-d-inline-block p-mr-2"><i class="pi pi-clock"></i></span>
@@ -66,7 +66,7 @@
           {{iterationConfigData.capacity?.value?.value ? iterationConfigData.capacity?.value?.value + ' Hours' : 'N/A'}}
         </span>
       </div>
-  
+
       <div class="p-mr-2"
         *ngIf="this.selectedSprint?.['sprintState']?.toLowerCase() === 'active' && selectedTab?.toLowerCase() === 'iteration'">
         <span class="refresh-state p-p-2" (click)="displayModal = true"
@@ -78,9 +78,9 @@
           <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync" />Syncing
         </span>
       </div>
-  
+
     </div>
-    <div class="p-d-flex">
+    <div class="p-d-flex p-jc-between p-ai-center">
       <div class="view-tabs p-pl-2 p-pr-2"
         *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
         <div aria-hidden="true" pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
@@ -100,13 +100,24 @@
           </label>
         </div>
       </div>
+      <div aria-hidden="true" pTooltip="Share URL" tooltipPosition="top" tooltipEvent="hover"
+        tooltipStyleClass="tooltiptext" class="share-url-btn">
+        <span class="icon-container p-d-inline-block p-mr-2 p-cursor-pointer" (click)="copyUrlToClipboard($event)"
+          [ngClass]="buttonStyleClass">
+          <img src="../../../assets/img/Vector.svg" *ngIf="!isSuccess" style="height: 18px; margin-left: -2px;"
+            alt="Table View" class="ico-default" />
+          <img src="../../../assets/img/Check-white.svg" *ngIf="isSuccess" style="height: 18px; margin-left: -2px;"
+            alt="Table View" class="ico-active" />
+        </span>
+      </div>
       <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext"
         *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
         <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
           <i class="pi pi-pause" style="font-size: 1rem"></i>
         </span>
-        <p-multiSelect #showHideDdn [styleClass]="'showHideDdn'" [options]="masterDataCopy['kpiList']" optionLabel="kpiName">
+        <p-multiSelect #showHideDdn [styleClass]="'showHideDdn'" [options]="masterDataCopy['kpiList']"
+          optionLabel="kpiName">
           <ng-template pTemplate="header">
             <p-checkbox [styleClass]="'showHideDdnSelectAll'" name="showHideSelectAll" [(ngModel)]="showHideSelectAll"
               [binary]="true" (onChange)="showHideSelectAllApply();disableShowHideApply = false;"></p-checkbox>
@@ -126,7 +137,7 @@
           </ng-template>
         </p-multiSelect>
       </div>
-  
+
       <div class="date-filter-container cursor-pointer"
         *ngIf="(kanban || selectedTab?.toLowerCase() === 'developer') && selectedTab.toLowerCase() != 'kpi-maturity' && !(kanban && selectedTab.toLowerCase() === 'dora')">
         <!-- Date filter start -->
