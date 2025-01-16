@@ -3157,7 +3157,7 @@
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     }
   },
   {
@@ -3167,7 +3167,7 @@
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types to be considered for root cause analysis"
     }
   },
   {
@@ -3177,7 +3177,7 @@
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     }
   },
   {
@@ -3187,7 +3187,7 @@
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     }
   },
   {
@@ -3832,7 +3832,7 @@
     "section": "Issue Types Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     },
     "mandatory": false,
     "nodeSpecific": false
@@ -4096,7 +4096,7 @@
     "section": "Issue Types Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     },
     "mandatory": false,
     "nodeSpecific": false
@@ -4174,7 +4174,7 @@
     "section": "Issue Types Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types to be considered for root cause analysis"
     },
     "mandatory": false,
     "nodeSpecific": false
@@ -4278,7 +4278,7 @@
     "section": "Issue Types Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     },
     "mandatory": false,
     "nodeSpecific": false
@@ -4291,7 +4291,7 @@
     "section": "Issue Types Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     },
     "mandatory": false,
     "nodeSpecific": false
@@ -4304,7 +4304,7 @@
     "section": "Issue Types Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     },
     "mandatory": false,
     "nodeSpecific": false
@@ -4317,7 +4317,7 @@
     "section": "Issue Types Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     },
     "mandatory": false,
     "nodeSpecific": false
@@ -4330,7 +4330,7 @@
     "section": "Issue Types Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": ""
+      "definition": "All issue types used to track tickets"
     },
     "mandatory": false,
     "nodeSpecific": false
