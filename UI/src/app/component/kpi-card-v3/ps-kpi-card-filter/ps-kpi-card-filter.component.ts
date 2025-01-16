@@ -27,8 +27,8 @@ export class PsKpiCardFilterComponent implements OnInit {
     this.kpiCardFilter?.filterGroup?.filterGroup1?.forEach((filter: { filterKey: any; }) => {
       this.form.addControl(filter.filterKey, this.fb.control(''));
     });
-    this.setDefaultFilter(this.kpiCardFilter);
     this.setDefaultForm();
+    this.setDefaultFilter(this.kpiCardFilter);
   }
 
   getOptions(filterKey: string) {
