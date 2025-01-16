@@ -9,6 +9,9 @@ import { DatePipe } from '@angular/common';
 import { Menu } from 'primeng/menu';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
+import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import * as d3 from 'd3';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-kpi-card-v2',
@@ -78,9 +81,19 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   @Input() immediateLoader: boolean = true;
   @Input() partialData: boolean = false;
   warning = '';
+  //spal
+  kpiHeaderData: {};
+  kpiFilterData: {};
+  copyCardData: any;
+  currentChartData;
+  KpiCategory;
+  colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];//d3.schemeCategory10;//['#167a26', '#4ebb1a', '#f53535'];
+  selectedButtonValue;
+  cardData;
+
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService,
+    private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService, private kpiHelperService: KpiHelperService,
     private helperService: HelperService) { }
 
   ngOnInit(): void {
@@ -89,7 +102,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       if (x && Object.keys(x)?.length) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
-          if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
+          if (Array.isArray(x[this.kpiData?.kpiId][key]) && x[this.kpiData?.kpiId][key]?.includes('Overall')) {
             if (this.kpiData?.kpiId === "kpi72") {
               if (key === "filter1") {
                 this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
@@ -127,6 +140,11 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
+    /** assign 1st value to radio button by default */
+    // if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
+    //   console.log('default first radio')
+    //   this.radioOption = this.dropdownArr[0]?.options[0];
+    // }
   }
 
   initializeMenu() {
@@ -153,7 +171,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         command: () => {
           this.exportToExcel();
         },
-        disabled: !this.kpiData.kpiDetail.chartType
+        disabled: !this.kpiData?.kpiDetail?.chartType
       },
       {
         label: 'Comments',
@@ -164,6 +182,30 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         },
       }
     ];
+  }
+
+/**
+   * Handles various actions based on the event type.
+   * Prepares data, opens dialogs, exports data, or shows comments as needed.
+   *
+   * @param {any} event - The event object containing action indicators.
+   * @returns {void}
+   */
+  handleAction(event:any){
+     if (event.listView) {
+          this.prepareData();
+        } else if (event.setting) {
+          this.onOpenFieldMappingDialog();
+        } else if (event.explore) {
+          if(event.kpiId){
+            this.exportToExcel(event.kpiId);
+          }else{
+            this.exportToExcel();
+          }
+        } else if (event.comment) {
+          this.showComments = true;
+          this.openCommentModal();
+        }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -186,6 +228,32 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         }
       }
     }
+
+    //#region new card kpi
+    if (this.selectedTab === 'iteration' && !this.loader) {
+    //  console.log(this.trendValueList)
+      this.cardData = this.trendValueList;
+      const {
+        issueData,
+        kpiName,
+        kpiInfo,
+        kpiId,
+        dataGroup,
+        filterGroup,
+        categoryData
+      } = this.cardData;
+      let responseCode = this.kpiDataStatusCode;
+      this.kpiHeaderData = { issueData, kpiName, kpiInfo, kpiId, responseCode };
+      this.kpiFilterData = { dataGroup, filterGroup, issueData, chartType: this.kpiData?.kpiDetail?.chartType, categoryData };
+      this.copyCardData = JSON.parse(JSON.stringify(this.cardData));
+      this.currentChartData = this.prepareChartData(
+        this.cardData,
+        this.colorPalette,
+        this.cardData.kpiId === "kpi128"?this.cardData?.categoryData?.categoryGroup[0]?.categoryName:''
+      );
+    }
+
+    //#endregion
   }
 
   openCommentModal = () => {
@@ -388,7 +456,17 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     return this.service.getProcessorLogDetails().find(ptl => sourceArray.includes(ptl['processorName'].toLowerCase()));
   }
 
-  exportToExcel() {
+  exportToExcel(KpiId?:any) {
+    if(!!this.cardData){
+      let exportData = this.cardData['issueData'];
+      // const uniqueCategory = [[...new Set(exportData.map(item => item.Category))]];
+      // console.log(uniqueCategory)
+      if(KpiId === 'kpi176'){
+        exportData = exportData.filter(x => x['Issue Type'].includes('Dependency') || x['Issue Type'].includes('Risk'));
+      }
+      this.service.kpiExcelSubject.next({markerInfo:this.cardData?.dataGroup?.markerInfo,columns:this.cardData['modalHeads'],excelData:exportData})
+    }
+
     this.downloadExcel.emit(true);
   }
 
@@ -431,9 +509,18 @@ export class KpiCardV2Component implements OnInit, OnChanges {
     }
   }
 
-  getColorCssClasses(index) {
+  getColorCssClasses(index: number): string | undefined {
+    if (!Array.isArray(this.colorCssClassArray)) {
+      console.warn('colorCssClassArray is not initialized or is not an array.');
+      return undefined;
+    }
+    if (index < 0 || index >= this.colorCssClassArray.length) {
+      console.warn(`Index ${index} is out of bounds for colorCssClassArray.`);
+      return undefined;
+    }
     return this.colorCssClassArray[index];
   }
+  
 
   hasData(field: string): boolean {
     return this.sprintDetailsList[this.selectedTabIndex]['hoverList'].some(rowData => rowData[field] !== null && rowData[field] !== undefined);
@@ -498,5 +585,176 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       }
     });
     this.displaySprintDetailsModal = true;
+  }
+  //#region new card
+
+/**
+     * Handles changes in filter selection, updates the issue data based on the selected filters,
+     * and prepares the chart data accordingly. It distinguishes between cases where the selected
+     * key object has a specific category value.
+     *
+     * @param event - The event object containing filter selection details.
+     * @returns void
+     * @throws None
+     */
+onFilterChange(event) {
+  const { selectedKeyObj, selectedKey, ...updatedEvent } = event;
+
+  // Dynamically determine the exclusion value
+  const exclusionValue = selectedKeyObj?.Category;
+
+  const filters = [
+    ...Object.entries({ ...updatedEvent, ...selectedKeyObj }).map(([key, value]) => ({ [key]: value }))
+  ];
+
+  // Apply dynamic filters
+  const filterIssues = this.applyDynamicfilter(this.cardData.issueData, filters.filter(item => !(item.Category && item.Category === exclusionValue)));
+
+  // Update filtered data
+  this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+
+  // Prepare chart data using the appropriate key
+  const chartKey = selectedKeyObj?.Category !== exclusionValue ? selectedKey : exclusionValue;
+  this.currentChartData = this.prepareChartData(this.copyCardData, this.colorPalette, chartKey);
+
+  // Update selected button value
+  this.selectedButtonValue = selectedKeyObj;
+}
+
+/**
+     * Resets the filter by restoring the original issue data and preparing the chart data.
+     *
+     * @param {void} No parameters are accepted.
+     * @returns {void} This function does not return a value.
+     * @throws {Error} Throws an error if chart data preparation fails.
+     */
+  onFilterClear() {
+    const filterIssues = this.cardData.issueData;
+    this.copyCardData = { ...this.copyCardData, issueData: filterIssues };
+    this.currentChartData = this.prepareChartData(
+      this.copyCardData,
+      this.colorPalette,
+    );
+  }
+
+  applyDynamicfilter(data: any[], filterArr: any) {
+    let filteredData = data;
+    // cleanup empty or null or undefined props
+    filterArr = this.sanitizeArray(filterArr);
+
+    if (filterArr.length) {
+      filterArr.forEach(element => {
+        let filterObj = Object.keys(element).map(x => {
+          return {
+            key: x,
+            value: element[x]
+          }
+        });
+        if (Array.isArray(filterObj[0].value)) {
+          filteredData = filteredData.filter(issue => filterObj[0]?.value.includes(issue[filterObj[0].key]));
+        } else {
+          filteredData = filteredData.filter(issue => issue[filterObj[0].key]?.includes(filterObj[0].value));
+        }
+      });
+    }
+    return filteredData;
+  }
+
+  // cleanup empty or null or undefined props
+/**
+     * Recursively sanitizes an array or object by removing null, undefined,
+     * and empty objects, returning a cleaned version of the input.
+     *
+     * @param input - The array or object to sanitize.
+     * @returns A sanitized array or object, or null if the input is empty.
+     * @throws No exceptions are thrown.
+     */
+  sanitizeArray(input) {
+    // Recursive function to handle nested structures
+    function sanitize(item) {
+      if (Array.isArray(item)) {
+        return item
+          .map(sanitize) // Recursively sanitize array elements
+          .filter((el) => el !== null && el !== undefined && Object.keys(el).length > 0); // Exclude null, undefined, or empty objects
+      } else if (typeof item === "object" && item !== null) {
+        const sanitizedObject = {};
+        for (const [key, value] of Object.entries(item)) {
+          if (value) sanitizedObject[key] = value; // Add key-value pairs with truthy values
+        }
+        return Object.keys(sanitizedObject).length > 0 ? sanitizedObject : null; // Remove empty objects
+      }
+      return null; // Exclude non-object and non-array elements
+    }
+
+    return sanitize(input);
+  }
+
+
+  prepareChartData(inputData: any, color: any, key?: any) {
+    return this.kpiHelperService.getChartDataSet(inputData, this.kpiData.kpiDetail.chartType, color, key);
+  }
+
+/**
+   * Calculates the total sum of numeric values associated with a specified key in an array of issue data.
+   * @param issueData - An array of objects representing issues, each containing various key-value pairs.
+   * @param key - The key whose numeric values will be summed.
+   * @returns The total sum as a string.
+   * @throws No exceptions are explicitly thrown, but non-numeric values are ignored in the sum.
+   */
+  calculateValue(issueData, key: string): string {
+    const total = issueData.reduce((sum, issue) => {
+      const value = issue[key];
+      return sum + (typeof value === 'number' ? value : 0); // Only add numeric values
+    }, 0);
+
+    return total.toString(); // Convert to string for display
+  }
+
+/**
+   * Converts a given value to hours if the specified unit represents time.
+   * @param val - The value to be converted.
+   * @param unit - The unit of the value, which determines if conversion is necessary.
+   * @returns The converted value in days/hours (unit).
+   */
+  convertToHoursIfTime(val, unit) {
+    return this.kpiHelperService.convertToHoursIfTime(val, unit)
+  }
+
+/**
+   * Calculates and returns the cumulative value based on the chart type and selected button value.
+   * It converts the total count to hours if the chart type is 'stacked-bar' or 'stacked-bar-chart'.
+   * Returns the total count or a calculated value based on the selected button value otherwise.
+   *
+   * @returns {number} The cumulative value or total count.
+   * @throws {Error} Throws an error if the data structure is not as expected.
+   */
+  showCummalative() {
+    if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
+      return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
+    } else if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar-chart') {
+      if (!!this.selectedButtonValue?.length && !!this.selectedButtonValue[0]?.key) {
+        return this.copyCardData.issueData.reduce((sum, issue) => sum + (issue.tempCount || 0), 0)
+      } else {
+        return this.currentChartData.totalCount
+      }
+    } else {
+      if (!!this.selectedButtonValue && !!this.selectedButtonValue[0].key) {
+        const totalValue = this.calculateValue(this.copyCardData.issueData, this.selectedButtonValue[0].key)
+        return this.kpiHelperService.convertToHoursIfTime(totalValue, this.selectedButtonValue[0].unit)
+      }
+      return this.currentChartData.totalCount
+    }
+  }
+
+  //#endregion
+
+/**
+ * Checks for the presence of a filter group in the provided filter data.
+ * @param filterData - An object containing filter information, which may include a filterGroup property.
+ * @returns The filterGroup property if it exists; otherwise, undefined.
+ * @throws No exceptions are thrown.
+ */
+  checkFilterPresence(filterData) {
+    return filterData?.filterGroup;
   }
 }

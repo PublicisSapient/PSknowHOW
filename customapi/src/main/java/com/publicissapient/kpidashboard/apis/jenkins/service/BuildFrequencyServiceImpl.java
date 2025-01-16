@@ -75,8 +75,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Object>, Map<ObjectId, List<Build>>> {
 
 	private static final long DAYS_IN_WEEKS = 7;
-	@Autowired
-	private BuildRepository buildRepository;
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
