@@ -87,9 +87,18 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate,
-											   String kpiId) {
+			String kpiId) {
 		log.info("Fetching Build Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchBuildFrequencydata(basicProjectConfigId, startDate, endDate);
+	}
+
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public Map<String, Object> fetchSprintCapacityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId) {
+		log.info("Fetching Sprint Capacity Utilization KPI Data for Project {} and KPI {}",
+				basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
 }

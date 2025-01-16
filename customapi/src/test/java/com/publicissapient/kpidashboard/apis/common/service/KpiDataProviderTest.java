@@ -11,10 +11,13 @@ import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
@@ -35,6 +38,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiDataProviderTest {
+
+	private static final String STORY_LIST = "stories";
+	private static final String SPRINTSDETAILS = "sprints";
+	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
+	private static final String ESTIMATE_TIME = "Estimate_Time";
+
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
@@ -49,6 +58,10 @@ public class KpiDataProviderTest {
 	private SprintRepository sprintRepository;
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	private CapacityKpiDataRepository capacityKpiDataRepository;
 
 	private Map<String, Object> filterLevelMap;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
@@ -124,6 +137,29 @@ public class KpiDataProviderTest {
 					sprintList);
 			assertThat("Total Stories : ", result.size(), equalTo(4));
 		});
+	}
+
+	@Test
+	public void fetchSprintCapacityDataFromDb_shouldReturnCorrectData_whenValidInput() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		String kpiId = "kpiId";
+
+		when(sprintRepository.findBySprintIDIn(sprintList)).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(Mockito.anySet(), Mockito.anyMap(),
+				Mockito.eq(CommonConstant.NUMBER))).thenReturn(totalIssueList);
+		when(jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(Mockito.anySet(), Mockito.anyMap(),
+				Mockito.eq(CommonConstant.PARENT_STORY_ID))).thenReturn(totalIssueList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),
+				Mockito.anyList())).thenReturn(new ArrayList<>());
+
+		Map<String, Object> result = kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId,
+				sprintList);
+
+		assertThat(result.get(ESTIMATE_TIME), equalTo(new ArrayList<>()));
+		assertThat(((List<JiraIssue>)result.get(STORY_LIST)).size(), equalTo(totalIssueList.size()*2));
+		assertThat(result.get(SPRINTSDETAILS), equalTo(sprintDetailsList));
+		assertThat(result.get(JIRA_ISSUE_HISTORY_DATA), equalTo(new ArrayList<>()));
 	}
 
 }
