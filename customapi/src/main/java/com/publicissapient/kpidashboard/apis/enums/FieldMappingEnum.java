@@ -263,9 +263,8 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraLiveStatusKPI51", "kanbanRCACountIssueTypeKPI51", "jiraTicketClosedStatusKPI51",
 					"jiraTicketRejectedStatusKPI151", "thresholdValueKPI51")),
 
-	KPI53("Lead Time Kanban", KPISource.JIRAKANBAN.name(),
-			Arrays.asList("jiraLiveStatusKPI53", "jiraTicketClosedStatusKPI53", "kanbanCycleTimeIssueTypeKPI53",
-					"jiraTicketTriagedStatusKPI53", "thresholdValueKPI53")),
+	KPI53("Lead Time Kanban", KPISource.JIRAKANBAN.name(), Arrays.asList("jiraLiveStatusKPI53",
+			"jiraTicketClosedStatusKPI53", "kanbanCycleTimeIssueTypeKPI53", "jiraTicketTriagedStatusKPI53")),
 
 	KPI54("Ticket Open Vs Close By Priority", KPISource.JIRAKANBAN.name(), Arrays.asList("ticketCountIssueTypeKPI54",
 			"ticketCountIssueTypeKPI54", "jiraTicketClosedStatusKPI54", "thresholdValueKPI54")),
