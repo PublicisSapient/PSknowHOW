@@ -186,8 +186,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 				result = kpiDataCacheService.fetchIssueCountData(kpiRequest, basicProjectConfigId, sprintIdList,
 						KPICode.ISSUE_COUNT.getKpiId());
 			} else {// fetch data from DB if filters below Sprint level (i.e. additional filters)
-				result = kpiDataProvider.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId, sprintList,
-						KPICode.ISSUE_COUNT.getKpiId());
+				result = kpiDataProvider.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId, sprintList);
 			}
 			List<JiraIssue> allJiraIssue = (List<JiraIssue>) result.get(STORY_LIST);
 			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.get(SPRINTSDETAILS);

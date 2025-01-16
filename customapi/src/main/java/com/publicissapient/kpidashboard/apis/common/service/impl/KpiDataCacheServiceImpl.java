@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -79,23 +80,23 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public Map<String, Object> fetchIssueCountData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId) {
-		return kpiDataProvider.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId, sprintList, kpiId);
+		log.info("Fetching Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
-	/**
-	 * Fetches sprint capacity utilization kpi data from the database and caches the result.
-	 *
-	 * @param kpiRequest The KPI request object.
-	 * @param basicProjectConfigId The project config ID.
-	 * @param sprintList The list of sprint IDs.
-	 * @param kpiId The KPI ID.
-	 * @return A map containing estimate time, story list, sprint details, and JiraIssue history.
-	 */
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate,
+			String kpiId) {
+		log.info("Fetching Build Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchBuildFrequencydata(basicProjectConfigId, startDate, endDate);
+	}
+
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public Map<String, Object> fetchSprintCapacityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId) {
-		return kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprintList, kpiId);
+		return kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
 }

@@ -1,31 +1,41 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.BuildStatus;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
+import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -49,6 +59,8 @@ public class KpiDataProvider {
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Autowired
 	private CapacityKpiDataRepository capacityKpiDataRepository;
+	@Autowired
+	private BuildRepository buildRepository;
 
 	/**
 	 * Fetches data from DB for the given project and sprints combination.
@@ -56,12 +68,11 @@ public class KpiDataProvider {
 	 * @param kpiRequest
 	 * @param basicProjectConfigId
 	 * @param sprintList
-	 * @param kpiId
 	 * @return
 	 */
 	public Map<String, Object> fetchIssueCountDataFromDB(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-			List<String> sprintList, String kpiId) {
-		log.info("Fetching Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+			List<String> sprintList) {
+
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
@@ -122,17 +133,32 @@ public class KpiDataProvider {
 	}
 
 	/**
-	 * Fetches sprint capacity data from the database for the given project and sprints combination.
+	 * Fetch data from data for given project.
 	 *
-	 * @param kpiRequest The KPI request object.
-	 * @param basicProjectConfigId The project config ID.
-	 * @param sprintList The list of sprint IDs.
-	 * @param kpiId The KPI ID.
-	 * @return A map containing estimate time, story list, sprint details, and JiraIssue history.
+	 * @param basicProjectConfigId
+	 * @param startDate
+	 * @param endDate
+	 * @return
 	 */
+	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate) {
+		List<String> statusList = List.of(BuildStatus.SUCCESS.name());
+		Map<String, List<String>> mapOfFilters = new HashMap<>();
+		mapOfFilters.put("buildStatus", statusList);
+		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
+		projectBasicConfigIds.add(basicProjectConfigId);
+		return buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+	}
+
+    /**
+     * Fetches sprint capacity data from the database for the given project and sprints combination.
+     *
+     * @param kpiRequest The KPI request object.
+     * @param basicProjectConfigId The project config ID.
+     * @param sprintList The list of sprint IDs.
+     * @return A map containing estimate time, story list, sprint details, and JiraIssue history.
+     */
 	public Map<String, Object> fetchSprintCapacityDataFromDb(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-			List<String> sprintList, String kpiId) {
-		log.info("Fetching Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+			List<String> sprintList) {
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
