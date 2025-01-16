@@ -330,23 +330,23 @@ export class BasicConfigComponent implements OnInit {
             this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
           });
 
-          this.sharedService.setSelectedProject(this.selectedProject);
-          this.allProjectList?.push(this.selectedProject);
-          this.sharedService.setProjectList(this.allProjectList);
-          if (!this.ifSuperUser) {
-            if (response['projectsAccess']) {
-              const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-              this.sharedService.setCurrentUserDetails({ authorities });
-            }
+        this.sharedService.setSelectedProject(this.selectedProject);
+        this.allProjectList?.push(this.selectedProject);
+        this.sharedService.setProjectList(this.allProjectList);
+        if (!this.ifSuperUser) {
+          if (response['projectsAccess']) {
+            const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
+            this.http.setCurrentUserDetails({ authorities });
           }
-          this.form.reset();
-          this.messenger.add({
-            severity: 'success',
-            summary: 'Project setup initiated',
-            detail: ''
-          });
-          this.isProjectSetupPopup = false;
-          this.isProjectCOmpletionPopup = true;
+        }
+        this.form.reset();
+        this.messenger.add({
+          severity: 'success',
+          summary: 'Project setup initiated',
+          detail: ''
+        });
+        this.isProjectSetupPopup = false;
+        this.isProjectCOmpletionPopup = true;
 
           // Google Analytics
           this.ga.createProjectData(gaObj);

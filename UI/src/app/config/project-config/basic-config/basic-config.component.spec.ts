@@ -465,8 +465,10 @@ describe('BasicConfigComponent', () => {
     component.selectedProject = {};
 
     component.ifSuperUser = false;
-
-    httpService.addBasicConfig.and.returnValue(of(mockResponse));
+    spyOn(httpService, 'setCurrentUserDetails');
+    const spy = spyOn(messageService, 'add');
+    spyOn(ga, 'createProjectData');
+    spyOn(component, 'getFields');  
     component.onSubmit();
     expect(component.form.valid).toBeTruthy();
 

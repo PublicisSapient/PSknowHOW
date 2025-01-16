@@ -250,7 +250,7 @@ export class ProjectListComponent implements OnInit {
               item.projects = item.projects.filter(x => x.projectId != project.id);
             });
             arr = arr?.filter(item => item.projects?.length > 0);
-            this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
+            this.http.setCurrentUserDetails({ projectsAccess: arr });
           }
         }, error => {
           this.projectDeletionStatus(error);

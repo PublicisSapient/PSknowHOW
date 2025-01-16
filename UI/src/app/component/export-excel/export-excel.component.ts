@@ -41,6 +41,7 @@ export class ExportExcelComponent implements OnInit {
   isDisableSaveCOnfigurationBtn: boolean = false;
   markerInfo = [];
   forzenColumns = ['issue id'];
+  exportExcelRawVariable;
 
   constructor(
     private excelService: ExcelService,
@@ -50,27 +51,37 @@ export class ExportExcelComponent implements OnInit {
     private messageService: MessageService
   ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    this.sharedService.kpiExcelSubject.subscribe((x:any)=>{
+      this.exportExcelRawVariable = x;
+      if (x?.markerInfo) {
+        for (const key in x?.markerInfo) {
+          this.markerInfo.push({ color: key, info: x?.markerInfo[key] });
+        }
+      }
+    })
+  }
 
-  // download excel functionality
-  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?,) {
+  // download excel functionality commetting out condition for additionalFilterSupport & iSAdditionalFilterSelected can be revisit 
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?,testKpi?) {
     const sprintIncluded = filterApplyData.sprintIncluded.length > 0 ? filterApplyData.sprintIncluded : ['CLOSED'];
     this.modalDetails['kpiId'] = kpiId;
-    if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
+    //if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
       this.helperService.downloadExcel(kpiId, kpiName, isKanban, filterApplyData, filterData, sprintIncluded,).subscribe((getData) => {
+        getData = {...getData,...this.exportExcelRawVariable}
         this.isDisableSaveCOnfigurationBtn = !getData['saveDisplay'];
         if (getData?.['kpiColumnList']?.length && getData?.['excelData']?.length) {
-          this.dataTransformatin(getData['kpiColumnList'], getData['excelData'], chartType, kpiName);
+          (this.sharedService.selectedTab === 'iteration')?this.dataTransformForIterationTableWidget([], [], getData['kpiColumnList'], getData['excelData'], kpiName, kpiId):this.dataTransformatin(getData['kpiColumnList'], getData['excelData'], chartType, kpiName);
         } else {
           this.modalDetails['header'] = kpiName;
           this.displayModal = true;
         }
 
       });
-    } else {
-      this.modalDetails['header'] = kpiName;
-      this.displayModal = true;
-    }
+    // } else {
+    //   this.modalDetails['header'] = kpiName;
+    //   this.displayModal = true;
+    // }
   }
 
 
@@ -198,6 +209,7 @@ export class ExportExcelComponent implements OnInit {
     this.selectedColumns = []
     this.tableColumns = [];
     this.isDisableSaveCOnfigurationBtn = false;
+    this.markerInfo = [];
   }
 
   checkIfArray(arr) {

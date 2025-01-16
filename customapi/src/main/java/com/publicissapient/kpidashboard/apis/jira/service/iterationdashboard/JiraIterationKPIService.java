@@ -77,7 +77,6 @@ public abstract class JiraIterationKPIService implements NonTrendKPIService {
 			iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
 		else
 			iterationKpiModalVal.setRemainingTime(0);
-		iterationKpiModalVal.setDelay(iterationStatus.getDelay());
 		modalValues.add(iterationKpiModalVal);
 		overAllmodalValues.add(iterationKpiModalVal);
 	}

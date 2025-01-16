@@ -2,18 +2,25 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IssueCardComponent } from './issue-card.component';
 import { SharedService } from 'src/app/services/shared.service';
 import { BehaviorSubject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 describe('IssueCardComponent', () => {
     let component: IssueCardComponent;
     let fixture: ComponentFixture<IssueCardComponent>;
     let sharedService: SharedService;
+    const routerMock = {
+      navigate: jasmine.createSpy('navigate')
+    };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [IssueCardComponent],
-            providers: [SharedService]
-        })
-            .compileComponents();
+            providers: [
+              SharedService,
+              { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } },
+              { provide: Router, useValue: routerMock }
+            ]
+        }).compileComponents();
     });
 
     beforeEach(() => {

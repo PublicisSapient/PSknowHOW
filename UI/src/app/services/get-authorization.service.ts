@@ -26,7 +26,7 @@ export class GetAuthorizationService {
   constructor(private sharedService: SharedService) { }
 
   checkIfSuperUser() {
-    if (this.sharedService.getCurrentUserDetails('authorities') && this.sharedService.getCurrentUserDetails('authorities').includes('ROLE_SUPERADMIN')) {
+    if (this.sharedService.getCurrentUserDetails('authorities')?.length && this.sharedService.getCurrentUserDetails('authorities').includes('ROLE_SUPERADMIN')) {
       // logged in as SuperUser so return true
       return true;
     } else {
@@ -36,21 +36,21 @@ export class GetAuthorizationService {
 
   checkIfProjectAdmin() {
     let isProjectAdmin = false;
-    const projectsAccess = !!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null' ? this.sharedService.getCurrentUserDetails('projectsAccess') : [];
-    if (this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== null) {
-      projectsAccess?.forEach(accessElem => {
-        if (accessElem.role === 'ROLE_PROJECT_ADMIN') {
-          isProjectAdmin = true;
-        }
-      });
-    }
+    const projectsAccess = this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null' ? this.sharedService.getCurrentUserDetails('projectsAccess') : [];
+
+    projectsAccess?.forEach(accessElem => {
+      if (accessElem.role === 'ROLE_PROJECT_ADMIN') {
+        isProjectAdmin = true;
+      }
+    });
+
     return isProjectAdmin;
   }
 
   checkIfViewer(selectedProject) {
-    const projectsAccess = !!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null' ? this.sharedService.getCurrentUserDetails('projectsAccess') : [];
+    const projectsAccess = this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null' ? this.sharedService.getCurrentUserDetails('projectsAccess') : [];
     let isViewer = false;
-    projectsAccess.forEach(projectAccess => {
+    projectsAccess?.forEach(projectAccess => {
       if (projectAccess.role) {
         if (projectAccess.role === 'ROLE_PROJECT_VIEWER') {
           projectAccess.projects.forEach(project => {
@@ -68,7 +68,7 @@ export class GetAuthorizationService {
   checkIfRoleViewerPresent() {
     const projectsAccess = !!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null' ? this.sharedService.getCurrentUserDetails('projectsAccess') : [];
     let isViewer = false;
-    projectsAccess.forEach(projectAccess => {
+    projectsAccess?.forEach(projectAccess => {
       if (projectAccess.role) {
         if (projectAccess.role === 'ROLE_PROJECT_VIEWER') {
           isViewer = true;

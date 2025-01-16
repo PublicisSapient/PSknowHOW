@@ -143,7 +143,7 @@ public class RisksAndDependenciesServiceImplTest {
 			KpiElement kpiElement = risksAndDependenciesServiceImpl.getKpiData(kpiRequest,
 					kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
-			assertNotNull(kpiElement.getTrendValueList());
+			assertNotNull(kpiElement.getIssueData());
 
 		} catch (ApplicationException enfe) {
 

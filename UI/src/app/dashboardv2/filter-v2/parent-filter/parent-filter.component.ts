@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { DropdownFilterOptions } from 'primeng/dropdown';
 
@@ -19,7 +20,7 @@ export class ParentFilterComponent implements OnChanges {
   additionalFilterLevels = [];
   @Output() onSelectedLevelChange = new EventEmitter();
   filterValue: string = '';
-  constructor(public helperService: HelperService) { }
+  constructor(public service: SharedService, public helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['parentFilterConfig']) {
@@ -32,11 +33,8 @@ export class ParentFilterComponent implements OnChanges {
             nodeDisplayName: item
           }
         });
-        this.filterLevels = this.filterLevels.filter((level) => {
-          return !this.additionalFilterLevels.includes(level.nodeName)
-        })
-
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('parent_level');
+        this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level.nodeName));
+        this.stateFilters = (this.service.getBackupOfUrlFilters() && JSON.parse(this.service.getBackupOfUrlFilters())['parent_level']) || this.service.getBackupOfFilterSelectionState('parent_level');
         Promise.resolve().then(() => {
           if (this.stateFilters && typeof this.stateFilters === 'string') {
             this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId.toLowerCase() === this.stateFilters.toLowerCase() })[0];
@@ -60,7 +58,7 @@ export class ParentFilterComponent implements OnChanges {
         console.log(this.filterLevels)
         this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
-        this.stateFilters = this.helperService.getBackupOfFilterSelectionState('primary_level');
+        this.stateFilters = JSON.parse(this.service.getBackupOfUrlFilters())['primary_level'] || this.service.getBackupOfFilterSelectionState('primary_level');
         Promise.resolve().then(() => {
           if (this.stateFilters) {
             if (Array.isArray(this.stateFilters)) {
@@ -102,7 +100,7 @@ export class ParentFilterComponent implements OnChanges {
 /**
  * Handles the change of the selected level in the filter configuration.
  * Emits the selected level and updates the backup of filter selection state based on whether the parent level has changed.
- * 
+ *
  * @param {boolean} parentLevelChanged - Indicates if the parent level has changed.
  * @returns {void}
  */
@@ -110,18 +108,18 @@ export class ParentFilterComponent implements OnChanges {
     if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
       this.onSelectedLevelChange.emit(this.selectedLevel?.nodeName);
       if (parentLevelChanged) {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel.nodeName, 'primary_level': null });
+        this.service.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName, 'primary_level': null });
       } else {
-        this.helperService.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName });
+        this.service.setBackupOfFilterSelectionState({ 'parent_level': this.selectedLevel?.nodeName });
       }
     } else {
-      let selectedNode = this.filterData[this['parentFilterConfig']['labelName']]?.filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
+      let selectedNode = this.filterData[this['parentFilterConfig']['labelName']]?.filter((filter) => filter.nodeId === this.selectedLevel?.nodeId);
       if (selectedNode && selectedNode[0]) {
         this.onSelectedLevelChange.emit({ nodeId: selectedNode[0]?.nodeId, nodeType: this['parentFilterConfig']['labelName'], emittedLevel: this.parentFilterConfig['emittedLevel'], fullNodeDetails: selectedNode });
         if (parentLevelChanged) {
-          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0], 'primary_level': null });
+          this.service.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0], 'primary_level': null });
         } else {
-          this.helperService.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0] });
+          this.service.setBackupOfFilterSelectionState({ 'parent_level': selectedNode[0] });
         }
       }
     }
@@ -130,7 +128,7 @@ export class ParentFilterComponent implements OnChanges {
 /**
  * Handles the change event of a dropdown element.
  * If a dropdown element is selected, it triggers the level change handling.
- * 
+ *
  * @param {any} $event - The event object from the dropdown change.
  * @returns {void}
  */
