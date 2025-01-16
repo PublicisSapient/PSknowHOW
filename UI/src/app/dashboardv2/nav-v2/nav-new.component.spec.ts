@@ -129,7 +129,7 @@ describe('NavNewComponent', () => {
 
   beforeEach(async () => {
     // const httpSpy = jasmine.createSpyObj('HttpService', ['getShowHideOnDashboardNewUI', 'getAllHierarchyLevels']);
-    
+
     const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate', 'navigateByUrl', 'createUrlTree', 'serializeUrl', 'parseUrl', 'isActive', 'events', 'routerState', 'url', 'urlHandlingStrategy', 'config', 'resetConfig', 'ngOnDestroy', 'dispose', 'initialNavigation', 'setUpLocationChangeListener', 'getCurrentNavigation', 'triggerEvent']);
     const helperSpy = jasmine.createSpyObj('HelperService', ['setBackupOfFilterSelectionState', 'deepEqual']);
@@ -158,9 +158,9 @@ describe('NavNewComponent', () => {
     helperService = TestBed.inject(HelperService) as jasmine.SpyObj<HelperService>;
 
     // Set default mocks
-    spyOn(sharedService, 'getSelectedType').and.returnValue('scrum');
-    spyOn(sharedService, 'getSelectedTrends').and.returnValue([]);
-    spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(of({ data: 'mock data' }));
+    // spyOn(sharedService, 'getSelectedType').and.returnValue('scrum');
+    // spyOn(sharedService, 'getSelectedTrends').and.returnValue([]);
+    // spyOn(httpService, 'getShowHideOnDashboardNewUI').and.returnValue(of({ data: 'mock data' }));
     component.selectedType = 'scrum';
     component.dashConfigData = {
       scrum: [
@@ -171,7 +171,7 @@ describe('NavNewComponent', () => {
             primaryFilter: { defaultLevel: { labelName: 'Project' } },
             parentFilter: { labelName: 'Engagement' },
           },
-          kpis: [{kpiId: 'kpi1', shown: true}, {kpiId: 'kpi2', shown: true}]
+          kpis: [{ kpiId: 'kpi1', shown: true }, { kpiId: 'kpi2', shown: true }]
         },
       ],
       others: [
@@ -182,7 +182,7 @@ describe('NavNewComponent', () => {
             primaryFilter: { defaultLevel: { labelName: 'Project' } },
             parentFilter: { labelName: 'Engagement' },
           },
-          kpis: [{kpiId: 'kpi3', shown: true}, {kpiId: 'kpi4', shown: true}]
+          kpis: [{ kpiId: 'kpi3', shown: true }, { kpiId: 'kpi4', shown: true }]
         },
       ],
       configDetails: undefined
@@ -200,24 +200,6 @@ describe('NavNewComponent', () => {
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
-
-  // it('should set selectedTab based on window hash and transform it', () => {
-  //   mockWindowLocationHash('#/some/path/some tab');
-
-  //   component.ngOnInit();
-
-  //   expect(component.selectedTab).toBe('some-tab');
-  //   expect(sharedService.setSelectedBoard).toHaveBeenCalledWith('some-tab');
-  // });
-
-  // it('should use "kanban" type if sharedService.getSelectedType returns "kanban"', () => {
-    
-  //   spyOn(sharedService, 'getSelectedType').and.returnValue('kanban');
-  //   component.ngOnInit();
-
-  //   expect(component.selectedType).toBe('kanban');
-  //   expect(sharedService.setScrumKanban).toHaveBeenCalledWith('kanban');
-  // });
 
   it('should call setSelectedBoard if selectedTab is not "unauthorized access"', () => {
     const obj = { boardSlug: 'iteration' };
@@ -279,7 +261,7 @@ describe('NavNewComponent', () => {
     it('should call httpService and handle success response', () => {
       const responseMock = { success: true, data: { userBoardConfigDTO: {} } };
       spyOn(component, 'setBoards');
-      httpService.getShowHideOnDashboardNewUI.and.returnValue(of(responseMock));
+      spyOn(httpService,'getShowHideOnDashboardNewUI').and.returnValue(of(responseMock));
 
       component.getBoardConfig(['proj1']);
 
@@ -289,7 +271,7 @@ describe('NavNewComponent', () => {
 
     it('should handle error and call MessageService.add when getShowHideOnDashboardNewUI fails', () => {
       // Simulate an error in the HTTP call
-      httpService.getShowHideOnDashboardNewUI.and.returnValue(throwError({ message: 'Error' }));
+      spyOn(httpService,'getShowHideOnDashboardNewUI').and.returnValue(throwError({ message: 'Error' }));
 
       // Call the function that triggers the HTTP call
       component.getBoardConfig([]);
@@ -319,8 +301,10 @@ describe('NavNewComponent', () => {
         data: {
           userBoardConfigDTO: {
             scrum: [
-              { boardName: 'Scrum Board', boardSlug: 'scrum-board', filters: { primaryFilter: { defaultLevel: { labelName: 'level1' } } }, 
-            kpis: [{kpiId: 'kpi1', shown: true}, {kpiId: 'kpi2', shown: true}] }
+              {
+                boardName: 'Scrum Board', boardSlug: 'scrum-board', filters: { primaryFilter: { defaultLevel: { labelName: 'level1' } } },
+                kpis: [{ kpiId: 'kpi1', shown: true }, { kpiId: 'kpi2', shown: true }]
+              }
             ],
             others: []
           }
@@ -377,7 +361,7 @@ describe('NavNewComponent', () => {
                 primaryFilter: { defaultLevel: { labelName: 'project' } },
                 parentFilter: { labelName: 'port' },
               },
-              kpis: [{kpiId: 'kpi1', shown: true}, {kpiId: 'kpi2', shown: true}]
+              kpis: [{ kpiId: 'kpi1', shown: true }, { kpiId: 'kpi2', shown: true }]
             },
           ],
           others: [
@@ -388,7 +372,7 @@ describe('NavNewComponent', () => {
                 primaryFilter: { defaultLevel: { labelName: 'project' } },
                 parentFilter: { labelName: 'port' },
               },
-              kpis: [{kpiId: 'kpi3', shown: true}, {kpiId: 'kpi4', shown: true}]
+              kpis: [{ kpiId: 'kpi3', shown: true }, { kpiId: 'kpi4', shown: true }]
             },
           ],
           configDetails: {},
@@ -408,7 +392,7 @@ describe('NavNewComponent', () => {
             primaryFilter: { defaultLevel: { labelName: 'Project' } },
             parentFilter: { labelName: 'Engagement' },
           },
-          kpis: [{kpiId: 'kpi1', shown: true}, {kpiId: 'kpi2', shown: true}]
+          kpis: [{ kpiId: 'kpi1', shown: true }, { kpiId: 'kpi2', shown: true }]
         },
       ],
       others: [
@@ -419,7 +403,7 @@ describe('NavNewComponent', () => {
             primaryFilter: { defaultLevel: { labelName: 'Project' } },
             parentFilter: { labelName: 'Engagement' },
           },
-          kpis: [{kpiId: 'kpi3', shown: true}, {kpiId: 'kpi4', shown: true}]
+          kpis: [{ kpiId: 'kpi3', shown: true }, { kpiId: 'kpi4', shown: true }]
         },
       ],
       configDetails: undefined
@@ -447,6 +431,78 @@ describe('NavNewComponent', () => {
 
     expect(getAllHierarchyLevelsSpy).toHaveBeenCalled();
   });
-});
 
+
+  describe('NavNewComponent.ngOnInit() ngOnInit method', () => {
+    describe('Happy paths', () => {
+      it('should initialize selectedType and set it in sharedService', () => {
+        spyOn(sharedService, 'getSelectedType').and.returnValue('kanban');
+        spyOn(sharedService, 'setScrumKanban').and.callFake(() => { });
+
+        component.ngOnInit();
+
+        expect(component.selectedType).toBe('kanban');
+        expect(sharedService.setScrumKanban).toHaveBeenCalledWith('kanban');
+      });
+
+      it('should call getBoardConfig with selected trends', () => {
+        const trends = [{ basicProjectConfigId: '123' }];
+        spyOn(sharedService, 'getSelectedTrends').and.returnValue(trends);
+        spyOn<any>(component, 'getBoardConfig').and.callFake(() => { });
+
+        component.ngOnInit();
+
+        expect(component['getBoardConfig']).toHaveBeenCalledWith(['123']);
+      });
+
+      // it('should subscribe to onTabSwitch and update selectedTab', () => {
+      //   const tabSwitchData = { selectedBoard: 'newTab' };
+      //   spyOn(sharedService.onTabSwitch, 'subscribe').and.callFake((callback: ({ selectedBoard: string }) => void) => {
+      //     callback(tabSwitchData);
+      //     return { unsubscribe: jasmine.createSpy() };
+      //   });
+
+      //   component.ngOnInit();
+
+      //   expect(component.selectedTab).toBe('newTab');
+      // });
+    });
+
+    describe('Edge cases', () => {
+      describe('Edge cases', () => {
+        it('should handle empty selected trends gracefully', () => {
+          spyOn(sharedService, 'getSelectedTrends').and.returnValue([]);
+          spyOn<any>(component, 'getBoardConfig').and.callFake(() => { });
+
+          component.ngOnInit();
+
+          expect(component['getBoardConfig']).toHaveBeenCalledWith([]);
+        });
+
+        it('should handle null selectedType and default to scrum', () => {
+          spyOn(sharedService, 'getSelectedType').and.returnValue(null);
+          spyOn(sharedService, 'setScrumKanban').and.callFake(() => { });
+
+          component.ngOnInit();
+
+          expect(component.selectedType).toBe('scrum');
+          expect(sharedService.setScrumKanban).toHaveBeenCalledWith('scrum');
+        });
+
+        // it('should handle errors in getBoardConfig gracefully', () => {
+        //   spyOn<any>(component, 'getBoardConfig').and.callFake(() => {
+        //     throw new Error('Test error');
+        //   });
+        //   messageService.add.and.callFake(() => { });
+
+        //   expect(() => component.ngOnInit()).not.toThrow();
+        //   expect(messageService.add).toHaveBeenCalledWith({
+        //     severity: 'error',
+        //     summary: 'Test error',
+        //   });
+        // });
+      });
+    });
+  });
+});
 

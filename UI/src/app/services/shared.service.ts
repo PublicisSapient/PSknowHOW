@@ -193,7 +193,7 @@ export class SharedService {
   }
 
   // getter for tab i.e Scrum/Kanban
-  getSelectedType() {
+  getSelectedType(): string {
     return this.selectedtype;
   }
 
