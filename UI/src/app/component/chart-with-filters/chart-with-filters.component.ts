@@ -243,7 +243,7 @@ export class ChartWithFiltersComponent implements OnInit, OnChanges {
   categorySelect(event) {
     this.dataCopy = this.data.filter(issue => issue.Category.includes(event.option.categoryName));
     this.modifiedData = this.groupData(this.dataCopy, this.selectedMainFilter.filterKey);
-    this.draw(this.modifiedData);
+    setTimeout(() => {this.draw(this.modifiedData);}, 0);
     this.legendData = [];
     this.populateLegend(this.modifiedData);
     this.service.setKpiSubFilterObj({ [this.kpiId]: { selectedMainCategory: event.option,  selectedMainFilter: this.selectedMainFilter } });
