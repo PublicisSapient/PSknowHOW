@@ -81,4 +81,12 @@ public class KpiDataCacheServiceImplTest {
         assertNotNull(kpiDataCacheService.fetchIssueCountData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
     }
 
+	@Test
+	public void fetchSprintCapacityData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchSprintCapacityDataFromDb(any(), any(), any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result = kpiDataCacheService.fetchSprintCapacityData(new KpiRequest(), new ObjectId(),
+				new ArrayList<>(), "kpi1");
+		assertNotNull(result);
+	}
+
 }

@@ -85,15 +85,11 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	private volatile List<String> sprintIdList = new ArrayList<>();
 
 	@Autowired
-	private KpiHelperService kpiHelperService;
-	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private FilterHelperService flterHelperService;
 	@Autowired
 	private CacheService cacheService;
-	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -255,6 +251,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		List<SprintDetails> sprintDetails = new ArrayList<>();
 		List<JiraIssue> issueList = new ArrayList<>();
 		List<JiraIssueCustomHistory> issueCustomHistoryList = new ArrayList<>();
+		List<CapacityKpiData> estimateTimeList = new ArrayList<>();
 		boolean fetchCachedData = flterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
 		projectWiseSprints.forEach((basicProjectConfigId, sprints) -> {
 			Map<String, Object> result;
@@ -268,10 +265,10 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 			sprintDetails.addAll((List<SprintDetails>) result.get(SPRINTSDETAILS));
 			issueList.addAll((List<JiraIssue>) result.get(STORY_LIST));
 			issueCustomHistoryList.addAll((List<JiraIssueCustomHistory>) result.get(JIRA_ISSUE_HISTORY_DATA));
+			estimateTimeList.addAll((List<CapacityKpiData>) result.get(ESTIMATE_TIME));
 
 		});
 		Map<String, Object> resultListMap = new HashMap<>();
-		List<CapacityKpiData> estimateTimeList = kpiHelperService.fetchCapacityDataFromDB(kpiRequest, leafNodeList);
 		resultListMap.put(ESTIMATE_TIME, estimateTimeList);
 		resultListMap.put(STORY_LIST, issueList);
 		resultListMap.put(SPRINTSDETAILS, sprintDetails);

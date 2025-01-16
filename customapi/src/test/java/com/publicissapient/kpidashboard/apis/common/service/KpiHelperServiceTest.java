@@ -298,21 +298,6 @@ public class KpiHelperServiceTest {
 	}
 
 	@Test
-	public void testFetchSprintCapacityDataFromDb() throws ApplicationException {
-
-		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
-		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
-
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
-				new ArrayList<>(), "hierarchyLevelOne", 5);
-		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-
-		kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
-		assertEquals(5,leafNodeList.size());
-	}
-
-	@Test
 	public void testFetchCapacityDataFromDB() throws ApplicationException {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.CAPACITY.getKpiId());
