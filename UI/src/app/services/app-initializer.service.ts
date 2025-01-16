@@ -99,13 +99,13 @@ export class AppInitializerService {
 
     async checkFeatureFlag() {
         let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
+        if (loc && loc.indexOf('authentication') === -1) {
+            localStorage.setItem('shared_link', loc)
+        }
         return new Promise<void>(async (resolve, reject) => {
             if (!environment['production']) {
                 this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
                 this.validateToken(loc);
-                if (loc.indexOf('authentication') === -1) {
-                    localStorage.setItem('shared_link', loc)
-                }
             } else {
                 const env$ = this.http.get('assets/env.json').pipe(
                     tap(env => {
@@ -117,10 +117,10 @@ export class AppInitializerService {
                         environment['MAP_URL'] = env['MAP_URL'] || '';
                         environment['RETROS_URL'] = env['RETROS_URL'] || '';
                         environment['SPEED_SUITE'] = env['SPEED_SUITE'] === 'true' ? true : false;
-                        this.validateToken(loc);
-                        if (loc.indexOf('authentication') === -1) {
+                        if (loc && loc.indexOf('authentication') === -1) {
                             localStorage.setItem('shared_link', loc)
                         }
+                        this.validateToken(loc);
                     }));
                 env$.toPromise().then(async res => {
                     this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
@@ -165,7 +165,16 @@ export class AppInitializerService {
                         }
                         this.router.navigateByUrl(location);
                     } else {
-                        this.router.navigate(['/dashboard/iteration']);
+                        if (localStorage.getItem('shared_link')) {
+                            const shared_link = localStorage.getItem('shared_link')
+                            if (shared_link) {
+                                localStorage.removeItem('shared_link');
+                            }
+                            this.router.navigateByUrl(shared_link);
+                        } else {
+                            this.router.navigate(['/dashboard/iteration']);
+                        }
+
                     }
                 }, error => {
                     console.log(error);
