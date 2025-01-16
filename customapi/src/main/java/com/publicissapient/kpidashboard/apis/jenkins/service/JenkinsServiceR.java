@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -70,6 +71,9 @@ public class JenkinsServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
 	private boolean referFromProjectCache = true;
 
 	@SuppressWarnings({ "unchecked" })
@@ -98,8 +102,11 @@ public class JenkinsServiceR {
 					return responseList;
 				}
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(),
-						groupId, kpiRequest.getSprintIncluded());
+				Object cachedData = null;
+				if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+					cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(),
+							groupId, kpiRequest.getSprintIncluded());
+				}
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData) {
 					log.info("[JENKINS][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),

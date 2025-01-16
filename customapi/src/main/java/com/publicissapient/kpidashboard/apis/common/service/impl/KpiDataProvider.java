@@ -6,9 +6,12 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,8 @@ public class KpiDataProvider {
 	private FilterHelperService filterHelperService;
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private BuildRepository buildRepository;
 
 	/**
 	 * Fetches data from DB for the given project and sprints combination.
@@ -43,12 +48,11 @@ public class KpiDataProvider {
 	 * @param kpiRequest
 	 * @param basicProjectConfigId
 	 * @param sprintList
-	 * @param kpiId
 	 * @return
 	 */
 	public Map<String, Object> fetchIssueCountDataFromDB(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-			List<String> sprintList, String kpiId) {
-		log.info("Fetching Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+			List<String> sprintList) {
+
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
@@ -106,5 +110,22 @@ public class KpiDataProvider {
 		resultListMap.put("projectWiseStoryCategories", projectWiseStoryCategories);
 		resultListMap.put("projectWiseTotalCategories", projectWiseJiraIdentification);
 		return resultListMap;
+	}
+
+	/**
+	 * Fetch data from data for given project.
+	 * 
+	 * @param basicProjectConfigId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate) {
+		List<String> statusList = List.of(BuildStatus.SUCCESS.name());
+		Map<String, List<String>> mapOfFilters = new HashMap<>();
+		mapOfFilters.put("buildStatus", statusList);
+		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
+		projectBasicConfigIds.add(basicProjectConfigId);
+		return buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
 	}
 }

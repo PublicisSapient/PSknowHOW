@@ -107,9 +107,9 @@ public class KpiDataProviderTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-        when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-        when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-                .thenReturn(totalIssueList);
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
 
 		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 		treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").forEach(leaf -> {
@@ -121,7 +121,7 @@ public class KpiDataProviderTest {
 
 		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
 			Map<String, Object> result = kpiDataProvider.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId,
-					sprintList, KPICode.ISSUE_COUNT.getKpiId());
+					sprintList);
 			assertThat("Total Stories : ", result.size(), equalTo(4));
 		});
 	}

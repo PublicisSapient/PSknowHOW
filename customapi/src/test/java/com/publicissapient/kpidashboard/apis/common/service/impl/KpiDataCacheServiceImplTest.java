@@ -77,7 +77,7 @@ public class KpiDataCacheServiceImplTest {
 
 	@Test
     public void testFetchIssueCountData() {
-        when(kpiDataProvider.fetchIssueCountDataFromDB(any(), any(), any(), any())).thenReturn(new HashMap<>());
+        when(kpiDataProvider.fetchIssueCountDataFromDB(any(), any(), any())).thenReturn(new HashMap<>());
         assertNotNull(kpiDataCacheService.fetchIssueCountData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
     }
 

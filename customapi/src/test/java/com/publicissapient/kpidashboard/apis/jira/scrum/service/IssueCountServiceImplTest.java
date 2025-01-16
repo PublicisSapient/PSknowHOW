@@ -210,7 +210,7 @@ public class IssueCountServiceImplTest {
 		result.put(PROJECT_WISE_TOTAL_CATEGORIES, projectWiseJiraIdentification);
 
 		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
-		when(kpiDataProvider.fetchIssueCountDataFromDB(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+		when(kpiDataProvider.fetchIssueCountDataFromDB(Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(result);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +79,8 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	private BuildRepository buildRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Override
 	public String getQualifierType() {
@@ -143,7 +146,12 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 
 		statusList.add(BuildStatus.SUCCESS.name());
 		mapOfFilters.put("buildStatus", statusList);
-		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+		List<Build> buildList = new ArrayList<>();
+		projectBasicConfigIds.forEach(projectBasicConfigId -> {
+			buildList.addAll(kpiDataCacheService.fetchBuildFrequencydata(projectBasicConfigId, startDate, endDate,
+					KPICode.BUILD_FREQUENCY.getKpiId()));
+		});
+
 		if (CollectionUtils.isEmpty(buildList)) {
 			return new HashMap<>();
 		}

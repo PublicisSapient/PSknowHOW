@@ -21,8 +21,11 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -64,4 +67,15 @@ public interface KpiDataCacheService {
 	 */
 	Map<String, Object> fetchIssueCountData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId);
+
+	/**
+	 *
+	 * @param basicProjectConfigId
+	 * @param startDate
+	 * @param endDate
+	 * @param kpiId
+	 * @return
+	 */
+	List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate,
+                                        String kpiId);
 }
