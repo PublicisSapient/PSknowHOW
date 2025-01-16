@@ -154,7 +154,7 @@ public class KpiDataProviderTest {
 				Mockito.anyList())).thenReturn(new ArrayList<>());
 
 		Map<String, Object> result = kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId,
-				sprintList, kpiId);
+				sprintList);
 
 		assertThat(result.get(ESTIMATE_TIME), equalTo(new ArrayList<>()));
 		assertThat(((List<JiraIssue>)result.get(STORY_LIST)).size(), equalTo(totalIssueList.size()*2));

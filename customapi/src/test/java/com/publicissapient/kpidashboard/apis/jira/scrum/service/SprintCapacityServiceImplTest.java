@@ -36,7 +36,6 @@ import java.util.Map;
 import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -182,8 +181,7 @@ public class SprintCapacityServiceImplTest {
 		});
 		kpiWiseAggregation.put("sprintCapacity", "average");
 
-		when(kpiDataProvider.fetchSprintCapacityDataFromDb(eq(kpiRequest), any(), any(),
-				eq(KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId()))).thenReturn(resultMap);
+		when(kpiDataProvider.fetchSprintCapacityDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultMap);
 		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
 		Assert.assertNull(capacityListMap.get(SPRINTCAPACITYKEY));
@@ -202,8 +200,7 @@ public class SprintCapacityServiceImplTest {
 		});
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("sprintCapacity", Arrays.asList("-5", "5-25", "25-50", "50-75", "75-"));
-		when(kpiDataProvider.fetchSprintCapacityDataFromDb(eq(kpiRequest), any(), any(),
-				eq(KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId()))).thenReturn(resultMap);
+		when(kpiDataProvider.fetchSprintCapacityDataFromDb(eq(kpiRequest), any(), any())).thenReturn(resultMap);
 		kpiWiseAggregation.put("sprintCapacity", "average");
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";

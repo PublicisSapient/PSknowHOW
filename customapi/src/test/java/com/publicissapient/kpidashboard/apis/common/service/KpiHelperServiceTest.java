@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
