@@ -122,7 +122,7 @@ export class AppComponent implements OnInit {
 
     const url = localStorage.getItem('shared_link');
     const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects;
-    const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities.includes('ROLE_SUPERADMIN');
+    const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities?.includes('ROLE_SUPERADMIN');
     if (url) {
       // Extract query parameters
       const queryParams = new URLSearchParams(url.split('?')[1]);
