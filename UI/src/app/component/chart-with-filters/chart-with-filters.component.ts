@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 import { ExportExcelComponent } from '../export-excel/export-excel.component';
 import { SharedService } from 'src/app/services/shared.service';
@@ -8,7 +8,7 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './chart-with-filters.component.html',
   styleUrls: ['./chart-with-filters.component.css']
 })
-export class ChartWithFiltersComponent implements OnChanges {
+export class ChartWithFiltersComponent implements OnInit, OnChanges {
   @Input() data;
   dataCopy;
   modifiedData;
@@ -28,6 +28,20 @@ export class ChartWithFiltersComponent implements OnChanges {
   psColors = ['#FBCF5F', '#A4F6A5', '#FFB688', '#D38EEC', '#ED8888', '#6079C5', '#9FE8FA', '#D4CEB0', '#99CDA9', '#6079C5'];
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
+
+  ngOnInit(): void {
+    this.selectedMainFilter = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] ? 
+    this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainFilter'] : 
+    this.filters.filterGroup1[0];
+    if (this.category && this.category.length && this.category[1]) {
+      this.selectedMainCategory = this.service.getKpiSubFilterObj()[this.kpiId] && this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] ? 
+      this.service.getKpiSubFilterObj()[this.kpiId]['selectedMainCategory'] : 
+      this.category[1];
+    }
+    this.modifiedData = this.groupData(this.data, this.selectedMainFilter.filterKey);
+    this.categorySelect({option:this.selectedMainCategory})
+    this.mainFilterSelect({option:this.selectedMainFilter},)
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['filters']) {
