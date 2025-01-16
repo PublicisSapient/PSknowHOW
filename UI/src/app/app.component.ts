@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
+  constructor(public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
     public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private helperService: HelperService, private location: Location) {
     this.authorized = this.getAuth.checkAuth();
   }
@@ -127,7 +127,7 @@ export class AppComponent implements OnInit {
       const queryParams = new URLSearchParams(url.split('?')[1]);
       const stateFilters = queryParams.get('stateFilters');
 
-      if (stateFilters) {
+      if (stateFilters && stateFilters.length > 0) {
         const decodedStateFilters = atob(stateFilters);
         const stateFiltersObj = JSON.parse(decodedStateFilters);
 
@@ -142,7 +142,7 @@ export class AppComponent implements OnInit {
 
         // Check if user has access to all project in stateFiltersObj['primary_level']
         const hasAccessToAll = stateFilterObj.every(filter =>
-          currentUserProjectAccess.some(project => project.projectId === filter.basicProjectConfigId)
+          currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
         );
 
         if (hasAccessToAll) {

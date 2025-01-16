@@ -39,12 +39,12 @@ export class NavNewComponent implements OnInit, OnDestroy {
       .subscribe(data => {
         this.selectedTab = data.selectedBoard;
       });
-    
-    this.sharedService.primaryFilterChangeSubject.subscribe(x=>{
+
+    this.sharedService.primaryFilterChangeSubject.subscribe(x => {
       this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
     })
 
-    this.sharedService.onScrumKanbanSwitch.subscribe(type=>{
+    this.sharedService.onScrumKanbanSwitch.subscribe(type => {
       this.selectedType = type.selectedType
     })
   }
@@ -97,7 +97,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
           }
         });
 
-        data['others'].forEach((board) => {
+        data['others']?.forEach((board) => {
           if (board?.filters) {
             board.filters.primaryFilter.defaultLevel.labelName = levelDetails.filter(level => level.hierarchyLevelId === board.filters.primaryFilter.defaultLevel.labelName)[0].hierarchyLevelName;
             if (board.filters.parentFilter && board.filters.parentFilter.labelName !== 'Organization Level') {
@@ -114,18 +114,20 @@ export class NavNewComponent implements OnInit, OnDestroy {
           this.dashConfigData = data;
         }
 
-        this.items = [...this.dashConfigData[this.selectedType], ...this.dashConfigData['others']].filter(board => 
-          board.kpis.some(kpi => kpi.shown === true) && board.kpis.length > 0
-        ).map((obj) => {
-          return {
-            label: obj['boardName'],
-            slug: obj['boardSlug'],
-            command: () => {
-              this.handleMenuTabFunctionality(obj)
-            },
-          };
-        });
-        this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+        if (this.dashConfigData[this.selectedType]?.length) {
+          this.items = [...this.dashConfigData[this.selectedType], ...this.dashConfigData['others']].filter(board =>
+            board.kpis.some(kpi => kpi.shown === true) && board.kpis.length > 0
+          ).map((obj) => {
+            return {
+              label: obj['boardName'],
+              slug: obj['boardSlug'],
+              command: () => {
+                this.handleMenuTabFunctionality(obj)
+              },
+            };
+          });
+          this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+        }
       } else {
         this.httpService.getAllHierarchyLevels().subscribe((res) => {
           if (res.data) {

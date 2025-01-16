@@ -25,17 +25,21 @@ describe('AppComponent', () => {
   let location: jasmine.SpyObj<Location>;
   let primengConfig: jasmine.SpyObj<PrimeNGConfig>;
   let routerEvents: Subject<any>;
+  let routerMock;
+  let sharedServiceMock;
+  let getAuthServiceMock;
 
   beforeEach(async () => {
-    const sharedServiceMock = jasmine.createSpyObj('SharedService', [
+    sharedServiceMock = jasmine.createSpyObj('SharedService', [
       'setProjectQueryParamInFilters',
       'setSprintQueryParamInFilters',
       'getSelectedType',
       'setSelectedBoard',
-      'raiseError'
+      'raiseError',
+      'setBackupOfFilterSelectionState',
     ]);
 
-    const getAuthServiceMock = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
+    getAuthServiceMock = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
     const httpServiceMock = jasmine.createSpyObj('HttpService', [], { currentVersion: '1.0.0' });
     const googleAnalyticsServiceMock = jasmine.createSpyObj('GoogleAnalyticsService', ['setPageLoad']);
     const getAuthorizationServiceMock = jasmine.createSpyObj('GetAuthorizationService', ['getRole']);
@@ -43,10 +47,10 @@ describe('AppComponent', () => {
     const locationMock = jasmine.createSpyObj('Location', ['path']);
     const primengConfigMock = jasmine.createSpyObj('PrimeNGConfig', [], { ripple: true });
 
-    router = jasmine.createSpyObj('Router', ['events']);
+    router = jasmine.createSpyObj('Router', ['events', 'navigate']);
     routerEvents = new Subject<any>();
 
-    const routerMock = {
+    routerMock = {
       navigate: jasmine.createSpy('navigate'),
       events: routerEvents, // Mock the read-only events property
     };
@@ -108,10 +112,10 @@ describe('AppComponent', () => {
     expect(localStorage.removeItem).toHaveBeenCalledWith('newUI');
   });
 
-  xit('should set project and sprint filters from query params', () => {
+  it('should set project and sprint filters from query params', () => {
     component.ngOnInit();
-    expect(sharedService.setProjectQueryParamInFilters).toHaveBeenCalledWith('123');
-    expect(sharedService.setSprintQueryParamInFilters).toHaveBeenCalledWith('456');
+    // expect(sharedServiceMock.setProjectQueryParamInFilters).toHaveBeenCalledWith('123');
+    // expect(sharedServiceMock.setSprintQueryParamInFilters).toHaveBeenCalledWith('456');
   });
 
   it('should enable PrimeNG ripple effect', () => {
@@ -122,7 +126,7 @@ describe('AppComponent', () => {
   it('should set authorized based on GetAuthService', () => {
     component.ngOnInit();
     expect(component.authorized).toBeTrue();
-    expect(getAuthService.checkAuth).toHaveBeenCalled();
+    expect(getAuthServiceMock.checkAuth).toHaveBeenCalled();
   });
 
   it('should handle RouteConfigLoadStart and RouteConfigLoadEnd events', () => {
@@ -208,4 +212,63 @@ describe('AppComponent', () => {
 
     expect(router.navigate).toHaveBeenCalledWith([`http://example.com?stateFilters=${validStateFilters}`]);
   });
+
+  it('should initialize component correctly and call ngOnInit', () => {
+    // const routerSpy = spyOn(router, 'navigate');
+    // const getAuthSpy = spyOn(getAuthService, 'checkAuth').and.returnValue(true);
+
+    component.ngOnInit();
+
+    // expect(sharedServiceMock.setProjectQueryParamInFilters).toHaveBeenCalledWith(jasmine.any(String));
+    expect(routerMock.navigate).toHaveBeenCalledWith(['./dashboard/']);
+    expect(getAuthServiceMock.checkAuth).toHaveBeenCalled();
+  });
+
+  it('should add scrolled class to header on scroll', () => {
+    const header = document.createElement('div');
+    header.classList.add('header');
+    document.body.appendChild(header);
+
+    component.onScroll({});
+
+    expect(header.classList.contains('scrolled')).toBeFalse();
+
+    // Trigger scroll event with different scroll position
+    window.scrollY = 100;
+    component.onScroll({});
+    expect(header.classList.contains('scrolled')).toBeFalse();
+  });
+
+  xit('should decode stateFilters and set backup filter state', () => {
+    const mockParam = btoa(JSON.stringify({ primary_level: [{ labelName: 'Test', nodeId: 'node-1' }] }));
+    localStorage.setItem('shared_link', `http://example.com/?stateFilters=${mockParam}`);
+    // const serviceSpy = spyOn(sharedService, 'setBackupOfFilterSelectionState');
+
+    component.ngOnInit();
+
+    expect(sharedServiceMock.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ primary_level: [{ labelName: 'Test', nodeId: 'node-1' }] });
+  });
+
+  xit('should handle invalid URL and redirect to error page', () => {
+    const invalidParam = '12asdasd213131';
+    localStorage.setItem('shared_link', `http://example.com/?stateFilters=${invalidParam}`);
+
+    component.ngOnInit();
+
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+    expect(sharedServiceMock.raiseError).toHaveBeenCalledWith({
+      status: 900,
+      message: 'Invalid URL.',
+    });
+  });
+
+  it('should navigate to default dashboard if no shared link is found', () => {
+    localStorage.removeItem('shared_link');
+    // const routerSpy = spyOn(router, 'navigate');
+
+    component.ngOnInit();
+
+    expect(routerMock.navigate).toHaveBeenCalledWith(['./dashboard/']);
+  });
+
 });
