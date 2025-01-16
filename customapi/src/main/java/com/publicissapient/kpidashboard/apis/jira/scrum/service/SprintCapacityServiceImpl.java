@@ -256,7 +256,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		projectWiseSprints.forEach((basicProjectConfigId, sprints) -> {
 			Map<String, Object> result;
 			if (fetchCachedData) {
-				result = kpiDataCacheService.fetchSprintCapacityData(kpiRequest, basicProjectConfigId, sprints,
+				result = kpiDataCacheService.fetchSprintCapacityData(kpiRequest, basicProjectConfigId, sprintIdList,
 						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
 			} else {
 				result = kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprints);

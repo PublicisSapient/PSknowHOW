@@ -96,6 +96,8 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Override
 	public Map<String, Object> fetchSprintCapacityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId) {
+		log.info("Fetching Sprint Capacity Utilization KPI Data for Project {} and KPI {}",
+				basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
