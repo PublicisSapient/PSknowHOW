@@ -395,10 +395,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       let selectedProject;
       if (stateFilters['primary_level'][0].labelName === 'project') {
         selectedProject = stateFilters['primary_level'][0];
-      } else {
+      } else if (stateFilters['primary_level'][0].labelName.toLowerCase() === 'sprint' || stateFilters['primary_level'][0].labelName.toLowerCase() === 'release') {
         selectedProject = this.filterDataArr[this.selectedType]['Project'].filter(proj => proj.nodeId === stateFilters['primary_level'][0].parentId)[0];
       }
-      this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+      if (selectedProject) {
+        this.getBoardConfig([selectedProject['basicProjectConfigId']]);
+      } else {
+        this.getBoardConfig([]);
+      }
     } else if (this.selectedLevel && typeof this.selectedLevel === 'string') {
       let selectedProject = this.helperService.sortAlphabetically(this.filterDataArr[this.selectedType][this.selectedLevel])[0];
       if (selectedProject) {
@@ -920,7 +924,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.filterApplyData['selectedMap']['sprint'] = [];
         let sprints = this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['parentId'] === event[0].parentId && x['sprintState']?.toLowerCase() == 'active');
         sprints = this.helperService.sortByField(sprints, ['sprintState', 'sprintStartDate']);
-        
+
         if (sprints.length) {
           this.filterApplyData['selectedMap']['sprint'].push(...sprints[0].map(de => de.nodeId));
         }

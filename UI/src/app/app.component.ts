@@ -122,6 +122,7 @@ export class AppComponent implements OnInit {
 
     const url = localStorage.getItem('shared_link');
     const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects;
+    const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities?.includes('ROLE_SUPERADMIN');
     if (url) {
       // Extract query parameters
       const queryParams = new URLSearchParams(url.split('?')[1]);
@@ -133,28 +134,32 @@ export class AppComponent implements OnInit {
 
         // console.log('Decoded State Filters Object:', stateFiltersObj);
         let stateFilterObj = [];
-
+        let projectLevelSelected = false;
         if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
           stateFilterObj = [stateFiltersObj['parent_level']];
         } else {
           stateFilterObj = stateFiltersObj['primary_level'];
         }
 
+        projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
+
         // Check if user has access to all project in stateFiltersObj['primary_level']
-        const hasAccessToAll = stateFilterObj.every(filter =>
+        const hasAccessToAll = ifSuperAdmin || stateFilterObj.every(filter =>
           currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
         );
 
-        if (hasAccessToAll) {
-          this.router.navigate([JSON.parse(JSON.stringify(url))]);
-        } else {
-          this.router.navigate(['/dashboard/Error']);
-          setTimeout(() => {
-            this.service.raiseError({
-              status: 901,
-              message: 'No project access.',
-            });
-          }, 100);
+        if (projectLevelSelected) {
+          if (hasAccessToAll) {
+            this.router.navigate([JSON.parse(JSON.stringify(url))]);
+          } else {
+            this.router.navigate(['/dashboard/Error']);
+            setTimeout(() => {
+              this.service.raiseError({
+                status: 901,
+                message: 'No project access.',
+              });
+            }, 100);
+          }
         }
       }
     } else {
