@@ -858,10 +858,12 @@ public class DataMigrationService {
 					}
 				}
 			});
+		}
 			log.info("Scrum Additional Hierarchy Details  Processing Data Completed");
 			log.info("Kanban Additional Hierarchy Details  Processing Data Started");
 
 			// for kanban
+		if(MapUtils.isNotEmpty(projectIdWiseUniqueId)){
 			projectWiseKanbanAdditonalFilter.forEach((project, hierarchies) -> {
 				if (projectIdWiseUniqueId.containsKey(project)) {
 					for (KanbanAccountHierarchy accountHierarchy : hierarchies) {
@@ -880,6 +882,12 @@ public class DataMigrationService {
 			});
 		}
 		log.info("Kanban Additional Hierarchy Details  Processing Data Completed");
+		dataSetToSave.putIfAbsent("PROJECT_HIERARCHY", projectHierarchyList);
+		dataSetToSave.computeIfPresent("PROJECT_HIERARCHY", (k, v) -> {
+			((List<ProjectHierarchy>) v).addAll(projectHierarchyList);
+			return v;
+		});
+
 	}
 
 }
