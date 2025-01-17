@@ -40,7 +40,7 @@ export class ExcelService {
       for (const data of kpiData.excelData) {
         const rowData = {};
         for (const key in data) {
-          if (!(typeof (data[key]) == 'object')) {
+          if (typeof (data[key]) !== 'object') {
             rowData[key] = data[key];
           } else {
             const appendedRowData = [];
@@ -336,19 +336,20 @@ export class ExcelService {
           let j = 0;
           for (const dataChildName in dataName) {
             if (kpiName === 'Engineering Maturity') {
-              for (let index = 0; index < dataName[dataChildName].length; index++) {
+              for (const item of dataName[dataChildName]) {
                 let newValue = '';
-                if (dataName[dataChildName][index] != null && dataName[dataChildName][index] && typeof dataName[dataChildName][index] === 'object') {
-                  for (const newobjKey in dataName[dataChildName][index]) {
-                    const value = dataName[dataChildName][index][newobjKey];
-                    newValue = newValue + newobjKey + ': ' + value + ',' + '\r\n';
+                if (item != null && typeof item === 'object') {
+                  for (const newobjKey in item) {
+                    const value = item[newobjKey];
+                    newValue += `${newobjKey}: ${value},\r\n`;
                   }
                 } else {
-                  newValue = dataName[dataChildName][index];
+                  newValue = item;
                 }
 
                 newFormatArray[j].push(newValue);
               }
+
             } else {
               if (newFormatArray[j]) {
                 newFormatArray[j].push(...dataName[dataChildName]);
@@ -521,19 +522,20 @@ export class ExcelService {
           let j = 1;
           for (const dataChildName in dataName) {
             if (kpiName === 'Cycle Time' || kpiName === 'Code Commits') {
-              for (let index = 0; index < dataName[dataChildName].length; index++) {
+              for (const item of dataName[dataChildName]) {
                 let newValue = '';
-                if (dataName[dataChildName][index] != null && dataName[dataChildName][index] && typeof dataName[dataChildName][index] === 'object') {
-                  for (const newobjKey in dataName[dataChildName][index]) {
-                    const value = dataName[dataChildName][index][newobjKey];
+                if (item != null && item && typeof item === 'object') {
+                  for (const newobjKey in item) {
+                    const value = item[newobjKey];
                     newValue = newValue + newobjKey + ': ' + value + ',' + '\r\n';
                   }
                 } else {
-                  newValue = dataName[dataChildName][index];
+                  newValue = item;
                 }
 
                 newFormatArray[j].push(newValue);
               }
+
             } else {
               if (newFormatArray[j]) {
                 newFormatArray[j].push(...dataName[dataChildName]);

@@ -146,9 +146,9 @@ public class KPIExcelUtility {
 				totalTimeSpent = totalTimeSpent + defect.getTimeSpentInMinutes();
 			} else {
 				excelData.setDefectId(Collections.emptyMap());
-				excelData.setDefectDesc(Constant.DASH);
+				excelData.setDefectDesc(Constant.BLANK);
 				excelData.setRootCause(Collections.emptyList());
-				excelData.setDefectStatus(Constant.DASH);
+				excelData.setDefectStatus(Constant.BLANK);
 			}
 			excelData.setTotalTimeSpent(totalTimeSpent != null ? String.valueOf((totalTimeSpent / 60)) : "0");
 		}
@@ -182,7 +182,7 @@ public class KPIExcelUtility {
 			} else {
 				KPIExcelData excelData = new KPIExcelData();
 				JiraIssue jiraIssue = issueData.get(story);
-				setQualityCommonExcelData(jiraIssue, story, Collections.emptyMap(), excelData, Constant.DASH,
+				setQualityCommonExcelData(jiraIssue, story, Collections.emptyMap(), excelData, Constant.BLANK,
 						customApiConfig);
 				setStoryPoint(fieldMapping, excelData, jiraIssue);
 				kpiExcelData.add(excelData);
@@ -535,12 +535,25 @@ public class KPIExcelUtility {
 				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId())) {
 					excelData.setTechDebt(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS.getKpiId())
-						|| kpiId.equalsIgnoreCase(KPICode.CODE_VIOLATIONS_KANBAN.getKpiId())) {
-					excelData.setSonarViolation(kpiSpecificDataList.get(i));
-				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
+				}else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
 					excelData.setCodeQuality(kpiSpecificDataList.get(i) + " unit");
 				}
+				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
+				kpiExcelData.add(excelData);
+			}
+		}
+	}
+
+	public static void populateSonarViolationsExcelData(String projectName, List<String> jobList,
+			List<List<String>> kpiSpecificDataList, List<String> versionDate, List<KPIExcelData> kpiExcelData,
+			String kpiId) {
+		if (CollectionUtils.isNotEmpty(jobList)) {
+			for (int i = 0; i < jobList.size(); i++) {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setProject(projectName);
+				excelData.setJobName(jobList.get(i));
+				excelData.setSonarViolationSeverity(kpiSpecificDataList.get(i).get(0));
+				excelData.setSonarViolationType(kpiSpecificDataList.get(i).get(1));
 				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
 				kpiExcelData.add(excelData);
 			}
@@ -1572,7 +1585,7 @@ public class KPIExcelUtility {
 	 * @param object
 	 */
 	public static void populateAssignee(JiraIssue jiraIssue, Object object) {
-		String assigneeName = jiraIssue.getAssigneeName() != null ? jiraIssue.getAssigneeName() : " - ";
+		String assigneeName = jiraIssue.getAssigneeName() != null ? jiraIssue.getAssigneeName() : Constant.BLANK;
 		if (object instanceof IterationKpiModalValue) {
 			((IterationKpiModalValue) object).setAssignee(assigneeName);
 		} else if (object instanceof KPIExcelData) {
@@ -1603,38 +1616,29 @@ public class KPIExcelUtility {
 		jiraIssueModalObject.setIssueType(jiraIssue.getTypeName());
 		jiraIssueModalObject.setPriority(jiraIssue.getPriority());
 		KPIExcelUtility.populateAssignee(jiraIssue, jiraIssueModalObject);
-		jiraIssueModalObject.setIssueSize(Constant.DASH);
-		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			jiraIssueModalObject.setIssueSize(df2.format(jiraIssue.getStoryPoints()));
-		}
-		if (null != jiraIssue.getOriginalEstimateMinutes()
-				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-			Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
-			jiraIssueModalObject
-					.setIssueSize(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/"
-							+ roundingOff(originalEstimateInHours) + " hrs");
-		}
+		setIssueSizeForIssueKpiModal(jiraIssue, fieldMapping, jiraIssueModalObject);
 		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
-				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
+				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : Constant.BLANK);
 		jiraIssueModalObject.setChangeDate(
-				(StringUtils.isNotEmpty(jiraIssue.getChangeDate())) ? jiraIssue.getChangeDate().split("T")[0] : "-");
+				(StringUtils.isNotEmpty(jiraIssue.getChangeDate())) ? jiraIssue.getChangeDate().split("T")[0]
+						: Constant.BLANK);
 		jiraIssueModalObject.setCreatedDate(
-				(StringUtils.isNotEmpty(jiraIssue.getCreatedDate())) ? jiraIssue.getCreatedDate().split("T")[0] : "-");
+				(StringUtils.isNotEmpty(jiraIssue.getCreatedDate())) ? jiraIssue.getCreatedDate().split("T")[0]
+						: Constant.BLANK);
 		jiraIssueModalObject.setUpdatedDate(
-				(StringUtils.isNotEmpty(jiraIssue.getUpdateDate())) ? jiraIssue.getUpdateDate().split("T")[0] : "-");
+				(StringUtils.isNotEmpty(jiraIssue.getUpdateDate())) ? jiraIssue.getUpdateDate().split("T")[0]
+						: Constant.BLANK);
 		jiraIssueModalObject.setLabels(jiraIssue.getLabels());
 		jiraIssueModalObject.setRootCauseList(jiraIssue.getRootCauseList());
 		jiraIssueModalObject.setOwnersFullName(jiraIssue.getOwnersFullName());
 		jiraIssueModalObject.setSprintName(
-				StringUtils.isNotEmpty(jiraIssue.getSprintName()) ? jiraIssue.getSprintName() : Constant.DASH);
+				StringUtils.isNotEmpty(jiraIssue.getSprintName()) ? jiraIssue.getSprintName() : Constant.BLANK);
 		jiraIssueModalObject.setResolution(jiraIssue.getResolution());
 		if (CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())) {
 			List<ReleaseVersion> releaseVersions = jiraIssue.getReleaseVersions();
 			jiraIssueModalObject.setReleaseName(releaseVersions.get(releaseVersions.size() - 1).getReleaseName());
 		} else
-			jiraIssueModalObject.setReleaseName(Constant.DASH);
+			jiraIssueModalObject.setReleaseName(Constant.BLANK);
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
 			jiraIssueModalObject
 					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
@@ -1646,15 +1650,15 @@ public class KPIExcelUtility {
 			jiraIssueModalObject.setRemainingEstimateMinutes(remEstimate);
 			jiraIssueModalObject.setRemainingTimeInDays(remEstimate);
 		} else {
-			jiraIssueModalObject.setRemainingEstimateMinutes(Constant.DASH);
-			jiraIssueModalObject.setRemainingTimeInDays(Constant.DASH);
+			jiraIssueModalObject.setRemainingEstimateMinutes(Constant.BLANK);
+			jiraIssueModalObject.setRemainingTimeInDays(Constant.BLANK);
 		}
 		jiraIssueModalObject.setTimeSpentInMinutes(CommonUtils.convertIntoDays(jiraIssue.getTimeSpentInMinutes()));
 		if (jiraIssue.getDevDueDate() != null)
 			jiraIssueModalObject.setDevDueDate(DateUtil.dateTimeConverter(jiraIssue.getDevDueDate(),
 					DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
 		else
-			jiraIssueModalObject.setDevDueDate(Constant.DASH);
+			jiraIssueModalObject.setDevDueDate(Constant.BLANK);
 
 		if (CollectionUtils.isNotEmpty(fieldMapping.getAdditionalFilterConfig())) {
 			if (CollectionUtils.isNotEmpty(jiraIssue.getAdditionalFilters())) {
@@ -1666,7 +1670,7 @@ public class KPIExcelUtility {
 										.toList());
 
 			} else {
-				jiraIssueModalObject.setSquads(List.of(Constant.DASH));
+				jiraIssueModalObject.setSquads(List.of(Constant.BLANK));
 			}
 		}
 
@@ -1696,39 +1700,30 @@ public class KPIExcelUtility {
 		issueKpiModalValue.setIssueType(jiraIssue.getTypeName());
 		issueKpiModalValue.setPriority(jiraIssue.getPriority());
 		KPIExcelUtility.populateAssignee(jiraIssue, issueKpiModalValue);
-		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			issueKpiModalValue.setIssueSize(df2.format(jiraIssue.getStoryPoints()));
-		}
-		if (null != jiraIssue.getOriginalEstimateMinutes()
-				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-			Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
-			issueKpiModalValue
-					.setIssueSize(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/"
-							+ roundingOff(originalEstimateInHours) + " hrs");
-		} else {
-			issueKpiModalValue.setIssueSize(Constant.DASH);
-		}
+		setIssueSizeForIssueKpiModal(jiraIssue, fieldMapping, issueKpiModalValue);
 		issueKpiModalValue.setDueDate(StringUtils.isNotEmpty(jiraIssue.getDueDate()) ? DateUtil.dateTimeConverter(
-				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
+				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : Constant.BLANK);
 		issueKpiModalValue.setChangeDate(
-				(StringUtils.isNotEmpty(jiraIssue.getChangeDate())) ? jiraIssue.getChangeDate().split("T")[0] : "-");
+				(StringUtils.isNotEmpty(jiraIssue.getChangeDate())) ? jiraIssue.getChangeDate().split("T")[0]
+						: Constant.BLANK);
 		issueKpiModalValue.setCreatedDate(
-				(StringUtils.isNotEmpty(jiraIssue.getCreatedDate())) ? jiraIssue.getCreatedDate().split("T")[0] : "-");
+				(StringUtils.isNotEmpty(jiraIssue.getCreatedDate())) ? jiraIssue.getCreatedDate().split("T")[0]
+						: Constant.BLANK);
 		issueKpiModalValue.setUpdatedDate(
-				(StringUtils.isNotEmpty(jiraIssue.getUpdateDate())) ? jiraIssue.getUpdateDate().split("T")[0] : "-");
+				(StringUtils.isNotEmpty(jiraIssue.getUpdateDate())) ? jiraIssue.getUpdateDate().split("T")[0]
+						: Constant.BLANK);
 		issueKpiModalValue.setLabels(jiraIssue.getLabels());
 		issueKpiModalValue.setRootCauseList(jiraIssue.getRootCauseList());
 		issueKpiModalValue.setOwnersFullName(jiraIssue.getOwnersFullName());
 		issueKpiModalValue.setSprintName(
-				StringUtils.isNotEmpty(jiraIssue.getSprintName()) ? jiraIssue.getSprintName() : Constant.DASH);
+				StringUtils.isNotEmpty(jiraIssue.getSprintName()) ? jiraIssue.getSprintName() : Constant.BLANK);
 		issueKpiModalValue.setResolution(jiraIssue.getResolution());
 		if (CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())) {
 			List<ReleaseVersion> releaseVersions = jiraIssue.getReleaseVersions();
 			issueKpiModalValue.setReleaseName(releaseVersions.get(releaseVersions.size() - 1).getReleaseName());
-		} else
-			issueKpiModalValue.setReleaseName(Constant.DASH);
+		} else {
+			issueKpiModalValue.setReleaseName(Constant.BLANK);
+		}
 		if (jiraIssue.getOriginalEstimateMinutes() != null) {
 			issueKpiModalValue
 					.setOriginalEstimateMinutes(CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes()));
@@ -1739,15 +1734,17 @@ public class KPIExcelUtility {
 			String remEstimate = CommonUtils.convertIntoDays(jiraIssue.getRemainingEstimateMinutes());
 			issueKpiModalValue.setRemainingEstimateMinutes(remEstimate);
 			issueKpiModalValue.setRemainingTimeInDays(remEstimate);
+			issueKpiModalValue.setRemainingTime(jiraIssue.getRemainingEstimateMinutes());
 		} else {
-			issueKpiModalValue.setRemainingEstimateMinutes(Constant.DASH);
+			issueKpiModalValue.setRemainingEstimateMinutes(Constant.BLANK);
+			issueKpiModalValue.setRemainingTime(0);
 		}
 		issueKpiModalValue.setTimeSpentInMinutes(CommonUtils.convertIntoDays(jiraIssue.getTimeSpentInMinutes()));
 		if (jiraIssue.getDevDueDate() != null)
 			issueKpiModalValue.setDevDueDate(DateUtil.dateTimeConverter(jiraIssue.getDevDueDate(),
 					DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
 		else
-			issueKpiModalValue.setDevDueDate(Constant.DASH);
+			issueKpiModalValue.setDevDueDate(Constant.BLANK);
 
 		if (CollectionUtils.isNotEmpty(fieldMapping.getAdditionalFilterConfig())) {
 			if (CollectionUtils.isNotEmpty(jiraIssue.getAdditionalFilters())) {
@@ -1759,7 +1756,7 @@ public class KPIExcelUtility {
 										.toList());
 
 			} else {
-				issueKpiModalValue.setSquads(List.of(Constant.DASH));
+				issueKpiModalValue.setSquads(List.of(Constant.BLANK));
 			}
 		}
 
@@ -1770,6 +1767,23 @@ public class KPIExcelUtility {
 
 		modalObjectMap.computeIfPresent(jiraIssue.getNumber(), (k, v) -> issueKpiModalValue);
 
+	}
+
+	private static void setIssueSizeForIssueKpiModal(JiraIssue jiraIssue, FieldMapping fieldMapping,
+			IssueKpiModalValue issueKpiModalValue) {
+		issueKpiModalValue.setIssueSize(Constant.BLANK);
+		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			issueKpiModalValue.setIssueSize(df2.format(jiraIssue.getStoryPoints()));
+		}
+		if (null != jiraIssue.getOriginalEstimateMinutes()
+				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
+			Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+			issueKpiModalValue
+					.setIssueSize(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/"
+							+ roundingOff(originalEstimateInHours) + " hrs");
+		}
 	}
 
 	/**
@@ -1964,7 +1978,7 @@ public class KPIExcelUtility {
 				excelData.setSprintName(StringUtils.isNotEmpty(jiraIssue.getSprintName())
 						&& StringUtils.isNotEmpty(jiraIssue.getSprintAssetState())
 						&& sprintStatusList.contains(jiraIssue.getSprintAssetState()) ? jiraIssue.getSprintName()
-								: "-");
+								: Constant.BLANK);
 				String date = Constant.EMPTY_STRING;
 				if (jiraIssue.getCreatedDate() != null) {
 					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DateUtil.DATE_FORMAT,
@@ -2053,7 +2067,7 @@ public class KPIExcelUtility {
 					date = DateUtil.dateTimeConverter(jiraIssue.getSprintBeginDate(), ITERATION_DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 				}
-				excelData.setSprintStartDate(StringUtils.isNotEmpty(date) ? date : Constant.DASH);
+				excelData.setSprintStartDate(StringUtils.isNotEmpty(date) ? date : Constant.BLANK);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -2151,7 +2165,7 @@ public class KPIExcelUtility {
 						excelData.setIssueDesc(meanTimeRecoverData.getDesc());
 						excelData.setCompletionDate(!StringUtils.isEmpty(meanTimeRecoverData.getClosedDate())
 								? meanTimeRecoverData.getClosedDate()
-								: Constant.DASH);
+								: Constant.BLANK);
 						excelData.setCreatedDate(meanTimeRecoverData.getCreatedDate());
 						excelData.setTimeToRecover(meanTimeRecoverData.getTimeToRecover());
 						kpiExcelData.add(excelData);
@@ -2227,11 +2241,11 @@ public class KPIExcelUtility {
 				String devDate = DateUtil.dateTimeConverter(
 						String.valueOf(devCompleteDateIssueMap.get(jiraIssue.getNumber())), DateUtil.DATE_FORMAT,
 						DateUtil.DISPLAY_DATE_FORMAT);
-				excelData.setDevCompleteDate(StringUtils.isNotEmpty(devDate) ? devDate : Constant.DASH);
+				excelData.setDevCompleteDate(StringUtils.isNotEmpty(devDate) ? devDate : Constant.BLANK);
 				String completionDate = DateUtil.dateTimeConverter(
 						String.valueOf(completeDateIssueMap.get(jiraIssue.getNumber())), DateUtil.DATE_FORMAT,
 						DateUtil.DISPLAY_DATE_FORMAT);
-				excelData.setCompletionDate(StringUtils.isNotEmpty(completionDate) ? completionDate : Constant.DASH);
+				excelData.setCompletionDate(StringUtils.isNotEmpty(completionDate) ? completionDate : Constant.BLANK);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -2268,7 +2282,7 @@ public class KPIExcelUtility {
 					.getFilterValues().stream().map(AdditionalFilterValue::getValue)).toList());
 
 		} else {
-			excelData.setSquads(List.of(Constant.DASH));
+			excelData.setSquads(List.of(Constant.BLANK));
 		}
 	}
 
@@ -2296,8 +2310,12 @@ public class KPIExcelUtility {
 							roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
 									+ roundingOff(totalOriginalEstimate) + " hrs");
 				}
-				excelData.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
-						jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
+				excelData
+						.setDueDate(
+								(StringUtils.isNotEmpty(jiraIssue.getDueDate()))
+										? DateUtil.dateTimeConverter(jiraIssue.getDueDate(),
+												DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT)
+										: Constant.BLANK);
 				kpiExcelData.add(excelData);
 			});
 		}

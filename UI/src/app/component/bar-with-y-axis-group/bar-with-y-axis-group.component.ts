@@ -159,12 +159,12 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
         return finalResult
       })
     }
-    
+
     const self = this;
 
     const categoriesNames = data.map((d) => d.categorie);
     const rateNames = data[0].value.map((d) => d.rate);
-    const paddingTop = 24; 
+    const paddingTop = 24;
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
@@ -198,7 +198,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
 
     const yAxis = d3.axisLeft(y).ticks(5)
 
-    const color = d3.scaleOrdinal().range(this.color);
+    const color = this.color && d3.scaleOrdinal().range(this.color);
 
     /** Adding tooltip */
     let tooltipContainer;
@@ -269,7 +269,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       if (viewType === 'large' && selectedProjectCount === 1) {
         xAxisText.each((d, i, nodes) => {
           const textElement = d3.select(nodes[i]);
-          const width = tempAxis.bandwidth(); 
+          const width = tempAxis.bandwidth();
           this.wrap(textElement, width);
         });
       }
@@ -345,7 +345,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
           return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? barScale(d.rate) + barWidth / 1.5 : barScale(d.rate)
         }
       })
-      .style('fill', (d) =>color(d.rate))
+      .style('fill', (d) => (color && color(d.rate)))
       .attr('y', (d) =>y(this.yAxisOrder[d.value]) + y.bandwidth()/2)
       .attr('height', (d) => (height - margin.top - (y(this.yAxisOrder[d.value]) + y.bandwidth()/2)))
       .attr('class', 'bar')

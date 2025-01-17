@@ -386,7 +386,7 @@ const formFieldData = [
     spyOn(httpService, 'addBasicConfig').and.returnValue(of(successResponse))
     spyOn(sharedService, 'setSelectedProject');
     component.ifSuperUser = false;
-    spyOn(sharedService, 'setCurrentUserDetails');
+    spyOn(httpService, 'setCurrentUserDetails');
     const spy = spyOn(messageService, 'add');
     spyOn(ga, 'createProjectData');
     spyOn(component, 'getFields');  

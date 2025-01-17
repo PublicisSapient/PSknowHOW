@@ -24,7 +24,8 @@ import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-import { FeatureFlagsService } from './services/feature-toggle.service';
+import { HelperService } from './services/helper.service';
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -34,11 +35,11 @@ import { FeatureFlagsService } from './services/feature-toggle.service';
 
 
 export class AppComponent implements OnInit {
-
   loadingRouteConfig: boolean;
-
   authorized = <boolean>true;
-
+  refreshCounter: number = 0;
+  self: any = this;
+  selectedTab: string = '';
   @HostListener('window:scroll', ['$event'])
   onScroll(event) {
     const header = document.querySelector('.header');
@@ -49,8 +50,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private feature: FeatureFlagsService) {
+  constructor(public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
+    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private helperService: HelperService, private location: Location) {
     this.authorized = this.getAuth.checkAuth();
   }
 
@@ -60,16 +61,41 @@ export class AppComponent implements OnInit {
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
       .subscribe(params => {
-        let nodeId = params.projectId;
-        let sprintId = params.sprintId;
-        if (nodeId) {
-          this.service.setProjectQueryParamInFilters(nodeId)
+        if (!this.refreshCounter) {
+          let param = params['stateFilters'];
+          if (param?.length) {
+            try {
+              let selectedTab = this.location.path();
+              selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+              selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+              this.selectedTab = selectedTab.split('?statefilters=')[0];
+              this.service.setSelectedBoard(this.selectedTab);
+
+              param = atob(param);
+              console.log('param', param);
+              // param = param.replace(/###/gi, '___');
+
+              const kpiFilterParam = params['kpiFilters'];
+              if (kpiFilterParam) {
+                const kpiFilterParamDecoded = atob(kpiFilterParam);
+                const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+                this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+              }
+
+              this.service.setBackupOfFilterSelectionState(JSON.parse(param));
+              this.refreshCounter++;
+            } catch (error) {
+              this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+              setTimeout(() => {
+                this.service.raiseError({
+                  status: 900,
+                  message: 'Invalid URL.'
+                });
+              }, 100);
+            }
+          }
         }
-        if (sprintId) {
-          this.service.setSprintQueryParamInFilters(sprintId)
-        }
-      }
-      );
+      });
 
     this.primengConfig.ripple = true;
     this.authorized = this.getAuth.checkAuth();
@@ -93,5 +119,52 @@ export class AppComponent implements OnInit {
       }
 
     });
+
+    const url = localStorage.getItem('shared_link');
+    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects;
+    const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities?.includes('ROLE_SUPERADMIN');
+    if (url) {
+      // Extract query parameters
+      const queryParams = new URLSearchParams(url.split('?')[1]);
+      const stateFilters = queryParams.get('stateFilters');
+
+      if (stateFilters && stateFilters.length > 0) {
+        const decodedStateFilters = atob(stateFilters);
+        const stateFiltersObj = JSON.parse(decodedStateFilters);
+
+        // console.log('Decoded State Filters Object:', stateFiltersObj);
+        let stateFilterObj = [];
+        let projectLevelSelected = false;
+        if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
+          stateFilterObj = [stateFiltersObj['parent_level']];
+        } else {
+          stateFilterObj = stateFiltersObj['primary_level'];
+        }
+
+        projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
+
+        // Check if user has access to all project in stateFiltersObj['primary_level']
+        const hasAccessToAll = ifSuperAdmin || stateFilterObj.every(filter =>
+          currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
+        );
+
+        if (projectLevelSelected) {
+          if (hasAccessToAll) {
+            this.router.navigate([JSON.parse(JSON.stringify(url))]);
+          } else {
+            this.router.navigate(['/dashboard/Error']);
+            setTimeout(() => {
+              this.service.raiseError({
+                status: 901,
+                message: 'No project access.',
+              });
+            }, 100);
+          }
+        }
+      }
+    } else {
+      this.router.navigate(['./dashboard/']);
+    }
   }
+
 }

@@ -45,13 +45,13 @@
   "jiraStatusForDevelopment": [
     "DEVELOPMENT"
   ],
-  "jiraTicketVelocityIssueType": [
+  "jiraTicketVelocityIssueTypeKPI49": [
     "User Story",
     "Feature",
     "Bug",
     "Epic"
   ],
-  "ticketDeliverdStatus": [
+  "ticketDeliveredStatusKPI49": [
     "Closed"
   ],
   "ticketReopenStatus": [

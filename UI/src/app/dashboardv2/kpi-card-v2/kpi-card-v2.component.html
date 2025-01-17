@@ -1,61 +1,120 @@
-<div class="kpi-card-container">
-  <div class="kpi-card-header p-pr-5 p-pl-5 p-jc-between">
-    <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
-      <div class="kpi-card-title-container">
-        <h3 *ngIf="kpiData">{{kpiData?.kpiName}}</h3>
-        <span *ngIf="kpiData?.kpiDetail?.kpiInfo" aria-hidden="true" class="info-icon" (mouseover)="showTooltip(true)"
-          (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}">
-          <img alt="info" class="" src="../../../assets/img/Info.svg" />
-          <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
-            (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
-            [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
-        </span>
-      </div>
-      <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'" (mouseover)="showWarning(true)"
-        (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
-        <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
-          src="../../../assets/img/Warning.svg" />
-        <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
-          [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true"></app-tooltip-v2>
-      </span>
-    </div>
-    <div class="kpi-menu-container" (click)="toggleMenu($event)">
-      <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
-    </div>
-    <p-menu #kpimenu id="menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems">
-      <ng-template pTemplate="item" let-item>
-        <div>
-          <i [class]="item.icon"></i>
-          <span> {{ item.label }}</span>
-        </div>
-      </ng-template>
-    </p-menu>
-  </div>
+<ng-container *ngIf="selectedTab === 'iteration'; else cardWithOutRawJsonTemplate">
+  <div class="kpi-card-container-v2">
+    <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"  (actionTriggered)="handleAction($event)"
+    ></app-ps-kpi-card-header>
 
-  <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" *ngIf="kpiData.kpiDetail.chartType !== 'stacked-area'"
-    [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }"
-    class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
-    <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
-      <ng-container *ngFor="let filter of dropdownArr;let k = index">
-        <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"
-          [(ngModel)]="filterOptions['filter'+(k+1)]" [autoDisplayFirst]="true"
-          [style]="{'margin-left': '5px', 'height': '32px'}" (onChange)="handleChange('single',k)"
-          [virtualScroll]="true" [virtualScrollItemSize]="30"
-          [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"></p-dropdown>
+    <div class="kpi-card-body">
+      <ng-container
+        *ngIf="!loader && (currentChartData?.chartData?.length || currentChartData?.chartData?.data?.length || currentChartData?.chartData?.chartData?.length); else noDataRawDataKPIs">
+        <div *ngIf="checkFilterPresence(kpiFilterData)">
+          <app-ps-kpi-card-filter [kpiCardFilter]="kpiFilterData" [kpiId]="kpiData?.kpiId"
+            *ngIf="kpiData?.kpiDetail?.chartType !== 'chartWithFilter' && kpiData?.kpiDetail?.chartType !== 'CumulativeMultilineChart'"
+            (filterChange)="onFilterChange($event)" (filterClear)="onFilterClear()"></app-ps-kpi-card-filter>
+        </div>
+        <div
+          *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
+          class="p-pr-5 p-pl-5 p-pt-5 p-col-6">
+          <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
+          <h3 class="p-my-0">{{showCummalative()}}</h3>
+        </div>
+        <div class="p-d-flex">
+          <div class="{{ kpiData?.kpiDetail?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
+            <app-ps-kpi-card-chart-renderer [chartData]="currentChartData?.chartData"
+              [chartType]="kpiData?.kpiDetail?.chartType" [chartWidth]="cardData?.chartWidth"
+              [chartHeight]="cardData?.chartHeight" [kpiName]="kpiData?.kpiDetail?.kpiName"
+              [kpiId]="kpiData?.kpiDetail?.kpiId" [kpiDetails]="kpiData?.kpiDetail"></app-ps-kpi-card-chart-renderer>
+          </div>
+          <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="kpiData?.kpiDetail?.chartType ===  'bar-chart'">
+            <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
+              <p>{{dataGroup.name}}</p>
+              <h3>{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),dataGroup.unit)}}</h3>
+            </div>
+          </div>
+        </div>
       </ng-container>
     </div>
-    <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-jc-end">
-      <ng-container *ngFor="let filter of dropdownArr;let k = index">
-        <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
-          [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" [filter]="false"
-          [showHeader]="false" (change)="handleChange('multi')" [placeholder]="filter?.filterType" [clearable]="false"
-          class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
-          <ng-container *ngFor="let item of filter?.options; index as i">
-            <ng-option [value]="item">
-              {{item}}
-            </ng-option>
-          </ng-container>
-        </ng-select>
+    <div
+      *ngIf="kpiData?.kpiDetail?.chartType === 'stacked-bar-chart' ||  kpiData?.kpiDetail?.chartType ===  'stacked-bar'"
+      class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
+      <ul class="legend">
+        <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData">
+          <span [ngStyle]="{ 'background-color': footer.color }"></span>{{ footer.category }}
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="kpiData?.kpiDetail?.chartType === 'grouped-bar-chart'"
+      class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
+      <ul class="legend" style="margin-top: -20px;">
+        <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData?.data;let i = index;">
+          <span [ngStyle]="{ 'background-color': footer['color' + (i+1)] }"></span>{{ footer['category' + (i+1)] }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</ng-container>
+
+
+<ng-template #cardWithOutRawJsonTemplate>
+  <div class="kpi-card-container">
+    <div class="kpi-card-header p-pr-5 p-pl-5 p-jc-between">
+      <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
+        <div class="kpi-card-title-container">
+          <h3 *ngIf="kpiData">{{kpiData?.kpiName}}</h3>
+          <span *ngIf="kpiData?.kpiDetail?.kpiInfo" aria-hidden="true" class="info-icon" (mouseover)="showTooltip(true)"
+            (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}">
+            <img alt="info" class="" src="../../../assets/img/Info.svg" />
+            <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
+              (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
+              [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
+          </span>
+        </div>
+        <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'"
+          (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
+          <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
+            src="../../../assets/img/Warning.svg" />
+          <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
+            [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true"></app-tooltip-v2>
+        </span>
+      </div>
+      <div class="kpi-menu-container" (click)="toggleMenu($event)">
+        <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
+      </div>
+      <p-menu #kpimenu id="menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems">
+        <ng-template pTemplate="item" let-item>
+          <div>
+            <i [class]="item.icon"></i>
+            <span> {{ item.label }}</span>
+          </div>
+        </ng-template>
+      </p-menu>
+    </div>
+
+    <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
+      *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'"
+      [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }"
+      class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
+      <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
+        <ng-container *ngFor="let filter of dropdownArr;let k = index">
+          <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"
+            [(ngModel)]="filterOptions['filter'+(k+1)]" [autoDisplayFirst]="true"
+            [style]="{'margin-left': '5px', 'height': '32px'}" (onChange)="handleChange('single',k)"
+            [virtualScroll]="true" [virtualScrollItemSize]="30"
+            [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"></p-dropdown>
+        </ng-container>
+      </div>
+      <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-jc-end">
+        <ng-container *ngFor="let filter of dropdownArr;let k = index">
+          <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
+            [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" [filter]="false"
+            [showHeader]="false" (change)="handleChange('multi')" [placeholder]="filter?.filterType" [clearable]="false"
+            class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
+            <ng-container *ngFor="let item of filter?.options; index as i">
+              <ng-option [value]="item">
+                {{item}}
+              </ng-option>
+            </ng-container>
+          </ng-select>
 
         <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
           inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
@@ -72,6 +131,31 @@
           (onChange)="handleChange('radio', $event)"></p-selectButton>
       </ng-container>
     </ng-container>
+
+    <ng-container *ngSwitchCase="'multitypefilters'">
+      <div class="multi-filter-section">
+        <ng-container *ngFor="let filter of dropdownArr;let k = index">
+          <ng-container *ngIf="filter.filterType?.toLowerCase() === 'radiobtn'; else dropdown">
+            <ng-container *ngIf="filter?.options && filter?.options.length ">
+              <p-selectButton [options]="filter?.options" [(ngModel)]="radioOption"
+                (onChange)="handleChange('radio', $event,k)"></p-selectButton>
+            </ng-container>
+          </ng-container>
+          <ng-template #dropdown>
+            <div>
+              <p-multiSelect *ngIf="filter?.options?.length" #multiSelect1
+              inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
+              [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
+              (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
+              [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
+              [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
+            </p-multiSelect>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </ng-container>
+    
   </div>
   <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : kpiData.kpiDetail.chartType === 'stacked-area' ? '270px' : '220px',
   'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
@@ -119,24 +203,25 @@
               (click)="reloadKPI()"></button>
             </span>
 
+            </div>
           </div>
         </div>
+        <div class="min-ht" *ngIf="!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected">
+          <div class="err squad-err-msg">KPI cannot be measured for a Squad</div>
+        </div>
+      </ng-template>
+      <div class="overlay loader" *ngIf="loader || immediateLoader">
+        <div class="loading-img"></div>
       </div>
-      <div class="min-ht" *ngIf="!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected">
-        <div class="err squad-err-msg">KPI cannot be measured for a Squad</div>
-      </div>
-    </ng-template>
-    <div class="overlay loader" *ngIf="loader || immediateLoader">
-      <div class="loading-img"></div>
+    </div>
+    <div class="kpi-card-footer p-pr-5 p-pl-5"
+      [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
+      <app-trend-indicator-v2 *ngIf="checkIfDataPresent(kpiDataStatusCode)" [trendData]="trendData"
+        [colorObj]="trendBoxColorObj">
+      </app-trend-indicator-v2>
     </div>
   </div>
-  <div class="kpi-card-footer p-pr-5 p-pl-5"
-    [ngClass]="{'hidden' : (loader || immediateLoader || (!checkIfDataPresent(kpiDataStatusCode) && !partialData) || (iSAdditionalFilterSelected || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)))}">
-    <app-trend-indicator-v2 *ngIf="checkIfDataPresent(kpiDataStatusCode)" [trendData]="trendData"
-      [colorObj]="trendBoxColorObj">
-    </app-trend-indicator-v2>
-  </div>
-</div>
+</ng-template>
 
 <p-dialog [(visible)]="displaySprintDetailsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
   styleClass="sprint-details-overlay">
@@ -236,3 +321,16 @@
     </div>
   </ng-container>
 </p-dialog>
+
+<ng-template #noDataRawDataKPIs>
+  <div class="min-ht" *ngIf="!loader">
+    <div class="p-w-100  p-d-flex p-justify-center">
+      <img alt="no-data" src="../../../assets/img/NoDataFound.svg"
+        [ngStyle]="{'height': kpiData?.kpiDetail?.kpiHeight === 100 ? '100%' : '100px'}" />
+    </div>
+    <h4 class="p-text-center">No Data Available.</h4>
+  </div>
+  <div class="overlay loader" *ngIf="loader">
+    <div class="loading-img"></div>
+  </div>
+</ng-template>

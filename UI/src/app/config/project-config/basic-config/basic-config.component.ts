@@ -251,7 +251,7 @@ export class BasicConfigComponent implements OnInit {
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            this.sharedService.setCurrentUserDetails({ authorities });
+            this.http.setCurrentUserDetails({ authorities });
           }
         }
         this.form.reset();
