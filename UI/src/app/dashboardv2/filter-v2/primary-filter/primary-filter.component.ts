@@ -207,6 +207,12 @@ export class PrimaryFilterComponent implements OnChanges {
         if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
           this.service.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
           this.applyFilters = false;
+
+          if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'sprint' || this.selectedFilters[0]?.labelName?.toLowerCase() === 'release') {
+             this.service.setSelectedTrends(this.filterData['Project'].filter(x => this.selectedFilters.map(s=>s.parentId).includes(x.nodeId)));
+          } else if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'project') {
+            this.service.setSelectedTrends(this.selectedFilters);
+          }
         }
       }
 

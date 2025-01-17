@@ -252,15 +252,18 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 
 		List<KpiData> dataGroup1 = new ArrayList<>();
 		String unit;
+		String name;
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			unit = CommonConstant.SP;
+			name = CommonConstant.STORY_POINT;    
 		} else {
 			unit = CommonConstant.DAY;
+			name = CommonConstant.ORIGINAL_ESTIMATE;    
 		}
 
-		dataGroup1.add(createKpiData("", "", 1, "count", ""));
-		dataGroup1.add(createKpiData("value", "", 2, "sum", unit));
+		dataGroup1.add(createKpiData("", "Issue count", 1, "count", ""));
+		dataGroup1.add(createKpiData("value", name, 2, "sum", unit));
 
 		List<KpiData> dataGroup2 = new ArrayList<>();
 		dataGroup2.add(createKpiData(DELAY, DELAY, 1, "sum", ""));
