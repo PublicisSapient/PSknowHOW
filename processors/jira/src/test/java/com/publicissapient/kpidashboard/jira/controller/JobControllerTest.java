@@ -327,17 +327,8 @@ public class JobControllerTest {
 	@Test
 	public void testMetaData() throws Exception {
 		// Mocking ongoingExecutionsService.isExecutionInProgress() to return false
-		when(ongoingExecutionsService.isExecutionInProgress(anyString())).thenReturn(false);
 
-		// Mocking findById() to return an Optional<ProjectBasicConfig>
-		Optional<ProjectBasicConfig> projectBasicConfig = Optional.of(new ProjectBasicConfig());
-		when(projectConfigRepository.findById(any())).thenReturn(projectBasicConfig);
-
-		// Mocking findByToolNameAndBasicProjectConfigId() to return a list of ProjectToolConfig
-		List<ProjectToolConfig> projectToolConfigs = Collections.singletonList(new ProjectToolConfig());
-		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigs);
-
-		// Calling the method with ProcessorExecutionBasicConfig
+	// Calling the method with ProcessorExecutionBasicConfig
 		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
 		processorExecutionBasicConfig.setProjectBasicConfigIds(Collections.singletonList("507f1f77bcf86cd799439011"));
 		ResponseEntity<String> response = jobController.runMetadataStep("507f1f77bcf86cd799439011");
@@ -346,15 +337,11 @@ public class JobControllerTest {
 	@Test
 	public void testMetaDataException() throws Exception {
 		// Mocking ongoingExecutionsService.isExecutionInProgress() to return false
-		when(ongoingExecutionsService.isExecutionInProgress(anyString())).thenReturn(false);
 
 		// Mocking findById() to return an Optional<ProjectBasicConfig>
-		Optional<ProjectBasicConfig> projectBasicConfig = Optional.of(new ProjectBasicConfig());
-		when(projectConfigRepository.findById(any())).thenReturn(projectBasicConfig);
+
 
 		// Mocking findByToolNameAndBasicProjectConfigId() to return a list of ProjectToolConfig
-		List<ProjectToolConfig> projectToolConfigs = Collections.singletonList(new ProjectToolConfig());
-		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigs);
 
 		// Calling the method with ProcessorExecutionBasicConfig
 		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();

@@ -251,7 +251,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 	private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
 		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(
-				projectConfig.getProjectToolConfig().getMetadataTemplateCode(), JiraConstants.JIRA,
+				projectConfig.getProjectToolConfig().getOriginalTemplateCode(), JiraConstants.JIRA,
 				projectConfig.isKanban());
 		String templateName = metadataIdentifier.getTemplateName();
 		Map<String, List<String>> valuesToIdentifyMap = new HashMap<>();
