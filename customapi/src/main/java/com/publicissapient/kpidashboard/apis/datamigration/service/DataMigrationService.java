@@ -92,6 +92,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DataMigrationService {
 
+	public static final String SPRINT_HISTORY = "SPRINT_HISTORY";
+	public static final String PROJECT_HIERARCHY = "PROJECT_HIERARCHY";
+	public static final String SPRINT_DETAILS = "SPRINT_DETAILS";
 	@Autowired
 	private ProjectBasicConfigRepository basicConfigRepository;
 	@Autowired
@@ -218,7 +221,7 @@ public class DataMigrationService {
 
 	private List<ProjectBasicDup> duplicateProject(List<ProjectBasicConfig> projectBasicConfigList) {
 		ModelMapper mapper = new ModelMapper();
-		List<ProjectBasicDup> projectBasicDupList = new ArrayList<>();
+		List<ProjectBasicDup> projectBasicDupLists = new ArrayList<>();
 		for (ProjectBasicConfig projectBasicConfig : projectBasicConfigList) {
 			ProjectBasicDup projectBasicDup = mapper.map(projectBasicConfig, ProjectBasicDup.class);
 			List<HierarchyValueDup> hierarchyValueDupList = projectBasicDup.getHierarchy();
@@ -226,11 +229,11 @@ public class DataMigrationService {
 				for (HierarchyValueDup values : hierarchyValueDupList) {
 					values.setCustomizedValue(values.getCustomizedValue());
 				}
-				projectBasicDupList.add(projectBasicDup);
+				projectBasicDupLists.add(projectBasicDup);
 			}
 		}
 
-		return projectBasicDupList;
+		return projectBasicDupLists;
 
 	}
 
@@ -408,7 +411,7 @@ public class DataMigrationService {
 
 		Map<String, String> projectNameWiseNodeId = projectBasicConfigList.stream().collect(
 				Collectors.toMap(a -> (a.getProjectName() + "_" + a.getId()), ProjectBasicConfig::getProjectNodeId));
-		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get("SPRINT_HISTORY");
+		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 		List<KpiCommentsHistory> allHistory = kpiCommentsHistoryRepository.findAll();
 		List<KPIComments> all = kpiCommentsRepository.findAll();
 
@@ -416,23 +419,7 @@ public class DataMigrationService {
 		List<KPIComments> finalKpiComment = new ArrayList<>();
 		List<KpiCommentsHistory> finalKpiHistoryComment = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(all)) {
-			for (KPIComments kpiComment : all) {
-				if (projectNameWiseNodeId.containsKey(kpiComment.getNode())) {
-					kpiComment.setNode(projectNameWiseNodeId.get(kpiComment.getNode()));
-					if (StringUtils.isNotEmpty(kpiComment.getNodeChildId())
-							&& sprintNodeHistory.containsKey(kpiComment.getNodeChildId())) {
-						kpiComment.setNodeChildId(sprintNodeHistory.get(kpiComment.getNodeChildId()));
-						finalKpiComment.add(kpiComment);
-					}
-
-					else if (StringUtils.isEmpty(kpiComment.getNodeChildId())) {
-						finalKpiComment.add(kpiComment);
-					}
-
-				}
-			}
-		}
+		kpiComment(projectNameWiseNodeId, sprintNodeHistory, all, finalKpiComment);
 		log.info("KPI Comments Data Processing Completed");
 		log.info("KPI Comments History Data Processing Started");
 		if (CollectionUtils.isNotEmpty(allHistory)) {
@@ -458,6 +445,26 @@ public class DataMigrationService {
 
 	}
 
+	private static void kpiComment(Map<String, String> projectNameWiseNodeId, Map<String, String> sprintNodeHistory, List<KPIComments> all, List<KPIComments> finalKpiComment) {
+		if (CollectionUtils.isNotEmpty(all)) {
+			for (KPIComments kpiComment : all) {
+				if (projectNameWiseNodeId.containsKey(kpiComment.getNode())) {
+					kpiComment.setNode(projectNameWiseNodeId.get(kpiComment.getNode()));
+					if (StringUtils.isNotEmpty(kpiComment.getNodeChildId())
+							&& sprintNodeHistory.containsKey(kpiComment.getNodeChildId())) {
+						kpiComment.setNodeChildId(sprintNodeHistory.get(kpiComment.getNodeChildId()));
+						finalKpiComment.add(kpiComment);
+					}
+
+					else if (StringUtils.isEmpty(kpiComment.getNodeChildId())) {
+						finalKpiComment.add(kpiComment);
+					}
+
+				}
+			}
+		}
+	}
+
 	private void updateAccessRequest(List<OrganizationHierarchy> organizationHierarchyList,
 			Map<String, Object> dataSetToSave) {
 		Map<String, List<String>> map = organizationHierarchyList.stream()
@@ -468,31 +475,39 @@ public class DataMigrationService {
 
 		List<AccessRequest> accessRequest = accessRequestsRepository.findAll();
 		log.info("Access Request Data Processing Started");
+		getAccessRequestData(map, accessRequest);
+		log.info("Access Request Data Processing Completed");
+
+		dataSetToSave.put("ACCESS_REQUEST", accessRequest);
+
+	}
+
+	private static void getAccessRequestData(Map<String, List<String>> map, List<AccessRequest> accessRequest) {
 		if (CollectionUtils.isNotEmpty(accessRequest)) {
 			for (AccessRequest request : accessRequest) {
 				AccessNode node = request.getAccessNode();
 				String level = node.getAccessLevel();
 				if (CollectionUtils.isNotEmpty(node.getAccessItems())) {
 					List<AccessItem> newAccessItem = new ArrayList<>();
-					for (AccessItem item : node.getAccessItems()) {
-						if (map.containsKey(level + "_" + item.getItemName())) {
-							List<String> strings = map.get(level + "_" + item.getItemName());
-							for (String str : strings) {
-								AccessItem item1 = new AccessItem();
-								item1.setItemId(str);
-								newAccessItem.add(item1);
-							}
-						}
-					}
+					addNewAccessItem(map, node, level, newAccessItem);
 					node.setAccessItems(newAccessItem);
 				}
 
 			}
 		}
-		log.info("Access Request Data Processing Completed");
+	}
 
-		dataSetToSave.put("ACCESS_REQUEST", accessRequest);
-
+	private static void addNewAccessItem(Map<String, List<String>> map, AccessNode node, String level, List<AccessItem> newAccessItem) {
+		for (AccessItem item : node.getAccessItems()) {
+			if (map.containsKey(level + "_" + item.getItemName())) {
+				List<String> strings = map.get(level + "_" + item.getItemName());
+				for (String str : strings) {
+					AccessItem item1 = new AccessItem();
+					item1.setItemId(str);
+					newAccessItem.add(item1);
+				}
+			}
+		}
 	}
 
 	private void updateUserInfo(List<OrganizationHierarchy> organizationHierarchyList,
@@ -506,30 +521,7 @@ public class DataMigrationService {
 			for (UserInfo userInfo : newUserInfo) {
 				List<ProjectsAccess> projectsAccess = userInfo.getProjectsAccess();
 				if (CollectionUtils.isNotEmpty(projectsAccess)) {
-					for (ProjectsAccess access : projectsAccess) {
-						List<AccessNode> accessNodes = access.getAccessNodes();
-						if (CollectionUtils.isNotEmpty(accessNodes)) {
-							for (AccessNode node : accessNodes) {
-								String level = node.getAccessLevel();
-								if (CollectionUtils.isNotEmpty(node.getAccessItems())) {
-									List<AccessItem> newAccessItem = new ArrayList<>();
-									for (AccessItem item : node.getAccessItems()) {
-										if (map.containsKey(level + "_" + item.getItemName())) {
-											List<String> strings = map.get(level + "_" + item.getItemName());
-											for (String str : strings) {
-												AccessItem item1 = new AccessItem();
-												item1.setItemId(str);
-												newAccessItem.add(item1);
-											}
-										}
-									}
-									node.setAccessItems(newAccessItem);
-								}
-
-							}
-						}
-
-					}
+					iterateProjectAccess(map, projectsAccess);
 				}
 
 			}
@@ -540,10 +532,28 @@ public class DataMigrationService {
 
 	}
 
+	private static void iterateProjectAccess(Map<String, List<String>> map, List<ProjectsAccess> projectsAccess) {
+		for (ProjectsAccess access : projectsAccess) {
+			List<AccessNode> accessNodes = access.getAccessNodes();
+			if (CollectionUtils.isNotEmpty(accessNodes)) {
+				for (AccessNode node : accessNodes) {
+					String level = node.getAccessLevel();
+					if (CollectionUtils.isNotEmpty(node.getAccessItems())) {
+						List<AccessItem> newAccessItem = new ArrayList<>();
+						addNewAccessItem(map, node, level, newAccessItem);
+						node.setAccessItems(newAccessItem);
+					}
+
+				}
+			}
+
+		}
+	}
+
 	private void updateSprintTraceLog(Map<String, Object> dataSetToSave) {
 		List<SprintTraceLog> sprintTraceLogList = sprintTraceLogRepository.findAll();
 		List<SprintTraceLog> sprintTraceLogFinalList = new ArrayList<>();
-		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get("SPRINT_HISTORY");
+		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 		log.info("Sprint Trace Log Data Processing Data Started");
 		if (CollectionUtils.isNotEmpty(sprintTraceLogList)) {
 			for (SprintTraceLog sprintTraceLog : sprintTraceLogList) {
@@ -585,7 +595,7 @@ public class DataMigrationService {
 				.findAll();
 		List<TestExecution> testExecutionFinalList = new ArrayList<>();
 		List<KanbanTestExecution> kanbanTestExecutionFinalList = new ArrayList<>();
-		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get("SPRINT_HISTORY");
+		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 		log.info("Scrum TestExecution Data Processing Data Started");
 		if (CollectionUtils.isNotEmpty(testExecutionList)) {
 			for (TestExecution testExecution : testExecutionList) {
@@ -619,7 +629,7 @@ public class DataMigrationService {
 		List<JiraIssue> jiraIssueRepositoryAll = (List<JiraIssue>) jiraIssueRepository.findAll();
 		List<KanbanJiraIssue> kanbanJiraIssueHistoryRepositoryAll = kanbanJiraIssueRepository.findAll();
 
-		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get("SPRINT_HISTORY");
+		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 		List<JiraIssue> jiraIssueList = new ArrayList<>();
 		List<KanbanJiraIssue> kanbanJiraIssueList = new ArrayList<>();
 		log.info("Scrum Jira Issue Data Processing Data Started");
@@ -650,7 +660,7 @@ public class DataMigrationService {
 
 	private void updateHappieness(Map<String, Object> dataSetToSave) {
 		List<HappinessKpiData> happienessCapacity = happinessKpiDataRepository.findAll();
-		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get("SPRINT_HISTORY");
+		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 		List<HappinessKpiData> happinessKpiDataList = new ArrayList<>();
 		log.info("Happienes Data Processing Data Started");
 		if (CollectionUtils.isNotEmpty(happienessCapacity)) {
@@ -670,7 +680,7 @@ public class DataMigrationService {
 	private void updateCapacity(Map<ObjectId, String> projectIdWiseUniqueId, Map<String, Object> dataSetToSave) {
 		List<CapacityKpiData> capacityKpiDataList = (List<CapacityKpiData>) capacityKpiDataRepository.findAll();
 		List<KanbanCapacity> kanbanCapacityList = (List<KanbanCapacity>) kanbanCapacityRepository.findAll();
-		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get("SPRINT_HISTORY");
+		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 		List<CapacityKpiData> scrumCapacityKpi = new ArrayList<>();
 		List<KanbanCapacity> kanbanCapacities = new ArrayList<>();
 		log.info("Scrum Capacity  Processing Data Completed");
@@ -744,9 +754,9 @@ public class DataMigrationService {
 
 		});
 		log.info("Sprint Details  Processing Data Completed");
-		dataSetToSave.put("PROJECT_HIERARCHY", sprintHierarchyList);
-		dataSetToSave.put("SPRINT_DETAILS", sprintDetailsList);
-		dataSetToSave.put("SPRINT_HISTORY", sprintNodeHistory);
+		dataSetToSave.put(PROJECT_HIERARCHY, sprintHierarchyList);
+		dataSetToSave.put(SPRINT_DETAILS, sprintDetailsList);
+		dataSetToSave.put(SPRINT_HISTORY, sprintNodeHistory);
 
 	}
 
@@ -811,8 +821,8 @@ public class DataMigrationService {
 			}
 		});
 
-		dataSetToSave.putIfAbsent("PROJECT_HIERARCHY", projectHierarchyList);
-		dataSetToSave.computeIfPresent("PROJECT_HIERARCHY", (k, v) -> {
+		dataSetToSave.putIfAbsent(PROJECT_HIERARCHY, projectHierarchyList);
+		dataSetToSave.computeIfPresent(PROJECT_HIERARCHY, (k, v) -> {
 			((List<ProjectHierarchy>) v).addAll(projectHierarchyList);
 			return v;
 		});
@@ -838,8 +848,45 @@ public class DataMigrationService {
 
 		// for scrum
 		List<ProjectHierarchy> projectHierarchyList = new ArrayList<>();
-		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get("SPRINT_HISTORY");
+		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 
+		scrumAdditionalHierarchyData(projectIdWiseUniqueId, projectWiseScrumAdditonalFilter, projectHierarchyList, sprintNodeHistory);
+		log.info("Scrum Additional Hierarchy Details  Processing Data Completed");
+			log.info("Kanban Additional Hierarchy Details  Processing Data Started");
+
+			// for kanban
+		kanbanAdditionalHierarchyData(projectIdWiseUniqueId, projectWiseKanbanAdditonalFilter, projectHierarchyList);
+		log.info("Kanban Additional Hierarchy Details  Processing Data Completed");
+		dataSetToSave.putIfAbsent(PROJECT_HIERARCHY, projectHierarchyList);
+		dataSetToSave.computeIfPresent(PROJECT_HIERARCHY, (k, v) -> {
+			((List<ProjectHierarchy>) v).addAll(projectHierarchyList);
+			return v;
+		});
+
+	}
+
+	private static void kanbanAdditionalHierarchyData(Map<ObjectId, String> projectIdWiseUniqueId, Map<ObjectId, List<KanbanAccountHierarchy>> projectWiseKanbanAdditonalFilter, List<ProjectHierarchy> projectHierarchyList) {
+		if(MapUtils.isNotEmpty(projectIdWiseUniqueId)){
+			projectWiseKanbanAdditonalFilter.forEach((project, hierarchies) -> {
+				if (projectIdWiseUniqueId.containsKey(project)) {
+					for (KanbanAccountHierarchy accountHierarchy : hierarchies) {
+						ProjectHierarchy additionalHierachy = new ProjectHierarchy();
+						additionalHierachy.setBasicProjectConfigId(accountHierarchy.getBasicProjectConfigId());
+						additionalHierachy.setNodeId(accountHierarchy.getNodeId());
+						additionalHierachy.setHierarchyLevelId(accountHierarchy.getLabelName());
+						additionalHierachy.setNodeName(accountHierarchy.getNodeName());
+						additionalHierachy.setNodeDisplayName(accountHierarchy.getNodeName());
+						additionalHierachy.setCreatedDate(accountHierarchy.getCreatedDate());
+						additionalHierachy.setParentId(projectIdWiseUniqueId.get(project));
+						projectHierarchyList.add(additionalHierachy);
+					}
+
+				}
+			});
+		}
+	}
+
+	private static void scrumAdditionalHierarchyData(Map<ObjectId, String> projectIdWiseUniqueId, Map<ObjectId, List<AccountHierarchy>> projectWiseScrumAdditonalFilter, List<ProjectHierarchy> projectHierarchyList, Map<String, String> sprintNodeHistory) {
 		if (MapUtils.isNotEmpty(sprintNodeHistory)) {
 			projectWiseScrumAdditonalFilter.forEach((project, hierarchies) -> {
 				if (projectIdWiseUniqueId.containsKey(project)) {
@@ -859,35 +906,6 @@ public class DataMigrationService {
 				}
 			});
 		}
-			log.info("Scrum Additional Hierarchy Details  Processing Data Completed");
-			log.info("Kanban Additional Hierarchy Details  Processing Data Started");
-
-			// for kanban
-		if(MapUtils.isNotEmpty(projectIdWiseUniqueId)){
-			projectWiseKanbanAdditonalFilter.forEach((project, hierarchies) -> {
-				if (projectIdWiseUniqueId.containsKey(project)) {
-					for (KanbanAccountHierarchy accountHierarchy : hierarchies) {
-						ProjectHierarchy additionalHierachy = new ProjectHierarchy();
-						additionalHierachy.setBasicProjectConfigId(accountHierarchy.getBasicProjectConfigId());
-						additionalHierachy.setNodeId(accountHierarchy.getNodeId());
-						additionalHierachy.setHierarchyLevelId(accountHierarchy.getLabelName());
-						additionalHierachy.setNodeName(accountHierarchy.getNodeName());
-						additionalHierachy.setNodeDisplayName(accountHierarchy.getNodeName());
-						additionalHierachy.setCreatedDate(accountHierarchy.getCreatedDate());
-						additionalHierachy.setParentId(projectIdWiseUniqueId.get(project));
-						projectHierarchyList.add(additionalHierachy);
-					}
-
-				}
-			});
-		}
-		log.info("Kanban Additional Hierarchy Details  Processing Data Completed");
-		dataSetToSave.putIfAbsent("PROJECT_HIERARCHY", projectHierarchyList);
-		dataSetToSave.computeIfPresent("PROJECT_HIERARCHY", (k, v) -> {
-			((List<ProjectHierarchy>) v).addAll(projectHierarchyList);
-			return v;
-		});
-
 	}
 
 }
