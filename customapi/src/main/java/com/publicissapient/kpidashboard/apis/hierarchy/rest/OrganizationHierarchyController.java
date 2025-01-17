@@ -22,7 +22,7 @@ public class OrganizationHierarchyController {
 	private OrganizationHierarchyService organizationHierarchyService;
 
 	@GetMapping
-	private ResponseEntity<ServiceResponse> getHierarchyLevel() {
+	public ResponseEntity<ServiceResponse> getHierarchyLevel() {
 
 		List<OrganizationHierarchy> organizationHierarchies = organizationHierarchyService.findAll();
 
