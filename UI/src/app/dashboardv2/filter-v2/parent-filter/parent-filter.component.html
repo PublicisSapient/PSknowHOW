@@ -3,8 +3,9 @@
         <p-dropdown [options]="filterLevels" optionLabel="nodeName" [(ngModel)]="selectedLevel" filter="true" inputId="singleselectParentFilter"
             placeholder="Select {{ parentFilterConfig['name'] }}"
             [style]="{'width':'280px', 'max-width': '100%', 'height': '40px'}"
-            [panelStyle]="{ 'min-width': 'min(100vw, 250px)' }" 
-            (onChange)="onDropdownChange($event)" [appendTo]="parentFilterDiv">
+            [panelStyle]="{ 'min-width': 'min(100vw, 250px)' }"
+            [appendTo]="parentFilterDiv"
+            (onChange)="onDropdownChange($event)">
         </p-dropdown>
         <label class="floating-label" for="singleselectParentFilter">Select {{ parentFilterConfig['labelName']
             }}</label>

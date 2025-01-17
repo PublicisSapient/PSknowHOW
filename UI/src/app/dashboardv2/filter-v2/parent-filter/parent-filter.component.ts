@@ -129,7 +129,8 @@ export class ParentFilterComponent implements OnChanges {
  * @param {any} $event - The event object from the dropdown change.
  * @returns {void}
  */
-  onDropdownChange($event:any){
+  onDropdownChange($event: any) {
+    console.log('onDropdownChange', $event);
     if(this.helperService.isDropdownElementSelected($event)){
       this.handleSelectedLevelChange(true)
     }

@@ -32,7 +32,7 @@ export class HelperService {
   isKanban = false;
   grossMaturityObj = {};
   public passMaturityToFilter;
-  
+
   constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router, private route: ActivatedRoute) {
     this.passMaturityToFilter = new EventEmitter();
   }
@@ -894,7 +894,7 @@ export class HelperService {
 
   isDropdownElementSelected($event: any): boolean {
     try {
-      if ($event.originalEvent.type === 'click') {
+      if ($event.originalEvent.type === 'click' || $event.originalEvent.type === 'keydown') {
         return true;
       } else {
         return false;
