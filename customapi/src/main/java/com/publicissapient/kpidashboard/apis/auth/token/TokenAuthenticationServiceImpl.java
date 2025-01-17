@@ -125,9 +125,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public boolean isJWTTokenExpired(String jwtToken) {
-		Claims decodedJWT = Jwts.parser()
-				.setSigningKey(tokenAuthProperties.getSecret())
-				.parseClaimsJws(jwtToken)
+		Claims decodedJWT = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(jwtToken)
 				.getBody();
 		Date expiresAt = decodedJWT.getExpiration();
 		return new Date().after(expiresAt);
@@ -149,7 +147,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		}
 
 	}
-
 
 	@Override
 	public String getAuthToken(HttpServletRequest httpServletRequest) {
@@ -202,8 +199,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			boolean isJWTTokenExpired = new Date().after(tokenExpiration);
 			LocalDateTime lastLogout = usersSessionService.getLastLogoutTimeOfUser(username);
 			ZonedDateTime tokenCreationZonedDateTime = tokenCreationDate.toInstant().atZone(ZoneId.systemDefault());
-			ZonedDateTime lastLogoutZonedDateTime = lastLogout != null ? lastLogout.atZone(ZoneId.systemDefault()) : null;
-			boolean isJWTTokenValid = lastLogoutZonedDateTime == null || tokenCreationZonedDateTime.isAfter(lastLogoutZonedDateTime);
+			ZonedDateTime lastLogoutZonedDateTime = lastLogout != null ? lastLogout.atZone(ZoneId.systemDefault())
+					: null;
+			boolean isJWTTokenValid = lastLogoutZonedDateTime == null
+					|| tokenCreationZonedDateTime.isAfter(lastLogoutZonedDateTime);
 			if (isJWTTokenExpired || !isJWTTokenValid) {
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 				return null;
@@ -226,9 +225,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT).optionalStart()
 				.appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false).optionalEnd()
 				.toFormatter();
-		UserTokenData userTokenData = dataList.stream()
-				.max(Comparator.comparing(data -> LocalDateTime.parse(data.getExpiryDate(), formatter))).orElse(null);
-		return userTokenData;
+		return dataList.stream().max(Comparator.comparing(data -> LocalDateTime.parse(data.getExpiryDate(), formatter)))
+				.orElse(null);
 
 	}
 
@@ -328,9 +326,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public String getUserNameFromToken(String jwtToken){
-		Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(jwtToken)
-				.getBody();
+	public String getUserNameFromToken(String jwtToken) {
+		Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(jwtToken).getBody();
 		return claims.getSubject();
 	}
 
