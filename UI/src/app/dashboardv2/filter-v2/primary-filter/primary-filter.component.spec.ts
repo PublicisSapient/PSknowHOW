@@ -784,7 +784,7 @@ describe('PrimaryFilterComponent', () => {
 
 
 
-    it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', (done) => {
+    it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', fakeAsync(() => {
       component.hierarchyLevels = ['sprint'];
       component.selectedLevel = 'sprint';
       component.filterData = { 'sprint': [{ nodeId: 2, labelName: 'Level 2' }] }
@@ -799,12 +799,10 @@ describe('PrimaryFilterComponent', () => {
 
       component.applyDefaultFilters();
 
-      setTimeout(() => {
-        expect(component.selectedFilters).toBe(undefined);
-        expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
-        done();
-      }, 200);
-    });
+      tick(200);
+      expect(component.selectedFilters).toBe(undefined);
+      expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
+    }));
 
     it('should reset selectedFilters and call applyPrimaryFilters for sprint/release  when conditions are met', (done) => {
       component.hierarchyLevels = ['sprint', 'Level 2'];
@@ -828,7 +826,7 @@ describe('PrimaryFilterComponent', () => {
       }, 200);
     });
 
-    it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', (done) => {
+    it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', fakeAsync((done) => {
       component.hierarchyLevels = ['sprint', 'Level 2'];
       component.selectedLevel = 'sprint';
       component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }] }
@@ -842,17 +840,15 @@ describe('PrimaryFilterComponent', () => {
 
       component.applyDefaultFilters();
 
-      setTimeout(() => {
-        expect(component.selectedFilters).toEqual(
-          jasmine.arrayContaining([
-            jasmine.objectContaining({ labelName: 'sprint', nodeId: 1 })
-          ])
-        );
-        done();
-      }, 200);
-    });
+      tick(100);
+      expect(component.selectedFilters).toEqual(
+        jasmine.arrayContaining([
+          jasmine.objectContaining({ labelName: 'sprint', nodeId: 1 })
+        ])
+      );
+    }));
 
-    it('should set selectedFilters to empty array and call onPrimaryFilterChange for sprint/release when conditions are met', (done) => {
+    it('should set selectedFilters to empty array and call onPrimaryFilterChange for sprint/release when conditions are met', fakeAsync(() => {
       component.hierarchyLevels = ['sprint', 'Level 2'];
       component.selectedLevel = 'sprint';
       component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }] }
@@ -863,14 +859,11 @@ describe('PrimaryFilterComponent', () => {
       component.stateFilters = {};
 
       spyOn(component.onPrimaryFilterChange, 'emit');
-
       component.applyDefaultFilters();
+      tick(100);
+      expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
 
-      setTimeout(() => {
-        expect(component.onPrimaryFilterChange.emit).toHaveBeenCalledWith([]);
-        done();
-      }, 200);
-    });
+    }));
   });
 
   it('should reset the component state', () => {
