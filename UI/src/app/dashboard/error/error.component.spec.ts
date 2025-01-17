@@ -73,6 +73,8 @@ describe('ErrorComponent', () => {
   const error404 = { status: 404, message: 'Not found' };
   const error500 = { status: 500, message: 'Internal Server Error' };
   const error405 = { status: 405, message: 'Method not allowed' };
+  const error900 = { status: 900, message: 'Invalid URL.' };
+  const error901 = { status: 901, message: 'No project access.' };
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -124,6 +126,21 @@ describe('ErrorComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
     expect(component.errorMsg).toEqual('Some error occurred');
+  });
+  it('should display proper error message on 900 error', () => {
+    sharedService.raiseError(error900);
+    spyOn(sharedService.passErrorToErrorPage, 'emit');
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(component.errorMsg).toEqual('Invalid URL.');
+  });
+
+  it('should display proper error message on 901 error', () => {
+    sharedService.raiseError(error901);
+    spyOn(sharedService.passErrorToErrorPage, 'emit');
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(component.errorMsg).toEqual('No project access.');
   });
 
 

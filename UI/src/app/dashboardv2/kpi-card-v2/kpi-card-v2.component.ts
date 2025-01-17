@@ -231,7 +231,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
     //#region new card kpi
     if (this.selectedTab === 'iteration' && !this.loader) {
-    //  console.log(this.trendValueList)
       this.cardData = this.trendValueList;
       const {
         issueData,

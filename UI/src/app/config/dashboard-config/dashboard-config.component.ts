@@ -202,7 +202,7 @@
         this.kpiFormValue.kpiCategories['controls'][boardName].setValue(!kpiTempArray.every(val => val === false));       
        } else {
         this.setMainDashboardKpiShowHideStatus(kpi.kpiId,true);
-        this.kpiFormValue.kpiCategories['controls'][boardName].setValue(kpiTempArray.some(val => val === false));
+        this.kpiFormValue.kpiCategories['controls'][boardName].setValue(kpiTempArray.some(val => val === true));
        }
       
        if(this.kpiChangesObj[boardName]) {
