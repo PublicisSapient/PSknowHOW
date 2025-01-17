@@ -211,11 +211,17 @@ describe('BasicConfigComponent', () => {
   };
 
   beforeEach(async () => {
-    const httpServiceSpy = jasmine.createSpyObj('HttpService', ['addBasicConfig', 'getOrganizationHierarchy']);
+    const httpServiceSpy = jasmine.createSpyObj('HttpService', ['addBasicConfig', 'getOrganizationHierarchy', 'setCurrentUserDetails']);
     const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['getSelectedProject', 'getProjectList', 'setSelectedProject', 'setSelectedFieldMapping', 'getCurrentUserDetails', 'setProjectList']);
     const authServiceSpy = jasmine.createSpyObj('GetAuthorizationService', ['checkIfSuperUser', 'checkIfProjectAdmin']);
     const messageServiceSpy = jasmine.createSpyObj('MessageService', ['add']);
     const gaServiceSpy = jasmine.createSpyObj('GoogleAnalyticsService', ['createProjectData']);
+
+    // Mock return values for service methods
+    httpServiceSpy.addBasicConfig.and.returnValue(of(successResponse));
+    httpServiceSpy.getOrganizationHierarchy.and.returnValue(of({ data: [] }));
+    sharedServiceSpy.getSelectedProject.and.returnValue(of({ id: 1, name: 'Test Project' }));
+    sharedServiceSpy.getCurrentUserDetails.and.returnValue(of('test_user'));
 
     await TestBed.configureTestingModule({
       declarations: [BasicConfigComponent],
@@ -306,6 +312,14 @@ describe('BasicConfigComponent', () => {
       list: [{ nodeDisplayName: 'Test Node' }, { nodeDisplayName: 'Another Node' }],
       filteredSuggestions: []
     };
+
+    const currentLevel = {
+      hierarchyLevelId: 'project',
+      list:  [{ nodeDisplayName: 'Test Node' }, { nodeDisplayName: 'Another Node' }],
+      filteredSuggestions: []
+    };
+    component.formData = [currentLevel, { hierarchyLevelId: 'parent', list: [] }];
+
     component.search(mockEvent, mockField, 2);
     expect(mockField.filteredSuggestions.length).toBe(1);
     expect(mockField.filteredSuggestions[0].nodeDisplayName).toBe('Test Node');
@@ -465,10 +479,6 @@ describe('BasicConfigComponent', () => {
     component.selectedProject = {};
 
     component.ifSuperUser = false;
-    spyOn(httpService, 'setCurrentUserDetails');
-    const spy = spyOn(messageService, 'add');
-    spyOn(gaService, 'createProjectData');
-    spyOn(component, 'getFields');  
     component.onSubmit();
     expect(component.form.valid).toBeTruthy();
 

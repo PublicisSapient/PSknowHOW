@@ -483,6 +483,7 @@ export class HelperService {
       value: item.value.map(x => ({
         ...x,
         value: (typeof x.value === 'object') ? {} : [],
+        allHoverValue : [],
         lineValue: x?.hasOwnProperty('lineValue') ? (typeof x.lineValue === 'object') ? {} : [] : null
       }))
     }));
@@ -505,6 +506,7 @@ export class HelperService {
               }
             } else {
               aggArr[idx].value[j].value.push(obj[key][i]?.value[j]?.value);
+              aggArr[idx].value[j].allHoverValue.push(obj[key][i]?.value[j]?.hoverValue);
               aggArr[idx].value[j].value.sort();
               if (aggArr[idx]?.value[j]?.hasOwnProperty('lineValue') && aggArr[idx]?.value[j]?.lineValue != null) {
                 aggArr[idx].value[j].lineValue.push(obj[key][i]?.value[j]?.lineValue);
@@ -543,6 +545,7 @@ export class HelperService {
           aggArr[i].value?.map(x => {
             x.value = (x.value?.reduce((partialSum, a) => partialSum + a, 0));
             x.data = x.value;
+            x.hoverValue = x?.allHoverValue && x?.allHoverValue?.length ? this.aggregateHoverValues(x?.allHoverValue) : {}
             if (x.hasOwnProperty('lineValue') && x?.lineValue != null) {
               x.lineValue = (x.lineValue?.reduce((partialSum, a) => partialSum + a, 0));
             }
@@ -592,6 +595,16 @@ export class HelperService {
     }
     return aggArr;
   }
+
+  aggregateHoverValues(objects: any[]): any {
+    return objects.reduce((acc, obj) => {
+        Object.keys(obj).forEach((key) => {
+            acc[key] = (acc[key] || 0) + obj[key];
+        });
+        return acc;
+    }, {});
+}
+
 
   getKpiCommentsHttp(data) {
     return new Promise((resolve, reject) => this.httpService.getCommentCount(data).subscribe((response) => {

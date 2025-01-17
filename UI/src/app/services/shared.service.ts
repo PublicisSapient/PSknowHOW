@@ -193,7 +193,7 @@ export class SharedService {
   }
 
   // getter for tab i.e Scrum/Kanban
-  getSelectedType() {
+  getSelectedType(): string {
     return this.selectedtype;
   }
 
@@ -427,7 +427,7 @@ export class SharedService {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
-    console.log('kpiFiltes', this.selectedKPIFilterObj);
+    // console.log('kpiFiltes', this.selectedKPIFilterObj);
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
     this.router.navigate([], {
@@ -492,7 +492,9 @@ export class SharedService {
   }
   setSelectedTrends(values) {
     values.forEach(trend => {
-      trend.path = trend.path?.replace(/___/g, '###');
+      if (trend?.path) {
+        trend.path = trend.path?.replace(/___/g, '###');
+      }
     });
     this.selectedTrends = values;
     // this.selectedTrendsEvent.emit(values);
