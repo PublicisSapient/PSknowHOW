@@ -787,7 +787,7 @@ describe('PrimaryFilterComponent', () => {
     it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', fakeAsync(() => {
       component.hierarchyLevels = ['sprint'];
       component.selectedLevel = 'sprint';
-      component.filterData = { 'sprint': [{ nodeId: 2, labelName: 'Level 2' }] }
+      component.filterData = { 'sprint': [{ nodeId: 2, labelName: 'Level 2' }],'Project':[{ nodeId: 1, labelName: 'Level 1' }] }
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',
@@ -829,7 +829,7 @@ describe('PrimaryFilterComponent', () => {
     it('should set selectedFilters based on stateFilters parent_level for sprint/release when conditions are met', fakeAsync((done) => {
       component.hierarchyLevels = ['sprint', 'Level 2'];
       component.selectedLevel = 'sprint';
-      component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }] }
+      component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }],'Project':[{ nodeId: 2, labelName: 'Level 1' }] }
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',
@@ -851,7 +851,7 @@ describe('PrimaryFilterComponent', () => {
     it('should set selectedFilters to empty array and call onPrimaryFilterChange for sprint/release when conditions are met', fakeAsync(() => {
       component.hierarchyLevels = ['sprint', 'Level 2'];
       component.selectedLevel = 'sprint';
-      component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }] }
+      component.filterData = { 'sprint': [{ nodeId: 1, labelName: 'sprint' }],'Project':[{ nodeId: 2, labelName: 'Level 1' }] }
       component.primaryFilterConfig = {
         defaultLevel: { labelName: 'sprint' },
         type: 'singleSelect',

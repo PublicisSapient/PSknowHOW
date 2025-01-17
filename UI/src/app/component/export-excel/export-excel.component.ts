@@ -253,6 +253,7 @@ export class ExportExcelComponent implements OnInit {
       // Generate column filter data
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
+          if(colData === undefined){ return;}
           if (this.typeOf(colData) && colData?.hasOwnProperty('hyperlink')) {
             // if (!this.excludeColumnFilter.includes(colName.toLowerCase()) &&  !this.includeColumnFilter.includes(colName.toLowerCase())) {
             //   this.excludeColumnFilter.push(colName)
@@ -262,6 +263,7 @@ export class ExportExcelComponent implements OnInit {
             return { name: blankValues.includes(colData)?'(Blanks)':colData, value: colData };
           }
         });
+        this.tableColumnData[colName] =this.tableColumnData[colName].filter(x=>x!==undefined);
         this.tableColumnForm[colName] = [];
       });
     }
