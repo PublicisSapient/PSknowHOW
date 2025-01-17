@@ -240,6 +240,9 @@ export class ExportExcelComponent implements OnInit {
           if (typeof updatedRow[colName] === 'string') {
             updatedRow[colName] = updatedRow[colName].trim();
           }
+          if(Array.isArray(updatedRow[colName])){
+            updatedRow[colName] =updatedRow[colName].join(',')
+          }
           if (blankValues.includes(updatedRow[colName])) {
             updatedRow[colName] = '';
           }
@@ -250,7 +253,7 @@ export class ExportExcelComponent implements OnInit {
       // Generate column filter data
       this.modalDetails['tableHeadings'].forEach(colName => {
         this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
-          if (this.typeOf(colData)) {
+          if (this.typeOf(colData) && colData?.hasOwnProperty('hyperlink')) {
             // if (!this.excludeColumnFilter.includes(colName.toLowerCase()) &&  !this.includeColumnFilter.includes(colName.toLowerCase())) {
             //   this.excludeColumnFilter.push(colName)
             // }
