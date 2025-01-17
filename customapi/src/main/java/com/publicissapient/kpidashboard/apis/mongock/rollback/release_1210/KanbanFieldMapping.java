@@ -65,7 +65,7 @@ public class KanbanFieldMapping {
 	public static final String ISSUE_TYPES_TO_CONSIDER = "Issue types to consider";
 	public static final String ISSUE_TYPES_MAPPING = "Issue Types Mapping";
 	public static final String PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED = "Provide any status from workflow on which Live is considered.";
-
+	public static final String ALL_ISSUE_TYPE_TO_TRACK_TICKETS = "All issue types used to track tickets";
 	private final MongoTemplate mongoTemplate;
 
 	public KanbanFieldMapping(MongoTemplate mongoTemplate) {
@@ -185,10 +185,14 @@ public class KanbanFieldMapping {
 				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
 		updateField(JIRA_LIVE_STATUS_OTA, "Live Status - Open Ticket Ageing",
 				PROVIDE_ANY_STATUS_FROM_WORKFLOW_ON_WHICH_LIVE_IS_CONSIDERED, WORK_FLOW_STATUS_MAPPING, true);
-		updateField(TICKET_COUNT_ISSUE_TYPE, "Ticket Count Issue Type", "", ISSUE_TYPES_MAPPING, false);
-		updateField(KANBAN_RCA_COUNT_ISSUE_TYPE, "Ticket RCA Count Issue Type", "", ISSUE_TYPES_MAPPING, false);
-		updateField(JIRA_TICKET_VELOCITY_ISSUE_TYPE, "Ticket Velocity Issue Type", "", ISSUE_TYPES_MAPPING, false);
-		updateField(KANBAN_CYCLE_TIME_ISSUE_TYPE, "Kanban Lead Time Issue Type", "", ISSUE_TYPES_MAPPING, false);
+		updateField(TICKET_COUNT_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, ALL_ISSUE_TYPE_TO_TRACK_TICKETS,
+				ISSUE_TYPES_MAPPING, false);
+		updateField(KANBAN_RCA_COUNT_ISSUE_TYPE, "Issue types to be included for RCA",
+				"All issue types to be considered for root cause analysis", ISSUE_TYPES_MAPPING, false);
+		updateField(JIRA_TICKET_VELOCITY_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, ALL_ISSUE_TYPE_TO_TRACK_TICKETS,
+				ISSUE_TYPES_MAPPING, false);
+		updateField(KANBAN_CYCLE_TIME_ISSUE_TYPE, ISSUE_TYPES_TO_CONSIDER, ALL_ISSUE_TYPE_TO_TRACK_TICKETS,
+				ISSUE_TYPES_MAPPING, false);
 		updateField(TICKET_DELIVERD_STATUS, "Ticket Delivered Status",
 				"Status from workflow on which ticket is considered as delivered.", WORK_FLOW_STATUS_MAPPING, true);
 		updateField(JIRA_TICKET_CLOSED_STATUS, "Ticket Closed Status",

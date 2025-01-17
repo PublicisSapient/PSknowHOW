@@ -35,7 +35,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
   ngOnInit() {
     this.subscriptions.push(this.service.populateAdditionalFilters
-      .pipe(distinctUntilChanged())
+      // .pipe(distinctUntilChanged())
       .subscribe((data) => {
         if (data && Object.keys(data)?.length && data[Object.keys(data)[0]]?.length) {
           this.selectedFilters = [];
@@ -204,7 +204,7 @@ export class AdditionalFilterComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['additionalFilterConfig'] && changes['additionalFilterConfig'].previousValue && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue))
     || (changes['selectedLevel'])) {
-      // this.filterData = [];
+      this.filterData = [];
       this.selectedFilters = [];
     }
   }
