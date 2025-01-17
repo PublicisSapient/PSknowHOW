@@ -373,3 +373,8 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   position: relative;
   z-index: 1001;
 }
+
+.disabled {
+  background-color: #F3F3F3;
+  pointer-events: none;
+}
