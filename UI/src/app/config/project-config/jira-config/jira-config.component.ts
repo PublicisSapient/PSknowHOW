@@ -2613,7 +2613,7 @@ export class JiraConfigComponent implements OnInit {
             this.selectedToolConfig = [response['data']];
             this.messenger.add({
               severity: 'success',
-              summary: `${this.urlParam} config submitted!!  ${successAlert}`,
+              summary: `${this.urlParam} Config submitted! Fresh data will be fetched as per the updated configuration.`,
             });
             // update the table
             if (!this.configuredTools || !this.configuredTools.length) {
@@ -2640,10 +2640,14 @@ export class JiraConfigComponent implements OnInit {
             } else {
               this.toolForm.reset();
             }
+           
+            /** This will be called for JIRA tool */
+            this.fetchJiraMappingOptioninBE(this.urlParam,submitData['basicProjectConfigId']);
+
           } else {
             this.messenger.add({
               severity: 'error',
-              summary: `${response['message'] ? response['message'] : 'Some error occurred. Please try again later'}`
+              summary: `${this.urlParam} Config could not be saved. Please try again after sometime.`
             });
           }
         });
@@ -2672,7 +2676,7 @@ export class JiraConfigComponent implements OnInit {
             this.selectedToolConfig = [response['data']];
             this.messenger.add({
               severity: 'success',
-              summary: `${this.urlParam} config updated!! ${successAlert}`,
+              summary: `${this.urlParam} config updated! Fresh data will be fetched as per the updated configuration`,
             });
 
             // update the table
@@ -2699,10 +2703,14 @@ export class JiraConfigComponent implements OnInit {
             } else {
               this.isConfigureTool = false;
             }
+            
+            /** This will be called for JIRA tool */
+            this.fetchJiraMappingOptioninBE(this.urlParam,submitData['basicProjectConfigId']);
+
           } else {
             this.messenger.add({
               severity: 'error',
-              summary: 'Some error occurred. Please try again later.',
+              summary: `${this.urlParam} Config could not be saved. Please try again after sometime.`,
             });
           }
         });
@@ -2907,5 +2915,23 @@ export class JiraConfigComponent implements OnInit {
       const element = document.getElementById("tool-configuration");
       element.scrollIntoView({ behavior: "smooth", inline: "nearest" });
     }, 100);
+  }
+
+  fetchJiraMappingOptioninBE(urlParam,basicConfigID){
+    if(urlParam === 'Jira'){
+      this.http.fetchJiramappingBE(basicConfigID).subscribe(res=>{
+        if(res && res?.['success']){
+          this.messenger.add({
+            severity: 'success',
+            summary: `Jira fields have been fetched as per the chosen Jira Configuration.`,
+          });
+        }else{
+          this.messenger.add({
+            severity: 'error',
+            summary: `Something went wrong! Jira fields could not be fetched. Please run the Jira processor after sometime.`,
+          });
+        }
+      })
+    }
   }
 }
