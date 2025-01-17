@@ -722,6 +722,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.additionalFiltersArr = [];
     }
     if (event.length === 1 && this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
+      this.buttonStyleClass = 'default';
       this.getProcessorsTraceLogsForProject().then(result => {
         this.sendDataToDashboard(event);
       }).catch(error => {
@@ -730,6 +731,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       });
     } else {
       this.sendDataToDashboard(event);
+      this.buttonStyleClass = 'disabled'
     }
   }
 
