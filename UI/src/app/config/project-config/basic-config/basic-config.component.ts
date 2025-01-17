@@ -122,19 +122,19 @@ export class BasicConfigComponent implements OnInit {
       });
 
       if (this.clone !== 'true') {
-        this.formData = this.formData.filter(item=>item.hierarchyLevelId !== 'project')
+        this.formData = this.formData.filter(item => item.hierarchyLevelId !== 'project')
       }
-        this.formData.push(
-          {
-            level: this.formData.length,
-            hierarchyLevelId: 'projectName',
-            hierarchyLevelName: 'Project Name',
-            hierarchyLevelTooltip: 'Project Name',
-            inputType: 'text',
-            value: '',
-            required: true
-          }
-        );
+      this.formData.push(
+        {
+          level: this.formData.length,
+          hierarchyLevelId: 'projectName',
+          hierarchyLevelName: 'Project Name',
+          hierarchyLevelTooltip: 'Project Name',
+          inputType: 'text',
+          value: '',
+          required: true
+        }
+      );
 
 
       this.formData?.push(
@@ -168,11 +168,11 @@ export class BasicConfigComponent implements OnInit {
     }
     this.blocked = false;
     this.prefillForm();
-      if (this.clone === 'true') {
-        setTimeout(() => {
-          this.prefillForm();
-        }, 500);
-      }
+    if (this.clone === 'true') {
+      setTimeout(() => {
+        this.prefillForm();
+      }, 500);
+    }
   }
 
   prefillForm(): void {
@@ -196,11 +196,11 @@ export class BasicConfigComponent implements OnInit {
   search(event, field, index) {
     const filtered: any[] = [];
     const query = event.query;
-    const parentNode = index>1?this.form.value[this.formData[index-1].hierarchyLevelId]:null;
+    const parentNode = index > 1 ? this.form.value[this.formData[index - 1].hierarchyLevelId] : null;
     let filteredFieldsByParentId;
-    if(parentNode) {
+    if (parentNode) {
       filteredFieldsByParentId = field.list.filter(item => item.parentId == parentNode.nodeId)
-    } else if(field.filteredSuggestions && field.filteredSuggestions.length) {
+    } else if (field.filteredSuggestions && field.filteredSuggestions.length) {
       filteredFieldsByParentId = field.filteredSuggestions;
     } else {
       filteredFieldsByParentId = field.list
@@ -227,7 +227,7 @@ export class BasicConfigComponent implements OnInit {
     // currentLevel.filteredSuggestions = currentLevel.list.filter(item => item.nodeId === selectedNodeId);
 
     // Step 2: Filter items in levels below based on selected item’s nodeId
-    if(event.hierarchyLevelId === 'project' && this.clone == 'true') {
+    if (event.hierarchyLevelId === 'project' && this.clone == 'true') {
       const formValues = {};
       formValues['projectName'] = 'Clone_' + event.nodeDisplayName;
       this.form.patchValue(formValues)
@@ -260,20 +260,20 @@ export class BasicConfigComponent implements OnInit {
     let selectParentId = [selectedNodeId];
     for (let i = currentIndex + 1; i < this.formData.length; i++) {
       if (this.formData[i].list) {
-        if(selectParentId.length) {
-        this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => selectParentId.includes(item.parentId));
+        if (selectParentId.length) {
+          this.formData[i].filteredSuggestions = this.formData[i].list.filter(item => selectParentId.includes(item.parentId));
         }
-        selectParentId = this.formData[i]?.filteredSuggestions.map(item=>item.nodeId);
+        selectParentId = this.formData[i]?.filteredSuggestions.map(item => item.nodeId);
 
         if (this.formData[i].filteredSuggestions && this.formData[i].filteredSuggestions.length && this.clone == 'true') {
           this.selectedItems[this.formData[i].hierarchyLevelId] = this.formData[i].filteredSuggestions[0];
           selectParentId = this.formData[i].filteredSuggestions[0].nodeId
-          if(this.formData[i].hierarchyLevelId === 'project') {
+          if (this.formData[i].hierarchyLevelId === 'project') {
             const formValues = {};
             formValues['projectName'] = 'Clone_' + this.formData[i].filteredSuggestions[0].nodeDisplayName;
             this.form.patchValue(formValues)
           }
-      }
+        }
       }
     }
   }
@@ -330,23 +330,23 @@ export class BasicConfigComponent implements OnInit {
             this.selectedProject[element.hierarchyLevel.hierarchyLevelName] = element.value;
           });
 
-        this.sharedService.setSelectedProject(this.selectedProject);
-        this.allProjectList?.push(this.selectedProject);
-        this.sharedService.setProjectList(this.allProjectList);
-        if (!this.ifSuperUser) {
-          if (response['projectsAccess']) {
-            const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            this.http.setCurrentUserDetails({ authorities });
+          this.sharedService.setSelectedProject(this.selectedProject);
+          this.allProjectList?.push(this.selectedProject);
+          this.sharedService.setProjectList(this.allProjectList);
+          if (!this.ifSuperUser) {
+            if (response['projectsAccess']) {
+              const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
+              this.http.setCurrentUserDetails({ authorities });
+            }
           }
-        }
-        this.form.reset();
-        this.messenger.add({
-          severity: 'success',
-          summary: 'Project setup initiated',
-          detail: ''
-        });
-        this.isProjectSetupPopup = false;
-        this.isProjectCOmpletionPopup = true;
+          this.form.reset();
+          this.messenger.add({
+            severity: 'success',
+            summary: 'Project setup initiated',
+            detail: ''
+          });
+          this.isProjectSetupPopup = false;
+          this.isProjectCOmpletionPopup = true;
 
           // Google Analytics
           this.ga.createProjectData(gaObj);
@@ -388,7 +388,7 @@ export class BasicConfigComponent implements OnInit {
       acc[item.hierarchyLevelId] = item.hierarchyLevelName;
       return acc;
     }, {});
-    if(hierarchyMap) {
+    if (hierarchyMap) {
       hierarchyMap['project'] = 'Project';
     }
     /* const hierarchyMap = {
@@ -430,11 +430,11 @@ export class BasicConfigComponent implements OnInit {
 
   getNodeDisplayNameById(nodeId: string, field) {
     const currentIndex = this.formData.findIndex(level => level === field);
-      if (this.formData[currentIndex-1]?.list) {
-        let matchingObject = this.formData[currentIndex - 1]?.list.find(item => item.nodeId === nodeId);
-        return `(${matchingObject.nodeDisplayName})`;
-      }
+    if (this.formData[currentIndex - 1]?.list) {
+      let matchingObject = this.formData[currentIndex - 1]?.list.find(item => item.nodeId === nodeId);
+      return `(${matchingObject.nodeDisplayName})`;
     }
+  }
   getButtonLabel(): string {
     return this.clone === 'true' ? 'Clone' : 'Save';
   }
