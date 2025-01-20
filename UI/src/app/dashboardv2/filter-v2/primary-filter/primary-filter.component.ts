@@ -284,4 +284,16 @@ export class PrimaryFilterComponent implements OnChanges {
     }
   }
 
+  onFooterKeydown(event: KeyboardEvent) {
+    if (event.key === 'ArrowDown') {
+      // Move focus back to the last checkbox
+      const checkboxes = document.querySelectorAll('.p-multiselect-items input[type="checkbox"]');
+      if (checkboxes.length) {
+        (checkboxes[checkboxes.length - 1] as HTMLElement).focus();
+      }
+      event.preventDefault();
+    }
+  }
+
+
 }

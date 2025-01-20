@@ -16,13 +16,14 @@
                 </div>
             </ng-template>
             <ng-template pTemplate="footer">
-                <div class="p-p-3 p-text-right">
+                <div class="p-p-3 p-text-right" tabindex="0" (keydown)="onFooterKeydown($event)">
                     <p-button label="Apply" (onClick)="applyPrimaryFilters($event)"
-                        [style]="{backgroundColor: '#0B4BC8'}" [disabled]="!selectedFilters?.length"></p-button>
+                        [style]="{backgroundColor: '#0B4BC8'}" [disabled]="!selectedFilters?.length"
+                        aria-label="Apply selected filters"></p-button>
                 </div>
             </ng-template>
         </p-multiSelect>
-        <label class="floating-label" for="multiselectFilter">Select {{ selectedLevel }}</label>
+        <label class="floating-label" for="multiselectFilter" [attr.aria-label]="'Select ' + selectedLevel">Select {{ selectedLevel }}</label>
     </span>
     <span *ngIf="primaryFilterConfig && primaryFilterConfig['type'] === 'singleSelect'" class="p-float-label">
         <p-dropdown *ngIf="selectedFilters" inputId="singleselectFilter" [options]="filters" [(ngModel)]="selectedFilters[0]"
@@ -44,7 +45,7 @@
                 </div>
             </ng-template>
         </p-dropdown>
-        
+
         <label class="floating-label" for="singleselectFilter" [hidden]="isFilterHidden(filters)">
           Select
           <ng-container *ngIf="!selectedLevel || isString(selectedLevel); else objectTemplate">
