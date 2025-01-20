@@ -731,7 +731,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       });
     } else {
       this.sendDataToDashboard(event);
-      this.buttonStyleClass = 'disabled'
+      if(this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project'){
+        this.buttonStyleClass = 'default';  
+      }else{
+        this.buttonStyleClass = 'disabled'
+      }
     }
   }
 
