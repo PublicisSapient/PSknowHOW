@@ -192,20 +192,14 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 				if (allIssuesWithDueDate.contains(issue)) {
 					Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping, sprintDetails,
 							allIssueHistories, allCompletedIssuesList, issue);
-					Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
-							.get(ACTUAL_COMPLETION_DATA);
 					setDataForPlanned(issue, jiraIssueData, sprintDetails, allCompletedIssuesList, issueWiseDelay, data,
 							category, category2);
-					setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, true);
 				}
 				if (allIssuesWithDevDueDate.contains(issue)) {
 					Map<String, Object> jiraIssueData = jiraIssueCalculationDev(fieldMapping, sprintDetails,
 							allIssueHistories, issue, devCompletedIssues, allCompletedIssuesList);
-					Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
-							.get(ACTUAL_COMPLETION_DATA);
 					setDataForDevCompletion(issue, sprintDetails, category, jiraIssueData, devCompletedIssues, data,
-							category2);
-					setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
+							category2, issueWiseDelay);
 				}
 				setCategoryForUnplanned(issue, allIssuesWithoutDueDate, category, allCompletedIssuesList, category2);
 				if (CollectionUtils.isNotEmpty(category)) {
@@ -385,22 +379,26 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	 * @param devCompletedIssues
 	 * @param data
 	 */
-	private static void setDataForDevCompletion(JiraIssue issue, SprintDetails sprintDetails, Set<String> category,
+	private void setDataForDevCompletion(JiraIssue issue, SprintDetails sprintDetails, Set<String> category,
 			Map<String, Object> jiraIssueData, Map<JiraIssue, String> devCompletedIssues, IssueKpiModalValue data,
-			Map<String, List<String>> category2) {
+			Map<String, List<String>> category2, Map<String, IterationPotentialDelay> issueWiseDelay) {
 		int delay = 0;
 		category2.putIfAbsent(DEV_STATUS, new ArrayList<>());
+		Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
+				.get(ACTUAL_COMPLETION_DATA);
 		if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
 			// Checking if dev due Date is < today date for active sprint
 			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					.isBefore(LocalDate.now())) {
 				delay = getIssueDelay(issue, category, jiraIssueData, devCompletedIssues, delay, category2);
+				setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
 			}
 		} else {
 			// Checking if dev due Date is <= sprint End Date for closed sprint
 			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isBefore(DateUtil
 					.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1))) {
 				delay = getIssueDelay(issue, category, jiraIssueData, devCompletedIssues, delay, category2);
+				setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
 			}
 		}
 		data.setDelay(delay);
@@ -448,6 +446,8 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			delay = KpiDataHelper.getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
 		}
 		category2.putIfAbsent(PLANNED, new ArrayList<>());
+		Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
+				.get(ACTUAL_COMPLETION_DATA);
 		if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
 			// Checking if dueDate is < today date for active sprint
 			if (DateUtil.stringToLocalDate(issue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
@@ -455,6 +455,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 				category.add(PLANNED);
 				category2.get(PLANNED).add(PLANNED_COMPLETION);
 				data.setDelay(delay);
+				setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, true);
 			}
 		} else {
 			// Checking if dueDate is <= sprint End Date for closed sprint
@@ -463,6 +464,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 				category.add(PLANNED);
 				category2.get(PLANNED).add(PLANNED_COMPLETION);
 				data.setDelay(delay);
+				setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, true);
 			}
 		}
 		// Calculating actual work status for only completed issues
