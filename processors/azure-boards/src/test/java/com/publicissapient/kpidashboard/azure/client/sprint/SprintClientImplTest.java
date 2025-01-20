@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -149,7 +148,7 @@ public class SprintClientImplTest {
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
-		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer(), new HashMap<>());
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
 	}
 
 	@Test
@@ -173,7 +172,7 @@ public class SprintClientImplTest {
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
-		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer(), new HashMap<>());
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
 	}
 
 	@Test
@@ -195,7 +194,7 @@ public class SprintClientImplTest {
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
-		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer(), new HashMap<>());
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
 	}
 
 	private AzureServer prepareAzureServer() {
