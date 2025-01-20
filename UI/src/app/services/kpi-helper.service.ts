@@ -183,58 +183,59 @@ export class KpiHelperService {
     const issueData = json.issueData || [];
     const dataGroup = json.dataGroup?.dataGroup1;
     const categoryGroup = json.categoryData?.categoryGroup2;
-    const categoryKey = json.categoryData?.categoryKey;  
+    const categoryKey = json.categoryData?.categoryKey;
+    const categoryKey2 = json.categoryData?.categoryKey2;
     let issueDataCopy;
+    const issueDataFiltered = issueData.filter(issue => issue[categoryKey].includes(filter));
     categoryGroup?.forEach(categoryElem => {
-      let categoryValue = categoryElem.categoryName;    
-      let i = 0;    
-      let value = 0;    
+      let categoryValue = categoryElem.categoryName;
+      let i = 0;
+      let value = 0;
       let test = {};
-      test['category'] = categoryValue;  
-      const issueDataFiltered = issueData.filter(issue => issue[categoryKey].includes(filter));
+      test['category'] = categoryValue;
+      issueDataCopy = issueDataFiltered.filter(issue => issue[categoryKey2][filter].includes(categoryValue));
       dataGroup.forEach(dataGroupElem => {
-        let dataColor = color[i];      
-        i = i + 1;      
-        issueDataCopy = issueDataFiltered.filter(issue => issue[categoryKey].includes(categoryValue));      
+        let dataColor = color[i];
+        i = i + 1;
         if (dataGroupElem.aggregation === 'count') {
-          value = issueDataCopy.length;      
-        } else if (dataGroupElem.aggregation === 'sum') {        
-          value = issueDataCopy.reduce((acc: number, issue: any) => {          
-            return acc + (issue[dataGroupElem.key] || 0); // Use the key from the data group        
-        }, 0);        
-        if (dataGroupElem.unit && dataGroupElem.unit === 'day') {          
-          value = value / (60 * 8);        
-        }      
-      }      
-      test['value' + i] = value;      
-      test['category' + i] = dataGroupElem.name;      
-      test['color' + i] = dataColor;      
-      test['color'] = color;      
-      if(filter==='Unplanned'){        
-        test['summaryValue'] = 'NA'      
-      }else{        
-        test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {          
-          if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {            
-            return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);          
-          } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {            
-            return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);          
-          } else {            
-            return acc;          
-          }       
-        }, 0) + ' ' + dataGroupElem.unit;      
-      }    });    
-      chartData['data'].push(test);  });  
-      chartData['categoryData'] = categoryGroup;  
-      chartData['summaryHeader'] = json?.dataGroup?.dataGroup2[0]?.name;  
-      // chartData['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {  
-      //   if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {  
-      //     return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);  
-      //   } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {  
-      //     return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);  
-      //   } else {  
-      //     return acc;  
-      //   }  
-      // }, 0);  
+          value = issueDataCopy.length;
+        } else if (dataGroupElem.aggregation === 'sum') {
+          value = issueDataCopy.reduce((acc: number, issue: any) => {
+            return acc + (issue[dataGroupElem.key] || 0); // Use the key from the data group
+        }, 0);
+        if (dataGroupElem.unit && dataGroupElem.unit === 'day') {
+          value = value / (60 * 8);
+        }
+      }
+      test['value' + i] = value;
+      test['category' + i] = dataGroupElem.name;
+      test['color' + i] = dataColor;
+      test['color'] = color;
+      if(filter==='Unplanned'){
+        test['summaryValue'] = 'NA'
+      }else{
+        test['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
+          if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
+            return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+          } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
+            return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+          } else {
+            return acc;
+          }
+        }, 0) + ' ' + dataGroupElem.unit;
+      }    });
+      chartData['data'].push(test);  });
+      chartData['categoryData'] = categoryGroup;
+      chartData['summaryHeader'] = json?.dataGroup?.dataGroup2[0]?.name;
+      // chartData['summaryValue'] = issueDataCopy.reduce((acc: number, issue: any) => {
+      //   if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] > 0) {
+      //     return acc + issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+      //   } else if (issue.hasOwnProperty(json.dataGroup.dataGroup2[0].key) && issue[json.dataGroup.dataGroup2[0].key] <= 0) {
+      //     return acc - issue[json.dataGroup.dataGroup2[0].key] / (60 * 8);
+      //   } else {
+      //     return acc;
+      //   }
+      // }, 0);
     return { chartData: chartData };
   }
 
