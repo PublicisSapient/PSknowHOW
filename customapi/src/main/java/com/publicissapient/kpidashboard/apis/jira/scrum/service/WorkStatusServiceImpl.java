@@ -192,8 +192,8 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 				if (allIssuesWithDueDate.contains(issue)) {
 					Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping, sprintDetails,
 							allIssueHistories, allCompletedIssuesList, issue);
-					setDataForPlanned(issue, jiraIssueData, sprintDetails, allCompletedIssuesList, issueWiseDelay, data,
-							category, category2);
+					category2 = setDataForPlanned(issue, jiraIssueData, sprintDetails, allCompletedIssuesList,
+							issueWiseDelay, data, category);
 				}
 				if (allIssuesWithDevDueDate.contains(issue)) {
 					Map<String, Object> jiraIssueData = jiraIssueCalculationDev(fieldMapping, sprintDetails,
@@ -384,8 +384,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			Map<String, List<String>> category2, Map<String, IterationPotentialDelay> issueWiseDelay) {
 		int delay = 0;
 		category2.putIfAbsent(DEV_STATUS, new ArrayList<>());
-		Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
-				.get(ACTUAL_COMPLETION_DATA);
+		Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData.get(ACTUAL_COMPLETION_DATA);
 		if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
 			// Checking if dev due Date is < today date for active sprint
 			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
@@ -433,9 +432,10 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	 * @param issueWiseDelay
 	 * @param data
 	 */
-	private void setDataForPlanned(JiraIssue issue, Map<String, Object> jiraIssueData, SprintDetails sprintDetails,
-			List<String> allCompletedIssuesList, Map<String, IterationPotentialDelay> issueWiseDelay,
-			IssueKpiModalValue data, Set<String> category, Map<String, List<String>> category2) {
+	private Map<String, List<String>> setDataForPlanned(JiraIssue issue, Map<String, Object> jiraIssueData,
+			SprintDetails sprintDetails, List<String> allCompletedIssuesList,
+			Map<String, IterationPotentialDelay> issueWiseDelay, IssueKpiModalValue data, Set<String> category) {
+		Map<String, List<String>> category2 = new HashMap<>();
 		int delay = 0;
 		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
 			int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
@@ -446,8 +446,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			delay = KpiDataHelper.getDelayInMinutes(iterationPotentialDelay.getPotentialDelay());
 		}
 		category2.putIfAbsent(PLANNED, new ArrayList<>());
-		Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
-				.get(ACTUAL_COMPLETION_DATA);
+		Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData.get(ACTUAL_COMPLETION_DATA);
 		if (SprintDetails.SPRINT_STATE_ACTIVE.equalsIgnoreCase(sprintDetails.getState())) {
 			// Checking if dueDate is < today date for active sprint
 			if (DateUtil.stringToLocalDate(issue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
@@ -476,6 +475,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 				data.setDelay(delay);
 			}
 		}
+		return category2;
 	}
 
 	/**
