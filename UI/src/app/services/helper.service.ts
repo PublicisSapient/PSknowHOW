@@ -794,6 +794,7 @@ export class HelperService {
         // Set blank selectedProject after logged out state
         this.sharedService.setSelectedProject(null);
         this.httpService.setCurrentUserDetails({});
+        this.sharedService.setUserDetailsAsBlankObj();
         this.sharedService.setVisibleSideBar(false);
         this.sharedService.setAddtionalFilterBackup({});
         this.sharedService.setKpiSubFilterObj({});

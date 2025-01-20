@@ -689,6 +689,10 @@ export class SharedService {
     ];
   }
 
+  setUserDetailsAsBlankObj(){
+    this.currentUserDetails = {}
+  }
+
   //#endregion
 }
 
