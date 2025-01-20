@@ -12,10 +12,12 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -34,6 +36,7 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -62,6 +65,8 @@ public class KpiDataProviderTest {
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
 	private CapacityKpiDataRepository capacityKpiDataRepository;
+	@Mock
+	private BuildRepository buildRepository;
 
 	private Map<String, Object> filterLevelMap;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
@@ -120,8 +125,8 @@ public class KpiDataProviderTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(any(), any(), any()))
 				.thenReturn(totalIssueList);
 
 		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
@@ -137,6 +142,15 @@ public class KpiDataProviderTest {
 					sprintList);
 			assertThat("Total Stories : ", result.size(), equalTo(4));
 		});
+	}
+
+	@Test
+	public void testFetchBuildFrequencydata() {
+		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/non-JiraProcessors/build_details.json");
+		List<Build> buildList = buildDataFactory.getbuildDataList();
+		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
+		List<Build> list = kpiDataProvider.fetchBuildFrequencydata(new ObjectId(), "", "");
+		assertThat(list.size(), equalTo(18));
 	}
 
 	@Test

@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,6 +81,14 @@ public class KpiDataCacheServiceImplTest {
         when(kpiDataProvider.fetchIssueCountDataFromDB(any(), any(), any())).thenReturn(new HashMap<>());
         assertNotNull(kpiDataCacheService.fetchIssueCountData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
     }
+
+	@Test
+	public void testfetchBuildFrequencydata() {
+		when(kpiDataProvider.fetchBuildFrequencydata(any(), any(), any())).thenReturn(new ArrayList<>());
+		List<Build> result = kpiDataCacheService.fetchBuildFrequencydata(new ObjectId(), "",
+				"", "kpi1");
+		assertNotNull(result);
+	}
 
 	@Test
 	public void fetchSprintCapacityData_shouldReturnCorrectData_whenValidInput() {
