@@ -203,7 +203,7 @@ export class AdditionalFilterComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['additionalFilterConfig'] && changes['additionalFilterConfig'].previousValue && !this.compareObjects(changes['additionalFilterConfig'].previousValue, changes['additionalFilterConfig'].currentValue))
-    || (changes['selectedLevel'])) {
+    || (changes['selectedLevel'] && changes['selectedLevel'].previousValue && !this.compareObjects(changes['selectedLevel'].previousValue, changes['selectedLevel'].currentValue))) {
       this.filterData = [];
       this.selectedFilters = [];
     }
