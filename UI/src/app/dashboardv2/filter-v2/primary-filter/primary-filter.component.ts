@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MultiSelect } from 'primeng/multiselect';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -26,6 +26,7 @@ export class PrimaryFilterComponent implements OnChanges {
   @Output() onPrimaryFilterChange = new EventEmitter();
   @ViewChild('multiSelect') multiSelect: MultiSelect;
   applyFilters: boolean = false;
+  preventClose: boolean;
 
   constructor(public service: SharedService, public helperService: HelperService) {
     // This is required speecifically when filter is removed from removeFilter fn on filter-new
@@ -284,14 +285,28 @@ export class PrimaryFilterComponent implements OnChanges {
     }
   }
 
-  onFooterKeydown(event: KeyboardEvent) {
-    if (event.key === 'ArrowDown') {
-      // Move focus back to the last checkbox
-      const checkboxes = document.querySelectorAll('.p-multiselect-items input[type="checkbox"]');
-      if (checkboxes.length) {
-        (checkboxes[checkboxes.length - 1] as HTMLElement).focus();
-      }
-      event.preventDefault();
+  preventDropdownClose(event: Event) {
+    // event.stopPropagation();
+    console.log('preventDropdownClose');
+    this.preventClose = true;
+  }
+
+  handleBlur() {
+    // Logic when panel loses focus, if needed
+    this.preventClose = false; // Reset flag on blur
+  }
+
+  handlePanelHide() {
+    if (this.preventClose) {
+      this.preventClose = false; // Reset flag after handling
+      return false; // Prevent closing
+    }
+    return true; // Allow closing
+  }
+
+  handleFooterKeydown(event: KeyboardEvent) {
+    if (event.key === 'Tab') {
+      this.preventClose = true; // Prevent close when tabbing within panel
     }
   }
 
