@@ -57,6 +57,9 @@ export class HelperService {
         downloadJson.selectedMap[filterData[0].label].push(filterData[0].filterData[i].nodeId);
       }
     }
+    if(isKanban === true){
+      downloadJson['selectedMap']['sprint'] = [];
+    }
     return this.httpService.downloadExcel(downloadJson, kpiId);
 
   }
