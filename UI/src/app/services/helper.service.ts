@@ -32,7 +32,7 @@ export class HelperService {
   isKanban = false;
   grossMaturityObj = {};
   public passMaturityToFilter;
-  
+
   constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService, private router: Router, private route: ActivatedRoute) {
     this.passMaturityToFilter = new EventEmitter();
   }
@@ -798,8 +798,11 @@ export class HelperService {
         this.sharedService.setVisibleSideBar(false);
         this.sharedService.setAddtionalFilterBackup({});
         this.sharedService.setKpiSubFilterObj({});
+        this.sharedService.setBackupOfFilterSelectionState(null); // -> SENDING NULL SO THAT SELECTED FILTERS ARE RESET ON LOGOUT
         localStorage.clear();
-        this.router.navigate(['./authentication/login']);
+        this.router.navigate(['./authentication/login']).then(() => {
+          window.location.reload();
+        });
       } else {
         let redirect_uri = window.location.href;
         window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
