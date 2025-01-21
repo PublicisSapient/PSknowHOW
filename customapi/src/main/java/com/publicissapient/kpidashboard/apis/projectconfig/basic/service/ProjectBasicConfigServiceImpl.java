@@ -454,6 +454,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			});
 
 			projectHierarchyRepository.saveAll(projectHierarchyList);
+			cacheService.clearCache(CommonConstant.CACHE_PROJECT_HIERARCHY);
 		}
 	}
 

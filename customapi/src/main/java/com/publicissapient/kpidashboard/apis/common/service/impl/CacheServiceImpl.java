@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -75,6 +77,8 @@ public class CacheServiceImpl implements CacheService {
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
 	@Autowired
 	private AuthenticationService authNAuthService;
+	@Autowired
+    private ProjectHierarchyService projectHierarchyService;
 	List<AccountHierarchyData> accountHierarchyDataList;
 
 	@Override
@@ -326,4 +330,10 @@ public class CacheServiceImpl implements CacheService {
 
 	}
 
+	@Cacheable(CommonConstant.CACHE_PROJECT_HIERARCHY)
+	@Override
+	public List<ProjectHierarchy> getAllProjectHierarchy() {
+		log.info("Caching ProjectHierachy");
+		return projectHierarchyService.findAll();
+	}
 }
