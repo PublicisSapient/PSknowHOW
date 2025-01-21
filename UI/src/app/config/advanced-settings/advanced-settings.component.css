@@ -107,3 +107,7 @@ div.main {
   min-width: 300px;
   max-width: 600px;
 }
+
+.h-40 {
+  height: 23px;
+}
