@@ -140,13 +140,16 @@ export class LoginComponent implements OnInit {
             }
 
             // Check if user has access to all project in stateFiltersObj['primary_level']
-            const hasAccessToAll = stateFilterObj.every(filter =>
-              currentUserProjectAccess.some(project => project.projectId === filter.basicProjectConfigId)
-            );
+            // SUperadmin have all project access hence no need to check project for superadmin
+            const hasAccessToAll = this.sharedService.getCurrentUserDetails('authorities')?.includes('ROLE_SUPERADMIN') || stateFilterObj.every(filter =>
+              currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
+            )
 
             if (hasAccessToAll) {
+              localStorage.removeItem('shared_link');
               this.router.navigate([JSON.parse(JSON.stringify(url))]);
             } else {
+              localStorage.removeItem('shared_link');
               this.router.navigate(['/dashboard/Error']);
               setTimeout(() => {
                 this.sharedService.raiseError({
