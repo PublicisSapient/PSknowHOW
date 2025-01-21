@@ -326,6 +326,6 @@ public class PIPredictabilityServiceImplTest {
 	@Test
 	public void calculateThresholdValue() {
 		fieldMapping.setThresholdValueKPI153("15");
-		 Assert.assertEquals("15.0",piPredictabilityService.calculateThresholdValue(fieldMapping.getThresholdValueKPI153(), KPICode.PI_PREDICTABILITY.getKpiId()));
+		 Assert.assertEquals(Double.valueOf(15D),piPredictabilityService.calculateThresholdValue(fieldMapping.getThresholdValueKPI153(), KPICode.PI_PREDICTABILITY.getKpiId()));
 	}
 }

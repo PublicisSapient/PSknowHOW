@@ -311,7 +311,6 @@ public class ProjectBasicConfigServiceImplTest {
 	 */
 	@Test
 	public void addConfigTest_projectNameAlreadyExist_failure() {
-		when(basicConfigRepository.findByProjectName(any(String.class))).thenReturn(basicConfig);
 		when(basicConfigRepository.findByProjectNodeId(any())).thenReturn(basicConfig);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
@@ -322,7 +321,6 @@ public class ProjectBasicConfigServiceImplTest {
 	 */
 	@Test
 	public void addConfigTest_saveOperation_failure() {
-		when(basicConfigRepository.findByProjectName(any())).thenReturn(basicConfig);
 		when(basicConfigRepository.findByProjectNodeId(any())).thenReturn(basicConfig);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
