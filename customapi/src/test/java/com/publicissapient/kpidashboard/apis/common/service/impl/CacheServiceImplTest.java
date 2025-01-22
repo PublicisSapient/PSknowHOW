@@ -56,6 +56,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -376,4 +377,38 @@ public class CacheServiceImplTest {
         verify(configHelperService, times(1)).getConfigMapData(cacheKey);
     }
 
+    @Test
+    public void testUpdateCacheProjectConfigMapData() {
+        when(configHelperService.getConfigMapData(anyString())).thenReturn(Map.of("", new ProjectBasicConfig()));
+        cacheService.updateCacheProjectConfigMapData();
+
+    }
+
+    @Test
+    public void testUpdateAllCacheProjectConfigMapData() {
+
+        String cacheKey = CommonConstant.CACHE_PROJECT_CONFIG_MAP;
+
+        // Mock the method
+        when(configHelperService.getConfigMapData(anyString())).thenReturn(new Object());
+        // Verify the results
+        cacheService.updateAllCacheProjectConfigMapData();
+        verify(configHelperService, times(1)).getConfigMapData(cacheKey);
+    }
+
+    @Test
+    public void testCacheAllProjectConfigMapData() {
+        // Mocked data
+        String cacheKey = CommonConstant.CACHE_PROJECT_CONFIG_MAP;
+
+        // Mock the methods
+        doNothing().when(configHelperService).loadConfigData();
+        when(configHelperService.getConfigMapData(anyString())).thenReturn(new Object());
+
+        // Call the method
+        cacheService.cacheAllProjectConfigMapData();
+        // Verify interactions
+        verify(configHelperService, times(1)).loadConfigData();
+        verify(configHelperService, times(1)).getConfigMapData(cacheKey);
+    }
 }
