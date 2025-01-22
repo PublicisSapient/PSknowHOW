@@ -294,6 +294,10 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolMembersUrl;
 	private String defectRateUrl;
 
+	@Setter
+	@Getter
+	private int sprintVelocityVarianceThreshold;
+
     @Setter
     @Getter
     private int userSessionsExpiresOn;
