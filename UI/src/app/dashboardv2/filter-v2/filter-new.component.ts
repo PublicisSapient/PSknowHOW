@@ -613,11 +613,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       let parentLevel = level - 1;
       let parentLevelNode = completeHiearchyData?.filter(x => x.level === parentLevel);
       let parentLevelName = parentLevelNode[0].hierarchyLevelName;
-
-      let childNode = this.filterDataArr[this.selectedType][selectedLevelNode[0].hierarchyLevelName].find(x => x.nodeId === child.nodeId);
-      if (childNode) {
-        let immediateParent = this.filterDataArr[this.selectedType][parentLevelName].find(x => x.nodeId === childNode.parentId);
-        return immediateParent?.nodeDisplayName + '-' + child?.nodeId;
+      if (this.filterDataArr && this.filterDataArr[this.selectedType]?.length) {
+        let childNode = this.filterDataArr[this.selectedType][selectedLevelNode[0].hierarchyLevelName].find(x => x.nodeId === child.nodeId);
+        if (childNode) {
+          let immediateParent = this.filterDataArr[this.selectedType][parentLevelName].find(x => x.nodeId === childNode.parentId);
+          return immediateParent?.nodeDisplayName + '-' + child?.nodeId;
+        } else {
+          return '';
+        }
       } else {
         return '';
       }
@@ -685,10 +688,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousFilterEvent['additional_level'] = event['additional_level'];
       this.previousFilterEvent['primary_level'] = event['primary_level'];
       this.service.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
-      // Object.keys(event['additional_level']).forEach(key => {
-      //   this.setColors(event['primary_level']);
-      //   this.handleAdditionalChange({ [key]: event['additional_level'][key] })
-      // });
+      Object.keys(event['additional_level']).forEach(key => {
+        this.setColors(event['primary_level']);
+        this.handleAdditionalChange({ [key]: event['additional_level'][key] })
+      });
     } else if (!event.length || event[0].labelName.toLowerCase() !== this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase()) {
       this.noSprint = true;
       this.service.setAdditionalFilters([]);
@@ -760,9 +763,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       });
     } else {
       this.sendDataToDashboard(event);
-      if(this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project'){
-        this.buttonStyleClass = 'default';  
-      }else{
+      if (this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
+        this.buttonStyleClass = 'default';
+      } else {
         this.buttonStyleClass = 'disabled'
       }
     }
