@@ -21,6 +21,7 @@ import static com.publicissapient.kpidashboard.apis.stringshortener.util.UniqueS
 
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.stringshortener.dto.StringShortenerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,36 +41,30 @@ public class StringShortenerService {
         this.stringShortenerRepository = stringMappingRepository;
     }
 
-    public StringShortener createShortString(String longString) {
-        if (longString == null || longString.isEmpty()) {
-            log.warn("Provided long string is null or empty");
-            throw new IllegalArgumentException("Please provide a valid long string");
+    public StringShortener createShortString(StringShortenerDTO stringShortenerDTO){
+        if (stringShortenerDTO == null) {
+            log.warn("Provided stringShortenerDTO is null");
+            throw new IllegalArgumentException("Please provide a valid stringShortenerDTO");
         }
-        log.info("Creating short string for long string: {}", longString);
-        Optional<StringShortener> existingMapping = stringShortenerRepository.findByLongString(longString);
-        if (existingMapping.isPresent()) {
-            log.info("Existing mapping found for long string: {}", longString);
-            return existingMapping.get();
+        Optional<StringShortener> stringShortenerOptional = stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString(stringShortenerDTO.getLongKPIFiltersString(),stringShortenerDTO.getLongStateFiltersString());
+        if (stringShortenerOptional.isPresent()) {
+            log.info("Existing mapping found for long strings: {},{}", stringShortenerDTO.getLongKPIFiltersString(),stringShortenerDTO.getLongStateFiltersString());
+            return stringShortenerOptional.get();
         }
-
-        String shortstring = generateShortKey(longString);
-        log.info("Generated short string: {} for long string: {}", shortstring, longString);
+        String shortKPIFiltersString = generateShortKey(stringShortenerDTO.getLongKPIFiltersString());
+        String shortStateFiltersString = generateShortKey(stringShortenerDTO.getLongStateFiltersString());
         StringShortener stringMapping = new StringShortener();
-        stringMapping.setLongString(longString);
-        stringMapping.setShortString(shortstring);
+        stringMapping.setLongKPIFiltersString(stringShortenerDTO.getLongKPIFiltersString());
+        stringMapping.setShortKPIFilterString(shortKPIFiltersString);
+        stringMapping.setLongStateFiltersString(stringShortenerDTO.getLongStateFiltersString());
+        stringMapping.setShortStateFiltersString(shortStateFiltersString);
+
         StringShortener savedMapping = stringShortenerRepository.save(stringMapping);
-        log.info("Successfully created and saved short string: {} for long string: {}", shortstring, longString);
         return savedMapping;
     }
 
-    public Optional<StringShortener> getLongString(String shortstring) {
-        log.info("Retrieving long string for short string: {}", shortstring);
-        Optional<StringShortener> stringMapping = stringShortenerRepository.findByShortString(shortstring);
-        if (stringMapping.isPresent()) {
-            log.info("Found long string: {} for short string: {}", stringMapping.get().getLongString(), shortstring);
-        } else {
-            log.warn("No mapping found for short string: {}", shortstring);
-        }
+    public Optional<StringShortener> getLongString(String kpiFilters, String stateFilters) {
+        Optional<StringShortener> stringMapping = stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString(kpiFilters,stateFilters);
         return stringMapping;
     }
 }

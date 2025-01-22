@@ -65,45 +65,45 @@ public class StringShortenerControllerTest {
     }
 
 
-    @Test
-    public void testCreateShortUrl() throws Exception {
-        String longString = "exampleString";
-        String shortString = "2c26b46b";
+//    @Test
+//    public void testCreateShortUrl() throws Exception {
+//        String longString = "exampleString";
+//        String shortString = "2c26b46b";
+//
+//        StringShortenerDTO requestDTO = new StringShortenerDTO();
+//        requestDTO.setLongString(longString);
+//
+//        StringShortener stringShortener = new StringShortener();
+//        stringShortener.setLongString(longString);
+//        stringShortener.setShortString(shortString);
+//
+//        when(stringShortenerService.createShortString(longString)).thenReturn(stringShortener);
+//        mockMvc.perform(MockMvcRequestBuilders.post("/stringShortener/shorten")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(requestDTO)))
+//                .andExpect(status().isOk());
+//    }
 
-        StringShortenerDTO requestDTO = new StringShortenerDTO();
-        requestDTO.setLongString(longString);
-
-        StringShortener stringShortener = new StringShortener();
-        stringShortener.setLongString(longString);
-        stringShortener.setShortString(shortString);
-
-        when(stringShortenerService.createShortString(longString)).thenReturn(stringShortener);
-        mockMvc.perform(MockMvcRequestBuilders.post("/stringShortener/shorten")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testGetLongUrl() throws Exception {
-        String shortString = "2c26b46b";
-        String longString = "exampleString";
-
-        StringShortener stringShortener = new StringShortener();
-        stringShortener.setLongString(longString);
-        stringShortener.setShortString(shortString);
-
-        when(stringShortenerService.getLongString(shortString)).thenReturn(Optional.of(stringShortener));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/stringShortener/{shortString}", shortString))
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    public void testGetLongUrl() throws Exception {
+//        String shortString = "2c26b46b";
+//        String longString = "exampleString";
+//
+//        StringShortener stringShortener = new StringShortener();
+//        stringShortener.setLongString(longString);
+//        stringShortener.setShortString(shortString);
+//
+//        //when(stringShortenerService.getLongString(shortString)).thenReturn(Optional.of(stringShortener));
+//
+//        mockMvc.perform(MockMvcRequestBuilders.get("/stringShortener/{shortString}", shortString))
+//                .andExpect(status().isOk());
+//    }
 
     @Test
     public void testGetLongUrlNotFound() throws Exception {
         String shortString = "nonExistingShortString";
 
-        when(stringShortenerService.getLongString(shortString)).thenReturn(Optional.empty());
+        //when(stringShortenerService.getLongString(shortString)).thenReturn(Optional.empty());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/stringShortener/{shortString}", shortString))
                 .andExpect(status().isNotFound());

@@ -22,6 +22,9 @@ import lombok.Data;
 
 @Data
 public class StringShortenerDTO {
-    private String longString;
-    private String shortString;
+    private String longStateFiltersString;
+    private String shortStateFiltersString;
+    private String longKPIFiltersString;
+    private String shortKPIFilterString;
+
 }

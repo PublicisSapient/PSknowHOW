@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface StringShortenerRepository extends MongoRepository<StringShortener, String> {
-    Optional<StringShortener> findByShortString(String shortString);
-    Optional<StringShortener> findByLongString(String longString);
+    Optional<StringShortener> findByShortKPIFilterStringAndShortStateFiltersString(String shortKPIFilterString, String shortStateFiltersString);
+    Optional<StringShortener> findByLongKPIFiltersStringAndLongStateFiltersString(String longKPIFiltersString, String longStateFiltersString);
+
 }

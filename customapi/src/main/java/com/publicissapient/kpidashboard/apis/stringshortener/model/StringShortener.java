@@ -27,6 +27,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class StringShortener {
     @Id
     private String id;
-    private String longString;
-    private String shortString;
+    private String longStateFiltersString;
+    private String shortStateFiltersString;
+    private String longKPIFiltersString;
+    private String shortKPIFilterString;
 }

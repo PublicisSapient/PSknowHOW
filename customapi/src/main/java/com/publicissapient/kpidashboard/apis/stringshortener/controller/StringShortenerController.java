@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.stringshortener.controller;
 import com.publicissapient.kpidashboard.apis.stringshortener.dto.StringShortenerDTO;
 import com.publicissapient.kpidashboard.apis.stringshortener.model.StringShortener;
 import com.publicissapient.kpidashboard.apis.stringshortener.service.StringShortenerService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,6 @@ import java.util.Optional;
 @RequestMapping("/stringShortener")
 public class StringShortenerController {
 
-
     private final StringShortenerService stringShortenerService;
 
     @Autowired
@@ -41,19 +41,19 @@ public class StringShortenerController {
 
     @PostMapping("/shorten")
     public ResponseEntity<StringShortenerDTO> createShortString(@RequestBody StringShortenerDTO stringShortenerDTO) {
-        StringShortener stringShortener = stringShortenerService.createShortString(stringShortenerDTO.getLongString());
-        StringShortenerDTO responseDTO = new StringShortenerDTO();
-        responseDTO.setLongString(stringShortener.getLongString());
-        responseDTO.setShortString(stringShortener.getShortString());
+        StringShortener stringShortener = stringShortenerService.createShortString(stringShortenerDTO);
+        final ModelMapper modelMapper = new ModelMapper();
+        final StringShortenerDTO responseDTO = modelMapper.map(stringShortener, StringShortenerDTO.class);
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("/longString")
-    public ResponseEntity<String> getLongString(@RequestParam String shortString) {
-        Optional<StringShortener> stringShortener = stringShortenerService.getLongString(shortString);
+    public ResponseEntity<StringShortenerDTO> getLongString(@RequestParam String kpiFilters,@RequestParam String stateFilters) {
+        Optional<StringShortener> stringShortener = stringShortenerService.getLongString(kpiFilters,stateFilters);
         if (stringShortener.isPresent()) {
-            return stringShortener.map(mapping -> ResponseEntity.ok(mapping.getLongString()))
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+            final ModelMapper modelMapper = new ModelMapper();
+            final StringShortenerDTO responseDTO = modelMapper.map(stringShortener.get(), StringShortenerDTO.class);
+            return ResponseEntity.ok(responseDTO);
         }
         return ResponseEntity.notFound().build();
     }
