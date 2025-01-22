@@ -9,8 +9,8 @@
                 <div class="filter-item">
                     <div>
                         <span>{{option.nodeDisplayName}}</span>
-                        <span *ngIf="option?.path" class="parent_span">
-                            ({{ option.path.split('_')[0]}})
+                        <span class="parent_span" *ngIf="getImmediateParentDisplayName(option)">
+                            ({{ getImmediateParentDisplayName(option) }})
                         </span>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                 <div class="filter-item">
                     <span>{{ option.nodeDisplayName }}</span>
                     <span class="parent_span">
-                        ({{ service.getSelectedTab().toLowerCase() === 'iteration' ? option.sprintState : service.getSelectedTab().toLowerCase() === 'release' ? option.releaseState : getParentDisplayName(option.parentId, filterData)  }})
+                        ({{ service.getSelectedTab().toLowerCase() === 'iteration' ? option.sprintState : service.getSelectedTab().toLowerCase() === 'release' ? option.releaseState : getImmediateParentDisplayName(option) }})
                     </span>
                 </div>
             </ng-template>

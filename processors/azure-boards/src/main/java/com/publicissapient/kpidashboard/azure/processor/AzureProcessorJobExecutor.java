@@ -148,6 +148,8 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 					CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_SPRINT_HIERARCHY);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+					CommonConstant.CACHE_PROJECT_HIERARCHY);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,	CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 

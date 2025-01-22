@@ -284,6 +284,7 @@ export class BasicConfigComponent implements OnInit {
     console.log(formValue);
     const submitData = {};
     submitData['projectName'] = formValue['projectName'];
+    submitData['projectDisplayName'] = formValue['projectName'];
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];

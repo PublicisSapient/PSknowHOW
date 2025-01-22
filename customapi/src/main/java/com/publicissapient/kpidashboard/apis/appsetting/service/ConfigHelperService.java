@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +88,8 @@ public class ConfigHelperService {
 	@Autowired
 	private OrganizationHierarchyRepository organizationHierarchyRepository;
 	@Autowired
+	private ProjectHierarchyRepository projectHierarchyRepository;
+	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
 	@Autowired
 	private ProjectToolConfigRepository projectToolConfigRepository;
@@ -117,9 +121,10 @@ public class ConfigHelperService {
 		List<HierarchyLevel> hierarchyLevels = hierarchyLevelRepository.findAllByOrderByLevel();
 
 		projectList.forEach(projectConfig -> {
-			//AN: This is to make sure UI doesn't break, to be removed after migration
-			if(CollectionUtils.isEmpty(projectConfig.getHierarchy())) {
-				projectConfig.setHierarchy(projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
+			// AN: This is to make sure UI doesn't break, to be removed after migration
+			if (CollectionUtils.isEmpty(projectConfig.getHierarchy())) {
+				projectConfig.setHierarchy(
+						projectBasicConfigService.getHierarchy(hierarchyLevels, projectConfig.getProjectNodeId()));
 			}
 			projectConfigMap.put(projectConfig.getId().toString(), projectConfig);
 			FieldMapping mapping = fieldMappingList.stream()
@@ -199,6 +204,19 @@ public class ConfigHelperService {
 	 */
 	public ProjectBasicConfig getProjectConfig(String key) {
 		return getProjectConfigMap().get(key);
+	}
+
+	/**
+	 * Gets project config.
+	 *
+	 * @param projectNodeId
+	 *            the uniqueNodeId
+	 * @return the project config
+	 */
+	public ProjectBasicConfig getProjectNodeIdWiseProjectConfig(String projectNodeId) {
+		return getProjectConfigMap().values().stream()
+				.collect(Collectors.toMap(ProjectBasicConfig::getProjectNodeId, e1 -> e1)).get(projectNodeId);
+
 	}
 
 	/**
@@ -388,5 +406,12 @@ public class ConfigHelperService {
 		projectConfigMap.put(projectBasicConfig.getId().toString(), projectBasicConfig);
 		cacheService.updateCacheProjectConfigMapData();
 		cacheService.updateAllCacheProjectConfigMapData();
+	}
+
+	public List<ObjectId> getProjectHierarchyProjectConfigMap(List<String> uniqueId) {
+		return cacheService.getAllProjectHierarchy().stream()
+				.filter(projectHierarchy -> uniqueId.contains(projectHierarchy.getNodeId()))
+				.map(ProjectHierarchy::getBasicProjectConfigId).toList();
+
 	}
 }

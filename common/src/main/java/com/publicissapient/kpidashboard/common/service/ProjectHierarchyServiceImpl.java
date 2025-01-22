@@ -39,6 +39,11 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 	ProjectHierarchyRepository projectHierarchyRepository;
 
 	@Override
+	public List<ProjectHierarchy> findAll() {
+		return projectHierarchyRepository.findAll();
+	}
+
+	@Override
 	public Map<String, ProjectHierarchy> getProjectHierarchyMapByConfigId(String projectConfigId) {
 		return getProjectRelatedHierachy(projectConfigId).stream().collect(
 				Collectors.toMap(OrganizationHierarchy::getNodeId, p -> p, (existingValue, newValue) -> existingValue));
@@ -64,7 +69,8 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 		return projectHierarchyRepository.findByBasicProjectConfigId(new ObjectId(projectConfigId));
 	}
 
-	@Override public List<ProjectHierarchy> findAllByBasicProjectConfigIds(List<ObjectId> basicProjectConfigIdList) {
+	@Override
+	public List<ProjectHierarchy> findAllByBasicProjectConfigIds(List<ObjectId> basicProjectConfigIdList) {
 		return projectHierarchyRepository.findByBasicProjectConfigIdIn(basicProjectConfigIdList);
 	}
 }

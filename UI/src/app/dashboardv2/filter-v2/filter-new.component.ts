@@ -549,7 +549,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       if (data[i]?.nodeId) {
-        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName }
+         this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName }
       }
     }
     if (Object.keys(this.colorObj).length) {
@@ -731,7 +731,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       });
     } else {
       this.sendDataToDashboard(event);
-      this.buttonStyleClass = 'disabled'
+      if(this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project'){
+        this.buttonStyleClass = 'default';  
+      }else{
+        this.buttonStyleClass = 'disabled'
+      }
     }
   }
 

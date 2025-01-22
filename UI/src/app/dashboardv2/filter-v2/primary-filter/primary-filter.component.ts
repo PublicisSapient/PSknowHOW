@@ -172,17 +172,6 @@ export class PrimaryFilterComponent implements OnChanges {
     }
   }
 
-  getParentDisplayName(parentId: string, data: Record<string, any[]>): string | undefined {
-    // Iterate through the data structure to find the matching node
-    for (const category of Object.values(data)) {
-      const parentNode = category.find(node => node.nodeId === parentId);
-      if (parentNode) {
-        return parentNode.nodeDisplayName;
-      }
-    }
-    return undefined; // Return undefined if not found
-  }
-
   applyPrimaryFilters(event) {
     if (this.primaryFilterConfig && Object.keys(this.primaryFilterConfig).length) {
       this.applyFilters = true;
@@ -220,7 +209,7 @@ export class PrimaryFilterComponent implements OnChanges {
           this.applyFilters = false;
 
           if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'sprint' || this.selectedFilters[0]?.labelName?.toLowerCase() === 'release') {
-            this.service.setSelectedTrends(this.selectedFilters.map(x => x.parentId));
+             this.service.setSelectedTrends(this.filterData['Project'].filter(x => this.selectedFilters.map(s=>s.parentId).includes(x.nodeId)));
           } else if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'project') {
             this.service.setSelectedTrends(this.selectedFilters);
           }
@@ -293,6 +282,22 @@ export class PrimaryFilterComponent implements OnChanges {
     } else {
       return this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate'])
     }
+  }
+
+
+  getImmediateParentDisplayName(child) {
+    let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
+    let selectedLevelNode = completeHiearchyData?.filter(x => x.hierarchyLevelName === this.selectedLevel);
+    let level = selectedLevelNode[0].level;
+    if (level > 1) {
+      let parentLevel = level - 1;
+      let parentLevelNode = completeHiearchyData?.filter(x => x.level === parentLevel);
+      let parentLevelName = parentLevelNode[0].hierarchyLevelName;
+
+      let immediateParent = this.filterData[parentLevelName].find(x => x.nodeId === child.parentId);
+      return immediateParent?.nodeDisplayName;
+    }
+    return undefined;
   }
 
 }
