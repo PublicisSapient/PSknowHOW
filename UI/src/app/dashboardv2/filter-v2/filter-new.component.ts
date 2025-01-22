@@ -433,7 +433,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     //   }
     // }
 
-    return true;
+    return false;
   }
 
   getBoardConfig(projectList, event = null) {
@@ -604,6 +604,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @returns {void}
    */
   handlePrimaryFilterChange(event) {
+    if(this.helperService.deepEqual(event, this.previousFilterEvent)) {
+      console.log('same event spla ***');
+    }
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
         if (!event['additional_level'][key]?.length) {
