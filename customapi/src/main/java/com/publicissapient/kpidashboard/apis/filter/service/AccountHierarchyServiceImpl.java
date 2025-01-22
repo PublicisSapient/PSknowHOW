@@ -377,7 +377,7 @@ public class AccountHierarchyServiceImpl
 			hierarchy.setBeginDate(sprintDetails.getStartDate());
 			hierarchy.setEndDate(sprintDetails.getEndDate());
 		}
-		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(), hierarchy.getParentId(),
+		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeDisplayName(), hierarchy.getParentId(),
 				hierarchy.getHierarchyLevelId(), hierarchy);
 		node.setLevel(hierarchyLevelIdMap.getOrDefault(hierarchy.getHierarchyLevelId(), 0));
 		accountHierarchyData.setLabelName(hierarchy.getHierarchyLevelId());

@@ -262,6 +262,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	private void clearOrgHierarchyCache() {
 		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
+		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
 		configHelperService.loadConfigData();
 	}
 

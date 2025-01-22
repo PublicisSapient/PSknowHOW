@@ -78,7 +78,7 @@ public class CacheServiceImpl implements CacheService {
 	@Autowired
 	private AuthenticationService authNAuthService;
 	@Autowired
-    private ProjectHierarchyService projectHierarchyService;
+	private ProjectHierarchyService projectHierarchyService;
 	List<AccountHierarchyData> accountHierarchyDataList;
 
 	@Override
@@ -100,7 +100,7 @@ public class CacheServiceImpl implements CacheService {
 	@Cacheable(CommonConstant.CACHE_ACCOUNT_HIERARCHY)
 	@Override
 	public Object cacheAccountHierarchyData() {
-		accountHierarchyDataList=accountHierarchyService.createHierarchyData();
+		accountHierarchyDataList = accountHierarchyService.createHierarchyData();
 		return accountHierarchyDataList;
 	}
 
@@ -110,7 +110,8 @@ public class CacheServiceImpl implements CacheService {
 		return accountHierarchyDataList.stream()
 				.filter(data -> data.getNode().stream()
 						.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-								&& node.getProjectHierarchy().getSprintState() != null)).toList();
+								&& node.getProjectHierarchy().getSprintState() != null))
+				.toList();
 
 	}
 
@@ -132,6 +133,7 @@ public class CacheServiceImpl implements CacheService {
 
 	/**
 	 * this method will be current updated map store in cache
+	 * 
 	 * @return
 	 */
 	@CachePut(CommonConstant.CACHE_PROJECT_CONFIG_MAP)
@@ -152,6 +154,7 @@ public class CacheServiceImpl implements CacheService {
 
 	/**
 	 * this method will be current updated map store in cache
+	 * 
 	 * @return
 	 */
 	@CachePut(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP)
@@ -163,12 +166,13 @@ public class CacheServiceImpl implements CacheService {
 
 	private Object filterOnHoldProjectBasicConfig() {
 
-		Map<String, ProjectBasicConfig> projectConfigMap = (Map<String, ProjectBasicConfig>) configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+		Map<String, ProjectBasicConfig> projectConfigMap = (Map<String, ProjectBasicConfig>) configHelperService
+				.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 
-		return projectConfigMap == null ? Collections.emptyMap() : projectConfigMap.entrySet()
-				.stream()
-				.filter(entry -> entry.getValue() != null && !entry.getValue().isProjectOnHold())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		return projectConfigMap == null ? Collections.emptyMap()
+				: projectConfigMap.entrySet().stream()
+						.filter(entry -> entry.getValue() != null && !entry.getValue().isProjectOnHold())
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_MAP)
