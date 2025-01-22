@@ -115,6 +115,8 @@ public class MeanTimeToRecoverServiceImplTest {
 	private List<JiraIssue> jiraIssueList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> issueCustomHistoryList = new ArrayList<>();
 	private ToolsKPIService toolsKPIService;
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -151,6 +153,17 @@ public class MeanTimeToRecoverServiceImplTest {
 		kpiWiseAggregation.put("MEAN_TIME_TO_RECOVER", "sum");
 
 		toolsKPIService = mock(ToolsKPIService.class, CALLS_REAL_METHODS);
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfigs -> {
+			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 	}
 
