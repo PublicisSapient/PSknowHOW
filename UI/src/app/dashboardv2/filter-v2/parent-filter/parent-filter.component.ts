@@ -23,8 +23,9 @@ export class ParentFilterComponent implements OnChanges {
   constructor(public service: SharedService, public helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['parentFilterConfig'] && !this.helperService.deepEqual(changes['parentFilterConfig'].currentValue, changes['parentFilterConfig'].previousValue)) {
-      if (changes['parentFilterConfig'].currentValue['labelName'] === 'Organization Level') {
+    if ((changes['parentFilterConfig'] && !this.helperService.deepEqual(changes['parentFilterConfig'].currentValue, changes['parentFilterConfig'].previousValue)) ||
+    (changes['selectedTab'] && changes['selectedTab'].currentValue !== changes['selectedTab'].previousValue)) {
+      if (this.parentFilterConfig['labelName'] === 'Organization Level') {
         this.fillAdditionalFilterLevels();
         this.filterLevels = Object.keys(this.filterData).map((item) => {
           return {
@@ -47,7 +48,7 @@ export class ParentFilterComponent implements OnChanges {
           this.handleSelectedLevelChange();
         });
       } else {
-        this.filterLevels = this.filterData[changes['parentFilterConfig'].currentValue['labelName']]?.map((item) => {
+        this.filterLevels = this.filterData[this.parentFilterConfig['labelName']]?.map((item) => {
           return {
             nodeId: item.nodeId,
             nodeName: item.nodeName
@@ -61,7 +62,7 @@ export class ParentFilterComponent implements OnChanges {
             if (Array.isArray(this.stateFilters)) {
               this.stateFilters = this.stateFilters[0];
             }
-            if (this.stateFilters['labelName']?.toLowerCase() === changes['parentFilterConfig'].currentValue['labelName']?.toLowerCase()) {
+            if (this.stateFilters['labelName']?.toLowerCase() === this.parentFilterConfig['labelName']?.toLowerCase()) {
               this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId === this.stateFilters['nodeId'] })[0];
             } else if (this.stateFilters['labelName']?.toLowerCase() === 'sprint' || this.stateFilters['labelName']?.toLowerCase() === 'release') {
               this.selectedLevel = this.filterLevels.filter((level) => { return level.nodeId === this.stateFilters['parentId'] })[0];
