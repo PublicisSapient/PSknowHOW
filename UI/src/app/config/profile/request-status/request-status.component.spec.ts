@@ -128,7 +128,8 @@ describe('RequestStatusComponent', () => {
 
   it('should load pending requests on load', () => {
     component.userName = 'testUser';
-    sharedService.currentUserDetailsSubject.next({user_name: 'testUser'});
+    const fakeUserDetails = {user_name: 'testUser'}
+    localStorage.setItem('currentUserDetails',JSON.stringify(fakeUserDetails))
     fixture.detectChanges();
     component.ngOnInit();
     httpMock.match(baseUrl + '/api/accessrequests/user/' + component.userName)[0].flush(fakeRequestsData);
