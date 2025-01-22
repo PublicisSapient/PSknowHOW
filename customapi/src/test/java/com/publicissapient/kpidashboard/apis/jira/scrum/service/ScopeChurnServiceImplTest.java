@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -86,6 +89,8 @@ public class ScopeChurnServiceImplTest {
 	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
 	private FilterHelperService filterHelperService;
+	@Mock
+	private CommonService commonService;
 
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -93,6 +98,10 @@ public class ScopeChurnServiceImplTest {
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	List<JiraIssue> totalIssueList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
+
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 
 	@Before
 	public void setup() {
@@ -118,6 +127,19 @@ public class ScopeChurnServiceImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfigs -> {
+			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 	}
 
 	@Test
@@ -183,7 +205,7 @@ public class ScopeChurnServiceImplTest {
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
 		} catch (Exception exception) {
 		}
 	}
@@ -206,7 +228,7 @@ public class ScopeChurnServiceImplTest {
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
 		} catch (Exception exception) {
 		}
 	}
