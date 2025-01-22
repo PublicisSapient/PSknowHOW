@@ -73,10 +73,10 @@ export class MyprofileComponent implements OnInit {
       this.noAccess = true;
     }
 
-    this.sharedService.currentUserDetailsObs.subscribe(details => {
-      this.setUserDetails(details);
-    })
-
+    // this.sharedService.currentUserDetailsObs.subscribe(details => {
+    //   this.setUserDetails(details);
+    // })
+    this.setUserDetails(this.sharedService.getCurrentUserDetails());
     if (this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
       const accessList = JSON.parse(JSON.stringify(this.sharedService.getCurrentUserDetails('projectsAccess')));
       this.groupProjects(accessList);

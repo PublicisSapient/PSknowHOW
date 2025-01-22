@@ -2327,13 +2327,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     for (let i = 0; i < arr?.length; i++) {
       for (const key in this.colorObj) {
-        if (kpiId == 'kpi17' && this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName) {
+
+        let selectedNode = this.filterData.filter(x => x.nodeName === arr[i].value[0].sprojectName);
+        let selectedId = selectedNode[0].nodeId;
+
+        if (kpiId == 'kpi17' && this.colorObj[key]?.nodeId == selectedId) {
           this.chartColorList[kpiId].push(this.colorObj[key]?.color);
           finalArr.push(JSON.parse(JSON.stringify(arr[i])));
         }
-        else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
+        else if (this.colorObj[key]?.nodeId == selectedId) {
           this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-          finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
+          finalArr.push(arr[i]);
         }
         else continue;
       }
@@ -2688,8 +2692,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             let trendObj = {};
             const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
             if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
+              let selectedNode = this.filterData.filter(x => x.nodeName === this.kpiChartData[kpiId][i]?.data);
+              let selectedId = selectedNode[0].nodeId;
               trendObj = {
                 "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                "hierarchyId": selectedId,
                 "value": latest,
                 "trend": trend,
                 "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
@@ -2702,7 +2709,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             if (kpiId === 'kpi997') {
               trendObj['value'] = 'NA';
             }
-            this.kpiTrendsObj[kpiId]?.push(trendObj);
+            if (!this.kpiTrendsObj[kpiId].map(x => x.hierarchyId).includes(trendObj['hierarchyId'])) {
+              this.kpiTrendsObj[kpiId]?.push(trendObj);
+            }
           }
         }
       } else {
@@ -2710,8 +2719,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (averageCoverageIdx > -1) {
           let trendObj = {};
           const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][averageCoverageIdx]);
+          let selectedNode = this.filterData.filter(x => x.nodeName === this.kpiChartData[kpiId][averageCoverageIdx]?.data);
+          let selectedId = selectedNode[0].nodeId;
           trendObj = {
             "hierarchyName": this.kpiChartData[kpiId][averageCoverageIdx]?.data,
+            "hiearchyId": selectedId,
             "value": latest,
             "trend": trend,
             "maturity": this.checkMaturity(this.kpiChartData[kpiId][averageCoverageIdx]),

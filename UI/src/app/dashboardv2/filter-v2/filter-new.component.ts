@@ -549,7 +549,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       if (data[i]?.nodeId) {
-         this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName }
+        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName }
       }
     }
     if (Object.keys(this.colorObj).length) {
@@ -557,8 +557,15 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  objectKeys(obj) {
-    return this.helperService.getObjectKeys(obj)
+  objectKeys(obj): any[] {
+    // return this.helperService.getObjectKeys(obj)
+    let result = [];
+    if (obj && Object.keys(obj)?.length) {
+      Object.keys(obj).forEach((x) => {
+        result.push(obj[x]);
+      });
+    }
+    return result;
   }
 
   /**
@@ -572,6 +579,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let stateFilters = this.service.getBackupOfFilterSelectionState();
     if (Object.keys(this.colorObj).length > 1) {
       delete this.colorObj[id];
+      console.log(Object.values(this.colorObj).map(m => m['nodeId']));
       if (!stateFilters['additional_level']) {
         let selectedFilters = this.filterDataArr[this.selectedType][this.selectedLevel].filter((f) => Object.values(this.colorObj).map(m => m['nodeId']).includes(f.nodeId));
         this.handlePrimaryFilterChange(selectedFilters);
@@ -594,6 +602,27 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.setBackupOfFilterSelectionState(stateFilters);
       }
     }
+  }
+
+  getImmediateParentDisplayName(child) {
+    let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
+    let selectedLevel = typeof this.selectedLevel === 'string' ? this.selectedLevel : this.selectedLevel.nodeType;
+    let selectedLevelNode = completeHiearchyData?.filter(x => x.hierarchyLevelName === selectedLevel);
+    let level = selectedLevelNode[0].level;
+    if (level > 1) {
+      let parentLevel = level - 1;
+      let parentLevelNode = completeHiearchyData?.filter(x => x.level === parentLevel);
+      let parentLevelName = parentLevelNode[0].hierarchyLevelName;
+
+      let childNode = this.filterDataArr[this.selectedType][selectedLevelNode[0].hierarchyLevelName].find(x => x.nodeId === child.nodeId);
+      if (childNode) {
+        let immediateParent = this.filterDataArr[this.selectedType][parentLevelName].find(x => x.nodeId === childNode.parentId);
+        return immediateParent?.nodeDisplayName + '-' + child?.nodeId;
+      } else {
+        return '';
+      }
+    }
+    return undefined;
   }
 
   /**
@@ -656,10 +685,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       this.previousFilterEvent['additional_level'] = event['additional_level'];
       this.previousFilterEvent['primary_level'] = event['primary_level'];
       this.service.setBackupOfFilterSelectionState({ 'additional_level': event['additional_level'] });
-      Object.keys(event['additional_level']).forEach(key => {
-        this.setColors(event['primary_level']);
-        this.handleAdditionalChange({ [key]: event['additional_level'][key] })
-      });
+      // Object.keys(event['additional_level']).forEach(key => {
+      //   this.setColors(event['primary_level']);
+      //   this.handleAdditionalChange({ [key]: event['additional_level'][key] })
+      // });
     } else if (!event.length || event[0].labelName.toLowerCase() !== this.primaryFilterConfig['defaultLevel'].labelName.toLowerCase()) {
       this.noSprint = true;
       this.service.setAdditionalFilters([]);
