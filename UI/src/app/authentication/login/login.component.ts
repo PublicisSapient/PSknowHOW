@@ -120,7 +120,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['./dashboard/Config/Profile']);
       } else {
         const url = localStorage.getItem('shared_link');
-        const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects;
+        const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
         if (url) {
           // Extract query parameters
           const queryParams = new URLSearchParams(url.split('?')[1]);
