@@ -40,8 +40,9 @@ export class PrimaryFilterComponent implements OnChanges {
     const selectedLevelChanged = changes['selectedLevel'] && !this.helperService.deepEqual(changes['selectedLevel']?.currentValue, changes['selectedLevel'].previousValue);
     const primaryFilterConfigChanged = changes['primaryFilterConfig'] && Object.keys(changes['primaryFilterConfig'].currentValue).length && !changes['primaryFilterConfig']?.firstChange;
     const selectedTypeChanged = changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange;
+    const selectedTabChanged = changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange;
 
-    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged) {
+    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged || selectedTabChanged) {
       this.applyDefaultFilters();
       return;
     }
