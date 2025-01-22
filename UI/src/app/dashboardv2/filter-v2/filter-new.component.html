@@ -34,11 +34,11 @@
       <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
         <li class="selectedfilter p-mr-3">
           <div class="selected-node">
-            <div class="selected-node-label p-pl-0" [title]="colorObj[item]?.nodeName">
-              <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"></span>
-              <span class="p-l-1">{{filterType | uppercase}} {{ colorObj[item]?.nodeName?.length<= 20 ?
-                  colorObj[item]?.nodeName : colorObj[item]?.nodeName?.slice(0,20)+'...'}} <span class="remove-node"
-                  (click)="removeFilter(colorObj[item]?.nodeId)">&times;</span>
+            <div class="selected-node-label p-pl-0" [title]="item?.nodeName + ' (' + getImmediateParentDisplayName(item) + ')'">
+              <span class="align-list-marker" [ngStyle]="{'background':item?.color}"></span>
+              <span class="p-l-1">{{filterType | uppercase}} {{ item?.nodeName?.length<= 20 ?
+                  item?.nodeName : item?.nodeName?.slice(0,20)+'...'}} <span class="remove-node"
+                  (click)="removeFilter(item?.nodeId)">&times;</span>
               </span>
             </div>
           </div>
