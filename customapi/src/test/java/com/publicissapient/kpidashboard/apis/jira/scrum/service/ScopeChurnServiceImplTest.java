@@ -102,6 +102,7 @@ public class ScopeChurnServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+	private List<DataCount> trendValues = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -139,6 +140,21 @@ public class ScopeChurnServiceImplTest {
 			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
 		});
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
+		List<DataCount> dataCountList = new ArrayList<>();
+		dataCountList.add(createDataCount("2022-07-26", 0l));
+		dataCountList.add(createDataCount("2022-07-27", 35l));
+		dataCountList.add(createDataCount("2022-07-28", 44l));
+		dataCountList.add(createDataCount("2022-07-29", 0l));
+		dataCountList.add(createDataCount("2022-07-30", 0l));
+		dataCountList.add(createDataCount("2022-07-31", 12l));
+		dataCountList.add(createDataCount("2022-08-01", 0l));
+		DataCount dataCount = createDataCount(null, 0l);
+		dataCount.setData("");
+		dataCount.setValue(dataCountList);
+		trendValues.add(dataCount);
+		trendValueMap.put("Overall", trendValues);
+		trendValueMap.put("BRANCH1->PR_10304", trendValues);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 	}
 
@@ -205,7 +221,7 @@ public class ScopeChurnServiceImplTest {
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
+			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(2));
 		} catch (Exception exception) {
 		}
 	}
@@ -228,7 +244,7 @@ public class ScopeChurnServiceImplTest {
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
+			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(2));
 		} catch (Exception exception) {
 		}
 	}
@@ -271,5 +287,15 @@ public class ScopeChurnServiceImplTest {
 	public void cleanup() {
 		jiraIssueRepository.deleteAll();
 		jiraIssueCustomHistoryRepository.deleteAll();
+	}
+
+	private DataCount createDataCount(String date, Long data) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(data.toString());
+		dataCount.setSProjectName("PR_10304");
+		dataCount.setDate(date);
+		dataCount.setHoverValue(new HashMap<>());
+		dataCount.setValue(Long.valueOf(data));
+		return dataCount;
 	}
 }
