@@ -389,16 +389,36 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			// Checking if dev due Date is < today date for active sprint
 			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					.isBefore(LocalDate.now())) {
-				delay = getIssueDelay(issue, category, jiraIssueData, devCompletedIssues, delay, category2);
+				category.add(DEV_STATUS);
+				category2.get(DEV_STATUS).add(PLANNED_COMPLETION);
+				if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+					int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
+					delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
+				}
 				setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
 			}
 		} else {
 			// Checking if dev due Date is <= sprint End Date for closed sprint
 			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).isBefore(DateUtil
 					.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1))) {
-				delay = getIssueDelay(issue, category, jiraIssueData, devCompletedIssues, delay, category2);
+				category.add(DEV_STATUS);
+				category2.get(DEV_STATUS).add(PLANNED_COMPLETION);
+				if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+					int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
+					delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
+				}
 				setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
 			}
+		}
+		// Calculating actual work status for only completed issues
+		if (devCompletedIssues.containsKey(issue)) {
+			category2.get(DEV_STATUS).add(ACTUAL_COMPLETION);
+			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+					.isAfter(LocalDate.now().minusDays(1)) && !jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+				int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
+				delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
+			}
+			setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
 		}
 		data.setDelay(delay);
 	}
@@ -474,6 +494,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 					.isAfter(LocalDate.now().minusDays(1))) {
 				data.setDelay(delay);
 			}
+			setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, true);
 		}
 		return category2;
 	}
@@ -495,7 +516,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 							jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 							.findFirst().orElse(new JiraIssueCustomHistory());
 					String devCompletionDate = IterationKpiHelper.getDevCompletionDate(issueCustomHistory,
-							fieldMapping.getJiraDevDoneStatusKPI145());
+							fieldMapping.getJiraDevDoneStatusKPI128());
 					completedIssues.putIfAbsent(jiraIssue, devCompletionDate);
 				});
 			}
