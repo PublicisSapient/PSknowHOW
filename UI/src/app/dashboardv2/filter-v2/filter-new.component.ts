@@ -418,22 +418,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
   compareStringArrays(array1, array2) {
-    // if (!array1 || !array2) {
-    //   return false;
-    // }
-    // // Check if both arrays have the same length
-    // if (array1.length !== array2.length) {
-    //   return false;
-    // }
+    if (!array1 || !array2) {
+      return false;
+    }
+    // Check if both arrays have the same length
+    if (array1.length !== array2.length) {
+      return false;
+    }
 
-    // // Check if each corresponding element is the same
-    // for (let i = 0; i < array1.length; i++) {
-    //   if (array1[i] !== array2[i]) {
-    //     return false;
-    //   }
-    // }
+    // Check if each corresponding element is the same
+    for (let i = 0; i < array1.length; i++) {
+      if (array1[i] !== array2[i]) {
+        return false;
+      }
+    }
 
-    return false;
+    return true;
   }
 
   getBoardConfig(projectList, event = null) {
@@ -604,9 +604,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    * @returns {void}
    */
   handlePrimaryFilterChange(event) {
-    if(this.helperService.deepEqual(event, this.previousFilterEvent)) {
-      console.log('same event spla ***');
-    }
     if (event['additional_level']) {
       Object.keys(event['additional_level']).forEach((key) => {
         if (!event['additional_level'][key]?.length) {
