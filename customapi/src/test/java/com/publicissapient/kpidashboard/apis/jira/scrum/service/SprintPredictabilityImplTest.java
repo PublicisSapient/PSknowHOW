@@ -137,6 +137,7 @@ public class SprintPredictabilityImplTest {
 	private JiraServiceR jiraKPIService;
 	@Mock
 	private SprintRepositoryCustom sprintRepositoryCustom;
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -181,6 +182,19 @@ public class SprintPredictabilityImplTest {
 		kpiWiseAggregation.put("defectRemovalEfficiency", "percentile");
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
+
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfigs -> {
+			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 	}
 

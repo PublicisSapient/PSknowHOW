@@ -72,6 +72,7 @@ public class ProjectBasicConfigController {
 	public static final String ADDING_PROJECT_CONFIGURATIONS = "Adding project configurations: {}";
 	public static final String UPDATING_PROJECT_CONFIGURATIONS = "Updating project configurations: {}";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
+	public static final String FETCHED_SUCCESSFULLY = "Fetched successfully";
 	@Autowired
 	HttpServletRequest contextreq;
 	@Autowired
@@ -102,7 +103,7 @@ public class ProjectBasicConfigController {
 		basicProjectConfigId = CommonUtils.handleCrossScriptingTaintedValue(basicProjectConfigId);
 		log.info("List project configuration request recieved for : {}", basicProjectConfigId);
 		boolean isSuccess = true;
-		String message = "Fetched successfully";
+		String message = FETCHED_SUCCESSFULLY;
 		Object returnObj = null;
 
 		if (Optional.ofNullable(basicProjectConfigId).isPresent()) {
@@ -135,7 +136,7 @@ public class ProjectBasicConfigController {
 
 			// Return a successful response
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ServiceResponse(true, "Fetched successfully", result));
+					.body(new ServiceResponse(true, FETCHED_SUCCESSFULLY, result));
 
 		} catch (Exception ex) {
 			// Handle unexpected exceptions
@@ -203,7 +204,7 @@ public class ProjectBasicConfigController {
 
 		ServiceResponse response = new ServiceResponse(false, "No record found", null);
 		if (CollectionUtils.isNotEmpty(configsList)) {
-			response = new ServiceResponse(true, "Fetched successfully", configsList);
+			response = new ServiceResponse(true, FETCHED_SUCCESSFULLY, configsList);
 		}
 		return response;
 	}
@@ -233,9 +234,8 @@ public class ProjectBasicConfigController {
 	@GetMapping(value = "/hierarchyResponses")
 	public ResponseEntity<List<HierarchyResponseDTO>> getAllHierarchyResponse(HttpServletRequest request) {
 		String apiKey = customApiConfig.getxApiKey();
-		Boolean isApiAuth = StringUtils.isNotEmpty(apiKey)
-				&& apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
-		if (isApiAuth) {
+		if (StringUtils.isNotEmpty(apiKey)
+				&& apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY))) {
 			return ResponseEntity.status(HttpStatus.OK).body(projectBasicConfigService.getHierarchyData());
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());

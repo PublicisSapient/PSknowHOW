@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
-import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestionsService;
 
 @RestController
 @RequestMapping("/hierarchylevels")
@@ -21,7 +20,7 @@ public class HierarchyLevelsController {
 	private HierarchyLevelService hierarchyLevelService;
 
 	@GetMapping
-	private ResponseEntity<List<HierarchyLevel>> getHierarchyLevel() {
+	public ResponseEntity<List<HierarchyLevel>> getHierarchyLevel() {
 
 		List<HierarchyLevel> hierarchyLevels = hierarchyLevelService.getTopHierarchyLevels();
 

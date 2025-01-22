@@ -92,8 +92,6 @@ public class CommonServiceImpl implements CommonService {
 	@Override
 	public String getMaturityLevel(List<String> maturityRangeList, String kpiId, String actualMaturityVal) {
 
-		String maturityRange = Arrays.toString(maturityRangeList.toArray());
-
 		try {
 			if (actualMaturityVal == null || Constant.NOT_AVAILABLE.equalsIgnoreCase(actualMaturityVal)) {
 				return Constant.ZERO;

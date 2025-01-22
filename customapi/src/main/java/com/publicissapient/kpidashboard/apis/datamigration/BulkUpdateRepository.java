@@ -68,6 +68,8 @@ import java.util.List;
 @Repository
 @Slf4j
 public class BulkUpdateRepository {
+	public static final String SPRINT_ID = "sprintID";
+	public static final String PROJECT_ID = "projectId";
 	@Autowired
 	private ProjectBasicConfigRepository basicConfigRepository;
 	@Autowired
@@ -153,7 +155,7 @@ public class BulkUpdateRepository {
 					CapacityKpiData.class);
 			for (CapacityKpiData data : capacityUpdates) {
 				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("sprintID", data.getSprintID()).set("projectId", data.getProjectId());
+				Update update = new Update().set(SPRINT_ID, data.getSprintID()).set(PROJECT_ID, data.getProjectId());
 				capacityBulkOps.updateOne(query, update);
 			}
 
@@ -167,7 +169,7 @@ public class BulkUpdateRepository {
 					KanbanCapacity.class);
 			for (KanbanCapacity data : kanbanCapacityList) {
 				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("projectId", data.getProjectId());
+				Update update = new Update().set(PROJECT_ID, data.getProjectId());
 				additionalBulkOps.updateOne(query, update);
 			}
 
@@ -182,7 +184,7 @@ public class BulkUpdateRepository {
 					HappinessKpiData.class);
 			for (HappinessKpiData data : happienss) {
 				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("sprintID", data.getSprintID());
+				Update update = new Update().set(SPRINT_ID, data.getSprintID());
 				capacityBulkOps.updateOne(query, update);
 			}
 
@@ -198,7 +200,7 @@ public class BulkUpdateRepository {
 			BulkOperations scrumJiraIssue = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, JiraIssue.class);
 			for (JiraIssue data : scrumJiraIssueList) {
 				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("sprintID", data.getSprintID());
+				Update update = new Update().set(SPRINT_ID, data.getSprintID());
 				scrumJiraIssue.updateOne(query, update);
 			}
 
@@ -229,7 +231,7 @@ public class BulkUpdateRepository {
 					TestExecution.class);
 			for (TestExecution data : testExecutionList) {
 				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("sprintId", data.getSprintId()).set("projectId", data.getProjectId());
+				Update update = new Update().set("sprintId", data.getSprintId()).set(PROJECT_ID, data.getProjectId());
 				testExecutionOps.updateOne(query, update);
 			}
 
@@ -259,7 +261,7 @@ public class BulkUpdateRepository {
 					ProjectRelease.class);
 			for (ProjectRelease data : projectReleaseList) {
 				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("projectId", data.getProjectId()).set("projectName",
+				Update update = new Update().set(PROJECT_ID, data.getProjectId()).set("projectName",
 						data.getProjectName());
 				projectReleaseOps.updateOne(query, update);
 			}
@@ -337,7 +339,7 @@ public class BulkUpdateRepository {
 					SprintDetails.class);
 			for (SprintDetails data : sprintDetailsList) {
 				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("sprintID", data.getSprintID());
+				Update update = new Update().set(SPRINT_ID, data.getSprintID());
 				bulkOpsComments.updateOne(query, update);
 			}
 
