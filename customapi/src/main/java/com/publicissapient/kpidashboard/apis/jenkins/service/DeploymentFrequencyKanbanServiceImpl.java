@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -267,13 +268,13 @@ public class DeploymentFrequencyKanbanServiceImpl
 	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String trendLineName, String envName,
 			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName(),
+			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName),
 					new ArrayList<>());
-			trendValueMap.get(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName())
+			trendValueMap.get(deploymentListEnvWise.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName))
 					.addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-			trendValueMap.get(envName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+			trendValueMap.putIfAbsent(envName + CommonUtils.getStringWithDelimiters(trendLineName), new ArrayList<>());
+			trendValueMap.get(envName + CommonUtils.getStringWithDelimiters(trendLineName)).addAll(dataCountList);
 		}
 	}
 

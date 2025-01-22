@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -219,16 +220,15 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		String jobName;
 		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
 			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+				jobName = buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName);
 			} else {
-				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
+				jobName = buildList.get(0).getJobFolder() + CommonUtils.getStringWithDelimiters(trendLineName);
 			}
-
 		} else {
 			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-				jobName = entry.getKey() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+				jobName = buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName);
 			} else {
-				jobName = entry.getKey() + CommonConstant.ARROW + trendLineName;
+				jobName = entry.getKey() + CommonUtils.getStringWithDelimiters(trendLineName);
 			}
 		}
 		return jobName;

@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -308,13 +309,13 @@ public class ChangeFailureRateKanbanServiceImpl
 	private static void trendValue(List<Build> buildList, String trendLineName,
 			Map<String, List<DataCount>> trendValueMap, String jobName, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName(),
+			trendValueMap.putIfAbsent(buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName) ,
 					new ArrayList<>());
-			trendValueMap.get(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName())
+			trendValueMap.get(buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName))
 					.addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-			trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+			trendValueMap.putIfAbsent(jobName + CommonUtils.getStringWithDelimiters(trendLineName), new ArrayList<>());
+			trendValueMap.get(jobName + CommonUtils.getStringWithDelimiters(trendLineName)).addAll(dataCountList);
 		}
 	}
 

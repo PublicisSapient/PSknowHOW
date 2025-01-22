@@ -351,6 +351,8 @@ public final class CommonConstant {
 	public static final String COUNT = "Count";
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
+	public static final String OPENING_DELIMITER = " (";
+	public static final String CLOSING_DELIMITER = ") ";
 
 
 
