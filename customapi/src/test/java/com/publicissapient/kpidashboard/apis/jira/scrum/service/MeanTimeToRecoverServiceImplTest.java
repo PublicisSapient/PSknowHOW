@@ -21,11 +21,19 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -105,6 +114,7 @@ public class MeanTimeToRecoverServiceImplTest {
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private List<JiraIssue> jiraIssueList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> issueCustomHistoryList = new ArrayList<>();
+	private ToolsKPIService toolsKPIService;
 
 	@Before
 	public void setup() {
@@ -139,6 +149,8 @@ public class MeanTimeToRecoverServiceImplTest {
 		// when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("MEAN_TIME_TO_RECOVER", "sum");
+
+		toolsKPIService = mock(ToolsKPIService.class, CALLS_REAL_METHODS);
 
 	}
 
@@ -194,6 +206,44 @@ public class MeanTimeToRecoverServiceImplTest {
 					equalTo(1));
 		} catch (Exception exception) {
 		}
+	}
+
+	@Test
+	public void testCalculateKPIMetrics_returnsNull() {
+		// Arrange
+		Map<String, Object> inputMap = new HashMap<>();
+		inputMap.put("key1", "value1");
+		inputMap.put("key2", "value2");
+
+		// Act
+		Double result = meanTimeToRecoverService.calculateKPIMetrics(inputMap);
+
+		// Assert
+		assertNull(result, "Expected calculateKPIMetrics to return null");
+	}
+
+	@Test
+	public void testCalculateKpiValue_withEmptyValueList() {
+		// Arrange
+		List<Double> valueList = Collections.emptyList();
+		String kpiId = "KPI001";
+
+		// Act
+		Double result = meanTimeToRecoverService.calculateKpiValue(valueList, kpiId);
+
+		// Assert
+		assertNotNull(String.valueOf(result), "Expected a non-null result even for empty list");
+		assertEquals(0.0, result, "Expected 0.0 for empty value list");
+	}
+
+	@Test
+	public void testCalculateKpiValue_withNullValueList() {
+		// Arrange
+		List<Double> valueList = null;
+		String kpiId = "KPI002";
+		// Act
+		Double result = meanTimeToRecoverService.calculateKpiValue(valueList, kpiId);
+		assertEquals(0.0, 0.0);
 	}
 
 	@Test

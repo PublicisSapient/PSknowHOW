@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.net.UnknownHostException;
@@ -47,7 +49,9 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -196,8 +200,8 @@ public class CommonServiceImplTest {
 		projectsAccess.setAccessNodes(accessNodes);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
 		Map<String, Boolean> notificationEmail = new HashMap<>();
-		notificationEmail.put("accessAlertNotification" , true);
-		notificationEmail.put("errorAlertNotification" , false);
+		notificationEmail.put("accessAlertNotification", true);
+		notificationEmail.put("errorAlertNotification", false);
 		user.setNotificationEmail(notificationEmail);
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
@@ -233,8 +237,8 @@ public class CommonServiceImplTest {
 		projectsAccess.setRole("");
 		projectsAccess.setAccessNodes(accessNodes);
 		Map<String, Boolean> notificationEmail = new HashMap<>();
-		notificationEmail.put("accessAlertNotification" , true);
-		notificationEmail.put("errorAlertNotification" , false);
+		notificationEmail.put("accessAlertNotification", true);
+		notificationEmail.put("errorAlertNotification", false);
 		user.setNotificationEmail(notificationEmail);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
 		List<UserInfo> users = new ArrayList<>();
@@ -271,8 +275,8 @@ public class CommonServiceImplTest {
 		projectsAccess.setAccessNodes(accessNodes);
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
 		Map<String, Boolean> notificationEmail = new HashMap<>();
-		notificationEmail.put("accessAlertNotification" , true);
-		notificationEmail.put("errorAlertNotification" , false);
+		notificationEmail.put("accessAlertNotification", true);
+		notificationEmail.put("errorAlertNotification", false);
 		user.setNotificationEmail(notificationEmail);
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
@@ -325,20 +329,75 @@ public class CommonServiceImplTest {
 	}
 
 	@Test
+	public void testSortTrendValueMap_withOverallAndOverallOverallKeys() {
+		// Arrange
+		Map<String, List<DataCount>> trendMap = new HashMap<>();
+		trendMap.put(CommonConstant.OVERALL, List.of(new DataCount()));
+		trendMap.put(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL, List.of(new DataCount()));
+		trendMap.put("Key2", List.of(new DataCount()));
+		trendMap.put("Key1", List.of(new DataCount()));
+
+		// Act
+		Map<String, List<DataCount>> sortedMap = commonService.sortTrendValueMap(trendMap);
+
+		// Assert
+		assertEquals(4, sortedMap.size());
+		assertTrue(sortedMap.containsKey(CommonConstant.OVERALL));
+		assertTrue(sortedMap.containsKey(CommonConstant.OVERALL + "#" + CommonConstant.OVERALL));
+		assertEquals("Key1", sortedMap.keySet().toArray()[2]);
+		assertEquals("Key2", sortedMap.keySet().toArray()[3]);
+	}
+
+	@Test
+	public void testSortTrendValueMap_withoutSpecialKeys() {
+		// Arrange
+		Map<String, List<DataCount>> trendMap = new HashMap<>();
+		trendMap.put("Key3", List.of(new DataCount()));
+		trendMap.put("Key1", List.of(new DataCount()));
+		trendMap.put("Key2", List.of(new DataCount()));
+
+		// Act
+		Map<String, List<DataCount>> sortedMap = commonService.sortTrendValueMap(trendMap);
+
+		// Assert
+		assertEquals(3, sortedMap.size());
+		assertEquals("Key1", sortedMap.keySet().toArray()[0]);
+		assertEquals("Key2", sortedMap.keySet().toArray()[1]);
+		assertEquals("Key3", sortedMap.keySet().toArray()[2]);
+	}
+
+	@Test
+	public void testSortTrendValueMap_withEmptyMap() {
+		// Arrange
+		Map<String, List<DataCount>> trendMap = new HashMap<>();
+
+		// Act
+		Map<String, List<DataCount>> sortedMap = commonService.sortTrendValueMap(trendMap);
+
+		// Assert
+		assertTrue(sortedMap.isEmpty());
+	}
+
+	@Test
 	public void getProjectAdminEmailAddressBasedProjectId() {
 
 		String username = "user";
+		String emailAddress = "user@gmail.com";
 		AuthType authType = AuthType.STANDARD;
 		UserInfo user = new UserInfo();
 		user.setUsername(username);
 		user.setAuthType(authType);
+		user.setEmailAddress(emailAddress);
+		Map<String, Boolean> ne = new HashMap<>();
+		ne.put(CommonConstant.ACCESS_ALERT_NOTIFICATION, true);
+		user.setNotificationEmail(ne);
 		user.setId(new ObjectId("5ddf69f6a592816aa30c4fbe"));
 		List<String> auth = new ArrayList<>();
 		auth.add(Constant.ROLE_PROJECT_ADMIN);
 		user.setAuthorities(auth);
 		List<AccessNode> accessNodes = new ArrayList<>();
 		AccessNode acc = new AccessNode();
-		acc.setAccessLevel("Project");
+		acc.setAccessLevel("project");
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId("61e4f7852747353d4405c765");
 		acc.setAccessItems(Lists.newArrayList(accessItem));

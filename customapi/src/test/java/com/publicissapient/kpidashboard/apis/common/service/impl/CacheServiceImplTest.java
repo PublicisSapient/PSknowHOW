@@ -20,10 +20,14 @@ package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceKanbanImpl;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.junit.Test;
@@ -37,11 +41,14 @@ import org.springframework.cache.support.SimpleValueWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -89,6 +96,15 @@ public class CacheServiceImplTest {
     public void testCacheAccountHierarchyData_ValidInput_ReturnsData() {
         when(accountHierarchyService.createHierarchyData()).thenReturn(new ArrayList<>());
         Object result = cacheService.cacheAccountHierarchyData();
+        assertNotNull(result);
+    }
+    @Test
+    public void testCacheSprintHierarchyData_ValidInput_ReturnsData() {
+        AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
+                .newInstance("/json/default/project_hierarchy_filter_data.json");
+        List<AccountHierarchyData> accountHierarchyDataList;
+        cacheService.accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+        Object result = cacheService.cacheSprintLevelData();
         assertNotNull(result);
     }
 
@@ -170,6 +186,12 @@ public class CacheServiceImplTest {
 
     @Test
     public void testCacheProjectConfigMapData_ValidInput_ReturnsData() {
+        doNothing().when(configHelperService).loadConfigData();
+        cacheService.cacheProjectConfigMapData();
+        verify(configHelperService).loadConfigData();
+    }
+    @Test
+    public void testUpdateCacheProjectConfigMapData_ValidInput_ReturnsData() {
         doNothing().when(configHelperService).loadConfigData();
         cacheService.cacheProjectConfigMapData();
         verify(configHelperService).loadConfigData();

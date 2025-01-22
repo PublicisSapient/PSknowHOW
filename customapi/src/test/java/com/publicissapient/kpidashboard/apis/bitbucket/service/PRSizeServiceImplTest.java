@@ -131,7 +131,7 @@ public class PRSizeServiceImplTest {
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
         RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
         repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
-        repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().minusDays(2).toString());
+        repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().toString());
         ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
         projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
         projectBasicConfig.setIsKanban(true);
