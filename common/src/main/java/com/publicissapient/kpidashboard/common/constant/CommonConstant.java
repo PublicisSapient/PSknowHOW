@@ -35,6 +35,7 @@ public final class CommonConstant {
 	public static final String CACHE_ACCOUNT_HIERARCHY = "accountHierarchy";
 
 	public static final String CACHE_ORGANIZATION_HIERARCHY = "organizationHierarchies";
+	public static final String CACHE_PROJECT_HIERARCHY = "projectHierarchies";
 	public static final String CACHE_SPRINT_HIERARCHY = "sprintHierarchy";
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";

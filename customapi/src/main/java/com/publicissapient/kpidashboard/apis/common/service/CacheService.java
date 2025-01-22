@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 
 /**
  * A Service to manage cache.
@@ -112,4 +112,6 @@ public interface CacheService {
 	Object cacheAllProjectConfigMapData();
 
 	Object updateAllCacheProjectConfigMapData();
+
+	List<ProjectHierarchy> getAllProjectHierarchy();
 }

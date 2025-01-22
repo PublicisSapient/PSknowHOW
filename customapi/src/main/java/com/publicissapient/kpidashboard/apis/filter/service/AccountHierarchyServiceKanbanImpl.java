@@ -208,7 +208,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 	 */
 	private void createHierarchyData(ProjectHierarchy hierarchy, AccountHierarchyDataKanban accountHierarchyData,
 			Map<String, Integer> hierarchyLevelIdMap) {
-		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(), hierarchy.getParentId(),
+		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeDisplayName(), hierarchy.getParentId(),
 				hierarchy.getHierarchyLevelId(), hierarchy);
 		node.setLevel(hierarchyLevelIdMap.getOrDefault(hierarchy.getHierarchyLevelId(), 0));
 		accountHierarchyData.setLabelName(hierarchy.getHierarchyLevelId());

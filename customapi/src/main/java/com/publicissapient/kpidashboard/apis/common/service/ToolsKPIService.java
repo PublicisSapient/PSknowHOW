@@ -1193,13 +1193,12 @@ public abstract class ToolsKPIService<R, S> {
 		}
 	}
 
-	//todo Logic change as per projectNodeId
 	private Optional<String> extractProjectId(String input, String labelName) {
 		if (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
 			int lastUnderscoreIndex = input.lastIndexOf("_");
 			return lastUnderscoreIndex != -1 ? Optional.of(input.substring(lastUnderscoreIndex + 1)) : Optional.empty();
 		} else if (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
-			return input != "" ? Optional.ofNullable(input) : Optional.empty();
+			return StringUtils.isNotEmpty(input) ? Optional.ofNullable(input) : Optional.empty();
 		}
 		return Optional.empty();
 	}

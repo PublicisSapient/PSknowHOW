@@ -187,9 +187,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Override
 	public ServiceResponse addBasicConfig(ProjectBasicConfigDTO projectBasicConfigDTO) {
 		ServiceResponse response;
-		// HB : todo remove projectName condition
-		ProjectBasicConfig basicConfig = basicConfigRepository
-				.findByProjectName(projectBasicConfigDTO.getProjectName());
+		ProjectBasicConfig basicConfig = null;
 		if (StringUtils.isNotEmpty(projectBasicConfigDTO.getProjectNodeId())) {
 			basicConfig = basicConfigRepository.findByProjectNodeId(projectBasicConfigDTO.getProjectNodeId());
 		}
@@ -262,11 +260,13 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	}
 
 	private void clearOrgHierarchyCache() {
+		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY);
+		cacheService.clearCache(CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 		cacheService.clearCache(CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
 		configHelperService.loadConfigData();
 	}
 
-    /**
+	/**
 	 * Clone Tool Configurations, Field Mappings, and Board Metadata for Cloned
 	 * Project
 	 *
@@ -393,9 +393,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectNodeId())) {
 					basicConfig.setProjectNodeId(savedConfigOpt.get().getProjectNodeId());
 				}
-				if (StringUtils.isEmpty(projectBasicConfigDTO.getProjectDisplayName())) {
-					basicConfig.setProjectDisplayName(savedConfigOpt.get().getProjectDisplayName());
-				}
+
+				// UI providing channged display name value to original project name as well,
+				// which will require more effort so workaround
+				basicConfig.setProjectName(savedConfig.getProjectName());
+
 				// AP: Temporary workaround end
 				if (isAssigneeUpdated(basicConfig, savedConfig)) {
 					List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
@@ -424,13 +426,13 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 				OrganizationHierarchy orgHierarchy = organizationHierarchyService
 						.findByNodeId(basicConfig.getProjectNodeId());
-				updateProjectNameInOrgHierarchy(basicConfig, orgHierarchy);
 
 				List<ProjectHierarchy> projectWiseHierarchyList = projectHierarchyRepository
 						.findByBasicProjectConfigId(basicConfig.getId());
-				updateProjectNameInProjectHierch(savedConfigOpt, basicConfig, projectWiseHierarchyList);
+				updateProjectNameInProjectHierch(savedConfig, basicConfig, projectWiseHierarchyList);
 
 				configHelperService.updateCacheProjectBasicConfig(basicConfig);
+				updateProjectNameInOrgHierarchy(basicConfig, orgHierarchy);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
 			} else {
 				response = new ServiceResponse(false, "Try with different project name.", null);
@@ -441,24 +443,24 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return response;
 	}
 
-	private void updateProjectNameInProjectHierch(Optional<ProjectBasicConfig> savedConfigOpt,
-                                                  ProjectBasicConfig basicConfig, List<ProjectHierarchy> projectHierarchyList) {
+	private void updateProjectNameInProjectHierch(ProjectBasicConfig savedConfigOpt, ProjectBasicConfig basicConfig,
+			List<ProjectHierarchy> projectHierarchyList) {
 		if (CollectionUtils.isNotEmpty(projectHierarchyList)) {
 			projectHierarchyList.stream().forEach(projectHierarchy -> {
 
-				if (projectHierarchy.getNodeDisplayName().contains(savedConfigOpt.get().getProjectName())) {
+				if (projectHierarchy.getNodeDisplayName().contains(savedConfigOpt.getProjectDisplayName())) {
 					projectHierarchy.setNodeDisplayName(projectHierarchy.getNodeDisplayName()
-							.replace(savedConfigOpt.get().getProjectName(), basicConfig.getProjectName()));
+							.replace(savedConfigOpt.getProjectDisplayName(), basicConfig.getProjectDisplayName()));
 				}
 			});
 
 			projectHierarchyRepository.saveAll(projectHierarchyList);
+			cacheService.clearCache(CommonConstant.CACHE_PROJECT_HIERARCHY);
 		}
 	}
 
-    private void updateProjectNameInOrgHierarchy(ProjectBasicConfig basicConfig, OrganizationHierarchy orgHierarchy) {
+	private void updateProjectNameInOrgHierarchy(ProjectBasicConfig basicConfig, OrganizationHierarchy orgHierarchy) {
 		if (orgHierarchy != null) {
-			orgHierarchy.setNodeName(basicConfig.getProjectName());
 			orgHierarchy.setNodeDisplayName(basicConfig.getProjectDisplayName());
 			organizationHierarchyService.save(orgHierarchy);
 			clearOrgHierarchyCache();

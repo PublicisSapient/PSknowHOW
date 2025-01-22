@@ -820,10 +820,7 @@ public class KpiHelperService { // NOPMD
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
-		List<CapacityKpiData> byFilters = capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
-
-		return byFilters;
+		return capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
 	}
 
 	/**

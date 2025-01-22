@@ -37,4 +37,6 @@ public interface ProjectHierarchyService {
 	void saveAll(Set<ProjectHierarchy> projectHierarchies);
 
 	List<ProjectHierarchy> findAllByBasicProjectConfigIds(List<ObjectId> basicProjectConfigIdList);
+
+	List<ProjectHierarchy> findAll();
 }
