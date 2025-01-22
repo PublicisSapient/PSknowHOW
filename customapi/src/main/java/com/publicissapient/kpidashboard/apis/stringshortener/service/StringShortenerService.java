@@ -59,8 +59,7 @@ public class StringShortenerService {
         stringMapping.setLongStateFiltersString(stringShortenerDTO.getLongStateFiltersString());
         stringMapping.setShortStateFiltersString(shortStateFiltersString);
 
-        StringShortener savedMapping = stringShortenerRepository.save(stringMapping);
-        return savedMapping;
+        return stringShortenerRepository.save(stringMapping);
     }
 
     public Optional<StringShortener> getLongString(String kpiFilters, String stateFilters) {
