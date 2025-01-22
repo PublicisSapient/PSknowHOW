@@ -262,7 +262,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 				});
 
 				aggDataCountList.addAll(dataCountList);
-				trendValue(trendValueMap, trendLineName, envName, deploymentListEnvWise, dataCountList);
+				trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
 
 			}
 		});
@@ -272,8 +272,6 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * 
 	 * @param trendValueMap
 	 *            trendValueMap
-	 * @param trendLineName
-	 *            trendLineName
 	 * @param envName
 	 *            envName
 	 * @param deploymentListEnvWise
@@ -281,16 +279,16 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * @param dataCountList
 	 *            dataCountList
 	 */
-	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String trendLineName, String envName,
+	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
 			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName) ,
+			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getPipelineName(),
 					new ArrayList<>());
-			trendValueMap.get(deploymentListEnvWise.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName))
+			trendValueMap.get(deploymentListEnvWise.get(0).getPipelineName())
 					.addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(envName + CommonUtils.getStringWithDelimiters(trendLineName), new ArrayList<>());
-			trendValueMap.get(envName + CommonUtils.getStringWithDelimiters(trendLineName)).addAll(dataCountList);
+			trendValueMap.putIfAbsent(envName, new ArrayList<>());
+			trendValueMap.get(envName).addAll(dataCountList);
 		}
 	}
 
