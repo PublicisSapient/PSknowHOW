@@ -59,6 +59,9 @@
 		<sonar.exclusions>
 			**src/test/java/**
 		</sonar.exclusions>
+		<sonar.cpd.exclusions>
+			**com/publicissapient/kpidashboard/apis/mongock/**/*
+		</sonar.cpd.exclusions>
 	</properties>
 
 	<repositories>

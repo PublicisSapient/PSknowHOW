@@ -91,9 +91,9 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			projectList.add(basicProjectConfigId.toString());
-			if (Optional.ofNullable(fieldMapping.getKanbanCycleTimeIssueType()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getKanbanCycleTimeIssueTypeKPI53()).isPresent()) {
 				mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getKanbanCycleTimeIssueType()));
+						CommonUtils.convertToPatternList(fieldMapping.getKanbanCycleTimeIssueTypeKPI53()));
 			}
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
@@ -239,7 +239,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 							- leadTimeValidationDataForKanban.getIntakeDate().getMillis();
 					openToTriageDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					openToTriageDay.add("NA");
+					openToTriageDay.add(" ");
 				}
 				if (leadTimeValidationDataForKanban.getTriageDate() != null
 						&& leadTimeValidationDataForKanban.getCompletedDate() != null) {
@@ -247,7 +247,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 							- leadTimeValidationDataForKanban.getTriageDate().getMillis();
 					triageToCompleteDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					triageToCompleteDay.add("NA");
+					triageToCompleteDay.add(" ");
 				}
 				if (leadTimeValidationDataForKanban.getCompletedDate() != null
 						&& leadTimeValidationDataForKanban.getLiveDate() != null) {
@@ -255,7 +255,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 							- leadTimeValidationDataForKanban.getCompletedDate().getMillis();
 					completeToLiveDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					completeToLiveDay.add("NA");
+					completeToLiveDay.add(" ");
 				}
 				if (leadTimeValidationDataForKanban.getIntakeDate() != null
 						&& leadTimeValidationDataForKanban.getLiveDate() != null) {
@@ -263,7 +263,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 							- leadTimeValidationDataForKanban.getIntakeDate().getMillis();
 					openToLiveDay.add(String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)));
 				} else {
-					openToLiveDay.add("NA");
+					openToLiveDay.add(" ");
 				}
 
 			}
@@ -321,9 +321,9 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 			// in below loop create list of day difference between Intake and
 			// DOR. Here Intake is created date of issue.
 			for (KanbanIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
-				List<String> triaged = fieldMapping.getJiraTicketTriagedStatus();
-				List<String> completed = fieldMapping.getJiraTicketClosedStatus();
-				String live = fieldMapping.getJiraLiveStatusLTK();
+				List<String> triaged = fieldMapping.getJiraTicketTriagedStatusKPI53();
+				List<String> completed = fieldMapping.getJiraTicketClosedStatusKPI53();
+				String live = fieldMapping.getJiraLiveStatusKPI53();
 				LeadTimeValidationDataForKanban leadTimeValidationDataForKanban = new LeadTimeValidationDataForKanban();
 				leadTimeValidationDataForKanban.setIssueNumber(jiraIssueCustomHistory.getStoryID());
 				leadTimeValidationDataForKanban.setUrl(jiraIssueCustomHistory.getUrl());
@@ -467,4 +467,10 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
 		return calculateKpiValueForLong(valueList, kpiName);
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI53(), KPICode.LEAD_TIME_KANBAN.getKpiId());
+	}
+
 }

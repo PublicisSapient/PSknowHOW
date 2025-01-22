@@ -212,7 +212,7 @@ public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<O
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_TYPE.name();
+		return "";
 	}
 
 }

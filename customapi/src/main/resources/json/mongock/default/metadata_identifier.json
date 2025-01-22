@@ -1562,5 +1562,577 @@
         ]
       }
     ]
+  },
+  {
+    "tool":"Jira",
+    "templateName":"Standard non-DOJO Template",
+    "templateCode":"11",
+    "isKanban":false,
+    "disabled":false,
+    "issues":[
+      {
+        "type":"jiradefecttype",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueTypeNames",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueEpicType",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectInjectionIssueTypeKPI14",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueTypeKPI35",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRemovalIssueTypeKPI34",
+        "value":[]
+      },
+      {
+        "type":"jiraTestAutomationIssueType",
+        "value":[]
+      },
+      {
+        "type":"jiraSprintVelocityIssueTypeKPI138",
+        "value":[]
+      },
+      {
+        "type":"jiraSprintCapacityIssueTypeKpi46",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectCountlIssueTypeKPI28",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectCountlIssueTypeKPI36",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueTypeKPI3",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueTypeKPI156",
+        "value":[]
+      },
+      {
+        "type":"jiraQAKPI111IssueType",
+        "value":[]
+      },
+      {
+        "type":"jiraStoryIdentificationKPI129",
+        "value":[]
+      },
+      {
+        "type":"jiraStoryIdentificationKpi40",
+        "value":[]
+      },
+      {
+        "type":"jiraTechDebtIssueType",
+        "value":[]
+      },
+      {
+        "type":"jiraKPI82StoryIdentification",
+        "value":[]
+      },
+      {
+        "type":"jiraKPI135StoryIdentification",
+        "value":[]
+      },
+      {
+        "type":"jiraStoryIdentificationKPI166",
+        "value":[]
+      },
+      {
+        "type":"jiraStoryIdentificationKPI166",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueRiskTypeKPI176",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueDependencyTypeKPI176",
+        "value":[]
+      },
+      {
+        "type":"jiraStoryCategoryKpi40",
+        "value":[]
+      }
+    ],
+    "customfield":[
+      {
+        "type":"jiraStoryPointsCustomField",
+        "value":[]
+      },
+      {
+        "type":"epicCostOfDelay",
+        "value":[]
+      },
+      {
+        "type":"epicRiskReduction",
+        "value":[]
+      },
+      {
+        "type":"epicUserBusinessValue",
+        "value":[]
+      },
+      {
+        "type":"epicWsjf",
+        "value":[]
+      },
+      {
+        "type":"epicTimeCriticality",
+        "value":[]
+      },
+      {
+        "type":"epicJobSize",
+        "value":[]
+      },
+      {
+        "type":"epicLink",
+        "value":[]
+      },
+      {
+        "type":"rootcause",
+        "value":[]
+      },
+      {
+        "type":"sprintName",
+        "value":[]
+      }
+    ],
+    "workflow":[
+      {
+        "type":"storyFirstStatusKPI148",
+        "value":[]
+      },
+      {
+        "type":"storyFirstStatusKPI3",
+        "value":[]
+      },
+      {
+        "type":"storyFirstStatusKPI154",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForQaKPI148",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForQaKPI135",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForQaKPI82",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForDevelopmentKPI82",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForDevelopmentKPI135",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectCreatedStatusKPI14",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI152",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI151",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI28",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI34",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI37",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI35",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI82",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI135",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI133",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusRCAKPI36",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI14",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusQAKPI111",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRemovalStatusKPI34",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectClosedStatusKPI137",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueDeliverdStatusKPI138",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueDeliverdStatusKPI126",
+        "value":[]
+      },
+      {
+        "type":"jiraIssueDeliverdStatusKPI82",
+        "value":[]
+      },
+      {
+        "type":"jiraDorKPI3",
+        "value":[]
+      },
+      {
+        "type":"jiraLiveStatusKPI3",
+        "value":[]
+      },
+      {
+        "type":"jiraLiveStatusKPI127",
+        "value":[]
+      },
+      {
+        "type":"jiraLiveStatusKPI152",
+        "value":[]
+      },
+      {
+        "type":"jiraLiveStatusKPI151",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionKPI28",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionKPI34",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionKPI37",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionKPI35",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionKPI135",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionKPI82",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionKPI133",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionRCAKPI36",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionQAKPI111",
+        "value":[]
+      },
+      {
+        "type":"resolutionTypeForRejectionKPI14",
+        "value":[]
+      },
+      {
+        "type":"issueStatusExcluMissingWorkKPI124",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectDroppedStatusKPI127",
+        "value":[]
+      },
+      {
+        "type":"jiraBlockedStatusKPI131",
+        "value":[]
+      },
+      {
+        "type":"jiraWaitStatusKPI131",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForInProgressKPI148",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForInProgressKPI122",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForInProgressKPI145",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForInProgressKPI125",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForInProgressKPI128",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForInProgressKPI123",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForInProgressKPI119",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusForInProgressKPI154",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI14",
+        "value":[]
+      },
+      {
+        "type":"jiraDodQAKPI111",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI3",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI127",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI152",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI151",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI37",
+        "value":[]
+      },
+      {
+        "type":"jiraStatusStartDevelopmentKPI154",
+        "value":[]
+      },
+      {
+        "type":"jiraLiveStatusKPI155",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI155",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI156",
+        "value":[]
+      },
+      {
+        "type":"jiraDefectRejectionStatusKPI155",
+        "value":[]
+      },
+      {
+        "type":"jiraStoryIdentificationKPI164",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI163",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI166",
+        "value":[]
+      },
+      {
+        "type":"jiraDodKPI166",
+        "value":[]
+      }
+    ]
+  },
+  {
+    "tool" : "Jira",
+    "templateName" : "Standard non-DOJO Template",
+    "templateCode" : "12",
+    "isKanban" : true,
+    "disabled" : false,
+    "issues" : [
+      {
+        "type" : "epic",
+        "value" : []
+      },
+      {
+        "type" : "issuetype",
+        "value" : []
+      },
+      {
+        "type" : "uatdefect",
+        "value" : []
+      },
+      {
+        "type" : "ticketVelocityStatusIssue",
+        "value" : []
+      },
+      {
+        "type" : "ticketThroughputIssue",
+        "value" : []
+      },
+      {
+        "type" : "ticketWipClosedIssue",
+        "value" : []
+      },
+      {
+        "type" : "ticketReopenIssue",
+        "value" : []
+      },
+      {
+        "type" : "kanbanCycleTimeIssue",
+        "value" : []
+      },
+      {
+        "type" : "kanbanTechDebtIssueType",
+        "value" : []
+      }
+    ],
+    "customfield" : [
+      {
+        "type" : "storypoint",
+        "value" : []
+      },
+      {
+        "type" : "rootcause",
+        "value" : []
+      },
+      {
+        "type" : "techdebt",
+        "value" : []
+      },
+      {
+        "type" : "uat",
+        "value" : []
+      },
+      {
+        "type" : "timeCriticality",
+        "value" : []
+      },
+      {
+        "type" : "wsjf",
+        "value" : []
+      },
+      {
+        "type" : "costOfDelay",
+        "value" : []
+      },
+      {
+        "type" : "businessValue",
+        "value" : []
+      },
+      {
+        "type" : "riskReduction",
+        "value" : []
+      },
+      {
+        "type" : "jobSize",
+        "value" : []
+      },
+      {
+        "type" : "epicLink",
+        "value" : []
+      }
+    ],
+    "workflow" : [
+      {
+        "type" : "firststatus",
+        "value" : []
+      },
+      {
+        "type" : "firstDevstatus",
+        "value" : []
+      },
+      {
+        "type" : "rejection",
+        "value" : []
+      },
+      {
+        "type" : "delivered",
+        "value" : []
+      },
+      {
+        "type" : "ticketReopenStatus",
+        "value" : []
+      },
+      {
+        "type" : "ticketResolvedStatus",
+        "value" : []
+      },
+      {
+        "type" : "ticketClosedStatus",
+        "value" : []
+      },
+      {
+        "type" : "ticketWIPStatus",
+        "value" : []
+      },
+      {
+        "type" : "ticketRejectedStatus",
+        "value" : []
+      },
+      {
+        "type" : "ticketTriagedStatus",
+        "value" : []
+      }
+    ],
+    "valuestoidentify" : [
+      {
+        "type" : "rootCauseValue",
+        "value" : []
+      },
+      {
+        "type" : "rejectionResolution",
+        "value" : []
+      },
+      {
+        "type" : "qaRootCause",
+        "value" : []
+      }
+    ]
   }
 ]

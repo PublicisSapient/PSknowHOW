@@ -251,7 +251,7 @@ export class BasicConfigComponent implements OnInit {
         if (!this.ifSuperUser) {
           if (response['projectsAccess']) {
             const authorities = response['projectsAccess'].map(projAcc => projAcc.role);
-            this.sharedService.setCurrentUserDetails({ authorities });
+            this.http.setCurrentUserDetails({ authorities });
           }
         }
         this.form.reset();
@@ -307,7 +307,7 @@ export class BasicConfigComponent implements OnInit {
   }
 
   getButtonLabel(): string {
-    return this.clone === 'true' ? 'Clone' : 'Finalize';
+    return this.clone === 'true' ? 'Clone' : 'Save';
   }
 
   getConeStatusFlag(): boolean {

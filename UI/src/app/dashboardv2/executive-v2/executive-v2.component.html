@@ -31,10 +31,10 @@
                         <div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
                             <ng-container
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
-
                                 <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-                                    <div *ngIf="selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled']"
-                                        class="{{ kpi.kpiDetail?.kpiWidth ? kpi.kpiDetail?.kpiWidth === 100 ? 'p-col-12' : 'p-col-6'  : 'p-col-6'  }}">
+                                    <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId !== 'kpi154' && kpi.kpiId !== 'kpi121'"
+                                        class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}"
+                                        [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '414px') }">
                                         <app-kpi-card-v2 [selectedTab]="selectedTab"
                                             [nodeId]="filterApplyData?.selectedMap?.['release']?.[0]"
                                             [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -49,11 +49,11 @@
                                             [showChartView]="showChart"
                                             [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
                                             [sprintsOverlayVisible]="sprintsOverlayVisible && kpi?.kpiDetail?.chartType !== 'table'"
-                                            [trendValueList]="kpiChartData[kpi?.kpiId]" [colors]="colorObj"
-                                            [showCommentIcon]="showCommentIcon"
+                                            [trendValueList]="selectedTab === 'iteration' ? iterationKPIData[kpi?.kpiId] ? iterationKPIData[kpi?.kpiId] : {} : kpiChartData[kpi?.kpiId]"
+                                            [colors]="colorObj" [showCommentIcon]="showCommentIcon"
                                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                             (getCommentCountByKpi)="getKpiCommentsCount($event)"
-                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail.kpiSize"
+                                            (reloadKPITab)="reloadKPI($event)" [kpiSize]="kpi.kpiDetail?.kpiSize"
                                             [kpiChartData]="kpiChartData" [immediateLoader]='immediateLoader'
                                             [partialData]="checkIfPartialDataPresent(kpi)">
                                             <ng-container *ngIf="!noTabAccess else noDataAccess">
@@ -349,6 +349,15 @@
                                         </app-kpi-card-v2>
 
                                     </div>
+                                    <div *ngIf="checkKPIPresence(kpi) && kpi.kpiId === 'kpi154'">
+                                        <app-daily-scrum-tab [assigneeList]="iterationKPIData['kpi154']?.trendValueList"
+                                            [columns]="iterationKPIData['kpi154']?.modalHeads"
+                                            [filterData]="iterationKPIData['kpi154']?.filterData"
+                                            [issueData]="iterationKPIData['kpi154']?.issueData"
+                                            [standUpStatusFilter]="iterationKPIData['kpi154']?.standUpStatusFilter"
+                                            [kpiData]="dailyStandupKPIDetails" (reloadKPITab)="reloadKPI($event)">
+                                        </app-daily-scrum-tab>
+                                    </div>
                                     <ng-template #noDataForChartWithFilters>
                                         <div class="min-ht">
                                             <div class="p-w-100  p-d-flex p-justify-center">
@@ -415,7 +424,8 @@
 
 <app-export-excel #exportExcel></app-export-excel>
 
-<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2">
+<ng-container *ngIf="isRecommendationsEnabled && selectedtype?.toLowerCase() == 'scrum' && projectCount <=2 && this.filterApplyData?.label === 'project' && 
+!(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'developer')" >
     <app-recommendations [filterData]="filterApplyData" [kpiList]="kpiList"></app-recommendations>
 </ng-container>
 

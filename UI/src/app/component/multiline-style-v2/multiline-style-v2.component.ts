@@ -102,10 +102,10 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
   draw() {
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
-    const sprintList = this.data[0].value.map(details => details.sSprintName);
+    const sprintList = this.data[0]?.value.map(details => details.sSprintName);
     const dataCategory = this.data.map(d => d.data);
-    const lineTypes = this.data[0].value[0].dataValue.map(lineData => lineData.lineType);
-    const lineDetails = this.data[0].value[0].dataValue.map(lineData => lineData.name);
+    const lineTypes = this.data[0]?.value[0].dataValue.map(lineData => lineData.lineType);
+    const lineDetails = this.data[0]?.value[0].dataValue.map(lineData => lineData.name);
     const formattedData = this.transformData(this.data, lineTypes);
 
     // this is used for removing svg already made when value is updated
@@ -134,12 +134,11 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
     const circleRadiusHover = 4;
     const marginLeft = 40;
     const marginTop = 35;
-    // const color = this.color;
     const color = this.color;
     const kpiId = this.kpiId;
     const showUnit = this.unit;
     const containerWidth = d3.select(this.elem).select('#graphContainer').node().offsetWidth || window.innerWidth;
-    const resizeWidth = (containerWidth > (data[0].value.length * 20 * 8) ? containerWidth : (data[0].value.length * 20 * 8))
+    const resizeWidth = (containerWidth > (data[0]?.value.length * 20 * 8) ? containerWidth : (data[0]?.value.length * 20 * 8))
     width = data.length <= 5 ? containerWidth - 70 : resizeWidth;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
@@ -182,7 +181,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       });
     });
 
-    const colorCategory = d3.scaleOrdinal()
+    const colorCategory = color && d3.scaleOrdinal()
       .domain(dataCategory)
       .range(color);
 
@@ -200,7 +199,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
         .rangeRound([0, width - margin])
         .padding(0)
         .domain(
-          data[maxObjectNo].value.map(function (d, i) {
+          data[maxObjectNo]?.value?.map(function (d, i) {
             return i + 1;
           }),
         );
@@ -398,7 +397,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .style('stroke', '#dedede')
       .style('fill', 'none')
       .attr('class', 'gridline');
-    
+
       const xAxisGrid = d3.axisBottom(xScale).tickSize(-(height - 60)).tickFormat('').ticks(5);
       svgX.append('g')
         .attr('class', 'y-axis-grid')
@@ -485,7 +484,7 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       })
       .attr('d', (d) => line(d.value))
       .call(transition)
-      .style('stroke', (d, i) => colorCategory(d.data))
+      .style('stroke', (d, i) => (colorCategory && colorCategory(d.data)))
       .style('stroke-dasharray', (d) => {
         if (d.value[0].lineType === 'dotted') {
           return '4,4';
@@ -523,8 +522,8 @@ export class MultilineStyleV2Component implements OnChanges, OnDestroy, OnInit {
       .attr('class', function (d, i) {
         return 'circlegroup' + i;
       })
-      .style('fill', (d, i) => colorCategory(d.data))
-      .style('stroke', (d, i) => colorCategory(d.data))
+      .style('fill', (d, i) => (colorCategory && colorCategory(d.data)))
+      .style('stroke', (d, i) => (colorCategory && colorCategory(d.data)))
       .selectAll('circle')
       .data((d) => d.value)
       .enter()

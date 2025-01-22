@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
     constructor(private router: Router, private getAuth: GetAuthService,private sharedService : SharedService, private httpService: HttpService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const currentUserDetails = this.sharedService.currentUserDetails;
+        const currentUserDetails = this.httpService.currentUserDetails;
 
         if (currentUserDetails) {
             if (currentUserDetails['authorities']) {
@@ -50,7 +50,7 @@ export class AuthGuard implements CanActivate {
         } else {
             return this.httpService.getCurrentUserDetails().pipe(map(details => {
                 if (details['success']) {
-                    this.sharedService.setCurrentUserDetails(details['data']);
+                    this.httpService.setCurrentUserDetails(details['data']);
                     if (details['data']['authorities']) {
                         return true;
                     }
