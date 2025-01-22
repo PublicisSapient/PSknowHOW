@@ -37,12 +37,12 @@ export class RequestStatusComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
    
-    this.subscriptions.push(this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      if(details && details['user_name']){
-        this.userName = details['user_name'];
+    // this.subscriptions.push(this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      if(this.sharedService.getCurrentUserDetails('user_name')){
+        this.userName = this.sharedService.getCurrentUserDetails('user_name');
         this.getRequests();
       }
-    }))
+    // }))
   }
 
   getRequests() {
