@@ -70,8 +70,8 @@
   --color-secondary-blue: #079FFF;
   --color-secondary-yellow: #cdba38;
   --color-secondary-green: #00E6C3;
-  --font-regular: 'FuturaNext_Book', sans-serif;
-  --font-medium: 'FuturaNext_Medium', sans-serif;
+  --font-regular: 'Poppins_Medium', sans-serif;
+  --font-medium: 'Poppins_Regular', sans-serif;
 }
 
  @font-face {
@@ -85,7 +85,7 @@
 }
 
 
-@font-face {
+/* @font-face {
   font-family: 'FuturaNext_Book';
   src:url('assets/fonts/futura-next/FuturaNext_Book.otf');
 }
@@ -93,7 +93,7 @@
 @font-face {
   font-family: 'FuturaNext_Medium';
   src:url('assets/fonts/futura-next/FuturaNext-Medium.otf');
-}
+} */
 /* width */
 ::-webkit-scrollbar {
   width: 8px;
