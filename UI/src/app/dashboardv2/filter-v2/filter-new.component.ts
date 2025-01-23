@@ -14,6 +14,7 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
   templateUrl: './filter-new.component.html',
   styleUrls: ['./filter-new.component.css']
 })
+
 export class FilterNewComponent implements OnInit, OnDestroy {
   filterDataArr = {};
   masterData = {};
@@ -732,7 +733,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.sendDataToDashboard(event);
       if(this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project'){
-        this.buttonStyleClass = 'default';  
+        this.buttonStyleClass = 'default';
       }else{
         this.buttonStyleClass = 'disabled'
       }
@@ -1384,11 +1385,30 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   copyUrlToClipboard(event: Event) {
     event.stopPropagation();
     const url = window.location.href; // Get the current URL
-    navigator.clipboard.writeText(url).then(() => {
-      this.showSuccess();
-    }).catch(err => {
-      console.error('Failed to copy URL: ', err);
+    const queryParams = new URLSearchParams(url.split('?')[1]);
+    const stateFilters = queryParams.get('stateFilters');
+    const kpiFilters = queryParams.get('kpiFilters');
+    const payload = {
+      "longStateFiltersString": stateFilters,
+      "longKPIFiltersString": kpiFilters
+    };
+    this.httpService.handleUrlShortener(payload).subscribe((response: any) => {
+      console.log(response);
+      const shortStateFilterString = response.shortStateFiltersString;
+      const shortKPIFilterString = response.shortKPIFilterString;
+      const shortUrl = `${url.split('?')[0]}?stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}`;
+      navigator.clipboard.writeText(shortUrl).then(() => {
+        this.showSuccess();
+      }).catch(err => {
+        console.error('Failed to copy URL: ', err);
+      });
     });
+
+    // navigator.clipboard.writeText(url).then(() => {
+    //   this.showSuccess();
+    // }).catch(err => {
+    //   console.error('Failed to copy URL: ', err);
+    // });
   }
 
   showSuccess() {

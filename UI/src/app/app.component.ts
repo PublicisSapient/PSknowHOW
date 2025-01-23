@@ -63,6 +63,12 @@ export class AppComponent implements OnInit {
       .subscribe(params => {
         if (!this.refreshCounter) {
           let param = params['stateFilters'];
+          const kpiFilterParam = params['kpiFilters'];
+          if (param?.length <= 8 && kpiFilterParam?.length <= 8) {
+            this.httpService.handleRestoreUrl(params['stateFilters'], params['kpiFilters']).subscribe((response: any) => {
+              console.log('response', response);
+            });
+          }
           if (param?.length) {
             try {
               let selectedTab = this.location.path();
@@ -75,7 +81,7 @@ export class AppComponent implements OnInit {
               console.log('param', param);
               // param = param.replace(/###/gi, '___');
 
-              const kpiFilterParam = params['kpiFilters'];
+              // const kpiFilterParam = params['kpiFilters'];
               if (kpiFilterParam) {
                 const kpiFilterParamDecoded = atob(kpiFilterParam);
                 const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
