@@ -70,8 +70,8 @@
   --color-secondary-blue: #079FFF;
   --color-secondary-yellow: #cdba38;
   --color-secondary-green: #00E6C3;
-  --font-regular: 'Poppins_Medium', sans-serif;
-  --font-medium: 'Poppins_Regular', sans-serif;
+  --font-regular: 'Poppins_Regular', sans-serif;
+  --font-medium: 'Poppins_Medium', sans-serif;
 }
 
  @font-face {
