@@ -23,11 +23,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.datamigration.model.MigrationLockLog;
-import com.publicissapient.kpidashboard.apis.datamigration.util.MigrationEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +40,10 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.datamigration.model.HierarchyValueDup;
 import com.publicissapient.kpidashboard.apis.datamigration.model.MigrateData;
+import com.publicissapient.kpidashboard.apis.datamigration.model.MigrationLockLog;
 import com.publicissapient.kpidashboard.apis.datamigration.model.ProjectBasicDup;
 import com.publicissapient.kpidashboard.apis.datamigration.util.InconsistentDataException;
+import com.publicissapient.kpidashboard.apis.datamigration.util.MigrationEnum;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
@@ -626,8 +627,10 @@ public class DataMigrationService {
 	}
 
 	private void updateJiraIssue(Map<ObjectId, String> projectIdWiseUniqueId, Map<String, Object> dataSetToSave) {
-		List<JiraIssue> jiraIssueRepositoryAll = (List<JiraIssue>) jiraIssueRepository.findAll();
-		List<KanbanJiraIssue> kanbanJiraIssueHistoryRepositoryAll = kanbanJiraIssueRepository.findAll();
+		Set<ObjectId> objectIds = projectIdWiseUniqueId.keySet();
+		List<String> projectBaiscConfig = objectIds.stream().map(a -> a.toString()).toList();
+		List<JiraIssue> jiraIssueRepositoryAll = jiraIssueRepository.findByBasicProjectConfigIdIn(projectBaiscConfig);
+		List<KanbanJiraIssue> kanbanJiraIssueHistoryRepositoryAll = kanbanJiraIssueRepository.findByBasicProjectConfigIdIn(projectBaiscConfig);
 
 		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 		List<JiraIssue> jiraIssueList = new ArrayList<>();

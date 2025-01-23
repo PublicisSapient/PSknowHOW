@@ -230,4 +230,6 @@ public interface JiraIssueRepository
 	 */
 	@Query(value = "{ 'sprintID': { $in: ?0 }, 'basicProjectConfigId': ?1 }", fields = "{ 'sprintID': 1, 'number': 1, '_id': 0 }")
 	List<JiraIssue> findBySprintIDInAndBasicProjectConfigId(Set<String> sprintIDs, String basicProjectConfigId);
+
+	List<JiraIssue> findByBasicProjectConfigIdIn(List<String> basicProjectConfigIds);
 }
