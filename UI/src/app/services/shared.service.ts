@@ -378,18 +378,18 @@ export class SharedService {
     } else {
       this.selectedFilters = null;
     }
-    if (!this.refreshCounter) {
-      ++this.refreshCounter;
-    } else if (this.refreshCounter) {
 
-      const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters));
-      this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters));
-      // this.setBackupOfUrlFilters('{}');
-      this.router.navigate([], {
-        queryParams: { 'stateFilters': stateFilterEnc }, // Pass the object here
-        relativeTo: this.route,
-      });
+    if (this.refreshCounter === 0) {
+      this.refreshCounter++;
     }
+
+    // Navigate and update query parameters
+    const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters || {}));
+    this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters || {}));
+    this.router.navigate([], {
+      queryParams: { 'stateFilters': stateFilterEnc },
+      relativeTo: this.route,
+    });
   }
 
   getBackupOfFilterSelectionState(prop = null) {
@@ -687,6 +687,10 @@ export class SharedService {
         options: dropdownArr
       }
     ];
+  }
+
+  setUserDetailsAsBlankObj(){
+    this.currentUserDetails = {}
   }
 
   //#endregion

@@ -100,8 +100,8 @@
           </label>
         </div>
       </div>
-      <div aria-hidden="true" pTooltip="Share URL" tooltipPosition="top" tooltipEvent="hover"
-        tooltipStyleClass="tooltiptext" class="share-url-btn">
+      <div aria-hidden="true" pTooltip="Share URL" tooltipPosition="bottom" tooltipEvent="hover"
+        tooltipStyleClass="tooltiptext" class="share-url-btn" *ngIf="buttonStyleClass === 'default'">
         <span class="icon-container p-d-inline-block p-mr-2 p-cursor-pointer" (click)="copyUrlToClipboard($event)"
           [ngClass]="buttonStyleClass">
           <img src="../../../assets/img/Vector.svg" *ngIf="!isSuccess" style="height: 18px; margin-left: -2px;"
