@@ -216,7 +216,9 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 					List<Build> buildList = entry.getValue();
 					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
 						jobName = buildList.get(0).getJobFolder();
-					} else {
+					} else if(StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+						jobName = buildList.get(0).getPipelineName();
+					}else {
 						jobName = entry.getKey();
 					}
 					aggBuildList.addAll(buildList);
