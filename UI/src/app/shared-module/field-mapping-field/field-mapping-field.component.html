@@ -56,12 +56,12 @@
     </div>
 
     <div *ngSwitchCase="'toggle'">
-        <label for="fieldConfig?.fieldName" class="p-ml-2" style="font-family: 'FuturaNext_Medium', sans-serif;"> {{ fieldConfig?.toggleLabelLeft }}
+        <label for="fieldConfig?.fieldName" class="p-ml-2"> {{ fieldConfig?.toggleLabelLeft }}
         </label>
             <p-inputSwitch  id="fieldConfig?.fieldName" [(ngModel)]="value" (onChange)="setValue()">
             </p-inputSwitch>
 
-            <label for="fieldConfig?.fieldName" class="p-ml-2" [ngClass]="{'link': fieldConfig?.redirectUrl}" style="font-family: 'FuturaNext_Medium', sans-serif;" (click)="fieldConfig?.redirectUrl ? navigate(fieldConfig?.redirectUrl) : ''"> {{ fieldConfig?.toggleLabelRight }}
+            <label for="fieldConfig?.fieldName" class="p-ml-2" [ngClass]="{'link': fieldConfig?.redirectUrl}" (click)="fieldConfig?.redirectUrl ? navigate(fieldConfig?.redirectUrl) : ''"> {{ fieldConfig?.toggleLabelRight }}
               <span class="fa fa-info-circle" *ngIf="fieldConfig.tooltip.toggleDefinition" aria-hidden="true" pTooltip="<span>
                                             {{ fieldConfig.tooltip.toggleDefinition }}
                                             </span>" tooltipPosition="top" tooltipEvent="hover"
