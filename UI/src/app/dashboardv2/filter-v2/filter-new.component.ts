@@ -928,11 +928,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       if (this.selectedTab?.toLowerCase() === 'iteration') {
         this.filterApplyData['selectedMap']['sprint'] = [];
-        let sprints = this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['parentId'] === event[0].parentId && x['sprintState']?.toLowerCase() == 'active');
+        let sprints = this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['nodeId'] === event[0].parentId );
         sprints = this.helperService.sortByField(sprints, ['sprintState', 'sprintStartDate']);
 
         if (sprints.length) {
-          this.filterApplyData['selectedMap']['sprint'].push(...sprints[0].map(de => de.nodeId));
+          this.filterApplyData['selectedMap']['sprint'].push(...sprints.map(de => de.nodeId));
         }
       }
     }
