@@ -56,8 +56,8 @@ public interface KpiDataCacheService {
 
 	/**
 	 * Fetches data from DB for the given project and sprints combination. Data is
-	 * cached. Cache key - project basic config id and kpi id.
-	 * Note: Data will be cached only if Filter is selected till Sprint level.
+	 * cached. Cache key - project basic config id and kpi id. Note: Data will be
+	 * cached only if Filter is selected till Sprint level.
 	 *
 	 * @param kpiRequest
 	 * @param basicProjectConfigId
@@ -79,14 +79,37 @@ public interface KpiDataCacheService {
 	List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate, String kpiId);
 
 	/**
-	 * Fetches sprint capacity utilization kpi data from the database and caches the result.
+	 * Fetches sprint capacity utilization kpi data from the database and caches the
+	 * result.
 	 *
-	 * @param kpiRequest The KPI request object.
-	 * @param basicProjectConfigId The project config ID.
-	 * @param sprintList The list of sprint IDs.
-	 * @param kpiId The KPI ID.
-	 * @return A map containing estimate time, story list, sprint details, and JiraIssue history.
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @param kpiId
+	 *            The KPI ID.
+	 * @return A map containing estimate time, story list, sprint details, and
+	 *         JiraIssue history.
 	 */
 	Map<String, Object> fetchSprintCapacityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId);
+
+	/**
+	 * Fetches Scope Churn kpi data from the database and caches the result.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @param kpiId
+	 *            The KPI ID.
+	 * @return A map containing sprint details, total issues and scope change issue
+	 *         history.
+	 */
+	Map<String, Object> fetchScopeChurnData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId);
 }

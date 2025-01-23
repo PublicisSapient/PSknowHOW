@@ -101,4 +101,12 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 		return kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public Map<String, Object> fetchScopeChurnData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+												   List<String> sprintList, String kpiId) {
+		log.info("Fetching Scope Churn KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchScopeChurnData(kpiRequest, basicProjectConfigId, sprintList);
+	}
+
 }

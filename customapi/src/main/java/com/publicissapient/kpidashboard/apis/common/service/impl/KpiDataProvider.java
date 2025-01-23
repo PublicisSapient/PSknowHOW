@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class KpiDataProvider {
 	private static final String SPRINTSDETAILS = "sprints";
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
 	private static final String ESTIMATE_TIME = "Estimate_Time";
+	public static final String TOTAL_ISSUE = "totalIssue";
+	public static final String SPRINT_DETAILS = "sprintDetails";
+	public static final String SCOPE_CHANGE_ISSUE_HISTORY = "scopeChangeIssuesHistories";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -149,14 +153,19 @@ public class KpiDataProvider {
 		return buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
 	}
 
-    /**
-     * Fetches sprint capacity data from the database for the given project and sprints combination.
-     *
-     * @param kpiRequest The KPI request object.
-     * @param basicProjectConfigId The project config ID.
-     * @param sprintList The list of sprint IDs.
-     * @return A map containing estimate time, story list, sprint details, and JiraIssue history.
-     */
+	/**
+	 * Fetches sprint capacity data from the database for the given project and
+	 * sprints combination.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @return A map containing estimate time, story list, sprint details, and
+	 *         JiraIssue history.
+	 */
 	public Map<String, Object> fetchSprintCapacityDataFromDb(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList) {
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
@@ -226,6 +235,76 @@ public class KpiDataProvider {
 			resultListMap.put(JIRA_ISSUE_HISTORY_DATA, jiraIssueCustomHistoryList);
 		}
 
+		return resultListMap;
+	}
+
+	public Map<String, Object> fetchScopeChurnData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList) {
+		log.info("Fetching Scope Churn KPI Data for Project {}", basicProjectConfigId.toString());
+
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, Object> resultListMap = new HashMap<>();
+		List<String> basicProjectConfigIds = List.of(basicProjectConfigId.toString());
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Set<String> totalIssue = new HashSet<>();
+		Set<String> scopeChangeIssue = new HashSet<>();
+
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStoryIdentificationKPI164())) {
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
+					fieldMapping.getJiradefecttype(), fieldMapping.getJiraStoryIdentificationKPI164(),
+					JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+		} else {
+			// In Case of no issue type fetching all the issueType for that proj
+			uniqueProjectMap.put(basicProjectConfigId.toString(), new HashMap<>());
+		}
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+
+		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
+		sprintDetails.forEach(dbSprintDetail -> {
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getCompletedIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
+						CommonConstant.COMPLETED_ISSUES));
+			}
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getNotCompletedIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
+						CommonConstant.NOT_COMPLETED_ISSUES));
+			}
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getPuntedIssues())) {
+				List<String> removedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
+						CommonConstant.PUNTED_ISSUES);
+				totalIssue.addAll(removedIssues);
+				scopeChangeIssue.addAll(removedIssues);
+			}
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getAddedIssues())) {
+				List<String> addedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
+						CommonConstant.ADDED_ISSUES);
+				totalIssue.addAll(addedIssues);
+				scopeChangeIssue.addAll(addedIssues);
+			}
+		});
+
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, filterHelperService);
+
+		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+
+		if (CollectionUtils.isNotEmpty(totalIssue)) {
+			List<JiraIssueCustomHistory> scopeChangeIssueHistories = new ArrayList<>();
+			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
+					uniqueProjectMap);
+			resultListMap.put(SPRINT_DETAILS, sprintDetails);
+			resultListMap.put(TOTAL_ISSUE, totalJiraIssue);
+			// Fetching history only for change/removed issue date for Excel req
+			scopeChangeIssueHistories = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
+					new ArrayList<>(scopeChangeIssue),
+					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+			resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, scopeChangeIssueHistories);
+
+		}
 		return resultListMap;
 	}
 }

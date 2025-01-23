@@ -98,4 +98,10 @@ public class KpiDataCacheServiceImplTest {
 		assertNotNull(result);
 	}
 
+	@Test
+	public void testFetchScopeChurnData() {
+		when(kpiDataProvider.fetchScopeChurnData(any(), any(), any())).thenReturn(new HashMap<>());
+		assertNotNull(kpiDataCacheService.fetchScopeChurnData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
+	}
+
 }
