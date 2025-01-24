@@ -192,13 +192,18 @@ public class ChangeFailureRateKanbanServiceImpl
 			List<DataCount> dataCountAggList = new ArrayList<>();
 			List<Build> aggBuildList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(buildListProjectWise)) {
-
 				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
 						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
 				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
 					String jobName;
 					List<Build> buildList = entry.getValue();
-					jobName = getJobName(entry, buildList);
+					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+						jobName = buildList.get(0).getJobFolder();
+					} else if(StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+						jobName = buildList.get(0).getPipelineName();
+					}else {
+						jobName = entry.getKey();
+					}
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuildTimeWise(changeFailureRateInfo, buildList, trendLineName, trendValueMap, jobName,
 							dataCountAggList, durationFilter);
@@ -219,10 +224,6 @@ public class ChangeFailureRateKanbanServiceImpl
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CHANGE_FAILURE_RATE_KANBAN.getColumns());
-	}
-
-	private static String getJobName(Map.Entry<String, List<Build>> entry, List<Build> buildList) {
-		return StringUtils.defaultIfEmpty(buildList.get(0).getJobFolder(), entry.getKey());
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData, String trendLineName,

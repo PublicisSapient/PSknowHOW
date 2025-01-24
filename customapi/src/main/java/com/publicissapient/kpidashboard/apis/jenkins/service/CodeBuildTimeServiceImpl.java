@@ -311,7 +311,9 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 			if (StringUtils.isNotEmpty(build.getJobFolder())) {
 				codeBuildTimeInfo.addBuidJob(build.getJobFolder());
-			} else {
+			} else if(StringUtils.isNotEmpty(build.getPipelineName())){
+				codeBuildTimeInfo.addPipeLineNames(build.getPipelineName());
+			} else{
 				codeBuildTimeInfo.addBuidJob(build.getBuildJob());
 			}
 			codeBuildTimeInfo.addBuildUrl(build.getBuildUrl());
