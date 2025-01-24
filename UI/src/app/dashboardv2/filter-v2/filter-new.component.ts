@@ -1414,7 +1414,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   checkForFilterApplyDataSelectedMap() {
     const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
     const hasProject = this.filterApplyData['selectedMap'].project?.length;
-    console.log(this.filterApplyData['selectedMap']);
 
     Object.keys(this.filterApplyData['selectedMap']).forEach((key) => {
       if (this.filterApplyData['selectedMap'][key]?.length > 0 && key === 'sprint' && !hasProject) {
