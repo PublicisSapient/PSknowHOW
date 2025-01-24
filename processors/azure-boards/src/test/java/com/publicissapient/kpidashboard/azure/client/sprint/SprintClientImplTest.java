@@ -35,6 +35,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.service.AzureSprintReportLogService;
 
 @ExtendWith(SpringExtension.class)
 public class SprintClientImplTest {
@@ -56,6 +57,8 @@ public class SprintClientImplTest {
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	private AzureSprintReportLogService azureSprintReportLogService;
 
 	private SprintDetails sprintDetails1;
 	private SprintDetails sprintDetails2;
