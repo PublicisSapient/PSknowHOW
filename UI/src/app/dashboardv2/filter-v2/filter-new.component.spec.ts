@@ -55,7 +55,7 @@ describe('FilterNewComponent', () => {
         gaService = TestBed.inject(GoogleAnalyticsService);
 
         component.showHideDdn = mockMultiSelect as any;
-        localStorage.setItem('completeHierarchyData', '{"kanban":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}],"scrum":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"sprint","hierarchyLevelName":"Sprint"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}]}')
+        localStorage.setItem('completeHierarchyData', '{"kanban":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}],"scrum":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"sprint","hierarchyLevelName":"Sprint"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}]}');
         fixture.detectChanges();
     });
 
@@ -2956,4 +2956,100 @@ describe('FilterNewComponent', () => {
         });
 
     });
+
+
+  describe('FilterNewComponent.checkForFilterApplyDataSelectedMap() checkForFilterApplyDataSelectedMap method', () => {
+
+    it('should set project and sprint in filterApplyData.selectedMap when sprint is selected and no project is selected', () => {
+      const levelDetails = [
+        { hierarchyLevelId: 'sprint', hierarchyLevelName: 'Sprint' },
+        { hierarchyLevelId: 'project', hierarchyLevelName: 'Project' }
+      ];
+      const filterDataArr = {
+        kanban: {
+          Sprint: [
+            { nodeId: 'sprint1', parentId: 'project1' },
+            { nodeId: 'sprint2', parentId: 'project2' }
+          ],
+          Project: [
+            { nodeId: 'project1' },
+            { nodeId: 'project2' }
+          ]
+        }
+      };
+      const filterApplyData = {
+        selectedMap: {
+          sprint: ['sprint1'],
+          project: []
+        }
+      };
+
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({ kanban: levelDetails }));
+      component.selectedType = 'kanban';
+      component.filterDataArr = filterDataArr;
+      component.filterApplyData = filterApplyData;
+
+      component.checkForFilterApplyDataSelectedMap();
+
+      expect(component.filterApplyData['selectedMap'].project).toEqual(['project1']);
+      expect(component.filterApplyData['selectedMap'].sprint).toEqual(['sprint1']);
+    });
+
+    it('should set project and sprint in filterApplyData.selectedMap when squad is selected and no project is selected', () => {
+      const levelDetails = [
+        { hierarchyLevelId: 'sprint', hierarchyLevelName: 'Sprint' },
+        { hierarchyLevelId: 'project', hierarchyLevelName: 'Project' },
+        { hierarchyLevelId: 'sqd', hierarchyLevelName: 'Squad' }
+      ];
+      const filterDataArr = {
+        kanban: {
+          Sprint: [
+            { nodeId: 'sprint1', parentId: 'project1' }
+          ],
+          Project: [
+            { nodeId: 'project1' }
+          ],
+          Squad: [
+            { nodeId: 'squad1', parentId: 'sprint1' }
+          ]
+        }
+      };
+      const filterApplyData = {
+        selectedMap: {
+          sqd: ['squad1'],
+          project: []
+        }
+      };
+
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({ kanban: levelDetails }));
+      component.selectedType = 'kanban';
+      component.filterDataArr = filterDataArr;
+      component.filterApplyData = filterApplyData;
+      component.squadLevel = [{ hierarchyLevelId: 'sqd' }];
+
+      component.checkForFilterApplyDataSelectedMap();
+
+      expect(component.filterApplyData['selectedMap'].project).toEqual(['project1']);
+      expect(component.filterApplyData['selectedMap'].sprint).toEqual(['sprint1']);
+    });
+
+    it('should not modify filterApplyData.selectedMap if project is already selected', () => {
+      const filterApplyData = {
+        selectedMap: {
+          sprint: ['sprint1'],
+          project: ['project1']
+        }
+      };
+
+      component.filterApplyData = filterApplyData;
+
+      component.checkForFilterApplyDataSelectedMap();
+
+      expect(component.filterApplyData['selectedMap'].project).toEqual(['project1']);
+      expect(component.filterApplyData['selectedMap'].sprint).toEqual(['sprint1']);
+    });
+
+  });
+
+
 });
