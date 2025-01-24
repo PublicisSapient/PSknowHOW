@@ -70,7 +70,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
                 // in case project in state filters has been deleted
                 if (!this.selectedFilters?.length || !this.selectedFilters[0]) {
-                  this.selectedFilters = [this.filters[0]];
+                  this.selectedFilters = [this.selectCurrentProject()];
                   this.service.setBackupOfFilterSelectionState({ 'primary_level': null });
                 }
               } else {
@@ -97,7 +97,7 @@ export class PrimaryFilterComponent implements OnChanges {
                 this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
                 // reset
                 this.selectedFilters = [];
-                this.selectedFilters.push(this.filters[0]);
+                this.selectedFilters.push(this.selectCurrentProject());
                 this.service.setBackupOfFilterSelectionState({ 'primary_level': null });
                 this.applyPrimaryFilters({});
                 return;
@@ -125,7 +125,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
   reset() {
     this.selectedFilters = [];
-    this.selectedFilters.push(this.filters[0]);
+    this.selectedFilters.push(this.selectCurrentProject());
     this.service.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
     this.applyPrimaryFilters({});
   }
@@ -238,6 +238,9 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   onSelectionChange(event: any) {
+    if(event){
+      localStorage.setItem('selectedTrend', JSON.stringify(event.value));
+    }
     if (event?.value?.length > 0) {
       this.moveSelectedOptionToTop()
     }
@@ -260,6 +263,9 @@ export class PrimaryFilterComponent implements OnChanges {
   isString(val): boolean { return typeof val === 'string'; }
 
   onDropdownChange($event: any) {
+    if($event){
+    localStorage.setItem('selectedTrend', JSON.stringify($event?.value));
+    }
     if (this.helperService.isDropdownElementSelected($event)) {
       this.applyPrimaryFilters($event)
     }
@@ -283,6 +289,24 @@ export class PrimaryFilterComponent implements OnChanges {
     } else {
       return this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate'])
     }
+  }
+
+  //function will return 1st project if project details are not present in URL and localsotrage.
+  selectCurrentProject() {
+    let retValue = this.filters[0];
+    const backupState = this.service.getBackupOfFilterSelectionState();
+    const defaultLabelName = this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase();
+  
+    if (backupState?.parent_level?.labelName?.toLowerCase() === defaultLabelName) {
+      retValue = backupState.parent_level;
+    }
+  
+    const selectedTrend = JSON.parse(localStorage.getItem('selectedTrend') || 'null');
+    if (selectedTrend && selectedTrend[0]?.labelName?.toLowerCase() === defaultLabelName) {
+      retValue = selectedTrend[0];
+    }
+  
+    return retValue;
   }
 
 }
