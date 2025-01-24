@@ -2005,6 +2005,8 @@ describe('ConnectionListComponent', () => {
       success: "true",
       data: 200
     }
+    const fakeUserDetails = {user_name: 'testUser'}
+    localStorage.setItem('currentUserDetails',JSON.stringify(fakeUserDetails))
     component.addEditConnectionFieldsNlabels = fieldsAndLabels;
     component.connection['type'] = 'Teamcity';
     component.connectionTypeFieldsAssignment();

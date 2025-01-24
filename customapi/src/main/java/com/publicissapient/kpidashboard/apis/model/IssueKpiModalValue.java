@@ -179,4 +179,5 @@ public class IssueKpiModalValue implements Serializable {
 	private Integer issueWaitTime;
 	private Integer estimateTime;
 	private Integer actualTime;
+	private Map<String, List<String>> category2;
 }

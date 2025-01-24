@@ -68,7 +68,7 @@ export class ExportExcelComponent implements OnInit {
     this.modalDetails['kpiId'] = kpiId;
     //if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
       this.helperService.downloadExcel(kpiId, kpiName, isKanban, filterApplyData, filterData, sprintIncluded,).subscribe((getData) => {
-        getData = {...getData,...this.exportExcelRawVariable}
+        if((this.sharedService.selectedTab === 'iteration')){getData = {...getData,...this.exportExcelRawVariable}}
         this.isDisableSaveCOnfigurationBtn = !getData['saveDisplay'];
         if (getData?.['kpiColumnList']?.length && getData?.['excelData']?.length) {
           (this.sharedService.selectedTab === 'iteration')?this.dataTransformForIterationTableWidget(this.markerInfo, [], getData['kpiColumnList'], getData['excelData'], kpiName, kpiId):this.dataTransformatin(getData['kpiColumnList'], getData['excelData'], chartType, kpiName);

@@ -29,6 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CategoryData {
 	private String categoryKey;
+	private String categoryKey2;
 	private List<KpiDataCategory> categoryGroup;
 	private List<KpiDataCategory> categoryGroup2;
 }
