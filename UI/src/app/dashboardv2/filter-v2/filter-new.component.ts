@@ -732,7 +732,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       this.sendDataToDashboard(event);
       if(this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project'){
-        this.buttonStyleClass = 'default';  
+        this.buttonStyleClass = 'default';
       }else{
         this.buttonStyleClass = 'disabled'
       }
@@ -828,6 +828,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.service.setSelectedMap(this.filterApplyData['selectedMap']);
     if (this.filterDataArr[this.selectedType]) {
       if (this.selectedTab.toLowerCase() !== 'developer') {
+        this.checkForFilterApplyDataSelectedMap();
         if (this.selectedLevel) {
           if (typeof this.selectedLevel === 'string') {
             this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
@@ -947,6 +948,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     // Promise.resolve(() => {
     if (this.filterApplyData['selectedMap']) {
+      this.checkForFilterApplyDataSelectedMap();
       if (!this.selectedLevel) {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['Project'], this.filterApplyData, this.selectedTab, additionalFilterSelected, true, this.boardData['configDetails'], true, this.dashConfigData, this.selectedType);
         return;
@@ -1407,5 +1409,42 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   resetButton() {
     this.buttonStyleClass = 'default';
     this.isSuccess = false;
+  }
+
+  checkForFilterApplyDataSelectedMap() {
+    const levelDetails = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType];
+    const hasProject = this.filterApplyData['selectedMap'].project?.length;
+
+    Object.keys(this.filterApplyData['selectedMap']).forEach((key) => {
+      if (this.filterApplyData['selectedMap'][key]?.length > 0 && key === 'sprint' && !hasProject) {
+        const sprints = this.filterDataArr[this.selectedType][levelDetails.filter(x => x.hierarchyLevelId === 'sprint')[0].hierarchyLevelName];
+        const selectedSprints = sprints.filter(sprint =>
+          this.filterApplyData['selectedMap'][key].some(selectedId => sprint.nodeId === selectedId)
+        );
+
+        const projects = this.filterDataArr[this.selectedType][levelDetails.filter(x => x.hierarchyLevelId === 'project')[0].hierarchyLevelName];
+        const selectedProjects = projects.filter((project) =>
+          selectedSprints.some((sprint) => project.nodeId === sprint.parentId)
+        );
+
+        this.filterApplyData['selectedMap']['project'] = selectedProjects.map(project => project.nodeId);
+        this.filterApplyData['selectedMap']['sprint'] = selectedSprints.map(sprint => sprint.nodeId);
+
+      } else if (this.filterApplyData['selectedMap'][key]?.length > 0 && this.squadLevel && key === this.squadLevel[0].hierarchyLevelId && !hasProject) {
+        const squads = this.filterDataArr[this.selectedType][levelDetails.filter(x => x.hierarchyLevelId === 'sqd')[0].hierarchyLevelName];
+        const selectedSquad = squads.filter(x => (x.nodeId === this.filterApplyData['selectedMap'][key][0]));
+
+        const sprints = this.filterDataArr[this.selectedType][levelDetails.filter(x => x.hierarchyLevelId === 'sprint')[0].hierarchyLevelName];
+        const selectedSprints = sprints.filter(x => (x.nodeId === selectedSquad[0].parentId));
+
+        const projects = this.filterDataArr[this.selectedType][levelDetails.filter(x => x.hierarchyLevelId === 'project')[0].hierarchyLevelName];
+        const selectedProject = projects.filter(x => x.nodeId === selectedSprints[0].parentId);
+
+        this.filterApplyData['selectedMap']['project'] = [selectedProject[0].nodeId];
+        this.filterApplyData['selectedMap']['sprint'] = [selectedSprints[0].nodeId];
+
+      }
+    })
+
   }
 }
