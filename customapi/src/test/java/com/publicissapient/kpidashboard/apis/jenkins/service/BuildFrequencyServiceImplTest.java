@@ -35,6 +35,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -43,6 +44,7 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +57,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -104,6 +107,8 @@ public class BuildFrequencyServiceImplTest {
 
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
+	private Build build;
+	private BuildFrequencyInfo buildFrequencyInfo;
 
 	@Before
 	public void setup() {
@@ -131,15 +136,23 @@ public class BuildFrequencyServiceImplTest {
 
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
+		build = new Build();
+		getBuildFrequencyInfo();
+	}
 
+	private void getBuildFrequencyInfo() {
+		buildFrequencyInfo = new BuildFrequencyInfo();
+		buildFrequencyInfo.addBuildJobNameList("JobFolder");
+		buildFrequencyInfo.addWeeks("Week1");
+		buildFrequencyInfo.addBuildJobNameList("BuildJob");
 	}
 
 	private void setTreadValuesDataCount() {
 		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", new DataCount());
 		trendValues.add(dataCount);
 		trendValueMap.put("OverAll", trendValues);
-		trendValueMap.put("UI_Build -> KnowHow", trendValues);
-		trendValueMap.put("API_Build -> KnowHow", trendValues);
+		trendValueMap.put("UI_Build (KnowHow) ", trendValues);
+		trendValueMap.put("API_Build (KnowHow) ", trendValues);
 	}
 
 	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
@@ -254,4 +267,102 @@ public class BuildFrequencyServiceImplTest {
 		assertEquals(40L, result);
 	}
 
+	@Test
+	public void testGetJobName_WithJobFolderAndPipelineName() {
+		String trendLineName = "TrendLine";
+		Build build =  new Build();
+		build.setJobFolder("JobFolder");
+		build.setPipelineName("PipelineName");
+		build.setBuildJob("BuildJob");
+		build.setBuildUrl("BuildUrl");
+		build.setTimestamp(123456789L);
+		build.setDuration(1000L);
+		Map.Entry<String, List<Build>> entry = new HashMap.SimpleEntry<>("JobKey", Arrays.asList(build));
+		List<Build> buildList = entry.getValue();
+
+		String result = BuildFrequencyServiceImpl.getJobName(trendLineName, entry, buildList);
+		assertEquals("PipelineName (TrendLine) ", result);
+	}
+
+	@Test
+	public void testGetJobName_WithJobFolderOnly() {
+		String trendLineName = "TrendLine";
+		Build build =  new Build();
+		build.setJobFolder("JobFolder");
+		build.setPipelineName("");
+		build.setBuildJob("BuildJob");
+		build.setBuildUrl("BuildUrl");
+		build.setTimestamp(123456789L);
+		build.setDuration(1000L);
+		Map.Entry<String, List<Build>> entry = new HashMap.SimpleEntry<>("JobKey", Arrays.asList(build));
+		List<Build> buildList = entry.getValue();
+
+		String result = BuildFrequencyServiceImpl.getJobName(trendLineName, entry, buildList);
+		assertEquals("JobFolder (TrendLine) ", result);
+	}
+
+	@Test
+	public void testGetJobName_WithPipelineNameOnly() {
+		String trendLineName = "TrendLine";
+		Build build =  new Build();
+		build.setJobFolder("");
+		build.setPipelineName("PipelineName");
+		build.setBuildJob("BuildJob");
+		build.setBuildUrl("BuildUrl");
+		build.setTimestamp(123456789L);
+		build.setDuration(1000L);
+		Map.Entry<String, List<Build>> entry = new HashMap.SimpleEntry<>("JobKey", Arrays.asList(build));
+		List<Build> buildList = entry.getValue();
+
+		String result = BuildFrequencyServiceImpl.getJobName(trendLineName, entry, buildList);
+		assertEquals("PipelineName (TrendLine) ", result);
+	}
+
+	@Test
+	public void testGetJobName_WithJobKey() {
+		String trendLineName = "TrendLine";
+		Build build =  new Build();
+		build.setJobFolder("");
+		build.setPipelineName("");
+		build.setBuildJob("BuildJob");
+		build.setBuildUrl("BuildUrl");
+		build.setTimestamp(123456789L);
+		build.setDuration(1000L);
+		Map.Entry<String, List<Build>> entry = new HashMap.SimpleEntry<>("JobKey", Arrays.asList(build));
+		List<Build> buildList = entry.getValue();
+
+		String result = BuildFrequencyServiceImpl.getJobName(trendLineName, entry, buildList);
+		assertEquals("JobKey (TrendLine) ", result);
+	}
+	@Test
+	public void testBuildFrequencyInfo_WithJobFolder() {
+		build.setPipelineName("");
+		buildFrequencyServiceImpl.buildFrequencyInfo(buildFrequencyInfo, build, "Week1");
+
+		assertTrue(buildFrequencyInfo.getBuildJobList().contains("JobFolder"));
+		assertTrue(buildFrequencyInfo.getBuildStartTimeList().contains(DateUtil.dateConverter(new Date(build.getStartTime()))));
+		assertTrue(buildFrequencyInfo.getWeeksList().contains("Week1"));
+	}
+
+	@Test
+	public void testBuildFrequencyInfo_WithPipelineName() {
+		build.setJobFolder("");
+		buildFrequencyInfo.addBuildJobNameList("PipelineName");
+		buildFrequencyServiceImpl.buildFrequencyInfo(buildFrequencyInfo, build, "Week1");
+
+		assertTrue(buildFrequencyInfo.getBuildJobList().contains("PipelineName"));
+		assertTrue(buildFrequencyInfo.getBuildStartTimeList().contains(DateUtil.dateConverter(new Date(build.getStartTime()))));
+		assertTrue(buildFrequencyInfo.getWeeksList().contains("Week1"));
+	}
+
+	@Test
+	public void testBuildFrequencyInfo_WithBuildJob() {
+		build.setJobFolder("");
+		build.setPipelineName("");
+		buildFrequencyServiceImpl.buildFrequencyInfo(buildFrequencyInfo, build, "Week1");
+
+		assertTrue(buildFrequencyInfo.getBuildJobList().contains("BuildJob"));
+		assertTrue(buildFrequencyInfo.getBuildStartTimeList().contains(DateUtil.dateConverter(new Date(build.getStartTime()))));
+		assertTrue(buildFrequencyInfo.getWeeksList().contains("Week1"));
+	}
 }
