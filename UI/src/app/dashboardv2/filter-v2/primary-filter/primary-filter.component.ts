@@ -296,14 +296,20 @@ export class PrimaryFilterComponent implements OnChanges {
     let retValue = this.filters[0];
     const backupState = this.service.getBackupOfFilterSelectionState();
     const defaultLabelName = this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase();
+    const selectedTrend = JSON.parse(localStorage.getItem('selectedTrend') || 'null');
   
     if (backupState?.parent_level?.labelName?.toLowerCase() === defaultLabelName) {
       retValue = backupState.parent_level;
     }
-  
-    const selectedTrend = JSON.parse(localStorage.getItem('selectedTrend') || 'null');
-    if (selectedTrend && selectedTrend[0]?.labelName?.toLowerCase() === defaultLabelName) {
-      retValue = selectedTrend[0];
+
+    if(!backupState?.primary_level){
+      if (selectedTrend) {
+        retValue = selectedTrend[0];
+      }
+    }
+
+    if(retValue?.typeName !== this.service.getBackupOfFilterSelectionState()?.selected_type){
+      retValue = this.filters[0];
     }
   
     return retValue;

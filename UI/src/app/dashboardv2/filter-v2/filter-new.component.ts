@@ -377,6 +377,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       dataCopy[level.hierarchyLevelName] = this.filterDataArr[this.selectedType][level.hierarchyLevelId];
     });
     dataCopy = this.removeUndefinedProperties(dataCopy);
+    dataCopy['Project'] = dataCopy['Project'].map(proj => {return {...proj, typeName: this.service.getSelectedType()}});
     this.filterDataArr[this.selectedType] = dataCopy;
     if (this.filterDataArr[this.selectedType][this.selectedLevel]?.length) {
       if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
