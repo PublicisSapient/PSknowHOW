@@ -215,7 +215,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 *            list of builds
 	 * @return returns the job name
 	 */
-	private static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
+	protected static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
 			List<Build> buildList) {
 		String jobName;
 		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {

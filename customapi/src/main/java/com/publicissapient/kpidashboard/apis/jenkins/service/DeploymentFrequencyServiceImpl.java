@@ -279,7 +279,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * @param dataCountList
 	 *            dataCountList
 	 */
-	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
+	protected static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
 			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getEnvName())) {
 			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getEnvName(),

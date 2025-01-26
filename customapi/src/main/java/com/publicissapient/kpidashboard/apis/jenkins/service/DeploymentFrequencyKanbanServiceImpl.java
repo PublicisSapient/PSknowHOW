@@ -263,7 +263,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 	 * @param dataCountList
 	 *            dataCountList
 	 */
-	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
+	 protected static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
 			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getPipelineName())) {
 			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getPipelineName(),
@@ -311,7 +311,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 	 * @param deploymentListCurrentMonth
 	 * @return
 	 */
-	private void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
+	protected void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
 			List<Deployment> deploymentListCurrentMonth) {
 		if (null != deploymentFrequencyInfo && CollectionUtils.isNotEmpty(deploymentListCurrentMonth)) {
 			deploymentListCurrentMonth.forEach(deployment -> {

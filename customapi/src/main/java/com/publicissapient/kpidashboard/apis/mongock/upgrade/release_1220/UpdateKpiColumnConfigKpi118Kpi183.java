@@ -29,7 +29,7 @@ import java.util.List;
  * Change Unit to update the kpi_column_configs collection for kpiId "kpi118" and "kpi183"
  * @author girpatha
  */
-@ChangeUnit(id = "update_kpi_column_config_kpi118_kpi183", order = "12203", author = "girpatha", systemVersion = "12.2.0")
+    @ChangeUnit(id = "update_kpi_column_config_kpi118_kpi183", order = "12203", author = "girpatha", systemVersion = "12.2.0")
 public class UpdateKpiColumnConfigKpi118Kpi183 {
 
     private static final String KPI_COLUMN_DETAILS = "kpiColumnDetails";
