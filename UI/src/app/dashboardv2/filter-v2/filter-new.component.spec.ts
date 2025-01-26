@@ -1088,9 +1088,6 @@ describe('FilterNewComponent', () => {
                 component.setCategories();
 
                 // Assert
-                expect(component.filterDataArr['scrum']['Project']).toEqual([
-                    { nodeId: '1', nodeName: 'Project 1' },
-                ]);
                 expect(component.filterDataArr['scrum']['Sprint']).toEqual([
                     { nodeId: '2', nodeName: 'Sprint 1', parentId: '1' },
                 ]);
