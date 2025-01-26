@@ -327,7 +327,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * @param deploymentListCurrentMonth
 	 * @return
 	 */
-	private void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
+	protected void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
 			List<Deployment> deploymentListCurrentMonth) {
 		if (null != deploymentFrequencyInfo && CollectionUtils.isNotEmpty(deploymentListCurrentMonth)) {
 			deploymentListCurrentMonth.stream().forEach(deployment -> {

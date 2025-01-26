@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -42,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testng.Assert;
 
@@ -68,20 +70,22 @@ public class KPIExcelUtilityTest {
 
 	@InjectMocks
 	KPIExcelUtility excelUtility;
-
+	private List<KPIExcelData> kpiExcelData;
 	@Mock
 	CustomApiConfig customApiConfig;
 	private List<JiraIssue> jiraIssues;
 	private List<TestCaseDetails> testCaseDetailsList;
 	List<JiraIssue> storyList = new ArrayList<>();
-
+	private DeploymentFrequencyInfo deploymentFrequencyInfo;
 	@Before
 	public void setup() {
+		deploymentFrequencyInfo = Mockito.mock(DeploymentFrequencyInfo.class);
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		jiraIssues = jiraIssueDataFactory.getJiraIssues();
 		testCaseDetailsList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
 		storyList = jiraIssues.stream().filter(issue -> issue.getTypeName().equalsIgnoreCase("Story"))
 				.collect(Collectors.toList());
+		kpiExcelData = new ArrayList<>();
 	}
 
 	@Test
@@ -1099,5 +1103,77 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(48, kpiExcelData.size());
+	}
+
+	@Test
+	public void testPopulateDeploymentFrequencyExcelData() {
+		// Setup mock data
+		List<String> jobNameList = List.of("Job1", "Job2");
+		List<String> monthList = List.of("Week1", "Week2");
+		List<String> environmentList = List.of("Env1", "Env2");
+		List<String> deploymentDateList = List.of("2022-01-01", "2022-01-02");
+		String projectName = "projectName";
+		Map<String, String> deploymentMapPipelineNameWise = new HashMap<>();
+		deploymentMapPipelineNameWise.put("pipeline1", "ddd");
+		when(deploymentFrequencyInfo.getJobNameList()).thenReturn(jobNameList);
+		when(deploymentFrequencyInfo.getMonthList()).thenReturn(monthList);
+		when(deploymentFrequencyInfo.getEnvironmentList()).thenReturn(environmentList);
+		when(deploymentFrequencyInfo.getDeploymentDateList()).thenReturn(deploymentDateList);
+
+		// Call the method
+		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData, deploymentMapPipelineNameWise);
+
+		// Verify the results
+		assertEquals(2, kpiExcelData.size());
+		assertEquals("Job1", kpiExcelData.get(0).getJobName());
+		assertEquals("Week1", kpiExcelData.get(0).getWeeks());
+		assertEquals("Env1", kpiExcelData.get(0).getDeploymentEnvironment());
+		assertEquals("Job2", kpiExcelData.get(1).getJobName());
+		assertEquals("Week2", kpiExcelData.get(1).getWeeks());
+		assertEquals("Env2", kpiExcelData.get(1).getDeploymentEnvironment());
+	}
+	@Test
+	public void testPopulateDeploymentFrequencyExcelData_ValidData() {
+		// Setup mock data
+		List<String> jobNameList = Arrays.asList("Job1", "Job2");
+		List<String> monthList = Arrays.asList("Week1", "Week2");
+		List<String> environmentList = Arrays.asList("Env1", "Env2");
+		List<String> deploymentDateList = List.of("2022-01-01", "2022-01-02");
+		String projectName = "projectName";
+		Map<String, String> deploymentMapPipelineNameWise = new HashMap<>();
+		deploymentMapPipelineNameWise.put("pipeline1", "ddd");
+
+		when(deploymentFrequencyInfo.getJobNameList()).thenReturn(jobNameList);
+		when(deploymentFrequencyInfo.getMonthList()).thenReturn(monthList);
+		when(deploymentFrequencyInfo.getEnvironmentList()).thenReturn(environmentList);
+		when(deploymentFrequencyInfo.getDeploymentDateList()).thenReturn(deploymentDateList);
+
+		// Call the method
+		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData, deploymentMapPipelineNameWise);
+
+		// Verify the results
+		assertEquals(2, kpiExcelData.size());
+		assertEquals("Job1", kpiExcelData.get(0).getJobName());
+		assertEquals("Week1", kpiExcelData.get(0).getWeeks());
+		assertEquals("Env1", kpiExcelData.get(0).getDeploymentEnvironment());
+		assertEquals("Job2", kpiExcelData.get(1).getJobName());
+		assertEquals("Week2", kpiExcelData.get(1).getWeeks());
+		assertEquals("Env2", kpiExcelData.get(1).getDeploymentEnvironment());
+	}
+
+	@Test
+	public void testPopulateDeploymentFrequencyExcelData_EmptyData() {
+		// Setup mock data
+		List<String> jobNameList = Arrays.asList();
+		List<String> monthList = Arrays.asList();
+		List<String> environmentList = Arrays.asList();
+		List<String> deploymentDateList = List.of();
+		String projectName = "projectName";
+		Map<String, String> deploymentMapPipelineNameWise = new HashMap<>();
+		// Call the method
+		KPIExcelUtility.populateDeploymentFrequencyExcelData(projectName, deploymentFrequencyInfo, kpiExcelData, deploymentMapPipelineNameWise);
+
+		// Verify the results
+		assertEquals(0, kpiExcelData.size());
 	}
 }
