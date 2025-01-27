@@ -267,4 +267,25 @@ public class BuildFrequencyServiceImplTest {
 		assertEquals(40L, result);
 	}
 
+	@Test
+	public void testGetBuildFrquency_pipelineName_empty() throws Exception {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		buildList.forEach(build -> build.setPipelineName(null));
+		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
+		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
+
+		try {
+			when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
+
+			KpiElement kpiElement = buildFrequencyServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("Build Frequency :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
+		} catch (Exception enfe) {
+		}
+
+	}
+
+
 }
