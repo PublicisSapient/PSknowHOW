@@ -40,8 +40,7 @@
                     </form>
                 </div>
 
-                <div #capacityTemp>
-                    <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-kanban-table" *ngIf="kanban else capacityScrumDataTable">
+                    <!-- <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-kanban-table" *ngIf="kanban else capacityScrumDataTable">
                         <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="capacityKanbanData?.length > 0 else noDataTemp">
                             <div class="p-xl-12 p-pl-0 p-p-r-0 p-mb-2 table-header">{{tabContentHeaders[selectedView]}}
                             </div>
@@ -232,15 +231,15 @@
                             </div>
                         </div>
                     </ng-template>
-                </div>
-                <ng-template #capacityScrumDataTable>
+                </div> -->
+                <div>
                     <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-scrum-table"
-                        *ngIf="capacityScrumData?.length > 0 else noDataTemp">
+                    *ngIf="checkIfGridDataIdEmpty() else noDataTemp">
                         <div class="p-xl-12 p-pl-0 p-p-r-0 p-mb-2 table-header">{{tabContentHeaders[selectedView]}}
                         </div>
-                        <div class="">
-                            <p-table [columns]="cols.capacityScrumKeys" [value]="capacityScrumData"
-                                dataKey="sprintNodeId" class="capacity-table custom-grid"
+                            <!-- capacityKanbanData -->
+                            <p-table [columns]="getGridColumns()" [value]="kanban?capacityKanbanData:capacityScrumData"
+                                [dataKey]="kanban?startDate:sprintNodeId" class="capacity-table custom-grid"
                                 (onRowExpand)="onCapacitySprintRowSelection()" [expandedRowKeys]="expandedRows"
                                 loadingIcon="loading-img" expandableRows="true" rowExpandMode="single">
                                 <ng-template pTemplate="header" let-columns>
@@ -261,7 +260,13 @@
                                             <button *ngIf="i === 0 && isToggleEnableForSelectedProject" type="button"
                                                 pButton pRipple class="p-button-text  p-button-plain expand-btn"
                                                 [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
-                                            {{item[col.field] ? item[col.field] : '- -'}}
+                                                <span
+                                                *ngIf="col.field === 'startDate' || col.field === 'endDate' else otherFieldsTemp">
+                                                {{item[col.field] | isoDateFormat}}
+                                            </span>
+                                            <ng-template #otherFieldsTemp>
+                                                    {{item[col.field] ? item[col.field] : '- -'}}
+                                            </ng-template>
                                         </td>
                                         <td class="upload_sprint_capacity">
                                             <button pButton type="button" class="p-button-sm btn-active edit-btn"
@@ -459,9 +464,8 @@
                     </tr>
                 </ng-template>
 
-                </p-table>
-            </div>
-        </div>
+                            </p-table>
+                    </div>
         <ng-template #noDataTemp>
             <div class="p-xl-12 p-pl-0 p-p-r-0 no-data-available" *ngIf="noData">
                 No data Available for Selected Project
@@ -472,23 +476,22 @@
                 </div>
             </div>
         </ng-template>
-        </ng-template>
-    </div>
-</div>
-</div>
-<ng-template #noDataTemp>
-    <div class="p-xl-12 no-projects" *ngIf="!loader">
-        <div *ngIf="kanban else noScrumData" class="error-msg">
-            You do not have access to any Kanban project
+                </div>
+            </div>
         </div>
-        <ng-template #noScrumData>
-            <div class="error-msg">
-                You do not have access to any Scrum project
+        <ng-template #noDataTemp>
+            <div class="p-xl-12 no-projects" *ngIf="!loader">
+                <div *ngIf="kanban else noScrumData" class="error-msg">
+                    You do not have access to any Kanban project
+                </div>
+                <ng-template #noScrumData>
+                    <div class="error-msg">
+                        You do not have access to any Scrum project
+                    </div>
+                </ng-template>
             </div>
         </ng-template>
     </div>
-</ng-template>
-</div>
 </div>
 <!--add or remove assignees through manage users!-->
 <p-dialog header="Add/Remove Users" [(visible)]="displayAssignee" [modal]="true" (onShow)="onAssigneeModalOpen()"

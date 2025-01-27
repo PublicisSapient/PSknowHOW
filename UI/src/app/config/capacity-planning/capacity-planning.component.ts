@@ -900,4 +900,16 @@ export class CapacityPlanningComponent implements OnInit {
 
   }
 
+  getGridColumns() {
+    return this.kanban ? this.cols.capacityKanbanKeys : this.cols.capacityScrumKeys;
+  }
+
+  checkIfGridDataIdEmpty() {
+    if(this.kanban){
+      return this.capacityKanbanData?.length > 0;
+    }else{
+      return this.capacityScrumData?.length > 0  
+    }
+  }
+
 }
