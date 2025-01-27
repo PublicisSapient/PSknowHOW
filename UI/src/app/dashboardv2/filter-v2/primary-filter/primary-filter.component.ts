@@ -306,7 +306,7 @@ export class PrimaryFilterComponent implements OnChanges {
       retValue = selectedTrend[0];
     }
 
-    if(retValue?.typeName !== this.service.getBackupOfFilterSelectionState()?.selected_type){
+    if(retValue?.typeName !== this.service.getSelectedType()){
       retValue = this.filters[0];
     }
   
