@@ -163,17 +163,10 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		deploymentList.stream().filter(deployment -> deployment.getNumber().equalsIgnoreCase("1847"))
-				.forEach(deployment -> {
-					deployment.setStartTime(LocalDateTime.now().minusDays(1)
-							.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
-				});
 		when(deploymentRepository.findDeploymentList(anyMap(), anySet(), anyString(), anyString()))
 				.thenReturn(deploymentList);
-
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name()))
-				.thenReturn("Excel-Jenkins-7b0ed9dd-43f6-4086-adc6-fa555fdf6842");
-
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name()))
+				.thenReturn(kpiRequest.getRequestTrackerId());
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
@@ -182,7 +175,6 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		Map<String, String> kpiWiseAggregation = new HashMap<>();
 		kpiWiseAggregation.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), "sum");
 		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
-
 		try {
 			KpiElement kpiElement = deploymentFrequencyKanbanService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
