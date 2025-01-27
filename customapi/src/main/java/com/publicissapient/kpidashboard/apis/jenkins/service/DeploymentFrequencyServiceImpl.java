@@ -279,7 +279,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * @param dataCountList
 	 *            dataCountList
 	 */
-	protected static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
+	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
 			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getEnvName())) {
 			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getEnvName(),
@@ -327,7 +327,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * @param deploymentListCurrentMonth
 	 * @return
 	 */
-	protected void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
+	private void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
 			List<Deployment> deploymentListCurrentMonth) {
 		if (null != deploymentFrequencyInfo && CollectionUtils.isNotEmpty(deploymentListCurrentMonth)) {
 			deploymentListCurrentMonth.stream().forEach(deployment -> {

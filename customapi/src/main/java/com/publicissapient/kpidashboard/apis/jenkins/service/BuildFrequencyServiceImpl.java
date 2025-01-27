@@ -233,7 +233,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	 *            list of builds
 	 * @return returns the job name
 	 */
-	protected static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
+	private static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
 			List<Build> buildList) {
 		String jobName;
 		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
@@ -360,7 +360,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	 * @param date
 	 *            date
 	 */
-	protected void buildFrequencyInfo(BuildFrequencyInfo buildFrequencyInfo, Build build, String date) {
+	private void buildFrequencyInfo(BuildFrequencyInfo buildFrequencyInfo, Build build, String date) {
 		if (null != buildFrequencyInfo) {
 
 			if (StringUtils.isNotEmpty(build.getJobFolder())) {

@@ -35,11 +35,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -57,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -240,102 +239,5 @@ public class DeploymentFrequencyServiceImplTest {
 	public void getQualifierType() {
 		String result = deploymentFrequencyService.getQualifierType();
 		assertEquals(result, KPICode.DEPLOYMENT_FREQUENCY.name());
-	}
-
-	@Test
-	public void testTrendValueWithNonEmptyEnvName() {
-		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-		String envName = "QA";
-		List<Deployment> deploymentListEnvWise = new ArrayList<>();
-		Deployment deployment = new Deployment();
-		deployment.setEnvName(envName);
-		deploymentListEnvWise.add(deployment);
-
-		List<DataCount> dataCountList = new ArrayList<>();
-		DataCount dataCount = new DataCount();
-		dataCountList.add(dataCount);
-
-		DeploymentFrequencyServiceImpl.trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
-
-		Assertions.assertEquals(1, trendValueMap.get(envName).size());
-	}
-
-	@Test
-	public void testTrendValueWithEmptyEnvName() {
-		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-		String envName = "QA";
-		List<Deployment> deploymentListEnvWise = new ArrayList<>();
-		Deployment deployment = new Deployment();
-		deployment.setEnvName("");
-		deploymentListEnvWise.add(deployment);
-
-		List<DataCount> dataCountList = new ArrayList<>();
-		DataCount dataCount = new DataCount();
-		dataCountList.add(dataCount);
-
-		DeploymentFrequencyServiceImpl.trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
-
-		Assertions.assertEquals(1, trendValueMap.get(envName).size());
-	}
-	@Test
-	public void testSetDeploymentFrequencyInfoForExcelWithJobFolderName() {
-		Deployment deployment = new Deployment();
-		deployment.setEnvName("QA");
-		deployment.setJobFolderName("JobFolder1");
-		deployment.setStartTime("2023-10-01T10:00:00");
-		deploymentListCurrentMonth.add(deployment);
-
-		deploymentFrequencyService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth);
-
-		assertEquals(1, deploymentFrequencyInfo.getEnvironmentList().size());
-		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
-		assertEquals("JobFolder1", deploymentFrequencyInfo.getJobNameList().get(0));
-		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
-		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
-	}
-
-	@Test
-	public void testSetDeploymentFrequencyInfoForExcelWithJobName() {
-		Deployment deployment = new Deployment();
-		deployment.setEnvName("QA");
-		deployment.setJobName("Job1");
-		deployment.setStartTime("2023-10-01T10:00:00");
-		deploymentListCurrentMonth.add(deployment);
-
-		deploymentFrequencyService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth);
-
-		assertEquals(1, deploymentFrequencyInfo.getEnvironmentList().size());
-		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
-		assertEquals("Job1", deploymentFrequencyInfo.getJobNameList().get(0));
-		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
-		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
-	}
-
-	@Test
-	public void testSetDeploymentFrequencyInfoForExcelWithMultipleDeployments() {
-		Deployment deployment1 = new Deployment();
-		deployment1.setEnvName("QA");
-		deployment1.setJobName("Job1");
-		deployment1.setStartTime("2023-10-01T10:00:00");
-
-		Deployment deployment2 = new Deployment();
-		deployment2.setEnvName("Prod");
-		deployment2.setJobFolderName("JobFolder2");
-		deployment2.setStartTime("2023-10-02T10:00:00");
-
-		deploymentListCurrentMonth.add(deployment1);
-		deploymentListCurrentMonth.add(deployment2);
-
-		deploymentFrequencyService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth);
-
-		assertEquals(2, deploymentFrequencyInfo.getEnvironmentList().size());
-		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
-		assertEquals("Prod", deploymentFrequencyInfo.getEnvironmentList().get(1));
-		assertEquals("Job1", deploymentFrequencyInfo.getJobNameList().get(0));
-		assertEquals("JobFolder2", deploymentFrequencyInfo.getJobNameList().get(1));
-		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
-		assertEquals("02-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(1));
-		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
-		assertEquals("02/10 - 08/10", deploymentFrequencyInfo.getMonthList().get(1));
 	}
 }

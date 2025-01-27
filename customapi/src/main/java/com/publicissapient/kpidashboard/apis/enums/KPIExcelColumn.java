@@ -166,7 +166,7 @@ public enum KPIExcelColumn {
 							Arrays.asList("Project Name", "Job Name / Pipeline Name","Date", "Weeks", "Environment")),
 
 	DEFECTS_WITHOUT_STORY_LINK("kpi80",
-			Arrays.asList("Project Name", "Priority", "Defects Without Story 	Link", "Issue Description")),
+			Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
 
 	TEST_WITHOUT_STORY_LINK("kpi79", Arrays.asList("Project Name", "Test Case ID", "Linked to Story")),
 

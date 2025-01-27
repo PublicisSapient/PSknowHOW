@@ -8,7 +8,7 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
       "isDefault": false
@@ -802,7 +802,7 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
       "isDefault": false
@@ -1028,33 +1028,32 @@
       "isDefault": false
     }]
   },
-
   {
     "basicProjectConfigId": null,
     "kpiId": "kpi118",
     "kpiColumnDetails": [{
       "columnName": "Project Name",
-      "order": 0,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Date",
       "order": 1,
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 2,
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Month",
+      "columnName": "Date",
       "order": 3,
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Environment",
+      "columnName": "Month",
       "order": 4,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Environment",
+      "order": 5,
       "isShown": true,
       "isDefault": false
     }]
@@ -1536,7 +1535,7 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
       "isDefault": false
@@ -3133,7 +3132,7 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
       "isDefault": false
@@ -3154,7 +3153,6 @@
       "isDefault": false
     }]
   },
-
   {
     "basicProjectConfigId": null,
     "kpiId": "kpi176",
@@ -3194,5 +3192,83 @@
       "isShown": true,
       "isDefault": false
     }]
+  },
+  {
+    "basicProjectConfigId" : null,
+    "kpiId" : "kpi184",
+    "kpiColumnDetails" : [
+      {
+        "columnName" : "Project",
+        "order" : 1,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Job Name / Pipeline Name",
+        "order" : 2,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Total Build Count",
+        "order" : 3,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Total Build Failure Count",
+        "order" : 4,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Build Failure Percentage",
+        "order" : 5,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Weeks",
+        "order" : 6,
+        "isShown" : true,
+        "isDefault" : true
+      }
+    ]
+  },
+  {
+    "basicProjectConfigId" : null,
+    "kpiId" : "kpi183",
+    "kpiColumnDetails" : [
+      {
+        "columnName" : "Project Name",
+        "order" : 1,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Job Name / Pipeline Name",
+        "order" : 2,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Date",
+        "order" : 3,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Weeks",
+        "order" : 4,
+        "isShown" : true,
+        "isDefault" : true
+      },
+      {
+        "columnName" : "Environment",
+        "order" : 5,
+        "isShown" : true,
+        "isDefault" : true
+      }
+    ]
   }
 ]
