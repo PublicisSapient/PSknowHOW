@@ -305,6 +305,7 @@ public class DataMigrationService {
 
 	public void saveOrganizationHierarchyAndUpdateProjectBasic(List<OrganizationHierarchy> organizationHierarchyList,
 			List<ProjectBasicConfig> projectBasicConfigList, List<ProjectBasicDup> projectBasicDupList) {
+		log.info("**********Recommended to take a backup of database before processing******************");
 		log.info("Start - Updating Node Names to Original Values");
 		if (!migrationLockService.checkPreviousMigration()) {
 			MigrationLockLog fullMigration = new MigrationLockLog(MigrationEnum.MIGRATION_STEP.name());

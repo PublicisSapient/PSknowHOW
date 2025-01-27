@@ -76,6 +76,6 @@ public interface CapacityKpiDataRepository extends CrudRepository<CapacityKpiDat
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
-	@Query(value = "{ 'basicProjectConfigId': { $in: ?0 } }", fields = "{ '_id': 1 , 'basicProjectConfigId':1. 'sprintID':1, 'projectId':1 }")
+	@Query(value = "{ 'basicProjectConfigId': { $in: ?0 } }", fields = "{ '_id': 1 , 'basicProjectConfigId':1, 'sprintID':1, 'projectId':1 }")
 	List<CapacityKpiData> findByBasicProjectConfigIdIn(Set<ObjectId> basicProjectConfigId);
 }
