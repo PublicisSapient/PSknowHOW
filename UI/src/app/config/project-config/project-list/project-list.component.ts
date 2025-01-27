@@ -208,7 +208,7 @@ export class ProjectListComponent implements OnInit {
     for (let i = 0; i < this.projectList?.length; i++) {
       const obj = {
         id: this.projectList[i]?.id,
-        name: this.projectList[i]?.projectName,
+        name: this.projectList[i]?.projectDisplayName,
         type: this.projectList[i]?.kanban ? 'Kanban' : 'Scrum',
         saveAssigneeDetails: this.projectList[i]?.saveAssigneeDetails,
         developerKpiEnabled: this.projectList[i]?.developerKpiEnabled,

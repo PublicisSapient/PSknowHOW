@@ -2777,21 +2777,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
       let kpiIdsForCurrentBoard;
       if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+        kpiIdsForCurrentBoard = this.configGlobalData?.filter(kpi => kpi.kpiDetail.groupId === event.kpiDetail.groupId).map(kpiDetails => kpiDetails.kpiId)
         switch (kpiSource) {
           case 'sonar':
-            this.postSonarKanbanKpi(currentKPIGroup, 'sonar');
+            this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'jenkins':
-            this.postJenkinsKanbanKpi(currentKPIGroup, 'jenkins');
+            this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'zypher':
-            this.postZypherKanbanKpi(currentKPIGroup, 'zypher');
+            this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'bitbucket':
-            this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');
+            this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
             break;
           default:
-            this.postJiraKanbanKpi(currentKPIGroup, 'jira');
+            this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
         }
       } else {
         switch (kpiSource) {
