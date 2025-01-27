@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.datamigration;
 
+import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
@@ -55,6 +56,7 @@ import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRep
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -64,6 +66,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Repository
 @Slf4j
@@ -151,139 +154,91 @@ public class BulkUpdateRepository {
 			List<KanbanCapacity> kanbanCapacityList) {
 		// Bulk operations for CapacityKpiData collection
 		if (CollectionUtils.isNotEmpty(capacityUpdates)) {
-			BulkOperations capacityBulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					CapacityKpiData.class);
-			for (CapacityKpiData data : capacityUpdates) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set(SPRINT_ID, data.getSprintID()).set(PROJECT_ID, data.getProjectId());
-				capacityBulkOps.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			capacityBulkOps.execute();
+			processBulkUpdatesInBatches(capacityUpdates, CapacityKpiData.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set(SPRINT_ID, data.getSprintID()).set(PROJECT_ID, data.getProjectId())),
+					"CapacityKpi Data", 1);
 		}
 
 		// Bulk operations for another collection (e.g., AdditionalFilterCapacity)
 		if (CollectionUtils.isNotEmpty(kanbanCapacityList)) {
-			BulkOperations additionalBulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					KanbanCapacity.class);
-			for (KanbanCapacity data : kanbanCapacityList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set(PROJECT_ID, data.getProjectId());
-				additionalBulkOps.updateOne(query, update);
-			}
 
-			// Execute bulk operations for AdditionalFilterCapacity
-			additionalBulkOps.execute();
+			processBulkUpdatesInBatches(kanbanCapacityList, KanbanCapacity.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set(PROJECT_ID, data.getProjectId())),
+					"KanbanCapacity Data", 1);
+
 		}
 	}
 
 	public void bulkUpdateHappiness(List<HappinessKpiData> happienss) {
 		if (CollectionUtils.isNotEmpty(happienss)) {
-			BulkOperations capacityBulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					HappinessKpiData.class);
-			for (HappinessKpiData data : happienss) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set(SPRINT_ID, data.getSprintID());
-				capacityBulkOps.updateOne(query, update);
-			}
-
+			processBulkUpdatesInBatches(happienss, HappinessKpiData.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set(SPRINT_ID, data.getSprintID())),
+					"Happiness Kpi Data", 1);
 			// Execute bulk operations for CapacityKpiData
-			capacityBulkOps.execute();
+
 			log.info("HappienessKpiData successfully saved to the database.");
 		}
-
 	}
 
 	public void bulkUpdateJiraIssue(List<JiraIssue> scrumJiraIssueList, List<KanbanJiraIssue> kanbanJiraIssueList) {
+		// Process Scrum Jira Issues in batches
 		if (CollectionUtils.isNotEmpty(scrumJiraIssueList)) {
-			BulkOperations scrumJiraIssue = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, JiraIssue.class);
-			for (JiraIssue data : scrumJiraIssueList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set(SPRINT_ID, data.getSprintID());
-				scrumJiraIssue.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			scrumJiraIssue.execute();
-			log.info("Scrum JiraIssue successfully saved to the database.");
+			processBulkUpdatesInBatches(scrumJiraIssueList, JiraIssue.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set(SPRINT_ID, data.getSprintID())),
+					"Scrum JiraIssue", 10000);
 		}
+
+		// Process Kanban Jira Issues in batches
 		if (CollectionUtils.isNotEmpty(kanbanJiraIssueList)) {
-
-			BulkOperations kanabanBulpOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					KanbanJiraIssue.class);
-			for (KanbanJiraIssue data : kanbanJiraIssueList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("projectID", data.getProjectID());
-				kanabanBulpOps.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			kanabanBulpOps.execute();
-			log.info("Kanban JiraIssue successfully saved to the database.");
+			processBulkUpdatesInBatches(kanbanJiraIssueList, KanbanJiraIssue.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set("projectID", data.getProjectID())),
+					"Kanban JiraIssue", 10000);
 		}
+
 	}
 
 	public void bulkUpdateTestExecution(List<TestExecution> testExecutionList,
 			List<KanbanTestExecution> kanbanTestExecutionList) {
 		if (CollectionUtils.isNotEmpty(testExecutionList)) {
-			BulkOperations testExecutionOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					TestExecution.class);
-			for (TestExecution data : testExecutionList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("sprintId", data.getSprintId()).set(PROJECT_ID, data.getProjectId());
-				testExecutionOps.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			testExecutionOps.execute();
+			processBulkUpdatesInBatches(testExecutionList, TestExecution.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set("sprintId", data.getSprintId()).set(PROJECT_ID, data.getProjectId())),
+					"Scrum Test Execution", 1);
 			log.info("Scrum Test Execution Data successfully saved to the database.");
 		}
 		if (CollectionUtils.isNotEmpty(kanbanTestExecutionList)) {
+			processBulkUpdatesInBatches(kanbanTestExecutionList, KanbanTestExecution.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set("projectNodeId", data.getProjectNodeId())),
+					"Kanban Test Execution", 1);
 
-			BulkOperations kanabanBulpOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					KanbanTestExecution.class);
-			for (KanbanTestExecution data : kanbanTestExecutionList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("projectNodeId", data.getProjectNodeId());
-				kanabanBulpOps.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			kanabanBulpOps.execute();
 			log.info("Kanban Test Execution Data successfully saved to the database.");
 		}
 	}
 
 	public void bulkUpdateProjectRelease(List<ProjectRelease> projectReleaseList) {
 		if (CollectionUtils.isNotEmpty(projectReleaseList)) {
-			BulkOperations projectReleaseOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					ProjectRelease.class);
-			for (ProjectRelease data : projectReleaseList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set(PROJECT_ID, data.getProjectId()).set("projectName",
-						data.getProjectName());
-				projectReleaseOps.updateOne(query, update);
-			}
 
-			// Execute bulk operations for CapacityKpiData
-			projectReleaseOps.execute();
+			processBulkUpdatesInBatches(projectReleaseList, ProjectRelease.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())), new Update()
+							.set(PROJECT_ID, data.getProjectId()).set("projectName", data.getProjectName())),
+					"Project Release", 1);
 			log.info("Project Release Data successfully saved to the database.");
 		}
 	}
 
 	public void bulkUpdateSprintTraceLog(List<SprintTraceLog> sprintTraceLogList) {
 		if (CollectionUtils.isNotEmpty(sprintTraceLogList)) {
-			BulkOperations sprintTraceLogsOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					SprintTraceLog.class);
-			for (SprintTraceLog data : sprintTraceLogList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("sprintId", data.getSprintId());
-				sprintTraceLogsOps.updateOne(query, update);
-			}
 
-			// Execute bulk operations for CapacityKpiData
-			sprintTraceLogsOps.execute();
+			processBulkUpdatesInBatches(sprintTraceLogList, SprintTraceLog.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set("sprintId", data.getSprintId())),
+					"Sprint Trace Logs", 100);
 			log.info("Sprint Trace Log Data successfully saved to the database.");
 		}
 
@@ -291,77 +246,78 @@ public class BulkUpdateRepository {
 
 	public void bulkUpdateUserInfo(List<UserInfo> userInfoList, List<AccessRequest> accessRequestList) {
 		if (CollectionUtils.isNotEmpty(userInfoList)) {
-			BulkOperations userInfoOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, UserInfo.class);
-			for (UserInfo data : userInfoList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("projectsAccess", data.getProjectsAccess());
-				userInfoOps.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			userInfoOps.execute();
+			processBulkUpdatesInBatches(userInfoList, UserInfo.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set("projectsAccess", data.getProjectsAccess())),
+					"User Info", 100);
 			log.info("UserInfo Data successfully saved to the database.");
 		}
 		if (CollectionUtils.isNotEmpty(accessRequestList)) {
-
-			BulkOperations accessReqOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, AccessRequest.class);
-			for (AccessRequest data : accessRequestList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("accessNode", data.getAccessNode());
-				accessReqOps.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			accessReqOps.execute();
+			processBulkUpdatesInBatches(accessRequestList, AccessRequest.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set("accessNode", data.getAccessNode())),
+					"Access Request", 100);
 			log.info("Access Request Data successfully saved to the database.");
 		}
 	}
 
 	public void bulkUpdateComments(List<KPIComments> kpiCommentsList) {
 		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
-			BulkOperations bulkOpsComments = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					KPIComments.class);
-			for (KPIComments data : kpiCommentsList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("node", data.getNode()).set("nodeChildId", data.getNodeChildId());
-				bulkOpsComments.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			bulkOpsComments.execute();
+			processBulkUpdatesInBatches(kpiCommentsList, KPIComments.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set("node", data.getNode()).set("nodeChildId", data.getNodeChildId())),
+					"KpiComments", 1000);
 			log.info("Kpi Comments Data successfully saved to the database.");
 		}
 	}
 
 	public void saveToSprintDetails(List<SprintDetails> sprintDetailsList) {
 		if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-			BulkOperations bulkOpsComments = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					SprintDetails.class);
-			for (SprintDetails data : sprintDetailsList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set(SPRINT_ID, data.getSprintID());
-				bulkOpsComments.updateOne(query, update);
-			}
-
-			// Execute bulk operations for CapacityKpiData
-			bulkOpsComments.execute();
+			processBulkUpdatesInBatches(sprintDetailsList, SprintDetails.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set(SPRINT_ID, data.getSprintID())),
+					"SprintDetails", 1000);
 			log.info("Sprint Details Data successfully saved to the database.");
 		}
 	}
 
 	public void bulkUpdateCommentsHistory(List<KpiCommentsHistory> kpiCommentHistoryList) {
 		if (CollectionUtils.isNotEmpty(kpiCommentHistoryList)) {
-			BulkOperations bulkOpsComments = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-					KpiCommentsHistory.class);
-			for (KpiCommentsHistory data : kpiCommentHistoryList) {
-				Query query = new Query(Criteria.where("_id").is(data.getId()));
-				Update update = new Update().set("node", data.getNode()).set("nodeChildId", data.getNodeChildId());
-				bulkOpsComments.updateOne(query, update);
-			}
+			processBulkUpdatesInBatches(kpiCommentHistoryList, KpiCommentsHistory.class,
+					data -> Pair.of(new Query(Criteria.where("_id").is(data.getId())),
+							new Update().set("node", data.getNode()).set("nodeChildId", data.getNodeChildId())),
+					"Kpi Comments History", 1000);
 
-			// Execute bulk operations for CapacityKpiData
-			bulkOpsComments.execute();
 			log.info("Kpi Comments History Data successfully saved to the database.");
 		}
+	}
+
+	private <T> void processBulkUpdatesInBatches(List<T> updates, Class<T> entityClass,
+			Function<T, Pair<Query, Update>> updateMapper, String entityType, int batchCollection) {
+		int batchSize = batchCollection; // Set an appropriate batch size
+		List<List<T>> batches = Lists.partition(updates, batchSize);
+
+		log.info("Starting bulk update for {}. Total records: {}, Batch size: {}", entityType, updates.size(),
+				batchSize);
+		int batchNumber = 1;
+
+		for (List<T> batch : batches) {
+			try {
+				BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, entityClass);
+				for (T item : batch) {
+					Pair<Query, Update> queryUpdatePair = updateMapper.apply(item);
+					bulkOps.updateOne(queryUpdatePair.getLeft(), queryUpdatePair.getRight());
+				}
+				bulkOps.execute();
+				log.info("Batch {} for {} successfully processed. Records in batch: {}", batchNumber, entityType,
+						batch.size());
+			} catch (Exception e) {
+				log.error("Error in processing batch {} for {}. Error: {}", batchNumber, entityType, e.getMessage(), e);
+				throw e; // Rethrow to abort further processing
+			}
+			batchNumber++;
+		}
+
+		log.info("Bulk update for {} completed successfully.", entityType);
 	}
 }

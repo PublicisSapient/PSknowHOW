@@ -20,7 +20,9 @@
 package com.publicissapient.kpidashboard.common.repository.excel;
 
 import java.util.List;
+import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -73,4 +75,7 @@ public interface CapacityKpiDataRepository extends CrudRepository<CapacityKpiDat
 	 *            basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
+	@Query(value = "{ 'basicProjectConfigId': { $in: ?0 } }", fields = "{ '_id': 1 , 'basicProjectConfigId':1. 'sprintID':1, 'projectId':1 }")
+	List<CapacityKpiData> findByBasicProjectConfigIdIn(Set<ObjectId> basicProjectConfigId);
 }

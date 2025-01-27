@@ -25,6 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.application.BaseFieldMappingStructure;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -172,7 +174,8 @@ class FieldMappingHelperTest {
 
 	@Test
 	void testSetFieldValue() throws IllegalAccessException {
-		FieldMappingHelper.setFieldValue(scrumFieldMapping, "fieldName", "value");
+		FieldMappingHelper.setFieldValue(scrumFieldMapping, "sprintName", "value");
+		FieldMappingHelper.setFieldValue(scrumFieldMapping, "fielName", "value");
 	}
 
 	@Test
@@ -356,4 +359,88 @@ class FieldMappingHelperTest {
 				update);
 		Assertions.assertNotNull(update);
 	}
+
+
+	@Test
+	void testNestedFieldsPresent() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setFieldName("jiraDevDueDateField");
+		response.setOriginalValue("original");
+
+		FieldMappingResponse nestedResponse = new FieldMappingResponse();
+		nestedResponse.setFieldName("jiraDevDueDateField");
+		nestedResponse.setOriginalValue("nestedValue");
+
+		List<FieldMappingResponse> responseList = Arrays.asList(nestedResponse);
+
+		BaseFieldMappingStructure nestedField = new BaseFieldMappingStructure();
+		nestedField.setFieldName("jiraDevDueDateField");
+		nestedField.setFilterGroup(Arrays.asList("Due Date"));
+
+		FieldMappingStructure mappingStructure = new FieldMappingStructure();
+		mappingStructure.setNestedFields(Arrays.asList(nestedField));
+
+		FieldMapping fieldMapping = new FieldMapping();
+
+
+		fieldMappingHelper.generateHistoryForNestedFields(responseList, response, mappingStructure, fieldMapping);
+
+		Assert.assertEquals("original", response.getOriginalValue());
+	}
+
+	@Test
+	void testNoNestedFields() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setOriginalValue("original");
+
+		FieldMappingStructure mappingStructure = new FieldMappingStructure();
+		mappingStructure.setNestedFields(new ArrayList<>()); // No nested fields
+
+		FieldMapping fieldMapping = new FieldMapping();
+
+		fieldMappingHelper.generateHistoryForNestedFields(new ArrayList<>(), response, mappingStructure, fieldMapping);
+
+		Assert.assertEquals("original", response.getOriginalValue());
+	}
+
+	@Test
+	void testNoMatchingNestedFields() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setFieldName("jiraDevDueDateField");
+		response.setOriginalValue("original");
+
+		BaseFieldMappingStructure nestedField = new BaseFieldMappingStructure();
+		nestedField.setFieldName("nestedField");
+		nestedField.setFilterGroup(Arrays.asList("nonMatchingFilter"));
+
+		FieldMappingStructure mappingStructure = new FieldMappingStructure();
+		mappingStructure.setNestedFields(Arrays.asList(nestedField));
+
+		FieldMapping fieldMapping = new FieldMapping();
+
+		fieldMappingHelper.generateHistoryForNestedFields(new ArrayList<>(), response, mappingStructure, fieldMapping);
+
+		Assert.assertEquals("original", response.getOriginalValue());
+	}
+
+	@Test
+	void testNullParameters() {
+		Assert.assertThrows(NullPointerException.class, () -> {
+			fieldMappingHelper.generateHistoryForNestedFields(null, null, null, null);
+		});
+	}
+
+	@Test
+	void testEmptyFieldMappingResponseList() throws NoSuchFieldException, IllegalAccessException {
+		FieldMappingResponse response = new FieldMappingResponse();
+		response.setOriginalValue("original");
+
+		FieldMappingStructure mappingStructure = new FieldMappingStructure();
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMappingHelper.generateHistoryForNestedFields(new ArrayList<>(), response, mappingStructure, fieldMapping);
+
+		Assert.assertEquals("original", response.getOriginalValue());
+	}
+
+
 }

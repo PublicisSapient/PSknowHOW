@@ -54,6 +54,7 @@ public class SaveService {
 
 
 	public void saveToDatabase(Map<String, Object> dataToSave) {
+		log.info("Start--Migration Data Saving");
 		bulkUpdateRepository
 				.saveToOrganizationHierarchy((List<OrganizationHierarchy>) dataToSave.get("ORGANIZATION_HIERARCHY"));
 		bulkUpdateRepository.saveToBasicConfig((List<ProjectBasicConfig>) dataToSave.get("PROJECT_BASIC"));

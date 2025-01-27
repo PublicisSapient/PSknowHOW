@@ -394,7 +394,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 					basicConfig.setProjectNodeId(savedConfigOpt.get().getProjectNodeId());
 				}
 
-				// UI providing channged display name value to original project name as well,
+				// UI providing changed display name value to original project name as well,
 				// which will require more effort so workaround
 				basicConfig.setProjectName(savedConfig.getProjectName());
 
@@ -464,6 +464,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			orgHierarchy.setNodeDisplayName(basicConfig.getProjectDisplayName());
 			organizationHierarchyService.save(orgHierarchy);
 			clearOrgHierarchyCache();
+			cleanAllCache();
 		}
 	}
 
