@@ -154,4 +154,13 @@ public interface ProjectBasicConfigService {
 	ProjectBasicConfig getProjectBasicConfig(String projectBasicConfigId);
 
 	List<ProjectBasicConfig> getAllProjectsBasicConfigs(boolean isKanban);
+
+	/**
+	 * Method to filter the hierarchy DTOs with atLeast one connected tools
+	 *
+	 * @param hierarchyData
+	 *            hierarchy data
+	 * @return a list of HierarchyResponseDTOs with at least one connected tool
+	 */
+	List<HierarchyResponseDTO> filterHierarchyDTOsWithConnectedTools(List<HierarchyResponseDTO> hierarchyData);
 }

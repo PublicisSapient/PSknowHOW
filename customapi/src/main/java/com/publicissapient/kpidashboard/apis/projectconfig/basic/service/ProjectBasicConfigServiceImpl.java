@@ -965,4 +965,25 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return basicConfigList.stream().filter(projectBasicConfig -> projectBasicConfig.isKanban() == isKanban)
 				.collect(Collectors.toList());
 	}
+
+	/**
+	 * Filters out HierarchyResponseDTOs where none of the tools are connected.
+	 *
+	 * @param hierarchyResponseDTOS
+	 *            the list of HierarchyResponseDTOs to filter
+	 * @return a list of HierarchyResponseDTOs with at least one connected tool
+	 */
+	public List<HierarchyResponseDTO> filterHierarchyDTOsWithConnectedTools(
+			List<HierarchyResponseDTO> hierarchyResponseDTOS) {
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfigMapData = getProjectToolConfigMapData();
+		return hierarchyResponseDTOS.stream()
+				.filter(hierarchyResponsedto -> MapUtils
+						.isNotEmpty(projectToolConfigMapData.get(new ObjectId(hierarchyResponsedto.getProjectId()))))
+				.collect(Collectors.toList());
+	}
+
+	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> getProjectToolConfigMapData() {
+		return (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService.cacheProjectToolConfigMapData();
+	}
+
 }
