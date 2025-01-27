@@ -240,8 +240,8 @@ export class ExportExcelComponent implements OnInit {
           if (typeof updatedRow[colName] === 'string') {
             updatedRow[colName] = updatedRow[colName].trim();
           }
-          if(Array.isArray(updatedRow[colName])){
-            updatedRow[colName] =updatedRow[colName].join(',')
+          if(Array.isArray(updatedRow[colName]) && typeof updatedRow[colName] !=='object'){
+              updatedRow[colName] = (updatedRow[colName] as any[]).join(',')
           }
           if (blankValues.includes(updatedRow[colName])) {
             updatedRow[colName] = '';
