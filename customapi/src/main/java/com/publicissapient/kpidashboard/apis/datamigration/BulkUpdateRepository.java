@@ -77,7 +77,6 @@ public class BulkUpdateRepository {
 	private ProjectBasicConfigRepository basicConfigRepository;
 	@Autowired
 	private OrganizationHierarchyRepository organizationHierarchyRepository;
-
 	@Autowired
 	private AccountHierarchyRepository accountHierarchyRepository;
 	@Autowired
@@ -313,7 +312,8 @@ public class BulkUpdateRepository {
 						batch.size());
 			} catch (Exception e) {
 				log.error("Error in processing batch {} for {}. Error: {}", batchNumber, entityType, e.getMessage(), e);
-				throw e; // Rethrow to abort further processing
+				log.error("Recommended to restore your backup and restart customapi");
+				throw e;
 			}
 			batchNumber++;
 		}
