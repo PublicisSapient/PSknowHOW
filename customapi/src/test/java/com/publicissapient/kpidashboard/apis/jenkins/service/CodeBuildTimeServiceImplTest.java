@@ -20,12 +20,14 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -222,5 +224,60 @@ public class CodeBuildTimeServiceImplTest {
 		String qualifierType = codeBuildTimeServiceImpl.getQualifierType();
 
 	}
+	@Test
+	public void testGetJobNameWithPipelineName() {
+		List<Build> buildList = new ArrayList<>();
+		Build build = new Build();
+		build.setPipelineName("Pipeline1");
+		buildList.add(build);
 
+		Map.Entry<String, List<Build>> entry = new AbstractMap.SimpleEntry<>("Job1", buildList);
+		String trendLineName = "TrendLine1";
+
+		String jobName = CodeBuildTimeServiceImpl.getJobName(trendLineName, entry, buildList);
+		assertEquals("Pipeline1 (TrendLine1) ", jobName);
+	}
+
+	@Test
+	public void testGetJobNameWithJobFolder() {
+		List<Build> buildList = new ArrayList<>();
+		Build build = new Build();
+		build.setJobFolder("JobFolder1");
+		buildList.add(build);
+
+		Map.Entry<String, List<Build>> entry = new AbstractMap.SimpleEntry<>("Job1", buildList);
+		String trendLineName = "TrendLine1";
+
+		String jobName = CodeBuildTimeServiceImpl.getJobName(trendLineName, entry, buildList);
+		assertEquals("JobFolder1 (TrendLine1) ", jobName);
+	}
+
+	@Test
+	public void testGetJobNameWithBuildJob() {
+		List<Build> buildList = new ArrayList<>();
+		Build build = new Build();
+		build.setBuildJob("BuildJob1");
+		buildList.add(build);
+
+		Map.Entry<String, List<Build>> entry = new AbstractMap.SimpleEntry<>("Job1", buildList);
+		String trendLineName = "TrendLine1";
+
+		String jobName = CodeBuildTimeServiceImpl.getJobName(trendLineName, entry, buildList);
+		assertEquals("Job1 (TrendLine1) ", jobName);
+	}
+
+	@Test
+	public void testGetJobNameWithEmptyPipelineNameAndJobFolder() {
+		List<Build> buildList = new ArrayList<>();
+		Build build = new Build();
+		build.setPipelineName("");
+		build.setJobFolder("");
+		buildList.add(build);
+
+		Map.Entry<String, List<Build>> entry = new AbstractMap.SimpleEntry<>("Job1", buildList);
+		String trendLineName = "TrendLine1";
+
+		String jobName = CodeBuildTimeServiceImpl.getJobName(trendLineName, entry, buildList);
+		assertEquals("Job1 (TrendLine1) ", jobName);
+	}
 }

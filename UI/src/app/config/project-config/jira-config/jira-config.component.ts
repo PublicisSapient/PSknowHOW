@@ -1860,6 +1860,7 @@ export class JiraConfigComponent implements OnInit {
             },
             { field: 'jobType', header: 'Job Type', class: 'normal' },
             { field: 'jobName', header: 'Definitions', class: 'normal' },
+            { field: 'azurePipelineName', header: 'Pipeline Name', class: 'normal' }
           ];
 
           this.formTemplate = {
