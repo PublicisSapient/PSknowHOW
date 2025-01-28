@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,8 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProcessorExecutionTraceLogDTO;
+import com.publicissapient.kpidashboard.common.model.application.dto.SprintRefreshLogDTO;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 /**
@@ -48,6 +51,9 @@ public class ProcessorExecutionTraceLogServiceImplTest {
 
     @Mock
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
+    @Mock
+    private AzureSprintReportLogService azureSprintReportLogService;
 
     @InjectMocks
     private ProcessorExecutionTraceLogServiceImpl processorExecutionTraceLogService;
@@ -171,4 +177,31 @@ public class ProcessorExecutionTraceLogServiceImplTest {
 
 		verify(processorExecutionTraceLogRepository, times(1)).save(newLog);
 	}
+
+    @Test
+    public void getTraceLogDTOs() {
+        // Mock data
+        ProcessorExecutionTraceLog traceLog = new ProcessorExecutionTraceLog();
+        traceLog.setProcessorName("Azure");
+        traceLog.setBasicProjectConfigId("62177593904d2839684f5d68");
+        traceLog.setExecutionEndedAt(1649241013929L);
+        traceLog.setExecutionSuccess(true);
+
+        List<ProcessorExecutionTraceLog> traceLogs = List.of(traceLog);
+        when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
+                .thenReturn(traceLogs);
+
+        // Mock AzureSprintReportLogService
+        when(azureSprintReportLogService.getSprintRefreshLogs(any(ObjectId.class)))
+                .thenReturn(List.of(new SprintRefreshLogDTO()));
+
+        // Call the method
+        List<ProcessorExecutionTraceLogDTO> traceLogDTOs = processorExecutionTraceLogService.getTraceLogDTOs("Azure", "62177593904d2839684f5d68");
+
+        // Verify the result
+        assertEquals(1, traceLogDTOs.size());
+        assertEquals("Azure", traceLogDTOs.get(0).getProcessorName());
+        assertEquals("62177593904d2839684f5d68", traceLogDTOs.get(0).getBasicProjectConfigId());
+    }
+
 }
