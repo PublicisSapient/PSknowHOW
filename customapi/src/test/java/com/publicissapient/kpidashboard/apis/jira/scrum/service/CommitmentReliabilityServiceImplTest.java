@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -83,15 +86,12 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 public class CommitmentReliabilityServiceImplTest {
 
 	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
+	private static final String SPRINT_DETAILS = "sprintDetails";
 	private static String COMMITMENTRELIABILITY = "commitmentReliability";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> totalIssueList = new ArrayList<>();
 	List<SprintDetails> sprintDetailsList = new ArrayList<>();
-	@Mock
-	JiraIssueRepository jiraIssueRepository;
-	@Mock
-	SprintRepository sprintRepository;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -99,27 +99,22 @@ public class CommitmentReliabilityServiceImplTest {
 	@InjectMocks
 	CommittmentReliabilityServiceImpl commitmentReliabilityImpl;
 	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock
 	private FilterHelperService filterHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private CommonService commonService;
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
+	@Mock
+	private KpiDataProvider kpiDataProvider;
 
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private Map<String, Object> filterLevelMap;
-	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-	@Mock
-	private KpiHelperService kpiHelperService;
-	@Mock
-	private CommonService commonService;
+
 
 	/**
 	 * Set up the data
@@ -130,6 +125,7 @@ public class CommitmentReliabilityServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.COMMITMENT_RELIABILITY.getKpiId());
 		kpiRequest.setLabel("PROJECT");
+		kpiRequest.setLevel(5);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -225,11 +221,12 @@ public class CommitmentReliabilityServiceImplTest {
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(PROJECT_WISE_TOTAL_ISSUE, totalIssueList);
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchCommitmentReliabilityData(any(), any(), any(), any())).thenReturn(resultListMap);
 
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> predictList = commitmentReliabilityImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Sprint story size :", ((List<JiraIssue>) predictList.get(PROJECT_WISE_TOTAL_ISSUE)).size(),
@@ -248,9 +245,11 @@ public class CommitmentReliabilityServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(COMMITMENTRELIABILITY, Arrays.asList("-20", "20-40", "40-60", "60-80", "80-"));
 
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(PROJECT_WISE_TOTAL_ISSUE, totalIssueList);
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
+		when(kpiDataProvider.fetchCommitmentReliabilityData(any(), any(), any())).thenReturn(resultListMap);
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 

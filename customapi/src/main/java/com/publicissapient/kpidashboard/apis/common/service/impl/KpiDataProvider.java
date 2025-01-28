@@ -1,17 +1,13 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +46,7 @@ public class KpiDataProvider {
 	public static final String TOTAL_ISSUE = "totalIssue";
 	public static final String SPRINT_DETAILS = "sprintDetails";
 	public static final String SCOPE_CHANGE_ISSUE_HISTORY = "scopeChangeIssuesHistories";
+	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -57,6 +54,8 @@ public class KpiDataProvider {
 	private SprintRepository sprintRepository;
 	@Autowired
 	private FilterHelperService filterHelperService;
+	@Autowired
+	private KpiHelperService kpiHelperService;
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -303,6 +302,70 @@ public class KpiDataProvider {
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 			resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, scopeChangeIssueHistories);
 
+		}
+		return resultListMap;
+	}
+
+	public Map<String, Object> fetchCommitmentReliabilityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList) {
+		log.info("Fetching Commitment Reliability KPI Data for Project {}", basicProjectConfigId.toString());
+
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, Object> resultListMap = new HashMap<>();
+		List<String> basicProjectConfigIds = List.of(basicProjectConfigId.toString());
+		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
+
+		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
+
+		Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService
+				.getProjectWiseTotalSprintDetail(projectWiseTotalSprintDetails);
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
+		Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+
+		if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
+			Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
+					.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
+						FieldMapping fieldMapping = fieldMappingMap.get(key);
+						return Optional.ofNullable(fieldMapping)
+								.map(FieldMapping::getJiraIterationCompletionStatusKpi72)
+								.orElse(Collections.emptyList());
+					}));
+			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
+					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
+		}
+
+		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
+		Set<String> totalIssue = new HashSet<>();
+		sprintDetails.stream().forEach(dbSprintDetail -> {
+			FieldMapping fieldMapping = fieldMappingMap.get(dbSprintDetail.getBasicProjectConfigId());
+			// to modify sprintdetails on the basis of configuration for the project
+			SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
+					fieldMapping.getJiraIterationIssuetypeKpi72(), fieldMapping.getJiraIterationCompletionStatusKpi72(),
+					finalProjectWiseDuplicateIssuesWithMinCloseDate);
+			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+						CommonConstant.TOTAL_ISSUES));
+			}
+			if (CollectionUtils.isNotEmpty(sprintDetail.getPuntedIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+						CommonConstant.PUNTED_ISSUES));
+
+			}
+			if (CollectionUtils.isNotEmpty(sprintDetail.getAddedIssues())) {
+				totalIssue.addAll(sprintDetail.getAddedIssues());
+			}
+
+		});
+
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, filterHelperService);
+		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigIds.stream().distinct().toList());
+		if (CollectionUtils.isNotEmpty(totalIssue)) {
+			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
+					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
+			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		}
 		return resultListMap;
 	}
