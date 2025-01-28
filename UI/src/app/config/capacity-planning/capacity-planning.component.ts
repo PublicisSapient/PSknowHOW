@@ -900,4 +900,40 @@ export class CapacityPlanningComponent implements OnInit {
 
   }
 
+  getGridColumns() {
+    return this.kanban ? this.cols.capacityKanbanKeys : this.cols.capacityScrumKeys;
+  }
+
+  checkIfGridDataIdEmpty() {
+    if(this.kanban){
+      return this.capacityKanbanData?.length > 0;
+    }else{
+      return this.capacityScrumData?.length > 0  
+    }
+  }
+
+  getGridData() {
+    return this.kanban ? this.capacityKanbanData : this.capacityScrumData;
+  }
+
+  getDataKey() {
+    return this.kanban ? 'startDate' : 'sprintNodeId';
+  }
+
+  getExpandedClass(item,expanded){
+
+    if(this.kanban){
+     return {
+      'tr-active': (item ) === true, //(item | comparedates
+      'row-expanded': expanded
+    }
+    }else{
+    return{
+      'tr-active': item?.sprintState?.toLowerCase() === 'active',
+      'row-expanded': expanded
+    }
+    }
+    
+  }
+
 }
