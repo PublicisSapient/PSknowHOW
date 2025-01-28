@@ -1,0 +1,299 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.ehcache.org/v3"
+        xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
+        xsi:schemaLocation="
+            http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
+            http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
+
+    <cache alias="cache_kpi_master">
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="cache_maturity_range">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="cache_aggregation_criteria">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="cache_aggregation_circle_criteria">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="cache_project_basic_tree">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="cache_hierarchy_level_value">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="cache_field_mapping_stucture">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="cache_user_board_config">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="cache_project_tool_config">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="filters">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="boardMetaDataMap">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="toolItemMap">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="projectToolConfigMap">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="accountHierarchy">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="accountHierarchyKanban">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="sprintHierarchy">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="projectConfigMap">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="fieldMappingMap">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="additionalFilterHierLevel">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="hierarchyLevelCache">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="kanbanhierarchyLevelCache">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="hierarchyLevelMap">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="kanbanhierarchyLevelMap">
+        <heap unit="MB">25</heap>
+    </cache>
+
+    <cache alias="requestTrackerCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <!--<heap unit="entries">200</heap>-->
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="jiraKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="jenkinsKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="sonarKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="azureKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="bitbucketKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="gitLabKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="jiraKanbanKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="testingKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+</config>
