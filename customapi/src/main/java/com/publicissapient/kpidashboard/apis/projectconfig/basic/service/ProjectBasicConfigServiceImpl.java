@@ -249,7 +249,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			OrganizationHierarchy newOrganizationHierarchy = new OrganizationHierarchy();
 			maxLevel.ifPresent(ml -> newOrganizationHierarchy.setParentId(ml.getOrgHierarchyNodeId()));
 			newOrganizationHierarchy.setNodeId(projectNodeId);
-			newOrganizationHierarchy.setHierarchyLevelId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+			newOrganizationHierarchy.setHierarchyLevelId(String.valueOf(maxLevel.get().getHierarchyLevel().getLevel() + 1));
 			newOrganizationHierarchy.setNodeName(projectBasicConfigDTO.getProjectName());
 			newOrganizationHierarchy.setNodeDisplayName(projectBasicConfigDTO.getProjectDisplayName());
 			newOrganizationHierarchy.setCreatedDate(LocalDateTime.now());

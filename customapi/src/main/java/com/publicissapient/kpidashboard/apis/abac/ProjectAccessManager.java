@@ -1034,14 +1034,14 @@ public class ProjectAccessManager {
 			Optional<AccessNode> projectNode = userInfo.getProjectsAccess().stream()
 					.filter(projectAccess -> Constant.ROLE_PROJECT_ADMIN.equals(projectAccess.getRole()))
 					.flatMap(projectsAccess -> projectsAccess.getAccessNodes().stream()).filter(accessNode -> accessNode
-							.getAccessLevel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
+							.getAccessLevel().equalsIgnoreCase(String.valueOf(basicConfig.getHierarchy().size() + 1)))
 					.findFirst();
 
 			if (projectNode.isPresent()) {
 				projectNode.get().getAccessItems().add(newAccessItem);
 			} else {
 				AccessNode accessNode = new AccessNode();
-				accessNode.setAccessLevel(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+				accessNode.setAccessLevel(String.valueOf(basicConfig.getHierarchy().size() + 1));
 				List<AccessItem> accessItems = new ArrayList<>();
 				accessItems.add(newAccessItem);
 				accessNode.setAccessItems(accessItems);
@@ -1055,7 +1055,7 @@ public class ProjectAccessManager {
 			ProjectsAccess newProjectAccess = new ProjectsAccess();
 			newProjectAccess.setRole(Constant.ROLE_PROJECT_ADMIN);
 			AccessNode accessNode = new AccessNode();
-			accessNode.setAccessLevel(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+			accessNode.setAccessLevel(String.valueOf(basicConfig.getHierarchy().size() + 1));
 			List<AccessItem> accessItems = new ArrayList<>();
 			accessItems.add(newAccessItem);
 			accessNode.setAccessItems(accessItems);
