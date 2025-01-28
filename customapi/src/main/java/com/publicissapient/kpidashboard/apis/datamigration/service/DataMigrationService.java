@@ -420,8 +420,11 @@ public class DataMigrationService {
 		updateTestExecution(projectIdWiseUniqueId, dataSetToSave);
 		updateProjectRelease(projectBasicConfigList, dataSetToSave);
 		updateSprintTraceLog(dataSetToSave);
-		updateUserInfo(organizationHierarchyList, dataSetToSave);
-		updateAccessRequest(organizationHierarchyList, dataSetToSave);
+		List<HierarchyLevel> scrumHierachyLevel = hierarchyLevelMaap.get("scrum");
+		Map<String, Integer> allHierachies = scrumHierachyLevel.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, HierarchyLevel::getLevel));
+		updateUserInfo(organizationHierarchyList, dataSetToSave, allHierachies);
+		updateAccessRequest(organizationHierarchyList, dataSetToSave, allHierachies);
 		updateKpiComments(projectBasicConfigList, dataSetToSave);
 		return dataSetToSave;
 	}
@@ -486,7 +489,7 @@ public class DataMigrationService {
 	}
 
 	private void updateAccessRequest(List<OrganizationHierarchy> organizationHierarchyList,
-			Map<String, Object> dataSetToSave) {
+			Map<String, Object> dataSetToSave, Map<String, Integer> allHierachies) {
 		Map<String, List<String>> map = organizationHierarchyList.stream()
 				.collect(Collectors.groupingBy(org -> org.getHierarchyLevelId() + "_" + org.getNodeDisplayName(),
 						Collectors.mapping(OrganizationHierarchy::getNodeId, Collectors.toList()) // Value: list of
@@ -495,18 +498,20 @@ public class DataMigrationService {
 
 		List<AccessRequest> accessRequest = accessRequestsRepository.findAll();
 		log.info("Access Request Data Processing Started");
-		getAccessRequestData(map, accessRequest);
+		getAccessRequestData(map, accessRequest, allHierachies);
 		log.info("Access Request Data Processing Completed");
 
 		dataSetToSave.put("ACCESS_REQUEST", accessRequest);
 
 	}
 
-	private static void getAccessRequestData(Map<String, List<String>> map, List<AccessRequest> accessRequest) {
+	private static void getAccessRequestData(Map<String, List<String>> map, List<AccessRequest> accessRequest,
+			Map<String, Integer> scrumHierachyLevel) {
 		if (CollectionUtils.isNotEmpty(accessRequest)) {
 			for (AccessRequest request : accessRequest) {
 				AccessNode node = request.getAccessNode();
-				String level = node.getAccessLevel();
+				String accessLevel = node.getAccessLevel(); // check from map
+				String level = scrumHierachyLevel.getOrDefault(accessLevel, 0).toString();
 				if (CollectionUtils.isNotEmpty(node.getAccessItems())) {
 					List<AccessItem> newAccessItem = new ArrayList<>();
 					addNewAccessItem(map, node, level, newAccessItem);
@@ -532,7 +537,7 @@ public class DataMigrationService {
 	}
 
 	private void updateUserInfo(List<OrganizationHierarchy> organizationHierarchyList,
-			Map<String, Object> dataSetToSave) {
+			Map<String, Object> dataSetToSave, Map<String, Integer> scrumHierachyLevel) {
 		Map<String, List<String>> map = organizationHierarchyList.stream()
 				.collect(Collectors.groupingBy(org -> org.getHierarchyLevelId() + "_" + org.getNodeDisplayName(),
 						Collectors.mapping(OrganizationHierarchy::getNodeId, Collectors.toList())));
@@ -542,7 +547,7 @@ public class DataMigrationService {
 			for (UserInfo userInfo : newUserInfo) {
 				List<ProjectsAccess> projectsAccess = userInfo.getProjectsAccess();
 				if (CollectionUtils.isNotEmpty(projectsAccess)) {
-					iterateProjectAccess(map, projectsAccess);
+					iterateProjectAccess(map, projectsAccess, scrumHierachyLevel);
 				}
 
 			}
@@ -553,12 +558,14 @@ public class DataMigrationService {
 
 	}
 
-	private static void iterateProjectAccess(Map<String, List<String>> map, List<ProjectsAccess> projectsAccess) {
+	private static void iterateProjectAccess(Map<String, List<String>> map, List<ProjectsAccess> projectsAccess,
+			Map<String, Integer> scrumHierachyLevel) {
 		for (ProjectsAccess access : projectsAccess) {
 			List<AccessNode> accessNodes = access.getAccessNodes();
 			if (CollectionUtils.isNotEmpty(accessNodes)) {
 				for (AccessNode node : accessNodes) {
-					String level = node.getAccessLevel();
+					String accessLevel = node.getAccessLevel(); // check from map
+					String level = scrumHierachyLevel.getOrDefault(accessLevel, 0).toString();
 					if (CollectionUtils.isNotEmpty(node.getAccessItems())) {
 						List<AccessItem> newAccessItem = new ArrayList<>();
 						addNewAccessItem(map, node, level, newAccessItem);
