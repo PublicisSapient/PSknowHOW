@@ -160,6 +160,9 @@ public class SprintVelocityServiceImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
+		HashMap<String, List<String>> map = new HashMap<>();
+		map.put(KPICode.SPRINT_VELOCITY.getKpiId(), Arrays.asList("1-2", "2-3", "3-4", "4-5", "5-6"));
+		when(configHelperService.calculateMaturity()).thenReturn(map);
 
 	}
 
