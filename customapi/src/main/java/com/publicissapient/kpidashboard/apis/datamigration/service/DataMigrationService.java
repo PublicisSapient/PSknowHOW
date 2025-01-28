@@ -44,8 +44,10 @@ import com.publicissapient.kpidashboard.apis.datamigration.model.MigrationLockLo
 import com.publicissapient.kpidashboard.apis.datamigration.model.ProjectBasicDup;
 import com.publicissapient.kpidashboard.apis.datamigration.util.InconsistentDataException;
 import com.publicissapient.kpidashboard.apis.datamigration.util.MigrationEnum;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -86,6 +88,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -138,7 +141,8 @@ public class DataMigrationService {
 	private KpiCommentsRepository kpiCommentsRepository;
 	@Autowired
 	private KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
-
+	@Autowired
+	private HierarchyLevelService hierarchyLevelService;
 	@Autowired
 	private MigrationLockService migrationLockService;
 
@@ -172,11 +176,12 @@ public class DataMigrationService {
 				OrganizationHierarchy projectHierarchy = new OrganizationHierarchy();
 				projectHierarchy.setNodeName(project.getProjectName());
 				projectHierarchy.setNodeDisplayName(project.getProjectName());
-				projectHierarchy.setHierarchyLevelId("project");
+				int projectLevel = projectAboveLevel + 1;
+				projectHierarchy.setHierarchyLevelId(Integer.toString(projectLevel));
 				projectHierarchy.setCreatedDate(LocalDateTime.now());
 				projectHierarchy.setParentId(projectParentId);
 				projectHierarchy.setNodeId(UUID.randomUUID().toString());
-				projectHierarchyMap.put(projectAboveLevel - 1 + ":" + project.getProjectName(), projectHierarchy);
+				projectHierarchyMap.put(projectLevel + ":" + project.getProjectName(), projectHierarchy);
 				nodeWiseOrganizationHierarchy.putAll(projectHierarchyMap);
 
 			} catch (InconsistentDataException e) {
@@ -260,7 +265,7 @@ public class DataMigrationService {
 			organizationHierarchy = new OrganizationHierarchy();
 			organizationHierarchy.setNodeName(currentHierarchy.getValue());
 			organizationHierarchy.setNodeDisplayName(currentHierarchy.getValue());
-			organizationHierarchy.setHierarchyLevelId(currentHierarchy.getHierarchyLevel().getHierarchyLevelId());
+			organizationHierarchy.setHierarchyLevelId(currentHierarchy.getHierarchyLevel().toString());
 			organizationHierarchy.setCreatedDate(LocalDateTime.now());
 
 			// Recursively set parent
@@ -311,13 +316,21 @@ public class DataMigrationService {
 			MigrationLockLog fullMigration = new MigrationLockLog(MigrationEnum.MIGRATION_STEP.name());
 			try {
 				// Update node names to match their display names
+				List<HierarchyLevel> kanbanHierachyLevel = hierarchyLevelService.getFullHierarchyLevels(true);
+				Map<String, List<HierarchyLevel>> hierarchyLevelMaap = new HashMap<>();
+				hierarchyLevelMaap.put("scrum", hierarchyLevelService.getFullHierarchyLevels(false));
+				hierarchyLevelMaap.put("kanban", kanbanHierachyLevel);
 
 				organizationHierarchyList
 						.forEach(orgHierarchy -> orgHierarchy.setNodeName(orgHierarchy.getNodeDisplayName()));
 
+				int level = kanbanHierachyLevel.stream()
+						.filter(a -> a.getHierarchyLevelId()
+								.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
+						.toList().get(0).getLevel();
 				// Map project names to their unique node IDs
-				Map<String, String> projectNameWiseUniqueId = organizationHierarchyList.stream()
-						.filter(orgHierarchy -> "project".equalsIgnoreCase(orgHierarchy.getHierarchyLevelId()))
+				Map<String, String> projectNameWiseUniqueId = organizationHierarchyList.stream().filter(
+						orgHierarchy -> String.valueOf(level).equalsIgnoreCase(orgHierarchy.getHierarchyLevelId()))
 						.collect(Collectors.toMap(OrganizationHierarchy::getNodeDisplayName,
 								OrganizationHierarchy::getNodeId));
 
@@ -346,7 +359,7 @@ public class DataMigrationService {
 						.collect(Collectors.toMap(ProjectBasicConfig::getId, ProjectBasicConfig::getProjectNodeId));
 
 				Map<String, Object> dataToSave = createDataToSave(organizationHierarchyList, projectBasicConfigList,
-						projectIdWiseUniqueId);
+						projectIdWiseUniqueId, hierarchyLevelMaap);
 
 				dataToSave.put("ORGANIZATION_HIERARCHY", organizationHierarchyList);
 				dataToSave.put("PROJECT_BASIC", projectBasicConfigList);
@@ -383,7 +396,8 @@ public class DataMigrationService {
 	}
 
 	private Map<String, Object> createDataToSave(List<OrganizationHierarchy> organizationHierarchyList,
-			List<ProjectBasicConfig> projectBasicConfigList, Map<ObjectId, String> projectIdWiseUniqueId) {
+			List<ProjectBasicConfig> projectBasicConfigList, Map<ObjectId, String> projectIdWiseUniqueId,
+			Map<String, List<HierarchyLevel>> hierarchyLevelMaap) {
 		log.info("Start Processing Data");
 		List<String> labelNames = additionalFilterCategoryRepository.findAll().stream()
 				.map(AdditionalFilterCategory::getFilterCategoryId).collect(Collectors.toList());
@@ -395,9 +409,9 @@ public class DataMigrationService {
 				.findByLabelList(labelNames);
 
 		Map<String, Object> dataSetToSave = new HashMap<>();
-		createSprintHierarchy(accountHierarchyRepositoryAll, projectIdWiseUniqueId, dataSetToSave);
+		createSprintHierarchy(accountHierarchyRepositoryAll, projectIdWiseUniqueId, dataSetToSave, hierarchyLevelMaap);
 		createReleaseHierarchy(accountHierarchyRepositoryAll, kanbanAccountHierarchyList, projectIdWiseUniqueId,
-				dataSetToSave);
+				dataSetToSave, hierarchyLevelMaap);
 		createAdditinalFilterHierarchy(accountHierarchyRepositoryAll, kanbanAccountHierarchyList, projectIdWiseUniqueId,
 				dataSetToSave);
 		updateCapacity(projectIdWiseUniqueId, dataSetToSave);
@@ -720,8 +734,12 @@ public class DataMigrationService {
 	}
 
 	private void createSprintHierarchy(List<AccountHierarchy> accountHierarchyRepositoryAll,
-			Map<ObjectId, String> projectIdWiseUniqueId, Map<String, Object> dataSetToSave) {
+			Map<ObjectId, String> projectIdWiseUniqueId, Map<String, Object> dataSetToSave,
+			Map<String, List<HierarchyLevel>> hierarchyLevelMaap) {
 
+		int sprintHierarchyLevel = hierarchyLevelMaap.get("scrum").stream()
+				.filter(a -> a.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))
+				.toList().get(0).getLevel();
 		Map<ObjectId, List<AccountHierarchy>> projectWiseSprints = accountHierarchyRepositoryAll.stream()
 				.filter(label -> label.getLabelName().equalsIgnoreCase("sprint"))
 				.collect(Collectors.groupingBy(AccountHierarchy::getBasicProjectConfigId));
@@ -744,7 +762,7 @@ public class DataMigrationService {
 					sprintHierarchy.setBasicProjectConfigId(accountHierarchy.getBasicProjectConfigId());
 					sprintHierarchy.setBeginDate(accountHierarchy.getBeginDate());
 					sprintHierarchy.setEndDate(accountHierarchy.getEndDate());
-					sprintHierarchy.setHierarchyLevelId(accountHierarchy.getLabelName());
+					sprintHierarchy.setHierarchyLevelId(String.valueOf(sprintHierarchyLevel));
 					sprintHierarchy.setNodeName(accountHierarchy.getNodeName());
 					sprintHierarchy.setNodeDisplayName(accountHierarchy.getNodeName());
 					sprintHierarchy.setParentId(projectUniqueId);
@@ -774,8 +792,14 @@ public class DataMigrationService {
 
 	private void createReleaseHierarchy(List<AccountHierarchy> accountHierarchyRepositoryAll,
 			List<KanbanAccountHierarchy> kanbanAccountHierarchyList, Map<ObjectId, String> projectIdWiseUniqueId,
-			Map<String, Object> dataSetToSave) {
+			Map<String, Object> dataSetToSave, Map<String, List<HierarchyLevel>> hierarchyLevelMaap) {
 		log.info("Scrum Release Hierarchy Details  Processing Data Started");
+		int scrumReleaseHierarchyLevel = hierarchyLevelMaap.get("scrum").stream()
+				.filter(a -> a.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))
+				.toList().get(0).getLevel();
+		int kanbanReleaseHierarchyLevel = hierarchyLevelMaap.get("kanban").stream()
+				.filter(a -> a.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))
+				.toList().get(0).getLevel();
 		Map<ObjectId, List<AccountHierarchy>> projectWiseScrumReleases = accountHierarchyRepositoryAll.stream()
 				.filter(label -> label.getLabelName().equalsIgnoreCase("release"))
 				.collect(Collectors.groupingBy(AccountHierarchy::getBasicProjectConfigId));
@@ -798,7 +822,7 @@ public class DataMigrationService {
 					releaseHierarchy.setEndDate(accountHierarchy.getEndDate());
 					releaseHierarchy.setNodeId(accountHierarchy.getNodeId().replace(accountHierarchy.getParentId(), "")
 							.concat(projectUniqueId));
-					releaseHierarchy.setHierarchyLevelId(accountHierarchy.getLabelName());
+					releaseHierarchy.setHierarchyLevelId(String.valueOf(scrumReleaseHierarchyLevel));
 					releaseHierarchy.setNodeName(accountHierarchy.getNodeName());
 					releaseHierarchy.setNodeDisplayName(accountHierarchy.getNodeName());
 					releaseHierarchy.setCreatedDate(accountHierarchy.getCreatedDate());
@@ -822,7 +846,7 @@ public class DataMigrationService {
 					releaseHierarchy.setEndDate(accountHierarchy.getEndDate());
 					releaseHierarchy.setNodeId(accountHierarchy.getNodeId().replace(accountHierarchy.getParentId(), "")
 							.concat(projectUniqueId));
-					releaseHierarchy.setHierarchyLevelId(accountHierarchy.getLabelName());
+					releaseHierarchy.setHierarchyLevelId(String.valueOf(kanbanReleaseHierarchyLevel));
 					releaseHierarchy.setNodeName(accountHierarchy.getNodeName());
 					releaseHierarchy.setNodeDisplayName(accountHierarchy.getNodeName());
 					releaseHierarchy.setCreatedDate(accountHierarchy.getCreatedDate());
@@ -847,8 +871,9 @@ public class DataMigrationService {
 			List<KanbanAccountHierarchy> kanbanAccountHierarchyList, Map<ObjectId, String> projectIdWiseUniqueId,
 			Map<String, Object> dataSetToSave) {
 		log.info("Scrum Additional Hierarchy Details  Processing Data Started");
-		List<String> additonalFilterCategoryList = additionalFilterCategoryRepository.findAll().stream()
-				.map(AdditionalFilterCategory::getFilterCategoryId).toList();
+		Map<String, Integer> additonalFilterCategoryMap = additionalFilterCategoryRepository.findAll().stream().collect(
+				Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, AdditionalFilterCategory::getLevel));
+		Set<String> additonalFilterCategoryList = additonalFilterCategoryMap.keySet();
 
 		Map<ObjectId, List<AccountHierarchy>> projectWiseScrumAdditonalFilter = accountHierarchyRepositoryAll.stream()
 				.filter(label -> additonalFilterCategoryList.contains(label.getLabelName()))
@@ -863,12 +888,13 @@ public class DataMigrationService {
 		Map<String, String> sprintNodeHistory = (Map<String, String>) dataSetToSave.get(SPRINT_HISTORY);
 
 		scrumAdditionalHierarchyData(projectIdWiseUniqueId, projectWiseScrumAdditonalFilter, projectHierarchyList,
-				sprintNodeHistory);
+				sprintNodeHistory, additonalFilterCategoryMap);
 		log.info("Scrum Additional Hierarchy Details  Processing Data Completed");
 		log.info("Kanban Additional Hierarchy Details  Processing Data Started");
 
 		// for kanban
-		kanbanAdditionalHierarchyData(projectIdWiseUniqueId, projectWiseKanbanAdditonalFilter, projectHierarchyList);
+		kanbanAdditionalHierarchyData(projectIdWiseUniqueId, projectWiseKanbanAdditonalFilter, projectHierarchyList,
+				additonalFilterCategoryMap);
 		log.info("Kanban Additional Hierarchy Details  Processing Data Completed");
 		dataSetToSave.putIfAbsent(PROJECT_HIERARCHY, projectHierarchyList);
 		dataSetToSave.computeIfPresent(PROJECT_HIERARCHY, (k, v) -> {
@@ -880,7 +906,7 @@ public class DataMigrationService {
 
 	private static void kanbanAdditionalHierarchyData(Map<ObjectId, String> projectIdWiseUniqueId,
 			Map<ObjectId, List<KanbanAccountHierarchy>> projectWiseKanbanAdditonalFilter,
-			List<ProjectHierarchy> projectHierarchyList) {
+			List<ProjectHierarchy> projectHierarchyList, Map<String, Integer> additonalFilterCategoryMap) {
 		if (MapUtils.isNotEmpty(projectIdWiseUniqueId)) {
 			projectWiseKanbanAdditonalFilter.forEach((project, hierarchies) -> {
 				if (projectIdWiseUniqueId.containsKey(project)) {
@@ -888,7 +914,8 @@ public class DataMigrationService {
 						ProjectHierarchy additionalHierachy = new ProjectHierarchy();
 						additionalHierachy.setBasicProjectConfigId(accountHierarchy.getBasicProjectConfigId());
 						additionalHierachy.setNodeId(accountHierarchy.getNodeId());
-						additionalHierachy.setHierarchyLevelId(accountHierarchy.getLabelName());
+						additionalHierachy.setHierarchyLevelId(
+								additonalFilterCategoryMap.getOrDefault(accountHierarchy.getLabelName(), 0).toString());
 						additionalHierachy.setNodeName(accountHierarchy.getNodeName());
 						additionalHierachy.setNodeDisplayName(accountHierarchy.getNodeName());
 						additionalHierachy.setCreatedDate(accountHierarchy.getCreatedDate());
@@ -903,7 +930,8 @@ public class DataMigrationService {
 
 	private static void scrumAdditionalHierarchyData(Map<ObjectId, String> projectIdWiseUniqueId,
 			Map<ObjectId, List<AccountHierarchy>> projectWiseScrumAdditonalFilter,
-			List<ProjectHierarchy> projectHierarchyList, Map<String, String> sprintNodeHistory) {
+			List<ProjectHierarchy> projectHierarchyList, Map<String, String> sprintNodeHistory,
+			Map<String, Integer> additonalFilterCategoryMap) {
 		if (MapUtils.isNotEmpty(sprintNodeHistory)) {
 			projectWiseScrumAdditonalFilter.forEach((project, hierarchies) -> {
 				if (projectIdWiseUniqueId.containsKey(project)) {
@@ -912,7 +940,8 @@ public class DataMigrationService {
 							ProjectHierarchy additionalHierachy = new ProjectHierarchy();
 							additionalHierachy.setBasicProjectConfigId(accountHierarchy.getBasicProjectConfigId());
 							additionalHierachy.setNodeId(accountHierarchy.getNodeId());
-							additionalHierachy.setHierarchyLevelId(accountHierarchy.getLabelName());
+							additionalHierachy.setHierarchyLevelId(additonalFilterCategoryMap
+									.getOrDefault(accountHierarchy.getLabelName(), 0).toString());
 							additionalHierachy.setNodeName(accountHierarchy.getNodeName());
 							additionalHierachy.setNodeDisplayName(accountHierarchy.getNodeName());
 							additionalHierachy.setCreatedDate(accountHierarchy.getCreatedDate());
