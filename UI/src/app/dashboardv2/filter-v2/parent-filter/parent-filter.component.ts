@@ -23,7 +23,9 @@ export class ParentFilterComponent implements OnChanges {
   constructor(public service: SharedService, public helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if ((changes['parentFilterConfig'] && !this.helperService.deepEqual(changes['parentFilterConfig'].currentValue, changes['parentFilterConfig'].previousValue)) ) {
+    const selectedTabChanged = changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange;
+
+    if ((changes['parentFilterConfig'] && !this.helperService.deepEqual(changes['parentFilterConfig'].currentValue, changes['parentFilterConfig'].previousValue)) || selectedTabChanged ) {
       if (this.parentFilterConfig['labelName'] === 'Organization Level') {
         this.fillAdditionalFilterLevels();
         this.filterLevels = Object.keys(this.filterData).map((item) => {
@@ -130,6 +132,9 @@ export class ParentFilterComponent implements OnChanges {
  * @returns {void}
  */
   onDropdownChange($event:any){
+    if($event){
+      localStorage.setItem('selectedTrend', JSON.stringify($event.value));
+    }
     if(this.helperService.isDropdownElementSelected($event)){
       this.handleSelectedLevelChange(true)
     }
