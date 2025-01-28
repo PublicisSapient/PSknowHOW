@@ -912,4 +912,12 @@ export class CapacityPlanningComponent implements OnInit {
     }
   }
 
+  getGridData() {
+    return this.kanban ? this.capacityKanbanData : this.capacityScrumData;
+  }
+
+  getDataKey() {
+    return this.kanban ? 'startDate' : 'sprintNodeId';
+  }
+
 }

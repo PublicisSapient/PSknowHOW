@@ -40,13 +40,14 @@
                     </form>
                 </div>
 
-                    <!-- <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-kanban-table" *ngIf="kanban else capacityScrumDataTable">
-                        <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="capacityKanbanData?.length > 0 else noDataTemp">
+                <div #capacityTemp>
+                    <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-kanban-table" *ngIf="kanban else capacityScrumDataTable">
+                        <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="checkIfGridDataIdEmpty() else noDataTemp">
                             <div class="p-xl-12 p-pl-0 p-p-r-0 p-mb-2 table-header">{{tabContentHeaders[selectedView]}}
                             </div>
-                            <p-table [columns]="cols.capacityKanbanKeys" [value]="capacityKanbanData"
+                            <p-table [columns]="getGridColumns()" [value]="getGridData()"
                                 class="capacity-table custom-grid" loadingIcon="loading-img"
-                                [expandedRowKeys]="expandedRows" dataKey="startDate"
+                                [expandedRowKeys]="expandedRows" [dataKey]="getDataKey()"
                                 (onRowExpand)="onCapacitySprintRowSelection()" rowExpandMode="single">
                                 <ng-template pTemplate="header" let-columns>
                                     <tr>
@@ -119,6 +120,13 @@
                                             </p-sortIcon>
                                         </th>
 
+                                        <th scope="col" pSortableColumn="email" class="expanded-table-header-cell"
+                                        ><!--[style]="{'max-width':'170px'}"-->
+                                            <div>
+                                                <span [ngClass]="{'editable': projectCapacityEditMode}">Email Id</span>
+                                            </div>
+                                        </th>
+
                                         <th scope="col" pSortableColumn="role" class="expanded-table-header-cell">Domain
                                             <p-sortIcon field="role"></p-sortIcon>
                                         </th>
@@ -148,6 +156,23 @@
                                     <tr class="expanded-table-body-row">
                                         <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName :
                                             '- -'}}</td>
+
+                                            <td class="expanded-table-body-cell"
+                                            [style]="{'max-width':'170px', 'word-wrap': 'break-word'}">
+
+                                            <p-multiSelect [options]="projectAssigneeEmailsCopy"
+                                                *ngIf="projectCapacityEditMode;else showUserEmail"
+                                                defaultLabel="Select Emails" class="multiselect-custom"
+                                                [style]="{'width':'160px'}" display="chip" showClear="true"
+                                                optionLabel="name" optionValue="value"
+                                                [formControl]="selectedSprintAssigneFormArray[rowIndex]?.email"
+                                                (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email')"
+                                                (onClear)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'email', true)">
+                                            </p-multiSelect>
+
+                                            <ng-template #showUserEmail>{{assignee?.email ?
+                                                assignee?.email : '- -'}}</ng-template>
+                                        </td>
 
                                         <td class="expanded-table-body-cell">
                                             <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles"
@@ -231,15 +256,15 @@
                             </div>
                         </div>
                     </ng-template>
-                </div> -->
-                <div>
+                </div>
+                <ng-template #capacityScrumDataTable>
                     <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-scrum-table"
-                    *ngIf="checkIfGridDataIdEmpty() else noDataTemp">
+                        *ngIf="checkIfGridDataIdEmpty() else noDataTemp">
                         <div class="p-xl-12 p-pl-0 p-p-r-0 p-mb-2 table-header">{{tabContentHeaders[selectedView]}}
                         </div>
-                            <!-- capacityKanbanData -->
-                            <p-table [columns]="getGridColumns()" [value]="kanban?capacityKanbanData:capacityScrumData"
-                                [dataKey]="kanban?startDate:sprintNodeId" class="capacity-table custom-grid"
+                        <div class="">
+                            <p-table [columns]="getGridColumns()" [value]="getGridData()"
+                                [dataKey]="getDataKey()" class="capacity-table custom-grid"
                                 (onRowExpand)="onCapacitySprintRowSelection()" [expandedRowKeys]="expandedRows"
                                 loadingIcon="loading-img" expandableRows="true" rowExpandMode="single">
                                 <ng-template pTemplate="header" let-columns>
@@ -260,13 +285,7 @@
                                             <button *ngIf="i === 0 && isToggleEnableForSelectedProject" type="button"
                                                 pButton pRipple class="p-button-text  p-button-plain expand-btn"
                                                 [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
-                                                <span
-                                                *ngIf="col.field === 'startDate' || col.field === 'endDate' else otherFieldsTemp">
-                                                {{item[col.field] | isoDateFormat}}
-                                            </span>
-                                            <ng-template #otherFieldsTemp>
-                                                    {{item[col.field] ? item[col.field] : '- -'}}
-                                            </ng-template>
+                                            {{item[col.field] ? item[col.field] : '- -'}}
                                         </td>
                                         <td class="upload_sprint_capacity">
                                             <button pButton type="button" class="p-button-sm btn-active edit-btn"
@@ -464,8 +483,9 @@
                     </tr>
                 </ng-template>
 
-                            </p-table>
-                    </div>
+                </p-table>
+            </div>
+        </div>
         <ng-template #noDataTemp>
             <div class="p-xl-12 p-pl-0 p-p-r-0 no-data-available" *ngIf="noData">
                 No data Available for Selected Project
@@ -476,22 +496,23 @@
                 </div>
             </div>
         </ng-template>
-                </div>
-            </div>
+        </ng-template>
+    </div>
+</div>
+</div>
+<ng-template #noDataTemp>
+    <div class="p-xl-12 no-projects" *ngIf="!loader">
+        <div *ngIf="kanban else noScrumData" class="error-msg">
+            You do not have access to any Kanban project
         </div>
-        <ng-template #noDataTemp>
-            <div class="p-xl-12 no-projects" *ngIf="!loader">
-                <div *ngIf="kanban else noScrumData" class="error-msg">
-                    You do not have access to any Kanban project
-                </div>
-                <ng-template #noScrumData>
-                    <div class="error-msg">
-                        You do not have access to any Scrum project
-                    </div>
-                </ng-template>
+        <ng-template #noScrumData>
+            <div class="error-msg">
+                You do not have access to any Scrum project
             </div>
         </ng-template>
     </div>
+</ng-template>
+</div>
 </div>
 <!--add or remove assignees through manage users!-->
 <p-dialog header="Add/Remove Users" [(visible)]="displayAssignee" [modal]="true" (onShow)="onAssigneeModalOpen()"
