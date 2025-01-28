@@ -40,8 +40,9 @@ export class PrimaryFilterComponent implements OnChanges {
     const selectedLevelChanged = changes['selectedLevel'] && !this.helperService.deepEqual(changes['selectedLevel']?.currentValue, changes['selectedLevel'].previousValue);
     const primaryFilterConfigChanged = changes['primaryFilterConfig'] && Object.keys(changes['primaryFilterConfig'].currentValue).length && !changes['primaryFilterConfig']?.firstChange;
     const selectedTypeChanged = changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange;
+    const selectedTabChanged = changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange;
 
-    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged) {
+    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged || selectedTabChanged) {
       this.applyDefaultFilters();
       return;
     }
@@ -69,7 +70,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
                 // in case project in state filters has been deleted
                 if (!this.selectedFilters?.length || !this.selectedFilters[0]) {
-                  this.selectedFilters = [this.filters[0]];
+                  this.selectedFilters = [this.selectCurrentProject()];
                   this.service.setBackupOfFilterSelectionState({ 'primary_level': null });
                 }
               } else {
@@ -96,7 +97,7 @@ export class PrimaryFilterComponent implements OnChanges {
                 this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
                 // reset
                 this.selectedFilters = [];
-                this.selectedFilters.push(this.filters[0]);
+                this.selectedFilters.push(this.selectCurrentProject());
                 this.service.setBackupOfFilterSelectionState({ 'primary_level': null });
                 this.applyPrimaryFilters({});
                 return;
@@ -124,7 +125,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
   reset() {
     this.selectedFilters = [];
-    this.selectedFilters.push(this.filters[0]);
+    this.selectedFilters.push(this.selectCurrentProject());
     this.service.setBackupOfFilterSelectionState({ 'parent_level': null, 'primary_level': null });
     this.applyPrimaryFilters({});
   }
@@ -205,7 +206,11 @@ export class PrimaryFilterComponent implements OnChanges {
         }
 
         if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
-          this.service.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
+          if (this.selectedTab?.toLowerCase() === 'developer' || this.selectedTab?.toLowerCase() === 'backlog') {
+            this.service.setBackupOfFilterSelectionState({ 'parent_level': this.selectedFilters[0].labelName, 'primary_level': [...this.selectedFilters] });
+          } else {
+            this.service.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
+          }
           this.applyFilters = false;
 
           if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'sprint' || this.selectedFilters[0]?.labelName?.toLowerCase() === 'release') {
@@ -237,6 +242,9 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   onSelectionChange(event: any) {
+    if(event){
+      localStorage.setItem('selectedTrend', JSON.stringify(event.value));
+    }
     if (event?.value?.length > 0) {
       this.moveSelectedOptionToTop()
     }
@@ -259,6 +267,9 @@ export class PrimaryFilterComponent implements OnChanges {
   isString(val): boolean { return typeof val === 'string'; }
 
   onDropdownChange($event: any) {
+    if($event){
+      localStorage.setItem('selectedTrend', JSON.stringify($event?.value));
+    }
     if (this.helperService.isDropdownElementSelected($event)) {
       this.applyPrimaryFilters($event)
     }
@@ -282,6 +293,28 @@ export class PrimaryFilterComponent implements OnChanges {
     } else {
       return this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate'])
     }
+  }
+
+  //function will return 1st project if project details are not present in URL and localsotrage.
+  selectCurrentProject() {
+    let retValue = this.filters[0];
+    const backupState = this.service.getBackupOfFilterSelectionState();
+    const defaultLabelName = this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase();
+
+    if (backupState?.parent_level?.labelName?.toLowerCase() === defaultLabelName) {
+      retValue = backupState.parent_level;
+    }
+
+    const selectedTrend = JSON.parse(localStorage.getItem('selectedTrend') || 'null');
+    if (selectedTrend && selectedTrend[0]?.labelName?.toLowerCase() === defaultLabelName) {
+      retValue = selectedTrend[0];
+    }
+
+    if(retValue?.typeName !== this.service.getSelectedType()){
+      retValue = this.filters[0];
+    }
+
+    return retValue;
   }
 
 }
