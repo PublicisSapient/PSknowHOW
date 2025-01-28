@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -86,6 +89,10 @@ public class ScopeChurnServiceImplTest {
 	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
 	private FilterHelperService filterHelperService;
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
+	@Mock
+	private KpiDataProvider kpiDataProvider;
 
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -94,12 +101,17 @@ public class ScopeChurnServiceImplTest {
 	List<JiraIssue> totalIssueList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
 
+	private static final String TOTAL_ISSUE = "totalIssue";
+	private static final String SPRINT_DETAILS = "sprintDetails";
+	private static final String SCOPE_CHANGE_ISSUE_HISTORY = "scopeChangeIssuesHistories";
+
 	@Before
 	public void setup() {
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SCOPE_CHURN.getKpiId());
 		kpiRequest.setLabel("PROJECT");
+		kpiRequest.setLevel(5);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -127,15 +139,17 @@ public class ScopeChurnServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(TOTAL_ISSUE, totalIssueList);
+		resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, jiraIssueCustomHistoryList);
+
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>());
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
+		when(kpiDataProvider.fetchScopeChurnData(any(), any(), any())).thenReturn(resultListMap);
+
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
 		Map<String, Object> defectDataListMap = scopeChurnService.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
@@ -149,15 +163,16 @@ public class ScopeChurnServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(TOTAL_ISSUE, new ArrayList<>());
+		resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
+
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>());
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>());
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
 		Map<String, Object> defectDataListMap = scopeChurnService.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
@@ -177,9 +192,14 @@ public class ScopeChurnServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(scopeChurnService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(TOTAL_ISSUE, totalIssueList);
+		resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
+
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -200,9 +220,13 @@ public class ScopeChurnServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(scopeChurnService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>());
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(TOTAL_ISSUE, new ArrayList<>());
+		resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -224,11 +248,13 @@ public class ScopeChurnServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(scopeChurnService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(jiraIssueCustomHistoryList);
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_DETAILS, sprintDetailsList);
+		resultListMap.put(TOTAL_ISSUE, totalIssueList);
+		resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, jiraIssueCustomHistoryList);
+		when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
+		when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
 
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

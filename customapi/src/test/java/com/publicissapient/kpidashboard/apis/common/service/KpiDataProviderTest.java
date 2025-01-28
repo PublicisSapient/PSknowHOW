@@ -36,6 +36,7 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -174,6 +175,40 @@ public class KpiDataProviderTest {
 		assertThat(((List<JiraIssue>)result.get(STORY_LIST)).size(), equalTo(totalIssueList.size()*2));
 		assertThat(result.get(SPRINTSDETAILS), equalTo(sprintDetailsList));
 		assertThat(result.get(JIRA_ISSUE_HISTORY_DATA), equalTo(new ArrayList<>()));
+	}
+
+	@Test
+	public void testFetchScopeChurnData() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+
+		Map<String, Object> result = kpiDataProvider.fetchScopeChurnData(kpiRequest, basicProjectConfigId, sprintList);
+		assertNotNull(result);
+	}
+
+	@Test
+	public void testFetchScopeChurnDataEmptyData() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+
+		Map<ObjectId, FieldMapping> fieldMappingMap1 = new HashMap<>();
+		fieldMappingMap.forEach((key, value) -> fieldMappingMap1.put(key, new FieldMapping()));
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap1);
+
+		Map<String, Object> result = kpiDataProvider.fetchScopeChurnData(kpiRequest, basicProjectConfigId, sprintList);
+		assertNotNull(result);
 	}
 
 }

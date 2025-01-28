@@ -293,15 +293,14 @@ public class KpiDataProvider {
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			List<JiraIssueCustomHistory> scopeChangeIssueHistories = new ArrayList<>();
 			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
 					uniqueProjectMap);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 			resultListMap.put(TOTAL_ISSUE, totalJiraIssue);
 			// Fetching history only for change/removed issue date for Excel req
-			scopeChangeIssueHistories = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
-					new ArrayList<>(scopeChangeIssue),
-					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+			List<JiraIssueCustomHistory> scopeChangeIssueHistories = jiraIssueCustomHistoryRepository
+					.findByStoryIDInAndBasicProjectConfigIdIn(new ArrayList<>(scopeChangeIssue),
+							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 			resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, scopeChangeIssueHistories);
 
 		}
