@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.app.rest;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -95,9 +97,22 @@ public class ProcessorControllerTest {
 	@Test
 	public void test_getData200() throws Exception {
 		List<Processor> listProcessor = new ArrayList<>();
-		Mockito.when(processorService.getAllProcessorDetails())
+		when(processorService.getAllProcessorDetails())
 				.thenReturn(new ServiceResponse(true, StringUtils.EMPTY, listProcessor));
 		mockMvc.perform(MockMvcRequestBuilders.get("/processor").contentType(TestUtil.APPLICATION_JSON_UTF8))
+				.andExpect(status().is2xxSuccessful());
+	}
+
+	/**
+	 * method to test /processor restPoint ; Get All Processors
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void metadata() throws Exception {
+		List<Processor> listProcessor = new ArrayList<>();
+		when(processorService.runMetadataStep(any())).thenReturn(new ServiceResponse(true, StringUtils.EMPTY, listProcessor));
+		mockMvc.perform(MockMvcRequestBuilders.post("/processor/metadata/step/abc").contentType(TestUtil.APPLICATION_JSON_UTF8))
 				.andExpect(status().is2xxSuccessful());
 	}
 

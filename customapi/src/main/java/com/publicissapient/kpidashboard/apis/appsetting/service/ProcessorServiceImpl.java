@@ -79,7 +79,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private ProcessorUrlConfig processorUrlConfig;
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
-	
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -179,7 +179,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				Gson gson = new Gson();
 				String payload = gson.toJson(sprintId);
-				HttpEntity<String> requestEntity = new HttpEntity<>(payload,headers);
+				HttpEntity<String> requestEntity = new HttpEntity<>(payload, headers);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 				statuscode = resp.getStatusCode().value();
 			} catch (HttpClientErrorException ex) {
@@ -210,13 +210,55 @@ public class ProcessorServiceImpl implements ProcessorService {
 	 * saves the response statuses for repo tools
 	 *
 	 * @param repoToolsStatusResponse
-	 * 		repo tool response status
+	 *            repo tool response status
 	 */
 	public void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse) {
 		repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
+	}
+
+	/**
+	 * run the metadata step of processor, to get the options of fieldmapping
+	 *
+	 * @param projectBasicConfigId
+	 *            id of the project
+	 * @return {@code ServiceResponse}
+	 */
+	@Override
+	public ServiceResponse runMetadataStep(String projectBasicConfigId) {
+
+		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA)
+				.replaceFirst("/startprojectwiseissuejob", "/runMetadataStep");
+
+		boolean isSuccess = true;
+
+		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		String token = httpServletRequest.getHeader(AUTHORIZATION);
+		token = CommonUtils.handleCrossScriptingTaintedValue(token);
+		int statuscode = HttpStatus.NOT_FOUND.value();
+		if (StringUtils.isNotEmpty(url)) {
+			try {
+				HttpHeaders headers = new HttpHeaders();
+				headers.add(AUTHORIZATION, token);
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				Gson gson = new Gson();
+				String payload = gson.toJson(projectBasicConfigId);
+				HttpEntity<String> requestEntity = new HttpEntity<>(payload, headers);
+				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+				statuscode = resp.getStatusCode().value();
+			} catch (HttpClientErrorException ex) {
+				statuscode = ex.getStatusCode().value();
+				isSuccess = false;
+			} catch (ResourceAccessException ex) {
+				isSuccess = false;
+			}
+		}
+		if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
+			isSuccess = false;
+		}
+		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}
 
 }

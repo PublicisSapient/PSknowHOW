@@ -197,6 +197,7 @@ public class JiraProcessorJobTest {
 		jiraProcessorJob.fetchIssueScrumJqlJob();
 		jiraProcessorJob.fetchIssueSprintJob();
 		jiraProcessorJob.fetchIssueKanbanJqlJob();
+		jiraProcessorJob.runMetaDataStep();
 
 	}
 }
