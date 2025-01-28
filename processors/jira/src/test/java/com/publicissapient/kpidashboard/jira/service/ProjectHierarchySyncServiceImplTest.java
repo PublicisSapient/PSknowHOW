@@ -106,7 +106,7 @@ public class ProjectHierarchySyncServiceImplTest {
 		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(accountHierarchyList);
 
-		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy);
+		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy, hierarchyLevel);
 
 		verify(accountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
@@ -121,7 +121,7 @@ public class ProjectHierarchySyncServiceImplTest {
 		when(accountHierarchyRepository.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)).thenReturn(entriesToDelete);
 
-		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy);
+		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy, hierarchyLevel);
 
 		verify(accountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
@@ -133,7 +133,7 @@ public class ProjectHierarchySyncServiceImplTest {
 		ObjectId projectId = new ObjectId();
 		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
 
-		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy);
+		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy, hierarchyLevel);
 
 		verify(accountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
@@ -145,7 +145,7 @@ public class ProjectHierarchySyncServiceImplTest {
 
 
 		List<String> distinctReleaseNodeIds = List.of("Release1", "Release2");
-		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy);
+		projectHierarchySyncServiceImpl.syncReleaseHierarchy(projectId, fetchedReleasedHierarchy, hierarchyLevel);
 
 		verify(accountHierarchyRepository).findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(projectId,
 				distinctReleaseNodeIds, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);

@@ -137,7 +137,7 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 
 			projectHierachy = new ProjectHierarchy();
 			projectHierachy.setBasicProjectConfigId(projectBasicConfig.getId());
-			projectHierachy.setHierarchyLevelId(hierarchyLevel.getHierarchyLevelId());
+			projectHierachy.setHierarchyLevelId(String.valueOf(hierarchyLevel.getLevel()));
 			String sprintName = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintName");
 			String sprintId = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintID");
 			String state = (String) PropertyUtils.getSimpleProperty(sprintDetails, "state");
@@ -166,10 +166,10 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 
 		additionalFilters.forEach(additionalFilter -> {
 			if (additionalFilterCategoryIds.contains(additionalFilter.getFilterId())) {
-				String labelName = additionalFilter.getFilterId();
+				int hierarchyLevelID = Integer.parseInt(sprintHierarchy.getHierarchyLevelId());
 				additionalFilter.getFilterValues().forEach(additionalFilterValue -> {
 					ProjectHierarchy adFilterAccountHierarchy = new ProjectHierarchy();
-					adFilterAccountHierarchy.setHierarchyLevelId(labelName);
+					adFilterAccountHierarchy.setHierarchyLevelId(String.valueOf(hierarchyLevelID + 1));
 					adFilterAccountHierarchy.setNodeId(additionalFilterValue.getValueId());
 					adFilterAccountHierarchy.setNodeName(additionalFilterValue.getValue());
 					adFilterAccountHierarchy.setNodeDisplayName(additionalFilterValue.getValue());

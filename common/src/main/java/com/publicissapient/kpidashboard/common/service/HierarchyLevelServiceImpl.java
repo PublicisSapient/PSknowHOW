@@ -53,7 +53,7 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 				if (isKanban) {
 					bottomHierarchyLevel.setLevel(releaseHierarchyLevel.getLevel() + 1);
 				} else {
-					bottomHierarchyLevel.setLevel(sprintHierarchyLevel.getLevel() + 1);
+					bottomHierarchyLevel.setLevel(sprintHierarchyLevel.getLevel() + 2);
 				}
 				hierarchyLevels.add(bottomHierarchyLevel);
 			}
@@ -114,7 +114,7 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 		hierarchyLevel.setHierarchyLevelName(CommonConstant.HIERARCHY_LEVEL_NAME_RELEASE);
 		if (CollectionUtils.isNotEmpty(topHierarchies)) {
 			HierarchyLevel parent = getProjectHierarchyLevel();
-			hierarchyLevel.setLevel(parent.getLevel() + 1);
+			hierarchyLevel.setLevel(parent.getLevel() + 2);
 		} else {
 			hierarchyLevel.setLevel(2);
 		}
