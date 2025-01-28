@@ -920,4 +920,20 @@ export class CapacityPlanningComponent implements OnInit {
     return this.kanban ? 'startDate' : 'sprintNodeId';
   }
 
+  getExpandedClass(item,expanded){
+
+    if(this.kanban){
+     return {
+      'tr-active': (item ) === true, //(item | comparedates
+      'row-expanded': expanded
+    }
+    }else{
+    return{
+      'tr-active': item?.sprintState?.toLowerCase() === 'active',
+      'row-expanded': expanded
+    }
+    }
+    
+  }
+
 }
