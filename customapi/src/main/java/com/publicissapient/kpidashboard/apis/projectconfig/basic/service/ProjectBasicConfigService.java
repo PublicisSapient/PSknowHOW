@@ -154,4 +154,13 @@ public interface ProjectBasicConfigService {
 	void projectBasicConfigSortedBasedOnHierarchyLevel(ProjectBasicConfig projectBasicConfig);
 
 	List<HierarchyResponseDTO> getHierarchyData();
+
+	/**
+	 * Method to filter the hierarchy DTOs with atLeast one connected tools
+	 * 
+	 * @param hierarchyData
+	 *            hierarchy data
+	 * @return a list of HierarchyResponseDTOs with at least one connected tool
+	 */
+	List<HierarchyResponseDTO> filterHierarchyDTOsWithConnectedTools(List<HierarchyResponseDTO> hierarchyData);
 }
