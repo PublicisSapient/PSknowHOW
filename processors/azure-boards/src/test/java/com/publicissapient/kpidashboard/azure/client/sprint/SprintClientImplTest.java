@@ -1,8 +1,10 @@
 package com.publicissapient.kpidashboard.azure.client.sprint;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
 import com.publicissapient.kpidashboard.azure.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.azure.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.azure.exception.SprintReportException;
 import com.publicissapient.kpidashboard.azure.model.AzureProcessor;
 import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.azure.model.AzureToolConfig;
@@ -208,6 +211,20 @@ public class SprintClientImplTest {
 		azureServer.setUsername("");
 		return azureServer;
 
+	}
+
+	@Test
+	void testPrepareSprintReportThrowsSprintReportException() {
+		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
+		AzureServer azureServer = new AzureServer();
+
+		// Mocking the repository to throw an exception
+		doThrow(new RuntimeException("Database error")).when(sprintRepository).findBySprintID(anyString());
+
+		// Asserting that SprintReportException is thrown
+		assertThrows(SprintReportException.class, () -> {
+			sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, azureServer);
+		});
 	}
 
 }
