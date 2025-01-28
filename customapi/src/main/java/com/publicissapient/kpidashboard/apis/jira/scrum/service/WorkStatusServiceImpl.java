@@ -423,26 +423,6 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		data.setDelay(delay);
 	}
 
-	private static int getIssueDelay(JiraIssue issue, Set<String> category, Map<String, Object> jiraIssueData,
-			Map<JiraIssue, String> devCompletedIssues, int delay, Map<String, List<String>> category2) {
-		category.add(DEV_STATUS);
-		category2.get(DEV_STATUS).add(PLANNED_COMPLETION);
-		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
-			int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
-			delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
-		}
-		// Calculating actual work status for only completed issues
-		if (devCompletedIssues.containsKey(issue)) {
-			category2.get(DEV_STATUS).add(ACTUAL_COMPLETION);
-			if (DateUtil.stringToLocalDate(issue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-					.isAfter(LocalDate.now().minusDays(1)) && !jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
-				int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
-				delay = KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
-			}
-		}
-		return delay;
-	}
-
 	/**
 	 * 
 	 * @param issue
