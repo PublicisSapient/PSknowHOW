@@ -32,7 +32,7 @@ public class UniqueShortKeyGenerator {
 		if (input == null) {
 			throw new IllegalArgumentException("Input cannot be null");
 		}
-		log.info("Generating short key for input: {}", input);
+		log.info("Generating short key for input: {}", input.replaceAll("[^a-zA-Z0-9-_]", ""));
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -40,7 +40,7 @@ public class UniqueShortKeyGenerator {
 			// Return first 8 characters for a short key
 			return shortKey.substring(0, 8);
 		} catch (NoSuchAlgorithmException e) {
-			log.error("Error generating short key for input: {}", input, e);
+			log.error("Error generating short key for input: {}", input.replaceAll("[^a-zA-Z0-9-_]", ""), e);
 			throw new IllegalStateException("Error generating short key", e);
 		}
 	}
