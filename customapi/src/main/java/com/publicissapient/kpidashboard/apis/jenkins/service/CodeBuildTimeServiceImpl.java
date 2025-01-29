@@ -371,6 +371,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 		List<Build> buildList = new ArrayList<>();
 		leafNodeList.forEach(node -> {
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
+//			get cached build info from BuildFrequency db kpi cache
 			buildList.addAll(kpiDataCacheService.fetchBuildFrequencydata(basicProjectConfigId, startDate, endDate,
 					KPICode.BUILD_FREQUENCY.getKpiId()));
 		});
