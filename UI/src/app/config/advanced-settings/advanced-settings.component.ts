@@ -102,13 +102,13 @@ export class AdvancedSettingsComponent implements OnInit {
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
             that.userProjects = response.data.map((proj) => ({
-              name: proj.projectName,
+              name: proj.projectDisplayName,
               id: proj.id
             }));
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
               .map((filteredProj) => ({
-                name: filteredProj.projectName,
+                name: filteredProj.projectDisplayName,
                 id: filteredProj.id
               }));
           }

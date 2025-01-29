@@ -550,7 +550,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       if (data[i]?.nodeId) {
-        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName }
+        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName }
       }
     }
     if (Object.keys(this.colorObj).length) {

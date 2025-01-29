@@ -2328,8 +2328,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     for (let i = 0; i < arr?.length; i++) {
       for (const key in this.colorObj) {
 
-        let selectedNode = this.filterData.filter(x => x.nodeName === arr[i].value[0].sprojectName);
-        let selectedId = selectedNode[0].nodeId;
+        let selectedNode = this.filterData.filter(x => x.nodeDisplayName === arr[i].value[0].sprojectName);
+        let selectedId = selectedNode[0]?.nodeId;
 
         if (kpiId == 'kpi17' && this.colorObj[key]?.nodeId == selectedId) {
           this.chartColorList[kpiId].push(this.colorObj[key]?.color);
@@ -2692,7 +2692,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             let trendObj = {};
             const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
             if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
-              let selectedNode = this.filterData.filter(x => x.nodeName === this.kpiChartData[kpiId][i]?.data);
+              let selectedNode = this.filterData.filter(x => x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data);
               let selectedId = selectedNode[0].nodeId;
               trendObj = {
                 "hierarchyName": this.kpiChartData[kpiId][i]?.data,
