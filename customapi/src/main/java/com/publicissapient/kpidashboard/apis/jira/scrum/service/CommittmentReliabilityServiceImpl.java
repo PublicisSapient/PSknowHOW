@@ -15,6 +15,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -90,21 +93,19 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String SPECIAL_SYMBOL = "#";
 
 	@Autowired
-	private SprintRepository sprintRepository;
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	@Autowired
-	private KpiHelperService kpiHelperService;
-
-	@Autowired
-	private FilterHelperService flterHelperService;
-
+		@Autowired
+	private FilterHelperService filterHelperService;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
+	@Autowired
+	private KpiDataProvider kpiDataProvider;
+
+	private volatile List<String> sprintIdList = new ArrayList<>();
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -122,7 +123,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		sprintIdList = treeAggregatorDetail.getMapOfListOfLeafNodes().get(CommonConstant.SPRINT_MASTER).stream()
+				.map(node -> node.getSprintFilter().getId()).collect(Collectors.toList());
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, kpiElement, kpiRequest);
@@ -308,8 +310,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(
-				KPIExcelColumn.COMMITMENT_RELIABILITY.getColumns(sprintLeafNodeList, cacheService, flterHelperService));
+		kpiElement.setExcelColumns(KPIExcelColumn.COMMITMENT_RELIABILITY.getColumns(sprintLeafNodeList, cacheService,
+				filterHelperService));
 	}
 
 	private static Set<JiraIssue> getCompletedIssues(List<JiraIssue> allJiraIssue, SprintDetails sd,
@@ -348,64 +350,34 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			KpiRequest kpiRequest) {
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
-		List<String> sprintList = new ArrayList<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
+		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			sprintList.add(leaf.getSprintFilter().getId());
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-		});
-		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
-		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
-				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
-
-		Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService
-				.getProjectWiseTotalSprintDetail(projectWiseTotalSprintDetails);
-		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
-		Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-
-		if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
-			Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
-					.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
-						FieldMapping fieldMapping = fieldMappingMap.get(key);
-						return Optional.ofNullable(fieldMapping)
-								.map(FieldMapping::getJiraIterationCompletionStatusKpi72)
-								.orElse(Collections.emptyList());
-					}));
-			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
-					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
-		}
-
-		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
-		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(dbSprintDetail -> {
-			FieldMapping fieldMapping = fieldMappingMap.get(dbSprintDetail.getBasicProjectConfigId());
-			// to modify sprintdetails on the basis of configuration for the project
-			SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
-					fieldMapping.getJiraIterationIssuetypeKpi72(), fieldMapping.getJiraIterationCompletionStatusKpi72(),
-					finalProjectWiseDuplicateIssuesWithMinCloseDate);
-			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-						CommonConstant.TOTAL_ISSUES));
-			}
-			if (CollectionUtils.isNotEmpty(sprintDetail.getPuntedIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-						CommonConstant.PUNTED_ISSUES));
-
-			}
-			if (CollectionUtils.isNotEmpty(sprintDetail.getAddedIssues())) {
-				totalIssue.addAll(sprintDetail.getAddedIssues());
-			}
-
+			projectWiseSprints.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+			projectWiseSprints.get(basicProjectConfigId).add(leaf.getSprintFilter().getId());
 		});
 
-		/** additional filter **/
-		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().toList());
+		List<JiraIssue> totalIssue = new ArrayList<>();
+		List<SprintDetails> sprintDetails = new ArrayList<>();
+		boolean fetchCachedData = filterHelperService.isFilterSelectedTillSprintLevel(kpiRequest.getLevel(), false);
+		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
+			Map<String, Object> result;
+			if (fetchCachedData) {// fetch data from cache only if Filter is selected till Sprint level.
+				result = kpiDataCacheService.fetchCommitmentReliabilityData(kpiRequest, basicProjectConfigId,
+						sprintIdList, KPICode.COMMITMENT_RELIABILITY.getKpiId());
+			} else {// fetch data from DB if filters below Sprint level (i.e. additional filters)
+				result = kpiDataProvider.fetchCommitmentReliabilityData(kpiRequest, basicProjectConfigId, sprintList);
+			}
+			List<JiraIssue> allJiraIssue = (List<JiraIssue>) result.get(PROJECT_WISE_TOTAL_ISSUE);
+			List<SprintDetails> sprintDetailsList = (List<SprintDetails>) result.get(SPRINT_DETAILS);
+
+			sprintDetails.addAll(sprintDetailsList.stream().filter(sprint -> sprintList.contains(sprint.getSprintID()))
+					.collect(Collectors.toSet()));
+			totalIssue.addAll(allJiraIssue);
+		});
+
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
-					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
+			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE, totalIssue);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		}
 		return resultListMap;

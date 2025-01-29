@@ -27,9 +27,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -37,14 +34,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
 import com.publicissapient.kpidashboard.common.model.application.Subproject;
@@ -277,15 +277,19 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setJiraCanBeAutomatedTestValue(projectToolConfig.getJiraCanBeAutomatedTestValue());
 		projectTool.setTestCaseStatus(projectToolConfig.getTestCaseStatus());
 		projectTool.setMetadataTemplateCode(projectToolConfig.getMetadataTemplateCode());
+		projectTool.setOriginalTemplateCode(projectToolConfig.getOriginalTemplateCode());
 		projectTool.setGitLabSdmID(projectToolConfig.getGitLabSdmID());
 		projectTool.setAzureIterationStatusFieldUpdate(projectToolConfig.isAzureIterationStatusFieldUpdate());
 		projectTool.setProjectComponent(projectToolConfig.getProjectComponent());
 		projectTool.setTeam(projectToolConfig.getTeam());
 		projectTool.setAzureRefreshActiveSprintReport(projectToolConfig.getAzureRefreshActiveSprintReport());
+		if (Boolean.TRUE.equals(projectToolConfig.getAzureRefreshActiveSprintReport())) {
+			projectTool.setAzureRefreshActiveSprintReportUpdatedBy(authenticationService.getLoggedInUser());
+			projectTool.setAzureRefreshActiveSprintReportUpdatedOn(System.currentTimeMillis());
+		}
+		projectTool.setUpdatedBy(authenticationService.getLoggedInUser());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
-		projectTool.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
-		projectTool.setUpdatedBy(authenticationService.getLoggedInUser());
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 		if (projectTool.getToolName().equalsIgnoreCase(ProcessorConstants.ZEPHYR)
@@ -435,6 +439,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setBoardQuery(e.getBoardQuery());
 			projectConfToolDto.setBoards(e.getBoards());
 			projectConfToolDto.setMetadataTemplateCode(e.getMetadataTemplateCode());
+			projectConfToolDto.setOriginalTemplateCode(e.getOriginalTemplateCode());
 			projectConfToolDto.setRegressionAutomationLabels(e.getRegressionAutomationLabels());
 			projectConfToolDto.setTestAutomationStatusLabel(e.getTestAutomationStatusLabel());
 			projectConfToolDto.setAutomatedTestValue(e.getAutomatedTestValue());

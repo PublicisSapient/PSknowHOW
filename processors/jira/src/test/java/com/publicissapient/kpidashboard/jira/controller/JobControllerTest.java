@@ -325,6 +325,31 @@ public class JobControllerTest {
 	}
 
 	@Test
+	public void testMetaData() throws Exception {
+		// Mocking ongoingExecutionsService.isExecutionInProgress() to return false
+
+	// Calling the method with ProcessorExecutionBasicConfig
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(Collections.singletonList("507f1f77bcf86cd799439011"));
+		ResponseEntity<String> response = jobController.runMetadataStep("507f1f77bcf86cd799439011");
+	}
+
+	@Test
+	public void testMetaDataException() throws Exception {
+		// Mocking ongoingExecutionsService.isExecutionInProgress() to return false
+
+		// Mocking findById() to return an Optional<ProjectBasicConfig>
+
+
+		// Mocking findByToolNameAndBasicProjectConfigId() to return a list of ProjectToolConfig
+
+		// Calling the method with ProcessorExecutionBasicConfig
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(Collections.singletonList("507f1f77bcf86cd799439011"));
+		ResponseEntity<String> response = jobController.runMetadataStep("507f1f77bcf86cd799439011");
+	}
+
+	@Test
 	public void testStartProjectWiseIssueJobKanban_SuccessfulExecution() throws Exception {
 		// Mocking ongoingExecutionsService.isExecutionInProgress() to return false
 		when(ongoingExecutionsService.isExecutionInProgress(anyString())).thenReturn(false);

@@ -998,7 +998,14 @@
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
     "isAdditionalFilterSupport" : true ,
-    "calculateMaturity" : false ,
+    "calculateMaturity" : true ,
+    "maturityRange": [
+      "1-2",
+      "2-3",
+      "3-4",
+      "4-5",
+      "5-6"
+    ],
     "lineLegend" : "Sprint Velocity" ,
     "barLegend" : "Last 5 Sprints Average" ,
     "chartType" : "grouped_column_plus_line" ,

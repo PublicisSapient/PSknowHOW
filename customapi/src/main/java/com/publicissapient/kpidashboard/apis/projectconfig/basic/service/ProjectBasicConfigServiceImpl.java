@@ -32,9 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,18 +57,21 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
+import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
@@ -832,4 +832,25 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId, Collectors.collectingAndThen(
 						Collectors.toList(), list -> list.stream().limit(5).collect(Collectors.toList()))));
 	}
+
+	/**
+	 * Filters out HierarchyResponseDTOs where none of the tools are connected.
+	 *
+	 * @param hierarchyResponseDTOS
+	 *            the list of HierarchyResponseDTOs to filter
+	 * @return a list of HierarchyResponseDTOs with at least one connected tool
+	 */
+	public List<HierarchyResponseDTO> filterHierarchyDTOsWithConnectedTools(
+			List<HierarchyResponseDTO> hierarchyResponseDTOS) {
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfigMapData = getProjectToolConfigMapData();
+		return hierarchyResponseDTOS.stream()
+				.filter(hierarchyResponsedto -> MapUtils
+						.isNotEmpty(projectToolConfigMapData.get(new ObjectId(hierarchyResponsedto.getProjectId()))))
+				.collect(Collectors.toList());
+	}
+
+	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> getProjectToolConfigMapData() {
+		return (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService.cacheProjectToolConfigMapData();
+	}
+
 }

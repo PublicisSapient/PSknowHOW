@@ -29,17 +29,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Optional;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +45,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -63,13 +59,10 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -215,21 +208,20 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	 *            list of builds
 	 * @return returns the job name
 	 */
-	private static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
+	protected static String getJobName(String trendLineName, Map.Entry<String, List<Build>> entry,
 			List<Build> buildList) {
 		String jobName;
 		if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
 			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+				jobName = buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName);
 			} else {
-				jobName = buildList.get(0).getJobFolder() + CommonConstant.ARROW + trendLineName;
+				jobName = buildList.get(0).getJobFolder() + CommonUtils.getStringWithDelimiters(trendLineName);
 			}
-
 		} else {
 			if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-				jobName = entry.getKey() + CommonConstant.ARROW + buildList.get(0).getPipelineName();
+				jobName = buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName);
 			} else {
-				jobName = entry.getKey() + CommonConstant.ARROW + trendLineName;
+				jobName = entry.getKey() + CommonUtils.getStringWithDelimiters(trendLineName);
 			}
 		}
 		return jobName;
@@ -312,7 +304,9 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 
 			if (StringUtils.isNotEmpty(build.getJobFolder())) {
 				codeBuildTimeInfo.addBuidJob(build.getJobFolder());
-			} else {
+			} else if(StringUtils.isNotEmpty(build.getPipelineName())){
+				codeBuildTimeInfo.addPipeLineNames(build.getPipelineName());
+			} else{
 				codeBuildTimeInfo.addBuidJob(build.getBuildJob());
 			}
 			codeBuildTimeInfo.addBuildUrl(build.getBuildUrl());

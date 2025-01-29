@@ -278,4 +278,45 @@ public class ProcessorServiceImplTest {
 		Mockito.verify(cacheService, Mockito.times(3)).clearCache(Mockito.anyString());
 
 	}
+
+	@Test
+	public void fetchMetaData() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
+		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+		ServiceResponse response = processorService.runMetadataStep("132_TestSprint");
+		assertTrue(response.getSuccess());
+	}
+
+	@Test
+	public void fetchMetaData_ResourceException() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+						Mockito.<Class<String>>any()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
+		ServiceResponse response = processorService.runMetadataStep("132_TestSprint");
+		assertFalse(response.getSuccess());
+	}
+
+	@Test
+	public void fetchMetaData_ResourceAccessException() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+						Mockito.<Class<String>>any()))
+				.thenThrow(new ResourceAccessException("Bad Request"));
+		ServiceResponse response = processorService.runMetadataStep("132_TestSprint");
+		assertFalse(response.getSuccess());
+	}
+
+
+	@Test
+	public void fetchMetaData_serverError() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
+		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR);
+		ServiceResponse response = processorService.runMetadataStep("132_TestSprint");
+		assertFalse(response.getSuccess());
+	}
 }

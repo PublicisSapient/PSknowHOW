@@ -120,9 +120,9 @@
         }else{
           this.noProjectsForSelectedCategory = true;
           this.selectedProject = {}
-        } 
+        }
         this.setFormControlData();
-        this.kpiChangesObj = {};  
+        this.kpiChangesObj = {};
      }
      get kpiFormValue() {
          return this.kpiForm.controls;
@@ -166,7 +166,7 @@
         iterationKpis.kpis = iterationData.kpis;
       }
     }
-    
+
 
      this.httpService.submitShowHideKpiData(kpiListPayload,this.selectedProject['id'])
        .subscribe(response => {
@@ -199,21 +199,21 @@
 
        if (!event.checked) {
          this.setMainDashboardKpiShowHideStatus(kpi.kpiId,false);
-        this.kpiFormValue.kpiCategories['controls'][boardName].setValue(!kpiTempArray.every(val => val === false));       
+        this.kpiFormValue.kpiCategories['controls'][boardName].setValue(!kpiTempArray.every(val => val === false));
        } else {
         this.setMainDashboardKpiShowHideStatus(kpi.kpiId,true);
         this.kpiFormValue.kpiCategories['controls'][boardName].setValue(kpiTempArray.some(val => val === true));
        }
-      
+
        if(this.kpiChangesObj[boardName]) {
          this.kpiChangesObj[boardName].push(kpiObj);
        } else {
          this.kpiChangesObj[boardName] = [kpiObj];
        }
      }
-     
+
      // on kpicategory flag change,  setting all of its kpi flag
-    handleKpiCategoryChange(event, boardData) { 
+    handleKpiCategoryChange(event, boardData) {
          const boardSlug = boardData.boardName;
          const modifiedObj = {...boardData};
          const targetSelector = event.originalEvent?.target?.closest('.kpi-category-header')?.querySelector('.kpis-list');
@@ -231,7 +231,7 @@
             return item;
           });
          } else {
-          targetSelector?.classList.add('hide-kpisList');     
+          targetSelector?.classList.add('hide-kpisList');
           modifiedObj.kpis.forEach((item) => {
             item.shown = false;
             this.kpiFormValue.kpis['controls'][item.kpiId].setValue(false);
@@ -258,20 +258,11 @@
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
             that.userProjects = [];
-           const all = {
-            name: "ALL",
-            id: "all",
-            type : 'common',
-            isSort : false
-          };
             that.userProjects = response.data.map((filteredProj) => ({
                 name: filteredProj.projectName,
                 id: filteredProj.id,
                 type : filteredProj.kanban ? 'kanban' : 'scrum'
               }));
-              if(this.userProjects && that.userProjects.length){
-                that.userProjects.unshift(all);
-              }
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = [];
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
@@ -300,7 +291,7 @@
         }
       });
   }
-  
+
   updateProjectSelection(projectSelectionEvent) {
     const currentSelection = projectSelectionEvent.value;
     if (currentSelection) {

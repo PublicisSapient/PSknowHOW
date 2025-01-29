@@ -307,7 +307,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 			Map<String, Object> result;
 			if (fetchCachedData) {// fetch data from cache only if Filter is selected till Sprint level.
 				result = kpiDataCacheService.fetchScopeChurnData(kpiRequest, basicProjectConfigId, sprintIdList,
-						KPICode.ISSUE_COUNT.getKpiId());
+						KPICode.SCOPE_CHURN.getKpiId());
 			} else {// fetch data from DB if filters below Sprint level (i.e. additional filters)
 				result = kpiDataProvider.fetchScopeChurnData(kpiRequest, basicProjectConfigId, sprintList);
 			}

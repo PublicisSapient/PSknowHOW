@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -215,7 +216,9 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 					List<Build> buildList = entry.getValue();
 					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
 						jobName = buildList.get(0).getJobFolder();
-					} else {
+					} else if(StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+						jobName = buildList.get(0).getPipelineName();
+					}else {
 						jobName = entry.getKey();
 					}
 					aggBuildList.addAll(buildList);
@@ -324,13 +327,13 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 	private static void trendValue(List<Build> buildList, String trendLineName,
 			Map<String, List<DataCount>> trendValueMap, String jobName, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName(),
+			trendValueMap.putIfAbsent(buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName),
 					new ArrayList<>());
-			trendValueMap.get(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName())
+			trendValueMap.get(buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName))
 					.addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-			trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+			trendValueMap.putIfAbsent(jobName + CommonUtils.getStringWithDelimiters(trendLineName), new ArrayList<>());
+			trendValueMap.get(jobName + CommonUtils.getStringWithDelimiters(trendLineName)).addAll(dataCountList);
 		}
 	}
 
