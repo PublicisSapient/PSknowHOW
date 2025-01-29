@@ -15,105 +15,102 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.stringshortener.service;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.stringshortener.dto.StringShortenerDTO;
 import com.publicissapient.kpidashboard.apis.stringshortener.model.StringShortener;
 import com.publicissapient.kpidashboard.apis.stringshortener.repository.StringShortenerRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StringShortenerServiceTest {
 
-	@Mock
-	private StringShortenerRepository stringShortenerRepository;
+    @Mock
+    private StringShortenerRepository stringShortenerRepository;
 
-	@InjectMocks
-	private StringShortenerService stringShortenerService;
+    @InjectMocks
+    private StringShortenerService stringShortenerService;
 
-	private StringShortenerDTO stringShortenerDTO;
-	private StringShortener stringShortener;
+    private StringShortenerDTO stringShortenerDTO;
+    private StringShortener stringShortener;
 
-	@Before
-	public void setUp() {
-		stringShortenerDTO = new StringShortenerDTO();
-		stringShortenerDTO.setLongKPIFiltersString("longKPI");
-		stringShortenerDTO.setLongStateFiltersString("longState");
-		stringShortenerDTO.setShortKPIFilterString("shortKPI");
-		stringShortenerDTO.setShortStateFiltersString("shortState");
+    @Before
+    public void setUp() {
+        stringShortenerDTO = new StringShortenerDTO();
+        stringShortenerDTO.setLongKPIFiltersString("longKPI");
+        stringShortenerDTO.setLongStateFiltersString("longState");
 
-		stringShortener = new StringShortener();
-		stringShortener.setLongKPIFiltersString("longKPI");
-		stringShortener.setShortKPIFilterString("shortKPI");
-		stringShortener.setLongStateFiltersString("longState");
-		stringShortener.setShortStateFiltersString("shortState");
-		MockitoAnnotations.openMocks(this);
-	}
+        stringShortener = new StringShortener();
+        stringShortener.setLongKPIFiltersString("longKPI");
+        stringShortener.setShortKPIFilterString("shortKPI");
+        stringShortener.setLongStateFiltersString("longState");
+        stringShortener.setShortStateFiltersString("shortState");
+    }
 
-//	@Test
-//	public void testCreateShortString_NewMapping() {
-//		when(stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString(any(), any()))
-//				.thenReturn(Optional.empty());
-//		when(stringShortenerRepository.save(any(StringShortener.class))).thenReturn(stringShortener);
-//
-//		StringShortener result = stringShortenerService.createShortString(stringShortenerDTO);
-//
-//		assertNotNull(result);
-//		assertEquals("longKPI", result.getLongKPIFiltersString());
-//		assertEquals("shortKPI", result.getShortKPIFilterString());
-//		assertEquals("longState", result.getLongStateFiltersString());
-//		assertEquals("shortState", result.getShortStateFiltersString());
-//	}
+    @Test
+    public void testCreateShortString_NullInput() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            stringShortenerService.createShortString(null);
+        });
+        assertEquals("Please provide a valid stringShortenerDTO", exception.getMessage());
+    }
 
-//	@Test
-//	public void testCreateShortString_ExistingMapping() {
-//		when(stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString(any(), any()))
-//				.thenReturn(Optional.of(stringShortener));
-//
-//		StringShortener result = stringShortenerService.createShortString(stringShortenerDTO);
-//
-//		assertNotNull(result);
-//		assertEquals("longKPI", result.getLongKPIFiltersString());
-//		assertEquals("shortKPI", result.getShortKPIFilterString());
-//		assertEquals("longState", result.getLongStateFiltersString());
-//		assertEquals("shortState", result.getShortStateFiltersString());
-//	}
+    @Test
+    public void testCreateShortString_ExistingMapping() {
+        when(stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString("longKPI", "longState"))
+            .thenReturn(Optional.of(stringShortener));
 
-	@Test
-	public void testCreateShortString_NullInput() {
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-			stringShortenerService.createShortString(null);
-		});
+        StringShortener result = stringShortenerService.createShortString(stringShortenerDTO);
+        assertEquals(stringShortener, result);
+    }
 
-		assertEquals("Please provide a valid stringShortenerDTO", exception.getMessage());
-	}
+    @Test
+    public void testGetLongString_Found() {
+        when(stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString("shortKPI", "shortState"))
+            .thenReturn(Optional.of(stringShortener));
 
-//	@Test
-//	public void testGetLongString_ExistingMapping() {
-//		when(stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString(any(), any()))
-//				.thenReturn(Optional.of(stringShortener));
-//
-//		Optional<StringShortener> result = stringShortenerService.getLongString("shortKPI", "shortState");
-//
-//		assertTrue(result.isPresent());
-//		assertEquals("longKPI", result.get().getLongKPIFiltersString());
-//		assertEquals("longState", result.get().getLongStateFiltersString());
-//	}
+        Optional<StringShortener> result = stringShortenerService.getLongString("shortKPI", "shortState");
+        assertEquals(stringShortener, result.get());
+    }
+
+    @Test
+    public void testGetLongString_NotFound() {
+        when(stringShortenerRepository.findByShortKPIFilterStringAndShortStateFiltersString("shortKPI", "shortState"))
+            .thenReturn(Optional.empty());
+
+        Optional<StringShortener> result = stringShortenerService.getLongString("shortKPI", "shortState");
+        assertEquals(Optional.empty(), result);
+    }
+
+    @Test
+    public void testCreateShortString_NewMapping() {
+        // Arrange
+        when(stringShortenerRepository.findByLongKPIFiltersStringAndLongStateFiltersString("longKPI", "longState"))
+                .thenReturn(Optional.empty());
+
+        when(stringShortenerRepository.save(any(StringShortener.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        StringShortener result = stringShortenerService.createShortString(stringShortenerDTO);
+
+        // Assert
+        assertEquals("longKPI", result.getLongKPIFiltersString());
+        assertEquals("longState", result.getLongStateFiltersString());
+        assertEquals(8, result.getShortKPIFilterString().length());
+        assertEquals(8, result.getShortStateFiltersString().length());
+    }
 }

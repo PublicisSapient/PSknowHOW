@@ -227,18 +227,22 @@ public class ProjectBasicConfigController {
 
 	/**
 	 *
-	 * Gets All Scrum ProjectsList with hierarchy details
-	 * this method is only use for specific purpose for Expose API
+	 * Gets All Scrum ProjectsList with hierarchy details this method is only use
+	 * for specific purpose for Expose API
 	 *
-	 * @return list of Scrum project list with hierarchy details
+	 * @return list of Scrum project list with hierarchy details at least one
+	 *         connected tool
 	 */
 	@GetMapping(value = "/hierarchyResponses")
 	public ResponseEntity<List<HierarchyResponseDTO>> getAllHierarchyResponse(HttpServletRequest request) {
 		String apiKey = customApiConfig.getxApiKey();
-		Boolean isApiAuth = StringUtils.isNotEmpty(apiKey)
+		boolean isApiAuth = StringUtils.isNotEmpty(apiKey)
 				&& apiKey.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (isApiAuth) {
-			return ResponseEntity.status(HttpStatus.OK).body(projectBasicConfigService.getHierarchyData());
+			List<HierarchyResponseDTO> hierarchyData = projectBasicConfigService.getHierarchyData();
+			List<HierarchyResponseDTO> filteredHierarchyData = projectBasicConfigService
+					.filterHierarchyDTOsWithConnectedTools(hierarchyData);
+			return ResponseEntity.status(HttpStatus.OK).body(filteredHierarchyData);
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
 		}

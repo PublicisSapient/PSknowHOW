@@ -27,11 +27,13 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import org.springframework.stereotype.Service;
 
 /**
  * test service for testing service class for scrum and kanban
  * @author shi6
  */
+@Service("sonarTestService")
 @Component
 public class TestService extends SonarKPIService<Object, Object, Object> {
 

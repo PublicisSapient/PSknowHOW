@@ -62,7 +62,7 @@ describe('ProfileModule', () => {
 
   it("should AD login enable and change password disable",()=>{
    localStorage.setItem('loginType',"AD");
-   sharedService.currentUserDetailsSubject.next({});
+   localStorage.setItem('currentUserDetails',JSON.stringify({}))
     component.ngOnInit();
     expect(component.changePswdDisabled).toBeTruthy();
   })
