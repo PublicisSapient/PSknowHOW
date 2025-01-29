@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.BuildDataFactory;
@@ -55,6 +56,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -76,17 +78,11 @@ public class BuildFrequencyServiceImplTest {
 
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
 	@Mock
-	BuildRepository buildRepository;
+	KpiDataCacheService kpiDataCacheService;
 	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
-	@Mock
-	FilterHelperService filterHelperService;
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiConfig;
 	@InjectMocks
@@ -170,8 +166,7 @@ public class BuildFrequencyServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
-		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
+		when(kpiDataCacheService.fetchBuildFrequencydata(any(), any(), any(), any())).thenReturn(buildList);
 
 		try {
 			when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
@@ -217,10 +212,20 @@ public class BuildFrequencyServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(new ArrayList<>());
+		LocalDateTime weekDay = LocalDateTime.now();
+		while (weekDay.getDayOfWeek() != DayOfWeek.MONDAY) {
+			weekDay = weekDay.minusDays(1);
+		}
+		long weekDayTime = weekDay.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+		buildList.get(0).setJobFolder("");
+		buildList.get(0).setStartTime(weekDayTime);
+		buildList.get(1).setStartTime(weekDayTime);
+		when(kpiDataCacheService.fetchBuildFrequencydata(any(), any(), any(), any())).thenReturn(buildList);
 		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
 		try {
 			when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
+			when(cacheService.getFromApplicationCache(any())).thenReturn(kpiRequestTrackerId);
 
 			KpiElement kpiElement = buildFrequencyServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -273,7 +278,7 @@ public class BuildFrequencyServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		buildList.forEach(build -> build.setPipelineName(null));
-		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
+		when(kpiDataCacheService.fetchBuildFrequencydata(any(), any(), any(), any())).thenReturn(buildList);
 		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
 
 		try {

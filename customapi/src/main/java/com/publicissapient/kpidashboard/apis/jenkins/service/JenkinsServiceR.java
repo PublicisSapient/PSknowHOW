@@ -25,11 +25,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -70,6 +71,9 @@ public class JenkinsServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
 	private boolean referFromProjectCache = true;
 
 	@SuppressWarnings({ "unchecked" })
@@ -98,14 +102,9 @@ public class JenkinsServiceR {
 					return responseList;
 				}
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
-					log.info("[JENKINS][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-							kpiRequest.getIds());
-					return (List<KpiElement>) cachedData;
-				}
+				List<KpiElement> cachedData = getCachedData(kpiRequest, groupId, projectKeyCache);
+				if (CollectionUtils.isNotEmpty(cachedData))
+					return cachedData;
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
@@ -119,7 +118,8 @@ public class JenkinsServiceR {
 				for (KpiElement kpiElement : kpiRequest.getKpiList()) {
 					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 						try {
-							responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiElement, treeAggregatorDetail));
+							responseList.add(
+									calculateAllKPIAggregatedMetrics(kpiRequest, kpiElement, treeAggregatorDetail));
 						} catch (Exception e) {
 							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
 						}
@@ -147,6 +147,21 @@ public class JenkinsServiceR {
 		}
 
 		return responseList;
+	}
+
+	private List<KpiElement> getCachedData(KpiRequest kpiRequest, Integer groupId, String[] projectKeyCache) {
+		Object cachedData = null;
+		if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+			cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(), groupId,
+					kpiRequest.getSprintIncluded());
+		}
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& null != cachedData) {
+			log.info("[JENKINS][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
+					kpiRequest.getIds());
+			return (List<KpiElement>) cachedData;
+		}
+		return new ArrayList<>();
 	}
 
 	/**

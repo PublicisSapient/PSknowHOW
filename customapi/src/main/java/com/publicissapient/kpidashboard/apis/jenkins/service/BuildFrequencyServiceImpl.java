@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
@@ -79,6 +79,8 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	private BuildRepository buildRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Override
 	public String getQualifierType() {
@@ -144,7 +146,11 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 
 		statusList.add(BuildStatus.SUCCESS.name());
 		mapOfFilters.put("buildStatus", statusList);
-		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
+		List<Build> buildList = new ArrayList<>();
+		projectBasicConfigIds
+				.forEach(projectBasicConfigId -> buildList.addAll(kpiDataCacheService.fetchBuildFrequencydata(
+						projectBasicConfigId, startDate, endDate, KPICode.BUILD_FREQUENCY.getKpiId())));
+
 		if (CollectionUtils.isEmpty(buildList)) {
 			return new HashMap<>();
 		}
@@ -365,7 +371,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 
 			if (StringUtils.isNotEmpty(build.getJobFolder())) {
 				buildFrequencyInfo.addBuildJobNameList(build.getJobFolder());
-			} else if(StringUtils.isNotEmpty(build.getPipelineName())) {
+			} else if (StringUtils.isNotEmpty(build.getPipelineName())) {
 				buildFrequencyInfo.addBuildJobNameList(build.getPipelineName());
 			} else {
 				buildFrequencyInfo.addBuildJobNameList(build.getBuildJob());

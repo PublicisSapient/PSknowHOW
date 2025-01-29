@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +78,7 @@ public class CodeBuildTimeServiceImplTest {
 
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
 	@Mock
-	BuildRepository buildRepository;
+	KpiDataCacheService kpiDataCacheService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -163,7 +164,7 @@ public class CodeBuildTimeServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
+		when(kpiDataCacheService.fetchBuildFrequencydata(any(), any(), any(), any())).thenReturn(buildList);
 		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
 
 		try {

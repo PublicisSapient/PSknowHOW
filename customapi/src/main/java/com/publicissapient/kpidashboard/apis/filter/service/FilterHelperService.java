@@ -617,4 +617,19 @@ public class FilterHelperService {
 		return cacheService.getAdditionalFilterHierarchyLevel();
 	}
 
+	/**
+	 * Checks if filter level selected is upto project level or below project level.
+	 * 
+	 * @param level
+	 *            filter level selected
+	 * @param isKanban
+	 *            if scrum or kanban
+	 * @return true or false
+	 */
+	public boolean isFilterSelectedTillSprintLevel(int level, boolean isKanban) {
+		HierarchyLevel projectHierarchyLevel = getHierarchyLevelMap(isKanban)
+				.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, null);
+		return null != projectHierarchyLevel && projectHierarchyLevel.getLevel() >= level;
+	}
+
 }

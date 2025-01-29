@@ -298,9 +298,14 @@ public class CustomApiConfig {// NOPMD
 	@Getter
 	private int sprintVelocityVarianceThreshold;
 
+	@Setter
+	@Getter
+	private List<Integer> groupIdsToExcludeFromCache;
+
     @Setter
     @Getter
     private int userSessionsExpiresOn;
+
 	public String getDefectRateUrl() {
 		return defectRateUrl;
 	}
