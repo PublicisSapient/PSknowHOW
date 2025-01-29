@@ -1064,7 +1064,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
       });
       if (this.selectedTab !== 'iteration') {
-        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState.toUpperCase() === 'CLOSED');
       }
       this.service.setAdditionalFilters(this.additionalFiltersArr);
     }
