@@ -176,7 +176,7 @@ public class DataMigrationService {
 				projectHierarchy.setCreatedDate(LocalDateTime.now());
 				projectHierarchy.setParentId(projectParentId);
 				projectHierarchy.setNodeId(UUID.randomUUID().toString());
-				projectHierarchyMap.put(projectAboveLevel - 1 + ":" + project.getProjectName(), projectHierarchy);
+				projectHierarchyMap.put(projectAboveLevel + 1 + ":" + project.getProjectName(), projectHierarchy);
 				nodeWiseOrganizationHierarchy.putAll(projectHierarchyMap);
 
 			} catch (InconsistentDataException e) {
