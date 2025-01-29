@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -49,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
@@ -156,15 +156,15 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 
 		FieldMapping projectOne = new FieldMapping();
 		projectOne.setBasicProjectConfigId(new ObjectId("6335368249794a18e8a4479f"));
-		projectOne.setTicketCountIssueType(Arrays.asList("Story"));
+		projectOne.setTicketCountIssueTypeKPI54(Arrays.asList("Story"));
 
 		FieldMapping projectTwo = new FieldMapping();
 		projectTwo.setBasicProjectConfigId(new ObjectId("5b719d06a500d00814bfb2b9"));
-		projectTwo.setTicketCountIssueType(Arrays.asList("Story"));
+		projectTwo.setTicketCountIssueTypeKPI54(Arrays.asList("Story"));
 
 		FieldMapping projectThree = new FieldMapping();
 		projectThree.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		projectThree.setTicketCountIssueType(Arrays.asList("Story"));
+		projectThree.setTicketCountIssueTypeKPI54(Arrays.asList("Story"));
 
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);

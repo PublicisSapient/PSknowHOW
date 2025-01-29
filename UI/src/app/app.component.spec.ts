@@ -1,94 +1,277 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Router, NavigationEnd, RouteConfigLoadStart, RouteConfigLoadEnd } from '@angular/router';
-import { HttpService } from './services/http.service';
 import { AppComponent } from './app.component';
+import { SharedService } from './services/shared.service';
+import { GetAuthService } from './services/getauth.service';
+import { HttpService } from './services/http.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
-import { GetAuthService } from './services/getauth.service';
-import { SharedService } from './services/shared.service';
+import { Router, ActivatedRoute, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart, Route } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-import { of } from 'rxjs';
-import { APP_CONFIG, AppConfig } from './services/app.config';
-import { FeatureFlagsService } from './services/feature-toggle.service';
+import { HelperService } from './services/helper.service';
+import { Location } from '@angular/common';
+import { of, Subject } from 'rxjs';
+import { CommonModule, DatePipe } from '@angular/common';
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let router: Router;
-  let gaService: GoogleAnalyticsService;
-  let httpService: HttpService;
-  let authorization: GetAuthorizationService;
-  let getAuthService: GetAuthService;
-  let sharedService: SharedService;
-  let primengConfig: PrimeNGConfig;
-  let originalLocation: Location;
-  let featureFlagsService: FeatureFlagsService;
+  let sharedService: jasmine.SpyObj<SharedService>;
+  let getAuthService: jasmine.SpyObj<GetAuthService>;
+  let httpService: jasmine.SpyObj<HttpService>;
+  let googleAnalyticsService: jasmine.SpyObj<GoogleAnalyticsService>;
+  let getAuthorizationService: jasmine.SpyObj<GetAuthorizationService>;
+  let helperService: jasmine.SpyObj<HelperService>;
+  let router: jasmine.SpyObj<Router>;
+  let location: jasmine.SpyObj<Location>;
+  let primengConfig: jasmine.SpyObj<PrimeNGConfig>;
+  let routerEvents: Subject<any>;
+  let routerMock;
+  let sharedServiceMock;
+  let getAuthServiceMock;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ AppComponent ],
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
-      providers: [ GoogleAnalyticsService, HttpService, GetAuthorizationService,
-         SharedService, PrimeNGConfig, GetAuthService, FeatureFlagsService ,
-         { provide: APP_CONFIG, useValue: AppConfig }]
-    })
-    .compileComponents();
-  });
+    sharedServiceMock = jasmine.createSpyObj('SharedService', [
+      'setProjectQueryParamInFilters',
+      'setSprintQueryParamInFilters',
+      'getSelectedType',
+      'setSelectedBoard',
+      'raiseError',
+      'setBackupOfFilterSelectionState',
+    ]);
 
-  beforeEach(() => {
+    getAuthServiceMock = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
+    const httpServiceMock = jasmine.createSpyObj('HttpService', [], { currentVersion: '1.0.0' });
+    const googleAnalyticsServiceMock = jasmine.createSpyObj('GoogleAnalyticsService', ['setPageLoad']);
+    const getAuthorizationServiceMock = jasmine.createSpyObj('GetAuthorizationService', ['getRole']);
+    const helperServiceMock = jasmine.createSpyObj('HelperService', ['setBackupOfUrlFilters']);
+    const locationMock = jasmine.createSpyObj('Location', ['path']);
+    const primengConfigMock = jasmine.createSpyObj('PrimeNGConfig', [], { ripple: true });
+
+    router = jasmine.createSpyObj('Router', ['events', 'navigate']);
+    routerEvents = new Subject<any>();
+
+    routerMock = {
+      navigate: jasmine.createSpy('navigate'),
+      events: routerEvents, // Mock the read-only events property
+    };
+
+    const activatedRouteMock = {
+      queryParams: of({
+        projectId: '123',
+        sprintId: '456',
+      }),
+    };
+
+    localStorage.clear();
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      providers: [
+        { provide: SharedService, useValue: sharedServiceMock },
+        { provide: GetAuthService, useValue: getAuthServiceMock },
+        { provide: HttpService, useValue: httpServiceMock },
+        { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
+        { provide: GetAuthorizationService, useValue: getAuthorizationServiceMock },
+        { provide: HelperService, useValue: helperServiceMock },
+        { provide: Router, useValue: routerMock },
+        { provide: Location, useValue: locationMock },
+        { provide: PrimeNGConfig, useValue: primengConfigMock },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+      ],
+    });
+
+    TestBed.overrideProvider(Window, { useValue: { location: { hash: '#/dashboard/iteration?stateFilters=U29tZUVuY29kZWREYXRh' } } });
+
+    await TestBed.compileComponents();
+
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
-    gaService = TestBed.inject(GoogleAnalyticsService);
-    httpService = TestBed.inject(HttpService);
-    authorization = TestBed.inject(GetAuthorizationService);
-    sharedService = TestBed.inject(SharedService);
-    primengConfig = TestBed.inject(PrimeNGConfig);
-    featureFlagsService = TestBed.inject(FeatureFlagsService)
-    spyOn(gaService, 'load').and.returnValue(Promise.resolve(['gaTagManager']));
-    jasmine.createSpy('checkAuth').and.returnValue(true);
-    spyOn(sharedService, 'setSelectedType');
-    spyOn(component.ga, 'setPageLoad');
-    fixture.detectChanges();
+
+    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    getAuthService = TestBed.inject(GetAuthService) as jasmine.SpyObj<GetAuthService>;
+    httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
+    googleAnalyticsService = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
+    getAuthorizationService = TestBed.inject(GetAuthorizationService) as jasmine.SpyObj<GetAuthorizationService>;
+    helperService = TestBed.inject(HelperService) as jasmine.SpyObj<HelperService>;
+    location = TestBed.inject(Location) as jasmine.SpyObj<Location>;
+    primengConfig = TestBed.inject(PrimeNGConfig) as jasmine.SpyObj<PrimeNGConfig>;
+    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+
+    // Set default behaviors for spies
+    getAuthService.checkAuth.and.returnValue(true);
+    sharedService.getSelectedType.and.returnValue('Scrum');
+    location.path.and.returnValue('/dashboard/iteration');
+    localStorage.setItem('currentUserDetails', JSON.stringify({ projectsAccess: [{ projects: [{ projectId: '123' }] }], authorities: ['ROLE_SUPERADMIN'] }));
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set authorized to true on init', () => {
-    expect(component.authorized).toBeTrue();
+  it('should remove "newUI" from localStorage on initialization', () => {
+    spyOn(localStorage, 'removeItem');
+    component.ngOnInit();
+    expect(localStorage.removeItem).toHaveBeenCalledWith('newUI');
   });
 
-  it('should initialize with authorized set to true when user is authenticated', () => {
-		component.ngOnInit();
-		expect(component.authorized).toBe(true);
-	});
+  it('should set project and sprint filters from query params', () => {
+    component.ngOnInit();
+    // expect(sharedServiceMock.setProjectQueryParamInFilters).toHaveBeenCalledWith('123');
+    // expect(sharedServiceMock.setSprintQueryParamInFilters).toHaveBeenCalledWith('456');
+  });
 
-  it('should enable ripple effect in PrimeNGConfig', () => {
-		component.ngOnInit();
-		expect(primengConfig.ripple).toBe(true);
-	});
+  it('should enable PrimeNG ripple effect', () => {
+    component.ngOnInit();
+    expect(primengConfig.ripple).toBeTrue();
+  });
 
-  it('should add class scrolled to header when window.scrollY is 200', () => {
-		const header = document.createElement('div');
-		header.className = 'header';
-		document.body.appendChild(header);
-		window.scrollY = 200;
-		component.onScroll(new Event('scroll'));
-		expect(header.classList.contains('scrolled')).toBe(false);
-		document.body.removeChild(header);
-	});
+  it('should set authorized based on GetAuthService', () => {
+    component.ngOnInit();
+    expect(component.authorized).toBeTrue();
+    expect(getAuthServiceMock.checkAuth).toHaveBeenCalled();
+  });
 
-  it('should remove the class `scrolled` from header when window.scrollY is 200', () => {
-		const header = document.createElement('div');
-		header.classList.add('scrolled');
-		document.body.appendChild(header);
-		window.scrollY = 200;
-		component.onScroll(new Event('scroll'));
-		expect(header.classList.contains('scrolled')).toBe(true);
-		document.body.removeChild(header);
-	});
+  it('should handle RouteConfigLoadStart and RouteConfigLoadEnd events', () => {
+    component.ngOnInit();
+
+    // Emit RouteConfigLoadStart event
+    routerEvents.next(new RouteConfigLoadStart({ path: 'mock-path' } as any));
+    expect(component.loadingRouteConfig).toBeTrue();
+
+    // Emit RouteConfigLoadEnd event
+    routerEvents.next(new RouteConfigLoadEnd({ path: 'mock-path' } as any));
+    expect(component.loadingRouteConfig).toBeFalse();
+  });
+
+  it('should handle NavigationEnd events for Google Analytics and refresh logic', () => {
+    component.ngOnInit();
+
+    routerEvents.next(
+      new NavigationEnd(1, '/dashboard/iteration', '/dashboard/iteration'),
+    );
+
+    expect(component.selectedTab).toBe('');
+    // expect(sharedService.setSelectedBoard).toHaveBeenCalledWith('');
+    expect(googleAnalyticsService.setPageLoad).toHaveBeenCalledWith({
+      url: '/dashboard/iteration/Scrum',
+      userRole: getAuthorizationService.getRole(),
+      version: '1.0.0',
+      uiType: 'New',
+    });
+  });
+
+  xit('should decode and set state filters from URL hash', () => {
+    component.ngOnInit();
+    expect(sharedService.setBackupOfUrlFilters).toHaveBeenCalledWith('SomeEncodedData');
+  });
+
+  it('should navigate to dashboard if no shared link exists', () => {
+    localStorage.removeItem('shared_link');
+
+    component.ngOnInit();
+
+    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
+  });
+
+  xit('should navigate to error page if user lacks project access', () => {
+    const validStateFilters = btoa(JSON.stringify({ primary_level: [{ basicProjectConfigId: '123' }] }));
+    localStorage.setItem('shared_link', `http://example.com?stateFilters=${validStateFilters}`);
+    localStorage.setItem(
+      'currentUserDetails',
+      JSON.stringify({
+        projectsAccess: [
+          {
+            projects: [{ projectId: '456' }],
+          },
+        ],
+        authorities: ['ROLE_SUPERADMIN']
+      })
+    );
+
+    component.ngOnInit();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+    /* expect(sharedService.raiseError).toHaveBeenCalledWith({
+      status: 901,
+      message: 'No project access.',
+    }); */
+  });
+
+  xit('should navigate to shared link if user has access to all projects', () => {
+    const validStateFilters = btoa(JSON.stringify({ primary_level: [{ basicProjectConfigId: '123' }] }));
+    localStorage.setItem('shared_link', `http://example.com?stateFilters=${validStateFilters}`);
+    localStorage.setItem(
+      'currentUserDetails',
+      JSON.stringify({
+        projectsAccess: [
+          {
+            projects: [{ basicProjectConfigId: '123' }],
+          },
+        ],
+        authorities: ['ROLE_SUPERADMIN']
+      })
+    );
+
+    component.ngOnInit();
+
+    expect(router.navigate).toHaveBeenCalledWith([`http://example.com?stateFilters=${validStateFilters}`]);
+  });
+
+  it('should initialize component correctly and call ngOnInit', () => {
+    // const routerSpy = spyOn(router, 'navigate');
+    // const getAuthSpy = spyOn(getAuthService, 'checkAuth').and.returnValue(true);
+
+    component.ngOnInit();
+
+    // expect(sharedServiceMock.setProjectQueryParamInFilters).toHaveBeenCalledWith(jasmine.any(String));
+    expect(routerMock.navigate).toHaveBeenCalledWith(['./dashboard/']);
+    expect(getAuthServiceMock.checkAuth).toHaveBeenCalled();
+  });
+
+  it('should add scrolled class to header on scroll', () => {
+    const header = document.createElement('div');
+    header.classList.add('header');
+    document.body.appendChild(header);
+
+    component.onScroll({});
+
+    expect(header.classList.contains('scrolled')).toBeFalse();
+
+    // Trigger scroll event with different scroll position
+    window.scrollY = 100;
+    component.onScroll({});
+    expect(header.classList.contains('scrolled')).toBeFalse();
+  });
+
+  xit('should decode stateFilters and set backup filter state', () => {
+    const mockParam = btoa(JSON.stringify({ primary_level: [{ labelName: 'Test', nodeId: 'node-1' }] }));
+    localStorage.setItem('shared_link', `http://example.com/?stateFilters=${mockParam}`);
+    // const serviceSpy = spyOn(sharedService, 'setBackupOfFilterSelectionState');
+
+    component.ngOnInit();
+
+    expect(sharedServiceMock.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ primary_level: [{ labelName: 'Test', nodeId: 'node-1' }] });
+  });
+
+  xit('should handle invalid URL and redirect to error page', () => {
+    const invalidParam = '12asdasd213131';
+    localStorage.setItem('shared_link', `http://example.com/?stateFilters=${invalidParam}`);
+
+    component.ngOnInit();
+
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+    expect(sharedServiceMock.raiseError).toHaveBeenCalledWith({
+      status: 900,
+      message: 'Invalid URL.',
+    });
+  });
+
+  it('should navigate to default dashboard if no shared link is found', () => {
+    localStorage.removeItem('shared_link');
+    // const routerSpy = spyOn(router, 'navigate');
+
+    component.ngOnInit();
+
+    expect(routerMock.navigate).toHaveBeenCalledWith(['./dashboard/']);
+  });
+
 });

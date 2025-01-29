@@ -44,7 +44,6 @@ import { ScrollTopModule } from 'primeng/scrolltop';
 import { AppComponent } from './app.component';
 import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
 import { HeaderComponent } from './dashboardv2/header-v2/header.component';
-import { NavComponent } from './dashboard/nav/nav.component';
 import { CircularProgressComponent } from './component/circular-progress/circular-progress.component';
 import { ProgressbarComponent } from './component/progressbar/progressbar.component';
 import { CircularchartComponent } from './component/circularchart/circularchart.component';
@@ -55,7 +54,6 @@ import { LineBarChartWithHowerComponent } from './component/line-bar-chart-with-
 import { GaugechartComponent } from './component/gaugechart/gaugechart.component';
 import { MultilineComponent } from './component/multiline/multiline.component';
 import { MaturityComponent } from './dashboard/maturity/maturity.component';
-import { FilterComponent } from './dashboard/filter/filter.component';
 import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
 import { GroupstackchartComponentv2 } from './component/groupedstackchart-v2/groupstackchart-v2.component';
 import { PiechartComponent } from './component/piechart/piechart.component';
@@ -84,19 +82,16 @@ import { APP_CONFIG, AppConfig } from './services/app.config';
 import { HelperService } from './services/helper.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { JsonExportImportService } from './services/json-export-import.service';
-import { IterationComponent } from './dashboard/iteration/iteration.component';
 import { OverlappedProgressbarComponent } from './component/overlapped-progressbar/overlapped-progressbar.component';
 import { HorizontalStackProgressbarComponent } from './component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
 import { CircularProgressWithLegendsComponent } from './component/circular-progress-with-legends/circular-progress-with-legends.component';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { DialogService } from 'primeng/dynamicdialog';
-import { KpiCardComponent } from './dashboard/kpi-card/kpi-card.component';
 import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indicator.component';
 import { NoAccessComponent } from './component/no-access/no-access.component';
 import { TooltipComponent } from './component/tooltip/tooltip.component';
 import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
-import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
@@ -141,6 +136,16 @@ import { RecommendationsComponent } from './component/recommendations/recommenda
 import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
+import { StackedBarChartComponent } from './component/stacked-bar-chart/stacked-bar-chart.component';
+import { PsKpiCardHeaderComponent } from './component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
+import { PsKpiCardFilterComponent } from './component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
+import { PsKpiCardChartRendererComponent } from './component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
+import { KpiHelperService } from './services/kpi-helper.service';
+import { StackedBarComponent } from './component/stacked-bar/stacked-bar.component';
+import { SemiCircleDonutChartComponent } from './component/semi-circle-donut-chart/semi-circle-donut-chart.component';
+import { TabularKpiV2Component } from './component/tabular-kpi-v2/tabular-kpi-v2.component';
+import { GroupedBarChartComponent } from './component/grouped-bar-chart/grouped-bar-chart.component';
+import { TabularKpiWithDonutChartComponent } from './component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
 
 
 /******************************************************/
@@ -153,7 +158,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
 @NgModule({
     declarations: [
         AppComponent,
-        NavComponent,
         CircularProgressComponent,
         ProgressbarComponent,
         CircularchartComponent,
@@ -164,23 +168,19 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         GaugechartComponent,
         MultilineComponent,
         MaturityComponent,
-        FilterComponent,
         GroupstackchartComponent,
         GroupstackchartComponentv2,
         PiechartComponent,
         KpiComponent,
         ErrorComponent,
         // FooterComponent,
-        IterationComponent,
         OverlappedProgressbarComponent,
         HorizontalStackProgressbarComponent,
         CircularProgressWithLegendsComponent,
-        KpiCardComponent,
         TrendIndicatorComponent,
         TooltipComponent,
         NoAccessComponent,
         GroupedColumnPlusLineChartComponent,
-        BacklogComponent,
         TableComponent,
         ExportExcelComponent,
         CommentsComponent,
@@ -223,7 +223,16 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         RecommendationsComponent,
         ChartWithFiltersComponent,
         KpiAdditionalFilterComponent,
-        StickyHeaderV2Component
+        StickyHeaderV2Component,
+        StackedBarChartComponent,
+        PsKpiCardHeaderComponent,
+        PsKpiCardFilterComponent,
+        PsKpiCardChartRendererComponent,
+        StackedBarComponent,
+        SemiCircleDonutChartComponent,
+        TabularKpiV2Component,
+        GroupedBarChartComponent,
+        TabularKpiWithDonutChartComponent
     ],
     imports: [
         DropdownModule,
@@ -274,6 +283,7 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         FeatureFlagsService,
         AuthGuard,
         DialogService,
+        KpiHelperService,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,

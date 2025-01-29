@@ -21,15 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -47,19 +39,11 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
 import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -71,10 +55,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClosurePossibleTodayServiceImpl.class);
-	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
+	private static final String FILTER_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue Count";
-	private static final String OVERALL = "Overall";
+	private static final String FILTER_TYPE = "Multi";
 	private static final String SPRINT_DETAILS = "sprint details";
 
 	@Autowired
@@ -83,8 +67,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		DataCount trendValue = new DataCount();
-		projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
+		projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -104,7 +87,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-				// to modify sprintdetails on the basis of configuration for the project
+				// to modify sprint details on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
@@ -140,8 +123,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node latestSprintNode, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node latestSprintNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
@@ -150,96 +132,126 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);
+		Set<IssueKpiModalValue> issueData = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
-			// Creating map of modal Objects
-			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
-			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
-					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
 					allIssues, fieldMapping);
 			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream()
 					.collect(Collectors.toMap(IterationPotentialDelay::getIssueId, Function.identity(), (e1, e2) -> e2,
 							LinkedHashMap::new));
-			Set<String> issueTypes = new HashSet<>();
-			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-			List<Integer> overAllIssueCount = Arrays.asList(0);
-			List<Double> overAllStoryPoints = Arrays.asList(0.0);
-			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
-			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
-			typeWiseIssues.forEach((issueType, issues) -> {
-				issueTypes.add(issueType);
-				List<IterationKpiModalValue> modalValues = new ArrayList<>();
-				int issueCount = 0;
-				Double storyPoint = 0.0;
-				Double originalEstimate = 0.0;
-				for (JiraIssue jiraIssue : issues) {
-					if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber())
-							.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
-						KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue, fieldMapping,
-								modalObjectMap);
-						issueCount = issueCount + 1;
-						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
-						if (null != jiraIssue.getStoryPoints()) {
-							storyPoint = storyPoint + jiraIssue.getStoryPoints();
-							overAllStoryPoints.set(0, overAllStoryPoints.get(0) + jiraIssue.getStoryPoints());
-						}
-						if (null != jiraIssue.getOriginalEstimateMinutes()) {
-							originalEstimate = originalEstimate + jiraIssue.getOriginalEstimateMinutes();
-							overAllOriginalEstimate.set(0,
-									overAllOriginalEstimate.get(0) + jiraIssue.getOriginalEstimateMinutes());
-						}
+			// Creating map of modal Objects
+			Map<String, IssueKpiModalValue> issueKpiModalObject = KpiDataHelper.createMapOfIssueModal(allIssues);
+			allIssues.forEach(issue -> {
+				if (issueWiseDelay.containsKey(issue.getNumber()) && issueWiseDelay.get(issue.getNumber())
+						.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
+					KPIExcelUtility.populateIssueModal(issue, fieldMapping, issueKpiModalObject);
+					IssueKpiModalValue data = issueKpiModalObject.get(issue.getNumber());
+					data.setValue(0d);
+					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+						data.setValue(issue.getStoryPoints());
+					} else if (null != issue.getOriginalEstimateMinutes()) {
+						data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
 					}
+					issueData.add(data);
 				}
-				List<IterationKpiData> data = new ArrayList<>();
-				IterationKpiData issueCounts = new IterationKpiData(ISSUE_COUNT, Double.valueOf(issueCount), null, null,
-						"", modalValues);
-				IterationKpiData storyPoints;
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(storyPoint), null, null,
-							CommonConstant.SP, null);
-				} else {
-					storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(originalEstimate),
-							null, null, CommonConstant.HOURS, null);
-				}
-				data.add(issueCounts);
-				data.add(storyPoints);
-				IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, null, data);
-				iterationKpiValues.add(iterationKpiValue);
 			});
-			List<IterationKpiData> data = new ArrayList<>();
-			IterationKpiData overAllCount = new IterationKpiData(ISSUE_COUNT, Double.valueOf(overAllIssueCount.get(0)),
-					null, null, "", overAllmodalValues);
-			IterationKpiData overAllStPoints;
-			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT,
-						roundingOff(overAllStoryPoints.get(0)), null, null, CommonConstant.SP, null);
-			} else {
-				overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE,
-						roundingOff(overAllOriginalEstimate.get(0)), null, null, CommonConstant.HOURS, null);
-			}
-			data.add(overAllCount);
-			data.add(overAllStPoints);
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, data);
-			iterationKpiValues.add(overAllIterationKpiValue);
 
-			// Create kpi level filters
-			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
-			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-			trendValue.setValue(iterationKpiValues);
-			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(latestSprintNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.CLOSURES_POSSIBLE_TODAY.getColumns());
-			kpiElement.setTrendValueList(trendValue);
+			kpiElement.setIssueData(issueData);
+			kpiElement.setFilterGroup(createFilterGroup());
+			kpiElement.setDataGroup(createDataGroup(fieldMapping));
 		}
 	}
 
 	/**
-	 * with assignees criteria calculating potential delay for inprogress and open
-	 * issues and without assignees calculating potential delay for inprogress
+	 * Creates filter group.
+	 * 
+	 * @return
+	 */
+	private FilterGroup createFilterGroup() {
+		FilterGroup filterGroup = new FilterGroup();
+
+		List<Filter> filterList = new ArrayList<>();
+		filterList.add(createFilter(FILTER_TYPE, FILTER_BY_ISSUE_TYPE, "Issue Type", 1));
+		filterGroup.setFilterGroup1(filterList);
+
+		return filterGroup;
+	}
+
+	/**
+	 * Creates individual filter object.
+	 * 
+	 * @param type
+	 * @param name
+	 * @param key
+	 * @param order
+	 * @return
+	 */
+	private Filter createFilter(String type, String name, String key, Integer order) {
+		Filter filter = new Filter();
+		filter.setFilterType(type);
+		filter.setFilterName(name);
+		filter.setFilterKey(key);
+		filter.setOrder(order);
+		return filter;
+	}
+
+	/**
+	 * Creates data group that tells what kind of data will be shown on chart.
+	 * 
+	 * @param fieldMapping
+	 * @return
+	 */
+	private KpiDataGroup createDataGroup(FieldMapping fieldMapping) {
+		KpiDataGroup dataGroup = new KpiDataGroup();
+
+		String unit;
+		String displayName;
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			unit = CommonConstant.SP;
+			displayName = CommonConstant.STORY_POINT;
+		} else {
+			unit = CommonConstant.DAY;
+			displayName = CommonConstant.ORIGINAL_ESTIMATE;
+		}
+
+		List<KpiData> dataGroup1 = new ArrayList<>();
+		dataGroup1.add(createKpiData("", ISSUE_COUNT, 1, "count", ""));
+		dataGroup1.add(createKpiData("value", displayName, 2, "sum", unit));
+
+		dataGroup.setDataGroup1(dataGroup1);
+		return dataGroup;
+	}
+
+	/**
+	 * Creates kpi data object.
+	 * 
+	 * @param key
+	 * @param name
+	 * @param order
+	 * @param aggregation
+	 * @param unit
+	 * @return
+	 */
+	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit) {
+		KpiData data = new KpiData();
+		data.setKey(key);
+		data.setName(name);
+		data.setOrder(order);
+		data.setAggregation(aggregation);
+		data.setUnit(unit);
+		data.setShowAsLegend(false);
+		return data;
+	}
+
+	/**
+	 * with assignees criteria calculating potential delay for in progress and open
+	 * issues and without assignees calculating potential delay for in progress
 	 * stories
 	 * 
 	 * @param sprintDetails

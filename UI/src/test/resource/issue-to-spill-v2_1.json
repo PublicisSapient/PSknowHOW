@@ -1,0 +1,2157 @@
+{
+  "kpiId": "kpi123",
+  "kpiName": "Issues likely to Spill",
+  "unit": "Count",
+  "chartType": "table",
+  "id": "65793ddb127be336160bc0ef",
+  "isDeleted": "False",
+  "kpiCategory": "Iteration",
+  "kpiUnit": "Count",
+  "kanban": false,
+  "kpiSource": "Jira",
+  "groupId": 8,
+  "sprint": "BAU Sprint 36_Goodyear BAU SFCC",
+  "modalHeads": [
+    "Issue Id",
+    "Issue Type",
+    "Issue Description",
+    "Issue Priority",
+    "Size(story point/hours)",
+    "Issue Status",
+    "Due Date",
+    "Remaining Estimate",
+    "Predicted Completion Date",
+    "Assignee"
+  ],
+  "responseCode": "200",
+  "filterGroup": {
+    "filterGroup1": [
+      {
+        "filterKey": "Issue Type",
+        "filterName": "Filter by issue type",
+        "filterType": "Single",
+        "order": 1
+      },
+      {
+        "filterKey": "Priority",
+        "filterName": "Filter by priority",
+        "filterType": "Single",
+        "order": 2
+      }
+    ]
+  },
+  "dataGroup": {
+    "dataGroup1": [
+      {
+        "key": "",
+        "name": "Issue at Risk",
+        "order": 1,
+        "aggregation": "count",
+        "unit": "",
+        "showAsLegend": false,
+        "key1": "Category",
+        "value1": "Issue at Risk"
+      },
+      {
+        "key": "Value",
+        "name": "Original Estimate",
+        "order": 2,
+        "aggregation": "sum",
+        "unit": "Hours",
+        "showAsLegend": false
+      }
+    ]
+  },
+  "issueData": [
+    {
+      "Issue Id": "GECP-48854",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48854",
+      "Issue Description": "RTI | Update OOS messaging for available in region ",
+      "Issue Status": "On Hold",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "3.0/24.0 hrs",
+      "Remaining Hours": 540,
+      "Logged Work": "5h ",
+      "Original Estimate": "3d ",
+      "Priority": "P3 - Major",
+      "Due Date": "09-Sep-2024",
+      "Remaining Estimate": "1d 1h ",
+      "Remaining Days": "1d 1h ",
+      "Predicted Completion Date": "20-Nov-2024",
+      "Potential Delay(in days)": "52d",
+      "Dev Due Date": "06-Sep-2024",
+      "Assignee": "Lovepreet Singh",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Roadmap_Priority_2024",
+        "RTIOct2024"
+      ],
+      "Created Date": "2024-08-27",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Lovepreet Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "RTI_Dummy_FixVersion",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 1440
+    },
+    {
+      "Issue Id": "GECP-46771",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-46771",
+      "Issue Description": "Trailer Tire Dealer Flag",
+      "Issue Status": "In Development",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "6.0/48.0 hrs",
+      "Remaining Hours": 2880,
+      "Logged Work": "2h ",
+      "Original Estimate": "6d ",
+      "Priority": "P3 - Major",
+      "Due Date": "12-Sep-2024",
+      "Remaining Estimate": "6d ",
+      "Remaining Days": "6d ",
+      "Predicted Completion Date": "27-Nov-2024",
+      "Potential Delay(in days)": "54d",
+      "Dev Due Date": "-",
+      "Assignee": "Akshay Agarwal",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Roadmap_Priority_2024",
+        "RTIOct2024"
+      ],
+      "Created Date": "2024-07-16",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Akshay Agarwal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "RTI_Dummy_FixVersion",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 2880
+    },
+    {
+      "Issue Id": "GECP-49774",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49774",
+      "Issue Description": "Out of stock is showing in recommended section of GY ",
+      "Issue Status": "In Analysis",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Kunal Chaursiya",
+      "Change Date": "2024-09-14",
+      "Labels": [],
+      "Created Date": "2024-09-14",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Kunal Chaursiya"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49154",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49154",
+      "Issue Description": "Site Performance - Reduce initial server response to 500 ms (currently 2+ seconds) Part-2 - QE testable",
+      "Issue Status": "In Development",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "7.5/60.0 hrs",
+      "Remaining Hours": 3600,
+      "Logged Work": "1h ",
+      "Original Estimate": "7d 4h ",
+      "Priority": "P3 - Major",
+      "Due Date": "06-Sep-2024",
+      "Remaining Estimate": "7d 4h ",
+      "Remaining Days": "7d 4h ",
+      "Predicted Completion Date": "28-Nov-2024",
+      "Potential Delay(in days)": "59d",
+      "Dev Due Date": "04-Sep-2024",
+      "Assignee": "Vishal Prajapati",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "QETestable",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-09-02",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Vishal Prajapati"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 3600
+    },
+    {
+      "Issue Id": "GECP-49359",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49359",
+      "Issue Description": "GY-GAS-JT | Staggered Fit tire, when one of them is OOS in non roll market, still shows 2 qty in cart.",
+      "Issue Status": "In Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "1h 30m",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Shikha Jain",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "Functional_issue"
+      ],
+      "Created Date": "2024-09-06",
+      "Root Cause List": [
+        "dev – code"
+      ],
+      "Owner Full Name": [
+        "Shikha Jain"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49784",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49784",
+      "Issue Description": "GY-GAS-JT | stest | UI issues on Cart ( space between rebate and Schedule now)",
+      "Issue Status": "In Code Review",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "6h ",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Namitha Kn",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "Creative_Issue"
+      ],
+      "Created Date": "2024-09-14",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Namitha Kn"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-38466",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-38466",
+      "Issue Description": "Clean Bootstrap Dependency from GY-Core | Label Selector | Size Selector | Color Selector",
+      "Issue Status": "Implementing",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "3.0/24.0 hrs",
+      "Remaining Hours": 240,
+      "Logged Work": "2d 5h 30m",
+      "Original Estimate": "3d ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "4h ",
+      "Remaining Days": "4h ",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "11-Sep-2024",
+      "Assignee": "Smriti Smriti ",
+      "Change Date": "2024-09-12",
+      "Labels": [
+        "TECH_DEBT",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-01-04",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Smriti Smriti "
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Pagani_1_Oct",
+      "Updated Date": "2024-09-12",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 1440
+    },
+    {
+      "Issue Id": "GECP-49761",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49761",
+      "Issue Description": "GY-GAS-JT | OOS message UI issue in mobile view on PDP.",
+      "Issue Status": "In Code Review",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P4 - Minor",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Namitha Kn",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "Creative_Issue"
+      ],
+      "Created Date": "2024-09-13",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Namitha Kn"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49781",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49781",
+      "Issue Description": "GY / GAS / JT - On updating the QTY on cart for Tire with non roll store, the \"Schedule Now\" CTA hides.",
+      "Issue Status": "In Code Review",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "1d ",
+      "Original Estimate": "0d",
+      "Priority": "P2 - Critical",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Kunal Chaursiya",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "Functional_issue"
+      ],
+      "Created Date": "2024-09-14",
+      "Root Cause List": [
+        "configuration"
+      ],
+      "Owner Full Name": [
+        "Kunal Chaursiya"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-47766",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-47766",
+      "Issue Description": "GY-GAS-JT | Variant is not striked out when the same is OOS on compare Page.",
+      "Issue Status": "More info",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "1.5/12.0 hrs",
+      "Remaining Hours": 720,
+      "Logged Work": "0d",
+      "Original Estimate": "1d 4h ",
+      "Priority": "P3 - Major",
+      "Due Date": "16-Aug-2024",
+      "Remaining Estimate": "1d 4h ",
+      "Remaining Days": "1d 4h ",
+      "Predicted Completion Date": "20-Nov-2024",
+      "Potential Delay(in days)": "68d",
+      "Dev Due Date": "12-Sep-2024",
+      "Assignee": "Kapil Sharma",
+      "Change Date": "2024-09-12",
+      "Labels": [
+        "Functional_issue"
+      ],
+      "Created Date": "2024-08-02",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Kapil Sharma"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "RTI_Dummy_FixVersion",
+      "Updated Date": "2024-09-12",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 720
+    },
+    {
+      "Issue Id": "GECP-46550",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-46550",
+      "Issue Description": "RTI validation story on lower environment",
+      "Issue Status": "Ready for Sprint Planning",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "10.0/80.0 hrs",
+      "Remaining Hours": 4140,
+      "Logged Work": "1h ",
+      "Original Estimate": "10d ",
+      "Priority": "P3 - Major",
+      "Due Date": "29-Aug-2024",
+      "Remaining Estimate": "8d 5h ",
+      "Remaining Days": "8d 5h ",
+      "Predicted Completion Date": "29-Nov-2024",
+      "Potential Delay(in days)": "66d",
+      "Dev Due Date": "04-Sep-2024",
+      "Assignee": "Kishalaya Singh",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Roadmap_Priority_2024",
+        "RTIOct2024"
+      ],
+      "Created Date": "2024-07-10",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Kishalaya Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "RTI_Dummy_FixVersion",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 4800
+    },
+    {
+      "Issue Id": "GECP-49669",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49669",
+      "Issue Description": "GAS JT | Cart UI distort",
+      "Issue Status": "In Code Review",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Namitha Kn",
+      "Change Date": "2024-09-14",
+      "Labels": [],
+      "Created Date": "2024-09-12",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Namitha Kn"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-48762",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48762",
+      "Issue Description": "Display brands on PLP carried by the selected store | GY",
+      "Issue Status": "Open",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "4.0/32.0 hrs",
+      "Remaining Hours": 180,
+      "Logged Work": "2d 3h ",
+      "Original Estimate": "4d ",
+      "Priority": "P3 - Major",
+      "Due Date": "09-Sep-2024",
+      "Remaining Estimate": "3h ",
+      "Remaining Days": "3h ",
+      "Predicted Completion Date": "19-Nov-2024",
+      "Potential Delay(in days)": "51d",
+      "Dev Due Date": "06-Sep-2024",
+      "Assignee": "Akshay Agarwal",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "BMCR",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-08-26",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Akshay Agarwal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 1920
+    },
+    {
+      "Issue Id": "GECP-47287",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-47287",
+      "Issue Description": "RTI turned OFF | PDP | OOS Scenarios (QE Testable)",
+      "Issue Status": "In Testing",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "2.0/16.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "2d 4h ",
+      "Original Estimate": "2d ",
+      "Priority": "P3 - Major",
+      "Due Date": "06-Sep-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "19-Nov-2024",
+      "Potential Delay(in days)": "52d",
+      "Dev Due Date": "-",
+      "Assignee": "Charu Chopra",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "RTIOff_Nissan",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-07-23",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Charu Chopra"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 960
+    },
+    {
+      "Issue Id": "GECP-49412",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49412",
+      "Issue Description": "RTI Off | PDP | Stale scenarios not working",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Sahil Sehgal",
+      "Change Date": "2024-09-14",
+      "Labels": [],
+      "Created Date": "2024-09-10",
+      "Root Cause List": [
+        "dev – code"
+      ],
+      "Owner Full Name": [
+        "Sahil Sehgal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49171",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49171",
+      "Issue Description": "Test Case Creation for ordersReportChunks.js",
+      "Issue Status": "In Development",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.0/8.0 hrs",
+      "Remaining Hours": 480,
+      "Logged Work": "0d",
+      "Original Estimate": "1d ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "1d ",
+      "Remaining Days": "1d ",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "13-Sep-2024",
+      "Assignee": "Manoj Varma Alluri",
+      "Change Date": "2024-09-12",
+      "Labels": [
+        "TECH_DEBT",
+        "CodeCoverage"
+      ],
+      "Created Date": "2024-09-03",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Manoj Varma Alluri"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-12",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 480
+    },
+    {
+      "Issue Id": "GECP-49230",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49230",
+      "Issue Description": "Display OOS products on PLP for GAS/JT in RTI OFF",
+      "Issue Status": "In Testing",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "0.75/6.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "6h ",
+      "Original Estimate": "6h ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Charu Chopra",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "RTIOff_Nissan",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-09-04",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Charu Chopra"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 360
+    },
+    {
+      "Issue Id": "GECP-49779",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49779",
+      "Issue Description": "RTI ON | Quantity becomes 0 in quickview flyout when switch between installation method  from recommended section of the PDP",
+      "Issue Status": "In Development",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Kunal Chaursiya",
+      "Change Date": "2024-09-15",
+      "Labels": [],
+      "Created Date": "2024-09-14",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Kunal Chaursiya"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-15",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49219",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49219",
+      "Issue Description": "Tracking of Maintaince & Release Efforts ",
+      "Issue Status": "Funnel",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "12.81/102.5 hrs",
+      "Remaining Hours": 5040,
+      "Logged Work": "3d 30m",
+      "Original Estimate": "12d 6h 30m",
+      "Priority": "P4 - Minor",
+      "Due Date": "03-Sep-2024",
+      "Remaining Estimate": "10d 4h ",
+      "Remaining Days": "10d 4h ",
+      "Predicted Completion Date": "03-Dec-2024",
+      "Potential Delay(in days)": "65d",
+      "Dev Due Date": "03-Sep-2024",
+      "Assignee": "Sitesh Agrawal",
+      "Change Date": "2024-09-13",
+      "Labels": [],
+      "Created Date": "2024-09-04",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Sitesh Agrawal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 6150
+    },
+    {
+      "Issue Id": "GECP-48664",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48664",
+      "Issue Description": "GY BAU: Learn Pages Refresh- Batch 3 (How To Store Tires page)",
+      "Issue Status": "In Testing",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.13/9.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "1d 1h ",
+      "Original Estimate": "1d 1h ",
+      "Priority": "P3 - Major",
+      "Due Date": "12-Aug-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "19-Nov-2024",
+      "Potential Delay(in days)": "71d",
+      "Dev Due Date": "09-Sep-2024",
+      "Assignee": "Michael Doerman",
+      "Change Date": "2024-09-11",
+      "Labels": [
+        "BMCR",
+        "Roadmap_Priority_2024",
+        "SEO"
+      ],
+      "Created Date": "2024-08-21",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Michael Doerman"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-11",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 540
+    },
+    {
+      "Issue Id": "GECP-48482",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48482",
+      "Issue Description": "A11y || Regression || Quick View & Recommended service drawer is missing with accessible name",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "0.75/6.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "6h ",
+      "Original Estimate": "6h ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "12-Sep-2024",
+      "Assignee": "Parijatham Soundararajan",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "mustfixa11y",
+        "a11y"
+      ],
+      "Created Date": "2024-08-14",
+      "Root Cause List": [
+        "dev – code"
+      ],
+      "Owner Full Name": [
+        "Parijatham Soundararajan"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 360
+    },
+    {
+      "Issue Id": "GECP-49763",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49763",
+      "Issue Description": "SQA | Apple pay is not working for instore installation",
+      "Issue Status": "More info",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P2 - Critical",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Lovepreet Singh",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "Regression_Issue"
+      ],
+      "Created Date": "2024-09-13",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Lovepreet Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-46219",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-46219",
+      "Issue Description": "POC - Test accuracy of Google address API over Loqate API",
+      "Issue Status": "Analyzing",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "1.75/14.0 hrs",
+      "Remaining Hours": 180,
+      "Logged Work": "5h ",
+      "Original Estimate": "1d 6h ",
+      "Priority": "P3 - Major",
+      "Due Date": "16-Aug-2024",
+      "Remaining Estimate": "3h ",
+      "Remaining Days": "3h ",
+      "Predicted Completion Date": "19-Nov-2024",
+      "Potential Delay(in days)": "67d",
+      "Dev Due Date": "06-Sep-2024",
+      "Assignee": "Sindhu Jayaprakash",
+      "Change Date": "2024-09-10",
+      "Labels": [
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-07-02",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Sindhu Jayaprakash"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-10",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 840
+    },
+    {
+      "Issue Id": "GECP-45731",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-45731",
+      "Issue Description": "Multi language PDF to download - remaining touchpoints (GY CA)",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.63/13.0 hrs",
+      "Remaining Hours": 780,
+      "Logged Work": "6h ",
+      "Original Estimate": "1d 5h ",
+      "Priority": "P4 - Minor",
+      "Due Date": "10-Sep-2024",
+      "Remaining Estimate": "1d 5h ",
+      "Remaining Days": "1d 5h ",
+      "Predicted Completion Date": "04-Dec-2024",
+      "Potential Delay(in days)": "61d",
+      "Dev Due Date": "09-Sep-2024",
+      "Assignee": "Sitesh Agrawal",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Estimation_Delay",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-06-21",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Sitesh Agrawal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 780
+    },
+    {
+      "Issue Id": "GECP-48622",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48622",
+      "Issue Description": "GY BAU: Learn Pages Refresh- Batch 3 (How To Find Tire Size page)",
+      "Issue Status": "In Testing",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.13/9.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "1d 1h 20m",
+      "Original Estimate": "1d 1h ",
+      "Priority": "P3 - Major",
+      "Due Date": "28-Aug-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "19-Nov-2024",
+      "Potential Delay(in days)": "59d",
+      "Dev Due Date": "06-Sep-2024",
+      "Assignee": "Michael Doerman",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "BMCR",
+        "Roadmap_Priority_2024",
+        "SEO"
+      ],
+      "Created Date": "2024-08-21",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Michael Doerman"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 540
+    },
+    {
+      "Issue Id": "GECP-49411",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49411",
+      "Issue Description": "Regression | Partner Promo is inactive on SQA ",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Prateek Shrivastava",
+      "Change Date": "2024-09-13",
+      "Labels": [],
+      "Created Date": "2024-09-10",
+      "Root Cause List": [
+        "client – sfcc configuration "
+      ],
+      "Owner Full Name": [
+        "Prateek Shrivastava"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-47969",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-47969",
+      "Issue Description": "A11y || USAA promo messaging buttons are having only color to indicate ",
+      "Issue Status": "More info",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "0.5/4.0 hrs",
+      "Remaining Hours": 240,
+      "Logged Work": "0d",
+      "Original Estimate": "4h ",
+      "Priority": "P3 - Major",
+      "Due Date": "29-Aug-2024",
+      "Remaining Estimate": "4h ",
+      "Remaining Days": "4h ",
+      "Predicted Completion Date": "19-Nov-2024",
+      "Potential Delay(in days)": "58d",
+      "Dev Due Date": "29-Aug-2024",
+      "Assignee": "Parijatham Soundararajan",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "mustfixa11y",
+        "a11y"
+      ],
+      "Created Date": "2024-08-06",
+      "Root Cause List": [
+        "dev – code"
+      ],
+      "Owner Full Name": [
+        "Parijatham Soundararajan"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 240
+    },
+    {
+      "Issue Id": "GECP-48922",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48922",
+      "Issue Description": "UI | UI issue on the Devices for Rebate section and Rebate missing on Order confirmation page.",
+      "Issue Status": "In Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "0.0/0.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "3d 2h 30m",
+      "Original Estimate": "0d",
+      "Priority": "P4 - Minor",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "10-Sep-2024",
+      "Assignee": "Vikas Kumar Singh",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Creative_Issue"
+      ],
+      "Created Date": "2024-08-29",
+      "Root Cause List": [
+        "dev – design"
+      ],
+      "Owner Full Name": [
+        "Vikas Kumar Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49115",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49115",
+      "Issue Description": "PDP & Quickview | Line item should not be removed on changing quantity",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Sahil Sehgal",
+      "Change Date": "2024-09-14",
+      "Labels": [],
+      "Created Date": "2024-08-30",
+      "Root Cause List": [
+        "dev – code"
+      ],
+      "Owner Full Name": [
+        "Sahil Sehgal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49772",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49772",
+      "Issue Description": "A11y || Regression || PDP Existing drawer flyout || On closing the modal set the focus back on the triggered element ",
+      "Issue Status": "Open",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "0.75/6.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "6h ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Hussain Bharmal",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "mustfixa11y",
+        "a11y"
+      ],
+      "Created Date": "2024-09-14",
+      "Root Cause List": [
+        "dev – code"
+      ],
+      "Owner Full Name": [
+        "Hussain Bharmal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 360
+    },
+    {
+      "Issue Id": "GECP-48643",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48643",
+      "Issue Description": "GY BAU: Learn Pages Refresh- Batch 3 (Buying Tires Online page)",
+      "Issue Status": "In Testing",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.13/9.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "7h ",
+      "Original Estimate": "1d 1h ",
+      "Priority": "P3 - Major",
+      "Due Date": "12-Sep-2024",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "19-Nov-2024",
+      "Potential Delay(in days)": "48d",
+      "Dev Due Date": "10-Sep-2024",
+      "Assignee": "Michael Doerman",
+      "Change Date": "2024-09-12",
+      "Labels": [
+        "BMCR",
+        "Roadmap_Priority_2024",
+        "SEO"
+      ],
+      "Created Date": "2024-08-21",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Michael Doerman"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-12",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 540
+    },
+    {
+      "Issue Id": "GECP-49760",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49760",
+      "Issue Description": "Excluded brands for particular store are displayed under brands category of sort and filter",
+      "Issue Status": "Open",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Akshay Agarwal",
+      "Change Date": "2024-09-13",
+      "Labels": [],
+      "Created Date": "2024-09-13",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Akshay Agarwal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-48490",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48490",
+      "Issue Description": "Regression - Auto applying tire size",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Kishalaya Singh",
+      "Change Date": "2024-09-09",
+      "Labels": [],
+      "Created Date": "2024-08-14",
+      "Root Cause List": [
+        "other (provide details)"
+      ],
+      "Owner Full Name": [
+        "Kishalaya Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-09",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49172",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49172",
+      "Issue Description": "Test Case Creation for formHelpers.js",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "0.75/6.0 hrs",
+      "Remaining Hours": 60,
+      "Logged Work": "5h ",
+      "Original Estimate": "6h ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "1h ",
+      "Remaining Days": "1h ",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "16-Sep-2024",
+      "Assignee": "Mansi Sabharwal",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "TECH_DEBT",
+        "CodeCoverage"
+      ],
+      "Created Date": "2024-09-03",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Mansi Sabharwal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 360
+    },
+    {
+      "Issue Id": "GECP-48793",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48793",
+      "Issue Description": "Automation defect | Stest | Zip Payment | User unable to make payment | Modal not opening",
+      "Issue Status": "On Hold",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P2 - Critical",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Sahil Sehgal",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "automation-defect"
+      ],
+      "Created Date": "2024-08-27",
+      "Root Cause List": [
+        "3rd party"
+      ],
+      "Owner Full Name": [
+        "Sahil Sehgal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49262",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49262",
+      "Issue Description": "GY.com order confirmation - wrong offer number",
+      "Issue Status": "Open",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Cassandra Milicia (C)",
+      "Change Date": "2024-09-05",
+      "Labels": [],
+      "Created Date": "2024-09-05",
+      "Root Cause List": [
+        "other (provide details)"
+      ],
+      "Owner Full Name": [
+        "Cassandra Milicia (C)"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-05",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49170",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49170",
+      "Issue Description": "Test Case Creation for orderStatusReport.js",
+      "Issue Status": "In Analysis",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.0/8.0 hrs",
+      "Remaining Hours": 480,
+      "Logged Work": "0d",
+      "Original Estimate": "1d ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "1d ",
+      "Remaining Days": "1d ",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "13-Sep-2024",
+      "Assignee": "Lovepreet Singh",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "TECH_DEBT",
+        "CodeCoverage"
+      ],
+      "Created Date": "2024-09-03",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Lovepreet Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 480
+    },
+    {
+      "Issue Id": "GECP-49442",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49442",
+      "Issue Description": "QE automation",
+      "Issue Status": "Backlog",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "5.0/40.0 hrs",
+      "Remaining Hours": 630,
+      "Logged Work": "3d 5h 30m",
+      "Original Estimate": "5d ",
+      "Priority": "P4 - Minor",
+      "Due Date": "03-Sep-2024",
+      "Remaining Estimate": "1d 2h 30m",
+      "Remaining Days": "1d 2h 30m",
+      "Predicted Completion Date": "20-Nov-2024",
+      "Potential Delay(in days)": "56d",
+      "Dev Due Date": "03-Sep-2024",
+      "Assignee": "Jyoti Nath",
+      "Change Date": "2024-09-13",
+      "Labels": [],
+      "Created Date": "2024-09-11",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Jyoti Nath"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 2400
+    },
+    {
+      "Issue Id": "GECP-46194",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-46194",
+      "Issue Description": "GECP-44094 | No Search result | Not working on GY",
+      "Issue Status": "Open",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "2.0/16.0 hrs",
+      "Remaining Hours": 960,
+      "Logged Work": "0d",
+      "Original Estimate": "2d ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "2d ",
+      "Remaining Days": "2d ",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Devaraj Arasu T S",
+      "Change Date": "2024-09-03",
+      "Labels": [
+        "Sprint33_Initial"
+      ],
+      "Created Date": "2024-07-01",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Devaraj Arasu T S"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-03",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 960
+    },
+    {
+      "Issue Id": "GECP-49263",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49263",
+      "Issue Description": "Automation defect | JT | Multiple error messages are displayed for the password field.",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "3h 10m",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Virupaksha MP",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "automation-defect"
+      ],
+      "Created Date": "2024-09-05",
+      "Root Cause List": [
+        "dev – code"
+      ],
+      "Owner Full Name": [
+        "Virupaksha MP"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49177",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49177",
+      "Issue Description": "CLONE - NOC Alerts | Production Monitoring",
+      "Issue Status": "Funnel",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "2.0/16.0 hrs",
+      "Remaining Hours": 945,
+      "Logged Work": "15m",
+      "Original Estimate": "2d ",
+      "Priority": "P3 - Major",
+      "Due Date": "03-Sep-2024",
+      "Remaining Estimate": "1d 7h 45m",
+      "Remaining Days": "1d 7h 45m",
+      "Predicted Completion Date": "20-Nov-2024",
+      "Potential Delay(in days)": "56d",
+      "Dev Due Date": "03-Sep-2024",
+      "Assignee": "Namitha Kn",
+      "Change Date": "2024-09-03",
+      "Labels": [],
+      "Created Date": "2024-09-03",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Namitha Kn"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-03",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 960
+    },
+    {
+      "Issue Id": "GECP-48911",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48911",
+      "Issue Description": "Vehicles and Associated Products Job",
+      "Issue Status": "Need Info / Defect",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "1.0/8.0 hrs",
+      "Remaining Hours": 120,
+      "Logged Work": "6h ",
+      "Original Estimate": "1d ",
+      "Priority": "P4 - Minor",
+      "Due Date": "-",
+      "Remaining Estimate": "2h ",
+      "Remaining Days": "2h ",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "29-Aug-2024",
+      "Assignee": "Kishalaya Singh",
+      "Change Date": "2024-09-10",
+      "Labels": [],
+      "Created Date": "2024-08-28",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Kishalaya Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-10",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 480
+    },
+    {
+      "Issue Id": "GECP-38464",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-38464",
+      "Issue Description": "Clean Bootstrap Dependency from GY-Core | CARDS SELECTOR",
+      "Issue Status": "Testing",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "1.0/8.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "1d 1h ",
+      "Original Estimate": "1d ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "06-Sep-2024",
+      "Assignee": "Sitesh Agrawal",
+      "Change Date": "2024-09-12",
+      "Labels": [
+        "TECH_DEBT",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-01-04",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Sitesh Agrawal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-12",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 480
+    },
+    {
+      "Issue Id": "GECP-49757",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49757",
+      "Issue Description": "GY | GECP-47674 | The Sticky nav is not displayed on OOS product for GY",
+      "Issue Status": "In Code Review",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "1d ",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Namitha Kn",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "Functional_issue",
+        "Regression_Issue"
+      ],
+      "Created Date": "2024-09-13",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Namitha Kn"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-48278",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48278",
+      "Issue Description": "GY-GAS-JT | Minor UI issues on the Cart page.",
+      "Issue Status": "In Analysis",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "3h ",
+      "Original Estimate": "0d",
+      "Priority": "P4 - Minor",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "03-Sep-2024",
+      "Assignee": "Sindhu Jayaprakash",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Creative_Issue"
+      ],
+      "Created Date": "2024-08-12",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Sindhu Jayaprakash"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-47974",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-47974",
+      "Issue Description": "Error messaging redesign on cart (RTI off OOS + service cards)",
+      "Issue Status": "In Testing",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "9.75/78.0 hrs",
+      "Remaining Hours": 120,
+      "Logged Work": "10d 1h ",
+      "Original Estimate": "9d 6h ",
+      "Priority": "P3 - Major",
+      "Due Date": "16-Sep-2024",
+      "Remaining Estimate": "2h ",
+      "Remaining Days": "2h ",
+      "Predicted Completion Date": "19-Nov-2024",
+      "Potential Delay(in days)": "46d",
+      "Dev Due Date": "11-Sep-2024",
+      "Assignee": "Charu Chopra",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "RTIOff_Nissan",
+        "Roadmap_Priority_2024",
+        "DesignExploration"
+      ],
+      "Created Date": "2024-08-06",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Charu Chopra"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 4680
+    },
+    {
+      "Issue Id": "GECP-48315",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48315",
+      "Issue Description": "A/B testing - hero banner campaign launch",
+      "Issue Status": "On Hold",
+      "Issue Type": "Story",
+      "Size(story point/hours)": "1.63/13.0 hrs",
+      "Remaining Hours": 480,
+      "Logged Work": "0d",
+      "Original Estimate": "1d 5h ",
+      "Priority": "P3 - Major",
+      "Due Date": "30-Aug-2024",
+      "Remaining Estimate": "1d ",
+      "Remaining Days": "1d ",
+      "Predicted Completion Date": "20-Nov-2024",
+      "Potential Delay(in days)": "58d",
+      "Dev Due Date": "12-Sep-2024",
+      "Assignee": "Mansi Sabharwal",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-08-12",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Mansi Sabharwal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 780
+    },
+    {
+      "Issue Id": "GECP-48908",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48908",
+      "Issue Description": "Cookies on GY.com Bleeding Into Subdomains",
+      "Issue Status": "Open",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Kapil Sharma",
+      "Change Date": "2024-08-29",
+      "Labels": [],
+      "Created Date": "2024-08-28",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Kapil Sharma"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-08-29",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-48915",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48915",
+      "Issue Description": "Exploration for Sort All Services Page, Maintenance, Repair and Replace, Tire Related using Einstein",
+      "Issue Status": "Testing",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "3.0/24.0 hrs",
+      "Remaining Hours": 1440,
+      "Logged Work": "0d",
+      "Original Estimate": "3d ",
+      "Priority": "P4 - Minor",
+      "Due Date": "-",
+      "Remaining Estimate": "3d ",
+      "Remaining Days": "3d ",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "10-Sep-2024",
+      "Assignee": "Sanjay Kumar 8",
+      "Change Date": "2024-09-12",
+      "Labels": [
+        "POC",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-08-29",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Sanjay Kumar 8"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-12",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 1440
+    },
+    {
+      "Issue Id": "GECP-48483",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-48483",
+      "Issue Description": "A11y || Regression || QuickView & Recommended service drawer || On closing the modal set the focus back on the triggered element ",
+      "Issue Status": "Ready for Testing",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "0.75/6.0 hrs",
+      "Remaining Hours": 0,
+      "Logged Work": "1d 3h ",
+      "Original Estimate": "6h ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "0d",
+      "Remaining Days": "0d",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "11-Sep-2024",
+      "Assignee": "Parijatham Soundararajan",
+      "Change Date": "2024-09-14",
+      "Labels": [
+        "mustfixa11y",
+        "a11y"
+      ],
+      "Created Date": "2024-08-14",
+      "Root Cause List": [
+        "dev – code"
+      ],
+      "Owner Full Name": [
+        "Parijatham Soundararajan"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 360
+    },
+    {
+      "Issue Id": "GECP-49759",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49759",
+      "Issue Description": "Stores displayed after 15 count",
+      "Issue Status": "Reopen",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Manoj Varma Alluri",
+      "Change Date": "2024-09-14",
+      "Labels": [],
+      "Created Date": "2024-09-13",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Manoj Varma Alluri"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-14",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    },
+    {
+      "Issue Id": "GECP-49212",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49212",
+      "Issue Description": " Promotion & Data Testing",
+      "Issue Status": "Funnel",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "4.0/32.0 hrs",
+      "Remaining Hours": 1320,
+      "Logged Work": "2d 1h ",
+      "Original Estimate": "4d ",
+      "Priority": "P4 - Minor",
+      "Due Date": "03-Sep-2024",
+      "Remaining Estimate": "2d 6h ",
+      "Remaining Days": "2d 6h ",
+      "Predicted Completion Date": "21-Nov-2024",
+      "Potential Delay(in days)": "57d",
+      "Dev Due Date": "03-Sep-2024",
+      "Assignee": "Sitesh Agrawal",
+      "Change Date": "2024-09-04",
+      "Labels": [],
+      "Created Date": "2024-09-04",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Sitesh Agrawal"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-04",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [
+        "Issue at Risk"
+      ],
+      "Value": 1920
+    },
+    {
+      "Issue Id": "GECP-38468",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-38468",
+      "Issue Description": "Clean Bootstrap Dependency from GY-Core | PLP Tire/Service/Store Card ",
+      "Issue Status": "Testing",
+      "Issue Type": "Enabler Story",
+      "Size(story point/hours)": "3.0/24.0 hrs",
+      "Remaining Hours": 540,
+      "Logged Work": "1d 7h ",
+      "Original Estimate": "3d ",
+      "Priority": "P3 - Major",
+      "Due Date": "-",
+      "Remaining Estimate": "1d 1h ",
+      "Remaining Days": "1d 1h ",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "10-Sep-2024",
+      "Assignee": "Kapil Sharma",
+      "Change Date": "2024-09-13",
+      "Labels": [
+        "TECH_DEBT",
+        "Roadmap_Priority_2024"
+      ],
+      "Created Date": "2024-01-04",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Kapil Sharma"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "Nissan_18_Sep",
+      "Updated Date": "2024-09-13",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 1440
+    },
+    {
+      "Issue Id": "GECP-49440",
+      "Issue URL": "https://tools.publicis.sapient.com/jira/browse/GECP-49440",
+      "Issue Description": "Wrong qty on tires + installation on tire PDP ",
+      "Issue Status": "Open",
+      "Issue Type": "Defect",
+      "Size(story point/hours)": "-",
+      "Remaining Hours": 0,
+      "Logged Work": "0d",
+      "Original Estimate": "0d",
+      "Priority": "P4 - Minor",
+      "Due Date": "-",
+      "Remaining Estimate": "-",
+      "Predicted Completion Date": "-",
+      "Potential Delay(in days)": "-",
+      "Dev Due Date": "-",
+      "Assignee": "Kishalaya Singh",
+      "Change Date": "2024-09-10",
+      "Labels": [],
+      "Created Date": "2024-09-10",
+      "Root Cause List": [
+        "None"
+      ],
+      "Owner Full Name": [
+        "Kishalaya Singh"
+      ],
+      "Sprint Name": "BAU Sprint 36",
+      "Release Name": "-",
+      "Updated Date": "2024-09-10",
+      "Testing Phase": [
+        "Undefined"
+      ],
+      "Category": [],
+      "Value": 0
+    }
+  ],
+  "maxValue": "",
+  "kpiInfo": {
+    "definition": "It gives intelligence to the team about number of issues that could potentially not get completed during the iteration. Issues which have a Predicted Completion date > Sprint end date are considered.",
+    "details": [
+      {
+        "type": "link",
+        "kpiLinkDetail": {
+          "text": "Detailed Information at",
+          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713361/Issues+likely+to+spill"
+        }
+      }
+    ]
+  },
+  "kpiDetail": {
+    "kpiSubCategory": "Iteration Review",
+    "kpiWidth": 33,
+    "kpiHeight": 50
+  },
+  "isEnabled": true
+}

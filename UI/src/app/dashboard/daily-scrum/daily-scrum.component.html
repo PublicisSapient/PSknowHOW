@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>
-      <button class="assignee" (click)="handleViewExpandCollapse()">
+      <button class="assignee" (click)="handleViewExpandCollapse()" *ngIf="selectedUser === 'Overall'">
         <i class=" fas" [ngClass]="{'fa-compress' : displayModal , 'fa-expand': !displayModal}"></i>
       </button>
     </div>

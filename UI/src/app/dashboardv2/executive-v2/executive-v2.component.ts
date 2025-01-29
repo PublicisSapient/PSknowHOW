@@ -17,12 +17,12 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
@@ -122,8 +122,80 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   kpiTrendObject = {};
   durationFilter = 'Past 6 Months';
   selectedTrend: any = [];
+  iterationKPIData = {};
+  dailyStandupKPIDetails = {};
+
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
-    private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef) {
+    private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef, private router: Router) {
+
+  }
+
+  arrayDeepCompare(a1, a2) {
+    for (let idx = 0; idx < a1.length; idx++) {
+      if (!this.helperService.deepEqual(a1[idx], a2[idx])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  resetToDefaults() {
+    this.noFilterApplyData = false;
+    this.kpiLoader = new Set();
+    this.kpiStatusCodeArr = {};
+    this.immediateLoader = true;
+    this.processedKPI11Value = {};
+    this.selectedBranchFilter = 'Select';
+    this.serviceObject = {};
+    // this.selectedtype = 'scrum';
+  }
+
+  setGlobalConfigData(globalConfig) {
+    this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    if (!this.configGlobalData) {
+      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    }
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+  }
+
+  processKpiConfigData() {
+    const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
+    // user can enable kpis from show/hide filter, added below flag to show different message to the user
+    this.enableByUser = disabledKpis?.length ? true : false;
+    // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
+    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
+    let visibleKpis = this.configGlobalData?.filter(item => item.isEnabled);
+    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
+    if (this.updatedConfigGlobalData?.length === 0 || visibleKpis?.length === 0) {
+      this.noKpis = true;
+      if (this.updatedConfigGlobalData?.length && visibleKpis?.length === 0) {
+        this.enableByUser = true;
+      } else {
+        this.enableByUser = false;
+      }
+    } else {
+      this.noKpis = false;
+      this.enableByUser = false;
+    }
+
+    this.maturityTableKpiList = []
+    this.configGlobalData?.forEach(element => {
+      if (element.shown && element.isEnabled) {
+        this.kpiConfigData[element.kpiId] = true;
+        if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
+          if (this.selectedTab !== 'iteration') {
+            this.createTrendsData(element.kpiId);
+          }
+          this.handleMaturityTableLoader();
+        }
+      } else {
+        this.kpiConfigData[element.kpiId] = false;
+      }
+    });
+  }
+
+
+  ngOnInit() {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
@@ -202,80 +274,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }));
 
     this.selectedTrend = JSON.parse(JSON.stringify(this.service.getSelectedTrends()));
+    localStorage.setItem('selectedTrend', JSON.stringify(this.selectedTrend));
 
     this.subscriptions.push(this.service.selectedTrendsEventSubject.subscribe(trend => {
-      if (trend.length !== this.selectedTrend.length || !this.arrayDeepCompare(trend, this.selectedTrend)) {
+      const selectedTrendFromLS = localStorage.getItem('selectedTrend') && JSON.parse(localStorage.getItem('selectedTrend'));
+      if (selectedTrendFromLS?.length > 0 && (trend.length !== selectedTrendFromLS?.length || !this.arrayDeepCompare(trend, selectedTrendFromLS))) {
         this.selectedTrend = trend;
+        localStorage.setItem('selectedTrend', JSON.stringify(this.selectedTrend));
         this.kpiSelectedFilterObj = {};
         this.service.setKpiSubFilterObj(null);
+      } else {
+        this.service.setKpiSubFilterObj(this.service.getKpiSubFilterObj());
+        localStorage.setItem('selectedTrend', JSON.stringify(trend));
       }
     }));
-  }
-
-  arrayDeepCompare(a1, a2) {
-    for (let idx = 0; idx < a1.length; idx++) {
-      if (!this.helperService.deepEqual(a1[idx], a2[idx])) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  resetToDefaults() {
-    this.noFilterApplyData = false;
-    this.kpiLoader = new Set();
-    this.kpiStatusCodeArr = {};
-    this.immediateLoader = true;
-    this.processedKPI11Value = {};
-    this.selectedBranchFilter = 'Select';
-    this.serviceObject = {};
-    // this.selectedtype = 'scrum';
-  }
-
-  setGlobalConfigData(globalConfig) {
-    this.configGlobalData = globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    if (!this.configGlobalData) {
-      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardSlug?.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    }
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-  }
-
-  processKpiConfigData() {
-    const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
-    // user can enable kpis from show/hide filter, added below flag to show different message to the user
-    this.enableByUser = disabledKpis?.length ? true : false;
-    // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
-    this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
-    let visibleKpis = this.configGlobalData?.filter(item => item.isEnabled);
-    this.kpiList = this.configGlobalData?.map((kpi) => kpi.kpiId)
-    if (this.updatedConfigGlobalData?.length === 0 || visibleKpis?.length === 0) {
-      this.noKpis = true;
-      if (this.updatedConfigGlobalData?.length && visibleKpis?.length === 0) {
-        this.enableByUser = true;
-      } else {
-        this.enableByUser = false;
-      }
-    } else {
-      this.noKpis = false;
-      this.enableByUser = false;
-    }
-
-    this.maturityTableKpiList = []
-    this.configGlobalData?.forEach(element => {
-      if (element.shown && element.isEnabled) {
-        this.kpiConfigData[element.kpiId] = true;
-        if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
-          this.createTrendsData(element.kpiId);
-          this.handleMaturityTableLoader();
-        }
-      } else {
-        this.kpiConfigData[element.kpiId] = false;
-      }
-    });
-  }
-
-
-  ngOnInit() {
     /** Get recommendations flag */
     this.subscriptions.push(this.service.isRecommendationsEnabledObs.subscribe(item => {
       this.isRecommendationsEnabled = item;
@@ -289,13 +301,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     });
 
-    if (this.selectedTab.toLowerCase() === 'developer') {
-      this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
-        Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
+
+    this.subscriptions.push(this.service.triggerAdditionalFilters.subscribe((data) => {
+      Object.keys(data)?.length && this.updatedConfigGlobalData.forEach(kpi => {
+        Promise.resolve().then(() => {
           this.handleSelectedOption(data, kpi);
         });
-      }));
-    }
+      });
+    }));
+
   }
 
   // unsubscribing all Kpi Request
@@ -316,23 +330,35 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.hierarchyLevel = hierarchyData[this.selectedtype?.toLowerCase()];
       }
     }
-    if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
+    if ($event.dashConfigData && Object.keys($event.dashConfigData).length > 0) {
       this.filterData = $event.filterData;
       this.filterApplyData = $event.filterApplyData;
       this.globalConfig = $event.dashConfigData;
       this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis
-      const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
-      const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
-      this.releaseEndDate = endDate;
-      const today = new Date().toISOString().split('T')[0];
-      this.timeRemaining = this.calcBusinessDays(today, endDate);
-      this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+      if (this.selectedTab === 'release') {
+        const selectedRelease = this.filterData?.filter(x => x.nodeId === this.filterApplyData?.selectedMap?.release?.[0] && x.labelName?.toLowerCase() === 'release')[0];
+        const endDate = selectedRelease !== undefined ? new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0] : undefined;
+        this.releaseEndDate = endDate;
+        const today = new Date().toISOString().split('T')[0];
+        this.timeRemaining = this.calcBusinessDays(today, endDate);
+        this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
+      } else if (this.selectedTab === 'iteration') {
+        const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
+        if (selectedSprint) {
+          const today = new Date().toISOString().split('T')[0];
+          const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
+          this.timeRemaining = this.calcBusinessDays(today, endDate);
+          this.service.iterationConfigData.next({ daysLeft: this.timeRemaining });
+          this.iterationKPIData = {};
+        }
+      }
       if (!this.configGlobalData?.length && $event.dashConfigData) {
         this.configGlobalData = $event.dashConfigData[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         if (!this.configGlobalData) {
           this.configGlobalData = $event.dashConfigData['others']?.filter((item) => (item.boardSlug.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
         }
       }
+
 
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown);
 
@@ -355,8 +381,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       this.service.setAddtionalFilterBackup({});
-      this.service.setKpiSubFilterObj({});
-
       if (this.configGlobalData?.length) {
         // set up dynamic tabs
         this.setUpTabs();
@@ -492,6 +516,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         groupIdSet.add(obj['kpiDetail'].groupId);
       }
     });
+
+    if (this.selectedTab === 'iteration') {
+      // check for Capacity KPI and sort
+      this.updatedConfigGlobalData = this.updatedConfigGlobalData.sort((a, b) => a.kpiDetail.defaultOrder - b.kpiDetail.defaultOrder);
+    }
 
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
@@ -766,7 +795,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
-    if (this.selectedTab !== 'release' && this.selectedTab !== 'backlog') {
+    if (this.selectedTab !== 'release' && this.selectedTab !== 'backlog' && this.selectedTab !== 'iteration') {
       this.jiraKpiRequest = this.httpService.postKpi(postData, source)
         .subscribe(getData => {
           if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -806,7 +835,44 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.postJiraKPIForRelease(postData, source);
     } else if (this.selectedTab === 'backlog') {
       this.postJiraKPIForBacklog(postData, source);
+    } else if (this.selectedTab === 'iteration') {
+      //this.iterationKPIData = [];
+      this.postJiraKPIForIteration(postData, source);
     }
+  }
+
+  // post request of Jira(scrum) hygiene
+  postJiraKPIForIteration(postData, source): void {
+    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
+      .subscribe(getData => {
+        if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+          // creating array into object where key is kpi id
+          const localVariable = this.helperService.createKpiWiseId(getData);
+
+          this.iterationKPIData = Object.assign({}, this.iterationKPIData, localVariable);
+          this.removeLoaderFromKPIs(localVariable);
+
+          if (localVariable && localVariable['kpi121']) {
+            const iterationConfigData = {
+              daysLeft: this.timeRemaining,
+              capacity: {
+                value: {
+                  value: localVariable['kpi121'].trendValueList?.value ? localVariable['kpi121'].trendValueList?.value : 0
+                }
+              }
+            };
+            this.service.iterationConfigData.next(iterationConfigData);
+          }
+          if (this.iterationKPIData && this.iterationKPIData['kpi154']) {
+            this.dailyStandupKPIDetails = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi154')[0].kpiDetail;
+          }
+        } else {
+          this.handleKPIError(postData);
+        }
+      }, (error) => {
+        // Handle error
+        this.handleKPIError(postData);
+      });
   }
 
   postJiraKPIForBacklog(postData, source) {
@@ -1009,7 +1075,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // additional filters depend on KPI response
     let developerBopardKpis = this.globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
     if (this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis?.includes(kpiId)) {
-      this.helperService.setBackupOfFilterSelectionState({ 'additional_level': null });
+      this.service.setBackupOfFilterSelectionState({ 'additional_level': null });
       if (!trendValueList?.length) {
         this.additionalFiltersArr = {};
         this.service.setAdditionalFilters(this.additionalFiltersArr);
@@ -1102,9 +1168,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
             const preAggregatedValues = [];
             for (let i = 0; i < tempArr?.length; i++) {
-              preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
+              preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == (tempArr[i]?.filter1.length ? tempArr[i]?.filter1 : 'Overall') && k['filter2'] == tempArr[i]?.filter2));
             }
-            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
+            if (preAggregatedValues && preAggregatedValues.length > 1) {
+              const transformFilter = {}
+              preAggregatedValues.forEach(obj => {
+                transformFilter[obj.filter1 + 'and' + obj.filter2] = obj.value
+              })
+              this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(transformFilter, aggregationType, this.tooltip.percentile);
+            } else {
+              this.kpiChartData[kpiId] = preAggregatedValues[0]?.value ? preAggregatedValues[0]?.value : [];
+            }
           }
           else if (filterPropArr.includes('filter1')
             || filterPropArr.includes('filter2')) {
@@ -1203,9 +1277,20 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (this.kpiDropdowns[kpiId]?.length > 1) {
           this.kpiSelectedFilterObj[kpiId] = {};
           for (let i = 0; i < this.kpiDropdowns[kpiId].length; i++) {
-            this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+            if (filterType?.toLowerCase() === 'multitypefilters') {
+              if (this.kpiDropdowns[kpiId][i].filterType.toLowerCase() === 'radiobtn') {
+                this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+              } else {
+                this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [];
+              }
+            } else {
+              this.kpiSelectedFilterObj[kpiId]['filter' + (i + 1)] = [this.kpiDropdowns[kpiId][i].options[0]];
+            }
           }
         }
+      } else {
+        this.kpiSelectedFilterObj[kpiId] = {};
+        this.kpiSelectedFilterObj[kpiId]['filter1'] = [this.kpiDropdowns[kpiId][0]['options'][0]];
       }
     }
   }
@@ -1220,6 +1305,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
+  /**
+     * Sets the default KPI filters based on the provided KPI ID, filter properties, and filter type.
+     * It populates the kpiSelectedFilterObj with default options from kpiDropdowns.
+     * 
+     * @param {string} kpiId - The ID of the KPI for which to set filters.
+     * @param {string[]} filterPropArr - An array of filter property names to determine filter behavior.
+     * @param {string} [filterType] - The type of filter to apply (optional).
+     * @returns {void}
+     */
   getDefaultKPIFiltersForRelease(kpiId, filterPropArr, filterType) {
     if (this.kpiDropdowns[kpiId]?.length && this.kpiDropdowns[kpiId][0]['options'] && this.kpiDropdowns[kpiId][0]['options'].length) {
       if (filterPropArr.includes('filter')) {
@@ -1335,7 +1429,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
-    this.createTrendData(kpiId);
+    // this.createTrendData(kpiId);
+    if (kpiId !== 'kpi151' && kpiId !== 'kpi152' && kpiId !== 'kpi155') {
+      this.createTrendsData(kpiId);
+    }
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
         this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
@@ -1367,27 +1464,27 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return kpiChartData;
   }
 
-  createTrendData(kpiId) {
-    const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
-    const trendingList = this.kpiChartData[kpiId];
-    if (trendingList?.length) {
-      this.kpiTrendObject[kpiId] = [];
-      if (trendingList[0]?.value?.length > 0 && kpiDetail) {
-        let trendObj = {};
-        const [latest, trend, unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
-        trendObj = {
-          "hierarchyName": trendingList[0]?.data,
-          "trend": trend,
-          "maturity": 'M' + trendingList[0]?.maturity,
-          "maturityValue": trendingList[0]?.maturityValue,
-          "maturityDenominator": trendingList[0]?.value.length,
-          "kpiUnit": unit
-        };
-        this.kpiTrendObject[kpiId]?.push(trendObj);
+  /*   createTrendData(kpiId) {
+      const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
+      const trendingList = this.kpiChartData[kpiId];
+      if (trendingList?.length) {
+        this.kpiTrendObject[kpiId] = [];
+        if (trendingList[0]?.value?.length > 0 && kpiDetail) {
+          let trendObj = {};
+          const [latest, trend, unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
+          trendObj = {
+            "hierarchyName": trendingList[0]?.data,
+            "trend": trend,
+            "maturity": 'M' + trendingList[0]?.maturity,
+            "maturityValue": trendingList[0]?.maturityValue,
+            "maturityDenominator": trendingList[0]?.value.length,
+            "kpiUnit": unit
+          };
+          this.kpiTrendObject[kpiId]?.push(trendObj);
+        }
       }
-    }
-
-  }
+  
+    } */
 
   getChartDataforRelease(kpiId, idx, aggregationType?, kpiFilterChange = false) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
@@ -1397,7 +1494,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       let filterPropArr = Object.keys(trendValueList[0])?.filter((prop) => prop.includes('filter'));
 
       // get backup KPI filters
-      this.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+      // this.getBackupKPIFiltersForRelease(kpiId, filterPropArr);
+      this.getBackupKPIFilters(kpiId, filterPropArr);
     }
 
     if (kpiId === 'kpi178') {
@@ -1635,11 +1733,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   createCombinations(arr1, arr2) {
     let arr = [];
-    for (let i = 0; i < arr1?.length; i++) {
-      for (let j = 0; j < arr2?.length; j++) {
-        arr.push({ filter1: arr1[i], filter2: arr2[j] });
+    if (arr1?.length > 0) {
+      for (let i = 0; i < arr1?.length; i++) {
+        for (let j = 0; j < arr2?.length; j++) {
+          arr.push({ filter1: arr1[i], filter2: arr2[j] });
+        }
       }
+    } else {
+      /** Handled for Multi Type Dropdown */
+      return [
+        {
+          filter1: [],
+          filter2: arr2
+        }
+      ]
     }
+
     return arr;
   }
 
@@ -1751,10 +1860,10 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (preAggregatedValues?.length > 1) {
           if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
-          } else { 
-            if(kpiId === 'kpi171'){
+          } else {
+            if (kpiId === 'kpi171') {
               this.kpiChartData[kpiId] = [this.helperService.aggregationCycleTime(preAggregatedValues)];
-            }else{
+            } else {
               this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
             }
           }
@@ -1995,8 +2104,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
     this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
       if (response['success']) {
-        this.exportExcelComponent.dataTransformForIterationTableWidget([],[],response['data']['kpiColumnDetails'],tableValues,kpi?.kpiName + ' / ' + label,kpi.kpiId)
-      }     
+        this.exportExcelComponent.dataTransformForIterationTableWidget([], [], response['data']['kpiColumnDetails'], tableValues, kpi?.kpiName + ' / ' + label, kpi.kpiId)
+      }
     });
   }
 
@@ -2245,12 +2354,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         });
 
         this.kpiDropdowns[kpiId] = [];
-        dropdownArr.forEach(arr => {
+        dropdownArr.forEach((arr, i) => {
           arr = Array.from(arr);
           const obj = {};
           const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
           if (this.selectedTab.toLowerCase() !== 'developer' || kpiId !== 'kpi168') {
-            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown')) {
+            if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && ((kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown') || kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multitypefilters')) {
               const index = arr?.findIndex(x => x?.toLowerCase() == 'overall');
               if (index > -1) {
                 arr?.splice(index, 1);
@@ -2258,7 +2367,12 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             }
           }
 
-          obj['filterType'] = 'Select a filter';
+          if (this.allKpiArray[idx]?.filters) {
+            const filterConfig = this.allKpiArray[idx].filters;
+            obj['filterType'] = filterConfig['filter' + (i + 1)]?.filterType ? filterConfig['filter' + (i + 1)]?.filterType : 'Select a filter';
+          } else {
+            obj['filterType'] = 'Select a filter';
+          }
           if (arr.length > 0) {
             arr.sort((a, b) => {
               if (a === "Overall") {
@@ -2383,6 +2497,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
         }
+      } else if (kpi?.kpiDetail?.kpiFilter && kpi?.kpiDetail?.kpiFilter.toLowerCase() === 'multitypefilters') {
+        this.kpiSelectedFilterObj[kpi?.kpiId] = event;
       }
       else {
         if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && this.selectedTab.toLowerCase() !== 'developer') {
@@ -2474,6 +2590,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
 
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+
     this.getChartDataForBacklog(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
   }
 
@@ -2569,16 +2686,18 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           if (this.kpiChartData[kpiId][i]?.value?.length > 0) {
             let trendObj = {};
             const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
-            trendObj = {
-              "hierarchyName": this.kpiChartData[kpiId][i]?.data,
-              "value": latest,
-              "trend": trend,
-              "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
-                this.checkMaturity(this.kpiChartData[kpiId][i])
-                : 'M' + this.kpiChartData[kpiId][i]?.maturity,
-              "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
-              "kpiUnit": unit
-            };
+            if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
+              trendObj = {
+                "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                "value": latest,
+                "trend": trend,
+                "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
+                  this.checkMaturity(this.kpiChartData[kpiId][i])
+                  : 'M' + this.kpiChartData[kpiId][i]?.maturity,
+                "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
+                "kpiUnit": unit
+              };
+            }
             if (kpiId === 'kpi997') {
               trendObj['value'] = 'NA';
             }
@@ -2645,21 +2764,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
       let kpiIdsForCurrentBoard;
       if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+        kpiIdsForCurrentBoard = this.configGlobalData?.filter(kpi => kpi.kpiDetail.groupId === event.kpiDetail.groupId).map(kpiDetails => kpiDetails.kpiId)
         switch (kpiSource) {
           case 'sonar':
-            this.postSonarKanbanKpi(currentKPIGroup, 'sonar');
+            this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'jenkins':
-            this.postJenkinsKanbanKpi(currentKPIGroup, 'jenkins');
+            this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'zypher':
-            this.postZypherKanbanKpi(currentKPIGroup, 'zypher');
+            this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'bitbucket':
-            this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');
+            this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
             break;
           default:
-            this.postJiraKanbanKpi(currentKPIGroup, 'jira');
+            this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
         }
       } else {
         switch (kpiSource) {
@@ -2734,6 +2854,16 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return maxSprints;
   }
 
+  /**
+     * Calculates the number of business days between two Date objects, inclusive.
+     * Business days are defined as weekdays (Monday to Friday), excluding weekends.
+     * Returns 0 if the second date is earlier than the first date.
+     *
+     * @param dDate1 - The start date as a Date object.
+     * @param dDate2 - The end date as a Date object.
+     * @returns The number of business days between the two dates.
+     * @throws Returns 0 if dDate2 is earlier than dDate1.
+     */
   calcBusinessDays(dDate1, dDate2) { // input given as Date objects
     let iWeeks; let iDateDiff; let iAdjust = 0;
     if (dDate2 < dDate1) {
@@ -2783,4 +2913,44 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     return kpi?.kpiDetail?.yaxisLabel;
   }
+
+  /**
+     * Determines the CSS class for column width based on the provided KPI width percentage.
+     * Accepts specific width values and defaults to 50% if an unrecognized value is given.
+     * @param kpiwidth - The width percentage (100, 50, 66, 33) to determine the column class.
+     * @returns A string representing the corresponding CSS class for the column width.
+     * No exceptions are thrown.
+     */
+  getkpiwidth(kpiwidth) {
+    let retValue = '';
+
+    switch (kpiwidth) {
+      case 100:
+        retValue = 'p-col-12';
+        break;
+      case 50:
+        retValue = 'p-col-6';
+        break;
+      case 66:
+        retValue = 'p-col-8';
+        break;
+      case 33:
+        retValue = 'p-col-4';
+        break;
+      default:
+        retValue = 'p-col-6';
+        break;
+    }
+
+    return retValue;
+  }
+
+  checkKPIPresence(kpi) {
+    if (this.tabsArr.size > 1) {
+      return this.selectedKPITab === kpi.kpiDetail.kpiSubCategory && kpi['isEnabled'];
+    } else {
+      return kpi['isEnabled'];
+    }
+  }
+
 }

@@ -64,7 +64,7 @@ export class ProjectSettingsComponent implements OnInit {
     public sharedService: SharedService,
     public router: Router,
     private confirmationService: ConfirmationService,
-    private httpService: HttpService,
+    public httpService: HttpService,
     private messageService: MessageService,
     public getAuthorizationService: GetAuthorizationService,
   ) { }
@@ -105,11 +105,12 @@ export class ProjectSettingsComponent implements OnInit {
       },
     ];
 
-    this.sharedService.currentUserDetailsObs.subscribe(details => {
-      if (details) {
-        this.userName = details['user_name'];
-      }
-    });
+    // this.sharedService.currentUserDetailsObs.subscribe(details => {
+    //   if (details) {
+    //     this.userName = details['user_name'];
+    //   }
+    // });
+    this.userName = this.sharedService.getCurrentUserDetails('user_name');
 
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
@@ -308,7 +309,7 @@ export class ProjectSettingsComponent implements OnInit {
             });
             arr = arr?.filter(item => item.projects?.length > 0);
 
-            this.sharedService.setCurrentUserDetails({ projectsAccess: arr });
+            this.httpService.setCurrentUserDetails({ projectsAccess: arr });
           }
         }, error => {
           this.projectDeletionStatus(error);

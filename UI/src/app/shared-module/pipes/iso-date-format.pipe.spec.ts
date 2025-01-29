@@ -31,17 +31,17 @@ describe('IsoDateFormatPipe', () => {
 
 	it('should return empty string for an empty string', () => {
 		const result = pipe.transform('');
-		expect(result).toBe('-');
+		expect(result).toBe('');
 	});
 
 	it('should return Invalid Date for an invalid date string', () => {
 		const result = pipe.transform('invalid-date-string');
-		expect(result).toBe('-');
+		expect(result).toBe('');
 	});
 
 	it('should return empty string for null value', () => {
 		const result = pipe.transform(null);
-		expect(result).toBe('-');
+		expect(result).toBe('');
 	});
 
 	

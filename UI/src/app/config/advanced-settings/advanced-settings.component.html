@@ -137,6 +137,9 @@
                     <label>
                       Refresh Snapshot
                     </label>
+                    <img #commentSummary class="p-p-1 h-40 cursor-pointer" style="transform: translateY(7px)" *ngIf="findTraceLogForTool('Azure')?.sprintRefreshLog?.length"
+                                    (click)="azureOP.toggle($event)"
+                                    src="../../../assets/img/RequiresSyncIcon.svg" alt="Azure Snapshot History" />
                   </div>
                   <div style="display: flex;">
                     <button pButton pRipple label="Run Now"
@@ -264,5 +267,29 @@
       </li>
     </ul>
   </div>
+</p-overlayPanel>
+
+
+
+<p-overlayPanel #azureOP [showCloseIcon]="false">
+  <p-table [value]="findTraceLogForTool('Azure')?.sprintRefreshLog" [tableStyle]="{ 'min-width': '40rem' }"
+  [scrollable]="true" scrollHeight="200px">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Sprint Name</th>
+      <th>Sprint Start & End Date</th>
+      <th>Snapshot refreshed on</th>
+      <th>Snapshot refreshed by</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-item>
+    <tr>
+      <td>{{item.sprintName}}</td>
+      <td>{{item?.sprintStartDate | date : 'dd-MMM-yyyy'}} to {{item?.sprintEndDate | date : 'dd-MMM-yyyy'}}</td>
+      <td>{{endTimeConversion(item?.refreshedOn)}}</td>
+      <td>{{item.refreshBy}}</td>
+    </tr>
+  </ng-template>
+</p-table>
 </p-overlayPanel>
 

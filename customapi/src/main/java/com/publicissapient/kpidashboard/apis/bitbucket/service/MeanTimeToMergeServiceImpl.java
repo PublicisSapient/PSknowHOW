@@ -165,9 +165,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 				}
 			}
 		});
-		List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(aggMergeRequests, null, projectName,
-				duration, dataPoints, new ArrayList<>(), null);
-		aggDataMap.put(Constant.AGGREGATED_VALUE, dataCountList);
+
 		mapTmp.get(projectNode.getId()).setValue(aggDataMap);
 		populateExcelDataObject(requestTrackerId, repoToolValidationDataList, excelData);
 		kpiElement.setExcelData(excelData);

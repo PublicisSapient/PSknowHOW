@@ -26,7 +26,7 @@ export class RecommendationsComponent implements OnInit {
   selectedSprint: object = {};
   loading: boolean = false;
 
-  constructor(private httpService: HttpService, private messageService: MessageService, private service: SharedService) { }
+  constructor(private httpService: HttpService, private messageService: MessageService, public service: SharedService) { }
 
   ngOnInit(): void {
 

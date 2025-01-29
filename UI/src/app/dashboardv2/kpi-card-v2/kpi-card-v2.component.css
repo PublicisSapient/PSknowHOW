@@ -5,6 +5,17 @@
   opacity: 1;
   position: relative;
   max-height: 500px;
+  height: 400px;
+}
+
+:host .kpi-card-container-v2{
+  background: #fff;
+  border: 1px solid #D5DBE1;
+  border-radius: 10px;
+  opacity: 1;
+  position: relative;
+  max-height: 500px;
+  height: 100%;
 }
 
 :host .kpi-card-header {
@@ -64,7 +75,7 @@
   color: #333333;
   width: auto;
   right: 0;
-  height: 80px;
+  height: auto;
   display: flex;
   align-items: center;
 }
@@ -365,4 +376,37 @@
 
 :host ::ng-deep .p-overflowlabel {
   word-break: break-all;
+}
+
+.multi-filter-section {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  width: -webkit-fill-available
+}
+
+/* region */
+.legend{
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.legend li{
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+}
+
+.legend li span{
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
 }

@@ -1,30 +1,30 @@
 Select what you want to filter by: &nbsp;
-    <p-multiSelect [style]="{'min-width':'200px', 'height':'40px'}" [options]="filters?.filterGroup2"
-      optionLabel="filterName" [(ngModel)]="selectedFilter2"></p-multiSelect>
-    <table *ngIf="selectedFilter2?.length">
-      <tbody>
-        <tr *ngFor="let filter of selectedFilter2; let i = index;">
-          <td *ngIf="filter" style="font-size: 12px;">{{ filter?.filterKey }} </td>
-          <td *ngIf="filter">
-            <div style="background-color: #F6F6F6; width: 100%;text-align: center;padding: 5px;">{{ filter?.filterType
-              === 'Single' ? '=' : 'contains' }}</div>
-          </td>
-          <td *ngIf="filter" style="font-size: 12px !important;">
-            <p-multiSelect [style]="{'min-width':'200px', 'height':'40px', 'font-size': '12px'}"
-              [panelStyle]="{'font-size': '12px'}" *ngIf="filter?.filterType !== 'Single'" [options]="filter?.values"
-              [(ngModel)]="filter.selectedValue" (onChange)="additionalFilterChanged()"></p-multiSelect>
-            <p-dropdown [style]="{'min-width':'200px', 'height':'40px', 'font-size': '12px'}" [autoDisplayFirst]="false"
-              [panelStyle]="{'font-size': '12px'}" *ngIf="filter?.filterType === 'Single'" [options]="filter?.values"
-              [(ngModel)]="filter.selectedValue" (onChange)="additionalFilterChanged()"></p-dropdown>
-          </td>
-          <td *ngIf="filter">
-            <i class="pi pi-filter-slash" (click)="clearFilter(i)"></i>
-          </td>
-      </tbody>
-    </table>
-    <div>
-      <p-button label="Filter" [disabled]="!selectedFilter2?.length" (click)="applyAdditionalFilters()"
-        [style]="{'background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
-      <p-button label="Reset" (click)="clearAdditionalFilters()"
-        [style]="{'margin-left': '15px','background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
-    </div>
+<p-multiSelect [style]="{'min-width':'200px', 'height':'40px'}" [options]="filters?.filterGroup2"
+  optionLabel="filterName" [(ngModel)]="selectedFilter2"></p-multiSelect>
+<table *ngIf="selectedFilter2?.length">
+  <tbody>
+    <tr *ngFor="let filter of selectedFilter2; let i = index;">
+      <td *ngIf="filter" style="font-size: 12px;">{{ filter?.filterKey }} </td>
+      <td *ngIf="filter">
+        <div style="background-color: #F6F6F6; width: 100%;text-align: center;padding: 5px;">{{ filter?.filterType
+          === 'Single' ? '=' : 'contains' }}</div>
+      </td>
+      <td *ngIf="filter" style="font-size: 12px !important;">
+        <p-multiSelect [style]="{'min-width':'200px', 'height':'40px', 'font-size': '12px'}"
+          [panelStyle]="{'font-size': '12px'}" *ngIf="filter?.filterType !== 'Single'" [options]="filter?.values"
+          [(ngModel)]="filter.selectedValue" (onChange)="additionalFilterChanged()"></p-multiSelect>
+        <p-dropdown [style]="{'min-width':'200px', 'height':'40px', 'font-size': '12px'}" [autoDisplayFirst]="false"
+          [panelStyle]="{'font-size': '12px'}" *ngIf="filter?.filterType === 'Single'" [options]="filter?.values"
+          [(ngModel)]="filter.selectedValue" (onChange)="additionalFilterChanged()"></p-dropdown>
+      </td>
+      <td *ngIf="filter">
+        <i class="pi pi-filter-slash" (click)="clearFilter(i)"></i>
+      </td>
+  </tbody>
+</table>
+<div>
+  <p-button label="Filter" [disabled]="!selectedFilter2?.length" (click)="applyAdditionalFilters()"
+    [style]="{'background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
+  <p-button label="Reset" (click)="clearAdditionalFilters()"
+    [style]="{'margin-left': '15px','background-color':'#fff', 'color': '#333333', 'border': '1px solid #333333', 'height': '30px', 'font-size': '10px'}"></p-button>
+</div>

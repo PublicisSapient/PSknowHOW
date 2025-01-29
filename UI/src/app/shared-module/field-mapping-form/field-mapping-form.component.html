@@ -82,8 +82,8 @@
 </form>
 <div class="save-container p-mt-5 p-mb-1">
     <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3" icon="pi pi-save"
-        iconPos="left" label="Save" (click)="save()" [disabled]=" (form.invalid && selectedToolConfig[0]?.toolName?.toLowerCase() === 'jira')|| !form.dirty"></button>
-
+        iconPos="left" label="Save" (click)="save()" [disabled]=" (form.invalid && selectedToolConfig[0]?.toolName?.toLowerCase() === 'removingMandatoryValidationAsPartOfDTS-43148')|| !form.dirty"></button>
+</div>
 <!-- Search Dialog -->
 <p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
     [style]="{'min-height': '480px'}" styleClass="mapping-selection-popup" (onShow)="recordScrollPosition()"
@@ -91,7 +91,7 @@
     <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
         <div *ngIf="singleSelectionDropdown">
             <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
-                [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px'}" [options]="fieldMappingMultiSelectValues"
+                [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px', 'textAlign': 'left'}" [options]="fieldMappingMultiSelectValues"
                 placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
                 filter="true" showClear="true">
             </p-dropdown>
