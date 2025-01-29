@@ -104,4 +104,10 @@ public class KpiDataCacheServiceImplTest {
 		assertNotNull(kpiDataCacheService.fetchScopeChurnData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
 	}
 
+	@Test
+	public void testFetchCommitmentReliabilityData() {
+		when(kpiDataProvider.fetchCommitmentReliabilityData(any(), any(), any())).thenReturn(new HashMap<>());
+		assertNotNull(kpiDataCacheService.fetchCommitmentReliabilityData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
+	}
+
 }

@@ -36,6 +36,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -44,6 +45,7 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +59,7 @@ import java.lang.reflect.Method;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -100,6 +103,8 @@ public class BuildFrequencyServiceImplTest {
 
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
+	private Build build;
+	private BuildFrequencyInfo buildFrequencyInfo;
 
 	@Before
 	public void setup() {
@@ -127,15 +132,23 @@ public class BuildFrequencyServiceImplTest {
 
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
+		build = new Build();
+		getBuildFrequencyInfo();
+	}
 
+	private void getBuildFrequencyInfo() {
+		buildFrequencyInfo = new BuildFrequencyInfo();
+		buildFrequencyInfo.addBuildJobNameList("JobFolder");
+		buildFrequencyInfo.addWeeks("Week1");
+		buildFrequencyInfo.addBuildJobNameList("BuildJob");
 	}
 
 	private void setTreadValuesDataCount() {
 		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", new DataCount());
 		trendValues.add(dataCount);
 		trendValueMap.put("OverAll", trendValues);
-		trendValueMap.put("UI_Build -> KnowHow", trendValues);
-		trendValueMap.put("API_Build -> KnowHow", trendValues);
+		trendValueMap.put("UI_Build (KnowHow) ", trendValues);
+		trendValueMap.put("API_Build (KnowHow) ", trendValues);
 	}
 
 	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
@@ -258,5 +271,26 @@ public class BuildFrequencyServiceImplTest {
 		Long result = buildFrequencyServiceImpl.calculateKpiValue(valueList, kpiId);
 		assertEquals(40L, result);
 	}
+
+	@Test
+	public void testGetBuildFrquency_pipelineName_empty() throws Exception {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		buildList.forEach(build -> build.setPipelineName(null));
+		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
+		String kpiRequestTrackerId = "Excel-Jenkins-5be544de025de212549176a9";
+
+		try {
+			when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
+
+			KpiElement kpiElement = buildFrequencyServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("Build Frequency :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
+		} catch (Exception enfe) {
+		}
+
+	}
+
 
 }

@@ -294,6 +294,12 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolMembersUrl;
 	private String defectRateUrl;
 
+	@Setter
+	@Getter
+	private int sprintVelocityVarianceThreshold;
+
+	@Setter
+	@Getter
 	private List<Integer> groupIdsToExcludeFromCache;
 
     @Setter
@@ -1320,13 +1326,5 @@ public class CustomApiConfig {// NOPMD
 
     public void setRepoToolPRDeclineRateUrl(String repoToolPRDeclineRateUrl) {
         this.repoToolPRDeclineRateUrl = repoToolPRDeclineRateUrl;
-    }
-
-    public List<Integer> getGroupIdsToExcludeFromCache() {
-        return groupIdsToExcludeFromCache;
-    }
-
-    public void setGroupIdsToExcludeFromCache(List<Integer> groupIdsToExcludeFromCache) {
-        this.groupIdsToExcludeFromCache = groupIdsToExcludeFromCache;
     }
 }

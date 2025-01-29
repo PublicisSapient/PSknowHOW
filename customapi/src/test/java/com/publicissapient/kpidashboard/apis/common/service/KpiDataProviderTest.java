@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -36,6 +37,7 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +59,8 @@ public class KpiDataProviderTest {
 	ConfigHelperService configHelperService;
 	@Mock
 	private FilterHelperService filterHelperService;
+	@Mock
+	private KpiHelperService kpiHelperService;
 	@Mock
 	private SprintRepository sprintRepository;
 	@Mock
@@ -126,8 +130,7 @@ public class KpiDataProviderTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(any(), any(), any()))
-				.thenReturn(totalIssueList);
+		when(jiraIssueRepository.findIssueByNumber(any(), any(), any())).thenReturn(totalIssueList);
 
 		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 		treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").forEach(leaf -> {
@@ -171,9 +174,61 @@ public class KpiDataProviderTest {
 				sprintList);
 
 		assertThat(result.get(ESTIMATE_TIME), equalTo(new ArrayList<>()));
-		assertThat(((List<JiraIssue>)result.get(STORY_LIST)).size(), equalTo(totalIssueList.size()*2));
+		assertThat(((List<JiraIssue>) result.get(STORY_LIST)).size(), equalTo(totalIssueList.size() * 2));
 		assertThat(result.get(SPRINTSDETAILS), equalTo(sprintDetailsList));
 		assertThat(result.get(JIRA_ISSUE_HISTORY_DATA), equalTo(new ArrayList<>()));
+	}
+
+	@Test
+	public void testFetchScopeChurnData() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+
+		Map<String, Object> result = kpiDataProvider.fetchScopeChurnData(kpiRequest, basicProjectConfigId, sprintList);
+		assertNotNull(result);
+	}
+
+	@Test
+	public void testFetchScopeChurnDataEmptyData() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+
+		Map<ObjectId, FieldMapping> fieldMappingMap1 = new HashMap<>();
+		fieldMappingMap.forEach((key, value) -> fieldMappingMap1.put(key, new FieldMapping()));
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap1);
+
+		Map<String, Object> result = kpiDataProvider.fetchScopeChurnData(kpiRequest, basicProjectConfigId, sprintList);
+		assertNotNull(result);
+	}
+
+	@Test
+	public void testFetchCommitmentReliabilityData() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+
+		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
+		fieldMappingMap.forEach((key, value) -> duplicateIssues.put(key, new HashSet<>()));
+
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
+		when(kpiHelperService.getProjectWiseTotalSprintDetail(any())).thenReturn(duplicateIssues);
+
+		Map<String, Object> result = kpiDataProvider.fetchCommitmentReliabilityData(kpiRequest, basicProjectConfigId,
+				sprintList);
+		assertNotNull(result);
 	}
 
 }

@@ -112,4 +112,21 @@ public interface KpiDataCacheService {
 	 */
 	Map<String, Object> fetchScopeChurnData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId);
+
+	/**
+	 * Fetches Commitment Reliability kpi data from the database and caches the
+	 * result.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @param kpiId
+	 *            The KPI ID.
+	 * @return A map containing sprint details and total issues.
+	 */
+	Map<String, Object> fetchCommitmentReliabilityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId);
 }

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -246,7 +247,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 				});
 
 				aggDataCountList.addAll(dataCountList);
-				trendValue(trendValueMap, trendLineName, envName, deploymentListEnvWise, dataCountList);
+				trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
 			}
 		});
 	}
@@ -255,8 +256,6 @@ public class DeploymentFrequencyKanbanServiceImpl
 	 * 
 	 * @param trendValueMap
 	 *            trendValueMap
-	 * @param trendLineName
-	 *            trendLineName
 	 * @param envName
 	 *            envName
 	 * @param deploymentListEnvWise
@@ -264,16 +263,16 @@ public class DeploymentFrequencyKanbanServiceImpl
 	 * @param dataCountList
 	 *            dataCountList
 	 */
-	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String trendLineName, String envName,
+	 protected static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
 			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName(),
+			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getPipelineName(),
 					new ArrayList<>());
-			trendValueMap.get(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName())
+			trendValueMap.get(deploymentListEnvWise.get(0).getPipelineName())
 					.addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-			trendValueMap.get(envName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+			trendValueMap.putIfAbsent(envName, new ArrayList<>());
+			trendValueMap.get(envName).addAll(dataCountList);
 		}
 	}
 
@@ -312,7 +311,7 @@ public class DeploymentFrequencyKanbanServiceImpl
 	 * @param deploymentListCurrentMonth
 	 * @return
 	 */
-	private void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
+	protected void setDeploymentFrequencyInfoForExcel(DeploymentFrequencyInfo deploymentFrequencyInfo,
 			List<Deployment> deploymentListCurrentMonth) {
 		if (null != deploymentFrequencyInfo && CollectionUtils.isNotEmpty(deploymentListCurrentMonth)) {
 			deploymentListCurrentMonth.forEach(deployment -> {
