@@ -128,7 +128,8 @@ public class JiraServiceR {
 					return responseList;
 				}
 				List<KpiElement> cachedData = getCachedData(kpiRequest, groupId, projectKeyCache);
-				if (cachedData != null) return cachedData;
+				if (CollectionUtils.isNotEmpty(cachedData))
+					return cachedData;
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
@@ -180,7 +181,7 @@ public class JiraServiceR {
 			log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
 			return (List<KpiElement>) cachedData;
 		}
-		return null;
+		return new ArrayList<>();
 	}
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {

@@ -26,11 +26,11 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -103,7 +103,7 @@ public class JenkinsServiceR {
 				}
 
 				List<KpiElement> cachedData = getCachedData(kpiRequest, groupId, projectKeyCache);
-				if (cachedData != null)
+				if (CollectionUtils.isNotEmpty(cachedData))
 					return cachedData;
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -161,7 +161,7 @@ public class JenkinsServiceR {
 					kpiRequest.getIds());
 			return (List<KpiElement>) cachedData;
 		}
-		return null;
+		return new ArrayList<>();
 	}
 
 	/**
