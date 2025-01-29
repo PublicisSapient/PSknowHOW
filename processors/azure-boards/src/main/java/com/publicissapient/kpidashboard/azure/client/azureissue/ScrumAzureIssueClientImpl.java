@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.azure.service.AzureSprintReportRefreshService;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -131,8 +130,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorToolConnectionService processorToolConnectionService;
-	@Autowired
-	private AzureSprintReportRefreshService azureSprintReportRefreshService;
 
 	@Override
 	public int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey, // NOSONAR
@@ -219,10 +216,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				lastSavedJiraIssueChangedDateByType = findLastSavedJiraIssueByType(
 						projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
-				Map<ObjectId, Map<String, LocalDateTime>> projectWiseReportToggle= new HashMap<>();
 				// sprint report prepare and save sprint details
-				sprintClient.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, azureServer, projectWiseReportToggle);
-				azureSprintReportRefreshService.addUpdateTimesInBulk(projectWiseReportToggle);
+				sprintClient.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, azureServer);
 
 			}
 

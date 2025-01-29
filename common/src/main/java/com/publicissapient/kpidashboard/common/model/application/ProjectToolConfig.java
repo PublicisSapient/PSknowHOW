@@ -18,10 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
-import java.io.Serializable;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -121,6 +119,8 @@ public class ProjectToolConfig extends BasicModel implements Cloneable {
 	//to revise active sprint report in the db from the start
 	@Builder.Default
 	private Boolean azureRefreshActiveSprintReport =false;
+	private String azureRefreshActiveSprintReportUpdatedBy;
+	private long azureRefreshActiveSprintReportUpdatedOn;
 
 	@Override
 	public ProjectToolConfig clone() throws CloneNotSupportedException {
