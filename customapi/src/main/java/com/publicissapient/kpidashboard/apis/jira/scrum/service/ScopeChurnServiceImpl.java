@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -82,7 +83,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final String DEV = "DeveloperKpi";
 	public static final String TOTAL_ISSUE = "totalIssue";
 	public static final String SCOPE_CHANGE = "Scope Change";
 	public static final String SPRINT_DETAILS = "sprintDetails";
@@ -105,7 +105,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@Autowired
 	private KpiDataProvider kpiDataProvider;
 
-	private volatile List<String> sprintIdList = new ArrayList<>();
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
 	/**
 	 * {@inheritDoc}

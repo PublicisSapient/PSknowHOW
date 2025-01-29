@@ -61,7 +61,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String INITIAL_ORIGINAL_ESTIMATE = "Initial Commitment (Hours)";
 	private static final String FINAL_SCOPE_ORIGINAL_ESTIMATE = "Final Scope (Hours)";
 	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
-	private static final String DEV = "DeveloperKpi";
 	private static final String TOTAL_ISSUE_SIZE = "totalIssueSize";
 	private static final String COMPLETED_ISSUE_SIZE = "completedIssueSize";
 	private static final String INITIAL_ISSUE_SIZE = "initialIssueSize";
@@ -95,7 +94,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	@Autowired
 	private KpiDataProvider kpiDataProvider;
 
-	private volatile List<String> sprintIdList = new ArrayList<>();
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -338,7 +337,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<ObjectId, List<String>> projectWiseSprints = new HashMap<>();
 		leafNodeList.forEach(leaf -> {

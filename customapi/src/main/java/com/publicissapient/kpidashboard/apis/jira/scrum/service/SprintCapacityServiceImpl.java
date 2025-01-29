@@ -16,13 +16,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -82,7 +76,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	private final DecimalFormat df2 = new DecimalFormat(".##");
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
 
-	private volatile List<String> sprintIdList = new ArrayList<>();
+	private List<String> sprintIdList = Collections.synchronizedList(new ArrayList<>());
 
 	@Autowired
 	private CustomApiConfig customApiConfig;

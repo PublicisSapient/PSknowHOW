@@ -130,8 +130,6 @@ public class KpiHelperService { // NOPMD
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
-	private static final String STORY_LIST = "stories";
-	private static final String SPRINTSDETAILS = "sprints";
 	private static final String AZURE_REPO = "AzureRepository";
 	private static final String BITBUCKET = "Bitbucket";
 	private static final String GITLAB = "GitLab";

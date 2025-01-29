@@ -102,17 +102,9 @@ public class JenkinsServiceR {
 					return responseList;
 				}
 
-				Object cachedData = null;
-				if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
-					cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(),
-							groupId, kpiRequest.getSprintIncluded());
-				}
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
-					log.info("[JENKINS][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-							kpiRequest.getIds());
-					return (List<KpiElement>) cachedData;
-				}
+				List<KpiElement> cachedData = getCachedData(kpiRequest, groupId, projectKeyCache);
+				if (cachedData != null)
+					return cachedData;
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
@@ -126,7 +118,8 @@ public class JenkinsServiceR {
 				for (KpiElement kpiElement : kpiRequest.getKpiList()) {
 					CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 						try {
-							responseList.add(calculateAllKPIAggregatedMetrics(kpiRequest, kpiElement, treeAggregatorDetail));
+							responseList.add(
+									calculateAllKPIAggregatedMetrics(kpiRequest, kpiElement, treeAggregatorDetail));
 						} catch (Exception e) {
 							log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
 						}
@@ -154,6 +147,21 @@ public class JenkinsServiceR {
 		}
 
 		return responseList;
+	}
+
+	private List<KpiElement> getCachedData(KpiRequest kpiRequest, Integer groupId, String[] projectKeyCache) {
+		Object cachedData = null;
+		if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+			cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(), groupId,
+					kpiRequest.getSprintIncluded());
+		}
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& null != cachedData) {
+			log.info("[JENKINS][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
+					kpiRequest.getIds());
+			return (List<KpiElement>) cachedData;
+		}
+		return null;
 	}
 
 	/**

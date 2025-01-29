@@ -127,16 +127,8 @@ public class JiraServiceR {
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-				Object cachedData = null;
-				if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
-					cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
-							kpiRequest.getSprintIncluded());
-				}
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
-					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
-					return (List<KpiElement>) cachedData;
-				}
+				List<KpiElement> cachedData = getCachedData(kpiRequest, groupId, projectKeyCache);
+				if (cachedData != null) return cachedData;
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
@@ -175,6 +167,20 @@ public class JiraServiceR {
 		}
 
 		return responseList;
+	}
+
+	private List<KpiElement> getCachedData(KpiRequest kpiRequest, Integer groupId, String[] projectKeyCache) {
+		Object cachedData = null;
+		if (!customApiConfig.getGroupIdsToExcludeFromCache().contains(groupId)) {
+			cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
+					kpiRequest.getSprintIncluded());
+		}
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
+			log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
+			return (List<KpiElement>) cachedData;
+		}
+		return null;
 	}
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {

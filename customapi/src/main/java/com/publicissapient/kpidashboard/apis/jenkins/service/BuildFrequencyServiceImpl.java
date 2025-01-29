@@ -147,10 +147,9 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 		statusList.add(BuildStatus.SUCCESS.name());
 		mapOfFilters.put("buildStatus", statusList);
 		List<Build> buildList = new ArrayList<>();
-		projectBasicConfigIds.forEach(projectBasicConfigId -> {
-			buildList.addAll(kpiDataCacheService.fetchBuildFrequencydata(projectBasicConfigId, startDate, endDate,
-					KPICode.BUILD_FREQUENCY.getKpiId()));
-		});
+		projectBasicConfigIds
+				.forEach(projectBasicConfigId -> buildList.addAll(kpiDataCacheService.fetchBuildFrequencydata(
+						projectBasicConfigId, startDate, endDate, KPICode.BUILD_FREQUENCY.getKpiId())));
 
 		if (CollectionUtils.isEmpty(buildList)) {
 			return new HashMap<>();
@@ -372,7 +371,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 
 			if (StringUtils.isNotEmpty(build.getJobFolder())) {
 				buildFrequencyInfo.addBuildJobNameList(build.getJobFolder());
-			} else if(StringUtils.isNotEmpty(build.getPipelineName())) {
+			} else if (StringUtils.isNotEmpty(build.getPipelineName())) {
 				buildFrequencyInfo.addBuildJobNameList(build.getPipelineName());
 			} else {
 				buildFrequencyInfo.addBuildJobNameList(build.getBuildJob());
