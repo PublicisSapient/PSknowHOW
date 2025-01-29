@@ -37,6 +37,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Optional;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -83,11 +86,9 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	private static final long DAYS_IN_WEEKS = 7;
 
 	@Autowired
-	private ConfigHelperService configHelperService;
-	@Autowired
-	private BuildRepository buildRepository;
-	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Override
 	public String getQualifierType() {
@@ -373,17 +374,12 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	public Map<ObjectId, List<Build>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 
-		Set<ObjectId> projectBasicConfigIds = new HashSet<>();
-		List<String> statusList = new ArrayList<>();
-		Map<String, List<String>> mapOfFilters = new HashMap<>();
+		List<Build> buildList = new ArrayList<>();
 		leafNodeList.forEach(node -> {
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
-			projectBasicConfigIds.add(basicProjectConfigId);
+			buildList.addAll(kpiDataCacheService.fetchBuildFrequencydata(basicProjectConfigId, startDate, endDate,
+					KPICode.BUILD_FREQUENCY.getKpiId()));
 		});
-
-		statusList.add(BuildStatus.SUCCESS.name());
-		mapOfFilters.put("buildStatus", statusList);
-		List<Build> buildList = buildRepository.findBuildList(mapOfFilters, projectBasicConfigIds, startDate, endDate);
 		if (CollectionUtils.isEmpty(buildList)) {
 			return new HashMap<>();
 		}
