@@ -50,11 +50,7 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 				HierarchyLevel bottomHierarchyLevel = new HierarchyLevel();
 				bottomHierarchyLevel.setHierarchyLevelId(additionalFilterCategory.getFilterCategoryId());
 				bottomHierarchyLevel.setHierarchyLevelName(additionalFilterCategory.getFilterCategoryName());
-				if (isKanban) {
-					bottomHierarchyLevel.setLevel(releaseHierarchyLevel.getLevel() + 1);
-				} else {
-					bottomHierarchyLevel.setLevel(sprintHierarchyLevel.getLevel() + 2);
-				}
+				bottomHierarchyLevel.setLevel(releaseHierarchyLevel.getLevel() + 1);
 				hierarchyLevels.add(bottomHierarchyLevel);
 			}
 		}

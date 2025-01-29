@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.filter.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,6 @@ import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.AccountFilterRequest;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
@@ -70,12 +70,13 @@ public interface AccountHierarchyService<R, S> {
 	 * @param projectBasicConfigList
 	 * @param organizationHierarchyService
 	 * @param projectHierarchyService
+	 * @param projectHierarchyLevel
 	 * @return
 	 */
 
 	default List<ProjectHierarchy> getConfigureProjectsHierarchies(List<ProjectBasicConfig> projectBasicConfigList,
-			OrganizationHierarchyService organizationHierarchyService,
-			ProjectHierarchyService projectHierarchyService) {
+			OrganizationHierarchyService organizationHierarchyService, ProjectHierarchyService projectHierarchyService,
+			Optional<Integer> projectHierarchyLevel) {
 		List<ObjectId> projectBasicConfigIds = projectBasicConfigList.stream().map(ProjectBasicConfig::getId)
 				.collect(Collectors.toList());
 
@@ -102,7 +103,7 @@ public interface AccountHierarchyService<R, S> {
 		// configureOrganizationHierarchyList and projectHierarchyList merge into single
 		// list
 		configureOrganizationHierarchyList.stream().map(orgHierarchy -> {
-			if (orgHierarchy.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.PROJECT)) {
+			if (orgHierarchy.getHierarchyLevelId().equalsIgnoreCase(String.valueOf(projectHierarchyLevel))) {
 				ObjectId projectBasicId = projectNodeWiseBasicConfigIdMap.get(orgHierarchy.getNodeId());
 				return new ProjectHierarchy(orgHierarchy.getNodeId(), orgHierarchy.getNodeName(),
 						orgHierarchy.getNodeDisplayName(), orgHierarchy.getHierarchyLevelId(),

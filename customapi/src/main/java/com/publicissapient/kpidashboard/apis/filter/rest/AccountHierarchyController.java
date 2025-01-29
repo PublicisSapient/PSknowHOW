@@ -72,8 +72,10 @@ public class AccountHierarchyController {
 		}
 		ServiceResponse response = new ServiceResponse(false, "No hierarchy found", null);
 		if (null != accountHierarchyService) {
+
+			Object filteredList = accountHierarchyService.getFilteredList(filter);
 			response = new ServiceResponse(true, "fetched successfully",
-					accountHierarchyService.getFilteredList(filter));
+					filteredList);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
