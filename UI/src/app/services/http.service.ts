@@ -178,6 +178,7 @@ export class HttpService {
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
 
   currentUserDetails = null;
+  private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
   constructor(
     private router: Router,
@@ -1182,5 +1183,9 @@ export class HttpService {
 
   getRecommendations(data) {
     return this.http.post<object>(this.recommendationsUrl, data);
+  }
+
+  fetchJiramappingBE(basicConfigID){
+    return this.http.post<object>(this.saveMetaDataStepURL + basicConfigID, {});
   }
 }
