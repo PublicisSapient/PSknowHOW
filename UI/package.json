@@ -4,7 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve --configuration=local --proxy-config proxy.conf.json",
-    "build": "ng build --configuration=dev --aot --output-hashing=all",
+    "build": "ng build --configuration=docker --aot --output-hashing=all",
+    "build:production": "ng build --configuration=production --aot --output-hashing=all",
+    "build:dev": "ng build --configuration=dev --aot --output-hashing=all",
+    "build:qa": "ng build --configuration=qa --aot --output-hashing=all",
     "test": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng test --code-coverage",
     "lint": "ng lint dashboard",
     "e2e": "ng e2e",
