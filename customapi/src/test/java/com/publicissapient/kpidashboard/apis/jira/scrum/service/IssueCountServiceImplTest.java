@@ -22,7 +22,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
@@ -88,6 +93,14 @@ public class IssueCountServiceImplTest {
 	@InjectMocks
 	IssueCountServiceImpl issueCountServiceImpl;
 	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
+	@Mock
+	SprintRepository sprintRepository;
+	@Mock
+	CustomApiConfig customApiSetting;
+	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock
 	private CommonService commonService;
@@ -97,8 +110,13 @@ public class IssueCountServiceImplTest {
 	private KpiDataCacheService kpiDataCacheService;
 	@Mock
 	private	KpiDataProvider kpiDataProvider;
+	@Mock
+	private JiraServiceR jiraKPIService;
 
 	private Map<String, Object> filterLevelMap;
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	private List<FieldMapping> fieldMappingList = new ArrayList<>();
+	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	private List<JiraIssue> totalIssueList = new ArrayList<>();

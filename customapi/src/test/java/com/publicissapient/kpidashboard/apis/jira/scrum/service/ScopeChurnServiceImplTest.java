@@ -185,12 +185,6 @@ public class ScopeChurnServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>());
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
         when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(false);
         when(kpiDataProvider.fetchScopeChurnData(any(), any(), any())).thenReturn(resultListMap);
 
@@ -217,12 +211,6 @@ public class ScopeChurnServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>());
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>());
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
 		Map<String, Object> defectDataListMap = scopeChurnService.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
@@ -249,9 +237,6 @@ public class ScopeChurnServiceImplTest {
         when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
         when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
 
-        when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -279,9 +264,6 @@ public class ScopeChurnServiceImplTest {
         resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
         when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
         when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>());
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -310,11 +292,6 @@ public class ScopeChurnServiceImplTest {
         resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, jiraIssueCustomHistoryList);
         when(filterHelperService.isFilterSelectedTillSprintLevel(5, false)).thenReturn(true);
         when(kpiDataCacheService.fetchScopeChurnData(any(), any(), any(), any())).thenReturn(resultListMap);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(jiraIssueCustomHistoryList);
 
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
