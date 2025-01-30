@@ -42,6 +42,8 @@ export class ExportExcelComponent implements OnInit {
   markerInfo = [];
   forzenColumns = ['issue id'];
   exportExcelRawVariable;
+    // Define blank values to handle
+  blankValues = ['', null, undefined, '-', 'NA','N/A','Undefined'];
 
   constructor(
     private excelService: ExcelService,
@@ -225,44 +227,13 @@ export class ExportExcelComponent implements OnInit {
   }
 
   generateColumnFilterData() {
-    // Define blank values to handle
-    const blankValues = ['', null, undefined, '-', 'NA','N/A','Undefined'];
    // this.excludeColumnFilter = ['Linked Defect','Linked Stories'].map(item => item.toLowerCase());
    // this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
     if (this.modalDetails['tableValues'].length > 0) {
-      // Update tableValues to replace blank values with '(Blanks)'
-      this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => {
-        let updatedRow = { ...row }; // Create a copy of the row
-        Object.keys(updatedRow).forEach(colName => {
-          if(updatedRow[colName]?.hasOwnProperty('hyperlink')){
-            updatedRow = {...updatedRow,text:updatedRow[colName]?.text||''}
-            }
-          if (typeof updatedRow[colName] === 'string') {
-            updatedRow[colName] = updatedRow[colName].trim();
-          }
-          if(Array.isArray(updatedRow[colName]) && typeof updatedRow[colName] !=='object'){
-              updatedRow[colName] = (updatedRow[colName] as any[]).join(',')
-          }
-          if (blankValues.includes(updatedRow[colName])) {
-            updatedRow[colName] = '';
-          }
-        });
-        return updatedRow;
-      });
+      this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => this.refinedGridData(row));
   
-      // Generate column filter data
       this.modalDetails['tableHeadings'].forEach(colName => {
-        this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
-          if(colData === undefined){ return;}
-          if (this.typeOf(colData) && colData?.hasOwnProperty('hyperlink')) {
-            // if (!this.excludeColumnFilter.includes(colName.toLowerCase()) &&  !this.includeColumnFilter.includes(colName.toLowerCase())) {
-            //   this.excludeColumnFilter.push(colName)
-            // }
-            return { name:blankValues.includes(colData.text)?'(Blanks)':colData.text, value: colData };
-          } else {
-            return { name: blankValues.includes(colData)?'(Blanks)':colData, value: colData };
-          }
-        });
+        this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => this.getGridHeaderFilters(colData));
         this.tableColumnData[colName] =this.tableColumnData[colName].filter(x=>x!==undefined);
         this.tableColumnForm[colName] = [];
       });
@@ -391,6 +362,44 @@ export class ExportExcelComponent implements OnInit {
     } else{
       return columnName;
     }
+   }
+
+   getGridHeaderFilters(colData){
+    if(colData === undefined){ return;}
+    if(Array.isArray(colData)){
+      let tempText=[];
+      colData.map((item) => {
+        if (this.typeOf(item) && item?.hasOwnProperty('hyperlink')) {
+          tempText.push(item.text)
+        }
+      })
+      return { name: this.blankValues.includes((tempText).join(','))?'(Blanks)':(tempText).join(','), value: colData };
+    }
+    else if (this.typeOf(colData) && colData?.hasOwnProperty('hyperlink')) {
+      return { name:this.blankValues.includes(colData.text)?'(Blanks)':colData.text, value: colData };
+    } else {
+      return { name: this.blankValues.includes(colData)?'(Blanks)':colData, value: colData };
+    }
+   }
+
+   refinedGridData(row){
+    // replace blank values with '(Blanks)'
+      let updatedRow = { ...row }; 
+      Object.keys(updatedRow).forEach(colName => {
+        if(updatedRow[colName]?.hasOwnProperty('hyperlink')){
+          updatedRow = {...updatedRow,text:updatedRow[colName]?.text||''}
+          }
+        if (typeof updatedRow[colName] === 'string') {
+          updatedRow[colName] = updatedRow[colName].trim();
+        }
+        if(Array.isArray(updatedRow[colName]) && typeof updatedRow[colName] !=='object'){
+            updatedRow[colName] = (updatedRow[colName] as any[]).join(',')
+        }
+        if (this.blankValues.includes(updatedRow[colName])) {
+          updatedRow[colName] = '';
+        }
+      });
+      return updatedRow;
    }
 
 }
