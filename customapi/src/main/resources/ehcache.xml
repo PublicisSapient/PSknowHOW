@@ -97,10 +97,6 @@
         <heap unit="MB">25</heap>
     </cache>
 
-    <cache alias="organizationHierarchies">
-        <heap unit="MB">25</heap>
-    </cache>
-
     <cache alias="requestTrackerCache">
         <expiry>
             <ttl unit="hours">2</ttl>
@@ -278,12 +274,11 @@
         <heap unit="MB">50</heap>
     </cache>
 
-    <cache alias="testingKpiCache">
+    <cache alias="organizationHierarchies">
         <expiry>
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <!--Listeners can be used for debugging-->
         <listeners>
             <listener>
                 <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
@@ -298,6 +293,7 @@
         </listeners>
 
         <heap unit="MB">50</heap>
+
     </cache>
 
     <cache alias="project_kpi_data_cache">
@@ -321,5 +317,28 @@
 
         <heap unit="MB">50</heap>
     </cache>
+
+    <cache alias="testingKpiCache">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <!--Listeners can be used for debugging-->
+        <listeners>
+            <listener>
+                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
 
 </config>
