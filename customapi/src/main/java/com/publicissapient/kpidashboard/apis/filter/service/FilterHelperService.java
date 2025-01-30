@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.AccountFilteredData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +68,8 @@ import lombok.extern.slf4j.Slf4j;
 public class FilterHelperService {
 
 	private static final int SINGLECHILD = 1;
+	private Map<Integer, String> levelLabelMap = Map.of(1, "bu", 2, "ver", 3, "acc", 4, "port", 5, "project", 6,
+			"sprint", 7, "release", 8, "sqd");
 
 	@Autowired
 	private CacheService cacheService;
@@ -84,6 +87,11 @@ public class FilterHelperService {
 
 		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
 				.cacheAccountHierarchyData();
+
+			if (levelLabelMap.containsKey(Integer.valueOf(groupName))) {
+				groupName = levelLabelMap.get(Integer.valueOf(groupName));
+			}
+
 
 		List<AccountHierarchyData> dataList = getAccountHierarchyDataForRequest(
 				new HashSet<>(kpiRequest.getSprintIncluded()), accountDataListAll);

@@ -89,6 +89,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 
 	private Map<Integer, String> levelLabelMap = Map.of(1, "bu", 2, "ver", 3, "acc", 4, "port", 5, "project", 6,
 			"sprint", 7, "release", 8, "sqd");
+	private Map<Integer, Integer> levelToNewLevelMap = Map.of(7, 6, 8, 7);
 
 	@Override
 	public String getQualifierType() {
@@ -113,7 +114,15 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 		Set<AccountFilteredData> result = new HashSet<>();
 		accountHierarchyDataList.forEach(accountHierarchyData -> accountHierarchyData.getNode()
 				.forEach(node -> result.add(getAccountFilteredResponse(node.getProjectHierarchy(), node.getLevel()))));
-		result.forEach(data -> data.setLabelName(levelLabelMap.getOrDefault(data.getLevel(), data.getLabelName())));
+		for (AccountFilteredData data : result) {
+			Integer level = data.getLevel();
+			if (levelLabelMap.containsKey(level)) {
+				data.setLabelName(levelLabelMap.get(level));
+				if (data.getLabelName().equalsIgnoreCase("release") || data.getLabelName().equalsIgnoreCase("sqd")) {
+					data.setLevel(levelToNewLevelMap.get(level));
+				}
+			}
+		}
 		return result;
 	}
 
