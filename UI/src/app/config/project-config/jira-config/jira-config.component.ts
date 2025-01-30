@@ -1072,7 +1072,7 @@ export class JiraConfigComponent implements OnInit {
                 type: 'basicDropdown',
                 label: 'JIRA Configuration Template',
                 label2: '',
-                id: 'metadataTemplateCode',
+                id: 'originalTemplateCode',
                 onChangeEventHandler: (event) => this.jiraMethodChange(this, event),
                 validators: [],
                 containerClass: 'p-sm-6',
@@ -1860,6 +1860,7 @@ export class JiraConfigComponent implements OnInit {
             },
             { field: 'jobType', header: 'Job Type', class: 'normal' },
             { field: 'jobName', header: 'Definitions', class: 'normal' },
+            { field: 'azurePipelineName', header: 'Pipeline Name', class: 'normal' }
           ];
 
           this.formTemplate = {
@@ -2557,7 +2558,15 @@ export class JiraConfigComponent implements OnInit {
     }
 
     if (this.urlParam !== 'Jira') {
-      delete submitData['metadataTemplateCode'];
+      delete submitData['originalTemplateCode'];
+    }
+    else{
+      if(this.selectedToolConfig && this.selectedToolConfig.length){
+        submitData['metadataTemplateCode']=this.selectedToolConfig[0].metadataTemplateCode;
+      }
+      else{
+        submitData['metadataTemplateCode']=0;
+      }
     }
     if (this.urlParam === 'GitHubAction') {
       submitData['jobName'] = this.gitActionWorkflowNameList.filter(obj => obj.code === submitData['workflowID'])[0]?.name || "";
@@ -2605,7 +2614,7 @@ export class JiraConfigComponent implements OnInit {
             this.selectedToolConfig = [response['data']];
             this.messenger.add({
               severity: 'success',
-              summary: `${this.urlParam} config submitted!!  ${successAlert}`,
+              summary: `${this.urlParam} Config submitted! Fresh data will be fetched as per the updated configuration.`,
             });
             // update the table
             if (!this.configuredTools || !this.configuredTools.length) {
@@ -2632,10 +2641,14 @@ export class JiraConfigComponent implements OnInit {
             } else {
               this.toolForm.reset();
             }
+           
+            /** This will be called for JIRA tool */
+            this.fetchJiraMappingOptioninBE(this.urlParam,submitData['basicProjectConfigId']);
+
           } else {
             this.messenger.add({
               severity: 'error',
-              summary: `${response['message'] ? response['message'] : 'Some error occurred. Please try again later'}`
+              summary: `${this.urlParam} Config could not be saved. Please try again after sometime.`
             });
           }
         });
@@ -2664,7 +2677,7 @@ export class JiraConfigComponent implements OnInit {
             this.selectedToolConfig = [response['data']];
             this.messenger.add({
               severity: 'success',
-              summary: `${this.urlParam} config updated!! ${successAlert}`,
+              summary: `${this.urlParam} config updated! Fresh data will be fetched as per the updated configuration`,
             });
 
             // update the table
@@ -2691,10 +2704,14 @@ export class JiraConfigComponent implements OnInit {
             } else {
               this.isConfigureTool = false;
             }
+            
+            /** This will be called for JIRA tool */
+            this.fetchJiraMappingOptioninBE(this.urlParam,submitData['basicProjectConfigId']);
+
           } else {
             this.messenger.add({
               severity: 'error',
-              summary: 'Some error occurred. Please try again later.',
+              summary: `${this.urlParam} Config could not be saved. Please try again after sometime.`,
             });
           }
         });
@@ -2817,13 +2834,18 @@ export class JiraConfigComponent implements OnInit {
     this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp => {
       this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
       if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
-        const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
-        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate?.templateCode);
-        if (selectedTemplate?.templateName === 'Custom Template') {
-          this.toolForm.get('metadataTemplateCode').disable();
-        }
+        const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['originalTemplateCode'])
+        this.toolForm.get('originalTemplateCode')?.setValue(selectedTemplate?.templateCode);
+        if(!this.selectedToolConfig.originalTemplateCode){
+            this.toolForm.get('originalTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
+          }
+        else{
+            this.toolForm.get('originalTemplateCode')?.setValue(selectedTemplate.templateCode);
+          }
+        this.toolForm.get('originalTemplateCode').disable();
+
       } else {
-        this.toolForm.get('metadataTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
+        this.toolForm.get('originalTemplateCode')?.setValue(this.jiraTemplate[0]?.templateCode);
       }
     })
   }
@@ -2894,5 +2916,23 @@ export class JiraConfigComponent implements OnInit {
       const element = document.getElementById("tool-configuration");
       element.scrollIntoView({ behavior: "smooth", inline: "nearest" });
     }, 100);
+  }
+
+  fetchJiraMappingOptioninBE(urlParam,basicConfigID){
+    if(urlParam === 'Jira'){
+      this.http.fetchJiramappingBE(basicConfigID).subscribe(res=>{
+        if(res && res?.['success']){
+          this.messenger.add({
+            severity: 'success',
+            summary: `Jira fields have been fetched as per the chosen Jira Configuration.`,
+          });
+        }else{
+          this.messenger.add({
+            severity: 'error',
+            summary: `Something went wrong! Jira fields could not be fetched. Please run the Jira processor after sometime.`,
+          });
+        }
+      })
+    }
   }
 }

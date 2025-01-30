@@ -881,12 +881,56 @@ public abstract class ToolsKPIService<R, S> {
 			if (CollectionUtils.isEmpty(values)) {
 				values = dataCounts.stream().map(val -> (R) val.getValue()).collect(Collectors.toList());
 			}
-			R aggValue = calculateAggValue(kpiName, dataCounts, values, kpiId);
-			maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
-					String.valueOf(aggValue));
-			aggregateValue = String.valueOf(aggValue);
+			R aggValue = null;
+			if (kpiId.equalsIgnoreCase(KPICode.SPRINT_VELOCITY.getKpiId())) {
+				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+						String.valueOf(collectValuesForMaturityForVelocity(
+								Lists.reverse(values.stream().map(Double.class::cast).toList()))));
+			} else {
+				aggValue = calculateAggValue(kpiName, dataCounts, values, kpiId);
+				maturityValue = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+						String.valueOf(aggValue));
+			}
+			aggregateValue = aggValue != null ? String.valueOf(aggValue) : null;
 		}
 		return Pair.of(maturityValue, aggregateValue);
+	}
+
+	/**
+	 * Evaluates a list of velocity values to determine a maturity level based on
+	 * variance patterns and predefined thresholds.
+	 *
+	 * @param velocities
+	 *            A list of velocity values representing sprint performance.
+	 * @return An Integer representing the maturity level:
+	 */
+	private Integer collectValuesForMaturityForVelocity(List<Double> velocities) {
+		if (velocities.size() < 5) {
+			return null;
+		}
+		double threshold = customApiConfig.getSprintVelocityVarianceThreshold();
+		List<Double> variances = new ArrayList<>();
+		for (int i = 1; i < velocities.size(); i++) {
+			double prev = velocities.get(i - 1);
+			if (prev == 0) {
+				continue;
+			}
+			double variance = ((velocities.get(i) - prev) / prev) * 100;
+			variances.add(variance);
+		}
+
+		boolean allNegative = variances.stream().allMatch(v -> v < 0);
+		boolean allPositive = variances.stream().allMatch(v -> v >= 0);
+		boolean withinRange = variances.stream().allMatch(v -> Math.abs(v) <= threshold);
+		double sumVariances = variances.stream().mapToDouble(Double::doubleValue).sum();
+
+		if (allNegative) return 1;
+		if (sumVariances < 0 && !withinRange) return 2;
+		if (withinRange) return 3;
+		if (!allPositive && sumVariances > 0) return 4;
+		if (allPositive) return 5;
+
+		return null;
 	}
 
 	/**

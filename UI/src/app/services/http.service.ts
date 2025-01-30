@@ -178,6 +178,7 @@ export class HttpService {
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
 
   currentUserDetails = null;
+  private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
   private organizationHierarchy = this.baseUrl + '/api/organizationHierarchy';
   constructor(
@@ -1187,5 +1188,9 @@ export class HttpService {
 
   getOrganizationHierarchy() {
     return this.http.get<any>(this.organizationHierarchy);
+  }
+
+  fetchJiramappingBE(basicConfigID){
+    return this.http.post<object>(this.saveMetaDataStepURL + basicConfigID, {});
   }
 }

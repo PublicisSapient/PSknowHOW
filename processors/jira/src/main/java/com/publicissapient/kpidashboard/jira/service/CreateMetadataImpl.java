@@ -124,7 +124,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 			BoardMetadata boardMetadata = new BoardMetadata();
 			boardMetadata.setProjectBasicConfigId(projectConfig.getBasicProjectConfigId());
 			boardMetadata.setProjectToolConfigId(projectConfig.getProjectToolConfig().getId());
-			boardMetadata.setMetadataTemplateCode(projectConfig.getProjectToolConfig().getMetadataTemplateCode());
+			boardMetadata.setMetadataTemplateCode(projectConfig.getProjectToolConfig().getOriginalTemplateCode());
 			List<Metadata> fullMetaDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(fieldList)) {
 				fullMetaDataList.addAll(mapFields(fieldList, MetadataType.FIELDS.type()));
@@ -253,7 +253,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 	private FieldMapping mapFieldMapping(BoardMetadata boardMetadata, ProjectConfFieldMapping projectConfig) {
 		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(
-				projectConfig.getProjectToolConfig().getMetadataTemplateCode(), JiraConstants.JIRA,
+				projectConfig.getProjectToolConfig().getOriginalTemplateCode(), JiraConstants.JIRA,
 				projectConfig.isKanban());
 		String templateName = metadataIdentifier.getTemplateName();
 		Map<String, List<String>> valuesToIdentifyMap = new HashMap<>();

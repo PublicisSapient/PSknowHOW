@@ -27,6 +27,8 @@ import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,6 +85,8 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
 	Map<String, Object> durationFilter =  new LinkedHashMap<>();
+	private DeploymentFrequencyInfo deploymentFrequencyInfo;
+	private List<Deployment> deploymentListCurrentMonth;
 
 	@Mock
 	private DeploymentRepository deploymentRepository;
@@ -131,6 +136,8 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		setTreadValuesDataCount();
 
 		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
+		deploymentFrequencyInfo = new DeploymentFrequencyInfo();
+		deploymentListCurrentMonth = new ArrayList<>();
 
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
 		ProjectBasicConfig p1 = new ProjectBasicConfig();
@@ -167,13 +174,10 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-
 		when(deploymentRepository.findDeploymentList(anyMap(), anySet(), anyString(), anyString()))
 				.thenReturn(deploymentList);
-
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name()))
 				.thenReturn(kpiRequest.getRequestTrackerId());
-
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
@@ -182,7 +186,6 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		Map<String, String> kpiWiseAggregation = new HashMap<>();
 		kpiWiseAggregation.put(KPICode.DEPLOYMENT_FREQUENCY_KANBAN.name(), "sum");
 		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
-
 		try {
 			KpiElement kpiElement = deploymentFrequencyKanbanService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -278,4 +281,123 @@ public class DeploymentFrequencyKanbanServiceImplTest {
 		assertEquals(Double.valueOf(0), deploymentFrequencyKanbanService.calculateThresholdValue(new FieldMapping()));
 	}
 
+	@Test
+	public void testTrendValueWithNonEmptyPipelineName() {
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String envName = "QA";
+		List<Deployment> deploymentListEnvWise = new ArrayList<>();
+		Deployment deployment = new Deployment();
+		deployment.setPipelineName("Pipeline1");
+		deploymentListEnvWise.add(deployment);
+
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount = new DataCount();
+		dataCountList.add(dataCount);
+
+		DeploymentFrequencyKanbanServiceImpl.trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
+
+		assertEquals(1, trendValueMap.get("Pipeline1").size());
+	}
+
+	@Test
+	public void testTrendValueWithEmptyPipelineName() {
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String envName = "QA";
+		List<Deployment> deploymentListEnvWise = new ArrayList<>();
+		Deployment deployment = new Deployment();
+		deployment.setPipelineName("");
+		deploymentListEnvWise.add(deployment);
+
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount = new DataCount();
+		dataCountList.add(dataCount);
+
+		DeploymentFrequencyKanbanServiceImpl.trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
+
+		assertEquals(1, trendValueMap.get(envName).size());
+	}
+
+	@Test
+	public void testTrendValueWithMultipleDeployments() {
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String envName = "QA";
+		List<Deployment> deploymentListEnvWise = new ArrayList<>();
+		Deployment deployment1 = new Deployment();
+		deployment1.setPipelineName("Pipeline1");
+		Deployment deployment2 = new Deployment();
+		deployment2.setPipelineName("Pipeline1");
+		deploymentListEnvWise.add(deployment1);
+		deploymentListEnvWise.add(deployment2);
+
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount1 = new DataCount();
+		DataCount dataCount2 = new DataCount();
+		dataCountList.add(dataCount1);
+		dataCountList.add(dataCount2);
+
+		DeploymentFrequencyKanbanServiceImpl.trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
+
+		assertEquals(2, trendValueMap.get("Pipeline1").size());
+	}
+	@Test
+	public void testSetDeploymentFrequencyInfoForExcelWithJobFolderName() {
+		Deployment deployment = new Deployment();
+		deployment.setEnvName("QA");
+		deployment.setJobFolderName("JobFolder1");
+		deployment.setStartTime("2023-10-01T10:00:00");
+		deploymentListCurrentMonth.add(deployment);
+
+		deploymentFrequencyKanbanService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth);
+
+		assertEquals(1, deploymentFrequencyInfo.getEnvironmentList().size());
+		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
+		assertEquals("JobFolder1", deploymentFrequencyInfo.getJobNameList().get(0));
+		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
+		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
+	}
+
+	@Test
+	public void testSetDeploymentFrequencyInfoForExcelWithJobName() {
+		Deployment deployment = new Deployment();
+		deployment.setEnvName("QA");
+		deployment.setJobName("Job1");
+		deployment.setStartTime("2023-10-01T10:00:00");
+		deploymentListCurrentMonth.add(deployment);
+
+		deploymentFrequencyKanbanService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth);
+
+		assertEquals(1, deploymentFrequencyInfo.getEnvironmentList().size());
+		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
+		assertEquals("Job1", deploymentFrequencyInfo.getJobNameList().get(0));
+		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
+		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
+	}
+
+	@Test
+	public void testSetDeploymentFrequencyInfoForExcelWithMultipleDeployments() {
+		Deployment deployment1 = new Deployment();
+		deployment1.setEnvName("QA");
+		deployment1.setJobName("Job1");
+		deployment1.setStartTime("2023-10-01T10:00:00");
+
+		Deployment deployment2 = new Deployment();
+		deployment2.setEnvName("Prod");
+		deployment2.setJobFolderName("JobFolder2");
+		deployment2.setStartTime("2023-10-02T10:00:00");
+
+		deploymentListCurrentMonth.add(deployment1);
+		deploymentListCurrentMonth.add(deployment2);
+
+		deploymentFrequencyKanbanService.setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth);
+
+		assertEquals(2, deploymentFrequencyInfo.getEnvironmentList().size());
+		assertEquals("QA", deploymentFrequencyInfo.getEnvironmentList().get(0));
+		assertEquals("Prod", deploymentFrequencyInfo.getEnvironmentList().get(1));
+		assertEquals("Job1", deploymentFrequencyInfo.getJobNameList().get(0));
+		assertEquals("JobFolder2", deploymentFrequencyInfo.getJobNameList().get(1));
+		assertEquals("01-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(0));
+		assertEquals("02-Oct-2023", deploymentFrequencyInfo.getDeploymentDateList().get(1));
+		assertEquals("25/09 - 01/10", deploymentFrequencyInfo.getMonthList().get(0));
+		assertEquals("02/10 - 08/10", deploymentFrequencyInfo.getMonthList().get(1));
+	}
 }

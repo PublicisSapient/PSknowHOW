@@ -26,11 +26,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProcessorExecutionTraceLogDTO;
+import com.publicissapient.kpidashboard.common.model.application.dto.SprintRefreshLogDTO;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +48,9 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	
+	@Autowired
+	private AzureSprintReportLogService azureSprintReportLogService;
 
 	@Override
 	public void save(ProcessorExecutionTraceLog processorExecutionTracelog) {
@@ -76,7 +83,7 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 
 	@Override
 	public List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId) {
-        List<ProcessorExecutionTraceLog> resultTraceLogs = new ArrayList<>();
+		List<ProcessorExecutionTraceLog> resultTraceLogs = new ArrayList<>();
 
 		if (StringUtils.isEmpty(processorName) && StringUtils.isEmpty(basicProjectConfigId)) {
 			resultTraceLogs.addAll(getTraceLogs());
@@ -106,4 +113,42 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 				.sorted(Comparator.comparing(ProcessorExecutionTraceLog::getExecutionEndedAt).reversed())
 				.collect(Collectors.toList());
 	}
+
+	/**
+	 * Get ProcessorExecutionTraceLogDTOs
+	 * 
+	 * @param processorName
+	 *            processorName
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return List of ProcessorExecutionTraceLogDTO
+	 */
+	@Override
+	public List<ProcessorExecutionTraceLogDTO> getTraceLogDTOs(String processorName, String basicProjectConfigId) {
+		List<ProcessorExecutionTraceLog> traceLogs = getTraceLogs(processorName, basicProjectConfigId);
+		return traceLogs.stream().map(this::convertToProcessorExecutionTraceLogDTO).toList();
+	}
+
+	/**
+	 * Convert ProcessorExecutionTraceLog to ProcessorExecutionTraceLogDTO
+	 *
+	 * @param traceLog
+	 *            ProcessorExecutionTraceLog
+	 * @return ProcessorExecutionTraceLogDTO
+	 */
+	private ProcessorExecutionTraceLogDTO convertToProcessorExecutionTraceLogDTO(ProcessorExecutionTraceLog traceLog) {
+		ProcessorExecutionTraceLogDTO traceLogDTO = null;
+		if (traceLog != null) {
+			ModelMapper mapper = new ModelMapper();
+			traceLogDTO = mapper.map(traceLog, ProcessorExecutionTraceLogDTO.class);
+
+			if (ProcessorConstants.AZURE.equalsIgnoreCase(traceLog.getProcessorName())) {
+				List<SprintRefreshLogDTO> sprintRefreshLogDTOList = azureSprintReportLogService
+						.getSprintRefreshLogs(new ObjectId(traceLog.getBasicProjectConfigId()));
+				traceLogDTO.setSprintRefreshLog(sprintRefreshLogDTOList);
+			}
+		}
+		return traceLogDTO;
+	}
+
 }

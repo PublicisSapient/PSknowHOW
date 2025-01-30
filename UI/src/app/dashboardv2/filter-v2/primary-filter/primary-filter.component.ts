@@ -206,7 +206,11 @@ export class PrimaryFilterComponent implements OnChanges {
         }
 
         if (this.selectedFilters && this.selectedFilters[0] && Object.keys(this.selectedFilters[0]).length) {
-          this.service.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
+          if (this.selectedTab?.toLowerCase() === 'developer' || this.selectedTab?.toLowerCase() === 'backlog') {
+            this.service.setBackupOfFilterSelectionState({ 'parent_level': this.selectedFilters[0].labelName, 'primary_level': [...this.selectedFilters] });
+          } else {
+            this.service.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
+          }
           this.applyFilters = false;
 
           if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'sprint' || this.selectedFilters[0]?.labelName?.toLowerCase() === 'release') {
@@ -264,7 +268,7 @@ export class PrimaryFilterComponent implements OnChanges {
 
   onDropdownChange($event: any) {
     if($event){
-    localStorage.setItem('selectedTrend', JSON.stringify($event?.value));
+      localStorage.setItem('selectedTrend', JSON.stringify($event?.value));
     }
     if (this.helperService.isDropdownElementSelected($event)) {
       this.applyPrimaryFilters($event)
@@ -283,7 +287,7 @@ export class PrimaryFilterComponent implements OnChanges {
   }
 
   setDropdownWithMoreActiveOption(selectedLevel) {
-    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate']).filter(x => x.sprintState?.toLowerCase() === 'active');
+    const moreThanOneActiveOption = this.helperService.sortByField(this.filterData[selectedLevel]?.filter((filter) => filter.parentId === this.selectedLevel.nodeId && filter.sprintState?.toLowerCase() === 'active'), [this.primaryFilterConfig['defaultLevel'].sortBy, 'sprintStartDate'])
     if (moreThanOneActiveOption.length > 1) {
       return moreThanOneActiveOption;
     } else {
@@ -296,11 +300,11 @@ export class PrimaryFilterComponent implements OnChanges {
     let retValue = this.filters[0];
     const backupState = this.service.getBackupOfFilterSelectionState();
     const defaultLabelName = this.primaryFilterConfig['defaultLevel']['labelName']?.toLowerCase();
-  
+
     if (backupState?.parent_level?.labelName?.toLowerCase() === defaultLabelName) {
       retValue = backupState.parent_level;
     }
-  
+
     const selectedTrend = JSON.parse(localStorage.getItem('selectedTrend') || 'null');
     if (selectedTrend && selectedTrend[0]?.labelName?.toLowerCase() === defaultLabelName) {
       retValue = selectedTrend[0];
@@ -309,7 +313,7 @@ export class PrimaryFilterComponent implements OnChanges {
     if(retValue?.typeName !== this.service.getSelectedType()){
       retValue = this.filters[0];
     }
-  
+
     return retValue;
   }
 

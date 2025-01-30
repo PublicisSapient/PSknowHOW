@@ -90,6 +90,9 @@ public class JobController {
 	@Qualifier("fetchIssueSprintJob")
 	@Autowired
 	Job fetchIssueSprintJob;
+	@Qualifier("runMetaDataStep")
+	@Autowired
+	Job runMetaDataStep;
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
 	@Autowired
@@ -316,6 +319,34 @@ public class JobController {
 			}
 		});
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);
+	}
+
+	/**
+	 * This method is used to fetch the metadata
+	 *
+	 * @param projectBasicConfigId
+	 *            projectBasicConfigId
+	 * @return ResponseEntity
+	 */
+	@PostMapping(value = "/runMetadataStep", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> runMetadataStep(@RequestBody String projectBasicConfigId) {
+		log.info("Request coming for fetching sprint job");
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
+		CompletableFuture.runAsync(() -> {
+			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+			jobParametersBuilder.addString(PROJECT_ID, projectBasicConfigId);
+			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			jobParametersBuilder.addString(PROCESSOR_ID, jiraProcessorId.toString());
+			jobParametersBuilder.addString(IS_SCHEDULER, VALUE);
+			JobParameters params = jobParametersBuilder.toJobParameters();
+			try {
+				jobLauncher.run(runMetaDataStep, params);
+			} catch (Exception e) {
+				log.info("Jira Metadata failed for ProjectBasicConfigId : {}, with exception : {}",
+						params.getString(PROJECT_ID), e);
+			}
+		});
+		return ResponseEntity.ok().body("job started for Project : " + projectBasicConfigId);
 	}
 
 	private void runProjectBasedOnConfig(String basicProjectConfigId, JobParameters params,

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -256,7 +257,7 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 		if (CollectionUtils.isNotEmpty(durationList)) {
 			valueForCurrentRange = AggregationUtils.averageLong(durationList);
 		}
-		projectBuildTimeMap.put(jobName + CommonConstant.ARROW + projectName, valueForCurrentRange);
+		projectBuildTimeMap.put(jobName + CommonUtils.getStringWithDelimiters(projectName), valueForCurrentRange);
 		return projectBuildTimeMap;
 	}
 

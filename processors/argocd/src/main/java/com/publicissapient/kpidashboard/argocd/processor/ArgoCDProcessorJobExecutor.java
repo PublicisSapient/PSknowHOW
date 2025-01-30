@@ -366,7 +366,6 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 				deployment
 						.setDuration(DateUtil.calculateDuration(history.getDeployStartedAt(), history.getDeployedAt()));
 				deployment.setNumber(history.getId());
-				deployment.setPipelineName(CommonConstant.BLANK);
 				if (deployment.getBasicProjectConfigId() != null) {
 					deployments.put(
 							Pair.of(deployment.getBasicProjectConfigId().toHexString() + "-" + deployment.getJobName(),

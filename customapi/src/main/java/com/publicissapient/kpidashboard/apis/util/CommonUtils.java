@@ -598,4 +598,8 @@ public final class CommonUtils {
 		}
 		return false;
 	}
+
+	public static String getStringWithDelimiters(String sValue) {
+		return CommonConstant.OPENING_DELIMITER + sValue + CommonConstant.CLOSING_DELIMITER;
+	}
 }
