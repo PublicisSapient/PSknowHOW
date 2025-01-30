@@ -875,8 +875,8 @@ public class DataMigrationService {
 	}
 
 	private void createAdditinalFilterHierarchy(List<AccountHierarchy> accountHierarchyRepositoryAll,
-												List<KanbanAccountHierarchy> kanbanAccountHierarchyList, Map<ObjectId, String> projectIdWiseUniqueId,
-												Map<String, Object> dataSetToSave, Map<String, List<HierarchyLevel>> hierarchyLevelMaap) {
+			List<KanbanAccountHierarchy> kanbanAccountHierarchyList, Map<ObjectId, String> projectIdWiseUniqueId,
+			Map<String, Object> dataSetToSave, Map<String, List<HierarchyLevel>> hierarchyLevelMaap) {
 		log.info("Scrum Additional Hierarchy Details  Processing Data Started");
 		Map<String, Integer> additonalFilterCategoryMap = additionalFilterCategoryRepository.findAll().stream().collect(
 				Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, AdditionalFilterCategory::getLevel));
@@ -912,8 +912,8 @@ public class DataMigrationService {
 	}
 
 	private static void kanbanAdditionalHierarchyData(Map<ObjectId, String> projectIdWiseUniqueId,
-													  Map<ObjectId, List<KanbanAccountHierarchy>> projectWiseKanbanAdditonalFilter,
-													  List<ProjectHierarchy> projectHierarchyList, List<HierarchyLevel> additonalFilterCategoryMap) {
+			Map<ObjectId, List<KanbanAccountHierarchy>> projectWiseKanbanAdditonalFilter,
+			List<ProjectHierarchy> projectHierarchyList, List<HierarchyLevel> additonalFilterCategoryMap) {
 		if (MapUtils.isNotEmpty(projectIdWiseUniqueId)) {
 			projectWiseKanbanAdditonalFilter.forEach((project, hierarchies) -> {
 				if (projectIdWiseUniqueId.containsKey(project)) {
@@ -921,7 +921,7 @@ public class DataMigrationService {
 						ProjectHierarchy additionalHierachy = new ProjectHierarchy();
 						additionalHierachy.setBasicProjectConfigId(accountHierarchy.getBasicProjectConfigId());
 						additionalHierachy.setNodeId(accountHierarchy.getNodeId());
-						additionalHierachy.setHierarchyLevelId(String.valueOf(additonalFilterCategoryMap.size() +1));
+						additionalHierachy.setHierarchyLevelId(String.valueOf(additonalFilterCategoryMap.size() + 1));
 						additionalHierachy.setNodeName(accountHierarchy.getNodeName());
 						additionalHierachy.setNodeDisplayName(accountHierarchy.getNodeName());
 						additionalHierachy.setCreatedDate(accountHierarchy.getCreatedDate());
@@ -935,9 +935,9 @@ public class DataMigrationService {
 	}
 
 	private static void scrumAdditionalHierarchyData(Map<ObjectId, String> projectIdWiseUniqueId,
-													 Map<ObjectId, List<AccountHierarchy>> projectWiseScrumAdditonalFilter,
-													 List<ProjectHierarchy> projectHierarchyList, Map<String, String> sprintNodeHistory,
-													 List<HierarchyLevel> additonalFilterCategoryMap) {
+			Map<ObjectId, List<AccountHierarchy>> projectWiseScrumAdditonalFilter,
+			List<ProjectHierarchy> projectHierarchyList, Map<String, String> sprintNodeHistory,
+			List<HierarchyLevel> additonalFilterCategoryMap) {
 		if (MapUtils.isNotEmpty(sprintNodeHistory)) {
 			projectWiseScrumAdditonalFilter.forEach((project, hierarchies) -> {
 				if (projectIdWiseUniqueId.containsKey(project)) {
@@ -946,7 +946,8 @@ public class DataMigrationService {
 							ProjectHierarchy additionalHierachy = new ProjectHierarchy();
 							additionalHierachy.setBasicProjectConfigId(accountHierarchy.getBasicProjectConfigId());
 							additionalHierachy.setNodeId(accountHierarchy.getNodeId());
-							additionalHierachy.setHierarchyLevelId(String.valueOf(additonalFilterCategoryMap.size() + 1));
+							additionalHierachy
+									.setHierarchyLevelId(String.valueOf(additonalFilterCategoryMap.size() + 1));
 							additionalHierachy.setNodeName(accountHierarchy.getNodeName());
 							additionalHierachy.setNodeDisplayName(accountHierarchy.getNodeName());
 							additionalHierachy.setCreatedDate(accountHierarchy.getCreatedDate());
