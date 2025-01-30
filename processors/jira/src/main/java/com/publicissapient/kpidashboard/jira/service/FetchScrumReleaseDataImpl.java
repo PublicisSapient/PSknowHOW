@@ -101,15 +101,21 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 
 	private void saveScrumAccountHierarchy(ProjectBasicConfig projectConfig, ProjectRelease projectRelease) {
 
+		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
+				.getFullHierarchyLevels(projectConfig.isKanban());
+		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+
 		Map<String, ProjectHierarchy> existingHierarchy = projectHierarchyService
 				.getProjectHierarchyMapByConfigIdAndHierarchyLevelId(projectConfig.getId().toString(),
-						CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+						String.valueOf(hierarchyLevel.getLevel()));
 
 		Set<ProjectHierarchy> setToSave = new HashSet<>();
-		List<ProjectHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease, projectConfig);
+		List<ProjectHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease, projectConfig, hierarchyLevel);
 		setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
         projectHierarchySyncService.syncReleaseHierarchy(projectConfig.getId(),
-                hierarchyForRelease);
+                hierarchyForRelease, hierarchyLevel);
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			log.info("Updated Hierarchies {}", setToSave.size());
 			projectHierarchyService.saveAll(setToSave);
@@ -147,16 +153,13 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	 *
 	 * @param projectRelease
 	 * @param projectBasicConfig
+	 * @param hierarchyLevel
 	 * @return
 	 */
 	private List<ProjectHierarchy> createScrumHierarchyForRelease(ProjectRelease projectRelease,
-			ProjectBasicConfig projectBasicConfig) {
+																  ProjectBasicConfig projectBasicConfig, HierarchyLevel hierarchyLevel) {
 		log.info("Create Account Hierarchy");
-		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
-				.getFullHierarchyLevels(projectBasicConfig.isKanban());
-		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+
 		// fetching all the release versions from history whereever an issue
 		// was tagged
 		Set<String> releaseVersions = jiraIssueCustomHistoryRepository
@@ -175,7 +178,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 					.forEach(projectVersion -> {
 						ProjectHierarchy releaseHierarchy = new ProjectHierarchy();
 						releaseHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
-						releaseHierarchy.setHierarchyLevelId(hierarchyLevel.getHierarchyLevelId());
+						releaseHierarchy.setHierarchyLevelId(String.valueOf(hierarchyLevel.getLevel()));
 						String versionName = projectVersion.getName() + JiraConstants.COMBINE_IDS_SYMBOL;
 						String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
 								+ projectBasicConfig.getProjectNodeId();

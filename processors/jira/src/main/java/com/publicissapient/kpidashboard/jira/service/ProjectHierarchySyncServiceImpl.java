@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,11 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
@@ -89,24 +86,23 @@ public class ProjectHierarchySyncServiceImpl implements ProjectHierarchySyncServ
 	 * IDs in the fetched release hierarchy with those in the account hierarchy and
 	 * deleting non-matching entries.
 	 *
-	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
-	 * @param fetchedReleasedHierarchy
-	 *            the list of fetched release hierarchy
+	 * @param basicProjectConfigId     the ID of the basic project configuration
+	 * @param fetchedReleasedHierarchy the list of fetched release hierarchy
+	 * @param hierarchyLevel
 	 */
 	@Override
 	public void syncReleaseHierarchy(ObjectId basicProjectConfigId,
-										  List<ProjectHierarchy> fetchedReleasedHierarchy) {
+									 List<ProjectHierarchy> fetchedReleasedHierarchy, HierarchyLevel hierarchyLevel) {
 		List<String> distinctReleaseNodeIds = fetchedReleasedHierarchy.stream().map(ProjectHierarchy::getNodeId)
 				.distinct().toList();
 
 		List<String> entriesToDelete = projectHierarchyRepository
 				.findNodeIdsByBasicProjectConfigIdAndNodeIdNotIn(basicProjectConfigId, distinctReleaseNodeIds,
-						CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)
+						String.valueOf(hierarchyLevel.getLevel()))
 				.stream().map(ProjectHierarchy::getNodeId).toList();
 
 		if (CollectionUtils.isNotEmpty(entriesToDelete)) {
-			deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+			deleteNonMatchingEntries(basicProjectConfigId, entriesToDelete, String.valueOf(hierarchyLevel.getLevel()));
 		}
 	}
 

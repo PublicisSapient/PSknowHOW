@@ -19,11 +19,9 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import org.bson.types.ObjectId;
-
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 
 /**
  * Service interface for synchronizing project hierarchies.
@@ -42,12 +40,11 @@ public interface ProjectHierarchySyncService {
 	/**
 	 * Synchronizes the hierarchy for releases.
 	 *
-	 * @param basicProjectConfigId
-	 *            the ID of the basic project configuration
-	 * @param fetchedReleasedHierarchy
-	 *            the list of fetched release hierarchies
+	 * @param basicProjectConfigId     the ID of the basic project configuration
+	 * @param fetchedReleasedHierarchy the list of fetched release hierarchies
+	 * @param hierarchyLevel
 	 */
-	void syncReleaseHierarchy(ObjectId basicProjectConfigId, List<ProjectHierarchy> fetchedReleasedHierarchy);
+	void syncReleaseHierarchy(ObjectId basicProjectConfigId, List<ProjectHierarchy> fetchedReleasedHierarchy, HierarchyLevel hierarchyLevel);
 
 	/**
 	 * Deletes entries that do not match the given criteria.

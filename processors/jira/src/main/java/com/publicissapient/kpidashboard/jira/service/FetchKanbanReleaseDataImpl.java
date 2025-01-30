@@ -104,12 +104,18 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 	}
 
 	private void saveKanbanAccountHierarchy(ProjectBasicConfig projectConfig, ProjectRelease projectRelease) {
+
+		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
+				.getFullHierarchyLevels(projectConfig.isKanban());
+		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 		Map<String, ProjectHierarchy> existingHierarchy = projectHierarchyService
 				.getProjectHierarchyMapByConfigIdAndHierarchyLevelId(projectConfig.getId().toString(),
-						CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+						String.valueOf(hierarchyLevel.getLevel()));
 		Set<ProjectHierarchy> setToSave = new HashSet<>();
 
-		List<ProjectHierarchy> hierarchyForRelease = createKanbanHierarchyForRelease(projectRelease, projectConfig);
+		List<ProjectHierarchy> hierarchyForRelease = createKanbanHierarchyForRelease(projectRelease, projectConfig, hierarchyLevel);
 		if (CollectionUtils.isNotEmpty(hierarchyForRelease)) {
 			hierarchyForRelease.forEach(hierarchy -> {
 				if (StringUtils.isNotBlank(hierarchy.getParentId())) {
@@ -128,7 +134,7 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 			});
 		}
         projectHierarchySyncService.syncReleaseHierarchy(projectConfig.getId(),
-                hierarchyForRelease);
+                hierarchyForRelease, hierarchyLevel);
 
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			projectHierarchyService.saveAll(setToSave);
@@ -140,21 +146,18 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 	 *
 	 * @param projectRelease
 	 * @param projectBasicConfig
+	 * @param hierarchyLevel
 	 * @return
 	 */
 	private List<ProjectHierarchy> createKanbanHierarchyForRelease(ProjectRelease projectRelease,
-			ProjectBasicConfig projectBasicConfig) {
-		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
-				.getFullHierarchyLevels(projectBasicConfig.isKanban());
-		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+																   ProjectBasicConfig projectBasicConfig, HierarchyLevel hierarchyLevel) {
+
 		List<ProjectHierarchy> accountHierarchies = new ArrayList<>();
 		try {
 			projectRelease.getListProjectVersion().stream().forEach(projectVersion -> {
 				ProjectHierarchy releaseHierarchy = new ProjectHierarchy();
 				releaseHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
-				releaseHierarchy.setHierarchyLevelId(hierarchyLevel.getHierarchyLevelId());
+				releaseHierarchy.setHierarchyLevelId(String.valueOf(hierarchyLevel.getLevel()));
 				String versionName = projectVersion.getName() + JiraConstants.COMBINE_IDS_SYMBOL;
 				String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
 						+ projectBasicConfig.getProjectNodeId();

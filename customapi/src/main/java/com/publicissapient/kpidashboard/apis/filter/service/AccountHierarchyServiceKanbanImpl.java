@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,9 +42,11 @@ import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -78,9 +81,15 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
+	@Autowired
+	private HierarchyLevelService hierarchyLevelService;
 
 	@Autowired
 	private ProjectHierarchyService projectHierarchyService;
+
+	private Map<Integer, String> levelLabelMap = Map.of(1, "bu", 2, "ver", 3, "acc", 4, "port", 5, "project", 6,
+			"sprint", 7, "release", 8, "sqd");
+	private Map<Integer, Integer> levelToNewLevelMap = Map.of(7, 6, 8, 7);
 
 	@Override
 	public String getQualifierType() {
@@ -93,8 +102,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 				.cacheAccountHierarchyKanbanData();
 		Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
 		if (!authorizedProjectsService.ifSuperAdminUser() && CollectionUtils.isNotEmpty(hierarchyDataAll)) {
-			hierarchyDataAll = hierarchyDataAll.stream()
-					.filter(data -> data.getBasicProjectConfigId()!=null)
+			hierarchyDataAll = hierarchyDataAll.stream().filter(data -> data.getBasicProjectConfigId() != null)
 					.filter(data -> basicProjectConfigIds.contains(data.getBasicProjectConfigId().toHexString()))
 					.collect(Collectors.toList());
 		}
@@ -106,6 +114,15 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 		Set<AccountFilteredData> result = new HashSet<>();
 		accountHierarchyDataList.forEach(accountHierarchyData -> accountHierarchyData.getNode()
 				.forEach(node -> result.add(getAccountFilteredResponse(node.getProjectHierarchy(), node.getLevel()))));
+		for (AccountFilteredData data : result) {
+			Integer level = data.getLevel();
+			if (levelLabelMap.containsKey(level)) {
+				data.setLabelName(levelLabelMap.get(level));
+				if (data.getLabelName().equalsIgnoreCase("release") || data.getLabelName().equalsIgnoreCase("sqd")) {
+					data.setLevel(levelToNewLevelMap.get(level));
+				}
+			}
+		}
 		return result;
 	}
 
@@ -131,9 +148,9 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 	public List<AccountHierarchyDataKanban> createHierarchyData() {
 
 		List<ProjectBasicConfig> projectBasicConfigList = projectBasicConfigService.getAllProjectsBasicConfigs(true);
-
 		List<ProjectHierarchy> configureHierarchies = getConfigureProjectsHierarchies(projectBasicConfigList,
-				organizationHierarchyService, projectHierarchyService);
+				organizationHierarchyService, projectHierarchyService,
+				getLevelIDByHierarchyLevelID(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT));
 
 		Map<String, List<ProjectHierarchy>> parentWiseMap = configureHierarchies.stream()
 				.filter(fd -> fd.getParentId() != null).collect(Collectors.groupingBy(ProjectHierarchy::getParentId));
@@ -210,7 +227,11 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 			Map<String, Integer> hierarchyLevelIdMap) {
 		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeDisplayName(), hierarchy.getParentId(),
 				hierarchy.getHierarchyLevelId(), hierarchy);
-		node.setLevel(hierarchyLevelIdMap.getOrDefault(hierarchy.getHierarchyLevelId(), 0));
+
+		Integer level = hierarchyLevelIdMap.entrySet().stream()
+				.filter(entry -> entry.getValue().toString().equalsIgnoreCase((hierarchy.getHierarchyLevelId())))
+				.map(Map.Entry::getValue).findFirst().orElse(0);
+		node.setLevel(level);
 		accountHierarchyData.setLabelName(hierarchy.getHierarchyLevelId());
 		accountHierarchyData.setLeafNodeId(hierarchy.getNodeId());
 		if (CollectionUtils.isEmpty(accountHierarchyData.getNode())) {
@@ -221,5 +242,18 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 			accountHierarchyData.getNode().add(node);
 		}
 
+	}
+
+	/**
+	 * return hierarchy level Id
+	 *
+	 * @param hierarchyLevelId
+	 *            hierarchyLevelId
+	 * @return integer value
+	 */
+	private Optional<Integer> getLevelIDByHierarchyLevelID(String hierarchyLevelId) {
+		return cacheService.getFullKanbanHierarchyLevel().stream()
+				.filter(hierarchyLevel -> hierarchyLevel.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId))
+				.map(HierarchyLevel::getLevel).findFirst();
 	}
 }
