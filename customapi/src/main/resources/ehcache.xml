@@ -97,6 +97,10 @@
         <heap unit="MB">25</heap>
     </cache>
 
+    <cache alias="organizationHierarchies">
+        <heap unit="MB">25</heap>
+    </cache>
+
     <cache alias="requestTrackerCache">
         <expiry>
             <ttl unit="hours">2</ttl>
