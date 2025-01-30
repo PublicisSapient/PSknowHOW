@@ -125,44 +125,76 @@ export class LoginComponent implements OnInit {
           // Extract query parameters
           const queryParams = new URLSearchParams(url.split('?')[1]);
           const stateFilters = queryParams.get('stateFilters');
+          const kpiFilters = queryParams.get('kpiFilters');
 
           if (stateFilters) {
-            const decodedStateFilters = atob(stateFilters);
-            const stateFiltersObj = JSON.parse(decodedStateFilters);
+            let decodedStateFilters: string = '';
+            let stateFiltersObj: Object = {};
 
-            // console.log('Decoded State Filters Object:', stateFiltersObj);
-            let stateFilterObj = [];
-
-            if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
-              stateFilterObj = [stateFiltersObj['parent_level']];
+            if (stateFilters?.length <= 8) {
+              this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
+                console.log('response', response);
+                try {
+                  if (response) {
+                    const longStateFiltersString = response['longStateFiltersString'];
+                    decodedStateFilters = atob(longStateFiltersString);
+                    this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+                  }
+                } catch (error) {
+                  this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                  setTimeout(() => {
+                    this.sharedService.raiseError({
+                      status: 900,
+                      message: 'Invalid URL.'
+                    });
+                  })
+                }
+              });
             } else {
-              stateFilterObj = stateFiltersObj['primary_level'];
+              decodedStateFilters = atob(stateFilters);
+              this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
             }
 
-            // Check if user has access to all project in stateFiltersObj['primary_level']
-            // SUperadmin have all project access hence no need to check project for superadmin
-            const hasAccessToAll = this.sharedService.getCurrentUserDetails('authorities')?.includes('ROLE_SUPERADMIN') || stateFilterObj.every(filter =>
-              currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
-            )
-
-            if (hasAccessToAll) {
-              localStorage.removeItem('shared_link');
-              this.router.navigate([JSON.parse(JSON.stringify(url))]);
-            } else {
-              localStorage.removeItem('shared_link');
-              this.router.navigate(['/dashboard/Error']);
-              setTimeout(() => {
-                this.sharedService.raiseError({
-                  status: 901,
-                  message: 'No project access.',
-                });
-              }, 100);
-            }
           }
         } else {
           this.router.navigate(['./dashboard/']);
         }
       }
+    }
+  }
+
+  urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url) {
+    console.log(decodedStateFilters);
+    stateFiltersObj = JSON.parse(decodedStateFilters);
+
+    let stateFilterObj = [];
+
+    if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
+      stateFilterObj = [stateFiltersObj['parent_level']];
+    } else {
+      stateFilterObj = stateFiltersObj['primary_level'];
+    }
+
+    // Check if user has access to all project in stateFiltersObj['primary_level']
+    const hasAllProjectAccess = stateFilterObj.every(filter =>
+      currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
+    );
+
+    // Superadmin have all project access hence no need to check project for superadmin
+    const hasAccessToAll = this.sharedService.getCurrentUserDetails('authorities')?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
+
+    if (hasAccessToAll) {
+      localStorage.removeItem('shared_link');
+      this.router.navigate([JSON.parse(JSON.stringify(url))]);
+    } else {
+      localStorage.removeItem('shared_link');
+      this.router.navigate(['/dashboard/Error']);
+      setTimeout(() => {
+        this.sharedService.raiseError({
+          status: 901,
+          message: 'No project access.',
+        });
+      }, 100);
     }
   }
 }
