@@ -23,7 +23,7 @@
   <description>Github Actions processor service</description>
   <packaging>jar</packaging>
   <artifactId>githubaction-processor</artifactId>
-  <version>12.0.0-SNAPSHOT</version>
+  <version>12.1.0</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -265,7 +265,7 @@
 
 
   <scm>
-    <tag>4.6.1</tag>
+    <tag>12.1.0</tag>
   </scm>
 </project>
 
