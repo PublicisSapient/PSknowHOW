@@ -70,10 +70,10 @@
               "optimization": false,
               "outputHashing": "all",
               "sourceMap": true,
-              "namedChunks": false,
+              "namedChunks": true,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
+              "vendorChunk": true,
               "buildOptimizer": true
             },
             "supervisor": {
@@ -118,10 +118,10 @@
               "optimization": false,
               "outputHashing": "all",
               "sourceMap": true,
-              "namedChunks": false,
+              "namedChunks": true,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
+              "vendorChunk": true,
               "buildOptimizer": true
             },
             "local": {
