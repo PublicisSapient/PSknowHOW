@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1220;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1300;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -29,7 +29,7 @@ import java.util.List;
  * Change Unit to update the kpi_column_configs collection for kpiId "kpi118" and "kpi183"
  * @author girpatha
  */
-    @ChangeUnit(id = "update_kpi_column_config_kpi118_kpi183", order = "12203", author = "girpatha", systemVersion = "12.2.0")
+    @ChangeUnit(id = "update_kpi_column_config_kpi118_kpi183", order = "13003", author = "girpatha", systemVersion = "13.0.0")
 public class UpdateKpiColumnConfigKpi118Kpi183 {
 
     private static final String KPI_COLUMN_DETAILS = "kpiColumnDetails";
