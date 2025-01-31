@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -295,21 +294,6 @@ public class KpiHelperServiceTest {
 		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest,
 				projectWiseSprintsForFilter, sprintDetailsList);
 		assertEquals(2, resultMap.size());
-	}
-
-	@Test
-	public void testFetchSprintCapacityDataFromDb() throws ApplicationException {
-
-		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
-		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
-
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
-				new ArrayList<>(), "hierarchyLevelOne", 5);
-		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-
-		kpiHelperService.fetchSprintCapacityDataFromDb(kpiRequest, leafNodeList);
-		assertEquals(5,leafNodeList.size());
 	}
 
 	@Test

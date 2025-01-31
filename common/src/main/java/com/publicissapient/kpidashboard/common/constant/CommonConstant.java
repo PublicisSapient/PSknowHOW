@@ -341,6 +341,8 @@ public final class CommonConstant {
     public static final String PARENT_STORY_ID = "parentStoryId";
 	public static final String NUMBER = "number";
 
+	public static final String SPRINT_MASTER = "sprint_master";
+
 	//-- auth-N-auth changes ends here --
 
 	public static final String KPI_PASSED= "200";
@@ -351,6 +353,8 @@ public final class CommonConstant {
 	public static final String COUNT = "Count";
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
+	public static final String OPENING_DELIMITER = " (";
+	public static final String CLOSING_DELIMITER = ") ";
 
 
 
