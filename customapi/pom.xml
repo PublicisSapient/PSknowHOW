@@ -76,6 +76,13 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+
+		<repository>
+			<id>trmt-repo</id>
+			<name>trmt-lib</name>
+			<url>https://nexus-repository.tremend.ro/repository/TRMT-maven/</url>
+		</repository>
+
 	</repositories>
 
 	<dependencies>
@@ -497,6 +504,12 @@
 			<groupId>org.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
 			<classifier>jakarta</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tremend.trmt</groupId>
+			<artifactId>trmt-form-engine-client-lib</artifactId>
+			<version>2.1.2</version>
 		</dependency>
 
 	</dependencies>
