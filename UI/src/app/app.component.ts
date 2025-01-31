@@ -169,43 +169,68 @@ export class AppComponent implements OnInit {
       // Extract query parameters
       const queryParams = new URLSearchParams(url.split('?')[1]);
       const stateFilters = queryParams.get('stateFilters');
+      const kpiFilters = queryParams.get('kpiFilters');
 
       if (stateFilters && stateFilters.length > 0) {
-        const decodedStateFilters = atob(stateFilters);
-        const stateFiltersObj = JSON.parse(decodedStateFilters);
+        let decodedStateFilters: string = '';
+        let stateFiltersObj: Object = {};
 
-        // console.log('Decoded State Filters Object:', stateFiltersObj);
-        let stateFilterObj = [];
-        let projectLevelSelected = false;
-        if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
-          stateFilterObj = [stateFiltersObj['parent_level']];
+        if (stateFilters?.length <= 8) {
+          this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
+            if (response) {
+              const longStateFiltersString = response['longStateFiltersString'];
+              decodedStateFilters = atob(longStateFiltersString);
+              this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin);
+            }
+          });
         } else {
-          stateFilterObj = stateFiltersObj['primary_level'];
-        }
-
-        projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
-
-        // Check if user has access to all project in stateFiltersObj['primary_level']
-        const hasAccessToAll = ifSuperAdmin || stateFilterObj.every(filter =>
-          currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
-        );
-
-        if (projectLevelSelected) {
-          if (hasAccessToAll) {
-            this.router.navigate([JSON.parse(JSON.stringify(url))]);
-          } else {
-            this.router.navigate(['/dashboard/Error']);
-            setTimeout(() => {
-              this.service.raiseError({
-                status: 901,
-                message: 'No project access.',
-              });
-            }, 100);
-          }
+          decodedStateFilters = atob(stateFilters);
+          this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin);
         }
       }
+
     } else {
       this.router.navigate(['./dashboard/']);
+    }
+  }
+
+  urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin) {
+    console.log(decodedStateFilters);
+
+    stateFiltersObj = JSON.parse(decodedStateFilters);
+
+    let stateFilterObj = [];
+    let projectLevelSelected = false;
+    if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
+      stateFilterObj = [stateFiltersObj['parent_level']];
+    } else {
+      stateFilterObj = stateFiltersObj['primary_level'];
+    }
+
+    projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
+
+
+    // Check if user has access to all project in stateFiltersObj['primary_level']
+    const hasAllProjectAccess = stateFilterObj.every(filter =>
+      currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
+    );
+
+    // Superadmin have all project access hence no need to check project for superadmin
+    const hasAccessToAll = ifSuperAdmin || hasAllProjectAccess;
+
+    if (projectLevelSelected) {
+      if (hasAccessToAll) {
+        this.router.navigate([JSON.parse(JSON.stringify(url))]);
+      } else {
+        debugger
+        this.router.navigate(['/dashboard/Error'], { queryParams: {}, replaceUrl: true, relativeTo: this.route });
+        setTimeout(() => {
+          this.service.raiseError({
+            status: 901,
+            message: 'No project access.',
+          });
+        }, 100);
+      }
     }
   }
 
