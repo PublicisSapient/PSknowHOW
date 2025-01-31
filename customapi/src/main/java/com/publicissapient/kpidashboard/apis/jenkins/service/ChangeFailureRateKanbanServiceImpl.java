@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -191,13 +192,18 @@ public class ChangeFailureRateKanbanServiceImpl
 			List<DataCount> dataCountAggList = new ArrayList<>();
 			List<Build> aggBuildList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(buildListProjectWise)) {
-
 				Map<String, List<Build>> buildMapJobWise = buildListProjectWise.stream()
 						.collect(Collectors.groupingBy(Build::getBuildJob, Collectors.toList()));
 				for (Map.Entry<String, List<Build>> entry : buildMapJobWise.entrySet()) {
 					String jobName;
 					List<Build> buildList = entry.getValue();
-					jobName = getJobName(entry, buildList);
+					if (StringUtils.isNotEmpty(buildList.get(0).getJobFolder())) {
+						jobName = buildList.get(0).getJobFolder();
+					} else if(StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
+						jobName = buildList.get(0).getPipelineName();
+					}else {
+						jobName = entry.getKey();
+					}
 					aggBuildList.addAll(buildList);
 					prepareInfoForBuildTimeWise(changeFailureRateInfo, buildList, trendLineName, trendValueMap, jobName,
 							dataCountAggList, durationFilter);
@@ -218,10 +224,6 @@ public class ChangeFailureRateKanbanServiceImpl
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CHANGE_FAILURE_RATE_KANBAN.getColumns());
-	}
-
-	private static String getJobName(Map.Entry<String, List<Build>> entry, List<Build> buildList) {
-		return StringUtils.defaultIfEmpty(buildList.get(0).getJobFolder(), entry.getKey());
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData, String trendLineName,
@@ -308,13 +310,13 @@ public class ChangeFailureRateKanbanServiceImpl
 	private static void trendValue(List<Build> buildList, String trendLineName,
 			Map<String, List<DataCount>> trendValueMap, String jobName, List<DataCount> dataCountList) {
 		if (StringUtils.isNotEmpty(buildList.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName(),
+			trendValueMap.putIfAbsent(buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName) ,
 					new ArrayList<>());
-			trendValueMap.get(jobName + CommonConstant.ARROW + buildList.get(0).getPipelineName())
+			trendValueMap.get(buildList.get(0).getPipelineName() + CommonUtils.getStringWithDelimiters(trendLineName))
 					.addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-			trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+			trendValueMap.putIfAbsent(jobName + CommonUtils.getStringWithDelimiters(trendLineName), new ArrayList<>());
+			trendValueMap.get(jobName + CommonUtils.getStringWithDelimiters(trendLineName)).addAll(dataCountList);
 		}
 	}
 

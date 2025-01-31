@@ -180,6 +180,7 @@ export class HttpService {
   private urlRestore = this.baseUrl + '/api/stringShortener/longString';
 
   currentUserDetails = null;
+  private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
   constructor(
     private router: Router,
@@ -1184,6 +1185,10 @@ export class HttpService {
 
   getRecommendations(data) {
     return this.http.post<object>(this.recommendationsUrl, data);
+  }
+
+  fetchJiramappingBE(basicConfigID){
+    return this.http.post<object>(this.saveMetaDataStepURL + basicConfigID, {});
   }
 
   handleUrlShortener(payload: any): Observable<object> {

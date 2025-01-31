@@ -36,6 +36,7 @@ public class CodeBuildTimeInfo {
 	private List<String> buildStatusList;
 	private List<String> startedByList;
 	private List<String> weeksList;
+	private List<String> pipeLineNameList;
 
 	/**
 	 * Instantiates a new Code build time info holder.
@@ -49,6 +50,7 @@ public class CodeBuildTimeInfo {
 		buildStatusList = new ArrayList<>();
 		startedByList = new ArrayList<>();
 		weeksList = new ArrayList<>();
+		pipeLineNameList = new ArrayList<>();
 	}
 
 	/**
@@ -59,6 +61,16 @@ public class CodeBuildTimeInfo {
 	 */
 	public void addBuidJob(String buildJob) {
 		buildJobList.add(buildJob);
+	}
+
+	/**
+	 * Add Pipeline Name.
+	 *
+	 * @param pipeLineName
+	 *            the pipeLineName
+	 */
+	public void addPipeLineNames(String pipeLineName) {
+		pipeLineNameList.add(pipeLineName);
 	}
 
 	/**
@@ -274,5 +286,9 @@ public class CodeBuildTimeInfo {
 
 	public void addWeeks(String week) {
 		weeksList.add(week);
+	}
+
+	public List<String> getPipeLineNameList() {
+		return pipeLineNameList;
 	}
 }

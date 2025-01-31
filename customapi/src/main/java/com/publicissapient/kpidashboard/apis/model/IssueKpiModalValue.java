@@ -78,8 +78,8 @@ public class IssueKpiModalValue implements Serializable {
 	private String predictedCompletionDate;
 	@JsonProperty("Potential Delay(in days)")
 	private String potentialDelay;
-	@JsonProperty("Overall Delay")
-	private String potentialOverallDelay;
+	@JsonProperty("Dev Delay(in days)")
+	private String devDelayInDays;
 	@JsonProperty("Issue Priority")
 	private String issuePriority;
 	@JsonProperty("Linked Stories")

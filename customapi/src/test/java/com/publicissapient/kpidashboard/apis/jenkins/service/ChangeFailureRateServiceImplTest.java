@@ -22,16 +22,20 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -204,5 +208,24 @@ public class ChangeFailureRateServiceImplTest {
 		String result = changeFailureRateService.getQualifierType();
 		assertEquals(result, KPICode.CHANGE_FAILURE_RATE.name());
 	}
+	@Test
+	public void testTrendValueWithPipelineName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		List<Build> buildList = new ArrayList<>();
+		Build build = new Build();
+		build.setPipelineName("Pipeline1");
+		buildList.add(build);
 
+		String trendLineName = "TrendLine1";
+		Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+		String jobName = "Job1";
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCount = new DataCount();
+		dataCountList.add(dataCount);
+		Method trendValueMethod = ChangeFailureRateServiceImpl.class.getDeclaredMethod("trendValue", List.class, String.class, Map.class, String.class, List.class);
+		trendValueMethod.setAccessible(true);
+		trendValueMethod.invoke(null, buildList, trendLineName, trendValueMap, jobName, dataCountList);
+
+		assertTrue(trendValueMap.containsKey("Pipeline1" + CommonUtils.getStringWithDelimiters(trendLineName)));
+		assertEquals(dataCountList, trendValueMap.get("Pipeline1" + CommonUtils.getStringWithDelimiters(trendLineName)));
+	}
 }

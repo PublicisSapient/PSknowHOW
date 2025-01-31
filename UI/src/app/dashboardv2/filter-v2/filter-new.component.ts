@@ -1056,7 +1056,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         let uniqueIdsArr = Array.from(uniqueIds);
         let uniqueObjArr = [];
         for (let uniqueId of uniqueIdsArr) {
-          let uniqueObj = this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId)[0];
+          let uniqueObj = this.sortRecordDesc(this.additionalFiltersArr['filter' + (index + 1)].filter(f => f.nodeId === uniqueId))[0];
           uniqueObjArr.push({
             ...uniqueObj
           });
@@ -1065,7 +1065,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
       });
       if (this.selectedTab !== 'iteration') {
-        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState === 'CLOSED');
+        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState.toUpperCase() === 'CLOSED');
       }
       this.service.setAdditionalFilters(this.additionalFiltersArr);
     }
@@ -1467,5 +1467,13 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       }
     })
 
+  }
+
+  sortRecordDesc(data){
+    return data.sort((a, b) => {
+      const numA = parseInt(a.parentId.split('_')[0],10);
+      const numB = parseInt(b.parentId.split('_')[0],10);
+      return numB - numA;
+    });
   }
 }
