@@ -38,6 +38,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ScrollTopModule } from 'primeng/scrolltop';
+
+import { FormEngineConfigurationModule, SubformComponentModule, CustomComponentModule } from '@trmt/form-engine-service-lib';
+import {  FormioModule} from '@formio/angular';
+import { FormEngineModule } from '@trmt/form-engine-service-lib';
+
 /******************************************************/
 
 /******************* components   ***********************/
@@ -146,6 +151,7 @@ import { SemiCircleDonutChartComponent } from './component/semi-circle-donut-cha
 import { TabularKpiV2Component } from './component/tabular-kpi-v2/tabular-kpi-v2.component';
 import { GroupedBarChartComponent } from './component/grouped-bar-chart/grouped-bar-chart.component';
 import { TabularKpiWithDonutChartComponent } from './component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
+import { environment } from 'src/environments/environment';
 
 
 /******************************************************/
@@ -269,7 +275,14 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         BlockUIModule,
         SharedModuleModule,
         InputTextModule,
-        ScrollTopModule
+        ScrollTopModule,
+        FormEngineModule,
+        FormioModule,
+        CustomComponentModule,
+        SubformComponentModule,
+        FormEngineConfigurationModule.forRoot({
+            baseURL: `${environment.baseUrl}/api/form-engine/forward`
+          }),
     ],
     providers: [
         ExcelService,

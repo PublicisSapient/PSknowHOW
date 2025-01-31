@@ -28,6 +28,9 @@
                                 {{ tab }}
                             </div>
                         </div>
+                        <button (click)="isFormRenderer = true">
+                            click me
+                        </button>
                         <div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
                             <ng-container
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
@@ -459,4 +462,9 @@
             </ng-template>
         </p-table>
     </div>
+</p-dialog>
+
+<p-dialog [(visible)]="isFormRenderer" [modal]="true" styleClass="field-mapping">
+    <form-submit></form-submit>
+    <!-- <form-build></form-build> -->
 </p-dialog>
