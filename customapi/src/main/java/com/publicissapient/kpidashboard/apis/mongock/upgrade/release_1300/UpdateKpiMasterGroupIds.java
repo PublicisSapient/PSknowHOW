@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1220;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1300;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * prijain3
  */
-@ChangeUnit(id = "update_kpi_master_group_ids", order = "12204", author = "prijain3", systemVersion = "12.2.0")
+@ChangeUnit(id = "update_kpi_master_group_ids", order = "13004", author = "prijain3", systemVersion = "13.0.0")
 public class UpdateKpiMasterGroupIds {
 	private final MongoTemplate mongoTemplate;
 	private static final String KPI_MASTER = "kpi_master";
@@ -29,7 +29,8 @@ public class UpdateKpiMasterGroupIds {
 	public void execution() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
         //update KPI group ids
-        changeFieldValue("kpi114", GROUP_ID, 5, kpiMaster);
+		changeFieldValue("kpi149", GROUP_ID, 4, kpiMaster);
+		changeFieldValue("kpi114", GROUP_ID, 5, kpiMaster);
         changeFieldValue("kpi74", GROUP_ID, 5, kpiMaster);
         changeFieldValue("kpi8", GROUP_ID, 30, kpiMaster);
         changeFieldValue("kpi172", GROUP_ID, 30, kpiMaster);
@@ -90,6 +91,7 @@ public class UpdateKpiMasterGroupIds {
 	public void rollback() {
         MongoCollection<Document> kpiMaster = mongoTemplate.getCollection(KPI_MASTER);
 		// update KPI group ids
+		changeFieldValue("kpi149", GROUP_ID, 16, kpiMaster);
 		changeFieldValue("kpi114", GROUP_ID, 4, kpiMaster);
 		changeFieldValue("kpi74", GROUP_ID, 4, kpiMaster);
 		changeFieldValue("kpi8", GROUP_ID, 1, kpiMaster);
