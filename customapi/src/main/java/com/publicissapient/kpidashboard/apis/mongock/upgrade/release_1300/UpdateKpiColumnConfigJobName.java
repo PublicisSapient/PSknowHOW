@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1220;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1300;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -29,7 +29,7 @@ import java.util.Arrays;
  * Change Unit to update columnName from "Job Name" to "Job Name / Pipeline Name" for kpiIds "kpi66","kpi8","kpi116","kpi184","kpi172"
  * @author girpatha
  */
-@ChangeUnit(id = "update_kpi_column_config_job_name", order = "12202", author = "girpatha", systemVersion = "12.2.0")
+@ChangeUnit(id = "update_kpi_column_config_job_name", order = "13002", author = "girpatha", systemVersion = "13.0.0")
 public class UpdateKpiColumnConfigJobName {
 
     private final MongoTemplate mongoTemplate;
