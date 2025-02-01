@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -35,11 +34,11 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +74,8 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 		ProjectBasicConfig projectBasicConfig = projectConfig.getProjectBasicConfig();
 		// get all the hierarchies related to the selected project from project
 		// hierarchies collection
-		Map<String, ProjectHierarchy> existingHierarchy = projectHierarchyService.getProjectHierarchyMapByConfigId(projectConfig.getBasicProjectConfigId().toString());
+		Map<String, ProjectHierarchy> existingHierarchy = projectHierarchyService
+				.getProjectHierarchyMapByConfigId(projectConfig.getBasicProjectConfigId().toString());
 
 		Set<ProjectHierarchy> accHierarchyToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(kanbanJiraIssue.getProjectName())) {
@@ -118,11 +118,9 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 
 	private void accHierarchyToSave(ProjectHierarchy accountHierarchy,
 			Map<String, ProjectHierarchy> existingSquadHierarchy, Set<ProjectHierarchy> accHierarchyToSave) {
-		if (StringUtils.isNotBlank(accountHierarchy.getParentId())
-				|| (StringUtils.isBlank(accountHierarchy.getParentId()))) {
+		if (StringUtils.isNotBlank(accountHierarchy.getParentId())) {
 			ProjectHierarchy exHiery = existingSquadHierarchy.get(accountHierarchy.getNodeId());
-
-			if (null == exHiery) {
+			if (null == exHiery || !exHiery.getParentId().equalsIgnoreCase(accountHierarchy.getParentId())) {
 				accountHierarchy.setCreatedDate(LocalDateTime.now());
 				accHierarchyToSave.add(accountHierarchy);
 			}

@@ -55,7 +55,8 @@ public class ProjectHierarchy extends OrganizationHierarchy implements Serializa
 		ProjectHierarchy that = (ProjectHierarchy) o;
 		return Objects.equals(basicProjectConfigId, that.basicProjectConfigId)
 				&& Objects.equals(sprintState, that.sprintState) && Objects.equals(releaseState, that.releaseState)
-				&& Objects.equals(beginDate, that.beginDate) && Objects.equals(endDate, that.endDate);
+				&& Objects.equals(beginDate, that.beginDate) && Objects.equals(endDate, that.endDate)
+				&& Objects.equals(this.getParentId(), that.getParentId());
 	}
 
 	@Override

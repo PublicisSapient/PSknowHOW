@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -129,6 +130,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	private ProcessorToolConnectionService processorToolConnectionService;
 	@Autowired
 	private ProjectHierarchyService projectHierarchyService;
+
 	@Override
 	public int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey, // NOSONAR
 			// //NOPMD
@@ -552,7 +554,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			azureIssue.setSprintEndDate("");
 			azureIssue.setSprintAssetState("");
 		} else {
-			String sprintId = value.getId() + AzureConstants.COMBINE_IDS_SYMBOL + projectConfig.getProjectBasicConfig().getProjectNodeId();
+			String sprintId = value.getId() + AzureConstants.COMBINE_IDS_SYMBOL
+					+ projectConfig.getProjectBasicConfig().getProjectNodeId();
 			setSprintData(azureIssue, value, sprintId);
 			populateSprintDetails(value, sprintDetailsSet, sprintId);
 		}
@@ -795,8 +798,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 		HierarchyLevel sprintHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 
-		Map<String, ProjectHierarchy> existingHierarchy = projectHierarchyService
-				.getProjectHierarchyMapByConfigId(projectConfig.getBasicProjectConfigId().toString());
+		Map<String, List<ProjectHierarchy>> existingHierarchy = projectHierarchyService
+				.getProjectHierarchyMapByConfig(projectConfig.getBasicProjectConfigId().toString());
 
 		Set<ProjectHierarchy> setToSave = new HashSet<>();
 		for (JiraIssue jiraIssue : jiraIssueList) {
@@ -1058,10 +1061,10 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			String sprintId = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintID");
 			String state = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintAssetState");
 			projectHierarchy.setNodeId(sprintId);
-			projectHierarchy.setNodeName(
-					sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
 			projectHierarchy
-					.setNodeDisplayName(sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectDisplayName());
+					.setNodeName(sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
+			projectHierarchy.setNodeDisplayName(
+					sprintName + AzureConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectDisplayName());
 			projectHierarchy.setSprintState(state);
 			projectHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintBeginDate"));
 			projectHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintEndDate"));
@@ -1110,19 +1113,26 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 * @param existingHierarchy
 	 */
 	private void setToSaveAccountHierarchy(Set<ProjectHierarchy> setToSave, ProjectHierarchy sprintHierarchy,
-			Map<String, ProjectHierarchy> existingHierarchy) {
-
+			Map<String, List<ProjectHierarchy>> existingHierarchy) {
 		if (StringUtils.isNotBlank(sprintHierarchy.getParentId())) {
-			ProjectHierarchy exHiery = existingHierarchy.get(sprintHierarchy.getNodeId());
-			if (null == exHiery) {
+			List<ProjectHierarchy> exHieryList = existingHierarchy.get(sprintHierarchy.getNodeId());
+			if (CollectionUtils.isEmpty(exHieryList)) {
 				sprintHierarchy.setCreatedDate(LocalDateTime.now());
 				setToSave.add(sprintHierarchy);
-			} else if (!exHiery.equals(sprintHierarchy)) {
-				exHiery.setBeginDate(sprintHierarchy.getBeginDate());
-				exHiery.setNodeName(sprintHierarchy.getNodeName());
-				exHiery.setEndDate(sprintHierarchy.getEndDate());
-				exHiery.setReleaseState(sprintHierarchy.getSprintState());
-				setToSave.add(exHiery);
+			} else {
+				Map<String, ProjectHierarchy> exHiery = exHieryList.stream().collect(
+						Collectors.toMap(OrganizationHierarchy::getParentId, p -> p, (existing, newPair) -> existing));
+				ProjectHierarchy projectHierarchy = exHiery.get(sprintHierarchy.getParentId());
+				if (projectHierarchy == null) {
+					sprintHierarchy.setCreatedDate(LocalDateTime.now());
+					setToSave.add(sprintHierarchy);
+				} else if (!projectHierarchy.equals(sprintHierarchy)) {
+					projectHierarchy.setBeginDate(sprintHierarchy.getBeginDate());
+					projectHierarchy.setNodeName(sprintHierarchy.getNodeName());// sprint name changed
+					projectHierarchy.setEndDate(sprintHierarchy.getEndDate());
+					projectHierarchy.setSprintState(sprintHierarchy.getSprintState());
+					setToSave.add(projectHierarchy);
+				}
 			}
 
 		}

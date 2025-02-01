@@ -12,5 +12,7 @@ public interface OrganizationHierarchyService {
 
 	OrganizationHierarchy save(OrganizationHierarchy organizationHierarchy);
 
+	void deleteByNodeId(String nodeId);
+
 	void clearCache();
 }

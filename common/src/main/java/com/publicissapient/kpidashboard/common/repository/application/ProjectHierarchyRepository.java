@@ -41,4 +41,7 @@ public interface ProjectHierarchyRepository extends MongoRepository<ProjectHiera
 
 	void deleteByBasicProjectConfigIdAndNodeIdIn(ObjectId basicProjectConfigId, List<String> nodeIdsToBeDeleted,
 			String hierarchyLevelId);
+
+	@Query(value = "{ 'basicProjectConfigId': ?0 }", delete = true)
+	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 }

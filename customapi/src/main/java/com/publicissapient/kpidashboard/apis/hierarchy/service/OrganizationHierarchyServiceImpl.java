@@ -44,6 +44,11 @@ public class OrganizationHierarchyServiceImpl implements OrganizationHierarchySe
 		return organizationHierarchyRepository.save(organizationHierarchy);
 	}
 
+	@Override
+	public void deleteByNodeId(String nodeId) {
+		organizationHierarchyRepository.deleteByNodeId(nodeId);
+	}
+
 	@CacheEvict(CommonConstant.CACHE_ORGANIZATION_HIERARCHY)
 	@Override
 	public void clearCache() {

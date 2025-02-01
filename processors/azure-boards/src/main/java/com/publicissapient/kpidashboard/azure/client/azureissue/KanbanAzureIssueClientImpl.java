@@ -1206,11 +1206,9 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 
 	private void accHierarchyToSave(ProjectHierarchy accountHierarchy,
 			Map<String, ProjectHierarchy> existingSquadHierarchy, Set<ProjectHierarchy> accHierarchyToSave) {
-		if (StringUtils.isNotBlank(accountHierarchy.getParentId())
-				|| (StringUtils.isBlank(accountHierarchy.getParentId()))) {
+		if (StringUtils.isNotBlank(accountHierarchy.getParentId())) {
 			ProjectHierarchy exHiery = existingSquadHierarchy.get(accountHierarchy.getNodeId());
-
-			if (null == exHiery) {
+			if (null == exHiery || !exHiery.getParentId().equalsIgnoreCase(accountHierarchy.getParentId())) {
 				accountHierarchy.setCreatedDate(LocalDateTime.now());
 				accHierarchyToSave.add(accountHierarchy);
 			}
