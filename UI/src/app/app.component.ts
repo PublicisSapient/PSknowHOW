@@ -222,7 +222,6 @@ export class AppComponent implements OnInit {
       if (hasAccessToAll) {
         this.router.navigate([JSON.parse(JSON.stringify(url))]);
       } else {
-        debugger
         this.router.navigate(['/dashboard/Error'], { queryParams: {}, replaceUrl: true, relativeTo: this.route });
         setTimeout(() => {
           this.service.raiseError({

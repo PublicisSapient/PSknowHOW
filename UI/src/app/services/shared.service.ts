@@ -389,7 +389,7 @@ export class SharedService {
     this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters || {}));
 
     // NOTE: Do not navigate if the state filters are same as previous, this is to reduce the number of navigation calls, hence refactoring the code
-    if (this.tempStateFilters !== stateFilterEnc) {
+    if ((this.tempStateFilters !== stateFilterEnc) && (!this.router.url.split('/').includes('Config') && !this.router.url.split('/').includes('Error') && !this.router.url.split('/').includes('Help'))) {
       this.router.navigate([], {
         queryParams: { 'stateFilters': stateFilterEnc },
         relativeTo: this.route
@@ -435,12 +435,14 @@ export class SharedService {
     }
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
-    this.router.navigate([], {
-      queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr }, // Pass the object here
-      relativeTo: this.route,
-      queryParamsHandling: 'merge'
-    });
-
+    console.log('this.router.url ', this.router.url)
+    if (!this.router.url.split('/').includes('Config') && !this.router.url.split('/').includes('Error') && !this.router.url.split('/').includes('Help')) {
+      this.router.navigate([], {
+        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr }, // Pass the object here
+        relativeTo: this.route,
+        queryParamsHandling: 'merge'
+      });
+    }
     this.selectedFilterOption.next(value);
   }
 
