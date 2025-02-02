@@ -372,6 +372,12 @@ export class SharedService {
 
   private tempStateFilters = null;
   setBackupOfFilterSelectionState(selectedFilterObj) {
+    const routerUrl = this.router.url;
+    console.log('routerUrl', routerUrl);
+    const segments = typeof routerUrl === 'string' && routerUrl?.split('/');
+    const hasConfig = segments && segments.includes('Config');
+    const hasHelp = segments && segments.includes('Help');
+    const hasError = segments && segments.includes('Error');
     if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
       this.selectedFilters = { ...selectedFilterObj };
     } else if (selectedFilterObj) {
@@ -389,7 +395,7 @@ export class SharedService {
     this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters || {}));
 
     // NOTE: Do not navigate if the state filters are same as previous, this is to reduce the number of navigation calls, hence refactoring the code
-    if ((this.tempStateFilters !== stateFilterEnc) && (!this.router.url.split('/').includes('Config') && !this.router.url.split('/').includes('Error') && !this.router.url.split('/').includes('Help'))) {
+    if ((this.tempStateFilters !== stateFilterEnc) && (!hasConfig && !hasError && !hasHelp)) {
       this.router.navigate([], {
         queryParams: { 'stateFilters': stateFilterEnc },
         relativeTo: this.route
@@ -426,6 +432,11 @@ export class SharedService {
   }
 
   setKpiSubFilterObj(value: any) {
+    const routerUrl = this.router.url;
+    const segments = routerUrl?.split('/');
+    const hasConfig = segments.includes('Config');
+    const hasHelp = segments.includes('Help');
+    const hasError = segments.includes('Error');
     if (!value) {
       this.selectedKPIFilterObj = {};
     } else if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
@@ -435,8 +446,7 @@ export class SharedService {
     }
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
-    console.log('this.router.url ', this.router.url)
-    if (!this.router.url.split('/').includes('Config') && !this.router.url.split('/').includes('Error') && !this.router.url.split('/').includes('Help')) {
+    if (!hasConfig && !hasError && !hasHelp) {
       this.router.navigate([], {
         queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr }, // Pass the object here
         relativeTo: this.route,
