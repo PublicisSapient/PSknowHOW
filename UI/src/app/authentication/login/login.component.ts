@@ -164,7 +164,6 @@ export class LoginComponent implements OnInit {
   }
 
   urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url) {
-    console.log(decodedStateFilters);
     stateFiltersObj = JSON.parse(decodedStateFilters);
 
     let stateFilterObj = [];
@@ -181,7 +180,8 @@ export class LoginComponent implements OnInit {
     );
 
     // Superadmin have all project access hence no need to check project for superadmin
-    const hasAccessToAll = this.sharedService.getCurrentUserDetails('authorities')?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
+    const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
+    const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
 
     if (hasAccessToAll) {
       localStorage.removeItem('shared_link');

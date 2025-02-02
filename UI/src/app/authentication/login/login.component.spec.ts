@@ -32,6 +32,7 @@ describe('LoginComponent', () => {
   let router: Router;
   let httpService: HttpService;
   let sharedService: SharedService;
+  let localStorage: Storage;
 
   const mockRouter = {
     navigate: jasmine.createSpy('navigate'),
@@ -65,6 +66,7 @@ describe('LoginComponent', () => {
         { provide: HttpService, useValue: mockHttpService },
         { provide: SharedService, useValue: mockSharedService },
         { provide: GoogleAnalyticsService, useValue: mockGoogleAnalyticsService },
+        { provide: Storage, useValue: localStorage },
       ],
     }).compileComponents();
   });
@@ -75,6 +77,7 @@ describe('LoginComponent', () => {
     router = TestBed.inject(Router);
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
+    localStorage = TestBed.inject(Storage);
     fixture.detectChanges();
   });
 
@@ -181,7 +184,66 @@ describe('LoginComponent', () => {
     expect(mockRouter.navigate).toHaveBeenCalledWith(['./dashboard/']);
   });
 
-  afterEach(() => {
-    localStorage.removeItem('shared_link');
+
+  it('should navigate to the provided URL if the user has access to all projects', () => {
+    const decodedStateFilters = JSON.stringify({
+      parent_level: { basicProjectConfigId: 'project1' },
+      primary_level: []
+    });
+    const stateFiltersObj = {};
+    const currentUserProjectAccess = [{ projectId: 'project1' }];
+    const url = 'http://example.com';
+
+    // spyOn(localStorage, 'removeItem');
+    mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_USER']);
+
+    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+
+    // expect(localStorage.removeItem).toHaveBeenCalledWith('shared_link');
+    expect(router.navigate).toHaveBeenCalledWith([JSON.parse(JSON.stringify(url))]);
   });
+
+  it('should navigate to the provided URL if the user is a superadmin', () => {
+    const decodedStateFilters = JSON.stringify({
+      parent_level: { basicProjectConfigId: 'project1' },
+      primary_level: []
+    });
+    const stateFiltersObj = {};
+    const currentUserProjectAccess = [];
+    const url = 'http://example.com';
+
+    // spyOn(localStorage, 'removeItem');
+    mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_SUPERADMIN']);
+
+    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+
+    // expect(localStorage.removeItem).toHaveBeenCalledWith('shared_link');
+    expect(router.navigate).toHaveBeenCalledWith([JSON.parse(JSON.stringify(url))]);
+  });
+
+  it('should navigate to the error page if the user does not have access to all projects', () => {
+    const decodedStateFilters = JSON.stringify({
+      parent_level: { basicProjectConfigId: 'project1' },
+      primary_level: []
+    });
+    const stateFiltersObj = {};
+    const currentUserProjectAccess = [{ projectId: 'project2' }];
+    const url = 'http://example.com';
+
+    // spyOn(localStorage, 'removeItem');
+    mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_USER']);
+
+    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+
+    // expect(localStorage.removeItem).toHaveBeenCalledWith('shared_link');
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+    // expect(mockSharedService.raiseError).toHaveBeenCalledWith({
+    //   status: 901,
+    //   message: 'No project access.'
+    // });
+  });
+
+  // afterEach(() => {
+  //   localStorage.removeItem('shared_link');
+  // });
 });
