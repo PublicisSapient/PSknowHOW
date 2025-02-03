@@ -289,9 +289,8 @@ public class CommonServiceImpl implements CommonService {
 	 */
 	private Map<String, String> getHierarchyMap(String projectConfigId) {
 		Map<String, String> map = new HashMap<>();
-		Optional<ProjectBasicConfig> basicConfig = projectBasicConfigRepository.findById(new ObjectId(projectConfigId));
-		if (basicConfig.isPresent()) {
-			ProjectBasicConfig projectBasicConfig = basicConfig.get();
+			ProjectBasicConfig projectBasicConfig = projectBasicConfigRepository.findByProjectNodeId(projectConfigId);
+		if (projectBasicConfig!=null) {
 			CollectionUtils.emptyIfNull(projectBasicConfig.getHierarchy()).stream()
 					.sorted(Comparator.comparing(
 							(HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()))

@@ -31,6 +31,8 @@ public interface ProjectHierarchyService {
 
 	Map<String, ProjectHierarchy> getProjectHierarchyMapByConfigId(String projectConfigId);
 
+	Map<String, List<ProjectHierarchy>> getProjectHierarchyMapByConfig(String projectConfigId);
+
 	Map<String, ProjectHierarchy> getProjectHierarchyMapByConfigIdAndHierarchyLevelId(String projectConfigId,
 			String hierarchyLevelId);
 
@@ -39,4 +41,6 @@ public interface ProjectHierarchyService {
 	List<ProjectHierarchy> findAllByBasicProjectConfigIds(List<ObjectId> basicProjectConfigIdList);
 
 	List<ProjectHierarchy> findAll();
+
+	void deleteByBasicProjectConfigId(ObjectId projectBasicConfigId);
 }

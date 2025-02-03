@@ -44,9 +44,21 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 	}
 
 	@Override
+	public void deleteByBasicProjectConfigId(ObjectId projectBasicConfigId) {
+		projectHierarchyRepository.deleteByBasicProjectConfigId(projectBasicConfigId);
+	}
+
+	@Override
 	public Map<String, ProjectHierarchy> getProjectHierarchyMapByConfigId(String projectConfigId) {
 		return getProjectRelatedHierachy(projectConfigId).stream().collect(
 				Collectors.toMap(OrganizationHierarchy::getNodeId, p -> p, (existingValue, newValue) -> existingValue));
+
+	}
+
+	@Override
+	public Map<String, List<ProjectHierarchy>> getProjectHierarchyMapByConfig(String projectConfigId) {
+		return getProjectRelatedHierachy(projectConfigId).stream().collect(
+				Collectors.groupingBy(OrganizationHierarchy::getNodeId));
 
 	}
 

@@ -16,19 +16,22 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,12 +48,14 @@ import com.publicissapient.kpidashboard.common.model.application.AccountHierarch
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.dataFactories.AccountHierarchiesDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
@@ -105,8 +110,40 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 	public void createAccountHierarchy() {
 		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
 		Assert.assertEquals(2, createAccountHierarchy
-				.createAccountHierarchy(jiraIssues.get(0), createProjectConfig(), getSprintDetails())
-				.size());
+				.createAccountHierarchy(jiraIssues.get(0), createProjectConfig(), getSprintDetails()).size());
+	}
+
+	@Test
+	public void testCreateAccountHierarchy_Success() {
+		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
+		Map<String, List<ProjectHierarchy>> map = new HashMap<>();
+		List<ProjectHierarchy> projectHierarchies = new ArrayList<>();
+		projectHierarchies.add(new ProjectHierarchy());
+		map.put("41409_NewJira_63c04dc7b7617e260763ca4e", projectHierarchies);
+		when(projectHierarchyService.getProjectHierarchyMapByConfig(anyString())).thenReturn(map);
+		Set<ProjectHierarchy> result = createAccountHierarchy.createAccountHierarchy(jiraIssues.get(0),
+				createProjectConfig(), getSprintDetails());
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		assertEquals(2, result.size());
+	}
+
+	@Test
+	public void testCreateAccountHierarchy_Success_1() {
+		when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
+		Map<String, List<ProjectHierarchy>> map = new HashMap<>();
+		List<ProjectHierarchy> projectHierarchies = new ArrayList<>();
+		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
+		projectHierarchy.setNodeId("41409_NewJira_63c04dc7b7617e260763ca4e");
+		projectHierarchy.setParentId("project_unique_003");
+		projectHierarchies.add(projectHierarchy);
+		map.put("41409_NewJira_63c04dc7b7617e260763ca4e", projectHierarchies);
+		when(projectHierarchyService.getProjectHierarchyMapByConfig(anyString())).thenReturn(map);
+		Set<ProjectHierarchy> result = createAccountHierarchy.createAccountHierarchy(jiraIssues.get(0),
+				createProjectConfig(), getSprintDetails());
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+		assertEquals(2, result.size());
 	}
 
 	private List<HierarchyLevel> getMockHierarchyLevel() {

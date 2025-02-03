@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -86,8 +88,8 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 				&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
 			// get all the hierarchies related to the selected project from project
 			// hierarchies collection
-			Map<String, ProjectHierarchy> existingHierarchy = projectHierarchyService
-					.getProjectHierarchyMapByConfigId(projectConfig.getBasicProjectConfigId().toString());
+			Map<String, List<ProjectHierarchy>> existingHierarchy = projectHierarchyService
+					.getProjectHierarchyMapByConfig(projectConfig.getBasicProjectConfigId().toString());
 
 			ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
 			Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
@@ -112,19 +114,26 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 	}
 
 	private void setToSaveAccountHierarchy(Set<ProjectHierarchy> setToSave, ProjectHierarchy sprintHierarchy,
-			Map<String, ProjectHierarchy> existingHierarchy) {
+			Map<String, List<ProjectHierarchy>> existingHierarchy) {
 		if (StringUtils.isNotBlank(sprintHierarchy.getParentId())) {
-			ProjectHierarchy exHiery = existingHierarchy.get(sprintHierarchy.getNodeId());
-			if (null == exHiery) {
+			List<ProjectHierarchy> exHieryList = existingHierarchy.get(sprintHierarchy.getNodeId());
+			if (CollectionUtils.isEmpty(exHieryList)) {
 				sprintHierarchy.setCreatedDate(LocalDateTime.now());
 				setToSave.add(sprintHierarchy);
-			} else if (!exHiery.equals(sprintHierarchy)) {
-
-				exHiery.setBeginDate(sprintHierarchy.getBeginDate());
-				exHiery.setNodeName(sprintHierarchy.getNodeName());// sprint name changed
-				exHiery.setEndDate(sprintHierarchy.getEndDate());
-				exHiery.setSprintState(sprintHierarchy.getSprintState());
-				setToSave.add(exHiery);
+			} else {
+				Map<String, ProjectHierarchy> exHiery = exHieryList.stream().collect(
+						Collectors.toMap(OrganizationHierarchy::getParentId, p -> p, (existing, newPair) -> existing));
+				ProjectHierarchy projectHierarchy = exHiery.get(sprintHierarchy.getParentId());
+				if (projectHierarchy == null) {
+					sprintHierarchy.setCreatedDate(LocalDateTime.now());
+					setToSave.add(sprintHierarchy);
+				} else if (!projectHierarchy.equals(sprintHierarchy)) {
+					projectHierarchy.setBeginDate(sprintHierarchy.getBeginDate());
+					projectHierarchy.setNodeName(sprintHierarchy.getNodeName());// sprint name changed
+					projectHierarchy.setEndDate(sprintHierarchy.getEndDate());
+					projectHierarchy.setSprintState(sprintHierarchy.getSprintState());
+					setToSave.add(projectHierarchy);
+				}
 			}
 
 		}

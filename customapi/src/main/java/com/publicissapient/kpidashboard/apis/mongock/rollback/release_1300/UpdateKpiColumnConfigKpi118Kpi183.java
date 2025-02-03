@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1220;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1300;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import io.mongock.api.annotations.RollbackExecution;
  * Change Unit to update the kpi_column_configs collection for kpiId "kpi118" and "kpi183"
  * @author girpatha
  */
-@ChangeUnit(id = "r_update_kpi_column_config_kpi118_kpi183", order = "012203", author = "girpatha", systemVersion = "12.2.0")
+@ChangeUnit(id = "r_update_kpi_column_config_kpi118_kpi183", order = "013003", author = "girpatha", systemVersion = "13.0.0")
 public class UpdateKpiColumnConfigKpi118Kpi183 {
 
     private static final String KPI_COLUMN_DETAILS = "kpiColumnDetails";

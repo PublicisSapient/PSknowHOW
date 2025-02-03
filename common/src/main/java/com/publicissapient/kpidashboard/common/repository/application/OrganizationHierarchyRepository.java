@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.common.repository.application;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
@@ -26,4 +27,6 @@ import com.publicissapient.kpidashboard.common.model.application.OrganizationHie
 @Repository
 public interface OrganizationHierarchyRepository extends MongoRepository<OrganizationHierarchy, ObjectId> {
 
+    @Query(value = "{ 'nodeId': ?0 }", delete = true)
+    void deleteByNodeId(String nodeId);
 }

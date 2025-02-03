@@ -417,9 +417,6 @@ public class CommonServiceImplTest {
 		List<Authentication> authentications = new ArrayList<>();
 		authentications.add(authentication);
 
-		when(projectBasicConfigRepository.findById(ArgumentMatchers.any()))
-				.thenReturn(Optional.of(projectBasicConfigObj()));
-
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN))).thenReturn(users);
 		commonService.getProjectAdminEmailAddressBasedProjectId("5ddf69f6a592816aa30c4fbe");
 
