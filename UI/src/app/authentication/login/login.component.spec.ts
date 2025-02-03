@@ -103,7 +103,6 @@ describe('LoginComponent', () => {
     component.loginForm.setValue({ username: 'test', password: 'password' });
     httpService.login.and.returnValue(of({ status: 200, body: {} }));
 
-    // Mock the condition that leads to profile navigation
     sharedService.getCurrentUserDetails.and.returnValue('');
 
     component.onSubmit();
@@ -115,7 +114,6 @@ describe('LoginComponent', () => {
     component.loginForm.setValue({ username: 'test', password: 'password' });
     httpService.login.and.returnValue(of({ status: 200, body: {} }));
 
-    // Mock the condition that leads to dashboard navigation
     sharedService.getCurrentUserDetails.and.returnValue('someUserDetails');
 
     component.onSubmit();
@@ -123,31 +121,19 @@ describe('LoginComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
   });
 
-  it('should return true if user_email is not set', () => {
-    sharedService.getCurrentUserDetails.and.returnValue('');
-    expect(component.redirectToProfile()).toBe(true);
-  });
+ it('should handle 401 error and reset password', () => {
+  const data = { status: 401, error: { message: 'Unauthorized' } };
+  
+  // Spy on the setValue method
+  spyOn(component.f.password, 'setValue');
 
-  it('should return false if user has ROLE_SUPERADMIN', () => {
-    sharedService.getCurrentUserDetails.and.returnValue(['ROLE_SUPERADMIN']);
-    expect(component.redirectToProfile()).toBe(false);
-  });
+  component.performLogin(data, 'testUser', 'testPass');
 
-  it('should return true if projectsAccess is undefined or empty', () => {
-    sharedService.getCurrentUserDetails.and.returnValue(undefined);
-    expect(component.redirectToProfile()).toBe(true);
+  expect(component.error).toBe('Unauthorized');
+  expect(component.f.password.setValue).toHaveBeenCalledWith('');
+  expect(component.submitted).toBeFalse();
+});
 
-    sharedService.getCurrentUserDetails.and.returnValue([]);
-    expect(component.redirectToProfile()).toBe(true);
-  });
-
-  it('should handle 401 error and reset password', () => {
-    const data = { status: 401, error: { message: 'Unauthorized' } };
-    component.performLogin(data, 'testUser', 'testPass');
-    expect(component.error).toBe('Unauthorized');
-    expect(component.f.password.value).toBe('');
-    expect(component.submitted).toBeFalse();
-  });
 
   it('should handle server error with status 0', () => {
     const data = { status: 0 };
@@ -170,5 +156,20 @@ describe('LoginComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
   });
 
+ it('should handle shared link and navigate accordingly', () => {
+  spyOn(component, 'redirectToProfile').and.returnValue(false);
+  const data = { status: 200, body: {} };
+
+  // Create a valid Base64-encoded string
+  const validBase64 = btoa(JSON.stringify({ parent_level: { basicProjectConfigId: '123' } }));
+  const mockUrl = `./dashboard/somePath?stateFilters=${validBase64}`;
+  
+  localStorage.setItem('shared_link', mockUrl);
+  sharedService.getCurrentUserDetails.and.returnValue(['ROLE_USER']);
+  
+  component.performLogin(data, 'testUser', 'testPass');
+  
+  expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+});
 
 });

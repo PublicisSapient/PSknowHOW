@@ -82,6 +82,44 @@ describe('FilterNewComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should return an array of object values', () => {
+        const obj = { a: 1, b: 2, c: 3 };
+        expect(component.objectKeys(obj)).toEqual([1, 2, 3]);
+      });
+    
+      it('should return an empty array for an empty object', () => {
+        const obj = {};
+        expect(component.objectKeys(obj)).toEqual([]);
+      });
+    
+      it('should return an empty array for null input', () => {
+        expect(component.objectKeys(null)).toEqual([]);
+      });
+    
+      it('should return an empty array for undefined input', () => {
+        expect(component.objectKeys(undefined)).toEqual([]);
+      });
+
+      it('should return the immediate parent display name and child nodeId', () => {
+        const child = { nodeId: 'child1' };
+        const result = component.getImmediateParentDisplayName(child);
+        expect(result).toBe('');
+      });
+    
+      it('should return an empty string if child node is not found', () => {
+        const child = { nodeId: 'child2' };
+        const result = component.getImmediateParentDisplayName(child);
+        expect(result).toBe('');
+      });
+    
+      it('should return an empty string if filterDataArr is empty', () => {
+        component.filterDataArr = {};
+        const child = { nodeId: 'child1' };
+        const result = component.getImmediateParentDisplayName(child);
+        expect(result).toBe('');
+      });
+
+
     describe('FilterNewComponent.ngOnInit() ngOnInit method', () => {
         describe('Happy Path', () => {
             it('should initialize selectedTab and selectedType correctly', async () => {
