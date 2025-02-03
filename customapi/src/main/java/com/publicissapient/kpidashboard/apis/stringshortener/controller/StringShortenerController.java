@@ -18,16 +18,16 @@
 
 package com.publicissapient.kpidashboard.apis.stringshortener.controller;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.stringshortener.dto.StringShortenerDTO;
 import com.publicissapient.kpidashboard.apis.stringshortener.model.StringShortener;
 import com.publicissapient.kpidashboard.apis.stringshortener.service.StringShortenerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -38,11 +38,6 @@ public class StringShortenerController {
     private static final String SHORT_STRING_RESPONSE_MESSAGE = "Successfully Created Short String";
     private static final String FAILURE_RESPONSE_MESSAGE = "Invalid URL.";
     private static final String FETCH_SUCCESS_MESSAGE = "Successfully fetched";
-    private static final String MESSAGE = "message";
-    private static final String DATA = "data";
-    private static final String CODE = "code";
-    private static final int SUCCESS_RESPONSE_CODE = 200;
-    private static final int FAILURE_RESPONSE_CODE = 404;
 
 
     @Autowired
@@ -51,33 +46,32 @@ public class StringShortenerController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<Map<String, Object>> createShortString(@RequestBody StringShortenerDTO stringShortenerDTO) {
+    public ResponseEntity<ServiceResponse> createShortString(@RequestBody StringShortenerDTO stringShortenerDTO) {
+        ServiceResponse response = null;
         StringShortener stringShortener = stringShortenerService.createShortString(stringShortenerDTO);
         final ModelMapper modelMapper = new ModelMapper();
         final StringShortenerDTO responseDTO = modelMapper.map(stringShortener, StringShortenerDTO.class);
-        Map<String, Object> response = new HashMap<>();
-        response.put(CODE, SUCCESS_RESPONSE_CODE);
-        response.put(DATA, responseDTO);
-        response.put(MESSAGE, SHORT_STRING_RESPONSE_MESSAGE);
-        return ResponseEntity.ok(response);
+        if (responseDTO != null && !responseDTO.toString().isEmpty()) {
+            response = new ServiceResponse(true, SHORT_STRING_RESPONSE_MESSAGE, responseDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } else {
+            response = new ServiceResponse(false, FAILURE_RESPONSE_MESSAGE, null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
 
     @GetMapping("/longString")
-    public ResponseEntity<Map<String, Object>> getLongString(@RequestParam String kpiFilters, @RequestParam String stateFilters) {
+    public ResponseEntity<ServiceResponse> getLongString(@RequestParam String kpiFilters, @RequestParam String stateFilters) {
+        ServiceResponse response = null;
         Optional<StringShortener> stringShortener = stringShortenerService.getLongString(kpiFilters, stateFilters);
-        Map<String, Object> response = new HashMap<>();
         if (stringShortener.isPresent()) {
             final ModelMapper modelMapper = new ModelMapper();
             final StringShortenerDTO responseDTO = modelMapper.map(stringShortener.get(), StringShortenerDTO.class);
-            response.put(CODE, SUCCESS_RESPONSE_CODE);
-            response.put(DATA, responseDTO);
-            response.put(MESSAGE, FETCH_SUCCESS_MESSAGE);
-            return ResponseEntity.ok(response);
+            response = new ServiceResponse(true, FETCH_SUCCESS_MESSAGE, responseDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } else {
-            response.put(CODE, FAILURE_RESPONSE_CODE);
-            response.put(DATA, null);
-            response.put(MESSAGE, FAILURE_RESPONSE_MESSAGE);
-            return ResponseEntity.status(FAILURE_RESPONSE_CODE).body(response);
+            response = new ServiceResponse(false, FAILURE_RESPONSE_MESSAGE, null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 }
