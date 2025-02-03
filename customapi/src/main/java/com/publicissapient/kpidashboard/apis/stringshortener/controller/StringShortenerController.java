@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -33,6 +35,15 @@ import java.util.Optional;
 public class StringShortenerController {
 
     private final StringShortenerService stringShortenerService;
+    private static final String SHORT_STRING_RESPONSE_MESSAGE = "Successfully Created Short String";
+    private static final String FAILURE_RESPONSE_MESSAGE = "Invalid URL.";
+    private static final String FETCH_SUCCESS_MESSAGE = "Successfully fetched";
+    private static final String MESSAGE = "message";
+    private static final String DATA = "data";
+    private static final String CODE = "code";
+    private static final int SUCCESS_RESPONSE_CODE = 200;
+    private static final int FAILURE_RESPONSE_CODE = 404;
+
 
     @Autowired
     private StringShortenerController(StringShortenerService stringShortenerService) {
@@ -40,21 +51,33 @@ public class StringShortenerController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<StringShortenerDTO> createShortString(@RequestBody StringShortenerDTO stringShortenerDTO) {
+    public ResponseEntity<Map<String, Object>> createShortString(@RequestBody StringShortenerDTO stringShortenerDTO) {
         StringShortener stringShortener = stringShortenerService.createShortString(stringShortenerDTO);
         final ModelMapper modelMapper = new ModelMapper();
         final StringShortenerDTO responseDTO = modelMapper.map(stringShortener, StringShortenerDTO.class);
-        return ResponseEntity.ok(responseDTO);
+        Map<String, Object> response = new HashMap<>();
+        response.put(CODE, SUCCESS_RESPONSE_CODE);
+        response.put(DATA, responseDTO);
+        response.put(MESSAGE, SHORT_STRING_RESPONSE_MESSAGE);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/longString")
-    public ResponseEntity<StringShortenerDTO> getLongString(@RequestParam String kpiFilters,@RequestParam String stateFilters) {
-        Optional<StringShortener> stringShortener = stringShortenerService.getLongString(kpiFilters,stateFilters);
+    public ResponseEntity<Map<String, Object>> getLongString(@RequestParam String kpiFilters, @RequestParam String stateFilters) {
+        Optional<StringShortener> stringShortener = stringShortenerService.getLongString(kpiFilters, stateFilters);
+        Map<String, Object> response = new HashMap<>();
         if (stringShortener.isPresent()) {
             final ModelMapper modelMapper = new ModelMapper();
             final StringShortenerDTO responseDTO = modelMapper.map(stringShortener.get(), StringShortenerDTO.class);
-            return ResponseEntity.ok(responseDTO);
+            response.put(CODE, SUCCESS_RESPONSE_CODE);
+            response.put(DATA, responseDTO);
+            response.put(MESSAGE, FETCH_SUCCESS_MESSAGE);
+            return ResponseEntity.ok(response);
+        } else {
+            response.put(CODE, FAILURE_RESPONSE_CODE);
+            response.put(DATA, null);
+            response.put(MESSAGE, FAILURE_RESPONSE_MESSAGE);
+            return ResponseEntity.status(FAILURE_RESPONSE_CODE).body(response);
         }
-        return ResponseEntity.notFound().build();
     }
 }
