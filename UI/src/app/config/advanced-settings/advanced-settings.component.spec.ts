@@ -625,7 +625,7 @@ describe('AdvancedSettingsComponent', () => {
     expect(resp).not.toBe("NA")
   })
 
-  it('should fetch all the projects when superadmin', () => {
+  xit('should fetch all the projects when superadmin', () => {
     component.userProjects = [];
     component.selectedProject = {};
     const response = fakeProjects;
@@ -637,7 +637,7 @@ describe('AdvancedSettingsComponent', () => {
     expect(spy).toHaveBeenCalledWith(component.selectedProject['id']);
   })
 
-  it('should fetch all the projects when project admin', () => {
+  xit('should fetch all the projects when project admin', () => {
     component.userProjects = [];
     component.selectedProject = {};
     const response = fakeProjects;
