@@ -1,0 +1,11 @@
+<div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
+    <ng-container *ngFor="let kpi of chartData; let i = index;">
+        <div class="{{ getkpiwidth(kpi.kpiDetail?.kpiWidth) }}"
+            [ngStyle]="{'height': kpi.kpiDetail?.kpiHeight === 100 ? '414px' : (kpi.kpiDetail?.kpiHeight === 50 ? '257px' : '414px') }">
+
+            <app-report-kpi-card [currentChartData]="kpi.chartData" [kpiDataStatusCode]="kpi.kpiDataStatusCode"
+                [kpiData]="kpi.kpiDetail" [chartType]="kpi.chartType">
+            </app-report-kpi-card>
+        </div>
+    </ng-container>
+</div>

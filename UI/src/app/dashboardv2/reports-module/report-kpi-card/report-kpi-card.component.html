@@ -1,0 +1,222 @@
+<div class="kpi-card-container-v2">
+    <div class="kpi-card-header">
+        <div class="p-d-flex p-jc-between p-ai-center">
+            <div class="p-d-flex p-ai-center">
+                <div>
+                    <h3 class="p-my-0">{{ kpiData?.kpiName }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kpi-card-body">
+
+        <!-- <div *ngIf="kpiData?.chartType === 'stacked-bar-chart' ||  kpiData?.chartType ===  'stacked-bar'"
+            class="p-pr-5 p-pl-5 p-pt-5 p-col-6">
+            <div class="w-100">{{ cardData.dataGroup.summary.name }}</div>
+            <h3 class="p-my-0">{{showCummalative()}}</h3>
+        </div> -->
+        <div class="p-d-flex" style="height:300px;">
+            <div class="{{ kpiData?.chartType === 'bar-chart' ? 'p-col-8' : 'p-col-12' }}">
+                <div class="p-px-3 p-py-0"  style="height:300px;" [ngSwitch]="kpiData?.chartType">
+                    <app-stacked-bar-chart *ngSwitchCase="'stacked-bar-chart'" [data]="currentChartData"
+                        [width]="chartWidth" [height]="chartHeight"></app-stacked-bar-chart>
+                    <app-barchart [data]="currentChartData" [height]="chartHeight" [width]="chartWidth"
+                        *ngSwitchCase="'bar-chart'"></app-barchart>
+                    <app-stacked-bar *ngSwitchCase="'stacked-bar'" [data]="currentChartData" [width]="chartWidth"
+                        [height]="chartHeight"></app-stacked-bar>
+                    <app-semi-circle-donut-chart *ngSwitchCase="'semi-circle-donut-chart'" [value]="currentChartData"
+                        [max]="100" [width]="chartWidth" [height]="chartHeight"></app-semi-circle-donut-chart>
+                    <app-chart-with-filters [data]="chartData" *ngSwitchCase="'chartWithFilter'"
+                        [category]="chartData?.category" [kpiName]="kpiData?.kpiName">
+                    </app-chart-with-filters>
+                    <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'" [data]="currentChartData"
+                        [filters]="[]" [kpiId]="kpiData?.kpiId" [xCaption]="kpiData?.xaxisLabel"
+                        [yCaption]="kpiDetails?.yaxisLabel">
+                    </app-cumulative-line-chart>
+                    <app-tabular-kpi-v2 *ngSwitchCase="'table-v2'" [data]="currentChartData" [kpiId]="kpiData?.kpiId"
+                        [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
+                    <app-tabular-kpi-v2 *ngSwitchCase="'tableNonRawData'" [data]="currentChartData"
+                        [filters]="chartData?.filterGroup ? chartData?.filterGroup : []"></app-tabular-kpi-v2>
+                    <app-tabular-kpi-with-donut-chart *ngSwitchCase="'tabular-with-donut-chart'"
+                        [data]="currentChartData"></app-tabular-kpi-with-donut-chart>
+                    <app-grouped-bar-chart *ngSwitchCase="'grouped-bar-chart'"
+                        [filters]="chartData.categoryData.categoryGroup"
+                        [data]="currentChartData"></app-grouped-bar-chart>
+
+                    <ng-container *ngSwitchCase="'stackedColumn'">
+                        <ng-container>
+                            <app-groupstackchartv2 [legendType]="'normal'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                [yCaption]="checkYAxis(kpi)" [unit]="kpi?.kpiDetail?.kpiUnit"
+                                [data]="kpiChartData[kpi?.kpiId]" [kpiId]="kpi?.kpiId"
+                                [isAggregationStacks]="(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchartv2>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'line'">
+                        <ng-container>
+                            <app-multiline-v2 [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpi.chartData"
+                                [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                [selectedtype]="selectedtype" [viewType]="showChart"
+                                [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
+                                [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
+                            </app-multiline-v2>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'multipleline'">
+                        <ng-container *ngIf="checkIfZeroData(kpi)">
+                            <app-multiline-style-v2 [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpi.chartData"
+                                [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                [kpiId]="kpi?.kpiId">
+                            </app-multiline-style-v2>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+
+                    <ng-container *ngSwitchCase="'grouped_column_plus_line'">
+                        <ng-container *ngIf="checkIfZeroData(kpi)">
+                            <app-grouped-column-plus-line-chart-v2 [data]="kpi.chartData"
+                                [lineChart]="kpi?.kpiDetail?.lineChart" [isXaxisGroup]="kpi?.kpiDetail?.isXaxisGroup"
+                                [unit]="kpi?.kpiDetail?.kpiUnit" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                                [yCaption]="kpi?.kpiDetail?.yaxisLabel" [barLegend]="kpi?.kpiDetail?.barLegend"
+                                [lineLegend]="kpi?.kpiDetail?.lineLegend"
+                                [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
+                                [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
+                            </app-grouped-column-plus-line-chart-v2>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'bar-with-y-axis-group'">
+                        <ng-container>
+                            <app-bar-with-y-axis-group [data]="kpi.chartData" [lineChart]="true"
+                                [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                [color]="chartColorList[kpi?.kpiId]" [barLegend]="kpi?.kpiDetail?.barLegend"
+                                [lineLegend]="kpi?.kpiDetail?.lineLegend" [selectedtype]="selectedtype"
+                                [viewType]="showChart" [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
+                                [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
+                                [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder">
+                            </app-bar-with-y-axis-group>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'CumulativeMultilineChart'">
+                        <ng-container>
+                            <app-group-bar-chart [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="checkYAxis(kpi)"
+                                [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpi.chartData"
+                                [releaseEndDate]="releaseEndDate">
+                            </app-group-bar-chart>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
+                        <ng-container>
+                            <app-horizontal-percent-bar-chartv2 [kpiId]="kpi?.kpiId"
+                                [kpiWidth]="kpi?.kpiDetail?.kpiWidth" [data]="kpi.chartData">
+                            </app-horizontal-percent-bar-chartv2>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'pieChart'">
+                        <ng-container>
+                            <app-piechart [data]="kpi.chartData"></app-piechart>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi }">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'chartWithFilter'">
+                        <ng-container>
+                            <ng-container>
+                                <app-chart-with-filters [data]="kpi.chartData.data" [kpiId]="kpi?.kpiId"
+                                    [kpiName]="kpi?.kpiDetail.kpiName">
+                                </app-chart-with-filters>
+                            </ng-container>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+
+                    <ng-container *ngSwitchCase="'stacked-area'">
+                        <ng-container *ngIf="checkIfZeroData(kpi)">
+                            <app-stacked-area-chart [kpiId]="kpi?.kpiId"
+                                [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
+                        </ng-container>
+                        <ng-container *ngIf="!checkIfZeroData(kpi)">
+                            <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi }">
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+
+
+                    <app-multiline-v2 *ngSwitchDefault [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpi.chartData"
+                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                        [name]="kpi?.kpiDetail?.kpiName" [kpiId]="kpi?.kpiId"
+                        [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG"
+                        [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
+                    </app-multiline-v2>
+                </div>
+            </div>
+            <!-- <div class="p-pr-5 p-pl-5 p-text-center" *ngIf="kpiData?.chartType ===  'bar-chart'">
+                <div class="p-col-12" *ngFor="let dataGroup of cardData.dataGroup.dataGroup2">
+                    <p>{{dataGroup.name}}</p>
+                    <h3>{{convertToHoursIfTime(calculateValue(copyCardData.issueData,dataGroup.key),dataGroup.unit)}}
+                    </h3>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    <div *ngIf="kpiData?.chartType === 'stacked-bar-chart' ||  kpiData?.chartType ===  'stacked-bar'"
+        class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
+        <ul class="legend">
+            <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData">
+                <span [ngStyle]="{ 'background-color': footer.color }"></span>{{ footer.category }}
+            </li>
+        </ul>
+    </div>
+
+    <div *ngIf="kpiData?.chartType === 'grouped-bar-chart'"
+        class="kpi-card-footer justify-content-center p-pr-5 p-pl-5">
+        <ul class="legend" style="margin-top: -20px;">
+            <li class="p-px-3 p-py-0" *ngFor="let footer of currentChartData?.chartData?.data;let i = index;">
+                <span [ngStyle]="{ 'background-color': footer['color' + (i+1)] }"></span>{{ footer['category' +
+                (i+1)]
+                }}
+            </li>
+        </ul>
+    </div>
+</div>

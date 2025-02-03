@@ -10,6 +10,7 @@ import { Menu } from 'primeng/menu';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CommentsV2Component } from 'src/app/component/comments-v2/comments-v2.component';
 import { KpiHelperService } from 'src/app/services/kpi-helper.service';
+import { MessageService } from 'primeng/api';
 import * as d3 from 'd3';
 import { Subject } from 'rxjs';
 
@@ -94,7 +95,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
 
   constructor(public service: SharedService, private http: HttpService, private authService: GetAuthorizationService,
     private ga: GoogleAnalyticsService, private renderer: Renderer2, public dialogService: DialogService, private kpiHelperService: KpiHelperService,
-    private helperService: HelperService) { }
+    private helperService: HelperService, private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
@@ -180,6 +181,13 @@ export class KpiCardV2Component implements OnInit, OnChanges {
           this.showComments = true;
           this.openCommentModal();
         },
+      },
+      {
+        label: 'Add to Report',
+        icon: 'pi pi-briefcase',
+        command: ($event) => {
+          this.addToReport();
+        },
       }
     ];
   }
@@ -205,6 +213,8 @@ export class KpiCardV2Component implements OnInit, OnChanges {
         } else if (event.comment) {
           this.showComments = true;
           this.openCommentModal();
+        } else if(event.report) {
+          this.addToReport();
         }
   }
 
@@ -755,5 +765,35 @@ onFilterChange(event) {
  */
   checkFilterPresence(filterData) {
     return filterData?.filterGroup;
+  }
+
+  addToReport() {
+    let reportObj = { 
+      kpiId: this.kpiData.kpiId,
+      chartData: this.currentChartData.chartData,
+      kpiDetail: this.kpiData.kpiDetail,
+      kpiDataStatusCode: this.kpiDataStatusCode,
+      chartType: this.kpiData.kpiDetail.chartType,
+    };
+
+    let storedReportData = localStorage.getItem('reportData');
+    if(!storedReportData) {
+      storedReportData = JSON.stringify([reportObj]);
+      localStorage.setItem('reportData', storedReportData);
+      this.messageService.add({ severity: 'success', summary: 'KPI added to default report' });
+    } else {
+      let parsedData = JSON.parse(storedReportData);
+      let kpiIndex = parsedData.findIndex(x => x.kpiId === reportObj.kpiId);
+      if(kpiIndex === -1) {
+        parsedData.push(reportObj);
+        localStorage.setItem('reportData', JSON.stringify(parsedData));
+        this.messageService.add({ severity: 'success', summary: 'KPI added to default report' });
+      } else {
+        parsedData = parsedData.filter(x => x.kpiId !== reportObj.kpiId);
+        parsedData.push(reportObj);
+        localStorage.setItem('reportData', JSON.stringify(parsedData));
+        this.messageService.add({ severity: 'warn', summary: 'KPI updated and added to default report' });
+      }
+    }
   }
 }

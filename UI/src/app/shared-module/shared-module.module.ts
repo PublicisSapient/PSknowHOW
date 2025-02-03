@@ -22,6 +22,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { ProjectFilterComponent } from './project-filter/project-filter.component';
 import { NamePipePipe } from './name-pipe.pipe';
@@ -49,6 +50,23 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
 
+import { StackedBarChartComponent } from 'src/app/component/stacked-bar-chart/stacked-bar-chart.component';
+import { PsKpiCardHeaderComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-header/ps-kpi-card-header.component';
+import { PsKpiCardFilterComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-filter/ps-kpi-card-filter.component';
+import { PsKpiCardChartRendererComponent } from 'src/app/component/kpi-card-v3/ps-kpi-card-chart-renderer/ps-kpi-card-chart-renderer.component';
+import { StackedBarComponent } from 'src/app/component/stacked-bar/stacked-bar.component';
+import { SemiCircleDonutChartComponent } from 'src/app/component/semi-circle-donut-chart/semi-circle-donut-chart.component';
+import { TabularKpiV2Component } from 'src/app/component/tabular-kpi-v2/tabular-kpi-v2.component';
+import { GroupedBarChartComponent } from 'src/app/component/grouped-bar-chart/grouped-bar-chart.component';
+import { TabularKpiWithDonutChartComponent } from 'src/app/component/tabular-kpi-with-donut-chart/tabular-kpi-with-donut-chart.component';
+import { BarchartComponent } from 'src/app/component/barchart/barchart.component';
+import { KpiHelperService } from '../services/kpi-helper.service';
+import { TabMenuModule } from 'primeng/tabmenu';
+import { MenuModule } from 'primeng/menu';
+import { ChartWithFiltersComponent } from '../component/chart-with-filters/chart-with-filters.component';
+import { KpiAdditionalFilterComponent } from '../component/kpi-additional-filter/kpi-additional-filter.component';
+
+
 @NgModule({
   imports: [
     CommonModule,
@@ -71,7 +89,10 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     InputSwitchModule,
     CarouselModule,
     InputNumberModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    SelectButtonModule,
+    MenuModule,
+    TabMenuModule
   ],
   exports: [
     NgSelectModule,
@@ -85,7 +106,17 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     FeatureFlagDirective,
     CarouselModule,
     ConditionalInputComponent,
-    IsoDateFormatPipe
+    IsoDateFormatPipe,
+    StackedBarChartComponent,
+    PsKpiCardHeaderComponent,
+    PsKpiCardFilterComponent,
+    PsKpiCardChartRendererComponent,
+    StackedBarComponent,
+    SemiCircleDonutChartComponent,
+    TabularKpiV2Component,
+    GroupedBarChartComponent,
+    TabularKpiWithDonutChartComponent,
+    BarchartComponent
   ],
   declarations: [
     ProjectFilterComponent,
@@ -98,8 +129,21 @@ import { IsoDateFormatPipe } from './pipes/iso-date-format.pipe';
     AdditionalFilterFieldComponent,
     FeatureFlagDirective,
     ConditionalInputComponent,
-    IsoDateFormatPipe
+    IsoDateFormatPipe,
+    StackedBarChartComponent,
+    PsKpiCardHeaderComponent,
+    PsKpiCardFilterComponent,
+    PsKpiCardChartRendererComponent,
+    StackedBarComponent,
+    SemiCircleDonutChartComponent,
+    TabularKpiV2Component,
+    GroupedBarChartComponent,
+    TabularKpiWithDonutChartComponent,
+    BarchartComponent,
+    ChartWithFiltersComponent,
+    KpiAdditionalFilterComponent,
+
   ],
-  providers: [ConfirmationService]
+  providers: [ConfirmationService, KpiHelperService]
 })
 export class SharedModuleModule { }
