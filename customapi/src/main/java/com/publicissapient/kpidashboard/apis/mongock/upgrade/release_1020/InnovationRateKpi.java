@@ -24,7 +24,6 @@ import io.mongock.api.annotations.RollbackExecution;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @ChangeUnit(id = "innovation_rate_kpi", order = "10203", author = "kunkambl", systemVersion = "10.2.0")

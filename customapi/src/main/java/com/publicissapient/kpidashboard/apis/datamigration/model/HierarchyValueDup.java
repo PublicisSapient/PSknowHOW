@@ -36,6 +36,7 @@ public class HierarchyValueDup {
 	private HierarchyLevel hierarchyLevel;
 	private String value;
 	private String customizedValue;
+	private String orgHierarchyNodeId;
 
 	public HierarchyValueDup(HierarchyLevel hierarchyLevel, String value) {
 		this.hierarchyLevel = hierarchyLevel;

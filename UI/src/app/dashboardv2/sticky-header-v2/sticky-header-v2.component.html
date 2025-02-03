@@ -7,10 +7,10 @@
     <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
       <li class="selectedfilter" *ngFor="let item of objectKeys(colorObj); let i = index;">
         <div class="selected-node" style="display: flex;flex-wrap: nowrap;">
-          <div class="selected-node-label p-pl-0" style="text-wrap: nowrap;" [title]="colorObj[item]?.nodeName">
+          <div class="selected-node-label p-pl-0" style="text-wrap: nowrap;" [title]="colorObj[item]?.nodeDisplayName">
             <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"></span>
-            <span class="p-l-1">{{colorObj[item]?.labelName | uppercase}}: {{ colorObj[item]?.nodeName?.length<= 20 ?
-              colorObj[item]?.nodeName : colorObj[item]?.nodeName?.slice(0,20)+'...'}}</span>
+            <span class="p-l-1">{{colorObj[item]?.labelName | uppercase}}: {{ colorObj[item]?.nodeDisplayName?.length<= 20 ?
+              colorObj[item]?.nodeDisplayName : colorObj[item]?.nodeDisplayName?.slice(0,20)+'...'}}</span>
           </div>
         </div>
       </li>

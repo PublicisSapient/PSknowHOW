@@ -19,7 +19,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -38,6 +37,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 public abstract class ToolsKPIService<R, S> {
 
@@ -1222,21 +1222,29 @@ public abstract class ToolsKPIService<R, S> {
 		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
 				|| labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
 
-			Optional<String> projectId = extractProjectId(selectIds.iterator().next());
-			projectId.ifPresent(id -> {
-				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(new ObjectId(id));
-				if (fieldMapping != null) {
-					kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
-				}
-			});
+			Optional<String> projectId = extractProjectId(selectIds.iterator().next() , labelName);
+			Map<String, ProjectBasicConfig> basicConfigMap = (Map<String, ProjectBasicConfig>) cacheService
+					.cacheProjectConfigMapData();
+
+			basicConfigMap.values().stream().filter(
+					projectBasicConfig -> projectBasicConfig.getProjectNodeId().equalsIgnoreCase(projectId.orElse("")))
+					.findFirst().ifPresent(basicConfig -> {
+						FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicConfig.getId());
+						if (fieldMapping != null) {
+							kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
+						}
+					});
 		}
 	}
-	private Optional<String> extractProjectId(String input) {
-		int lastUnderscoreIndex = input.lastIndexOf("_");
-		return lastUnderscoreIndex != -1
-				? Optional.of(input.substring(lastUnderscoreIndex + 1))
-				: Optional.empty();
+
+	private Optional<String> extractProjectId(String input, String labelName) {
+		if (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
+			int lastUnderscoreIndex = input.lastIndexOf("_");
+			return lastUnderscoreIndex != -1 ? Optional.of(input.substring(lastUnderscoreIndex + 1)) : Optional.empty();
+		} else if (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+			return StringUtils.isNotEmpty(input) ? Optional.ofNullable(input) : Optional.empty();
+		}
+		return Optional.empty();
 	}
 	/**
 	 *

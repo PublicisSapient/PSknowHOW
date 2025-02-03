@@ -404,18 +404,18 @@ export class HelperService {
   }*/
 
 
-  sortAlphabetically(objArray) {
-    if (objArray && objArray.length > 1) {
-      objArray.sort((a, b) => {
-        const aName = a.nodeName || a.data || a.date || a;
-        const bName = b.nodeName || b.data || b.date || b;
-        if (typeof aName === 'string' && typeof bName === 'string') {
-          return aName.localeCompare(bName);
+    sortAlphabetically(objArray) {
+        if (objArray && objArray.length > 1) {
+            objArray.sort((a, b) => {
+                const aName = a.nodeDisplayName || a.nodeName || a.data || a.date || a;
+                const bName = b.nodeDisplayName || b.nodeName || b.data || b.date || b;
+                if (typeof aName === 'string' && typeof bName === 'string') {
+                    return aName.localeCompare(bName);
+                }
+            });
         }
-      });
+        return objArray;
     }
-    return objArray;
-  }
 
   sortByField(objArray, propArr): any {
     objArray.sort((a, b) => {

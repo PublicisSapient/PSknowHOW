@@ -19,8 +19,10 @@
 package com.publicissapient.kpidashboard.common.repository.excel;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
@@ -41,4 +43,7 @@ public interface KanbanCapacityRepository extends CrudRepository<KanbanCapacity,
 	 *            basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
+
+	@Query(value = "{ 'basicProjectConfigId': { $in: ?0 } }", fields = "{ '_id': 1 , 'basicProjectConfigId':1 }")
+	List<KanbanCapacity> findByBasicProjectConfigIdIn(Set<ObjectId> basicProjectConfigId);
 }

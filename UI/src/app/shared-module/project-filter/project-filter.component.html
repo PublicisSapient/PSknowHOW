@@ -37,8 +37,8 @@
           </div>
         </ng-template>
         <ng-template let-hierarchy pTemplate="item">
-          <div class="option" (click)="filterData($event,field.hierarchyLevel.hierarchyLevelId, hierarchy.code)">
-            {{hierarchy.code}}
+          <div class="option" (click)="filterData($event,field.hierarchyLevel.hierarchyLevelId, hierarchy.code, hierarchy.name)">
+            {{hierarchy.name}}
           </div>
         </ng-template>
       </p-multiSelect>

@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,6 +97,11 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	@Autowired
+	private OrganizationHierarchyService organizationHierarchyService;
+
+	@Autowired
+	private ProjectHierarchyService projectHierarchyService;
 
 	private static void getLevelIds(boolean flag, List<String> levelList, List<HierarchyLevel> accountHierarchyList) {
 		for (HierarchyLevel hierarchyLevel : accountHierarchyList) {
@@ -117,7 +124,8 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	public void clean(String projectToolConfigId) {
 
 		ProjectToolConfig tool = projectToolConfigRepository.findById(projectToolConfigId);
-		deleteJiraIssuesAndHistory(tool);
+		ProjectBasicConfig projectBasicConfig = getProjectBasicConfig(tool.getBasicProjectConfigId().toString());
+		deleteJiraIssuesAndHistory(tool, projectBasicConfig);
 		deleteReleaseInfo(tool);
 		deleteSprintDetailsData(tool);
 		clearCache();
@@ -128,10 +136,9 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 		return projectBasicConfigService.getProjectBasicConfigs(basicProjectConfigId);
 	}
 
-	private void deleteJiraIssuesAndHistory(ProjectToolConfig tool) {
+	private void deleteJiraIssuesAndHistory(ProjectToolConfig tool, ProjectBasicConfig projectBasicConfig) {
 		if (tool != null) {
 			String basicProjectConfigId = tool.getBasicProjectConfigId().toHexString();
-			ProjectBasicConfig projectBasicConfig = getProjectBasicConfig(basicProjectConfigId);
 			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(basicProjectConfigId,
 					tool.getToolName());
 
@@ -155,6 +162,8 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 				accountHierarchyRepository.deleteByBasicProjectConfigIdAndLabelNameIn(tool.getBasicProjectConfigId(),
 						levelList);
 			}
+			organizationHierarchyService.deleteByNodeId(projectBasicConfig.getProjectNodeId());
+			projectHierarchyService.deleteByBasicProjectConfigId(projectBasicConfig.getId());
 		}
 	}
 

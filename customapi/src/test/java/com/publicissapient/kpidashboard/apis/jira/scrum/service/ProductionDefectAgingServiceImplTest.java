@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -112,6 +113,7 @@ public class ProductionDefectAgingServiceImplTest {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectConfig.setProjectName("Scrum Project");
+		projectConfig.setProjectNodeId("Scrum Project_6335368249794a18e8a4479f");
 		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
@@ -132,6 +134,8 @@ public class ProductionDefectAgingServiceImplTest {
 		totalIssueBacklogList = JiraIssueDataFactory.newInstance().getJiraIssues();
 		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(),
 				anyString(), anyString(), anyBoolean())).thenReturn(totalIssueBacklogList);
+
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 	}
 

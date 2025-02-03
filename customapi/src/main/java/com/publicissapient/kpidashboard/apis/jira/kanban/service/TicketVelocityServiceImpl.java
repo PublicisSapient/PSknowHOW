@@ -174,8 +174,7 @@ public class TicketVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 				for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
 					List<KanbanIssueCustomHistory> kanbanIssueCustomHistories = new ArrayList<>();
-					String projectName = projectNodeId.substring(0,
-							projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+					String projectName = node.getProjectFilter().getName();
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
 							kpiRequest.getDuration());
 

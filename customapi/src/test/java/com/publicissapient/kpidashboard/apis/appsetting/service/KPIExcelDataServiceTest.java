@@ -21,6 +21,8 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import java.util.stream.Stream;
 import com.publicissapient.kpidashboard.apis.kpicolumnconfig.service.KpiColumnConfigService;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfigDTO;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnDetails;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -313,6 +316,15 @@ public class KPIExcelDataServiceTest {
 		kpiColumnConfigDTO.setSaveFlag(false);
 		kpiColumnConfigDTO.setKpiId("kpi48");
 		KpiRequest kpiRequest = createKpiRequestForSprint("kpi48", "", "sprint");
+
+		List<ObjectId> objectId = new ArrayList<>();
+		objectId.add(new ObjectId("65118da7965fbb0d14bce23c"));
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("65118da7965fbb0d14bce23c"));
+		projectBasicConfig.setProjectNodeId("projectId");
+		when(configHelperService.getProjectHierarchyProjectConfigMap(anyList())).thenReturn(objectId);
+		when(configHelperService.getProjectConfig(anyString())).thenReturn(projectBasicConfig);
 		when(kpiColumnConfigService.getByKpiColumnConfig(Mockito.any(), Mockito.any())).thenReturn(kpiColumnConfigDTO);
 		when(jiraServiceKanbanR.process(Mockito.any())).thenReturn(totalKpiElementList);
 		kpiExcelDataService
@@ -328,6 +340,16 @@ public class KPIExcelDataServiceTest {
 		level = 1;
 		idList.add("THPRO_THPRO");
 		acceptedFilterList.add(Filters.PROJECT.name());
+
+		List<ObjectId> objectId = new ArrayList<>();
+		objectId.add(new ObjectId("65118da7965fbb0d14bce23c"));
+
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("65118da7965fbb0d14bce23c"));
+		projectBasicConfig.setProjectNodeId("projectId");
+		when(configHelperService.getProjectHierarchyProjectConfigMap(anyList())).thenReturn(objectId);
+		when(configHelperService.getProjectConfig(anyString())).thenReturn(projectBasicConfig);
+		when(configHelperService.getProjectNodeIdWiseProjectConfig(anyString())).thenReturn(projectBasicConfig);
 
 		List<KpiElement> validationKpiElementList = new ArrayList<>();
 		validationKpiElementList.add(validationJiraKpiElement);

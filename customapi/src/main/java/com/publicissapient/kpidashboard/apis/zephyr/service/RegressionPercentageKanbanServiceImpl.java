@@ -170,7 +170,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		leafNodeList.forEach(node -> {
 
 			String projectNodeId = node.getId();
-			String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+			String projectName = node.getProjectFilter().getName();
 			String basicProjectConfId = node.getProjectFilter().getBasicProjectConfigId().toString();
 
 			List<TestCaseDetails> totalTest = total.get(basicProjectConfId);

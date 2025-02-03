@@ -182,7 +182,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 		Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 
 		filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
-				filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+				filteredNode.getProjectHierarchy().getBasicProjectConfigId()));
 		return filteredNode;
 	}
 

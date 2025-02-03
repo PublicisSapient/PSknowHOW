@@ -335,6 +335,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	@Override
 	public void saveFieldMapping(FieldMapping fieldMapping) {
 		fieldMappingRepository.save(fieldMapping);
+		clearCache();
 	}
 
 	/**

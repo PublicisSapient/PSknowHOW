@@ -85,7 +85,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 			Constant.VULNERABILITIES, "vulnerabilities",
 			Constant.CODE_SMELL, "code smells"
 	);
-	
+
 	private static final String VIOLATION_TYPES = "RadioBtn";
 	private static final String JOB_FILTER = "Select a filter";
 	private static final String SEVERITY = "Severity";
@@ -268,11 +268,9 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 	 * @param projectWiseDataMap     A map to store the data counts for each project.
 	 * @param versionDate            A list to store the version dates.
 	 */
-	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<List<String>> violations, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
-
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseViolationsList = new ArrayList<>();
 		List<Map<String, Object>> globalSonarViolationsHoverMapBySeverity = new ArrayList<>();
 		List<Map<String, Object>> globalSonarViolationsHoverMapByType = new ArrayList<>();
@@ -293,7 +291,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 			Long sonarViolations = sonarViolationsHoverMapBySeverity.values().stream().map(Integer.class::cast)
 					.mapToLong(val -> val).sum();
 
-			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
+			String keyName = prepareSonarKeyName(projectName, sonarDetails.getName(), sonarDetails.getBranch());
 			String kpiGroup = keyName + "#" + SEVERITY;
 			DataCount dcObjSeverety = getDataCountObject(sonarViolations, sonarViolationsHoverMapBySeverity,
 					projectName, date, kpiGroup);

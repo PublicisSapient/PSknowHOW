@@ -308,7 +308,7 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 					String date = getRange(dateRange, kpiRequest);
 
 					populateProjectFilterWiseDataMap(openedIssueCountMap, closedIssueCountMap, projectFilterWiseDataMap,
-							node.getProjectFilter().getId(), date);
+							node, date);
 
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
@@ -343,9 +343,10 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 	}
 
 	private void populateProjectFilterWiseDataMap(Map<String, Long> openedIssueCountMap,
-			Map<String, Long> closedIssueCountMap, Map<String, List<DataCount>> projectFilterWiseDataMap,
-			String projectNodeId, String date) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+												  Map<String, Long> closedIssueCountMap, Map<String, List<DataCount>> projectFilterWiseDataMap,
+												  Node node, String date) {
+		String projectName = node.getProjectFilter().getName();
+		String projectNodeId= node.getProjectFilter().getId();
 
 		openedIssueCountMap.forEach((key, value) -> {
 			DataCount dcObj = getDataCountObject(value, closedIssueCountMap.getOrDefault(key, 0L), projectName, date,

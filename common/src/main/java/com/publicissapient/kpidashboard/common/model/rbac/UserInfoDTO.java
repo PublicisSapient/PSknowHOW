@@ -52,6 +52,6 @@ public class UserInfoDTO {
 	private String displayName;
 	private String createdOn;
 	private String emailAddress;
-	private List<ProjectsAccess> projectsAccess;
+	private List<ProjectsAccessDTO> projectsAccess;
 	private Map<String , Boolean> notificationEmail;
 }

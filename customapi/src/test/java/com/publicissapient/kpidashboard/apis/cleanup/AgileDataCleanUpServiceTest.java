@@ -23,6 +23,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -106,6 +108,13 @@ public class AgileDataCleanUpServiceTest {
 
 	@Mock
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
+	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
+
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
+
 
 	@Test
 	public void getToolCategory() {

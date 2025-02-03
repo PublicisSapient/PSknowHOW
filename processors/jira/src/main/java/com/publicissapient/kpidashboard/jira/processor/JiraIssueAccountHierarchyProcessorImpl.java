@@ -23,27 +23,27 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
@@ -61,10 +61,10 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 	private HierarchyLevelService hierarchyLevelService;
 
 	@Autowired
-	private AccountHierarchyRepository accountHierarchyRepository;
+	private ProjectHierarchyService projectHierarchyService;
 
 	@Override
-	public Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+	public Set<ProjectHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
 			Set<SprintDetails> sprintDetailsSet) {
 
 		log.info("Creating account_hierarchy for the project : {}", projectConfig.getProjectName());
@@ -80,37 +80,29 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 				.filter(x -> x.getLevel() > sprintHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
 				.collect(Collectors.toList());
 
-		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = accountHierarchyList.stream().collect(Collectors
-				.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p, (existingValue, newValue) -> existingValue));
-		Set<AccountHierarchy> setToSave = new HashSet<>();
-		if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
+		Set<ProjectHierarchy> setToSave = new HashSet<>();
+		if (projectConfig.getProjectBasicConfig().getProjectNodeId() != null
+				&& StringUtils.isNotBlank(jiraIssue.getProjectName())
+				&& StringUtils.isNotBlank(jiraIssue.getSprintName())
 				&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())
 				&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
+			// get all the hierarchies related to the selected project from project
+			// hierarchies collection
+			Map<String, List<ProjectHierarchy>> existingHierarchy = projectHierarchyService
+					.getProjectHierarchyMapByConfig(projectConfig.getBasicProjectConfigId().toString());
 
 			ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
 			Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
 					.filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(basicProjectConfigId))
-					.collect(Collectors.toMap(sprintDetails -> sprintDetails.getSprintID().split("_")[0],
-							sprintDetails -> sprintDetails));
-			AccountHierarchy projectData= null;
-			Optional<AccountHierarchy> first = accountHierarchyList.stream().filter(hierarchy -> hierarchy.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)).findFirst();
-			if(first.isPresent()){
-				projectData= first.get();
-			}
-
+					.collect(Collectors.toMap(SprintDetails::getOriginalSprintId, sprintDetails -> sprintDetails));
 
 			for (String sprintId : jiraIssue.getSprintIdList()) {
 				SprintDetails sprintDetails = sprintDetailsMap.get(sprintId);
-
 				if (sprintDetails != null) {
-
-					AccountHierarchy sprintHierarchy = createHierarchyForSprint(sprintDetails,
-							projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
-
+					ProjectHierarchy sprintHierarchy = createHierarchyForSprint(sprintDetails,
+							projectConfig.getProjectBasicConfig(), sprintHierarchyLevel);
 					setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
-
-					List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
+					List<ProjectHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
 							jiraIssue, sprintHierarchy, additionalFilterCategoryIds);
 					additionalFiltersHierarchies.forEach(accountHierarchy -> setToSaveAccountHierarchy(setToSave,
 							accountHierarchy, existingHierarchy));
@@ -118,74 +110,86 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 				}
 			}
 		}
-
 		return setToSave;
 	}
 
-	private void setToSaveAccountHierarchy(Set<AccountHierarchy> setToSave, AccountHierarchy accountHierarchy,
-			Map<Pair<String, String>, AccountHierarchy> existingHierarchy) {
-		if (StringUtils.isNotBlank(accountHierarchy.getParentId())) {
-			AccountHierarchy exHiery = existingHierarchy
-					.get(Pair.of(accountHierarchy.getNodeId(), accountHierarchy.getPath()));
-
-			if (null == exHiery) {
-				accountHierarchy.setCreatedDate(LocalDateTime.now());
-				setToSave.add(accountHierarchy);
+	private void setToSaveAccountHierarchy(Set<ProjectHierarchy> setToSave, ProjectHierarchy sprintHierarchy,
+			Map<String, List<ProjectHierarchy>> existingHierarchy) {
+		if (StringUtils.isNotBlank(sprintHierarchy.getParentId())) {
+			List<ProjectHierarchy> exHieryList = existingHierarchy.get(sprintHierarchy.getNodeId());
+			if (CollectionUtils.isEmpty(exHieryList)) {
+				sprintHierarchy.setCreatedDate(LocalDateTime.now());
+				setToSave.add(sprintHierarchy);
+			} else {
+				Map<String, ProjectHierarchy> exHiery = exHieryList.stream().collect(
+						Collectors.toMap(OrganizationHierarchy::getParentId, p -> p, (existing, newPair) -> existing));
+				ProjectHierarchy projectHierarchy = exHiery.get(sprintHierarchy.getParentId());
+				if (projectHierarchy == null) {
+					sprintHierarchy.setCreatedDate(LocalDateTime.now());
+					setToSave.add(sprintHierarchy);
+				} else if (!projectHierarchy.equals(sprintHierarchy)) {
+					projectHierarchy.setBeginDate(sprintHierarchy.getBeginDate());
+					projectHierarchy.setNodeName(sprintHierarchy.getNodeName());// sprint name changed
+					projectHierarchy.setEndDate(sprintHierarchy.getEndDate());
+					projectHierarchy.setSprintState(sprintHierarchy.getSprintState());
+					setToSave.add(projectHierarchy);
+				}
 			}
+
 		}
 	}
 
-	private AccountHierarchy createHierarchyForSprint(SprintDetails sprintDetails,
-			ProjectBasicConfig projectBasicConfig, AccountHierarchy projectHierarchy, HierarchyLevel hierarchyLevel) {
-		AccountHierarchy accountHierarchy = null;
+	private ProjectHierarchy createHierarchyForSprint(SprintDetails sprintDetails,
+			ProjectBasicConfig projectBasicConfig, HierarchyLevel hierarchyLevel) {
+		ProjectHierarchy projectHierachy = null;
 		try {
 
-			accountHierarchy = new AccountHierarchy();
-			accountHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
-			accountHierarchy.setIsDeleted(JiraConstants.FALSE);
-			accountHierarchy.setLabelName(hierarchyLevel.getHierarchyLevelId());
+			projectHierachy = new ProjectHierarchy();
+			projectHierachy.setBasicProjectConfigId(projectBasicConfig.getId());
+			projectHierachy.setHierarchyLevelId(hierarchyLevel.getHierarchyLevelId());
 			String sprintName = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintName");
 			String sprintId = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintID");
-			accountHierarchy.setNodeId(sprintId);
-			accountHierarchy
+			String state = (String) PropertyUtils.getSimpleProperty(sprintDetails, "state");
+			projectHierachy.setNodeId(sprintId);
+			// IF WANT TO CHANGE THE NAME
+			projectHierachy
 					.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
-
-			accountHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "startDate"));
-			accountHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "endDate"));
-			accountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
-					.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath()).toString());
-			accountHierarchy.setParentId(projectHierarchy.getNodeId());
+			projectHierachy.setNodeDisplayName(
+					sprintName + JiraConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectDisplayName());
+			projectHierachy.setSprintState(state);
+			projectHierachy.setBeginDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "startDate"));
+			projectHierachy.setEndDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "endDate"));
+			projectHierachy.setParentId(projectBasicConfig.getProjectNodeId());
 
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			log.error("Jira Processor Failed to get Account Hierarchy data {}", e);
 		}
-		return accountHierarchy;
+		return projectHierachy;
 	}
 
-	private List<AccountHierarchy> accountHierarchiesForAdditionalFilters(JiraIssue jiraIssue,
-			AccountHierarchy sprintHierarchy, List<String> additionalFilterCategoryIds) {
+	private List<ProjectHierarchy> accountHierarchiesForAdditionalFilters(JiraIssue jiraIssue,
+			ProjectHierarchy sprintHierarchy, List<String> additionalFilterCategoryIds) {
 
-		List<AccountHierarchy> accountHierarchies = new ArrayList<>();
+		List<ProjectHierarchy> projectHierarchyList = new ArrayList<>();
 		List<AdditionalFilter> additionalFilters = ListUtils.emptyIfNull(jiraIssue.getAdditionalFilters());
 
 		additionalFilters.forEach(additionalFilter -> {
 			if (additionalFilterCategoryIds.contains(additionalFilter.getFilterId())) {
 				String labelName = additionalFilter.getFilterId();
 				additionalFilter.getFilterValues().forEach(additionalFilterValue -> {
-					AccountHierarchy adFilterAccountHierarchy = new AccountHierarchy();
-					adFilterAccountHierarchy.setLabelName(labelName);
+					ProjectHierarchy adFilterAccountHierarchy = new ProjectHierarchy();
+					adFilterAccountHierarchy.setHierarchyLevelId(labelName);
 					adFilterAccountHierarchy.setNodeId(additionalFilterValue.getValueId());
 					adFilterAccountHierarchy.setNodeName(additionalFilterValue.getValue());
+					adFilterAccountHierarchy.setNodeDisplayName(additionalFilterValue.getValue());
 					adFilterAccountHierarchy.setParentId(sprintHierarchy.getNodeId());
-					adFilterAccountHierarchy.setPath(sprintHierarchy.getNodeId()
-							+ CommonConstant.ACC_HIERARCHY_PATH_SPLITTER + sprintHierarchy.getPath());
-					adFilterAccountHierarchy.setBasicProjectConfigId(new ObjectId(jiraIssue.getBasicProjectConfigId()));
-					accountHierarchies.add(adFilterAccountHierarchy);
+					adFilterAccountHierarchy.setBasicProjectConfigId(sprintHierarchy.getBasicProjectConfigId());
+					projectHierarchyList.add(adFilterAccountHierarchy);
 				});
 			}
 
 		});
 
-		return accountHierarchies;
+		return projectHierarchyList;
 	}
 }

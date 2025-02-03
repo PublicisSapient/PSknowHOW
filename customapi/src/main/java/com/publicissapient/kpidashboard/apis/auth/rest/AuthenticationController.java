@@ -38,6 +38,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -165,7 +166,7 @@ public class AuthenticationController {
      * @param request the request
      * @return the response entity
      */
-    @RequestMapping(value = "/updateUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/updateUser", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     // NOSONAR
     public ResponseEntity<String> updateUser(@Valid @RequestBody AuthenticationRequest request) {
 
@@ -193,7 +194,7 @@ public class AuthenticationController {
      * @throws IOException      the io exception
      * @throws ServletException the servlet exception
      */
-    @RequestMapping(value = "/changePassword", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/changePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     // NOSONAR
     public ResponseEntity<ServiceResponse> changePassword(HttpServletRequest httpServletRequest,
                                                           HttpServletResponse httpServletResponse, @Valid @RequestBody ChangePasswordRequest request)
@@ -232,7 +233,7 @@ public class AuthenticationController {
         }
     }
 
-	@RequestMapping(value = "/changePassword/central", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/changePassword/central", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	// NOSONAR
 	public ResponseEntity<ServiceResponse> changePasswordForCentralAuth(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, @Valid @RequestBody ChangePasswordRequest request) { // NOSONAR
@@ -298,7 +299,7 @@ public class AuthenticationController {
         return !(StringUtils.containsIgnoreCase(reqPassword, username));
     }
 
-    @RequestMapping(value = "/authdetails", method = GET)
+    @GetMapping(value = "/authdetails")
     public ResponseEntity<ServiceResponse> getAuthDetails(HttpServletRequest request, Authentication authentication) {
         JSONObject jsonObject = tokenAuthenticationService.getOrSaveUserByToken(request, authentication);
         if (jsonObject != null) {

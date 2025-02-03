@@ -396,6 +396,7 @@ public final class CommonUtils {
 		cacheManagerMap.put(CommonConstant.CACHE_BOARD_META_DATA_MAP, CommonConstant.CACHE_BOARD_META_DATA_MAP);
 		cacheManagerMap.put(CommonConstant.CACHE_TOOL_CONFIG_MAP, CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		cacheManagerMap.put(CommonConstant.CACHE_PROJECT_CONFIG_MAP, CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+		cacheManagerMap.put(CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP, CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
 
 		if (cacheManagerMap.containsKey(key)) {
 			return cacheManagerMap.get(key);

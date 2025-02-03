@@ -164,4 +164,7 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'typeName' : { $ne : ?1 } }", count = true)
 	long countByBasicProjectConfigIdAndExcludeTypeName(String basicProjectConfigId, String typeName);
+
+	@Query(value = "{ 'basicProjectConfigId': { $in: ?0 } }", fields = "{ '_id': 1 , 'basicProjectConfigId':1 }")
+	List<KanbanJiraIssue> findByBasicProjectConfigIdIn(List<String> basicProjectConfigIds);
 }

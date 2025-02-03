@@ -153,11 +153,10 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_TECH_DEBT.getColumns());
 	}
 
-	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
 		Map<String, Object> key = new HashMap<>();
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseDebtList = new ArrayList<>();
 		history.values().stream().forEach(sonarDetails -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
@@ -167,7 +166,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 			if (techDebtValue != -1l) {
 				// sqale index is in minutes in a 8 hr day so dividing it by 480
 				long techDebtValueInDays = Math.round(techDebtValue / 480.0);
-				String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
+				String keyName = prepareSonarKeyName(projectName, sonarDetails.getName(), sonarDetails.getBranch());
 				DataCount dcObj = getDataCountObject(techDebtValueInDays, new HashMap<>(), projectName, date);
 				projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 				projectList.add(keyName);

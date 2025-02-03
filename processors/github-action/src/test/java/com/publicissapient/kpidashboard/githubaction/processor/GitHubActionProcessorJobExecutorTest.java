@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.githubaction.processor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -129,7 +130,7 @@ public class GitHubActionProcessorJobExecutorTest {
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
 		Mockito.when(gitHubActionConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		doThrow(RestClientException.class).when(restTemplate).exchange(
 				ArgumentMatchers.anyString(), ArgumentMatchers.eq(HttpMethod.GET),
 				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
@@ -162,7 +163,7 @@ public class GitHubActionProcessorJobExecutorTest {
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		projectConfig.setSaveAssigneeDetails(false);
 		projectConfigList.add(projectConfig);
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 
 		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
 		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
@@ -242,7 +243,7 @@ public class GitHubActionProcessorJobExecutorTest {
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		projectConfig.setSaveAssigneeDetails(false);
 		projectConfigList.add(projectConfig);
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 
 		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
 		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));

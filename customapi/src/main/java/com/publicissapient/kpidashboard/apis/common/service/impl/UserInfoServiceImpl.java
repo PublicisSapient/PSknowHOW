@@ -28,9 +28,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
+import com.publicissapient.kpidashboard.apis.errors.APIKeyInvalidException;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccessDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -49,6 +55,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -58,7 +65,6 @@ import com.publicissapient.kpidashboard.apis.auth.exceptions.UserNotFoundExcepti
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
@@ -130,6 +136,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	private CookieUtil cookieUtil;
 	@Autowired
 	private UserTokenReopository userTokenReopository;
+	@Autowired
+	private OrganizationHierarchyService organizationHierarchyService;
 
 	final ModelMapper modelMapper = new ModelMapper();
 
@@ -152,7 +160,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public Collection<UserInfo> getUsers() {
+	public Collection<UserInfoDTO> getUsers() {
 		List<UserInfo> userInfoList = userInfoRepository.findAll();
 		List<String> userNames = userInfoList.stream().map(UserInfo::getUsername).toList();
 
@@ -177,7 +185,36 @@ public class UserInfoServiceImpl implements UserInfoService {
 		});
 		List<UserInfo> approvedUserList = Lists.newArrayList(userInfoList);
 		approvedUserList.removeAll(nonApprovedUserList);
-		return approvedUserList;
+		List<UserInfoDTO> userInfoDTOList;
+
+		// Map approvedUser objects to UserInfoDTO objects
+		userInfoDTOList = approvedUserList.stream().map(approvedUser -> modelMapper.map(approvedUser, UserInfoDTO.class))
+				.collect(Collectors.toList());
+
+		// Fetch all organization hierarchy and store it in a map for quick lookup
+		List<OrganizationHierarchy> organizationHierarchyList = organizationHierarchyService.findAll();
+		if (CollectionUtils.isEmpty(organizationHierarchyList)) {
+			log.error("No organization hierarchy found");
+		}
+		Map<String, String> organizationHierarchyMap = organizationHierarchyList.stream()
+				.collect(Collectors.toMap(OrganizationHierarchy::getNodeId, OrganizationHierarchy::getNodeDisplayName));
+
+		userInfoDTOList
+				.forEach(
+						userInfoDTO -> Optional.ofNullable(userInfoDTO.getProjectsAccess())
+								.ifPresent(projectsAccessList -> projectsAccessList.forEach(projectsAccess -> Optional
+										.ofNullable(projectsAccess.getAccessNodes())
+										.ifPresent(accessNodeList -> accessNodeList.forEach(accessNode -> Optional
+												.ofNullable(accessNode.getAccessItems())
+												.ifPresent(accessItemList -> accessItemList.forEach(accessItem -> {
+													String itemName = organizationHierarchyMap
+															.get(accessItem.getItemId());
+													if (itemName != null) {
+														accessItem.setItemName(itemName);
+													}
+												})))))));
+
+		return userInfoDTOList;
 	}
 
 	/**
@@ -196,13 +233,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public ServiceResponse getAllUserInfo() {
-		List<UserInfo> userInfoList = (List<UserInfo>) getUsers();
+		List<UserInfoDTO> userInfoList = (List<UserInfoDTO>) getUsers();
 
 		if (CollectionUtils.isEmpty(userInfoList)) {
 			log.info("Db has no userinfo");
 			return new ServiceResponse(true, "No userinfo in user_info collection", userInfoList);
 		}
-		userInfoList.sort(Comparator.comparing(UserInfo::getUsername));
+		userInfoList.sort(Comparator.comparing(UserInfoDTO::getUsername));
 		log.info("Successfully fetched all userinfo");
 		return new ServiceResponse(true, "Found all users info", userInfoList);
 	}
@@ -278,7 +315,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * @return true if valid
 	 */
 	public boolean hasRoleSuperadmin(UserInfoDTO userInfoDto) {
-		List<ProjectsAccess> projectsAccess = userInfoDto.getProjectsAccess();
+		List<ProjectsAccessDTO> projectsAccess = userInfoDto.getProjectsAccess();
 		return projectsAccess.stream().anyMatch(pa -> pa.getRole().equalsIgnoreCase(Constant.ROLE_SUPERADMIN));
 	}
 
@@ -397,9 +434,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 	private UserInfoDTO convertToDTOObject(UserInfo userInfo) {
 		UserInfoDTO userInfoDTO = null;
 		if (null != userInfo) {
-			userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername()).authType(userInfo.getAuthType())
-					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress().toLowerCase())
-					.projectsAccess(userInfo.getProjectsAccess()).build();
+			ModelMapper mapper = new ModelMapper();
+
+			// Map UserInfo to UserInfoDTO
+			userInfoDTO = mapper.map(userInfo, UserInfoDTO.class);
+			userInfoDTO.setEmailAddress(userInfo.getEmailAddress().toLowerCase());
+
 		}
 		return userInfoDTO;
 	}

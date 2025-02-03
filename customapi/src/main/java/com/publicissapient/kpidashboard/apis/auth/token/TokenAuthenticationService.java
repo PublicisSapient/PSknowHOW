@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 

@@ -29,6 +29,7 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -91,7 +92,7 @@ public class ForgotPasswordController {
 	 *         <tt>UnknownHostException</tt> occurred.
 	 */
 
-	@RequestMapping(value = "/forgotPassword", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/forgotPassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> processForgotPassword(@RequestBody ForgotPasswordRequest request,
 			HttpServletRequest httpServletRequest) {
 		boolean isSuccess = false;
