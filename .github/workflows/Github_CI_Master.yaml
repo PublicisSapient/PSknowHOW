@@ -62,7 +62,7 @@ jobs:
 
       - name: Install Dependencies & Build UI
         run: |
-          cd UI
+          cd UIg
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm cache clean --force
           sudo npm install
@@ -177,13 +177,23 @@ jobs:
           chmod +x SonarDelay.sh
           ./SonarDelay.sh ./processors/target/sonar/report-task.txt
   
+  
+
   GitHub_CI_Complete:
     needs: [processors_ci, ui_ci, customapi_ci]
-    if: always()  # Ensures this job runs even if some jobs were skipped
+    if: always()  # Ensure it runs even if some jobs are skipped or fail
     runs-on: ubuntu-latest
     steps:
-      - name: CI Completed Successfully
-        run: echo "All relevant jobs have completed successfully."
+      - name: Check Job Status
+        run: |
+          if [[ "${{ needs.processors_ci.result }}" == "failure" || \
+                "${{ needs.ui_ci.result }}" == "failure" || \
+                "${{ needs.customapi_ci.result }}" == "failure" ]]; then
+            echo "❌ One or more jobs failed. Failing CI."
+            exit 1
+          else
+            echo "✅ All relevant jobs have passed."
+          fi
 
   # # ✅ Send Email Notification on Failure
   # notify_on_failure:
