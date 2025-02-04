@@ -79,7 +79,7 @@ public class ReleaseProgressServiceImplTest {
 	@Before
 	public void setUp() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("");
-		kpiRequest = kpiRequestFactory.findKpiRequest("kpi145");
+		kpiRequest = kpiRequestFactory.findKpiRequest("kpi147");
 		kpiRequest.setLabel("RELEASE");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance("/json/default/account_hierarchy_filter_data_release.json");
