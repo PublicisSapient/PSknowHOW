@@ -51,5 +51,6 @@ public class CacheClearingMechanism {
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_SOURCE_ENDPOINT, CommonConstant.JIRA_KPI);
 	}
 }

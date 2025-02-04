@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -97,6 +98,8 @@ public class CapacityMasterServiceImplTest {
 	private KanbanCapacityRepository kanbanCapacityRepository;
 	@Mock
 	private CacheService cacheService;
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
 	@Mock
 	private FilterHelperService filterHelperService;
 	@Mock

@@ -41,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -143,6 +144,8 @@ public class ProjectBasicConfigServiceImplTest {
 	private FilterHelperService filterHelperService;
 	@Mock
 	private CacheService cacheService;
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
 	@Mock
 	private AccountHierarchyRepository accountHierarchyRepository;
 	@Mock

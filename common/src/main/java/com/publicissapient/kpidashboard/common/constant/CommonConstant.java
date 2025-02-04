@@ -40,9 +40,13 @@ public final class CommonConstant {
 	public static final String CACHE_BOARD_META_DATA_MAP = "boardMetaDataMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
+	public static final String CACHE_PROJECT_KPI_DATA = "project_kpi_data_cache";
 
 	public static final String CACHE_CLEAR_ENDPOINT = "api/cache/clearCache";
 	public static final String CLEAR_ALL_CACHE_ENDPOINT = "api/cache/clearAllCache";
+	public static final String KPI_PROJECT_CACHE_CLEAR_ENDPOINT = "api/kpiCache/clearCacheForProject";
+	public static final String CACHE_CLEAR_SOURCE_ENDPOINT = "api/kpiCache/clearCacheForSource";
+	public static final String CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT = "api/kpiCache/clearCacheForProjectAndSource";
 	public static final String REPROCESS = "Reprocess";
 	public static final String FILE_STATUS_UPLOADED = "Uploaded";
 
@@ -356,7 +360,17 @@ public final class CommonConstant {
 	public static final String OPENING_DELIMITER = " (";
 	public static final String CLOSING_DELIMITER = ") ";
 
-
+	//KPI source
+	public static final String JIRA_KPI = "JIRA";
+	public static final String SONAR = "SONAR";
+	public static final String BITBUCKET = "BITBUCKET";
+	public static final String JENKINS = "JENKINS";
+	public static final String ZEPHYR = "ZEPHYR";
+	public static final String JIRAKANBAN = "JIRAKANBAN";
+	public static final String ZEPHYRKANBAN = "ZEPHYRKANBAN";
+	public static final String SONARKANBAN = "SONARKANBAN";
+	public static final String BITBUCKETKANBAN = "BITBUCKETKANBAN";
+	public static final String JENKINSKANBAN = "JENKINSKANBAN";
 
 	private CommonConstant() {
 

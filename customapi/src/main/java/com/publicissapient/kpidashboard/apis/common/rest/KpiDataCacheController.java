@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * REST controller managing all cache request
  *
@@ -60,6 +62,43 @@ public class KpiDataCacheController {
 	public void clearCache(@PathVariable("projectId") String basicProjectConfigId,
 			@PathVariable("kpiId") String kpiId) {
 		service.clearCache(basicProjectConfigId, kpiId);
+
+	}
+
+	/**
+	 * Clear Specified cache.
+	 *
+	 * @param basicProjectConfigId
+	 *            the project basic config id
+	 */
+	@RequestMapping(value = "/kpiCache/clearCacheForProject/{projectId}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	public void clearCacheForProject(@PathVariable("projectId") String basicProjectConfigId) {
+		service.clearCacheForProject(basicProjectConfigId);
+
+	}
+
+	/**
+	 * Clear Specified cache.
+	 *
+	 * @param source
+	 *            kpi source
+	 */
+	@RequestMapping(value = "/kpiCache/clearCacheForSource/{source}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	public void clearCacheForSource(@PathVariable("source") String source) {
+		service.clearCacheForSource(source);
+	}
+
+	/**
+	 * Clear Specified cache.
+	 *
+	 * @param source
+	 *            kpi source
+	 */
+	@RequestMapping(value = "/kpiCache/clearCacheForProjectAndSource/{source}/{projectId}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	public void clearCacheForProjectAndSource(@PathVariable("source") String source,
+			@PathVariable("projectId") String projectId) {
+		List<String> kpiList = service.getKpiBasedOnSource(source);
+		kpiList.forEach(kpiId -> service.clearCache(projectId, kpiId));
 
 	}
 

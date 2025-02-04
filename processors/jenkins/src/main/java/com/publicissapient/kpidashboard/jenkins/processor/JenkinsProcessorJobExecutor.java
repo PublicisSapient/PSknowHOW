@@ -165,7 +165,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 			log.info("Fetching data for project : {}", proBasicConfig.getProjectName());
 			List<ProcessorToolConnection> jenkinsJobFromConfig = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.JENKINS, proBasicConfig.getId());
-
+			int count1 = 0;
 			for (ProcessorToolConnection jenkinsServer : jenkinsJobFromConfig) {
 				String jobType = jenkinsServer.getJobType();
 				jenkinsServer.setApiKey(decryptKey(jenkinsServer.getApiKey()));
@@ -182,13 +182,14 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 					JenkinsClient jenkinsClient = jenkinsClientFactory.getJenkinsClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						count += processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog,
+						count1 += processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog,
 								proBasicConfig);
-						MDC.put("totalUpdatedCount", String.valueOf(count));
+						MDC.put("totalUpdatedCount", String.valueOf(count1));
 					} else {
-						count += processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog);
-						MDC.put("totalUpdatedCount", String.valueOf(count));
+						count1 += processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog);
+						MDC.put("totalUpdatedCount", String.valueOf(count1));
 					}
+					count += count1;
 				} catch (RestClientException exception) {
 					isClientException(jenkinsServer, exception);
 					executionStatus = false;
@@ -197,6 +198,10 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error(exception.getMessage(), exception);
 				}
+			}
+			if (count1 > 0) {
+				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, CommonConstant.JENKINS,
+						proBasicConfig.getId().toString());
 			}
 		}
 
@@ -390,6 +395,45 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache: {} ", cacheName);
 		} else {
 			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
+		}
+	}
+
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param param1
+	 *            parameter 1
+	 * @param param2
+	 *            parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jenkinsConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+		uriBuilder.path("/");
+		uriBuilder.path(param1);
+		uriBuilder.path("/");
+		uriBuilder.path(param2);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
 		}
 	}
 

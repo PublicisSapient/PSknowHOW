@@ -80,4 +80,45 @@ public class JiraProcessorCacheEvictor {
 		return cleaned;
 	}
 
+	/**
+	 * @param cacheEndPoint
+	 *            cacheEndPoint
+	 * @param param1
+	 *            parameter 1
+	 * @param param2
+	 *            parameter 2
+	 * @return boolean
+	 */
+	public boolean evictCache(String cacheEndPoint, String param1, String param2) {
+		boolean cleaned = false;
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraProcessorConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+		uriBuilder.path("/");
+		uriBuilder.path(param1);
+		uriBuilder.path("/");
+		uriBuilder.path(param2);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RuntimeException e) {
+			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			cleaned = true;
+			log.info("[JIRA-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for {} and {} ", param1, param2);
+		} else {
+			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for {} and {} ", param1, param2);
+		}
+		return cleaned;
+	}
+
 }

@@ -81,7 +81,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+public class 	ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
 	public static final String TOTAL_ISSUE = "totalIssue";
 	public static final String SCOPE_CHANGE = "Scope Change";

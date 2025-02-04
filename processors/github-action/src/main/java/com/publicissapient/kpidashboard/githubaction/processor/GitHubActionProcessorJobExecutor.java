@@ -147,6 +147,7 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 			log.info("Fetching data for project : {}", proBasicConfig.getProjectName());
 			List<ProcessorToolConnection> githubActionJobsFromConfig = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.GITHUBACTION, proBasicConfig.getId());
+			int count1 = 0;
 			for (ProcessorToolConnection gitHubActions : githubActionJobsFromConfig) {
 				String jobType = gitHubActions.getJobType();
 
@@ -161,13 +162,14 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 
 					GitHubActionClient gitHubActionClient = gitHubActionClientFactory.getGitHubActionClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						count = processBuildJob(gitHubActionClient, gitHubActions, processor,
+						count1 += processBuildJob(gitHubActionClient, gitHubActions, processor,
 								processorExecutionTraceLog, proBasicConfig);
-						MDC.put("totalUpdatedCount", String.valueOf(count));
+						MDC.put("totalUpdatedCount", String.valueOf(count1));
 					} else {
 						processDeployJob(gitHubActionClient, gitHubActions, processor, proBasicConfig, deploymentJobs,
 								processorExecutionTraceLog);
 					}
+					count += count1;
 				} catch (RestClientException | FetchingBuildException exception) {
 					isClientException(gitHubActions, exception);
 					executionStatus = false;
@@ -176,7 +178,10 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error(exception.getMessage(), exception);
 				}
-
+			}
+			if (count1 > 0) {
+				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, CommonConstant.JENKINS,
+						proBasicConfig.getId().toString());
 			}
 		}
 
@@ -368,6 +373,45 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache: {} ", cacheName);
 		} else {
 			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
+		}
+	}
+
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param param1
+	 *            parameter 1
+	 * @param param2
+	 *            parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(gitHubActionConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+		uriBuilder.path("/");
+		uriBuilder.path(param1);
+		uriBuilder.path("/");
+		uriBuilder.path(param2);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
 		}
 	}
 

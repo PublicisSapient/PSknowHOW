@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,6 +103,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private CacheService cacheService;
+
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Autowired
 	private UserAuthorizedProjectsService userAuthorizedProjectsService;
@@ -352,6 +356,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
 				performFilterOperation(basicConfigDtoCreation(updatedBasicConfig, mapper), true);
+				//clear kpi data cache for the project for all KPIs
+				kpiDataCacheService.clearCacheForProject(basicConfigId);
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
 			} else {
 				response = new ServiceResponse(false, "Try with different project name.", null);
