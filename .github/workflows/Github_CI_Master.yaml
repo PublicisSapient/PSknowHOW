@@ -176,6 +176,14 @@ jobs:
         run: |
           chmod +x SonarDelay.sh
           ./SonarDelay.sh ./processors/target/sonar/report-task.txt
+  
+  GitHub_CI_Complete:
+    needs: [processors_ci, ui_ci, customapi_ci]
+    if: always()  # Ensures this job runs even if some jobs were skipped
+    runs-on: ubuntu-latest
+    steps:
+      - name: CI Completed Successfully
+        run: echo "All relevant jobs have completed successfully."
 
   # # ✅ Send Email Notification on Failure
   # notify_on_failure:
