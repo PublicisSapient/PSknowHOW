@@ -195,8 +195,6 @@ export class AppComponent implements OnInit {
   }
 
   urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin) {
-    console.log(decodedStateFilters);
-
     stateFiltersObj = JSON.parse(decodedStateFilters);
 
     let stateFilterObj = [];
