@@ -77,9 +77,9 @@ export class AppComponent implements OnInit {
               this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam).subscribe((response: any) => {
                 console.log('response', response);
                 try {
-                  if (response) {
-                    const longKPIFiltersString = response['longKPIFiltersString'];
-                    const longStateFiltersString = response['longStateFiltersString'];
+                  if (response.success) {
+                    const longKPIFiltersString = response.data['longKPIFiltersString'];
+                    const longStateFiltersString = response.data['longStateFiltersString'];
                     stateFiltersParam = atob(longStateFiltersString);
                     // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
 
@@ -93,6 +93,14 @@ export class AppComponent implements OnInit {
 
                     this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
                     this.refreshCounter++;
+                  } else {
+                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                    setTimeout(() => {
+                      this.service.raiseError({
+                        status: 900,
+                        message: response.message || 'Invalid URL.'
+                      });
+                    });
                   }
                 } catch (error) {
                   this.router.navigate(['/dashboard/Error']); // Redirect to the error page
@@ -177,10 +185,18 @@ export class AppComponent implements OnInit {
 
         if (stateFilters?.length <= 8) {
           this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
-            if (response) {
-              const longStateFiltersString = response['longStateFiltersString'];
+            if (response.success) {
+              const longStateFiltersString = response.data['longStateFiltersString'];
               decodedStateFilters = atob(longStateFiltersString);
               this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin);
+            } else {
+              this.router.navigate(['/dashboard/Error']);
+              setTimeout(() => {
+                this.service.raiseError({
+                  status: 900,
+                  message: response.message || 'Invalid URL.',
+                });
+              }, 100);
             }
           });
         } else {
@@ -220,7 +236,7 @@ export class AppComponent implements OnInit {
       if (hasAccessToAll) {
         this.router.navigate([JSON.parse(JSON.stringify(url))]);
       } else {
-        this.router.navigate(['/dashboard/Error'], { queryParams: {}, replaceUrl: true, relativeTo: this.route });
+        this.router.navigate(['/dashboard/Error']);
         setTimeout(() => {
           this.service.raiseError({
             status: 901,

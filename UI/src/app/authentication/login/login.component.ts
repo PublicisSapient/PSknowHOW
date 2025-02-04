@@ -135,10 +135,19 @@ export class LoginComponent implements OnInit {
               this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
                 console.log('response', response);
                 try {
-                  if (response) {
-                    const longStateFiltersString = response['longStateFiltersString'];
+                  if (response.success) {
+                    const longStateFiltersString = response.data['longStateFiltersString'];
                     decodedStateFilters = atob(longStateFiltersString);
                     this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+                  } else {
+                    // this else block is for fallback scenario
+                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                    setTimeout(() => {
+                      this.sharedService.raiseError({
+                        status: 900,
+                        message: response.message || 'Invalid URL.'
+                      });
+                    });
                   }
                 } catch (error) {
                   this.router.navigate(['/dashboard/Error']); // Redirect to the error page

@@ -32,7 +32,6 @@ describe('LoginComponent', () => {
   let router: Router;
   let httpService: HttpService;
   let sharedService: SharedService;
-  let localStorage: Storage;
 
   const mockRouter = {
     navigate: jasmine.createSpy('navigate'),
@@ -45,7 +44,7 @@ describe('LoginComponent', () => {
     queryParams: of({ sessionExpire: 'Session expired' }),
   };
 
-  const mockHttpService = jasmine.createSpyObj('HttpService', ['login']);
+  const mockHttpService = jasmine.createSpyObj('HttpService', ['login', 'handleRestoreUrl']);
 
   const mockSharedService = {
     getCurrentUserDetails: jasmine.createSpy('getCurrentUserDetails'),
@@ -66,7 +65,6 @@ describe('LoginComponent', () => {
         { provide: HttpService, useValue: mockHttpService },
         { provide: SharedService, useValue: mockSharedService },
         { provide: GoogleAnalyticsService, useValue: mockGoogleAnalyticsService },
-        { provide: Storage, useValue: localStorage },
       ],
     }).compileComponents();
   });
@@ -77,7 +75,6 @@ describe('LoginComponent', () => {
     router = TestBed.inject(Router);
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
-    localStorage = TestBed.inject(Storage);
     fixture.detectChanges();
   });
 
@@ -194,12 +191,10 @@ describe('LoginComponent', () => {
     const currentUserProjectAccess = [{ projectId: 'project1' }];
     const url = 'http://example.com';
 
-    // spyOn(localStorage, 'removeItem');
     mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_USER']);
 
     component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
 
-    // expect(localStorage.removeItem).toHaveBeenCalledWith('shared_link');
     expect(router.navigate).toHaveBeenCalledWith([JSON.parse(JSON.stringify(url))]);
   });
 
@@ -212,12 +207,10 @@ describe('LoginComponent', () => {
     const currentUserProjectAccess = [];
     const url = 'http://example.com';
 
-    // spyOn(localStorage, 'removeItem');
     mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_SUPERADMIN']);
 
     component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
 
-    // expect(localStorage.removeItem).toHaveBeenCalledWith('shared_link');
     expect(router.navigate).toHaveBeenCalledWith([JSON.parse(JSON.stringify(url))]);
   });
 
@@ -230,17 +223,69 @@ describe('LoginComponent', () => {
     const currentUserProjectAccess = [{ projectId: 'project2' }];
     const url = 'http://example.com';
 
-    // spyOn(localStorage, 'removeItem');
     mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_USER']);
 
     component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
 
-    // expect(localStorage.removeItem).toHaveBeenCalledWith('shared_link');
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-    // expect(mockSharedService.raiseError).toHaveBeenCalledWith({
-    //   status: 901,
-    //   message: 'No project access.'
-    // });
+  });
+
+
+
+
+
+  it('should handle 401 status code', () => {
+    const data = { status: 401, error: { message: 'Unauthorized' } };
+    component.performLogin(data, 'username', 'password');
+    expect(component.error).toBe('Unauthorized');
+    expect(component.f.password.value).toBe('');
+    expect(component.submitted).toBe(false);
+  });
+
+  it('should handle 0 status code (Internal Server Error)', () => {
+    const data = { status: 0 };
+    component.performLogin(data, 'username', 'password');
+    expect(component.error).toBe('Internal Server Error');
+  });
+
+  it('should handle 200 status code with redirectToProfile() returning true', () => {
+    spyOn(component, 'redirectToProfile').and.returnValue(true);
+    const data = { status: 200, body: {} };
+    component.performLogin(data, 'username', 'password');
+    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
+  });
+
+  it('should handle 200 status code with redirectToProfile() returning false and shared_link in local storage', () => {
+    spyOn(component, 'redirectToProfile').and.returnValue(false);
+    const data = { status: 200, body: {} };
+    localStorage.setItem('shared_link', 'https://example.com');
+    component.performLogin(data, 'username', 'password');
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+  });
+
+  it('should handle 200 status code with redirectToProfile() returning false and no shared_link in local storage', () => {
+    spyOn(component, 'redirectToProfile').and.returnValue(false);
+    const data = { status: 200, body: {} };
+    localStorage.removeItem('shared_link');
+    component.performLogin(data, 'username', 'password');
+    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
+  });
+
+  it('should handle error for invalid URL', () => {
+    spyOn(component, 'redirectToProfile').and.returnValue(false);
+    const data = { status: 200, body: {} };
+    localStorage.setItem('shared_link', 'invalid-url');
+    component.performLogin(data, 'username', 'password');
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+  });
+
+  it('should handle error for failed URL restoration', () => {
+    spyOn(component, 'redirectToProfile').and.returnValue(false);
+    const data = { status: 200, body: {} };
+    localStorage.setItem('shared_link', 'https://example.com');
+    mockHttpService.handleRestoreUrl.and.returnValue(throwError('Error restoring URL'));
+    component.performLogin(data, 'username', 'password');
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
   });
 
   // afterEach(() => {
