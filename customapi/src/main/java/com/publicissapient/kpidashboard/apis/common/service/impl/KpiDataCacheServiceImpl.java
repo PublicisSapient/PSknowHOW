@@ -91,15 +91,10 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 		}
 	}
 
-	public void clearCacheForProjectAndSource(String basicProjectConfigId, String source) {
-		List<String> kpiList = getKpiBasedOnSource(source);
-		kpiList.forEach(kpiId -> clearCache(kpiId));
-	}
-
 	@Override
 	public void clearCacheForSource(String source) {
 		List<String> kpiList = getKpiBasedOnSource(source);
-		kpiList.forEach(kpiId -> clearCache(kpiId));
+		kpiList.forEach(this::clearCache);
 	}
 
 	@Override
