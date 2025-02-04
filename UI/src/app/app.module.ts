@@ -44,7 +44,6 @@ import { ActivatedRoute } from '@angular/router';
 /******************* components   ***********************/
 import { AppComponent } from './app.component';
 import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
-import { HeaderComponent } from './dashboardv2/header-v2/header.component';
 import { CircularProgressComponent } from './component/circular-progress/circular-progress.component';
 import { ProgressbarComponent } from './component/progressbar/progressbar.component';
 import { CircularchartComponent } from './component/circularchart/circularchart.component';
@@ -119,7 +118,6 @@ import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppInitializerService } from './services/app-initializer.service';
 import { AuthGuard } from './services/auth.guard';
-import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
 import { NavNewComponent } from './dashboardv2/nav-v2/nav-new.component';
 import { FilterNewComponent } from './dashboardv2/filter-v2/filter-new.component';
 import { ParentFilterComponent } from './dashboardv2/filter-v2/parent-filter/parent-filter.component';
@@ -194,13 +192,11 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         FeedbackComponent,
         BarWithYAxisGroupComponent,
         PageNotFoundComponent,
-        HeaderComponent,
         FilterNewComponent,
         ParentFilterComponent,
         PrimaryFilterComponent,
         AdditionalFilterComponent,
         NavNewComponent,
-        RecentCommentsComponent,
         ExecutiveV2Component,
         DashboardV2Component,
         KpiCardV2Component,

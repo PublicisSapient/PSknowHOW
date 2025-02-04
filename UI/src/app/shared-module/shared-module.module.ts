@@ -73,6 +73,10 @@ import { MultilineV2Component } from '../component/multiline-v2/multiline-v2.com
 import { TooltipV2Component } from '../component/tooltip-v2/tooltip-v2.component';
 import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
 
+import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
+
+import { RecentCommentsComponent } from '../component/recent-comments/recent-comments.component';
+
 
 @NgModule({
   imports: [
@@ -131,6 +135,9 @@ import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/tre
     MultilineStyleV2Component,
     TooltipV2Component,
     HorizontalPercentBarChartv2Component,
+    ChartWithFiltersComponent,
+    HeaderComponent,
+    RecentCommentsComponent
   ],
   declarations: [
     ProjectFilterComponent,
@@ -163,6 +170,8 @@ import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/tre
     MultilineStyleV2Component,
     TooltipV2Component,
     HorizontalPercentBarChartv2Component,
+    HeaderComponent,
+    RecentCommentsComponent
 
   ],
   providers: [ConfirmationService, KpiHelperService]

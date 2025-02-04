@@ -27,7 +27,7 @@
                         [height]="chartHeight"></app-stacked-bar>
                     <app-semi-circle-donut-chart *ngSwitchCase="'semi-circle-donut-chart'" [value]="currentChartData"
                         [max]="100" [width]="chartWidth" [height]="chartHeight"></app-semi-circle-donut-chart>
-                    <app-chart-with-filters [data]="chartData" *ngSwitchCase="'chartWithFilter'"
+                    <app-chart-with-filters [data]="currentChartData" *ngSwitchCase="'chartWithFilter'"
                         [category]="chartData?.category" [kpiName]="kpiData?.kpiName">
                     </app-chart-with-filters>
                     <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'" [data]="currentChartData"
@@ -157,10 +157,10 @@
                         </ng-container>
                     </ng-container>
 
-                    <ng-container *ngSwitchCase="'chartWithFilter'">
+                    <!-- <ng-container *ngSwitchCase="'chartWithFilter'">
                         <ng-container>
                             <ng-container>
-                                <app-chart-with-filters [data]="chartData.data" [kpiId]="kpi?.kpiId"
+                                <app-chart-with-filters [data]="chartData.data" [kpiId]="kpiData?.kpiId"
                                     [kpiName]="kpiData.kpiName">
                                 </app-chart-with-filters>
                             </ng-container>
@@ -169,7 +169,7 @@
                             <ng-container *ngTemplateOutlet="partialData; context:  { $implicit: kpi}">
                             </ng-container>
                         </ng-container>
-                    </ng-container>
+                    </ng-container> -->
 
 
                     <ng-container *ngSwitchCase="'stacked-area'">

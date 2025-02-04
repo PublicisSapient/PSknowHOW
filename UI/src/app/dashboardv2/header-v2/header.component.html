@@ -10,25 +10,23 @@
       <img src="assets/img/PSKnowHowLogo.svg" alt="Logo"/>
     </div>
 
-    <!--Report and Dashboard Navigation Start-->
-    <div class="p-d-flex p-align-center p-jc-between p-mr-3" *ngIf="userDetails['authorities']?.includes('ROLE_PROJECT_ADMIN') || userDetails['authorities']?.includes('ROLE_SUPERADMIN') || userDetails['authorities']?.includes('ROLE_PROJECT_VIEWER')">
-      <div class="p-d-flex p-align-center p-jc-between p-mr-3" *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')">
-        <div class="p-mr-3">
+    <!-- Report and Dashboard Navigation -->
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <div class="tab-button" *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')">
           <button pButton pRipple class="p-button-outlined" [disabled]="backToDashboardLoader" routerLinkActive="active"
             icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="DASHBOARD"
-            (click)="navigateToDashboard()" ></button>
+            (click)="navigateToDashboard()"></button>
         </div>
-      </div>
-      <div class="p-d-flex p-align-center p-jc-between">
-        <div class="p-mr-3">
-          <button pButton pRipple class="p-button-outlined" routerLinkActive="active" [routerLink]="['/dashboard']" label="DASHBOARD"></button>
+        <div class="tab-button">
+          <button [ngClass]="{active: router.url.indexOf('Report') === -1 }" routerLink="['/dashboard/{{sharedService.getSelectedTab()}}']" label="DASHBOARD">Dashboard</button>
         </div>
-        <div class="p-mr-3">
-          <button pButton pRipple class="p-button-outlined" routerLinkActive="active" [routerLink]="['/dashboard/Report/default-report']" label="REPORTS"></button>
+        <div class="tab-button">
+          <button routerLinkActive="active" [routerLink]="['/dashboard/Report/default-report']" [routerLinkActiveOptions]="{ exact: true }" label="REPORTS">Reports</button>
         </div>
       </div>
     </div>
-    <!--Report and Dashboard Navigation End-->
+    <!-- Report and Dashboard Navigation End -->
 
 
 

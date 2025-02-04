@@ -11,7 +11,7 @@ export class DefaultReportComponent implements OnInit {
   constructor(private service: SharedService) { }
 
   ngOnInit(): void {
-    this.service.setSelectedTab('Report');
+    // this.service.setSelectedTab('Report');
     this.generateChartData();
   }
 

@@ -1,4 +1,4 @@
-<div class="text-center board-menu p-d-flex p-jc-center p-pt-3 p-pb-3">
+<div class="text-center board-menu p-d-flex p-jc-center p-pt-3 p-pb-3" *ngIf="!router.url.split('/').includes('Report')">
   <p-tabMenu [model]="items" [activeItem]="activeItem">
     <ng-template pTemplate="item" let-item>
       <div>
