@@ -62,7 +62,7 @@ jobs:
 
       - name: Install Dependencies & Build UI
         run: |
-          cd UIg
+          cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm cache clean --force
           sudo npm install
