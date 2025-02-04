@@ -136,7 +136,7 @@ jobs:
         if: steps.customapi.outputs.customapi == 'true'
         id: sonartestcustomapi
         run: |
-               mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f customapi/pom.xml -X
+               mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f customapi/pom.xml
       - name: Running sonarqube quality gates CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
         id: qgtestcustomapi
@@ -173,7 +173,7 @@ jobs:
                   -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.PROCESSORS \
                   -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} \
                   -Dsonar.branch.name=$GITHUB_HEAD_REF \
-                  -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f processors/pom.xml -X
+                  -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f processors/pom.xml
       - name: Checking code Quality using SonarQube qg for processor
         id: Sonarqgprocessor
         if: steps.processors.outputs.processors == 'true'
