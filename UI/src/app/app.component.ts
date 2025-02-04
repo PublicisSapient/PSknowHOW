@@ -211,20 +211,22 @@ export class AppComponent implements OnInit {
   }
 
   urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin) {
-    stateFiltersObj = JSON.parse(decodedStateFilters);
+    let stateFiltersObjLocal = stateFiltersObj;
+
+    stateFiltersObjLocal = JSON.parse(decodedStateFilters);
 
     let stateFilterObj = [];
     let projectLevelSelected = false;
-    if (typeof stateFiltersObj['parent_level'] === 'object' && Object.keys(stateFiltersObj['parent_level']).length > 0) {
-      stateFilterObj = [stateFiltersObj['parent_level']];
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+      stateFilterObj = [stateFiltersObjLocal['parent_level']];
     } else {
-      stateFilterObj = stateFiltersObj['primary_level'];
+      stateFilterObj = stateFiltersObjLocal['primary_level'];
     }
 
     projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
 
 
-    // Check if user has access to all project in stateFiltersObj['primary_level']
+    // Check if user has access to all project in stateFiltersObjLocal['primary_level']
     const hasAllProjectAccess = stateFilterObj.every(filter =>
       currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
     );
