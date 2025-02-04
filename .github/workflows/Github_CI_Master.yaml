@@ -19,8 +19,8 @@ on:
 
 env:
   GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
-  SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-  SONAR_URL: ${{ secrets.SONARURL }}
+  sonartoken: ${{ secrets.SONARQUBE_TOKEN }}
+  sonarurl: ${{ secrets.SONARURL }}
 
 jobs:
   # ✅ Detect Changed Files
@@ -78,6 +78,7 @@ jobs:
       - name: SonarQube Analysis - UI
         run: |
           cd UI
+          sudo chmod -R 777 /usr/local/lib/node_modules
           echo "sonar.branch.name=${{ env.GITHUB_HEAD_NAME }}" >> sonar-project.properties
           echo "sonar.host.url=${{ secrets.SONARQUBE_HOST }}" >> sonar-project.properties
           echo "sonar.login=${{ secrets.SONARQUBE_TOKEN }}" >> sonar-project.properties
