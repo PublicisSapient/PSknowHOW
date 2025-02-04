@@ -9,9 +9,11 @@ import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 export class ReportKpiCardComponent implements OnInit {
   @Input() kpiData: any;
   @Input() currentChartData: any;
+  @Input() colors: any;
   constructor(private kpiHelperService: KpiHelperService) { }
 
   ngOnInit(): void {
+    console.log(this.colors);
   }
 
   showCummalative() {
@@ -19,5 +21,9 @@ export class ReportKpiCardComponent implements OnInit {
       return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
     }
     return this.currentChartData.totalCount
+  }
+
+  checkIfZeroData(data) {
+    return true;
   }
 }

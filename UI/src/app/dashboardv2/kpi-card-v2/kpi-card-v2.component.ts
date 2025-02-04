@@ -770,10 +770,11 @@ onFilterChange(event) {
   addToReport() {
     let reportObj = { 
       kpiId: this.kpiData.kpiId,
-      chartData: this.currentChartData.chartData,
+      chartData: this.currentChartData?.chartData ? this.currentChartData?.chartData : this.kpiChartData[this.kpiData?.kpiId],
       kpiDetail: this.kpiData.kpiDetail,
       kpiDataStatusCode: this.kpiDataStatusCode,
       chartType: this.kpiData.kpiDetail.chartType,
+      colors: this.getColorList(this.colors)
     };
 
     let storedReportData = localStorage.getItem('reportData');
@@ -795,5 +796,13 @@ onFilterChange(event) {
         this.messageService.add({ severity: 'warn', summary: 'KPI updated and added to default report' });
       }
     }
+  }
+
+  getColorList(colorObj) {
+    let result = [];
+    Object.keys(colorObj).forEach(key => {
+      result.push(colorObj[key].color);
+    });
+    return result;
   }
 }
