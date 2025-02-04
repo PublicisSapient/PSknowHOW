@@ -31,6 +31,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
@@ -556,13 +557,15 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(bambooConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
-		uriBuilder.path("/");
-		uriBuilder.path(param1);
-		uriBuilder.path("/");
-		uriBuilder.path(param2);
 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 

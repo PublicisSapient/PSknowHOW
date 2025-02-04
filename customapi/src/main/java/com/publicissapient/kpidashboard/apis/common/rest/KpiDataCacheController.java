@@ -46,7 +46,7 @@ public class KpiDataCacheController {
 	 * @param kpiId
 	 *            the cache name
 	 */
-	@RequestMapping(value = "/kpiCache/clearCacheForKpi/{kpiId}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/cache/kpi/{kpiId}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearCache(@PathVariable String kpiId) {
 		service.clearCache(kpiId);
 
@@ -58,7 +58,7 @@ public class KpiDataCacheController {
 	 * @param kpiId
 	 *            the cache name
 	 */
-	@RequestMapping(value = "/kpiCache/clearCache/{kpiId}/{projectId}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/cache/project/{projectId}/kpi/{kpiId}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearCache(@PathVariable("projectId") String basicProjectConfigId,
 			@PathVariable("kpiId") String kpiId) {
 		service.clearCache(basicProjectConfigId, kpiId);
@@ -71,7 +71,7 @@ public class KpiDataCacheController {
 	 * @param basicProjectConfigId
 	 *            the project basic config id
 	 */
-	@RequestMapping(value = "/kpiCache/clearCacheForProject/{projectId}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/cache/project/{projectId}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearCacheForProject(@PathVariable("projectId") String basicProjectConfigId) {
 		service.clearCacheForProject(basicProjectConfigId);
 
@@ -83,7 +83,7 @@ public class KpiDataCacheController {
 	 * @param source
 	 *            kpi source
 	 */
-	@RequestMapping(value = "/kpiCache/clearCacheForSource/{source}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/cache/source/{source}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearCacheForSource(@PathVariable("source") String source) {
 		service.clearCacheForSource(source);
 	}
@@ -94,7 +94,7 @@ public class KpiDataCacheController {
 	 * @param source
 	 *            kpi source
 	 */
-	@RequestMapping(value = "/kpiCache/clearCacheForProjectAndSource/{source}/{projectId}", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/cache/project/{projectId}/source/{source}/clear", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public void clearCacheForProjectAndSource(@PathVariable("source") String source,
 			@PathVariable("projectId") String projectId) {
 		List<String> kpiList = service.getKpiBasedOnSource(source);

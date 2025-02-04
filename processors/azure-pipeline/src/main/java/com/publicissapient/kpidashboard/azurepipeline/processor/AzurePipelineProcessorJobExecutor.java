@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -498,13 +499,15 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(azurePipelineConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
-		uriBuilder.path("/");
-		uriBuilder.path(param1);
-		uriBuilder.path("/");
-		uriBuilder.path(param2);
 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 

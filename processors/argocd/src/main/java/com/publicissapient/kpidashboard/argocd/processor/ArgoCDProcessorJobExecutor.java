@@ -432,13 +432,15 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(argoCDConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
-		uriBuilder.path("/");
-		uriBuilder.path(param1);
-		uriBuilder.path("/");
-		uriBuilder.path(param2);
 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 

@@ -79,7 +79,7 @@ public class JiraIssueSprintJobListener implements JobExecutionListener {
 			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_SOURCE_ENDPOINT, CommonConstant.JIRA_KPI);
+			processorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_SOURCE_ENDPOINT, CommonConstant.JIRA_KPI, "");
 
 		} else {
 			sprintTrace.setErrorInFetch(true);

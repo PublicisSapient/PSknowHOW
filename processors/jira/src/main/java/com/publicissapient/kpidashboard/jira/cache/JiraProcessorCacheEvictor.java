@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.cache;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -94,13 +95,15 @@ public class JiraProcessorCacheEvictor {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraProcessorConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
-		uriBuilder.path("/");
-		uriBuilder.path(param1);
-		uriBuilder.path("/");
-		uriBuilder.path(param2);
 
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 
