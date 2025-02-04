@@ -1397,8 +1397,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     };
     this.httpService.handleUrlShortener(payload).subscribe((response: any) => {
       console.log(response);
-      const shortStateFilterString = response.shortStateFiltersString;
-      const shortKPIFilterString = response.shortKPIFilterString;
+      const shortStateFilterString = response.data.shortStateFiltersString;
+      const shortKPIFilterString = response.data.shortKPIFilterString;
       const shortUrl = `${url.split('?')[0]}?stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}`;
       navigator.clipboard.writeText(shortUrl).then(() => {
         this.showSuccess();
