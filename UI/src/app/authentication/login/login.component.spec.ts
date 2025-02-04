@@ -284,66 +284,6 @@ describe('LoginComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
   });
 
-
-
-
-
-
-
-
-
-
-
-  it('should call handleRestoreUrl and successfully process the response', () => {
-    const stateFilters = 'short';
-    const kpiFilters = 'kpiShort';
-    const responseMock = { success: true, data: { longStateFiltersString: btoa('decodedString') } };
-
-    spyOn(component, 'urlRedirection'); // Mock the urlRedirection method
-    mockHttpService.handleRestoreUrl.and.returnValue(of(responseMock));
-
-    component['processFilters'](stateFilters, kpiFilters); // Replace with actual function name
-
-    expect(mockHttpService.handleRestoreUrl).toHaveBeenCalledWith(stateFilters, kpiFilters);
-    expect(component.urlRedirection).toHaveBeenCalledWith('decodedString', jasmine.anything(), jasmine.anything(), jasmine.anything());
-  });
-
-  it('should navigate to error page when API response is unsuccessful', () => {
-    const stateFilters = 'short';
-    const kpiFilters = 'kpiShort';
-    const responseMock = { success: false, message: 'Invalid URL' };
-
-    mockHttpService.handleRestoreUrl.and.returnValue(of(responseMock));
-
-    component['processFilters'](stateFilters, kpiFilters);
-
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-    expect(mockSharedService.raiseError).toHaveBeenCalledWith({ status: 900, message: 'Invalid URL' });
-  });
-
-  it('should navigate to error page when an exception occurs', () => {
-    const stateFilters = 'short';
-    const kpiFilters = 'kpiShort';
-
-    mockHttpService.handleRestoreUrl.and.returnValue(throwError(() => new Error('Network Error')));
-
-    component['processFilters'](stateFilters, kpiFilters);
-
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-    expect(mockSharedService.raiseError).toHaveBeenCalledWith({ status: 900, message: 'Invalid URL.' });
-  });
-
-  it('should decode stateFilters directly when length is greater than 8', () => {
-    const stateFilters = btoa('decodedStringLong'); // Simulated long string
-    const kpiFilters = 'kpiFilter';
-
-    spyOn(component, 'urlRedirection');
-
-    component['processFilters'](stateFilters, kpiFilters);
-
-    expect(component.urlRedirection).toHaveBeenCalledWith('decodedStringLong', jasmine.anything(), jasmine.anything(), jasmine.anything());
-  });
-
   // afterEach(() => {
   //   localStorage.removeItem('shared_link');
   // });

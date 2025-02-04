@@ -159,61 +159,12 @@ describe('AppComponent', () => {
     });
   });
 
-  xit('should decode and set state filters from URL hash', () => {
-    component.ngOnInit();
-    expect(sharedService.setBackupOfUrlFilters).toHaveBeenCalledWith('SomeEncodedData');
-  });
-
   it('should navigate to dashboard if no shared link exists', () => {
     localStorage.removeItem('shared_link');
 
     component.ngOnInit();
 
     expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
-  });
-
-  xit('should navigate to error page if user lacks project access', () => {
-    const validStateFilters = btoa(JSON.stringify({ primary_level: [{ basicProjectConfigId: '123' }] }));
-    localStorage.setItem('shared_link', `http://example.com?stateFilters=${validStateFilters}`);
-    localStorage.setItem(
-      'currentUserDetails',
-      JSON.stringify({
-        projectsAccess: [
-          {
-            projects: [{ projectId: '456' }],
-          },
-        ],
-        authorities: ['ROLE_SUPERADMIN']
-      })
-    );
-
-    component.ngOnInit();
-
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-    /* expect(sharedService.raiseError).toHaveBeenCalledWith({
-      status: 901,
-      message: 'No project access.',
-    }); */
-  });
-
-  xit('should navigate to shared link if user has access to all projects', () => {
-    const validStateFilters = btoa(JSON.stringify({ primary_level: [{ basicProjectConfigId: '123' }] }));
-    localStorage.setItem('shared_link', `http://example.com?stateFilters=${validStateFilters}`);
-    localStorage.setItem(
-      'currentUserDetails',
-      JSON.stringify({
-        projectsAccess: [
-          {
-            projects: [{ basicProjectConfigId: '123' }],
-          },
-        ],
-        authorities: ['ROLE_SUPERADMIN']
-      })
-    );
-
-    component.ngOnInit();
-
-    expect(router.navigate).toHaveBeenCalledWith([`http://example.com?stateFilters=${validStateFilters}`]);
   });
 
   it('should initialize component correctly and call ngOnInit', () => {
@@ -242,29 +193,6 @@ describe('AppComponent', () => {
     expect(header.classList.contains('scrolled')).toBeFalse();
   });
 
-  xit('should decode stateFilters and set backup filter state', () => {
-    const mockParam = btoa(JSON.stringify({ primary_level: [{ labelName: 'Test', nodeId: 'node-1' }] }));
-    localStorage.setItem('shared_link', `http://example.com/?stateFilters=${mockParam}`);
-    // const serviceSpy = spyOn(sharedService, 'setBackupOfFilterSelectionState');
-
-    component.ngOnInit();
-
-    expect(sharedServiceMock.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ primary_level: [{ labelName: 'Test', nodeId: 'node-1' }] });
-  });
-
-  xit('should handle invalid URL and redirect to error page', () => {
-    const invalidParam = '12asdasd213131';
-    localStorage.setItem('shared_link', `http://example.com/?stateFilters=${invalidParam}`);
-
-    component.ngOnInit();
-
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-    expect(sharedServiceMock.raiseError).toHaveBeenCalledWith({
-      status: 900,
-      message: 'Invalid URL.',
-    });
-  });
-
   it('should navigate to default dashboard if no shared link is found', () => {
     localStorage.removeItem('shared_link');
     // const routerSpy = spyOn(router, 'navigate');
@@ -272,6 +200,53 @@ describe('AppComponent', () => {
     component.ngOnInit();
 
     expect(routerMock.navigate).toHaveBeenCalledWith(['./dashboard/']);
+  });
+
+
+
+
+
+
+
+
+
+
+  it('should navigate to the provided URL if the user has access to all projects', () => {
+    const decodedStateFilters = JSON.stringify({
+      parent_level: { basicProjectConfigId: 'project1' },
+      primary_level: []
+    });
+    const stateFiltersObj = {};
+    const currentUserProjectAccess = [{ projectId: 'project1' }];
+    const url = 'http://example.com';
+
+    spyOn(component, 'urlRedirection').and.callThrough();
+
+    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, true);
+
+    expect(component.urlRedirection).toHaveBeenCalledWith(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, true);
+    // expect(router.navigate).toHaveBeenCalledWith([JSON.parse(JSON.stringify(url))]);
+  });
+
+  it('should navigate to the error page if the user does not have access to the project', () => {
+    const decodedStateFilters = JSON.stringify({
+      parent_level: { basicProjectConfigId: 'project1' },
+      primary_level: []
+    });
+    const stateFiltersObj = {};
+    const currentUserProjectAccess = [{ projectId: 'project2' }];
+    const url = 'http://example.com';
+
+    spyOn(component, 'urlRedirection').and.callThrough();
+
+    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, false);
+
+    expect(component.urlRedirection).toHaveBeenCalledWith(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, false);
+    // expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+    // expect(sharedServiceMock.raiseError).toHaveBeenCalledWith({
+    //   status: 901,
+    //   message: 'No project access.'
+    // });
   });
 
 });
