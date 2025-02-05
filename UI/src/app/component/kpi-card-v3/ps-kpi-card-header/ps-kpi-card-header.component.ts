@@ -5,6 +5,7 @@ import { KpiHelperService } from 'src/app/services/kpi-helper.service';
 import { KPI_HEADER_ACTION } from '../../../model/Constants'
 import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 @Component({
   selector: 'app-ps-kpi-card-header',
@@ -22,7 +23,8 @@ export class PsKpiCardHeaderComponent implements OnInit {
   disableSettings: boolean = false;
   userRole: string;
   checkIfViewer: boolean;
-  constructor(private kpiHelperService: KpiHelperService, public service: SharedService, private authService: GetAuthorizationService) { }
+  reportModuleEnabled: boolean = false;
+  constructor(private kpiHelperService: KpiHelperService, public service: SharedService, private authService: GetAuthorizationService, private featureFlagService: FeatureFlagsService) { }
 
   ngOnInit(): void {
     this.initializeMenu();
@@ -41,7 +43,7 @@ export class PsKpiCardHeaderComponent implements OnInit {
     this.kpimenu.toggle(event);
   }
 
-  initializeMenu() {
+  async initializeMenu() {
     this.menuItems = [
       {
         label: 'Settings',
@@ -78,15 +80,20 @@ export class PsKpiCardHeaderComponent implements OnInit {
           // this.openCommentModal();
           this.actionTriggered.emit({ ...this.MenuValues, comment: true });
         },
-      },
-      {
+      }
+    ];
+
+    this.reportModuleEnabled = await this.featureFlagService.isFeatureEnabled('REPORTS');
+    let alreadyAdded = this.menuItems.find(x => x.label === 'Add to Report');
+    if (this.reportModuleEnabled && !alreadyAdded) {
+      this.menuItems.push({
         label: 'Add to Report',
         icon: 'pi pi-briefcase',
         command: ($event) => {
           this.addToReport();
         },
-      }
-    ];
+      });
+    }
   }
 
   showWarning(val) {

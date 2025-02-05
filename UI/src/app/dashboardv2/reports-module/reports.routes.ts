@@ -1,15 +1,15 @@
 import { RouterModule, Routes } from '@angular/router';
-import { DefaultReportComponent } from './default-report/default-report.component';
+import { ReportContainerComponent } from './report-container/report-container.component';
 import { NgModule } from '@angular/core';
 
 export const reportsRoutes: Routes = [
     {
         path: 'Report',
-        component: DefaultReportComponent
+        component: ReportContainerComponent
     },
     {
         path: 'default-report',
-        component: DefaultReportComponent
+        component: ReportContainerComponent
     }
 ];
 

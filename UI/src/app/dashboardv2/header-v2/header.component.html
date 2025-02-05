@@ -11,7 +11,7 @@
     </div>
 
     <!-- Report and Dashboard Navigation -->
-    <div class="tab-container">
+    <div class="tab-container" *ngIf="reportModuleEnabled">
       <div class="tab-buttons">
         <div class="tab-button" *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')">
           <button pButton pRipple class="p-button-outlined" [disabled]="backToDashboardLoader" routerLinkActive="active"

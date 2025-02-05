@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
-  selector: 'app-default-report',
-  templateUrl: './default-report.component.html',
-  styleUrls: ['./default-report.component.css']
+  selector: 'app-report-container',
+  templateUrl: './report-container.component.html',
+  styleUrls: ['./report-container.component.css']
 })
-export class DefaultReportComponent implements OnInit {
+export class ReportContainerComponent implements OnInit {
   chartData: any;
   constructor(private service: SharedService) { }
 
