@@ -65,7 +65,6 @@ export class AppComponent implements OnInit {
         if (!this.refreshCounter) {
           let stateFiltersParam = params['stateFilters'];
           let kpiFiltersParam = params['kpiFilters'];
-          // console.log('params', stateFiltersParam, kpiFiltersParam);
 
           if (stateFiltersParam?.length) {
             let selectedTab = this.location.path();
@@ -76,7 +75,7 @@ export class AppComponent implements OnInit {
 
             if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
               this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam).subscribe((response: any) => {
-                console.log('response', response);
+
                 try {
                   if (response.success) {
                     const longKPIFiltersString = response.data['longKPIFiltersString'];
@@ -87,7 +86,7 @@ export class AppComponent implements OnInit {
                     // const kpiFiltersParam = params['kpiFilters'];
                     if (longKPIFiltersString) {
                       const kpiFilterParamDecoded = atob(longKPIFiltersString);
-                      console.log('kpiFilterParamDecoded', kpiFilterParamDecoded);
+
                       const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
                       this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
                     }
@@ -122,7 +121,7 @@ export class AppComponent implements OnInit {
                 // this.service.setSelectedBoard(this.selectedTab);
 
                 stateFiltersParam = atob(stateFiltersParam);
-                console.log('stateFiltersParam', stateFiltersParam);
+
                 // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
 
                 // const kpiFiltersParam = params['kpiFilters'];
@@ -213,7 +212,6 @@ export class AppComponent implements OnInit {
 
   urlRedirection(decodedStateFilters, currentUserProjectAccess, url, ifSuperAdmin) {
     const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
-    console.log('stateFiltersObjLocal', stateFiltersObjLocal);
 
     let stateFilterObj = [];
     let projectLevelSelected = false;
@@ -222,8 +220,6 @@ export class AppComponent implements OnInit {
     } else {
       stateFilterObj = stateFiltersObjLocal['primary_level'];
     }
-
-    console.log('stateFilterObj', stateFilterObj);
 
     projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
 
@@ -235,9 +231,6 @@ export class AppComponent implements OnInit {
 
     // Superadmin have all project access hence no need to check project for superadmin
     const hasAccessToAll = ifSuperAdmin || hasAllProjectAccess;
-
-    console.log('hasAccessToAll', hasAccessToAll);
-    console.log('projectLevelSelected', projectLevelSelected);
 
     if (projectLevelSelected) {
       if (hasAccessToAll) {
