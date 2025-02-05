@@ -215,10 +215,10 @@ export class AppInitializerService {
 
                 }
               } else {
-                this.router.navigate(['./dashboard/']);
+                // this.router.navigate(['./dashboard/']);
+                this.router.navigateByUrl(shared_link);
               }
               // debugger
-              // this.router.navigateByUrl(shared_link);
             } else {
               this.router.navigate(['/dashboard/iteration']);
             }
