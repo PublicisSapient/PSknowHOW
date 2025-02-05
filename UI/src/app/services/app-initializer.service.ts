@@ -268,6 +268,7 @@ export class AppInitializerService {
 
     localStorage.removeItem('shared_link');
     if (hasAccessToAll) {
+      console.log('has access', url)
       this.router.navigate([JSON.parse(JSON.stringify(url))]);
     } else {
       // localStorage.removeItem('shared_link');
