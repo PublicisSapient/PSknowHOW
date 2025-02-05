@@ -15,6 +15,7 @@ import * as d3 from 'd3';
 import { Subject } from 'rxjs';
 import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
+
 @Component({
   selector: 'app-kpi-card-v2',
   templateUrl: './kpi-card-v2.component.html',

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-report-container',
@@ -8,7 +7,7 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class ReportContainerComponent implements OnInit {
   chartData: any;
-  constructor(private service: SharedService) { }
+  constructor() { }
 
   ngOnInit(): void {
     // this.service.setSelectedTab('Report');
