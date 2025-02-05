@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller class for managing reports.
- * @Author : girpatha
  */
 @RestController
 @RequestMapping("/reports")

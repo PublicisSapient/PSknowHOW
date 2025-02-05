@@ -24,7 +24,6 @@ package com.publicissapient.kpidashboard.apis.errors;
  * This exception is used to indicate that an attempt to create or update a report
  * has failed due to the presence of duplicate KPI IDs.
  * </p>
- * @Author girpatha
  */
 
 public class DuplicateKpiException extends  RuntimeException {

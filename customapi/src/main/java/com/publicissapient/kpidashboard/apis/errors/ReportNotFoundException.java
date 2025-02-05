@@ -24,7 +24,6 @@ package com.publicissapient.kpidashboard.apis.errors;
  * This exception is used to indicate that an attempt to retrieve a report
  * has failed because the report does not exist.
  * </p>
- * @Author girpatha
  */
 public class ReportNotFoundException extends  RuntimeException {
     /**
