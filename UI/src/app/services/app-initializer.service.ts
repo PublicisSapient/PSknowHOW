@@ -159,15 +159,18 @@ export class AppInitializerService {
           }
 
           if (location) {
+            console.log('if')
             let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
             if (redirect_uri) {
               localStorage.removeItem('redirect_uri');
             }
             this.router.navigateByUrl(location);
           } else {
+            console.log('else')
             if (localStorage.getItem('shared_link')) {
               const shared_link = localStorage.getItem('shared_link');
               const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
+              console.log('shared_link', shared_link);
               if (shared_link) {
                 // localStorage.removeItem('shared_link');
 
@@ -175,6 +178,9 @@ export class AppInitializerService {
                 const queryParams = new URLSearchParams(shared_link.split('?')[1]);
                 const stateFilters = queryParams.get('stateFilters');
                 const kpiFilters = queryParams.get('kpiFilters');
+
+                console.log('stateFilters', stateFilters);
+                console.log('kpiFilters', kpiFilters);
 
                 if (stateFilters) {
                   let decodedStateFilters: string = '';
@@ -189,6 +195,7 @@ export class AppInitializerService {
                           decodedStateFilters = atob(longStateFiltersString);
                           this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
                         } else {
+                          console.log('else invalid url')
                           // this else block is for fallback scenario
                           this.router.navigate(['/dashboard/Error']); // Redirect to the error page
                           setTimeout(() => {
@@ -199,6 +206,7 @@ export class AppInitializerService {
                           });
                         }
                       } catch (error) {
+                        console.log('catch invalid url')
                         this.router.navigate(['/dashboard/Error']); // Redirect to the error page
                         setTimeout(() => {
                           this.sharedService.raiseError({
@@ -209,6 +217,7 @@ export class AppInitializerService {
                       }
                     });
                   } else {
+                    console.log('normal login')
                     decodedStateFilters = atob(stateFilters);
                     this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
                   }
@@ -220,6 +229,7 @@ export class AppInitializerService {
               // this.router.navigateByUrl(shared_link);
               // debugger
             } else {
+              console.log('localstorage not found')
               this.router.navigate(['/dashboard/iteration']);
             }
 
@@ -256,11 +266,11 @@ export class AppInitializerService {
     const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
     const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
 
+    localStorage.removeItem('shared_link');
     if (hasAccessToAll) {
-      localStorage.removeItem('shared_link');
       this.router.navigate([JSON.parse(JSON.stringify(url))]);
     } else {
-      localStorage.removeItem('shared_link');
+      // localStorage.removeItem('shared_link');
       this.router.navigate(['/dashboard/Error']);
       setTimeout(() => {
         this.sharedService.raiseError({
