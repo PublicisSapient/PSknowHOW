@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -278,4 +279,21 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 		return gson.toJson(collect, gsonType);
 	}
 
+	@ExceptionHandler(DuplicateReportException.class)
+	public ResponseEntity<ServiceResponse> handleDuplicateReportException(DuplicateReportException ex, WebRequest request) {
+		ServiceResponse response = new ServiceResponse(false, ex.getMessage(), null);
+		return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+	}
+
+	@ExceptionHandler(DuplicateKpiException.class)
+	public ResponseEntity<ServiceResponse> handleDuplicateKpiException(DuplicateKpiException ex, WebRequest request) {
+		ServiceResponse response = new ServiceResponse(false, ex.getMessage(), null);
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(ReportNotFoundException.class)
+	public ResponseEntity<ServiceResponse> handleReportNotFoundException(ReportNotFoundException ex, WebRequest request) {
+		ServiceResponse response = new ServiceResponse(false, ex.getMessage(), null);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	}
 }
