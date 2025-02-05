@@ -62,7 +62,9 @@ export class AppComponent implements OnInit {
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
       .subscribe(params => {
+        console.log('params ', params)
         if (!this.refreshCounter) {
+          console.log('params in ', params)
           let stateFiltersParam = params['stateFilters'];
           let kpiFiltersParam = params['kpiFilters'];
 
@@ -76,7 +78,7 @@ export class AppComponent implements OnInit {
             this.selectedTab = selectedTab.split('?statefilters=')[0];
             this.service.setSelectedBoard(this.selectedTab);
 
-            if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
+            if (stateFiltersParam?.length <= 8 || kpiFiltersParam?.length <= 8) {
               this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam).subscribe((response: any) => {
                 console.log('response app compo', response)
                 try {
