@@ -15,23 +15,22 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_1300;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1220;
 
-import java.util.Arrays;
-
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.Arrays;
 
 /**
  * @author kunkambl
  */
-@ChangeUnit(id = "r_update_sprint_velocity_maturity", order = "013001", author = "kunkambl", systemVersion = "13.0.0")
+@ChangeUnit(id = "update_sprint_velocity_maturity", order = "12201", author = "kunkambl", systemVersion = "12.2.0")
 public class SprintVelocityMaturityUpdate {
 	private MongoTemplate mongoTemplate;
 
@@ -43,8 +42,8 @@ public class SprintVelocityMaturityUpdate {
 	public void execute() {
 		Query query = new Query(Criteria.where("kpiId").is("kpi39"));
 		Update update = new Update();
-		update.set("maturityRange", null);
-		update.set("calculateMaturity", false);
+		update.set("maturityRange", Arrays.asList("1-2", "2-3", "3-4", "4-5", "5-6"));
+		update.set("calculateMaturity", true);
 		mongoTemplate.updateFirst(query, update, "kpi_master");
 	}
 
@@ -52,8 +51,8 @@ public class SprintVelocityMaturityUpdate {
 	public void rollback() {
 		Query query = new Query(Criteria.where("kpiId").is("kpi39"));
 		Update update = new Update();
-		update.set("maturityRange", Arrays.asList("1-2", "2-3", "3-4", "4-5", "5-6"));
-		update.set("calculateMaturity", true);
+		update.set("maturityRange", null);
+		update.set("calculateMaturity", false);
 		mongoTemplate.updateFirst(query, update, "kpi_master");
 	}
 

@@ -103,7 +103,7 @@
         </expiry>
 
         <!--Listeners can be used for debugging-->
-        <listeners>
+        <!--<listeners>
             <listener>
                 <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
                 <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
@@ -114,7 +114,7 @@
                 <events-to-fire-on>EXPIRED</events-to-fire-on>
                 <events-to-fire-on>REMOVED</events-to-fire-on>
             </listener>
-        </listeners>
+        </listeners>-->
 
         <!--<heap unit="entries">200</heap>-->
         <heap unit="MB">50</heap>
@@ -125,20 +125,6 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
-
         <heap unit="MB">50</heap>
     </cache>
 
@@ -146,20 +132,6 @@
         <expiry>
             <ttl unit="hours">2</ttl>
         </expiry>
-
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
 
         <heap unit="MB">50</heap>
     </cache>
@@ -169,20 +141,6 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
-
         <heap unit="MB">50</heap>
     </cache>
 
@@ -190,20 +148,6 @@
         <expiry>
             <ttl unit="hours">2</ttl>
         </expiry>
-
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
 
         <heap unit="MB">50</heap>
     </cache>
@@ -213,20 +157,6 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
-
         <heap unit="MB">50</heap>
     </cache>
 
@@ -234,20 +164,6 @@
         <expiry>
             <ttl unit="hours">2</ttl>
         </expiry>
-
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
 
         <heap unit="MB">50</heap>
     </cache>
@@ -257,20 +173,6 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
-
         <heap unit="MB">50</heap>
     </cache>
 
@@ -279,20 +181,6 @@
             <ttl unit="hours">2</ttl>
         </expiry>
 
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
-
         <heap unit="MB">50</heap>
     </cache>
 
@@ -300,20 +188,6 @@
         <expiry>
             <ttl unit="hours">2</ttl>
         </expiry>
-
-        <!--Listeners can be used for debugging-->
-        <listeners>
-            <listener>
-                <class>com.publicissapient.kpidashboard.apis.listener.CacheEventLogger</class>
-                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
-                <event-ordering-mode>UNORDERED</event-ordering-mode>
-                <events-to-fire-on>CREATED</events-to-fire-on>
-                <events-to-fire-on>UPDATED</events-to-fire-on>
-                <events-to-fire-on>EVICTED</events-to-fire-on>
-                <events-to-fire-on>EXPIRED</events-to-fire-on>
-                <events-to-fire-on>REMOVED</events-to-fire-on>
-            </listener>
-        </listeners>
 
         <heap unit="MB">50</heap>
     </cache>
