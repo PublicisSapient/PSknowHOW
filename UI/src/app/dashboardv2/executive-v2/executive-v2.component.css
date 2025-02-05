@@ -148,3 +148,7 @@
   right: 10px;
   top: 14px;
 }
+
+.card-vertical .card-body, .tab, .tab-content {
+  flex-grow: inherit;
+}

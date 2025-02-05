@@ -134,6 +134,8 @@ export class SharedService {
   selectedUrlFilters: string = '{}';
   refreshCounter: number = 0;
 
+  openAIModel = new EventEmitter();
+
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();

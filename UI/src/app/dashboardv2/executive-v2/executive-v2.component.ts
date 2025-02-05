@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef,EventEmitter } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -137,6 +137,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
   isFormRenderer : boolean = false;
+  formId : number = 2;
+  submit: EventEmitter<void> = new EventEmitter();
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
     private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef, private router: Router) {
@@ -212,6 +214,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
+    this.service.openAIModel.subscribe(value=>{
+      this.isFormRenderer = value;
+    })
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.resetToDefaults();
       this.selectedtype = data.selectedType;
@@ -2964,6 +2969,28 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       return kpi['isEnabled'];
     }
+  }
+
+  onSaveError(error) {
+    // When error will came at the time for form saving otherwise will not  execute
+  //  console.log("Responce came ",error)
+  }
+
+  onChange(event){
+    console.log("it will perform on any field change change",event)
+  }
+
+  onRender(event){
+    console.log("render Event",event)
+  }
+
+  OnSubmitDone(event){
+     console.log("on submit odne",event)
+     this.isFormRenderer = false;
+  }
+
+  OnDraftDone(event){
+  console.log("On draft donw",event)
   }
 
 }

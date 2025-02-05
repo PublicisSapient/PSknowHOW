@@ -28,9 +28,6 @@
                                 {{ tab }}
                             </div>
                         </div>
-                        <button (click)="isFormRenderer = true">
-                            click me
-                        </button>
                         <div class="p-grid justify-content-start p-pl-2 p-pr-2 p-m-0">
                             <ng-container
                                 *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
@@ -465,6 +462,13 @@
 </p-dialog>
 
 <p-dialog [(visible)]="isFormRenderer" [modal]="true" styleClass="field-mapping">
-    <form-submit></form-submit>
-    <!-- <form-build></form-build> -->
+    <form-submit [formId]="formId" [submit]="submit" (submitError)="onSaveError($event)" (submitDone)="OnSubmitDone($event)" (renderEvent)="onRender($event)"
+    (changeEvent)="onChange($event)" (draftDone)="OnDraftDone($event)" ></form-submit>
+
+    <!-- <button (click)="submit.emit()">test button</button> -->
+     <div class="p-d-flex p-justify-center p-mb-4">
+        <button pButton pRipple type="button" class="p-button-sm p-button-success p-button-raised"
+        iconPos="left" label="Submit" (click)="submit.emit()" ></button>
+     </div>
+
 </p-dialog>
