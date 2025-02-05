@@ -80,7 +80,7 @@ jobs:
       - name: SonarQube Analysis - UI  # Run static analysis
         run: |
           cd UI
-          sudo chown -R $(whoami) /home/runner/work/PSknowHOW/PSknowHOW/UI/node_modules
+          sudo chown -R $(whoami) /home/runner/work/PSknowHOW/PSknowHOW/UI/
           echo "sonar.branch.name=${{ env.GITHUB_HEAD_NAME }}" >> sonar-project.properties
           echo "sonar.host.url=${{ secrets.SONARQUBE_HOST }}" >> sonar-project.properties
           echo "sonar.login=${{ secrets.SONARQUBE_TOKEN }}" >> sonar-project.properties
