@@ -182,15 +182,18 @@ jobs:
   # ✅ Final Job to Ensure Completion
   GitHub_CI_Complete:
     needs: [processors_ci, ui_ci, customapi_ci]
-    if: always()  # Ensure it runs even if some jobs are skipped or fail
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Check Job Status
         run: |
           if [[ "${{ needs.processors_ci.result }}" == "failure" || \
                 "${{ needs.ui_ci.result }}" == "failure" || \
-                "${{ needs.customapi_ci.result }}" == "failure" ]]; then
-            echo "❌ One or more jobs failed. Failing CI."
+                "${{ needs.customapi_ci.result }}" == "failure" || \
+                "${{ needs.processors_ci.result }}" == "cancelled" || \
+                "${{ needs.ui_ci.result }}" == "cancelled" || \
+                "${{ needs.customapi_ci.result }}" == "cancelled" ]]; then
+            echo "❌ One or more jobs failed or were cancelled. Failing CI."
             exit 1
           else
             echo "✅ All relevant jobs have passed."
