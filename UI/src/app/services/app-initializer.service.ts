@@ -169,7 +169,7 @@ export class AppInitializerService {
               const shared_link = localStorage.getItem('shared_link');
               const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
               if (shared_link) {
-                localStorage.removeItem('shared_link');
+                // localStorage.removeItem('shared_link');
 
                 // Extract query parameters
                 const queryParams = new URLSearchParams(shared_link.split('?')[1]);
@@ -215,9 +215,9 @@ export class AppInitializerService {
 
                 }
               } else {
-                // this.router.navigate(['./dashboard/']);
-                this.router.navigateByUrl(shared_link);
+                this.router.navigate(['./dashboard/']);
               }
+              // this.router.navigateByUrl(shared_link);
               // debugger
             } else {
               this.router.navigate(['/dashboard/iteration']);
