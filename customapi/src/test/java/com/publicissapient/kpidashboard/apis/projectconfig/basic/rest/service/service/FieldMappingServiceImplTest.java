@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingStructureDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingMeta;
 import org.bson.types.ObjectId;
@@ -105,6 +106,9 @@ public class FieldMappingServiceImplTest {
 
 	@Mock
 	private CacheService cacheService;
+
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Mock
 	private TokenAuthenticationService tokenAuthenticationService;

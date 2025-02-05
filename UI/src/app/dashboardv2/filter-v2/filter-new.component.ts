@@ -1462,7 +1462,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         const selectedProject = projects.filter(x => x.nodeId === selectedSprints[0].parentId);
 
         this.filterApplyData['selectedMap']['project'] = [selectedProject[0].nodeId];
-        this.filterApplyData['selectedMap']['sprint'] = [selectedSprints[0].nodeId];
+        // this.filterApplyData['selectedMap']['sprint'] = [selectedSprints[0].nodeId];
 
       }
     })

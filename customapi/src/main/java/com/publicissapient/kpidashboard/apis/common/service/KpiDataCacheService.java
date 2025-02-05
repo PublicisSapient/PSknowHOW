@@ -52,6 +52,12 @@ public interface KpiDataCacheService {
 	 */
 	void clearCache(String basicProjectConfigId, String kpiId);
 
+    void clearCacheForProject(String basicProjectConfigId);
+
+	void clearCacheForSource(String source);
+
+	List<String> getKpiBasedOnSource(String source);
+
 	/**
 	 * Fetches data from DB for the given project and sprints combination. Data is
 	 * cached. Cache key - project basic config id and kpi id. Note: Data will be
