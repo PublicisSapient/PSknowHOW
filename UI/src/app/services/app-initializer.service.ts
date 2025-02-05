@@ -179,9 +179,6 @@ export class AppInitializerService {
                 const stateFilters = queryParams.get('stateFilters');
                 const kpiFilters = queryParams.get('kpiFilters');
 
-                console.log('stateFilters', stateFilters);
-                console.log('kpiFilters', kpiFilters);
-
                 if (stateFilters) {
                   let decodedStateFilters: string = '';
                   // let stateFiltersObj: Object = {};

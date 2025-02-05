@@ -75,7 +75,7 @@ export class AppComponent implements OnInit {
 
             if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
               this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam).subscribe((response: any) => {
-
+                console.log('response app compo', response)
                 try {
                   if (response.success) {
                     const longKPIFiltersString = response.data['longKPIFiltersString'];
@@ -91,6 +91,7 @@ export class AppComponent implements OnInit {
                       this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
                     }
 
+                    console.log('stateFiltersParam ', stateFiltersParam);
                     this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
                     this.refreshCounter++;
                   } else {
@@ -113,6 +114,7 @@ export class AppComponent implements OnInit {
                 }
               });
             } else {
+              console.log('not short url')
               try {
                 // let selectedTab = this.location.path();
                 // selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
