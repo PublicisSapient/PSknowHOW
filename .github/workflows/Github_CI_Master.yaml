@@ -65,7 +65,7 @@ jobs:
       - name: Install Dependencies & Build UI
         run: |
           cd UI
-          sudo chmod -R 777 /usr/local/lib/node_modules
+          sudo chown -R $(whoami) /usr/local/lib/node_modules
           sudo npm cache clean --force
           sudo npm install
           sudo npm install -g @angular/cli@14.2.6
@@ -80,7 +80,7 @@ jobs:
       - name: SonarQube Analysis - UI  # Run static analysis
         run: |
           cd UI
-          sudo chmod -R 777 /usr/local/lib/node_modules
+          sudo chown -R $(whoami) /home/runner/work/PSknowHOW/PSknowHOW/UI/
           echo "sonar.branch.name=${{ env.GITHUB_HEAD_NAME }}" >> sonar-project.properties
           echo "sonar.host.url=${{ secrets.SONARQUBE_HOST }}" >> sonar-project.properties
           echo "sonar.login=${{ secrets.SONARQUBE_TOKEN }}" >> sonar-project.properties
