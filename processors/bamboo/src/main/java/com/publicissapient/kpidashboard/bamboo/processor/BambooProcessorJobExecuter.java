@@ -31,6 +31,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
@@ -276,6 +277,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	private void processEachBambooJobOnJobType(List<ProcessorToolConnection> bambooJobList,
 			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, List<Build> activeBuildJobs,
 			List<Deployment> activeDeployJobs, ObjectId processorId, ProjectBasicConfig proBasicConfig) {
+		int count = 0;
 		for (ProcessorToolConnection bambooJobConfig : bambooJobList) {
 			processorToolConnectionService.validateConnectionFlag(bambooJobConfig);
 			String jobType = bambooJobConfig.getJobType();
@@ -289,13 +291,13 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			try {
 				BambooClient bambooClient = bambooClientFactory.getBambooClient(jobType);
 				if (BUILD.equalsIgnoreCase(jobType)) {
-					newBuildCount = processBuildJob(bambooClient, bambooJobConfig, processorExecutionTraceLog,
-							activeBuildJobs, newBuildCount, processorId, proBasicConfig);
+					count = processBuildJob(bambooClient, bambooJobConfig, processorExecutionTraceLog, activeBuildJobs,
+							count, processorId, proBasicConfig);
 				} else {
 					processDeployJob(bambooClient, existingDeployJobs, bambooJobConfig, processorExecutionTraceLog,
 							activeDeployJobs, processorId, proBasicConfig);
 				}
-
+				newBuildCount += count;
 			} catch (MalformedURLException | ParseException rcp) {
 				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 				processorExecutionTraceLog.setExecutionSuccess(false);
@@ -307,6 +309,10 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				MDC.remove("JobName");
 				MDC.remove("bambooInstanceUrl");
 			}
+		}
+		if (count > 0 || !activeDeployJobs.isEmpty()) {
+			cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, CommonConstant.JENKINS,
+					proBasicConfig.getId().toString());
 		}
 	}
 
@@ -534,6 +540,47 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			log.info("[BAMBOO-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache: {} ", cacheName);
 		} else {
 			log.error("[BAMBOO-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
+		}
+	}
+
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param param1
+	 *            parameter 1
+	 * @param param2
+	 *            parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(bambooConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
 		}
 	}
 
