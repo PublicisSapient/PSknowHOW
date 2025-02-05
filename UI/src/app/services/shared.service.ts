@@ -372,7 +372,7 @@ export class SharedService {
 
   private tempStateFilters = null;
   setBackupOfFilterSelectionState(selectedFilterObj) {
-    const routerUrl = this.router.url;
+    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
     console.log('routerUrl', routerUrl);
     const segments = typeof routerUrl === 'string' && routerUrl?.split('/');
     const hasConfig = segments && segments.includes('Config');
@@ -450,7 +450,6 @@ export class SharedService {
       this.router.navigate([], {
         queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr }, // Pass the object here
         relativeTo: this.route,
-        queryParamsHandling: 'merge'
       });
     }
     this.selectedFilterOption.next(value);
