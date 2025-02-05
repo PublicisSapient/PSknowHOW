@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { SharedService } from './services/shared.service';
 import { GetAuthService } from './services/getauth.service';
@@ -9,7 +9,7 @@ import { Router, ActivatedRoute, NavigationEnd, RouteConfigLoadEnd, RouteConfigL
 import { PrimeNGConfig } from 'primeng/api';
 import { HelperService } from './services/helper.service';
 import { Location } from '@angular/common';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { CommonModule, DatePipe } from '@angular/common';
 
 describe('AppComponent', () => {
@@ -40,7 +40,7 @@ describe('AppComponent', () => {
     ]);
 
     getAuthServiceMock = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
-    const httpServiceMock = jasmine.createSpyObj('HttpService', [], { currentVersion: '1.0.0' });
+    const httpServiceMock = jasmine.createSpyObj('HttpService', ['handleRestoreUrl'], { currentVersion: '1.0.0' });
     const googleAnalyticsServiceMock = jasmine.createSpyObj('GoogleAnalyticsService', ['setPageLoad']);
     const getAuthorizationServiceMock = jasmine.createSpyObj('GetAuthorizationService', ['getRole']);
     const helperServiceMock = jasmine.createSpyObj('HelperService', ['setBackupOfUrlFilters']);
@@ -202,51 +202,42 @@ describe('AppComponent', () => {
     expect(routerMock.navigate).toHaveBeenCalledWith(['./dashboard/']);
   });
 
-
-
-
-
-
-
-
-
-
-  it('should navigate to the provided URL if the user has access to all projects', () => {
+  it('should navigate to the provided URL if the user has access to all projects', fakeAsync(() => {
     const decodedStateFilters = JSON.stringify({
-      parent_level: { basicProjectConfigId: 'project1' },
+      parent_level: { basicProjectConfigId: 'project1', labelName: 'Project' },
       primary_level: []
     });
-    const stateFiltersObj = {};
     const currentUserProjectAccess = [{ projectId: 'project1' }];
     const url = 'http://example.com';
 
     spyOn(component, 'urlRedirection').and.callThrough();
 
-    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, true);
+    component.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, true);
 
-    expect(component.urlRedirection).toHaveBeenCalledWith(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, true);
-    // expect(router.navigate).toHaveBeenCalledWith([JSON.parse(JSON.stringify(url))]);
-  });
+    tick();
+    expect(component.urlRedirection).toHaveBeenCalledWith(decodedStateFilters, currentUserProjectAccess, url, true);
+    expect(router.navigate).toHaveBeenCalledWith([url]);
+  }));
 
-  it('should navigate to the error page if the user does not have access to the project', () => {
+  it('should navigate to the error page if the user does not have access to the project', fakeAsync(() => {
     const decodedStateFilters = JSON.stringify({
-      parent_level: { basicProjectConfigId: 'project1' },
+      parent_level: { basicProjectConfigId: 'project1', labelName: 'Project' },
       primary_level: []
     });
-    const stateFiltersObj = {};
     const currentUserProjectAccess = [{ projectId: 'project2' }];
     const url = 'http://example.com';
 
     spyOn(component, 'urlRedirection').and.callThrough();
 
-    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, false);
+    component.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, false);
 
-    expect(component.urlRedirection).toHaveBeenCalledWith(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, false);
-    // expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-    // expect(sharedServiceMock.raiseError).toHaveBeenCalledWith({
-    //   status: 901,
-    //   message: 'No project access.'
-    // });
-  });
+    tick();
+    expect(component.urlRedirection).toHaveBeenCalledWith(decodedStateFilters, currentUserProjectAccess, url, false);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+    expect(sharedServiceMock.raiseError).toHaveBeenCalledWith({
+      status: 901,
+      message: 'No project access.'
+    });
+  }));
 
 });

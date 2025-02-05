@@ -40,6 +40,7 @@ export class AppComponent implements OnInit {
   refreshCounter: number = 0;
   self: any = this;
   selectedTab: string = '';
+
   @HostListener('window:scroll', ['$event'])
   onScroll(event) {
     const header = document.querySelector('.header');
@@ -181,14 +182,14 @@ export class AppComponent implements OnInit {
 
       if (stateFilters && stateFilters.length > 0) {
         let decodedStateFilters: string = '';
-        let stateFiltersObj: Object = {};
+        // let stateFiltersObj: Object = {};
 
         if (stateFilters?.length <= 8) {
           this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
             if (response.success) {
               const longStateFiltersString = response.data['longStateFiltersString'];
               decodedStateFilters = atob(longStateFiltersString);
-              this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin);
+              this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, ifSuperAdmin);
             } else {
               this.router.navigate(['/dashboard/Error']);
               setTimeout(() => {
@@ -201,7 +202,7 @@ export class AppComponent implements OnInit {
           });
         } else {
           decodedStateFilters = atob(stateFilters);
-          this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin);
+          this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, ifSuperAdmin);
         }
       }
 
@@ -210,10 +211,9 @@ export class AppComponent implements OnInit {
     }
   }
 
-  urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url, ifSuperAdmin) {
-    let stateFiltersObjLocal = stateFiltersObj;
-
-    stateFiltersObjLocal = JSON.parse(decodedStateFilters);
+  urlRedirection(decodedStateFilters, currentUserProjectAccess, url, ifSuperAdmin) {
+    const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
+    console.log('stateFiltersObjLocal', stateFiltersObjLocal);
 
     let stateFilterObj = [];
     let projectLevelSelected = false;
@@ -222,6 +222,8 @@ export class AppComponent implements OnInit {
     } else {
       stateFilterObj = stateFiltersObjLocal['primary_level'];
     }
+
+    console.log('stateFilterObj', stateFilterObj);
 
     projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
 
@@ -234,17 +236,18 @@ export class AppComponent implements OnInit {
     // Superadmin have all project access hence no need to check project for superadmin
     const hasAccessToAll = ifSuperAdmin || hasAllProjectAccess;
 
+    console.log('hasAccessToAll', hasAccessToAll);
+    console.log('projectLevelSelected', projectLevelSelected);
+
     if (projectLevelSelected) {
       if (hasAccessToAll) {
         this.router.navigate([JSON.parse(JSON.stringify(url))]);
       } else {
         this.router.navigate(['/dashboard/Error']);
-        setTimeout(() => {
-          this.service.raiseError({
-            status: 901,
-            message: 'No project access.',
-          });
-        }, 100);
+        this.service.raiseError({
+          status: 901,
+          message: 'No project access.',
+        });
       }
     }
   }

@@ -129,7 +129,7 @@ export class LoginComponent implements OnInit {
 
           if (stateFilters) {
             let decodedStateFilters: string = '';
-            let stateFiltersObj: Object = {};
+            // let stateFiltersObj: Object = {};
 
             if (stateFilters?.length <= 8) {
               this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
@@ -138,7 +138,7 @@ export class LoginComponent implements OnInit {
                   if (response.success) {
                     const longStateFiltersString = response.data['longStateFiltersString'];
                     decodedStateFilters = atob(longStateFiltersString);
-                    this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+                    this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url);
                   } else {
                     // this else block is for fallback scenario
                     this.router.navigate(['/dashboard/Error']); // Redirect to the error page
@@ -161,7 +161,7 @@ export class LoginComponent implements OnInit {
               });
             } else {
               decodedStateFilters = atob(stateFilters);
-              this.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+              this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url);
             }
 
           }
@@ -172,9 +172,8 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url) {
-    let stateFiltersObjLocal = stateFiltersObj;
-    stateFiltersObjLocal = JSON.parse(decodedStateFilters);
+  urlRedirection(decodedStateFilters, currentUserProjectAccess, url) {
+    const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
 
     let stateFilterObj = [];
 

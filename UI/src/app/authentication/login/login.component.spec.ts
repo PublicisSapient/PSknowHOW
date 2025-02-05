@@ -193,7 +193,7 @@ describe('LoginComponent', () => {
 
     mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_USER']);
 
-    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+    component.urlRedirection(decodedStateFilters, currentUserProjectAccess, url);
 
     expect(router.navigate).toHaveBeenCalledWith([JSON.parse(JSON.stringify(url))]);
   });
@@ -209,7 +209,7 @@ describe('LoginComponent', () => {
 
     mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_SUPERADMIN']);
 
-    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+    component.urlRedirection(decodedStateFilters, currentUserProjectAccess, url);
 
     expect(router.navigate).toHaveBeenCalledWith([JSON.parse(JSON.stringify(url))]);
   });
@@ -225,7 +225,7 @@ describe('LoginComponent', () => {
 
     mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_USER']);
 
-    component.urlRedirection(decodedStateFilters, stateFiltersObj, currentUserProjectAccess, url);
+    component.urlRedirection(decodedStateFilters, currentUserProjectAccess, url);
 
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
   });
