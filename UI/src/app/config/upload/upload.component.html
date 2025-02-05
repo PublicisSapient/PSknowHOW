@@ -60,7 +60,7 @@
                   <ng-select formControlName="selectedProjectValue"
                     (change)="handleIterationFilters('project', false)" placeholder="Project" [clearable]="false"
                     class="p-pb-0">
-                    <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
+                    <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeDisplayName}}
                     </ng-option>
                   </ng-select>
                 </div>
