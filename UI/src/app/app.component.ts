@@ -66,8 +66,11 @@ export class AppComponent implements OnInit {
           let stateFiltersParam = params['stateFilters'];
           let kpiFiltersParam = params['kpiFilters'];
 
+          console.log('stateFiltersParam ', stateFiltersParam);
+          console.log('kpiFiltersParam ', kpiFiltersParam);
+
           if (stateFiltersParam?.length) {
-            let selectedTab = this.location.path();
+            let selectedTab = decodeURIComponent(this.location.path());
             selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
             selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
             this.selectedTab = selectedTab.split('?statefilters=')[0];
