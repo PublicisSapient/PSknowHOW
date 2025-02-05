@@ -65,7 +65,6 @@ jobs:
       - name: Install Dependencies & Build UI
         run: |
           cd UI
-          sudo chown -R $(whoami) /home/runner/work/PSknowHOW/PSknowHOW/UI/node_modules
           sudo chown -R $(whoami) /usr/local/lib/node_modules
           sudo npm cache clean --force
           sudo npm install
