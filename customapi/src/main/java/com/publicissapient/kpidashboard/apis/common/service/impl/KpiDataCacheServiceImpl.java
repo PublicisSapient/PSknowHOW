@@ -18,12 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.bson.types.ObjectId;
@@ -76,6 +76,46 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 		log.info("Evict KPI cache for project id - {} and kpi - {}", basicProjectConfigId, kpiId);
 	}
 
+	@Override
+	public void clearCacheForProject(String basicProjectConfigId) {
+		log.info("Evict KPI data cache for project - {} ", basicProjectConfigId);
+		Cache cache = cacheManager.getCache(Constant.CACHE_PROJECT_KPI_DATA);
+		if (null != cache) {
+			ConcurrentHashMap<Object, Object> map = (ConcurrentHashMap<Object, Object>) cache.getNativeCache();
+			Set<Object> keys = map.keySet();
+			keys.forEach(key -> {
+				if (key.toString().startsWith(basicProjectConfigId)) {
+					cache.evict(key);
+				}
+			});
+		}
+	}
+
+	@Override
+	public void clearCacheForSource(String source) {
+		List<String> kpiList = getKpiBasedOnSource(source);
+		kpiList.forEach(this::clearCache);
+	}
+
+	@Override
+	public List<String> getKpiBasedOnSource(String source) {
+		Map<String, List<String>> kpiMap = new HashMap<>();
+		kpiMap.put(KPISource.JIRA.name(),
+				List.of(KPICode.ISSUE_COUNT.getKpiId(), KPICode.COMMITMENT_RELIABILITY.getKpiId(),
+						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId()));
+		kpiMap.put(KPISource.JIRAKANBAN.name(), new ArrayList<>());
+		kpiMap.put(KPISource.SONAR.name(), new ArrayList<>());
+		kpiMap.put(KPISource.SONARKANBAN.name(), new ArrayList<>());
+		kpiMap.put(KPISource.BITBUCKET.name(), new ArrayList<>());
+		kpiMap.put(KPISource.BITBUCKETKANBAN.name(), new ArrayList<>());
+		kpiMap.put(KPISource.JENKINS.name(), List.of(KPICode.BUILD_FREQUENCY.getKpiId()));
+		kpiMap.put(KPISource.JENKINSKANBAN.name(), new ArrayList<>());
+		kpiMap.put(KPISource.ZEPHYR.name(), new ArrayList<>());
+		kpiMap.put(KPISource.ZEPHYRKANBAN.name(), new ArrayList<>());
+
+		return kpiMap.getOrDefault(source, new ArrayList<>());
+	}
+
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public Map<String, Object> fetchIssueCountData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
@@ -112,7 +152,7 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public Map<String, Object> fetchCommitmentReliabilityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-															  List<String> sprintList, String kpiId) {
+			List<String> sprintList, String kpiId) {
 		log.info("Fetching Commitment Reliability KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
 				kpiId);
 		return kpiDataProvider.fetchCommitmentReliabilityData(kpiRequest, basicProjectConfigId, sprintList);

@@ -24,6 +24,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,8 @@ import com.publicissapient.kpidashboard.common.repository.application.Deployment
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+
+import java.util.List;
 
 /**
  * @author anisingh4
@@ -63,6 +67,9 @@ public class BuildDataCleanUpServiceTest {
 	@Mock
 	private CacheService cacheService;
 
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
+
 	@InjectMocks
 	private BuildDataCleanUpService buildDataCleanupService;
 	@Mock
@@ -81,6 +88,8 @@ public class BuildDataCleanUpServiceTest {
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5e9db8f1e4b0caefbfa8e0c7"));
 		projectToolConfig.setToolName(ProcessorConstants.JENKINS);
 		when(projectToolConfigRepository.findById(Mockito.anyString())).thenReturn(projectToolConfig);
+		when(kpiDataCacheService.getKpiBasedOnSource(Mockito.anyString()))
+				.thenReturn(List.of(KPICode.BUILD_FREQUENCY.getKpiId()));
 		doNothing().when(buildRepository).deleteByProjectToolConfigId(projectToolConfig.getId());
 		doNothing().when(processorItemRepository).deleteByToolConfigId(Mockito.any(ObjectId.class));
 		doNothing().when(processorExecutionTraceLogRepository)

@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.CACHE_TOOL_CONFIG_MAP;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,8 @@ import com.publicissapient.kpidashboard.common.repository.application.Deployment
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+
+import java.util.List;
 
 /**
  * @author anisingh4
@@ -50,6 +54,9 @@ public class BuildDataCleanUpService implements ToolDataCleanUpService {
 
 	@Autowired
 	private CacheService cacheService;
+
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Autowired
 	private DeploymentRepository deploymentRepository;
@@ -81,6 +88,9 @@ public class BuildDataCleanUpService implements ToolDataCleanUpService {
 
 			cacheService.clearCache(CACHE_TOOL_CONFIG_MAP);
 			cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
+			List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.JENKINS.name());
+			kpiList.forEach(
+					kpiId -> kpiDataCacheService.clearCache(tool.getBasicProjectConfigId().toHexString(), kpiId));
 
 		}
 	}
