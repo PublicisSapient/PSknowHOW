@@ -101,7 +101,6 @@ import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-ch
 import { CommentsComponent } from './component/comments/comments.component';
 import { CommentsV2Component } from './component/comments-v2/comments-v2.component';
 import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
-import { CumulativeLineChartComponent } from './component/cumulative-line-chart/cumulative-line-chart.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 import { FeedbackComponent } from './feedback/feedback.component';
@@ -178,7 +177,6 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         UnauthorisedAccessComponent,
         GroupBarChartComponent,
         HorizontalPercentBarChartComponent,
-        CumulativeLineChartComponent,
         StackedAreaChartComponent,
         FeedbackComponent,
         KpiTableComponent,

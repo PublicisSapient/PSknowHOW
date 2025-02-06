@@ -76,6 +76,7 @@ import { TrendIndicatorV2Component } from '../dashboardv2/trend-indicator-v2/tre
 import { HeaderComponent } from '../dashboardv2/header-v2/header.component';
 
 import { RecentCommentsComponent } from '../component/recent-comments/recent-comments.component';
+import { CumulativeLineChartComponent } from '../component/cumulative-line-chart/cumulative-line-chart.component';
 
 
 @NgModule({
@@ -137,7 +138,8 @@ import { RecentCommentsComponent } from '../component/recent-comments/recent-com
     HorizontalPercentBarChartv2Component,
     ChartWithFiltersComponent,
     HeaderComponent,
-    RecentCommentsComponent
+    RecentCommentsComponent,
+    CumulativeLineChartComponent
   ],
   declarations: [
     ProjectFilterComponent,
@@ -171,7 +173,8 @@ import { RecentCommentsComponent } from '../component/recent-comments/recent-com
     TooltipV2Component,
     HorizontalPercentBarChartv2Component,
     HeaderComponent,
-    RecentCommentsComponent
+    RecentCommentsComponent,
+    CumulativeLineChartComponent
 
   ],
   providers: [ConfirmationService, KpiHelperService]
