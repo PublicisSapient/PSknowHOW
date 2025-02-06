@@ -26,54 +26,54 @@ import { DecodeUrlGuard } from './decodeURL.guard';
 })
 export class AppInitializerService {
 
-    constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
+  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
+  }
+  commonRoutes: Routes = [
+    { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+    { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+    // {
+    //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+    //     // data: {
+    //     //     feature: "Iteration"
+    //     // }
+    // },
+    {
+      path: 'kpi-maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+      data: {
+        feature: "Maturity"
+      }
     }
-    commonRoutes: Routes = [
-        { path: '', redirectTo: 'iteration', pathMatch: 'full' },
-        { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-        // {
-        //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
-        //     // data: {
-        //     //     feature: "Iteration"
-        //     // }
-        // },
+  ];
+  routes: Routes = [
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    {
+      path: 'authentication',
+      loadChildren: () => import('../../app/authentication/authentication.module').then(m => m.AuthenticationModule),
+      resolve: [Logged],
+      canActivate: [SSOGuard]
+    },
+    {
+      path: 'dashboard', component: DashboardV2Component,
+      canActivateChild: [FeatureGuard],
+      children: [
+        ...this.commonRoutes,
         {
-            path: 'kpi-maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
-            data: {
-                feature: "Maturity"
-            }
-        }
-    ];
-    routes: Routes = [
-        { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-        {
-            path: 'authentication',
-            loadChildren: () => import('../../app/authentication/authentication.module').then(m => m.AuthenticationModule),
-            resolve: [Logged],
-            canActivate: [SSOGuard]
+          path: 'Config',
+          loadChildren: () => import('../../app/config/config.module').then(m => m.ConfigModule),
+          data: {
+            feature: "Config"
+          }
         },
         {
-            path: 'dashboard', component: DashboardV2Component,
-            canActivateChild: [FeatureGuard],
-            children: [
-                ...this.commonRoutes,
-                {
-                    path: 'Config',
-                    loadChildren: () => import('../../app/config/config.module').then(m => m.ConfigModule),
-                    data: {
-                        feature: "Config"
-                    }
-                },
-                {
-                    path: 'Report',
-                    loadChildren: () => import('../../app/dashboardv2/reports-module/reports-module.module').then(m => m.ReportsModuleModule),
-                    data: {
-                        feature: "Report"
-                    }
-                },
-                { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
-                { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-                { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+          path: 'Report',
+          loadChildren: () => import('../../app/dashboardv2/reports-module/reports-module.module').then(m => m.ReportsModuleModule),
+          data: {
+            feature: "Report"
+          }
+        },
+        { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
+        { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+        { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
       ], canActivate: [AuthGuard],
     },
