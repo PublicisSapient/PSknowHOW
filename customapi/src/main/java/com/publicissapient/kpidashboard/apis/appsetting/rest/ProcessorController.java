@@ -163,7 +163,7 @@ public class ProcessorController {
 	}
 
 	@PostMapping(path = "/metadata/step/{projectBasicConfigId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasPermission(#projectBasicConfigIds, 'TRIGGER_PROCESSOR')")
+	@PreAuthorize("hasPermission(#projectBasicConfigId, 'TRIGGER_PROCESSOR')")
 	public ResponseEntity<ServiceResponse> triggerMetaDataStep(@PathVariable String projectBasicConfigId) {
 		ServiceResponse response = processorService.runMetadataStep(projectBasicConfigId);
 		HttpStatus responseStatus = HttpStatus.OK;
