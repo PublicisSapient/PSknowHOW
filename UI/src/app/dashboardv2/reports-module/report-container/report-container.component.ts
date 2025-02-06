@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReportContainerComponent implements OnInit {
   chartData: any;
+  widthObj = {100: 'p-col-12', 50: 'p-col-6', 66: 'p-col-8', 33: 'p-col-4'};
   constructor() { }
 
   ngOnInit(): void {
@@ -19,27 +20,17 @@ export class ReportContainerComponent implements OnInit {
     console.log(this.chartData);
   }
 
+
+/**
+   * Retrieves the width value associated with the specified KPI width key.
+   * If the key does not exist, it defaults to 'p-col-6'.
+   * 
+   * @param kpiwidth - The key for which to retrieve the width value.
+   * @returns The width value as a string, or 'p-col-6' if the key is not found.
+   * @throws No exceptions are thrown.
+   */
   getkpiwidth(kpiwidth) {
-    let retValue = '';
-
-    switch (kpiwidth) {
-      case 100:
-        retValue = 'p-col-12';
-        break;
-      case 50:
-        retValue = 'p-col-6';
-        break;
-      case 66:
-        retValue = 'p-col-8';
-        break;
-      case 33:
-        retValue = 'p-col-4';
-        break;
-      default:
-        retValue = 'p-col-6';
-        break;
-    }
-
+    let retValue = this.widthObj[kpiwidth] ? this.widthObj[kpiwidth] : 'p-col-6';
     return retValue;
   }
 

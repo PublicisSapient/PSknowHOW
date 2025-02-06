@@ -6,22 +6,11 @@ import { KpiHelperService } from 'src/app/services/kpi-helper.service';
   templateUrl: './report-kpi-card.component.html',
   styleUrls: ['./report-kpi-card.component.css']
 })
-export class ReportKpiCardComponent implements OnInit {
+export class ReportKpiCardComponent {
   @Input() kpiData: any;
   @Input() currentChartData: any;
   @Input() colors: any;
   constructor(private kpiHelperService: KpiHelperService) { }
-
-  ngOnInit(): void {
-    console.log(this.colors);
-  }
-
-  showCummalative() {
-    if (this.kpiData?.kpiDetail?.chartType === 'stacked-bar') {
-      return this.kpiHelperService.convertToHoursIfTime(this.currentChartData.totalCount, 'day')
-    }
-    return this.currentChartData.totalCount
-  }
 
   checkIfZeroData(data) {
     return true;
