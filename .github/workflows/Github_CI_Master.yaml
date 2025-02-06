@@ -69,7 +69,7 @@ jobs:
           sudo npm cache clean --force
           sudo npm install
           sudo npm install -g @angular/cli@14.2.6
-          sudo npm run build
+          sudo npm run build:dev
 
       - name: Run UI Unit Tests
         run: |

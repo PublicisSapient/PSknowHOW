@@ -10,6 +10,26 @@
       <img src="assets/img/PSKnowHowLogo.svg" alt="Logo"/>
     </div>
 
+    <!-- Report and Dashboard Navigation -->
+    <div class="tab-container" *ngIf="reportModuleEnabled">
+      <div class="tab-buttons">
+        <div class="tab-button" *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')">
+          <button pButton pRipple class="p-button-outlined" [disabled]="backToDashboardLoader" routerLinkActive="active"
+            icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="DASHBOARD"
+            (click)="navigateToDashboard()"></button>
+        </div>
+        <div class="tab-button">
+          <button [ngClass]="{active: router.url.indexOf('Report') === -1 }" routerLink="['/dashboard/{{sharedService.getSelectedTab()}}']" label="DASHBOARD">Dashboard</button>
+        </div>
+        <div class="tab-button">
+          <button routerLinkActive="active" [routerLink]="['/dashboard/Report/default-report']" [routerLinkActiveOptions]="{ exact: true }" label="REPORTS">Reports</button>
+        </div>
+      </div>
+    </div>
+    <!-- Report and Dashboard Navigation End -->
+
+
+
     <div class="p-d-flex p-align-center p-p-1">
       <app-recent-comments></app-recent-comments>
 
