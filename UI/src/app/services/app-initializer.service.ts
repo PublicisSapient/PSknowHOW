@@ -64,6 +64,13 @@ export class AppInitializerService {
                         feature: "Config"
                     }
                 },
+                {
+                    path: 'Report',
+                    loadChildren: () => import('../../app/dashboardv2/reports-module/reports-module.module').then(m => m.ReportsModuleModule),
+                    data: {
+                        feature: "Report"
+                    }
+                },
                 { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
                 { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
                 { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
