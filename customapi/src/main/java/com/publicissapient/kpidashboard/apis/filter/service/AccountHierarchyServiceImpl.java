@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +58,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
  * @author pkum34
  */
 @Service
+@Slf4j
 public class AccountHierarchyServiceImpl
 		implements AccountHierarchyService<List<AccountHierarchyData>, Set<AccountFilteredData>> {
 
@@ -93,6 +95,7 @@ public class AccountHierarchyServiceImpl
 		hierarchyDataAll = filterHelperService
 				.getAccountHierarchyDataForRequest(new HashSet<>(request.getSprintIncluded()), hierarchyDataAll);
 		Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
+		log.info("GS List of sprintHierarchyLevel {}", basicProjectConfigIds);
 		if (!authorizedProjectsService.ifSuperAdminUser() && CollectionUtils.isNotEmpty(hierarchyDataAll)) {
 			hierarchyDataAll = hierarchyDataAll.stream()
 					.filter(data -> basicProjectConfigIds.contains(data.getBasicProjectConfigId().toHexString()))
@@ -139,11 +142,13 @@ public class AccountHierarchyServiceImpl
 	public List<AccountHierarchyData> createHierarchyData() {
 
 		List<AccountHierarchy> filterDataList = accountHierarchyRepository.findAll();
+		log.info("GS filterDataList {}", filterDataList);
 		Map<String, List<AccountHierarchy>> parentWiseMap = filterDataList.stream()
 				.filter(fd -> fd.getParentId() != null).collect(Collectors.groupingBy(AccountHierarchy::getParentId));
 
 		List<AccountHierarchyData> listHierarchyData = new ArrayList<>();
 		String firstLevel = filterHelperService.getFirstHierarachyLevel();
+		log.info("GS firstLevel {}", firstLevel);
 
 		Map<String, Integer> hierarchyLevelIdMap = filterHelperService.getHierarchyIdLevelMap(false);
 
@@ -153,6 +158,7 @@ public class AccountHierarchyServiceImpl
 		List<String> sprintIds = filterDataList.stream()
 				.filter(x -> CommonConstant.HIERARCHY_LEVEL_ID_SPRINT.equalsIgnoreCase(x.getLabelName()))
 				.map(AccountHierarchy::getNodeId).collect(Collectors.toList());
+		log.info("GS sprintIds {}", sprintIds);
 		Map<String, SprintDetails> sprintDetailsMap = fetchSprintDetailsOf(sprintIds);
 
 		parentWiseSprintMap = filterDataList.stream()
@@ -188,7 +194,7 @@ public class AccountHierarchyServiceImpl
 						hierarchyLevelIdMap, limitedDisplayMap, sprintDetailsMap);
 			});
 		}
-
+		log.info("GS List of listHierarchyData {}", listHierarchyData);
 		return listHierarchyData;
 	}
 
@@ -360,6 +366,7 @@ public class AccountHierarchyServiceImpl
 		if (sprintDetails != null) {
 			hierarchy.setSprintState(sprintDetails.getState());
 		}
+		log.info("GS setValuesInAccountHierarchyData ");
 		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(), hierarchy.getParentId(),
 				hierarchy.getLabelName(), hierarchy);
 		node.setLevel(hierarchyLevelIdMap.getOrDefault(hierarchy.getLabelName(), 0));
