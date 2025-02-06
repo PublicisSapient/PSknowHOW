@@ -78,7 +78,7 @@ export class AppComponent implements OnInit {
             this.selectedTab = selectedTab.split('?statefilters=')[0];
             this.service.setSelectedBoard(this.selectedTab);
 
-            if (stateFiltersParam?.length <= 8 || kpiFiltersParam?.length <= 8) {
+            if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
               this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam).subscribe((response: any) => {
                 console.log('response app compo', response)
                 try {
