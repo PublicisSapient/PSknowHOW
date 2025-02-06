@@ -7,7 +7,7 @@
 // @import '@trmt/form-engine-service-lib/styles/imports/quill';
 
 
-form-submit, form-build, form-custom-component-build, .gu-mirror, .formio-dialog {
+form-submit {
 
   label {
     background-color: white !important
@@ -16,6 +16,8 @@ form-submit, form-build, form-custom-component-build, .gu-mirror, .formio-dialog
   @import '@trmt/form-engine-service-lib/styles/formio';
   @import '@trmt/form-engine-service-lib/styles/imports/bootstrap';
   @import '@trmt/form-engine-service-lib/styles/primeng';
+  @import '@trmt/form-engine-service-lib/styles/imports/quill';
+  @import '@trmt/form-engine-service-lib/styles/imports/font-awesome';
 }
 
 

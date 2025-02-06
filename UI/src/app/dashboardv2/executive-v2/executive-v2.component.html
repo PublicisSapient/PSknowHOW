@@ -462,8 +462,15 @@
 </p-dialog>
 
 <p-dialog [(visible)]="isFormRenderer" [modal]="true" styleClass="field-mapping">
-    <form-submit [formId]="formId" [submit]="submit" (submitError)="onSaveError($event)" (submitDone)="OnSubmitDone($event)" (renderEvent)="onRender($event)"
-    (changeEvent)="onChange($event)" (draftDone)="OnDraftDone($event)" ></form-submit>
+    <form-submit *ngIf="isFormRenderer"[formId]="formId" 
+    [submit]="submit" 
+    (submitError)="onSaveError($event)" 
+    (submitDone)="OnSubmitDone($event)" 
+    (renderEvent)="onRender($event)"
+    (changeEvent)="onChange($event)" 
+    (draftDone)="OnDraftDone($event)"
+    (canSubmit)="canSubmit($event)"
+    (loadError)="onLoadError($event)" ></form-submit>
 
     <!-- <button (click)="submit.emit()">test button</button> -->
      <div class="p-d-flex p-justify-center p-mb-4">

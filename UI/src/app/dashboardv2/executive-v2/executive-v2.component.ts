@@ -2973,7 +2973,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   onSaveError(error) {
     // When error will came at the time for form saving otherwise will not  execute
-  //  console.log("Responce came ",error)
+   console.log("Responce came ",error)
   }
 
   onChange(event){
@@ -2993,4 +2993,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   console.log("On draft donw",event)
   }
 
+  canSubmit(event){
+   console.log("this is can submit()",event)
+  }
+
+  onLoadError(evet){
+   console.log("this is load erro",evet)
+  }
 }
