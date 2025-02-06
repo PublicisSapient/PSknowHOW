@@ -26,6 +26,8 @@ import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, Activa
 import { PrimeNGConfig } from 'primeng/api';
 import { HelperService } from './services/helper.service';
 import { Location } from '@angular/common';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -62,14 +64,9 @@ export class AppComponent implements OnInit {
     /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
       .subscribe(params => {
-        console.log('params ', params)
         if (!this.refreshCounter) {
-          console.log('params in ', params)
           let stateFiltersParam = params['stateFilters'];
           let kpiFiltersParam = params['kpiFilters'];
-
-          console.log('stateFiltersParam ', stateFiltersParam);
-          console.log('kpiFiltersParam ', kpiFiltersParam);
 
           if (stateFiltersParam?.length) {
             let selectedTab = decodeURIComponent(this.location.path());
@@ -79,9 +76,21 @@ export class AppComponent implements OnInit {
             this.service.setSelectedBoard(this.selectedTab);
 
             if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
-              this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam).subscribe((response: any) => {
-                console.log('response app compo', response)
-                try {
+              this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
+                .pipe(
+                  catchError((error) => {
+                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                    setTimeout(() => {
+                      this.service.raiseError({
+                        status: 900,
+                        message: error.message || 'Invalid URL.'
+                      });
+                    });
+
+                    return throwError(error);  // Re-throw the error so it can be caught by a global error handler if needed
+                  })
+                )
+                .subscribe((response: any) => {
                   if (response.success) {
                     const longKPIFiltersString = response.data['longKPIFiltersString'];
                     const longStateFiltersString = response.data['longStateFiltersString'];
@@ -96,30 +105,11 @@ export class AppComponent implements OnInit {
                       this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
                     }
 
-                    console.log('stateFiltersParam ', stateFiltersParam);
                     this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
                     this.refreshCounter++;
-                  } else {
-                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                    setTimeout(() => {
-                      this.service.raiseError({
-                        status: 900,
-                        message: response.message || 'Invalid URL.'
-                      });
-                    });
                   }
-                } catch (error) {
-                  this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                  setTimeout(() => {
-                    this.service.raiseError({
-                      status: 900,
-                      message: 'Invalid URL.'
-                    });
-                  })
-                }
-              });
+                });
             } else {
-              console.log('not short url')
               try {
                 // let selectedTab = this.location.path();
                 // selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
@@ -191,21 +181,26 @@ export class AppComponent implements OnInit {
         // let stateFiltersObj: Object = {};
 
         if (stateFilters?.length <= 8) {
-          this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
-            if (response.success) {
-              const longStateFiltersString = response.data['longStateFiltersString'];
-              decodedStateFilters = atob(longStateFiltersString);
-              this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, ifSuperAdmin);
-            } else {
-              this.router.navigate(['/dashboard/Error']);
-              setTimeout(() => {
-                this.service.raiseError({
-                  status: 900,
-                  message: response.message || 'Invalid URL.',
-                });
-              }, 100);
-            }
-          });
+          this.httpService.handleRestoreUrl(stateFilters, kpiFilters)
+            .pipe(
+              catchError((error) => {
+                this.router.navigate(['/dashboard/Error']);
+                setTimeout(() => {
+                  this.service.raiseError({
+                    status: 900,
+                    message: error.message || 'Invalid URL.',
+                  });
+                }, 100);
+                return throwError(error);  // Re-throw the error so it can be caught by a global error handler if needed
+              })
+            )
+            .subscribe((response: any) => {
+              if (response.success) {
+                const longStateFiltersString = response.data['longStateFiltersString'];
+                decodedStateFilters = atob(longStateFiltersString);
+                this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, ifSuperAdmin);
+              }
+            });
         } else {
           decodedStateFilters = atob(stateFilters);
           this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, ifSuperAdmin);
@@ -230,7 +225,6 @@ export class AppComponent implements OnInit {
 
     projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
 
-
     // Check if user has access to all project in stateFiltersObjLocal['primary_level']
     const hasAllProjectAccess = stateFilterObj.every(filter =>
       currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
@@ -241,7 +235,7 @@ export class AppComponent implements OnInit {
 
     if (projectLevelSelected) {
       if (hasAccessToAll) {
-        this.router.navigate([JSON.parse(JSON.stringify(url))]);
+        this.router.navigate([url]);
       } else {
         this.router.navigate(['/dashboard/Error']);
         this.service.raiseError({

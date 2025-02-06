@@ -373,7 +373,6 @@ export class SharedService {
   private tempStateFilters = null;
   setBackupOfFilterSelectionState(selectedFilterObj) {
     const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
-    console.log('routerUrl', routerUrl);
     const segments = typeof routerUrl === 'string' && routerUrl?.split('/');
     const hasConfig = segments && segments.includes('Config');
     const hasHelp = segments && segments.includes('Help');
@@ -432,7 +431,7 @@ export class SharedService {
   }
 
   setKpiSubFilterObj(value: any) {
-    const routerUrl = this.router.url;
+    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
     const segments = routerUrl?.split('/');
     const hasConfig = segments.includes('Config');
     const hasHelp = segments.includes('Help');

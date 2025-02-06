@@ -20,13 +20,14 @@ import { PageNotFoundComponent } from '../page-not-found/page-not-found.componen
 import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.component';
 import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
 import { DecodeUrlGuard } from './decodeURL.guard';
+import { HelperService } from './helper.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppInitializerService {
 
-  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
+  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService, private helperService: HelperService) {
   }
   commonRoutes: Routes = [
     { path: '', redirectTo: 'iteration', pathMatch: 'full' },
@@ -96,7 +97,7 @@ export class AppInitializerService {
             feature: "Config"
           }
         },
-        { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full' },
+        { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
 
       ], canActivate: [AuthGuard],
     },
@@ -106,8 +107,9 @@ export class AppInitializerService {
 
   async checkFeatureFlag() {
     let loc = window.location.hash ? JSON.parse(JSON.stringify(window.location.hash?.split('#')[1])) : '';
+    loc = decodeURIComponent(loc);
     if (loc && loc.indexOf('authentication') === -1 && loc.indexOf('Error') === -1 && loc.indexOf('Config') === -1) {
-      localStorage.setItem('shared_link', loc)
+      localStorage.setItem('shared_link', (loc))
     }
     return new Promise<void>(async (resolve, reject) => {
       if (!environment['production']) {
@@ -166,77 +168,17 @@ export class AppInitializerService {
           }
 
           if (location) {
-            console.log('if')
             let redirect_uri = JSON.parse(localStorage.getItem('redirect_uri'));
             if (redirect_uri) {
               localStorage.removeItem('redirect_uri');
             }
             this.router.navigateByUrl(location);
           } else {
-            console.log('else')
             if (localStorage.getItem('shared_link')) {
-              const shared_link = localStorage.getItem('shared_link');
-              const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
-              console.log('shared_link', shared_link);
-              if (shared_link) {
-                // localStorage.removeItem('shared_link');
-
-                // Extract query parameters
-                const queryParams = new URLSearchParams(shared_link.split('?')[1]);
-                const stateFilters = queryParams.get('stateFilters');
-                const kpiFilters = queryParams.get('kpiFilters');
-
-                if (stateFilters) {
-                  let decodedStateFilters: string = '';
-                  // let stateFiltersObj: Object = {};
-
-                  if (stateFilters?.length <= 8) {
-                    this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
-                      console.log('response', response);
-                      try {
-                        if (response.success) {
-                          const longStateFiltersString = response.data['longStateFiltersString'];
-                          decodedStateFilters = atob(longStateFiltersString);
-                          this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
-                        } else {
-                          console.log('else invalid url')
-                          // this else block is for fallback scenario
-                          this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                          setTimeout(() => {
-                            this.sharedService.raiseError({
-                              status: 900,
-                              message: response.message || 'Invalid URL.'
-                            });
-                          });
-                        }
-                      } catch (error) {
-                        console.log('catch invalid url')
-                        this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                        setTimeout(() => {
-                          this.sharedService.raiseError({
-                            status: 900,
-                            message: 'Invalid URL.'
-                          });
-                        })
-                      }
-                    });
-                  } else {
-                    console.log('normal login')
-                    decodedStateFilters = atob(stateFilters);
-                    this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
-                  }
-
-                }
-              } else {
-                this.router.navigate(['./dashboard/']);
-              }
-              // this.router.navigateByUrl(shared_link);
-              // debugger
+              this.helperService.urlShorteningRedirection();
             } else {
-              console.log('localstorage not found')
               this.router.navigate(['/dashboard/iteration']);
             }
-
           }
         }, error => {
           console.log(error);
@@ -248,41 +190,5 @@ export class AppInitializerService {
 
     })
 
-  }
-
-  urlRedirection(decodedStateFilters, currentUserProjectAccess, url) {
-    const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
-
-    let stateFilterObj = [];
-
-    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
-      stateFilterObj = [stateFiltersObjLocal['parent_level']];
-    } else {
-      stateFilterObj = stateFiltersObjLocal['primary_level'];
-    }
-
-    // Check if user has access to all project in stateFiltersObjLocal['primary_level']
-    const hasAllProjectAccess = stateFilterObj.every(filter =>
-      currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
-    );
-
-    // Superadmin have all project access hence no need to check project for superadmin
-    const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
-    const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
-
-    localStorage.removeItem('shared_link');
-    if (hasAccessToAll) {
-      console.log('has access', url)
-      this.router.navigate([JSON.parse(JSON.stringify(url))]);
-    } else {
-      // localStorage.removeItem('shared_link');
-      this.router.navigate(['/dashboard/Error']);
-      setTimeout(() => {
-        this.sharedService.raiseError({
-          status: 901,
-          message: 'No project access.',
-        });
-      }, 100);
-    }
   }
 }

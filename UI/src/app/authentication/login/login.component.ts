@@ -23,6 +23,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { HelperService } from 'src/app/services/helper.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -40,7 +41,7 @@ export class LoginComponent implements OnInit {
 
 
 
-  constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService, private ga: GoogleAnalyticsService) {
+  constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService, private ga: GoogleAnalyticsService, private helperService: HelperService) {
   }
 
   ngOnInit() {
@@ -119,91 +120,8 @@ export class LoginComponent implements OnInit {
       if (this.redirectToProfile()) {
         this.router.navigate(['./dashboard/Config/Profile']);
       } else {
-        const url = localStorage.getItem('shared_link');
-        const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
-        if (url) {
-          // Extract query parameters
-          const queryParams = new URLSearchParams(url.split('?')[1]);
-          const stateFilters = queryParams.get('stateFilters');
-          const kpiFilters = queryParams.get('kpiFilters');
-
-          if (stateFilters) {
-            let decodedStateFilters: string = '';
-            // let stateFiltersObj: Object = {};
-
-            if (stateFilters?.length <= 8) {
-              this.httpService.handleRestoreUrl(stateFilters, kpiFilters).subscribe((response: any) => {
-                console.log('response', response);
-                try {
-                  if (response.success) {
-                    const longStateFiltersString = response.data['longStateFiltersString'];
-                    decodedStateFilters = atob(longStateFiltersString);
-                    this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url);
-                  } else {
-                    // this else block is for fallback scenario
-                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                    setTimeout(() => {
-                      this.sharedService.raiseError({
-                        status: 900,
-                        message: response.message || 'Invalid URL.'
-                      });
-                    });
-                  }
-                } catch (error) {
-                  this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                  setTimeout(() => {
-                    this.sharedService.raiseError({
-                      status: 900,
-                      message: 'Invalid URL.'
-                    });
-                  })
-                }
-              });
-            } else {
-              decodedStateFilters = atob(stateFilters);
-              this.urlRedirection(decodedStateFilters, currentUserProjectAccess, url);
-            }
-
-          }
-        } else {
-          this.router.navigate(['./dashboard/']);
-        }
+        this.helperService.urlShorteningRedirection();
       }
-    }
-  }
-
-  urlRedirection(decodedStateFilters, currentUserProjectAccess, url) {
-    const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
-
-    let stateFilterObj = [];
-
-    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
-      stateFilterObj = [stateFiltersObjLocal['parent_level']];
-    } else {
-      stateFilterObj = stateFiltersObjLocal['primary_level'];
-    }
-
-    // Check if user has access to all project in stateFiltersObjLocal['primary_level']
-    const hasAllProjectAccess = stateFilterObj.every(filter =>
-      currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
-    );
-
-    // Superadmin have all project access hence no need to check project for superadmin
-    const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
-    const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
-
-    if (hasAccessToAll) {
-      localStorage.removeItem('shared_link');
-      this.router.navigate([JSON.parse(JSON.stringify(url))]);
-    } else {
-      localStorage.removeItem('shared_link');
-      this.router.navigate(['/dashboard/Error']);
-      setTimeout(() => {
-        this.sharedService.raiseError({
-          status: 901,
-          message: 'No project access.',
-        });
-      }, 100);
     }
   }
 }
