@@ -127,7 +127,8 @@ export class RaiseAccessRequestComponent implements OnInit {
 
         this.requestData['accessNode']['accessItems'] = accessItem.value.map((item) => {
           return {
-            itemId: item.itemId
+            itemId: item.itemId,
+            itemName : item.itemName
           };
         });
 
