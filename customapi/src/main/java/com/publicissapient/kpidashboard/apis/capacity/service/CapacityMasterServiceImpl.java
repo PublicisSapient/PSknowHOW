@@ -34,6 +34,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -90,6 +92,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 	@Autowired
 	private CacheService cacheService;
+
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
@@ -347,15 +352,15 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		return capacityMasterList;
 	}
 
-	private void calculateAdditinalFilterCapacityForKanban(List<AdditionalFilterCapacity> additionalFilterCapacityList) {
+	private void calculateAdditinalFilterCapacityForKanban(
+			List<AdditionalFilterCapacity> additionalFilterCapacityList) {
 		if (CollectionUtils.isNotEmpty(additionalFilterCapacityList)) {
 			additionalFilterCapacityList.forEach(leafNode -> {
 				var leafNodeCapacity = leafNode.getNodeCapacityList();
 				if (CollectionUtils.isNotEmpty(leafNodeCapacity)) {
-					leafNodeCapacity.stream()
-							.filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
-							.forEach(capacity -> capacity.setAdditionalFilterCapacity(
-									capacity.getAdditionalFilterCapacity() * 5));
+					leafNodeCapacity.stream().filter(capacity -> capacity.getAdditionalFilterCapacity() != null)
+							.forEach(capacity -> capacity
+									.setAdditionalFilterCapacity(capacity.getAdditionalFilterCapacity() * 5));
 				}
 			});
 		}
@@ -468,7 +473,10 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityData = createCapacityData(capacityMaster);
 			}
 			capacityKpiDataRepository.save(capacityData);
+			//remove this call after cache changes are updated in CapacityService class
 			clearCache(CommonConstant.JIRA_KPI_CACHE);
+			clearKpiCache(capacityMaster.getBasicProjectConfigId().toString(),
+					KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId());
 			processed = true;
 		}
 		return processed;
@@ -625,6 +633,18 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	 */
 	private void clearCache(final String cacheName) {
 		cacheService.clearCache(cacheName);
+	}
+
+	/**
+	 * Clears kpi cache for given project and kpi.
+	 * 
+	 * @param basicProjectConfigId
+	 *            project basic config id
+	 * @param kpiId
+	 *            kpi id
+	 */
+	private void clearKpiCache(String basicProjectConfigId, String kpiId) {
+		kpiDataCacheService.clearCache(basicProjectConfigId, kpiId);
 	}
 
 	/**

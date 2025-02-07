@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1300;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_1220;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * prijain3
  */
-@ChangeUnit(id = "update_kpi_master_group_ids", order = "13004", author = "prijain3", systemVersion = "13.0.0")
+@ChangeUnit(id = "update_kpi_master_group_ids", order = "12204", author = "prijain3", systemVersion = "12.2.0")
 public class UpdateKpiMasterGroupIds {
 	private final MongoTemplate mongoTemplate;
 	private static final String KPI_MASTER = "kpi_master";

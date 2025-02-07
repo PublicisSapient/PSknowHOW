@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,8 @@ public class PushBuildServiceImpl implements PushBaseService {
 	private PushDataTraceLogService pushDataTraceLogService;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	/**
 	 * validate pushed buildDeploy data and if all requested data is valid then only
@@ -91,7 +95,7 @@ public class PushBuildServiceImpl implements PushBaseService {
 		pushDataResponse.setTotalSavedRecords(buildList.size() + deploymentList.size());
 		log.info(
 				"Total Records for " + projectConfigId + " to be Saved are " + pushDataResponse.getTotalSavedRecords());
-		totalSaveRecords(pushDataResponse, buildList, deploymentList, pushDataDetails);
+		totalSaveRecords(pushDataResponse, buildList, deploymentList, pushDataDetails, projectConfigId.toHexString());
 		return pushDataResponse;
 
 	}
@@ -105,7 +109,7 @@ public class PushBuildServiceImpl implements PushBaseService {
 	 * @param pushDataDetails
 	 */
 	private void totalSaveRecords(PushDataResponse pushDataResponse, List<Build> buildList,
-			List<Deployment> deploymentList, List<PushDataDetail> pushDataDetails) {
+			List<Deployment> deploymentList, List<PushDataDetail> pushDataDetails, String projectConfigId) {
 		PushDataTraceLog instance = PushDataTraceLog.getInstance();
 		instance.setTotalRecord(pushDataResponse.getTotalRecords());
 		instance.setTotalFailedRecord(pushDataResponse.getTotalFailedRecords());
@@ -120,6 +124,9 @@ public class PushBuildServiceImpl implements PushBaseService {
 		buildService.saveBuilds(buildList);
 		deployService.saveDeployments(deploymentList);
 		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
+		List<String> kpiList = kpiDataCacheService.getKpiBasedOnSource(KPISource.JENKINS.name());
+		kpiList.forEach(
+				kpiId -> kpiDataCacheService.clearCache(projectConfigId, kpiId));
 	}
 
 	/**

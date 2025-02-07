@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -98,6 +99,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Autowired
 	private CacheService cacheService;
+
+	@Autowired
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
@@ -205,7 +209,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 */
 	@Override
 	public List<FieldMappingResponse> getKpiSpecificFieldsAndHistory(KPICode kpi, ProjectToolConfig projectToolConfig,
-																	 FieldMappingMeta requestData) throws NoSuchFieldException, IllegalAccessException {
+			FieldMappingMeta requestData) throws NoSuchFieldException, IllegalAccessException {
 		FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpi.getKpiId().toUpperCase());
 		List<String> fields = fieldMappingEnum.getFields();
 		String releaseNodeId = requestData.getReleaseNodeId();
@@ -220,7 +224,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				FieldMappingResponse mappingResponse = new FieldMappingResponse();
 				Object value = FieldMappingHelper.getFieldMappingData(fieldMapping, fieldMappingClass, field,
 						releaseNodeId, nodeSpecifFields.contains(field));
-				// If the threshold value is empty, populate it with the default value from kpi_master
+				// If the threshold value is empty, populate it with the default value from
+				// kpi_master
 				setDefaultKPIThresholdIfEmpty(kpi, field, projectLevelThresholdFields, value, mappingResponse);
 				List<ConfigurationHistoryChangeLog> changeLogs = FieldMappingHelper.getFieldMappingHistory(fieldMapping,
 						field, releaseNodeId, nodeSpecifFields.contains(field));
@@ -289,11 +294,12 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 				update.set(fieldMappingResponse.getFieldName(), fieldMappingResponse.getOriginalValue());
 
 				if (null != mappingStructure) {
-					cleanTraceLog = createSpecialFieldsAndUpdateFieldMapping(projectToolConfig, fieldMappingMeta, update,
-							fieldMappingResponseList, cleanTraceLog, fieldMappingResponse, mappingStructure);
+					cleanTraceLog = createSpecialFieldsAndUpdateFieldMapping(projectToolConfig, fieldMappingMeta,
+							update, fieldMappingResponseList, cleanTraceLog, fieldMappingResponse, mappingStructure);
 					updateFields(fieldMappingResponse.getFieldName(), projectToolConfig, projectBasicConfig);
 					ConfigurationHistoryChangeLog configurationHistoryChangeLog = FieldMappingHelper
-							.createHistoryChangeLog(fieldMappingMeta, fieldMappingResponse, mappingStructure, loggedInUser);
+							.createHistoryChangeLog(fieldMappingMeta, fieldMappingResponse, mappingStructure,
+									loggedInUser);
 					update.addToSet(HISTORY + fieldMappingResponse.getFieldName(), configurationHistoryChangeLog);
 				}
 			}
@@ -304,6 +310,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			if (cleanTraceLog.equalsIgnoreCase("True"))
 				removeTraceLog(projectBasicConfig.getId());
 			clearCache();
+			kpiDataCacheService.clearCache(projectToolConfig.getBasicProjectConfigId().toString(), kpi.getKpiId());
 		}
 	}
 
@@ -374,6 +381,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		cacheService.clearCache(CommonConstant.SONAR_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
+		cacheService.clearCache(Constant.CACHE_PROJECT_KPI_DATA);
 	}
 
 	/**
@@ -415,20 +423,20 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			FieldMappingMeta fieldMappingMeta, Update update, List<FieldMappingResponse> fieldMappingResponseList,
 			String cleanTraceLog, FieldMappingResponse fieldMappingResponse, FieldMappingStructure mappingStructure)
 			throws NoSuchFieldException, IllegalAccessException {
-			// for nested fields
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(projectToolConfig.getBasicProjectConfigId());
-			FieldMappingHelper.generateHistoryForNestedFields(fieldMappingResponseList, fieldMappingResponse,
-					mappingStructure, fieldMapping);
-			// for additionalfilters
-			FieldMappingHelper.setMappingResponseWithGeneratedField(fieldMappingResponse, fieldMapping);
-			// for nodeSpecific
-			FieldMappingHelper.setNodeSpecificFields(mappingStructure, fieldMappingResponse, fieldMapping,
-					fieldMappingMeta.getReleaseNodeId(), update);
+		// for nested fields
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(projectToolConfig.getBasicProjectConfigId());
+		FieldMappingHelper.generateHistoryForNestedFields(fieldMappingResponseList, fieldMappingResponse,
+				mappingStructure, fieldMapping);
+		// for additionalfilters
+		FieldMappingHelper.setMappingResponseWithGeneratedField(fieldMappingResponse, fieldMapping);
+		// for nodeSpecific
+		FieldMappingHelper.setNodeSpecificFields(mappingStructure, fieldMappingResponse, fieldMapping,
+				fieldMappingMeta.getReleaseNodeId(), update);
 
-			if (cleanTraceLog.equalsIgnoreCase("False")) {
-				cleanTraceLog = mappingStructure.isProcessorCommon() ? "True" : "False";
-			}
+		if (cleanTraceLog.equalsIgnoreCase("False")) {
+			cleanTraceLog = mappingStructure.isProcessorCommon() ? "True" : "False";
+		}
 
 		return cleanTraceLog;
 	}
@@ -504,7 +512,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		Class<? super FieldMapping> historyClass = fieldMappingClass.getSuperclass();
 		Map<String, FieldMappingStructure> fieldMappingStructureMap = ((List<FieldMappingStructure>) configHelperService
 				.loadFieldMappingStructure()).stream()
-						.collect(Collectors.toMap(FieldMappingStructure::getFieldName, Function.identity()));
+				.collect(Collectors.toMap(FieldMappingStructure::getFieldName, Function.identity()));
 		String loggedInUser = authenticationService.getLoggedInUser();
 		for (Field field : fields) {
 			FieldMappingHelper.setAccessible(field);

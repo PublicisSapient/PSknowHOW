@@ -177,7 +177,8 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 			log.info("Fetching basic data for project : {}", proBasicConfig.getProjectName());
 			List<ProcessorToolConnection> argoCDJobList = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.ARGOCD, proBasicConfig.getId());
-			count.set(argoCDJobList.size());
+			AtomicInteger count1 = new AtomicInteger();
+			count1.set(argoCDJobList.size());
 			for (ProcessorToolConnection argoCDJob : argoCDJobList) {
 				String baseUrl = argoCDJob.getUrl();
 				String accessToken = decryptAccessToken(argoCDJob.getAccessToken());
@@ -200,13 +201,14 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 
 					// Process each application and save the revisions in the database
 					applications.stream().filter(Objects::nonNull)
-							.forEach(app -> count.addAndGet(saveRevisionsInDbAndGetCount(app, deploymentJobs, argoCDJob,
-									processor.getId(), serverToNameMap)));
+							.forEach(app -> count1.addAndGet(saveRevisionsInDbAndGetCount(app, deploymentJobs,
+									argoCDJob, processor.getId(), serverToNameMap)));
 					log.info("Finished ArgoCD Job started at :: {}", startTime);
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
 					processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
+					count.addAndGet(count1.get());
 				} catch (RestClientException exception) {
 					isClientException(argoCDJob, exception);
 					executionStatus = false;
@@ -215,6 +217,10 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error("Error getting ArgoCD jobs for ::" + baseUrl + " with exception :: ", exception);
 				}
+			}
+			if (count1.get() > 0) {
+				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, CommonConstant.JENKINS,
+						proBasicConfig.getId().toString());
 			}
 		}
 		MDC.put(TOTAL_UPDATED_COUNT, String.valueOf(count.get()));
@@ -410,6 +416,47 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 			log.error("[ARGOCD-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
 
+	}
+
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param param1
+	 *            parameter 1
+	 * @param param2
+	 *            parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(argoCDConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
+		}
 	}
 
 	/**
