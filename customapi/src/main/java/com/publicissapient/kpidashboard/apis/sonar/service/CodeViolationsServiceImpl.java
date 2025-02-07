@@ -156,7 +156,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 		Set<String> overAllJoblist = new HashSet<>();
 		getSonarHistoryForAllProjects(pList,
 				getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
-				.forEach((projectNodeId, projectData) -> {
+				.forEach((projectNodePair, projectData) -> {
 					List<String> projectList = new ArrayList<>();
 					List<List<String>> violations = new ArrayList<>();
 					List<String> versionDate = new ArrayList<>();
@@ -176,17 +176,17 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 							Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
 									.toEpochMilli();
 							Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
-									projectNodeId);
-							prepareViolationsList(history, date, projectNodeId, projectList, violations,
+									projectNodePair.getValue());
+							prepareViolationsList(history, date, projectNodePair.getValue(), projectList, violations,
 									projectWiseDataMap, versionDate);
 
 							endDateTime = endDateTime.minusWeeks(1);
 						}
 						overAllJoblist.addAll(projectList);
-						tempMap.get(projectNodeId).setValue(projectWiseDataMap);
+						tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
 						if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 							KPIExcelUtility.populateSonarViolationsExcelData(
-									tempMap.get(projectNodeId).getProjectFilter().getName(), projectList, violations,
+									tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, violations,
 									versionDate, excelData, KPICode.CODE_VIOLATIONS.getKpiId());
 						}
 					}
@@ -262,7 +262,7 @@ public class CodeViolationsServiceImpl extends SonarKPIService<Long, List<Object
 	 *
 	 * @param history                A map containing the Sonar history data.
 	 * @param date                   The date range for which the violations are being prepared.
-	 * @param projectNodeId          The ID of the project node.
+	 * @param projectName          The nodeDisplayName of the project node.
 	 * @param projectList            A list to store the project names.
 	 * @param violations             A list to store the violations.
 	 * @param projectWiseDataMap     A map to store the data counts for each project.

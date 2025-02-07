@@ -191,9 +191,6 @@ public class UnitCoverageServiceKanbanImplTest {
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-				.thenReturn(kpiRequestTrackerId);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
 
