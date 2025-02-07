@@ -1,22 +1,22 @@
-<div class="p-p-2 rounded p-mr-3 position-relative cursor-pointer" role="button" (click)="getRecentComments()">
-    <img src="../../../assets/img/ico-comments.svg" alt="Comment" />
+<div class="p-p-2 rounded p-mr-3 position-relative cursor-pointer" role="button" tabindex="0" aria-label="View Comments" (click)="getRecentComments()" (keydown.enter)="getRecentComments()">
+    <img src="../../../assets/img/ico-comments.svg" alt="Comment" aria-hidden="true" />
 </div>
 
 <p-dialog header="Comments" [(visible)]="displayCommentModal" [modal]="true" [position]="'right'"
-  [style]="{width: '34rem'}">
+  [style]="{width: '34rem'}" aria-describedby="dialog-body" role="dialog" (onShow)="onDialogShow()" #commentsDialog>
 
-  <div class="dialog-body">
+  <div class="dialog-body" role="region" aria-label="Comments List">
     <div class="comment-inner-section">
-        <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner"></i>
+        <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner" aria-label="Loading Comments" role="status"></i>
         <ng-container *ngIf="commentList?.length > 0 && !showSpinner; else noComments">
-            <div *ngFor="let comment of commentList; let i = index" [ngClass]="{'border-bottom': i != commentList.length - 1}">
+            <div *ngFor="let comment of commentList; let i = index" [ngClass]="{'border-bottom': i != commentList.length - 1}" role="article" tabindex="0">
                 <h4 class="comment-msg p-mt-3 p-mb-2">{{comment?.comment}}</h4>
                 <div class="p-d-flex p-align-center">
                     <b class="comment-author p-mr-2">{{comment?.commentBy}}</b>
-                    <span class="comment-separator p-mr-2"></span>
+                    <span class="comment-separator p-mr-2" aria-hidden="true"></span>
                     <span class="comment-date">{{comment?.commentOn}}</span>
                 </div>
-                <div class="comment-meta p-mb-2 font-grey p-d-flex p-align-center">
+                <div class="comment-meta p-mb-2 font-grey p-d-flex p-align-center" aria-label="Comment Details">
                     <div class="p-mr-1">{{comment.nodeChildId ? getNodeName(comment.nodeChildId) : getNodeName(comment.node)}}</div>
                     <div *ngIf="comment.kpiId">
                         {{' > ' + kpiObj[comment.kpiId]}}
@@ -26,7 +26,7 @@
         </ng-container>
     </div>
     <ng-template #noComments>
-        <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No comments</h5>
+        <h5 class="p-m-0 font-grey" *ngIf="!showSpinner" aria-live="polite">No comments</h5>
     </ng-template>
   </div>
 </p-dialog>
