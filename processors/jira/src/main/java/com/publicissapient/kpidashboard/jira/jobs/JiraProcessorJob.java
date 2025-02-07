@@ -269,6 +269,20 @@ public class JiraProcessorJob {
 				.start(sprintDataStep()).next(fetchIssueSprintChunkStep()).listener(jiraIssueSprintJobListener).build();
 	}
 
+	/**
+	 * This method is setup job for fetching sprint details based on sprint id
+	 *
+	 * @return job
+	 */
+	@TrackExecutionTime
+	@Bean
+	public Job runMetaDataStep() {
+		return builderFactory.getJobBuilder("runMetaDataStep Job", jobRepository).incrementer(new RunIdIncrementer())
+				.start(builderFactory.getStepBuilder("Fetch Metadata", jobRepository)
+						.tasklet(metaDataTasklet, transactionManager).build())
+				.build();
+	}
+
 	private Step sprintDataStep() {
 		return builderFactory.getStepBuilder("Fetch Sprint Data", jobRepository)
 				.tasklet(sprintReportTasklet, transactionManager).build();

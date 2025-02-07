@@ -1000,9 +1000,12 @@ public class KPIExcelUtility {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProjectName(projectName);
 				excelData.setDate(deploymentFrequencyInfo.getDeploymentDateList().get(i));
-				excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
-				excelData.setPipelineName(
-						deploymentMapPipelineNameWise.get(deploymentFrequencyInfo.getJobNameList().get(i)));
+				if(StringUtils.isNotEmpty(deploymentMapPipelineNameWise.get(deploymentFrequencyInfo.getJobNameList().get(i)))){
+					excelData.setJobName(
+							deploymentMapPipelineNameWise.get(deploymentFrequencyInfo.getJobNameList().get(i)));
+				} else {
+					excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
+				}
 				excelData.setWeeks(deploymentFrequencyInfo.getMonthList().get(i));
 				excelData.setDeploymentEnvironment(deploymentFrequencyInfo.getEnvironmentList().get(i));
 				kpiExcelData.add(excelData);
@@ -1098,11 +1101,16 @@ public class KPIExcelUtility {
 
 	public static void populateCodeBuildTime(List<KPIExcelData> kpiExcelData, String projectName,
 			CodeBuildTimeInfo codeBuildTimeInfo) {
-
-		for (int i = 0; i < codeBuildTimeInfo.getBuildJobList().size(); i++) {
+		int maxSize = Math.max(codeBuildTimeInfo.getBuildJobList().size(), codeBuildTimeInfo.getPipeLineNameList().size());
+		for (int i = 0; i < maxSize; i++) {
 			KPIExcelData excelData = new KPIExcelData();
 			excelData.setProjectName(projectName);
-			excelData.setJobName(codeBuildTimeInfo.getBuildJobList().get(i));
+			if (i < codeBuildTimeInfo.getBuildJobList().size()) {
+				excelData.setJobName(codeBuildTimeInfo.getBuildJobList().get(i));
+			}
+			if (i < codeBuildTimeInfo.getPipeLineNameList().size()) {
+				excelData.setJobName(codeBuildTimeInfo.getPipeLineNameList().get(i));
+			}
 			Map<String, String> buildUrl = new HashMap<>();
 			buildUrl.put(codeBuildTimeInfo.getBuildUrlList().get(i), codeBuildTimeInfo.getBuildUrlList().get(i));
 			excelData.setBuildUrl(buildUrl);

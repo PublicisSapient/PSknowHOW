@@ -370,7 +370,13 @@ export class SharedService {
     this.mapColorToProject.next(value);
   }
 
+  private tempStateFilters = null;
   setBackupOfFilterSelectionState(selectedFilterObj) {
+    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
+    const segments = typeof routerUrl === 'string' && routerUrl?.split('/');
+    const hasConfig = segments && segments.includes('Config');
+    const hasHelp = segments && segments.includes('Help');
+    const hasError = segments && segments.includes('Error');
     if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
       this.selectedFilters = { ...selectedFilterObj };
     } else if (selectedFilterObj) {
@@ -378,17 +384,22 @@ export class SharedService {
     } else {
       this.selectedFilters = null;
     }
-    if (!this.refreshCounter) {
-      ++this.refreshCounter;
-    } else if (this.refreshCounter) {
 
-      const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters));
-      this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters));
-      // this.setBackupOfUrlFilters('{}');
+    if (this.refreshCounter === 0) {
+      this.refreshCounter++;
+    }
+
+    // Navigate and update query parameters
+    const stateFilterEnc = btoa(JSON.stringify(this.selectedFilters || {}));
+    this.setBackupOfUrlFilters(JSON.stringify(this.selectedFilters || {}));
+
+    // NOTE: Do not navigate if the state filters are same as previous, this is to reduce the number of navigation calls, hence refactoring the code
+    if ((this.tempStateFilters !== stateFilterEnc) && (!hasConfig && !hasError && !hasHelp)) {
       this.router.navigate([], {
-        queryParams: { 'stateFilters': stateFilterEnc }, // Pass the object here
-        relativeTo: this.route,
+        queryParams: { 'stateFilters': stateFilterEnc },
+        relativeTo: this.route
       });
+      this.tempStateFilters = stateFilterEnc;
     }
   }
 
@@ -420,6 +431,11 @@ export class SharedService {
   }
 
   setKpiSubFilterObj(value: any) {
+    const routerUrl = decodeURIComponent(this.router.url).split('?')[0];
+    const segments = routerUrl?.split('/');
+    const hasConfig = segments.includes('Config');
+    const hasHelp = segments.includes('Help');
+    const hasError = segments.includes('Error');
     if (!value) {
       this.selectedKPIFilterObj = {};
     } else if (Object.keys(value)?.length && Object.keys(value)[0].indexOf('kpi') !== -1) {
@@ -427,15 +443,14 @@ export class SharedService {
         this.selectedKPIFilterObj[key] = value[key];
       });
     }
-    // console.log('kpiFiltes', this.selectedKPIFilterObj);
     const kpiFilterParamStr = btoa(Object.keys(this.selectedKPIFilterObj).length ? JSON.stringify(this.selectedKPIFilterObj) : '');
 
-    this.router.navigate([], {
-      queryParams: { 'kpiFilters': kpiFilterParamStr }, // Pass the object here
-      relativeTo: this.route,
-      queryParamsHandling: 'merge'
-    });
-
+    if (!hasConfig && !hasError && !hasHelp) {
+      this.router.navigate([], {
+        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr }, // Pass the object here
+        relativeTo: this.route,
+      });
+    }
     this.selectedFilterOption.next(value);
   }
 
@@ -687,6 +702,10 @@ export class SharedService {
         options: dropdownArr
       }
     ];
+  }
+
+  setUserDetailsAsBlankObj(){
+    this.currentUserDetails = {}
   }
 
   //#endregion

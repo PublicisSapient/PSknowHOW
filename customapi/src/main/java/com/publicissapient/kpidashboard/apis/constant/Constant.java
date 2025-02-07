@@ -154,6 +154,7 @@ public final class Constant {
 	public static final String DUPLICATED_LINES = "duplicated_lines";
 	public static final String N_CLOC = "ncloc";
 	public static final String PROJECT_LEVEL_THRESHOLD = "Project Level Threshold";
+	public static final String CACHE_PROJECT_KPI_DATA = "project_kpi_data_cache";
 	private Constant() {
 	}
 

@@ -15,17 +15,17 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.azure.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import java.time.LocalDateTime;
-
-@Data
-@AllArgsConstructor
-public class RefreshAuditDetails {
-
-	private LocalDateTime refreshTime;
-
-}
+export const environment = {
+    production: true,
+    baseUrl: '',
+    SSO_LOGIN: false,
+    CENTRAL_LOGIN_URL: '',
+    CENTRAL_API_URL: '',
+    RESOURCE: 'PSKnowHOW',
+    AUTHENTICATION_SERVICE: false,
+    SPEED_SUITE: false,
+    MAP_URL:'',
+    RETROS_URL: ''
+  };
+  

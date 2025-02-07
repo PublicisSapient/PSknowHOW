@@ -41,13 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl;
-import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -77,19 +71,23 @@ import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFacto
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.DeleteProjectTraceLogService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
+import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
@@ -97,6 +95,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
@@ -105,12 +104,14 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
@@ -143,6 +144,8 @@ public class ProjectBasicConfigServiceImplTest {
 	private FilterHelperService filterHelperService;
 	@Mock
 	private CacheService cacheService;
+	@Mock
+	private KpiDataCacheService kpiDataCacheService;
 	@Mock
 	private AccountHierarchyRepository accountHierarchyRepository;
 	@Mock
@@ -834,4 +837,42 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
+
+	@Test
+	public void testFilterHierarchyDTOsWithConnectedTools() {
+		// Mock the projectToolConfigMapData
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfigMapData = new HashMap<>();
+		ObjectId projectId1 = new ObjectId("5f855dec29cf840345f2d111");
+		ObjectId projectId2 = new ObjectId("5f855dec29cf840345f2d222");
+
+		ProjectToolConfig connectedTool = new ProjectToolConfig();
+		connectedTool.setToolName("JIRA");
+		ProjectToolConfig disconnectedTool = new ProjectToolConfig();
+		disconnectedTool.setToolName("GIT");
+
+		Map<String, List<ProjectToolConfig>> toolConfigMap1 = new HashMap<>();
+		toolConfigMap1.put("tool1", Arrays.asList(connectedTool));
+		Map<String, List<ProjectToolConfig>> toolConfigMap2 = new HashMap<>();
+		toolConfigMap2.put("tool1", Arrays.asList(disconnectedTool));
+
+		projectToolConfigMapData.put(projectId1, toolConfigMap1);
+		projectToolConfigMapData.put(projectId2, toolConfigMap2);
+
+		when(cacheService.cacheProjectToolConfigMapData()).thenReturn(projectToolConfigMapData);
+
+		// Create sample HierarchyResponseDTOs
+		HierarchyResponseDTO dto1 = new HierarchyResponseDTO();
+		dto1.setProjectId(projectId1.toString());
+		HierarchyResponseDTO dto2 = new HierarchyResponseDTO();
+		dto2.setProjectId(projectId2.toString());
+
+		List<HierarchyResponseDTO> hierarchyResponseDTOS = Arrays.asList(dto1, dto2);
+
+		// Call the method
+		List<HierarchyResponseDTO> result = projectBasicConfigServiceImpl.filterHierarchyDTOsWithConnectedTools(hierarchyResponseDTOS);
+
+		// Assert the result
+		assertEquals(2, result.size());
+		assertEquals(dto1.getProjectId(), result.get(0).getProjectId());
+	}
 }

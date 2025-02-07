@@ -60,7 +60,7 @@ public class IssueKpiModalValue implements Serializable {
 	private String priority;
 	@JsonProperty("Due Date")
 	private String dueDate;
-	@JsonProperty("Delay")
+
 	private Integer delay;
 	@JsonProperty("Remaining Estimate")
 	private String remainingEstimateMinutes;
@@ -78,8 +78,8 @@ public class IssueKpiModalValue implements Serializable {
 	private String predictedCompletionDate;
 	@JsonProperty("Potential Delay(in days)")
 	private String potentialDelay;
-	@JsonProperty("Overall Delay")
-	private String potentialOverallDelay;
+	@JsonProperty("Dev Delay(in days)")
+	private String devDelayInDays;
 	@JsonProperty("Issue Priority")
 	private String issuePriority;
 	@JsonProperty("Linked Stories")
@@ -179,4 +179,6 @@ public class IssueKpiModalValue implements Serializable {
 	private Integer issueWaitTime;
 	private Integer estimateTime;
 	private Integer actualTime;
+	private Map<String, List<String>> category2;
+	private Map<String, Integer> categoryWiseDelay;
 }

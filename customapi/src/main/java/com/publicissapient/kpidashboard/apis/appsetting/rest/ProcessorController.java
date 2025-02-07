@@ -20,11 +20,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.rest;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,12 +34,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ProcessorService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProcessorExecutionTraceLogDTO;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -117,7 +117,7 @@ public class ProcessorController {
 	public ResponseEntity<ServiceResponse> getProcessorTraceLog(@RequestParam(required = false) String processorName,
 			@RequestParam(required = false) String basicProjectConfigId) {
 
-		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService.getTraceLogs(processorName,
+		List<ProcessorExecutionTraceLogDTO> traceLogs = processorExecutionTraceLogService.getTraceLogDTOs(processorName,
 				basicProjectConfigId);
 
 		ServiceResponse response = new ServiceResponse(true, "Processor trace logs", traceLogs);
@@ -160,6 +160,19 @@ public class ProcessorController {
 		}
 		processorService.saveRepoToolTraceLogs(repoToolsStatusResponse);
 		return ResponseEntity.status(HttpStatus.OK).body(null);
+	}
+
+	@PostMapping(path = "/metadata/step/{projectBasicConfigId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission(#projectBasicConfigIds, 'TRIGGER_PROCESSOR')")
+	public ResponseEntity<ServiceResponse> triggerMetaDataStep(@PathVariable String projectBasicConfigId) {
+		ServiceResponse response = processorService.runMetadataStep(projectBasicConfigId);
+		HttpStatus responseStatus = HttpStatus.OK;
+		if (null == response) {
+			responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+			log.warn("Did not get successful response from the service: {} ", response);
+		}
+		return ResponseEntity.status(responseStatus).body(response);
+
 	}
 
 }

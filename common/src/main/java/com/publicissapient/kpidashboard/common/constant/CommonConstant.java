@@ -41,8 +41,14 @@ public final class CommonConstant {
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
 
+	public static final String PARAM1 = "param1";
+	public static final String PARAM2 = "param2";
+
 	public static final String CACHE_CLEAR_ENDPOINT = "api/cache/clearCache";
 	public static final String CLEAR_ALL_CACHE_ENDPOINT = "api/cache/clearAllCache";
+	public static final String CACHE_CLEAR_SOURCE_ENDPOINT = "api/cache/source/" + PARAM1 + "/clear";
+	public static final String CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT = "api/cache/project/" + PARAM1 + "/source/" + PARAM2
+			+ "/clear";
 	public static final String REPROCESS = "Reprocess";
 	public static final String FILE_STATUS_UPLOADED = "Uploaded";
 
@@ -196,136 +202,137 @@ public final class CommonConstant {
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
-    public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
-	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
-	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
-	public static final String CUSTOM_TEMPLATE_CODE_KANBAN="9";
+	public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
+	public static final String CACHE_PROJECT_TOOL_CONFIG = "cache_project_tool_config";
+	public static final String CUSTOM_TEMPLATE_CODE_SCRUM = "10";
+	public static final String CUSTOM_TEMPLATE_CODE_KANBAN = "9";
 	public static final String EPICLINK = "epicLink";
 
 	public static final String SOLID_LINE_TYPE = "solid";
 
 	public static final String DOTTED_LINE_TYPE = "dotted";
 
-	public static final String JIRADEFECTTYPE="jiradefecttype";
-	public static final String JIRAKPI135STORYIDENTIFICATION="jiraKPI135StoryIdentification";//azure
-	public static final String JIRAKPI82STORYIDENTIFICATION="jiraKPI82StoryIdentification";//azure
-	public static final String JIRAISSUETYPEKPI3="jiraIssueTypeKPI3";
-	public static final String JIRAISSUETYPENAMES="jiraIssueTypeNames";
-	public static final String JIRAISSUEEPICTYPE="jiraIssueEpicType";
-	public static final String JIRADEFECTINJECTIONISSUETYPEKPI14="jiraDefectInjectionIssueTypeKPI14";
-	public static final String JIRADODKPI14="jiraDodKPI14";
-	public static final String JIRADODQAKPI111="jiraDodQAKPI111";
-	public static final String JIRADODKPI3="jiraDodKPI3";
-	public static final String JIRADODKPI127="jiraDodKPI127";
-	public static final String JIRADODKPI152="jiraDodKPI152";
-	public static final String JIRADODKPI151="jiraDodKPI151";
-	public static final String JIRADODKPI37="jiraDodKPI37";
-	public static final String JIRASTARTDEVKPI54="jiraStatusStartDevelopmentKPI154";
-	public static final String JIRADODKPI155="jiraDodKPI155";
-	public static final String JIRADODKPI163="jiraDodKPI163";
-	public static final String JIRAISSUETYPEKPI35="jiraIssueTypeKPI35";
-	public static final String JIRADEFECTREMOVALISSUETYPEKPI34="jiraDefectRemovalIssueTypeKPI34";
-	public static final String JIRATESTAUTOMATIONISSUETYPE="jiraTestAutomationIssueType";
-	public static final String JIRASPRINTVELOCITYISSUETYPEKPI138="jiraSprintVelocityIssueTypeKPI138";
-	public static final String JIRASPRINTCAPACITYISSUETYPEKPI46="jiraSprintCapacityIssueTypeKpi46";
-	public static final String JIRAISSUETYPEKPI37="jiraIssueTypeKPI37";
-	public static final String JIRADEFECTCOUNTLISSUETYPEKPI28="jiraDefectCountlIssueTypeKPI28";
-	public static final String JIRADEFECTCOUNTLISSUETYPEKPI36="jiraDefectCountlIssueTypeKPI36";
-	public static final String JIRAQAKPI111ISSUETYPE="jiraQAKPI111IssueType";
-	public static final String JIRASTORYIDENTIFICATIONKPI129="jiraStoryIdentificationKPI129";
-	public static final String JIRASTORYIDENTIFICATIONKPI166="jiraStoryIdentificationKPI166";
-	public static final String JIRASTORYIDENTIFICATIONKPI40="jiraStoryIdentificationKpi40";
-	public static final String JIRASTORYCATEGORYKPI40="jiraStoryCategoryKpi40";
-	public static final String JIRA_STORY_IDENTIFICATION_KPI164="jiraStoryIdentificationKPI164";
+	public static final String JIRADEFECTTYPE = "jiradefecttype";
+	public static final String JIRAKPI135STORYIDENTIFICATION = "jiraKPI135StoryIdentification";// azure
+	public static final String JIRAKPI82STORYIDENTIFICATION = "jiraKPI82StoryIdentification";// azure
+	public static final String JIRAISSUETYPEKPI3 = "jiraIssueTypeKPI3";
+	public static final String JIRAISSUETYPENAMES = "jiraIssueTypeNames";
+	public static final String JIRAISSUEEPICTYPE = "jiraIssueEpicType";
+	public static final String JIRADEFECTINJECTIONISSUETYPEKPI14 = "jiraDefectInjectionIssueTypeKPI14";
+	public static final String JIRADODKPI14 = "jiraDodKPI14";
+	public static final String JIRADODQAKPI111 = "jiraDodQAKPI111";
+	public static final String JIRADODKPI3 = "jiraDodKPI3";
+	public static final String JIRADODKPI127 = "jiraDodKPI127";
+	public static final String JIRADODKPI152 = "jiraDodKPI152";
+	public static final String JIRADODKPI151 = "jiraDodKPI151";
+	public static final String JIRADODKPI37 = "jiraDodKPI37";
+	public static final String JIRASTARTDEVKPI54 = "jiraStatusStartDevelopmentKPI154";
+	public static final String JIRADODKPI155 = "jiraDodKPI155";
+	public static final String JIRADODKPI163 = "jiraDodKPI163";
+	public static final String JIRAISSUETYPEKPI35 = "jiraIssueTypeKPI35";
+	public static final String JIRADEFECTREMOVALISSUETYPEKPI34 = "jiraDefectRemovalIssueTypeKPI34";
+	public static final String JIRATESTAUTOMATIONISSUETYPE = "jiraTestAutomationIssueType";
+	public static final String JIRASPRINTVELOCITYISSUETYPEKPI138 = "jiraSprintVelocityIssueTypeKPI138";
+	public static final String JIRASPRINTCAPACITYISSUETYPEKPI46 = "jiraSprintCapacityIssueTypeKpi46";
+	public static final String JIRAISSUETYPEKPI37 = "jiraIssueTypeKPI37";
+	public static final String JIRADEFECTCOUNTLISSUETYPEKPI28 = "jiraDefectCountlIssueTypeKPI28";
+	public static final String JIRADEFECTCOUNTLISSUETYPEKPI36 = "jiraDefectCountlIssueTypeKPI36";
+	public static final String JIRAQAKPI111ISSUETYPE = "jiraQAKPI111IssueType";
+	public static final String JIRASTORYIDENTIFICATIONKPI129 = "jiraStoryIdentificationKPI129";
+	public static final String JIRASTORYIDENTIFICATIONKPI166 = "jiraStoryIdentificationKPI166";
+	public static final String JIRASTORYIDENTIFICATIONKPI40 = "jiraStoryIdentificationKpi40";
+	public static final String JIRASTORYCATEGORYKPI40 = "jiraStoryCategoryKpi40";
+	public static final String JIRA_STORY_IDENTIFICATION_KPI164 = "jiraStoryIdentificationKPI164";
 
-	public static final String STORYFIRSTSTATUSKPI148="storyFirstStatusKPI148";
-	public static final String STORYFIRSTSTATUSKPI154="storyFirstStatusKPI154";
-	public static final String STORYFIRSTSTATUSKPI3="storyFirstStatusKPI3";
-	public static final String JIRASTATUSFORQAKPI148="jiraStatusForQaKPI148";
-	public static final String JIRASTATUSFORQAKPI135="jiraStatusForQaKPI135";
-	public static final String JIRASTATUSFORQAKPI82="jiraStatusForQaKPI82";
-	public static final String JIRASTATUSFORDEVELOPMENTKPI82="jiraStatusForDevelopmentKPI82";
-	public static final String JIRASTATUSFORDEVELOPMENTKPI135="jiraStatusForDevelopmentKPI135";
-	public static final String JIRADEFECTCREATEDSTATUSKPI14="jiraDefectCreatedStatusKPI14";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI152="jiraDefectRejectionStatusKPI152";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI151="jiraDefectRejectionStatusKPI151";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI28="jiraDefectRejectionStatusKPI28";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI34="jiraDefectRejectionStatusKPI34";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI37="jiraDefectRejectionStatusKPI37";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI35="jiraDefectRejectionStatusKPI35";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI82="jiraDefectRejectionStatusKPI82";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI135="jiraDefectRejectionStatusKPI135";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI133="jiraDefectRejectionStatusKPI133";
-	public static final String JIRADEFECTREJECTIONSTATUSRCAKPI36="jiraDefectRejectionStatusRCAKPI36";
-	public static final String JIRADEFECTREJECTIONSTATUSKPI14="jiraDefectRejectionStatusKPI14";
-	public static final String JIRADEFECTREJECTIONSTATUSQAKPI111="jiraDefectRejectionStatusQAKPI111";
-	public static final String JIRADEFECTREMOVALSTATUSKPI34="jiraDefectRemovalStatusKPI34";
-	public static final String JIRADEFECTCLOSEDSTATUSKPI137="jiraDefectClosedStatusKPI137";
-	public static final String JIRAISSUEDELIVERDSTATUSKPI138="jiraIssueDeliverdStatusKPI138";
-	public static final String JIRAISSUEDELIVERDSTATUSKPI126="jiraIssueDeliverdStatusKPI126";
-	public static final String JIRAISSUEDELIVERDSTATUSKPI82="jiraIssueDeliverdStatusKPI82";
-	public static final String JIRADORKPI3="jiraDorKPI3";
-	public static final String JIRALIVESTATUSKPI3="jiraLiveStatusKPI3";
-	public static final String JIRALIVESTATUSKPI127="jiraLiveStatusKPI127";
-	public static final String JIRALIVESTATUSKPI152="jiraLiveStatusKPI152";
-	public static final String JIRALIVESTATUSKPI151="jiraLiveStatusKPI151";
+	public static final String STORYFIRSTSTATUSKPI148 = "storyFirstStatusKPI148";
+	public static final String STORYFIRSTSTATUSKPI154 = "storyFirstStatusKPI154";
+	public static final String STORYFIRSTSTATUSKPI3 = "storyFirstStatusKPI3";
+	public static final String JIRASTATUSFORQAKPI148 = "jiraStatusForQaKPI148";
+	public static final String JIRASTATUSFORQAKPI135 = "jiraStatusForQaKPI135";
+	public static final String JIRASTATUSFORQAKPI82 = "jiraStatusForQaKPI82";
+	public static final String JIRASTATUSFORDEVELOPMENTKPI82 = "jiraStatusForDevelopmentKPI82";
+	public static final String JIRASTATUSFORDEVELOPMENTKPI135 = "jiraStatusForDevelopmentKPI135";
+	public static final String JIRADEFECTCREATEDSTATUSKPI14 = "jiraDefectCreatedStatusKPI14";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI152 = "jiraDefectRejectionStatusKPI152";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI151 = "jiraDefectRejectionStatusKPI151";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI28 = "jiraDefectRejectionStatusKPI28";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI34 = "jiraDefectRejectionStatusKPI34";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI37 = "jiraDefectRejectionStatusKPI37";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI35 = "jiraDefectRejectionStatusKPI35";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI82 = "jiraDefectRejectionStatusKPI82";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI135 = "jiraDefectRejectionStatusKPI135";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI133 = "jiraDefectRejectionStatusKPI133";
+	public static final String JIRADEFECTREJECTIONSTATUSRCAKPI36 = "jiraDefectRejectionStatusRCAKPI36";
+	public static final String JIRADEFECTREJECTIONSTATUSKPI14 = "jiraDefectRejectionStatusKPI14";
+	public static final String JIRADEFECTREJECTIONSTATUSQAKPI111 = "jiraDefectRejectionStatusQAKPI111";
+	public static final String JIRADEFECTREMOVALSTATUSKPI34 = "jiraDefectRemovalStatusKPI34";
+	public static final String JIRADEFECTCLOSEDSTATUSKPI137 = "jiraDefectClosedStatusKPI137";
+	public static final String JIRAISSUEDELIVERDSTATUSKPI138 = "jiraIssueDeliverdStatusKPI138";
+	public static final String JIRAISSUEDELIVERDSTATUSKPI126 = "jiraIssueDeliverdStatusKPI126";
+	public static final String JIRAISSUEDELIVERDSTATUSKPI82 = "jiraIssueDeliverdStatusKPI82";
+	public static final String JIRADORKPI3 = "jiraDorKPI3";
+	public static final String JIRALIVESTATUSKPI3 = "jiraLiveStatusKPI3";
+	public static final String JIRALIVESTATUSKPI127 = "jiraLiveStatusKPI127";
+	public static final String JIRALIVESTATUSKPI152 = "jiraLiveStatusKPI152";
+	public static final String JIRALIVESTATUSKPI151 = "jiraLiveStatusKPI151";
 
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI135="jiraIterationCompletionStatusKPI135";//azure all below
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI122="jiraIterationCompletionStatusKPI122";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI75="jiraIterationCompletionStatusKPI75";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI145="jiraIterationCompletionStatusKPI145";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI72="jiraIterationCompletionStatusKpi72";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI39="jiraIterationCompletionStatusKpi39";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI5="jiraIterationCompletionStatusKpi5";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI124="jiraIterationCompletionStatusKPI124";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI123="jiraIterationCompletionStatusKPI123";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI125="jiraIterationCompletionStatusKPI125";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI120="jiraIterationCompletionStatusKPI120";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI128="jiraIterationCompletionStatusKPI128";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI134="jiraIterationCompletionStatusKPI134";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI133="jiraIterationCompletionStatusKPI133";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI131="jiraIterationCompletionStatusKPI131";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI138="jiraIterationCompletionStatusKPI138";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI119="jiraIterationCompletionStatusKPI119";
-	public static final String JIRAITERATIONCOMPLETIONSTATUSCUSTOMFIELD="jiraIterationCompletionStatusCustomField";
-	public static final String RESOLUTIONTYPEFORREJECTIONKPI28="resolutionTypeForRejectionKPI28";
-	public static final String RESOLUTIONTYPEFORREJECTIONKPI34="resolutionTypeForRejectionKPI34";
-	public static final String RESOLUTIONTYPEFORREJECTIONKPI37="resolutionTypeForRejectionKPI37";
-	public static final String RESOLUTIONTYPEFORREJECTIONKPI35="resolutionTypeForRejectionKPI35";
-	public static final String RESOLUTIONTYPEFORREJECTIONKPI135="resolutionTypeForRejectionKPI135";
-	public static final String RESOLUTIONTYPEFORREJECTIONKPI82="resolutionTypeForRejectionKPI82";
-	public static final String RESOLUTIONTYPEFORREJECTIONKPI133="resolutionTypeForRejectionKPI133";
-	public static final String RESOLUTIONTYPEFORREJECTIONRCAKPI36="resolutionTypeForRejectionRCAKPI36";
-	public static final String RESOLUTIONTYPEFORREJECTIONQAKPI111="resolutionTypeForRejectionQAKPI111";
-	public static final String RESOLUTIONTYPEFORREJECTIONKPI14="resolutionTypeForRejectionKPI14";
-	public static final String ISSUESTATUSEXCLUMISSINGWORKKPI124="issueStatusExcluMissingWorkKPI124";
-	public static final String JIRADEFECTDROPPEDSTATUSKPI127="jiraDefectDroppedStatusKPI127";
-	public static final String JIRABLOCKEDSTATUSKPI131="jiraBlockedStatusKPI131";
-	public static final String JIRAWAITSTATUSKPI131="jiraWaitStatusKPI131";
-	public static final String JIRASTATUSFORINPROGRESSKPI148="jiraStatusForInProgressKPI148";
-	public static final String JIRASTATUSFORINPROGRESSKPI122="jiraStatusForInProgressKPI122";
-	public static final String JIRASTATUSFORINPROGRESSKPI145="jiraStatusForInProgressKPI145";
-	public static final String JIRASTATUSFORINPROGRESSKPI125="jiraStatusForInProgressKPI125";
-	public static final String JIRASTATUSFORINPROGRESSKPI128="jiraStatusForInProgressKPI128";
-	public static final String JIRASTATUSFORINPROGRESSKPI123="jiraStatusForInProgressKPI123";
-	public static final String JIRASTATUSFORINPROGRESSKPI119="jiraStatusForInProgressKPI119";
-	public static final String JIRASTATUSFORINPROGRESSKPI154="jiraStatusForInProgressKPI154";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI135 = "jiraIterationCompletionStatusKPI135";// azure all
+																										   // below
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI122 = "jiraIterationCompletionStatusKPI122";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI75 = "jiraIterationCompletionStatusKPI75";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI145 = "jiraIterationCompletionStatusKPI145";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI72 = "jiraIterationCompletionStatusKpi72";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI39 = "jiraIterationCompletionStatusKpi39";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI5 = "jiraIterationCompletionStatusKpi5";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI124 = "jiraIterationCompletionStatusKPI124";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI123 = "jiraIterationCompletionStatusKPI123";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI125 = "jiraIterationCompletionStatusKPI125";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI120 = "jiraIterationCompletionStatusKPI120";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI128 = "jiraIterationCompletionStatusKPI128";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI134 = "jiraIterationCompletionStatusKPI134";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI133 = "jiraIterationCompletionStatusKPI133";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI131 = "jiraIterationCompletionStatusKPI131";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI138 = "jiraIterationCompletionStatusKPI138";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSKPI119 = "jiraIterationCompletionStatusKPI119";
+	public static final String JIRAITERATIONCOMPLETIONSTATUSCUSTOMFIELD = "jiraIterationCompletionStatusCustomField";
+	public static final String RESOLUTIONTYPEFORREJECTIONKPI28 = "resolutionTypeForRejectionKPI28";
+	public static final String RESOLUTIONTYPEFORREJECTIONKPI34 = "resolutionTypeForRejectionKPI34";
+	public static final String RESOLUTIONTYPEFORREJECTIONKPI37 = "resolutionTypeForRejectionKPI37";
+	public static final String RESOLUTIONTYPEFORREJECTIONKPI35 = "resolutionTypeForRejectionKPI35";
+	public static final String RESOLUTIONTYPEFORREJECTIONKPI135 = "resolutionTypeForRejectionKPI135";
+	public static final String RESOLUTIONTYPEFORREJECTIONKPI82 = "resolutionTypeForRejectionKPI82";
+	public static final String RESOLUTIONTYPEFORREJECTIONKPI133 = "resolutionTypeForRejectionKPI133";
+	public static final String RESOLUTIONTYPEFORREJECTIONRCAKPI36 = "resolutionTypeForRejectionRCAKPI36";
+	public static final String RESOLUTIONTYPEFORREJECTIONQAKPI111 = "resolutionTypeForRejectionQAKPI111";
+	public static final String RESOLUTIONTYPEFORREJECTIONKPI14 = "resolutionTypeForRejectionKPI14";
+	public static final String ISSUESTATUSEXCLUMISSINGWORKKPI124 = "issueStatusExcluMissingWorkKPI124";
+	public static final String JIRADEFECTDROPPEDSTATUSKPI127 = "jiraDefectDroppedStatusKPI127";
+	public static final String JIRABLOCKEDSTATUSKPI131 = "jiraBlockedStatusKPI131";
+	public static final String JIRAWAITSTATUSKPI131 = "jiraWaitStatusKPI131";
+	public static final String JIRASTATUSFORINPROGRESSKPI148 = "jiraStatusForInProgressKPI148";
+	public static final String JIRASTATUSFORINPROGRESSKPI122 = "jiraStatusForInProgressKPI122";
+	public static final String JIRASTATUSFORINPROGRESSKPI145 = "jiraStatusForInProgressKPI145";
+	public static final String JIRASTATUSFORINPROGRESSKPI125 = "jiraStatusForInProgressKPI125";
+	public static final String JIRASTATUSFORINPROGRESSKPI128 = "jiraStatusForInProgressKPI128";
+	public static final String JIRASTATUSFORINPROGRESSKPI123 = "jiraStatusForInProgressKPI123";
+	public static final String JIRASTATUSFORINPROGRESSKPI119 = "jiraStatusForInProgressKPI119";
+	public static final String JIRASTATUSFORINPROGRESSKPI154 = "jiraStatusForInProgressKPI154";
 
-	public static final String JIRASTORYPOINTSCUSTOMFIELD="jiraStoryPointsCustomField";
-	public static final String EPICCOSTOFDELAY="epicCostOfDelay";
-	public static final String EPICRISKREDUCTION="epicRiskReduction";
-	public static final String EPICUSERBUSINESSVALUE="epicUserBusinessValue";
-	public static final String EPICWSJF="epicWsjf";
-	public static final String EPICTIMECRITICALITY="epicTimeCriticality";
-	public static final String EPICJOBSIZE="epicJobSize";
-	public static final String SPRINTNAME="sprintName";
-	public static final String JIRATECHDEBTISSUETYPE="jiraTechDebtIssueType";
+	public static final String JIRASTORYPOINTSCUSTOMFIELD = "jiraStoryPointsCustomField";
+	public static final String EPICCOSTOFDELAY = "epicCostOfDelay";
+	public static final String EPICRISKREDUCTION = "epicRiskReduction";
+	public static final String EPICUSERBUSINESSVALUE = "epicUserBusinessValue";
+	public static final String EPICWSJF = "epicWsjf";
+	public static final String EPICTIMECRITICALITY = "epicTimeCriticality";
+	public static final String EPICJOBSIZE = "epicJobSize";
+	public static final String SPRINTNAME = "sprintName";
+	public static final String JIRATECHDEBTISSUETYPE = "jiraTechDebtIssueType";
 	public static final String ACTIVE = "ACTIVE";
 
 	public static final String JIRA = "Jira";
 
 	public static final String REPO = "Repo";
-	public static final String JIRADODKPI166="jiraDodKPI166";
+	public static final String JIRADODKPI166 = "jiraDodKPI166";
 	public static final String JIRAISSUERISKTYPE = "jiraIssueRiskTypeKPI176";
 	public static final String JIRAISSUEDEPENDENCYTYPE = "jiraIssueDependencyTypeKPI176";
 
@@ -333,26 +340,41 @@ public final class CommonConstant {
 
 	public static final String ERROR_ALERT_NOTIFICATION = "errorAlertNotification";
 
-	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$";//Username can only contain letters and numbers Maximum length is 30 and min is 4 characters
+	public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,30}$";// Username can only contain letters and numbers
+																		// Maximum length is 30 and min is 4 characters
 
 	public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
 	public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
-    public static final String PARENT_STORY_ID = "parentStoryId";
+	public static final String PARENT_STORY_ID = "parentStoryId";
 	public static final String NUMBER = "number";
 
-	//-- auth-N-auth changes ends here --
+	public static final String SPRINT_MASTER = "sprint_master";
 
-	public static final String KPI_PASSED= "200";
-	public static final String KPI_FAILED= "400";
-	public static final String MANDATORY_FIELD_MAPPING= "201";
-	public static final String TOOL_NOT_CONFIGURED= "202";
-	public static final String KPI_COMBINED_SORCE= "kpi_combined_source";
+	// -- auth-N-auth changes ends here --
+
+	public static final String KPI_PASSED = "200";
+	public static final String KPI_FAILED = "400";
+	public static final String MANDATORY_FIELD_MAPPING = "201";
+	public static final String TOOL_NOT_CONFIGURED = "202";
+	public static final String KPI_COMBINED_SORCE = "kpi_combined_source";
 	public static final String COUNT = "Count";
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
+	public static final String OPENING_DELIMITER = " (";
+	public static final String CLOSING_DELIMITER = ") ";
 
-
+	// KPI source
+	public static final String JIRA_KPI = "JIRA";
+	public static final String SONAR = "SONAR";
+	public static final String BITBUCKET = "BITBUCKET";
+	public static final String JENKINS = "JENKINS";
+	public static final String ZEPHYR = "ZEPHYR";
+	public static final String JIRAKANBAN = "JIRAKANBAN";
+	public static final String ZEPHYRKANBAN = "ZEPHYRKANBAN";
+	public static final String SONARKANBAN = "SONARKANBAN";
+	public static final String BITBUCKETKANBAN = "BITBUCKETKANBAN";
+	public static final String JENKINSKANBAN = "JENKINSKANBAN";
 
 	private CommonConstant() {
 

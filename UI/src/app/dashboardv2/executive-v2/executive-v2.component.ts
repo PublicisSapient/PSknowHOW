@@ -842,8 +842,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   // post request of Jira(scrum) hygiene
+/**
+   * Posts KPI data for the current iteration to the Jira service and processes the response.
+   * Updates local KPI data and handles errors appropriately.
+   * 
+   * @param postData - The data to be posted to the Jira service.
+   * @param source - The source identifier for the KPI data.
+   * @returns void
+   * @throws Handles errors internally and calls handleKPIError on failure.
+   */
   postJiraKPIForIteration(postData, source): void {
-    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
+    this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
@@ -2764,21 +2773,22 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
       let kpiIdsForCurrentBoard;
       if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+        kpiIdsForCurrentBoard = this.configGlobalData?.filter(kpi => kpi.kpiDetail.groupId === event.kpiDetail.groupId).map(kpiDetails => kpiDetails.kpiId)
         switch (kpiSource) {
           case 'sonar':
-            this.postSonarKanbanKpi(currentKPIGroup, 'sonar');
+            this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'jenkins':
-            this.postJenkinsKanbanKpi(currentKPIGroup, 'jenkins');
+            this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'zypher':
-            this.postZypherKanbanKpi(currentKPIGroup, 'zypher');
+            this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
             break;
           case 'bitbucket':
-            this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');
+            this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
             break;
           default:
-            this.postJiraKanbanKpi(currentKPIGroup, 'jira');
+            this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
         }
       } else {
         switch (kpiSource) {

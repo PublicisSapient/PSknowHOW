@@ -16,29 +16,19 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.azure.service;
+package com.publicissapient.kpidashboard.apis.stringshortener.model;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-@Service
-public class AzureSprintReportRefreshService {
-
-	@Autowired
-	private AzureSprintReportLogRepositoryCustom azureSprintReportLogRepositoryCustom;
-
-	/**
-	 * Adds or updates multiple sprint refresh logs in bulk.
-	 * 
-	 * @param projectWiseSprintReportUpdate
-	 *            A Map of ObjectId to a Map of sprintId and updateTime.
-	 */
-	public void addUpdateTimesInBulk(Map<ObjectId, Map<String, LocalDateTime>> projectWiseSprintReportUpdate) {
-		azureSprintReportLogRepositoryCustom.addUpdateTimesInBulk(projectWiseSprintReportUpdate);
-	}
-
-}
+    @Data
+    @Document(collection = "string_shorteners")
+    public class StringShortener {
+        @Id
+        private String id;
+        private String longStateFiltersString;
+        private String shortStateFiltersString;
+        private String longKPIFiltersString;
+        private String shortKPIFilterString;
+    }

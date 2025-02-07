@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -261,7 +262,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 				});
 
 				aggDataCountList.addAll(dataCountList);
-				trendValue(trendValueMap, trendLineName, envName, deploymentListEnvWise, dataCountList);
+				trendValue(trendValueMap, envName, deploymentListEnvWise, dataCountList);
 
 			}
 		});
@@ -271,8 +272,6 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * 
 	 * @param trendValueMap
 	 *            trendValueMap
-	 * @param trendLineName
-	 *            trendLineName
 	 * @param envName
 	 *            envName
 	 * @param deploymentListEnvWise
@@ -280,16 +279,16 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * @param dataCountList
 	 *            dataCountList
 	 */
-	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String trendLineName, String envName,
+	private static void trendValue(Map<String, List<DataCount>> trendValueMap, String envName,
 			List<Deployment> deploymentListEnvWise, List<DataCount> dataCountList) {
-		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getPipelineName())) {
-			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName(),
+		if (StringUtils.isNotEmpty(deploymentListEnvWise.get(0).getEnvName())) {
+			trendValueMap.putIfAbsent(deploymentListEnvWise.get(0).getEnvName(),
 					new ArrayList<>());
-			trendValueMap.get(envName + CommonConstant.ARROW + deploymentListEnvWise.get(0).getPipelineName())
+			trendValueMap.get(deploymentListEnvWise.get(0).getEnvName())
 					.addAll(dataCountList);
 		} else {
-			trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-			trendValueMap.get(envName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+			trendValueMap.putIfAbsent(envName, new ArrayList<>());
+			trendValueMap.get(envName).addAll(dataCountList);
 		}
 	}
 

@@ -52,6 +52,7 @@ import { ExportExcelComponent } from 'src/app/component/export-excel/export-exce
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
 import { MessageService } from 'primeng/api';
+import { throwError } from 'rxjs';
 
 const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
@@ -2491,7 +2492,7 @@ describe('ExecutiveV2Component', () => {
     component.globalConfig = {
       kanban: [
       ],
-      scrum: [ { boardSlug: 'test-board', boardName: 'test-board', kpis: ['kpi1', 'kpi118'] },
+      scrum: [{ boardSlug: 'test-board', boardName: 'test-board', kpis: ['kpi1', 'kpi118'] },
       { boardSlug: 'other-board', boardName: 'other-board', kpis: ['kpi3'] },],
       others: [],
     };
@@ -6696,7 +6697,7 @@ describe('ExecutiveV2Component', () => {
     component.globalConfig = {
       kanban: [
       ],
-      scrum: [ { boardSlug: 'test-board', boardName: 'test-board', kpis: ['kpi1', 'kpi118'] },
+      scrum: [{ boardSlug: 'test-board', boardName: 'test-board', kpis: ['kpi1', 'kpi118'] },
       { boardSlug: 'other-board', boardName: 'other-board', kpis: ['kpi3'] },],
       others: [],
     };
@@ -11336,7 +11337,7 @@ describe('ExecutiveV2Component', () => {
         }
       }
     ]
-    
+
     component.filterApplyData = { level: 'level1', label: 'level1' };
     spyOn(component, 'getChartDataForCardWithCombinationFilter');
     const spy = spyOn(httpService, 'postKpiNonTrend').and.returnValue(of([
@@ -13785,23 +13786,25 @@ describe('ExecutiveV2Component', () => {
   });
 
   describe('ExecutiveV2Component.ngOnInit() ngOnInit method', () => {
-    describe('Happy paths', () => {    
+    describe('Happy paths', () => {
       it('should subscribe to globalDashConfigData and process KPI config data', (done) => {
         // Arrange
         component.selectedtype = 'scrum';
-        const globalConfig = { scrum: [
-          { boardName: 'Tab1', boardSlug: 'Tab1', kpis: [] }],
+        const globalConfig = {
+          scrum: [
+            { boardName: 'Tab1', boardSlug: 'Tab1', kpis: [] }],
           kanban: [], others: [], enabledKPIs: [
-           'kpi1', 'kpi2'
-            ] };
+            'kpi1', 'kpi2'
+          ]
+        };
         spyOn(component, 'processKpiConfigData' as any);
         spyOn(component, 'setUpTabs' as any);
         spyOn(component, 'reloadKPI' as any);
-  
+
         // Act
         component.ngOnInit();
         service.globalDashConfigData.next(globalConfig);
-  
+
         // Assert
         setTimeout(() => {
           expect(component.processKpiConfigData).toHaveBeenCalled();
@@ -13812,17 +13815,90 @@ describe('ExecutiveV2Component', () => {
         }, 500);
       });
     });
-  
+
     describe('Edge cases', () => {
       it('should handle empty selectedTrends from localStorage', () => {
         // Arrange
         spyOn(localStorage, 'getItem').and.returnValue(null);
-  
+
         // Act
         component.ngOnInit();
-  
+
         // Assert
         expect(component.selectedTrend).toEqual([]);
+      });
+    });
+  });
+
+  describe('ExecutiveV2Component.postJiraKPIForIteration() postJiraKPIForIteration method', () => {
+    describe('Happy Paths', () => {
+      it('should process data correctly when valid data is returned', () => {
+        const postData =  {
+          "kpiList": [
+            {
+              "id": "65793ddb127be336160bc0fe",
+              "kpiId": "kpi121",
+              "kpiName": "Defect Count by Status",
+            }
+          ]
+        };
+        const source = 'jira';
+        const getData = [{ kpi121: { trendValueList: { value: 10 } } }];
+        spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(getData));
+        spyOn(helperService, 'createKpiWiseId').and.returnValue(({ kpi121: getData[0] }) as any);
+
+        component.postJiraKPIForIteration(postData, source);
+
+        expect(httpService.postKpiNonTrend).toHaveBeenCalledWith(postData, source);
+        expect(component.iterationKPIData).toEqual({ kpi121: getData[0] });
+      });
+
+      it('should update iterationConfigData when kpi121 is present', () => {
+        const postData = { some: 'data' };
+        const source = 'source';
+        const getData = [{ kpi121: { trendValueList: { value: 10 } } }];
+        spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(getData) as any);
+        spyOn(helperService, 'createKpiWiseId').and.returnValue(({ kpi121: getData[0] }) as any);
+        spyOn(component.service.iterationConfigData, 'next');
+        component.postJiraKPIForIteration(postData, source);
+
+        expect(component.service.iterationConfigData.next).toHaveBeenCalledWith({
+          daysLeft: component.timeRemaining,
+          capacity: { value: { value: 0 } }
+        });
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should handle null data gracefully', () => {
+        const postData = { some: 'data' };
+        const source = 'source';
+        spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(null) as any);
+        spyOn(component, 'handleKPIError');
+        component.postJiraKPIForIteration(postData, source);
+
+        expect(component.handleKPIError).toHaveBeenCalledWith(postData);
+      });
+
+      xit('should handle error response correctly', () => {
+        const postData = { some: 'data' };
+        const source = 'source';
+        const getData = [{ error: true }];
+        spyOn(httpService, 'postKpiNonTrend').and.returnValue(of(getData) as any);
+        spyOn(component, 'handleKPIError');
+        component.postJiraKPIForIteration(postData, source);
+
+        expect(component.handleKPIError).toHaveBeenCalledWith(postData);
+      });
+
+      it('should handle HTTP error correctly', () => {
+        const postData = { some: 'data' };
+        const source = 'source';
+        spyOn(httpService, 'postKpiNonTrend').and.returnValue(throwError(() => new Error('HTTP error')) as any);
+        spyOn(component, 'handleKPIError');
+        component.postJiraKPIForIteration(postData, source);
+
+        expect(component.handleKPIError).toHaveBeenCalledWith(postData);
       });
     });
   });

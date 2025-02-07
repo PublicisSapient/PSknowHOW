@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.service;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.dto.ProcessorExecutionTraceLogDTO;
 
 /**
  * @author anisingh4
@@ -30,4 +31,16 @@ public interface ProcessorExecutionTraceLogService {
 	List<ProcessorExecutionTraceLog> getTraceLogs();
 
 	List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId);
+
+	/**
+	 * 
+	 * Get Project TraceLogDTOs
+	 * 
+	 * @param processorName
+	 *            processorName
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return List<ProcessorExecutionTraceLogDTO>
+	 */
+	List<ProcessorExecutionTraceLogDTO> getTraceLogDTOs(String processorName, String basicProjectConfigId);
 }

@@ -198,7 +198,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 
 		} else {
-			jiraIssueModalObject.setPotentialOverallDelay(Constant.BLANK);
+			jiraIssueModalObject.setPotentialDelay(Constant.BLANK);
 			jiraIssueModalObject.setPredictedCompletionDate(Constant.BLANK);
 		}
 
@@ -295,7 +295,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 
 		List<KpiData> dataGroup2 = new ArrayList<>();
 		dataGroup2.add(createKpiData("Remaining Hours", REMAINING_WORK, 1, SUM, CommonConstant.DAY));
-		dataGroup2.add(createKpiData("Delay", POTENTIAL_DELAY, 2, SUM, CommonConstant.DAY));
+		dataGroup2.add(createKpiData("delay", POTENTIAL_DELAY, 2, SUM, CommonConstant.DAY));
 
 		// For markerInfo
 		Map<String, String> markerInfo = new HashMap<>();

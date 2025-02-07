@@ -176,8 +176,11 @@ export class HttpService {
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
   private getShowHideKpiNewUIUrl = this.baseUrl + '/api/user-board-config/getBoardConfig';
   private recommendationsUrl = this.baseUrl + '/api/kpiRecommendation';
+  private urlShortener = this.baseUrl + '/api/stringShortener/shorten';
+  private urlRestore = this.baseUrl + '/api/stringShortener/longString';
 
   currentUserDetails = null;
+  private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
   constructor(
     private router: Router,
@@ -1182,5 +1185,17 @@ export class HttpService {
 
   getRecommendations(data) {
     return this.http.post<object>(this.recommendationsUrl, data);
+  }
+
+  fetchJiramappingBE(basicConfigID){
+    return this.http.post<object>(this.saveMetaDataStepURL + basicConfigID, {});
+  }
+
+  handleUrlShortener(payload: any): Observable<object> {
+    return this.http.post<any>(this.urlShortener, payload);
+  }
+
+  handleRestoreUrl(stateFilterData, kpiFilterData) {
+    return this.http.get<any>(`${this.urlRestore}?stateFilters=${stateFilterData}&kpiFilters=${kpiFilterData}`);
   }
 }

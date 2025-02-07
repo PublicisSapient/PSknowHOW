@@ -250,7 +250,7 @@ public final class KPIHelperUtil {
 			filteredAccountDataKanban.forEach(data -> cloneNode(data.getNode(), aggregatedTreeNodeList));
 			filteredNode = setRootFilterAndLimitHierarchy(aggregatedTreeNodeList, true, firstLevel, leafNodeLevel);
 		}
-		
+
 		if (CollectionUtils.isNotEmpty(filteredNode)) {
 			root = createTree(filteredNode, mapTmp);
 		}
@@ -270,6 +270,9 @@ public final class KPIHelperUtil {
 
 		Map<String, List<Node>> result = leafNodeList.stream().distinct()
 				.collect(Collectors.groupingBy(Node::getGroupName, Collectors.toList()));
+		List<Node> nodeList = new ArrayList<>(
+				result.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, new ArrayList<>()));
+		result.put(CommonConstant.SPRINT_MASTER, nodeList);
 		Map<String, List<Node>> projectMap = projectNodeList.stream().distinct()
 				.collect(Collectors.groupingBy(Node::getGroupName, Collectors.toList()));
 		return new TreeAggregatorDetail(root, result, mapTmp, projectMap);

@@ -15,14 +15,16 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package com.publicissapient.kpidashboard.azure.service;
 
-import org.bson.types.ObjectId;
+package com.publicissapient.kpidashboard.apis.stringshortener.dto;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import lombok.Data;
 
-public interface AzureSprintReportLogRepositoryCustom {
+@Data
+public class StringShortenerDTO {
+    private String longStateFiltersString;
+    private String shortStateFiltersString;
+    private String longKPIFiltersString;
+    private String shortKPIFilterString;
 
-	void addUpdateTimesInBulk(Map<ObjectId, Map<String, LocalDateTime>> updates);
 }

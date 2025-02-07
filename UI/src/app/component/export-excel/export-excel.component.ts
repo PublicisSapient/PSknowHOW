@@ -36,12 +36,14 @@ export class ExportExcelComponent implements OnInit {
   filteredColumn;
   //excludeColumnFilter = [];
   //includeColumnFilter = [];
-  selectedColumns = [] // store all columns which is default or shown in table 
+  selectedColumns = [] // store all columns which is default or shown in table
   tableColumns = []; // store all table coumns with configurations
   isDisableSaveCOnfigurationBtn: boolean = false;
   markerInfo = [];
   forzenColumns = ['issue id'];
   exportExcelRawVariable;
+    // Define blank values to handle
+  blankValues = ['', null, undefined, '-', 'NA','N/A','Undefined'];
 
   constructor(
     private excelService: ExcelService,
@@ -51,7 +53,7 @@ export class ExportExcelComponent implements OnInit {
     private messageService: MessageService
   ) { }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.sharedService.kpiExcelSubject.subscribe((x:any)=>{
       this.exportExcelRawVariable = x;
       if (x?.markerInfo) {
@@ -62,13 +64,13 @@ export class ExportExcelComponent implements OnInit {
     })
   }
 
-  // download excel functionality commetting out condition for additionalFilterSupport & iSAdditionalFilterSelected can be revisit 
+  // download excel functionality commetting out condition for additionalFilterSupport & iSAdditionalFilterSelected can be revisit
   downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?,testKpi?) {
     const sprintIncluded = filterApplyData.sprintIncluded.length > 0 ? filterApplyData.sprintIncluded : ['CLOSED'];
     this.modalDetails['kpiId'] = kpiId;
     //if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
       this.helperService.downloadExcel(kpiId, kpiName, isKanban, filterApplyData, filterData, sprintIncluded,).subscribe((getData) => {
-        getData = {...getData,...this.exportExcelRawVariable}
+        if((this.sharedService.selectedTab === 'iteration')){getData = {...getData,...this.exportExcelRawVariable}}
         this.isDisableSaveCOnfigurationBtn = !getData['saveDisplay'];
         if (getData?.['kpiColumnList']?.length && getData?.['excelData']?.length) {
           (this.sharedService.selectedTab === 'iteration')?this.dataTransformForIterationTableWidget(this.markerInfo, [], getData['kpiColumnList'], getData['excelData'], kpiName, kpiId):this.dataTransformatin(getData['kpiColumnList'], getData['excelData'], chartType, kpiName);
@@ -97,7 +99,7 @@ export class ExportExcelComponent implements OnInit {
           obj[key] = [];
           for (let y in colData[key]) {
             //added check if valid url
-            if (colData[key][y].includes('http')) {
+            if (Array.isArray(colData[key][y]) && colData[key][y].includes('http')) {
               obj[key].push({ text: y, hyperlink: colData[key][y] });
             } else {
               obj[key].push(colData[key][y]);
@@ -115,7 +117,7 @@ export class ExportExcelComponent implements OnInit {
 
     this.dataTransformatin(rawColumConfig, tableData, '', kpiName);
   }
-  
+
   dataTransformatin(rawColumConfig, rawExcelData, chartType, kpiName) {
     rawColumConfig = this.makeIssueIDOnFirstOrder(rawColumConfig);
     this.tableColumns = rawColumConfig;
@@ -225,44 +227,13 @@ export class ExportExcelComponent implements OnInit {
   }
 
   generateColumnFilterData() {
-    // Define blank values to handle
-    const blankValues = ['', null, undefined, '-', 'NA','N/A','Undefined'];
    // this.excludeColumnFilter = ['Linked Defect','Linked Stories'].map(item => item.toLowerCase());
    // this.includeColumnFilter = ['Issue Id','Story ID','Defect ID','Link Story ID','Build URL','Epic ID','Created Defect ID','Merge Request URL','Ticket issue ID'].map(item => item.toLowerCase());
     if (this.modalDetails['tableValues'].length > 0) {
-      // Update tableValues to replace blank values with '(Blanks)'
-      this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => {
-        let updatedRow = { ...row }; // Create a copy of the row
-        Object.keys(updatedRow).forEach(colName => {
-          if(updatedRow[colName]?.hasOwnProperty('hyperlink')){
-            updatedRow = {...updatedRow,text:updatedRow[colName]?.text||''}
-            }
-          if (typeof updatedRow[colName] === 'string') {
-            updatedRow[colName] = updatedRow[colName].trim();
-          }
-          if(Array.isArray(updatedRow[colName])){
-            updatedRow[colName] =updatedRow[colName].join(',')
-          }
-          if (blankValues.includes(updatedRow[colName])) {
-            updatedRow[colName] = '';
-          }
-        });
-        return updatedRow;
-      });
-  
-      // Generate column filter data
+      this.modalDetails['tableValues'] = this.modalDetails['tableValues'].map(row => this.refinedGridData(row));
+
       this.modalDetails['tableHeadings'].forEach(colName => {
-        this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => {
-          if(colData === undefined){ return;}
-          if (this.typeOf(colData) && colData?.hasOwnProperty('hyperlink')) {
-            // if (!this.excludeColumnFilter.includes(colName.toLowerCase()) &&  !this.includeColumnFilter.includes(colName.toLowerCase())) {
-            //   this.excludeColumnFilter.push(colName)
-            // }
-            return { name:blankValues.includes(colData.text)?'(Blanks)':colData.text, value: colData };
-          } else {
-            return { name: blankValues.includes(colData)?'(Blanks)':colData, value: colData };
-          }
-        });
+        this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => this.getGridHeaderFilters(colData));
         this.tableColumnData[colName] =this.tableColumnData[colName].filter(x=>x!==undefined);
         this.tableColumnForm[colName] = [];
       });
@@ -294,7 +265,7 @@ export class ExportExcelComponent implements OnInit {
     return typeof value === 'object' && value !== null;
   }
 
-  //custom sort for sorting Range. 
+  //custom sort for sorting Range.
   // customSort(event: any) {
   //   let result = null;
   //   event.data.sort((data1, data2) => {
@@ -367,20 +338,20 @@ export class ExportExcelComponent implements OnInit {
     const issueIdColumn = columns.find(
       (col) => col.columnName.toLowerCase() === "issue id"
     );
-  
+
     if (!issueIdColumn) {
       return columns; // Return original if "issue id" is not found
     }
-  
+
     // Set "issue id" to the first position and adjust its order
     issueIdColumn.order = 0;
-  
+
     // Filter out the "issue id" column and reassign orders for the rest
     const remainingColumns = columns
       .filter((col) => col !== issueIdColumn)
       .sort((a, b) => a.order - b.order)
       .map((col, index) => ({ ...col, order: index + 1 }));
-  
+
     // Return the updated array with "issue id" at the top
     return [issueIdColumn, ...remainingColumns];
    }
@@ -391,6 +362,44 @@ export class ExportExcelComponent implements OnInit {
     } else{
       return columnName;
     }
+   }
+
+   getGridHeaderFilters(colData){
+    if(colData === undefined){ return;}
+    if(Array.isArray(colData)){
+      let tempText=[];
+      colData.map((item) => {
+        if (this.typeOf(item) && item?.hasOwnProperty('hyperlink')) {
+          tempText.push(item.text)
+        }
+      })
+      return { name: this.blankValues.includes((tempText).join(','))?'(Blanks)':(tempText).join(','), value: colData };
+    }
+    else if (this.typeOf(colData) && colData?.hasOwnProperty('hyperlink')) {
+      return { name:this.blankValues.includes(colData.text)?'(Blanks)':colData.text, value: colData };
+    } else {
+      return { name: this.blankValues.includes(colData)?'(Blanks)':colData, value: colData };
+    }
+   }
+
+   refinedGridData(row){
+    // replace blank values with '(Blanks)'
+      let updatedRow = { ...row };
+      Object.keys(updatedRow).forEach(colName => {
+        if(updatedRow[colName]?.hasOwnProperty('hyperlink')){
+          updatedRow = {...updatedRow,text:updatedRow[colName]?.text||''}
+          }
+        if (typeof updatedRow[colName] === 'string') {
+          updatedRow[colName] = updatedRow[colName].trim();
+        }
+        if(Array.isArray(updatedRow[colName]) && typeof updatedRow[colName] !=='object'){
+            updatedRow[colName] = (updatedRow[colName] as any[]).join(',')
+        }
+        if (this.blankValues.includes(updatedRow[colName])) {
+          updatedRow[colName] = '';
+        }
+      });
+      return updatedRow;
    }
 
 }
