@@ -10,7 +10,6 @@ import { PrimeNGConfig } from 'primeng/api';
 import { HelperService } from './services/helper.service';
 import { Location } from '@angular/common';
 import { of, Subject, throwError } from 'rxjs';
-import { CommonModule, DatePipe } from '@angular/common';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -239,5 +238,52 @@ describe('AppComponent', () => {
       message: 'No project access.'
     });
   }));
+
+  // Test cases for scroll behavior
+  describe('scroll behavior', () => {
+    let header: HTMLElement;
+
+    beforeEach(() => {
+      header = document.createElement('div');
+      header.classList.add('header');
+      document.body.appendChild(header);
+    });
+
+    afterEach(() => {
+      document.body.removeChild(header);
+    });
+
+    it('should add scrolled class when window is scrolled beyond 200px', () => {
+      header.classList.add('scrolled');
+      // Set the scroll position
+      window.scrollTo(0, 201);
+
+      // Dispatch a scroll event
+      window.dispatchEvent(new Event('scroll'));
+
+      expect(header.classList.contains('scrolled')).toBeTrue();
+    });
+
+    it('should remove scrolled class when window is scrolled less than 200px', () => {
+      window.scrollTo(0, 199);
+      window.dispatchEvent(new Event('scroll'));
+      expect(header.classList.contains('scrolled')).toBeFalse();
+    });
+  });
+
+  // Test cases for authorization
+  describe('authorization', () => {
+    it('should set authorized flag based on auth service response', () => {
+      getAuthService.checkAuth.and.returnValue(false);
+      component.ngOnInit();
+      expect(component.authorized).toBeFalse();
+    });
+
+    it('should clear newUI from localStorage on init', () => {
+      localStorage.setItem('newUI', 'some-value');
+      component.ngOnInit();
+      expect(localStorage.getItem('newUI')).toBeNull();
+    });
+  });
 
 });

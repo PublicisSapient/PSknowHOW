@@ -24,7 +24,6 @@ import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-import { HelperService } from './services/helper.service';
 import { Location } from '@angular/common';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
@@ -54,7 +53,7 @@ export class AppComponent implements OnInit {
   }
 
   constructor(public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private helperService: HelperService, private location: Location) {
+    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private location: Location) {
     this.authorized = this.getAuth.checkAuth();
   }
 
@@ -111,23 +110,12 @@ export class AppComponent implements OnInit {
                 });
             } else {
               try {
-                // let selectedTab = this.location.path();
-                // selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-                // selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
-                // this.selectedTab = selectedTab.split('?statefilters=')[0];
-                // this.service.setSelectedBoard(this.selectedTab);
-
                 stateFiltersParam = atob(stateFiltersParam);
-
-                // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
-
-                // const kpiFiltersParam = params['kpiFilters'];
                 if (kpiFiltersParam) {
                   const kpiFilterParamDecoded = atob(kpiFiltersParam);
                   const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
                   this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
                 }
-
                 this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
                 this.refreshCounter++;
               } catch (error) {
