@@ -17,6 +17,7 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
@@ -33,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -229,6 +231,46 @@ public class KpiDataProviderTest {
 		Map<String, Object> result = kpiDataProvider.fetchCommitmentReliabilityData(kpiRequest, basicProjectConfigId,
 				sprintList);
 		assertNotNull(result);
+	}
+
+	@Test
+	public void testFetchCostOfDelayData() {
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+		List<JiraIssue> codList = jiraIssueDataFactory.getJiraIssues();
+		List<JiraIssueCustomHistory> codHistoryList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
+		codHistoryList.stream().map(JiraIssueCustomHistory::getStatusUpdationLog).forEach(f -> {
+			f.forEach(g -> g.setUpdatedOn(LocalDateTime.now().minusDays(2)));
+		});
+
+		when(jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(Mockito.any(), Mockito.any())).thenReturn(codList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(codHistoryList);
+
+		Map<String, Object> result = kpiDataProvider.fetchCostOfDelayData(new ObjectId("6335363749794a18e8a4479b"));
+		assertThat("Data : ", result.size(), equalTo(3));
+	}
+
+	@Test
+	public void testFetchCostOfDelayData2() {
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+		List<JiraIssue> codList = jiraIssueDataFactory.getJiraIssues();
+		List<JiraIssueCustomHistory> codHistoryList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
+		codHistoryList.stream().map(JiraIssueCustomHistory::getStatusUpdationLog).forEach(f -> {
+			f.forEach(g -> g.setUpdatedOn(LocalDateTime.now().minusDays(2)));
+		});
+		fieldMappingMap.forEach((key, value) -> {
+			value.setClosedIssueStatusToConsiderKpi113(List.of("Closed"));
+			value.setIssueTypesToConsiderKpi113(List.of("Story"));
+		});
+
+		when(jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(Mockito.any(), Mockito.any())).thenReturn(codList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(codHistoryList);
+
+		Map<String, Object> result = kpiDataProvider.fetchCostOfDelayData(new ObjectId("6335363749794a18e8a4479b"));
+		assertThat("Data : ", result.size(), equalTo(3));
 	}
 
 }
