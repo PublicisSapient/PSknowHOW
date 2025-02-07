@@ -238,15 +238,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.maturityTableKpiList = [];
       this.colorObj = x;
       this.trendBoxColorObj = { ...x };
-      let tempObj = {};
+      this.kpiTableDataObj = {};
       for (const key in this.trendBoxColorObj) {
         const idx = key.lastIndexOf('_');
         const nodeName = key.slice(0, idx);
         this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-        tempObj[nodeName] = [];
+        this.kpiTableDataObj[key] = []
       }
       this.projectCount = Object.keys(this.trendBoxColorObj)?.length;
-      this.kpiTableDataObj = { ...tempObj };
       if (!this.kpiChartData || Object.keys(this.kpiChartData)?.length <= 0) return this.service.passDataToDashboard;
       for (const key in this.kpiChartData) {
         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
@@ -377,7 +376,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
         const nodeName = key.slice(0, idx);
-        this.kpiTableDataObj[nodeName] = [];
+        this.kpiTableDataObj[key] = [];
       }
 
       this.service.setAddtionalFilterBackup({});
@@ -1647,15 +1646,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
         }
       }
-      let filtersApplied = Object.keys(this.colorObj);
+      let filtersApplied = [];
 
-      filtersApplied = filtersApplied.map((x) => {
-        let parts = x.split('_');
-        return parts.slice(0, parts.length - 1).join('_');
-      });
+      
+      for (const key in this.colorObj) {
+          filtersApplied.push(this.colorObj[key].nodeId)
+      }
 
-
-      filtersApplied.forEach((hierarchyName) => {
+      filtersApplied.forEach((hierarchyId) => {
         let obj = {
           'kpiId': kpiId,
           'kpiName': this.allKpiArray[idx]?.kpiName,
@@ -1664,9 +1662,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           'hoverText': [],
           'order': enabledKpi?.order
         }
-        let chosenItem = iterativeEle?.filter((item) => item['data'] == hierarchyName)[0];
+        let chosenItem = iterativeEle?.filter((item) => item['data'] == this.colorObj[hierarchyId]?.nodeDisplayName)[0];
 
-        let trendData = this.kpiTrendsObj[kpiId]?.filter(x => x['hierarchyName']?.toLowerCase() == hierarchyName?.toLowerCase())[0];
+        let trendData = this.kpiTrendsObj[kpiId]?.filter(x => x['hierarchyId']?.toLowerCase() == hierarchyId?.toLowerCase())[0];
         obj['latest'] = trendData?.value || '-';
         obj['trend'] = trendData?.trend || '-';
         obj['maturity'] = trendData?.maturity || '-';
@@ -1686,14 +1684,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
 
         }
-        let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
+        let kpiIndex = this.kpiTableDataObj[hierarchyId]?.findIndex((x) => x.kpiId == kpiId);
         if (kpiIndex > -1) {
-          this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+          this.kpiTableDataObj[hierarchyId]?.splice(kpiIndex, 1);
         }
-        if (enabledKpi?.isEnabled && enabledKpi?.shown && this.kpiTableDataObj[hierarchyName]) {
-          this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
+        if (enabledKpi?.isEnabled && enabledKpi?.shown && this.kpiTableDataObj[hierarchyId]) {
+          this.kpiTableDataObj[hierarchyId] = [...this.kpiTableDataObj[hierarchyId], obj];
         }
-        this.sortingRowsInTable(hierarchyName);
+        this.sortingRowsInTable(hierarchyId);
       })
     } else {
       /** when no data available */
