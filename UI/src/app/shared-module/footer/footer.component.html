@@ -16,13 +16,15 @@
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<footer class="footer" [ngStyle]="{ 'margin-left': '0' }">
-  <div>
-    <div class="copyright">
-      <span class="version-header">
-        {{currentversion}}
+<footer class="footer" [ngStyle]="{ 'margin-left': '0' }" role="contentinfo" aria-label="Page footer" tabindex="0">
+  <div class="footer-content">
+    <div class="copyright" aria-live="polite">
+      <span class="version-header" aria-label="Application version">
+        Version: {{currentversion}}
       </span>
-      &copy; {{currentYear}} Publicis Sapient. All rights reserved.
+      <span aria-label="copyright information">
+        &copy; {{currentYear}} Publicis Sapient. All rights reserved.
+      </span>
     </div>
   </div>
 </footer>
