@@ -50,7 +50,7 @@
       <label for="project">Select Projects</label>
       <p-multiSelect *ngIf="resetDropdowns" class="multiselect-custom" appendTo="body" inputId="project"
         [style]="{'width':'100%','max-width': '100%'}" [options]="projects" [(ngModel)]="selectedValProjects"
-        defaultLabel="Select Projects" optionLabel="projectName" display="chip" (onChange)="projectSelected()">
+        defaultLabel="Select Projects" optionLabel="projectDisplayName" display="chip" (onChange)="projectSelected()">
       </p-multiSelect>
     </div>
   </div>

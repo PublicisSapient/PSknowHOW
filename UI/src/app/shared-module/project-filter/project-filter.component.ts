@@ -322,8 +322,8 @@ export class ProjectFilterComponent implements OnInit {
     } else {
       obj['accessType'] = 'project';
       obj['value'] = this.selectedValProjects.map((item) => ({
-          itemId: item.id,
-          itemName: item.projectName
+          itemId: item.projectNodeId,
+          itemName: item.projectDisplayName
         }));
     }
     obj['hierarchyArr'] = this.hierarchyArray;
