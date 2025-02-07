@@ -113,7 +113,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
-				.forEach((projectNodeId, projectData) -> {
+				.forEach((projectNodePair, projectData) -> {
 			List<String> projectList = new ArrayList<>();
 			List<String> debtList = new ArrayList<>();
 			List<String> versionDate = new ArrayList<>();
@@ -136,14 +136,14 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 					if (MapUtils.isEmpty(history)) {
 						history = prepareEmptyJobWiseHistoryMap(projectData, endms);
 					}
-					prepareSqualeList(history, date, projectNodeId, projectList, debtList, projectWiseDataMap,
+					prepareSqualeList(history, date, projectNodePair.getValue(), projectList, debtList, projectWiseDataMap,
 							versionDate);
 
 					endDateTime = endDateTime.minusWeeks(1);
 				}
-				tempMap.get(projectNodeId).setValue(projectWiseDataMap);
+				tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
 				if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateSonarKpisExcelData(tempMap.get(projectNodeId).getProjectFilter().getName(),
+					KPIExcelUtility.populateSonarKpisExcelData(tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(),
 							projectList, debtList, versionDate, excelData, KPICode.SONAR_TECH_DEBT.getKpiId());
 				}
 			}
