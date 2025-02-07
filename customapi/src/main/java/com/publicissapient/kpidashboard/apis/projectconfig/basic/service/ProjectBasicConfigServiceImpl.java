@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterServ
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
@@ -356,8 +356,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				basicConfig.setUpdatedBy(authenticationService.getLoggedInUser());
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
 				performFilterOperation(basicConfigDtoCreation(updatedBasicConfig, mapper), true);
-				//clear kpi data cache for the project for all KPIs
-				kpiDataCacheService.clearCacheForProject(basicConfigId);
+				// clear kpi data cache for the project for all KPIs
 				response = new ServiceResponse(true, "Updated Successfully.", updatedBasicConfig);
 			} else {
 				response = new ServiceResponse(false, "Try with different project name.", null);
@@ -403,6 +402,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		}
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 		cacheService.clearCache(CommonConstant.CACHE_PROJECT_BASIC_TREE);
+		cacheService.clearCache(Constant.CACHE_PROJECT_KPI_DATA);
 		if (basicConfig.getClonedFrom() != null) {
 			cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
@@ -563,9 +563,8 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		List<String> scmToolList = Arrays.asList(ProcessorConstants.BITBUCKET, ProcessorConstants.GITLAB,
 				ProcessorConstants.GITHUB, ProcessorConstants.AZUREREPO);
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
-		Boolean isRepoTool = tools.stream()
-				.anyMatch(toolConfig -> scmToolList.contains(toolConfig.getToolName())
-						&& projectBasicConfig.isDeveloperKpiEnabled());
+		Boolean isRepoTool = tools.stream().anyMatch(toolConfig -> scmToolList.contains(toolConfig.getToolName())
+				&& projectBasicConfig.isDeveloperKpiEnabled());
 		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 
@@ -827,8 +826,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		List<SprintDetails> sprintDetailsList = sprintRepository
-				.findByBasicProjectConfigIdInAndStateInOrderByStartDateASC(basicProjectConfigIds,
-						sprintStatusList);
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateASC(basicProjectConfigIds, sprintStatusList);
 
 		// Sort by beginDate in descending order
 
