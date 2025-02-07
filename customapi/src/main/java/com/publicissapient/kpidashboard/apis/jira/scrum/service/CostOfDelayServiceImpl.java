@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -72,8 +73,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	private static final String COD_DATA = "costOfDelayData";
 	private static final String COD_DATA_HISTORY = "costOfDelayDataHistory";
 	private static final String FIELD_MAPPING = "fieldMapping";
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
+	
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -81,9 +81,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	@Autowired
 	private CacheService cacheService;
 	@Autowired
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-	@Autowired
-	private ConfigHelperService configHelperService;
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> subCategoryMap) {
@@ -132,39 +130,24 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 			KpiRequest kpiRequest) {
 
 		Map<String, Object> resultListMap = new HashMap<>();
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-		Map<String, List<String>> closedStatusMap = new HashMap<>();
+		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(leafNodeList)) {
-
 			leafNodeList.forEach(leaf -> {
-				List<String> basicProjectConfigIds = new ArrayList<>();
-				Map<String, Object> mapOfFilters = new LinkedHashMap<>();
 				ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-				basicProjectConfigIds.add(leaf.getProjectFilter().getBasicProjectConfigId().toString());
-				FieldMapping fieldMapping = fieldMappingMap.get(basicProjectConfigId);
-                List<String> jiraCloseStatuses = new ArrayList<>();
-				if(CollectionUtils.isNotEmpty(fieldMapping.getClosedIssueStatusToConsiderKpi113())) {
-					jiraCloseStatuses.addAll(fieldMapping.getClosedIssueStatusToConsiderKpi113());
-				}
-                List<String> jiraIssueType = new ArrayList<>();
-				if(CollectionUtils.isNotEmpty(fieldMapping.getIssueTypesToConsiderKpi113())) {
-					jiraIssueType.addAll(fieldMapping.getIssueTypesToConsiderKpi113());
-				}
-				closedStatusMap.put(basicProjectConfigId.toString(),
-						jiraCloseStatuses.stream().map(String::toLowerCase).toList());
-				mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),jiraIssueType);
-				mapOfFilters.put(JiraFeature.STATUS.getFieldValueInFeature(), jiraCloseStatuses);
-				mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-						basicProjectConfigIds.stream().distinct().toList());
-				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfFilters);
+				basicProjectConfigIds.add(basicProjectConfigId);
 			});
 
 		}
-		List<JiraIssue> codList = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(new HashMap<>(), uniqueProjectMap);
-		List<JiraIssueCustomHistory> codHistory = jiraIssueCustomHistoryRepository
-				.findByStoryIDInAndBasicProjectConfigIdIn(
-						codList.stream().map(JiraIssue::getNumber).toList(), new ArrayList<>(uniqueProjectMap.keySet()));
+		List<JiraIssue> codList = new ArrayList<>();
+		List<JiraIssueCustomHistory> codHistory = new ArrayList<>();
+		Map<String, List<String>> closedStatusMap = new HashMap<>();
+		basicProjectConfigIds.forEach(basicProjectConfigId -> {
+			Map<String, Object> result = kpiDataCacheService.fetchCostOfDelayData(basicProjectConfigId,
+					KPICode.COST_OF_DELAY.getKpiId());
+			codList.addAll((List<JiraIssue>) result.get(COD_DATA));
+			codHistory.addAll((List<JiraIssueCustomHistory>) result.get(COD_DATA_HISTORY));
+			closedStatusMap.putAll((Map<String, List<String>>) result.get(FIELD_MAPPING));
+		});
 		resultListMap.put(COD_DATA, codList);
 		resultListMap.put(COD_DATA_HISTORY, codHistory);
 		resultListMap.put(FIELD_MAPPING, closedStatusMap);

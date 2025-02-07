@@ -129,7 +129,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 				.requestMatchers("/actuator**").permitAll().requestMatchers("/forgotPassword").permitAll()
 				.requestMatchers("/validateEmailToken**").permitAll().requestMatchers("/resetPassword").permitAll()
 				.requestMatchers("/cache/clearAllCache").permitAll()
-				.requestMatchers(HttpMethod.GET, "/cache/clearCache/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/cache/**").permitAll()
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll()
 				.requestMatchers("/stringShortener/shorten").permitAll()
