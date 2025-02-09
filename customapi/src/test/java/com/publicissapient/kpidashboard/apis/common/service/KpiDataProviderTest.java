@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -24,6 +25,7 @@ import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataR
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -36,11 +38,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,13 +57,17 @@ public class KpiDataProviderTest {
 	private static final String SPRINTSDETAILS = "sprints";
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
 	private static final String ESTIMATE_TIME = "Estimate_Time";
+	private static final String SPRINT_WISE_PREDICTABILITY = "predictability";
+
+	private static final String SPRINT_WISE_SPRINT_DETAILS = "sprintWiseSprintDetailMap";
 
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
 	@InjectMocks
 	KpiDataProvider kpiDataProvider;
-
+	@Mock
+	private SprintRepositoryCustom sprintRepositoryCustom;
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
@@ -73,6 +84,8 @@ public class KpiDataProviderTest {
 	private CapacityKpiDataRepository capacityKpiDataRepository;
 	@Mock
 	private BuildRepository buildRepository;
+	@Mock
+	CustomApiConfig customApiConfig;
 
 	private Map<String, Object> filterLevelMap;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
@@ -165,12 +178,12 @@ public class KpiDataProviderTest {
 		String kpiId = "kpiId";
 
 		when(sprintRepository.findBySprintIDIn(sprintList)).thenReturn(sprintDetailsList);
-		when(jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(Mockito.anySet(), Mockito.anyMap(),
+		when(jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(anySet(), Mockito.anyMap(),
 				Mockito.eq(CommonConstant.NUMBER))).thenReturn(totalIssueList);
-		when(jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(Mockito.anySet(), Mockito.anyMap(),
+		when(jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(anySet(), Mockito.anyMap(),
 				Mockito.eq(CommonConstant.PARENT_STORY_ID))).thenReturn(totalIssueList);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),
-				Mockito.anyList())).thenReturn(new ArrayList<>());
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(),
+				anyList())).thenReturn(new ArrayList<>());
 
 		Map<String, Object> result = kpiDataProvider.fetchSprintCapacityDataFromDb(kpiRequest, basicProjectConfigId,
 				sprintList);
@@ -179,6 +192,28 @@ public class KpiDataProviderTest {
 		assertThat(((List<JiraIssue>) result.get(STORY_LIST)).size(), equalTo(totalIssueList.size() * 2));
 		assertThat(result.get(SPRINTSDETAILS), equalTo(sprintDetailsList));
 		assertThat(result.get(JIRA_ISSUE_HISTORY_DATA), equalTo(new ArrayList<>()));
+	}
+
+	@Test
+	public void fetchSprintPredictabilityDataFromDb_shouldReturnCorrectData_whenValidInput() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		String kpiId = "kpiId";
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> sprintWiseStoryList = jiraIssueDataFactory.getStories();
+		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(),
+				anyList(),anyLong())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
+				.thenReturn(sprintWiseStoryList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
+		Set<String> set = new HashSet<>();
+		set.add("6335363749794a18e8a4479b");
+		duplicateIssues.put(new ObjectId("6335363749794a18e8a4479b"),set);
+		when(kpiHelperService.getProjectWiseTotalSprintDetail(anyMap())).thenReturn(duplicateIssues);
+		Map<String, Object> result = kpiDataProvider.fetchSprintPredictabilityDataFromDb(kpiRequest, basicProjectConfigId,
+				sprintList);
+		assertThat(result.get(SPRINT_WISE_PREDICTABILITY), equalTo(sprintWiseStoryList));
 	}
 
 	@Test
