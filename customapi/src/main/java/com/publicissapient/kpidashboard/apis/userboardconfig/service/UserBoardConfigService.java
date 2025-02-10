@@ -19,9 +19,9 @@
 package com.publicissapient.kpidashboard.apis.userboardconfig.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.userboardconfig.ConfigLevel;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.ProjectListRequested;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
-import org.springframework.http.ResponseEntity;
 
 /**
  * Service class for user board config
@@ -32,45 +32,46 @@ import org.springframework.http.ResponseEntity;
 public interface UserBoardConfigService {
 
 	/**
-	 * This method return user board config if present in db else return a default
-	 * configuration.
-	 * 
-	 * @return UserBoardConfigDTO
+	 * Retrieves the board configuration based on the specified configuration level
+	 * and list of requested projects.
+	 *
+	 * @param configLevel
+	 *            {@link ConfigLevel}
+	 * @param listOfRequestedProj
+	 *            the list of requested projects
+	 * @return the board configuration DTO
 	 */
-	UserBoardConfigDTO getUserBoardConfig(ProjectListRequested listOfRequestedProj);
+	UserBoardConfigDTO getBoardConfig(ConfigLevel configLevel, ProjectListRequested listOfRequestedProj);
 
 	/**
-	 * This method save user board config
-	 * 
+	 * Saves the board configuration based on the specified configuration level and
+	 * project configuration ID.
+	 *
 	 * @param userBoardConfigDTO
-	 *            userBoardConfigDTO
-	 * @return UserBoardConfigDTO
+	 *            the user board configuration DTO
+	 * @param configLevel
+	 *            {@link ConfigLevel}
+	 * @param basicProjectConfigId
+	 *            the ID of the basic project configuration
+	 * @return the service response indicating success or failure
 	 */
-	UserBoardConfigDTO saveUserBoardConfig(UserBoardConfigDTO userBoardConfigDTO);
+	ServiceResponse saveBoardConfig(UserBoardConfigDTO userBoardConfigDTO, ConfigLevel configLevel,
+			String basicProjectConfigId);
 
 	/**
-	 * delete UserBoard Data by userName
+	 * delete UserBoard config by userName
 	 *
 	 * @param userName
+	 *            userName
 	 */
 	void deleteUser(String userName);
 
 	/**
-	 * This method fetch admin / superAdmin project level board config
-	 * 
+	 * Deletes the project board config.
+	 *
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
-	 * @return admin user board config
 	 */
-	UserBoardConfigDTO getProjBoardConfigAdmin(String basicProjectConfigId);
+	void deleteProjectBoardConfig(String basicProjectConfigId);
 
-	/**
-	 * This method save project board config of proj/Super admin with
-	 * basicProjectConfigId, also modify other admin configs of that project
-	 *
-	 * @param userBoardConfigDTO   userBoardConfigDTO
-	 * @param basicProjectConfigId basicProjConfigId
-	 * @return UserBoardConfigDTO
-	 */
-	ResponseEntity<ServiceResponse> saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO, String basicProjectConfigId);
 }
