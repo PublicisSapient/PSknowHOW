@@ -40,6 +40,7 @@ public final class CommonConstant {
 	public static final String CACHE_BOARD_META_DATA_MAP = "boardMetaDataMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
+	public static final String CACHE_PROJECT_KPI_DATA = "project_kpi_data_cache";
 
 	public static final String PARAM1 = "param1";
 	public static final String PARAM2 = "param2";
