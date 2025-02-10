@@ -33,6 +33,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { KpiHelperService } from '../../services/kpi-helper.service';
 import { of } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { MessageService } from 'primeng/api';
 
 describe('KpiCardV2Component', () => {
   let component: KpiCardV2Component;
@@ -78,7 +79,7 @@ describe('KpiCardV2Component', () => {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
-      providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, DialogService, KpiHelperService,
+      providers: [SharedService, GetAuthService, HttpService, HelperService, CommonModule, DatePipe, DialogService, KpiHelperService, MessageService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })

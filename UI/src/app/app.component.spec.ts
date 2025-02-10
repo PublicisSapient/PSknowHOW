@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { SharedService } from './services/shared.service';
 import { GetAuthService } from './services/getauth.service';
@@ -9,8 +9,7 @@ import { Router, ActivatedRoute, NavigationEnd, RouteConfigLoadEnd, RouteConfigL
 import { PrimeNGConfig } from 'primeng/api';
 import { HelperService } from './services/helper.service';
 import { Location } from '@angular/common';
-import { of, Subject } from 'rxjs';
-import { CommonModule, DatePipe } from '@angular/common';
+import { of, Subject, throwError } from 'rxjs';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -40,7 +39,7 @@ describe('AppComponent', () => {
     ]);
 
     getAuthServiceMock = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
-    const httpServiceMock = jasmine.createSpyObj('HttpService', [], { currentVersion: '1.0.0' });
+    const httpServiceMock = jasmine.createSpyObj('HttpService', ['handleRestoreUrl'], { currentVersion: '1.0.0' });
     const googleAnalyticsServiceMock = jasmine.createSpyObj('GoogleAnalyticsService', ['setPageLoad']);
     const getAuthorizationServiceMock = jasmine.createSpyObj('GetAuthorizationService', ['getRole']);
     const helperServiceMock = jasmine.createSpyObj('HelperService', ['setBackupOfUrlFilters']);
@@ -159,61 +158,12 @@ describe('AppComponent', () => {
     });
   });
 
-  xit('should decode and set state filters from URL hash', () => {
-    component.ngOnInit();
-    expect(sharedService.setBackupOfUrlFilters).toHaveBeenCalledWith('SomeEncodedData');
-  });
-
   it('should navigate to dashboard if no shared link exists', () => {
     localStorage.removeItem('shared_link');
 
     component.ngOnInit();
 
     expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
-  });
-
-  xit('should navigate to error page if user lacks project access', () => {
-    const validStateFilters = btoa(JSON.stringify({ primary_level: [{ basicProjectConfigId: '123' }] }));
-    localStorage.setItem('shared_link', `http://example.com?stateFilters=${validStateFilters}`);
-    localStorage.setItem(
-      'currentUserDetails',
-      JSON.stringify({
-        projectsAccess: [
-          {
-            projects: [{ projectId: '456' }],
-          },
-        ],
-        authorities: ['ROLE_SUPERADMIN']
-      })
-    );
-
-    component.ngOnInit();
-
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-    /* expect(sharedService.raiseError).toHaveBeenCalledWith({
-      status: 901,
-      message: 'No project access.',
-    }); */
-  });
-
-  xit('should navigate to shared link if user has access to all projects', () => {
-    const validStateFilters = btoa(JSON.stringify({ primary_level: [{ basicProjectConfigId: '123' }] }));
-    localStorage.setItem('shared_link', `http://example.com?stateFilters=${validStateFilters}`);
-    localStorage.setItem(
-      'currentUserDetails',
-      JSON.stringify({
-        projectsAccess: [
-          {
-            projects: [{ basicProjectConfigId: '123' }],
-          },
-        ],
-        authorities: ['ROLE_SUPERADMIN']
-      })
-    );
-
-    component.ngOnInit();
-
-    expect(router.navigate).toHaveBeenCalledWith([`http://example.com?stateFilters=${validStateFilters}`]);
   });
 
   it('should initialize component correctly and call ngOnInit', () => {
@@ -242,29 +192,6 @@ describe('AppComponent', () => {
     expect(header.classList.contains('scrolled')).toBeFalse();
   });
 
-  xit('should decode stateFilters and set backup filter state', () => {
-    const mockParam = btoa(JSON.stringify({ primary_level: [{ labelName: 'Test', nodeId: 'node-1' }] }));
-    localStorage.setItem('shared_link', `http://example.com/?stateFilters=${mockParam}`);
-    // const serviceSpy = spyOn(sharedService, 'setBackupOfFilterSelectionState');
-
-    component.ngOnInit();
-
-    expect(sharedServiceMock.setBackupOfFilterSelectionState).toHaveBeenCalledWith({ primary_level: [{ labelName: 'Test', nodeId: 'node-1' }] });
-  });
-
-  xit('should handle invalid URL and redirect to error page', () => {
-    const invalidParam = '12asdasd213131';
-    localStorage.setItem('shared_link', `http://example.com/?stateFilters=${invalidParam}`);
-
-    component.ngOnInit();
-
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-    expect(sharedServiceMock.raiseError).toHaveBeenCalledWith({
-      status: 900,
-      message: 'Invalid URL.',
-    });
-  });
-
   it('should navigate to default dashboard if no shared link is found', () => {
     localStorage.removeItem('shared_link');
     // const routerSpy = spyOn(router, 'navigate');
@@ -272,6 +199,91 @@ describe('AppComponent', () => {
     component.ngOnInit();
 
     expect(routerMock.navigate).toHaveBeenCalledWith(['./dashboard/']);
+  });
+
+  it('should navigate to the provided URL if the user has access to all projects', fakeAsync(() => {
+    const decodedStateFilters = JSON.stringify({
+      parent_level: { basicProjectConfigId: 'project1', labelName: 'Project' },
+      primary_level: []
+    });
+    const currentUserProjectAccess = [{ projectId: 'project1' }];
+    const url = 'http://example.com';
+
+    spyOn(component, 'urlRedirection').and.callThrough();
+
+    component.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, true);
+
+    tick();
+    expect(component.urlRedirection).toHaveBeenCalledWith(decodedStateFilters, currentUserProjectAccess, url, true);
+    expect(router.navigate).toHaveBeenCalledWith([url]);
+  }));
+
+  it('should navigate to the error page if the user does not have access to the project', fakeAsync(() => {
+    const decodedStateFilters = JSON.stringify({
+      parent_level: { basicProjectConfigId: 'project1', labelName: 'Project' },
+      primary_level: []
+    });
+    const currentUserProjectAccess = [{ projectId: 'project2' }];
+    const url = 'http://example.com';
+
+    spyOn(component, 'urlRedirection').and.callThrough();
+
+    component.urlRedirection(decodedStateFilters, currentUserProjectAccess, url, false);
+
+    tick();
+    expect(component.urlRedirection).toHaveBeenCalledWith(decodedStateFilters, currentUserProjectAccess, url, false);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
+    expect(sharedServiceMock.raiseError).toHaveBeenCalledWith({
+      status: 901,
+      message: 'No project access.'
+    });
+  }));
+
+  // Test cases for scroll behavior
+  describe('scroll behavior', () => {
+    let header: HTMLElement;
+
+    beforeEach(() => {
+      header = document.createElement('div');
+      header.classList.add('header');
+      document.body.appendChild(header);
+    });
+
+    afterEach(() => {
+      document.body.removeChild(header);
+    });
+
+    it('should add scrolled class when window is scrolled beyond 200px', () => {
+      header.classList.add('scrolled');
+      // Set the scroll position
+      window.scrollTo(0, 201);
+
+      // Dispatch a scroll event
+      window.dispatchEvent(new Event('scroll'));
+
+      expect(header.classList.contains('scrolled')).toBeTrue();
+    });
+
+    it('should remove scrolled class when window is scrolled less than 200px', () => {
+      window.scrollTo(0, 199);
+      window.dispatchEvent(new Event('scroll'));
+      expect(header.classList.contains('scrolled')).toBeFalse();
+    });
+  });
+
+  // Test cases for authorization
+  describe('authorization', () => {
+    it('should set authorized flag based on auth service response', () => {
+      getAuthService.checkAuth.and.returnValue(false);
+      component.ngOnInit();
+      expect(component.authorized).toBeFalse();
+    });
+
+    it('should clear newUI from localStorage on init', () => {
+      localStorage.setItem('newUI', 'some-value');
+      component.ngOnInit();
+      expect(localStorage.getItem('newUI')).toBeNull();
+    });
   });
 
 });

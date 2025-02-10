@@ -238,6 +238,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		} else if (null != issue.getOriginalEstimateMinutes()) {
 			data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
 		}
+		data.setCategoryWiseDelay(new HashMap<>());
 	}
 
 	/**
@@ -265,11 +266,11 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			name = CommonConstant.ORIGINAL_ESTIMATE;
 		}
 
-		dataGroup1.add(createKpiData("", "Issue count", 1, "count", ""));
-		dataGroup1.add(createKpiData("value", name, 2, "sum", unit));
+		dataGroup1.add(createKpiData("", "Issue count", 1, "count", "", false));
+		dataGroup1.add(createKpiData("value", name, 2, "sum", unit, false));
 
 		List<KpiData> dataGroup2 = new ArrayList<>();
-		dataGroup2.add(createKpiData(DELAY, DELAY, 1, "sum", ""));
+		dataGroup2.add(createKpiData("categoryWiseDelay", DELAY, 1, "sum", CommonConstant.DAY, true));
 
 		dataGroup.setMarkerInfo(markerInfo);
 		dataGroup.setDataGroup1(dataGroup1);
@@ -287,7 +288,8 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	 * @param unit
 	 * @return
 	 */
-	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit) {
+	private KpiData createKpiData(String key, String name, Integer order, String aggregation, String unit,
+			boolean isMultipleValue) {
 		KpiData data = new KpiData();
 		data.setKey(key);
 		data.setName(name);
@@ -295,6 +297,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 		data.setAggregation(aggregation);
 		data.setUnit(unit);
 		data.setShowAsLegend(false);
+		data.setMultipleValue(isMultipleValue);
 		return data;
 	}
 
@@ -420,7 +423,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			}
 			setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, false);
 		}
-		data.setDelay(delay);
+		data.getCategoryWiseDelay().put(DEV_STATUS, delay);
 	}
 
 	/**
@@ -453,7 +456,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 					.isBefore(LocalDate.now())) {
 				category.add(PLANNED);
 				category2.get(PLANNED).add(PLANNED_COMPLETION);
-				data.setDelay(delay);
+				data.getCategoryWiseDelay().put(PLANNED, delay);
 				setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, true);
 			}
 		} else {
@@ -462,7 +465,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 					.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1))) {
 				category.add(PLANNED);
 				category2.get(PLANNED).add(PLANNED_COMPLETION);
-				data.setDelay(delay);
+				data.getCategoryWiseDelay().put(PLANNED, delay);
 				setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, true);
 			}
 		}
@@ -472,7 +475,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			category2.get(PLANNED).add(ACTUAL_COMPLETION);
 			if (DateUtil.stringToLocalDate(issue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					.isAfter(LocalDate.now().minusDays(1))) {
-				data.setDelay(delay);
+				data.getCategoryWiseDelay().put(PLANNED, delay);
 			}
 			setKpiSpecificData(data, issueWiseDelay, issue, jiraIssueData, actualCompletionData, true);
 		}

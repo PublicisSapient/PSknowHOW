@@ -143,4 +143,10 @@ public class KpiDataCacheServiceImplTest {
 		assertNotNull(kpiDataCacheService.fetchCommitmentReliabilityData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
 	}
 
+	@Test
+	public void testFetchCostOfDelayData() {
+		when(kpiDataProvider.fetchCostOfDelayData(any())).thenReturn(new HashMap<>());
+		assertNotNull(kpiDataCacheService.fetchCostOfDelayData(new ObjectId(), KPICode.COST_OF_DELAY.getKpiId()));
+	}
+
 }
