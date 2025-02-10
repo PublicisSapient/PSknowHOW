@@ -282,18 +282,9 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		Map<ObjectId, List<String>> previousProjectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors
-				.groupingBy(node -> node.getProjectFilter().getBasicProjectConfigId(), Collectors.collectingAndThen(
-						Collectors.toList(),
-						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
-
-		Map<ObjectId, List<String>> projectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors.groupingBy(
-				node -> node.getProjectFilter().getBasicProjectConfigId(),
-				Collectors.collectingAndThen(Collectors.toList(),
-						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
-		/*Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest,
-				projectWiseSprintsForFilter, sprintDetailsList);
-		assertEquals(2, resultMap.size());*/
+		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest,
+				new ArrayList<>(), sprintDetailsList);
+		assertEquals(2, resultMap.size());
 	}
 
 	@Test
