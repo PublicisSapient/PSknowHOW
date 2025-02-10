@@ -56,9 +56,6 @@ public class CapacityMasterController {
 	public ResponseEntity<ServiceResponse> addCapacity(@RequestBody CapacityMaster capacityMaster) {
 		ServiceResponse response = new ServiceResponse(false, "Failed to add Capacity Data", null);
 		try {
-			String projectNodeId = capacityMaster.getProjectNodeId();
-			capacityMaster.setBasicProjectConfigId(new ObjectId(projectNodeId
-					.substring(projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE) + 1, projectNodeId.length())));
 			policy.checkPermission(capacityMaster, "SAVE_UPDATE_CAPACITY");
 			capacityMaster = capacityMasterService.processCapacityData(capacityMaster);
 

@@ -170,7 +170,8 @@ public class KpiDataProvider {
 	public Map<String, Object> fetchSprintCapacityDataFromDb(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList) {
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
+		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
+		List<String> stringBasicProjectConfigId = new ArrayList<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMapForSubTask = new HashMap<>();
@@ -192,7 +193,8 @@ public class KpiDataProvider {
 		}
 
 		List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
-		basicProjectConfigIds.add(basicProjectConfigId.toString());
+		basicProjectConfigIds.add(basicProjectConfigId);
+		stringBasicProjectConfigId.add(basicProjectConfigId.toString());
 
 		mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 				CommonUtils.convertToPatternList(capacityIssueType));
@@ -203,6 +205,7 @@ public class KpiDataProvider {
 		uniqueProjectMapForSubTask.put(basicProjectConfigId.toString(), mapOfProjectFiltersForSubTask);
 
 		Map<String, Object> capacityMapOfFilters = new HashMap<>();
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest,capacityMapOfFilters,filterHelperService);
 		capacityMapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 				sprintList.stream().distinct().toList());
 		capacityMapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
@@ -229,7 +232,7 @@ public class KpiDataProvider {
 			jiraIssues.addAll(jiraIssueList);
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssues.stream().map(JiraIssue::getNumber).toList(),
-							basicProjectConfigIds.stream().distinct().toList());
+							stringBasicProjectConfigId.stream().distinct().toList());
 
 			resultListMap.put(STORY_LIST, jiraIssues);
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
