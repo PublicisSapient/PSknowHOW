@@ -554,6 +554,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName }
       }
     }
+    this.colorObj = {...this.colorObj,immediateParentDisplayName:this.getImmediateParentDisplayName(this.colorObj)}
     if (Object.keys(this.colorObj).length) {
       this.service.setColorObj(this.colorObj);
     }
@@ -608,9 +609,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   getImmediateParentDisplayName(child) {
     let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
-    let selectedLevel = typeof this.selectedLevel === 'string' ? this.selectedLevel : this.selectedLevel.nodeType;
+    let selectedLevel = typeof this.selectedLevel === 'string' ? this.selectedLevel : this.selectedLevel?.nodeType;
     let selectedLevelNode = completeHiearchyData?.filter(x => x.hierarchyLevelName === selectedLevel);
-    let level = selectedLevelNode[0].level;
+    let level = selectedLevelNode[0]?.level;
     if (level > 1) {
       let parentLevel = level - 1;
       let parentLevelNode = completeHiearchyData?.filter(x => x.level === parentLevel);
