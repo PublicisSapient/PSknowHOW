@@ -1,7 +1,7 @@
 <p-tabView [(activeIndex)]="activeIndex" class="kpi-table-tabs">
-    <p-tabPanel *ngFor="let tab of tabs; let i = index;" [header]="tab" [headerStyle]="{'background': nodeColors[tab]}">
+    <p-tabPanel *ngFor="let tab of tabs; let i = index;" [header]="tab?.['nodeDisplayName']" [headerStyle]="{'background': nodeColors?.[tab?.nodeId]}">
         <div class="card">
-            <p-table [columns]="cols" [value]="kpiData[tab]" styleClass="p-datatable-striped p-datatable-gridlines" 
+            <p-table [columns]="cols" [value]="kpiData?.[tab?.nodeId]" styleClass="p-datatable-striped p-datatable-gridlines" 
             [loading]="loader" loadingIcon="loading-img">
                 <ng-template pTemplate="header" let-columns>
                     <tr>

@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.bson.types.ObjectId;
@@ -72,8 +74,39 @@ public class KpiDataCacheServiceImplTest {
 	}
 
 	@Test
-	public void testClearCacheForProject() {
+	public void testClearCacheForProjectAndKpi() {
 		kpiDataCacheService.clearCache("12345", "kpi1");
+	}
+
+	@Test
+	public void testClearCacheForProject() {
+		String cacheKey = "12345_kpi1";
+		Cache cache = mock(Cache.class);
+		ConcurrentHashMap<Object, Object> map = new ConcurrentHashMap();
+		map.put(cacheKey, new Object());
+
+		when(cache.getNativeCache()).thenReturn(map);
+		when(cacheManager.getCache(Constant.CACHE_PROJECT_KPI_DATA)).thenReturn(cache);
+
+		kpiDataCacheService.clearCacheForProject("12345");
+		verify(cache, times(1)).evict(cacheKey);
+
+		kpiDataCacheService.clearCacheForProject("12312");
+		verify(cache, times(0)).evict("12312_kpi1");
+	}
+
+	@Test
+	public void testClearCacheForSource() {
+		String cacheKey = "12345_" + KPICode.BUILD_FREQUENCY.getKpiId();
+		Cache cache = mock(Cache.class);
+		ConcurrentHashMap<Object, Object> map = new ConcurrentHashMap();
+		map.put(cacheKey, new Object());
+
+		when(cache.getNativeCache()).thenReturn(map);
+		when(cacheManager.getCache(Constant.CACHE_PROJECT_KPI_DATA)).thenReturn(cache);
+
+		kpiDataCacheService.clearCacheForSource(KPISource.JENKINS.name());
+		verify(cache, times(1)).evict(cacheKey);
 	}
 
 	@Test
@@ -108,6 +141,12 @@ public class KpiDataCacheServiceImplTest {
 	public void testFetchCommitmentReliabilityData() {
 		when(kpiDataProvider.fetchCommitmentReliabilityData(any(), any(), any())).thenReturn(new HashMap<>());
 		assertNotNull(kpiDataCacheService.fetchCommitmentReliabilityData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));
+	}
+
+	@Test
+	public void testFetchCostOfDelayData() {
+		when(kpiDataProvider.fetchCostOfDelayData(any())).thenReturn(new HashMap<>());
+		assertNotNull(kpiDataCacheService.fetchCostOfDelayData(new ObjectId(), KPICode.COST_OF_DELAY.getKpiId()));
 	}
 
 }

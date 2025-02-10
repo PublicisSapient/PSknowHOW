@@ -19,6 +19,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 import { MessageService } from 'primeng/api';
 import { MultiSelect } from 'primeng/multiselect';
 
@@ -43,7 +44,7 @@ export class ProjectFilterComponent implements OnInit {
   selectedValTemplateValue = <any>[];
   selectedValueIsStillThere: any = {};
   valueRemoved: any = {};
-  constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService) { }
+  constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService, private helper: HelperService) { }
 
   ngOnInit(): void {
     this.getProjects();
@@ -179,6 +180,7 @@ export class ProjectFilterComponent implements OnInit {
   // }
 
   findUniques(data, propertyArray) {
+    data = this.helper.sortByField(data, ['name']);
     const seen = Object.create(null);
     return data.filter(o => {
       const key = propertyArray.map(k => o[k]).join('|');
@@ -218,7 +220,6 @@ export class ProjectFilterComponent implements OnInit {
 
     this.sortFilters();
     let newFilteredData = [];
-    console.log(this.selectedVal);
     if (Object.keys(this.selectedVal).length) {
       Object.keys(this.selectedVal).forEach((filterType) => {
         if (this.selectedVal[filterType] && this.selectedVal[filterType].length) {
@@ -233,14 +234,13 @@ export class ProjectFilterComponent implements OnInit {
         }
       });
 
-      newFilteredData = this.findUniques(newFilteredData, ['id', 'projectName', 'hierarchy']);
+      newFilteredData = this.findUniques(newFilteredData, ['id', 'projectDisplayName', 'hierarchy']);
       this.filteredData = newFilteredData;
       if (Object.keys(this.selectedVal).length) {
         this.filtersApplied = true;
       } else {
         this.filtersApplied = false;
       }
-      console.log(this.filteredData);
       this.populateDataLists(this.filteredData, filterType);
 
       // refine selectedVal as per the filtered data
@@ -326,9 +326,9 @@ export class ProjectFilterComponent implements OnInit {
     } else {
       obj['accessType'] = 'project';
       obj['value'] = this.selectedValProjects.map((item) => ({
-        itemId: item.id,
-        itemName: item.projectName
-      }));
+          itemId: item.projectNodeId,
+          itemName: item.projectDisplayName
+        }));
     }
     obj['hierarchyArr'] = this.hierarchyArray;
     obj['valueRemoved'] = this.valueRemoved;

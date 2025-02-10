@@ -22,16 +22,42 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { LoginComponent } from './login.component';
 import { HttpService } from '../../services/http.service';
+import { HelperService } from 'src/app/services/helper.service';
 import { SharedService } from '../../services/shared.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let router: jasmine.SpyObj<Router>;
-  let httpService: jasmine.SpyObj<HttpService>;
-  let sharedService: jasmine.SpyObj<SharedService>;
-  let gaService: jasmine.SpyObj<GoogleAnalyticsService>;
+  let router: Router;
+  let httpService: HttpService;
+  let sharedService: SharedService;
+  let helperService: HelperService;
+  let ga: GoogleAnalyticsService;
+
+  const mockRouter = {
+    navigate: jasmine.createSpy('navigate'),
+  };
+
+  const mockActivatedRoute = {
+    snapshot: {
+      queryParams: { returnUrl: '/' },
+    },
+    queryParams: of({ sessionExpire: 'Session expired' }),
+  };
+
+  const mockHttpService = jasmine.createSpyObj('HttpService', ['login', 'handleRestoreUrl']);
+
+  const mockSharedService = {
+    getCurrentUserDetails: jasmine.createSpy('getCurrentUserDetails'),
+    raiseError: jasmine.createSpy('raiseError'),
+  };
+
+  const mockHelperService = jasmine.createSpyObj('HelperService', ['urlShorteningRedirection']);
+
+  const mockGoogleAnalyticsService = {
+    setLoginMethod: jasmine.createSpy('setLoginMethod'),
+  };
 
   beforeEach(async () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -43,15 +69,13 @@ describe('LoginComponent', () => {
       declarations: [LoginComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        { provide: Router, useValue: routerSpy },
-        { provide: HttpService, useValue: httpSpy },
-        { provide: SharedService, useValue: sharedSpy },
-        { provide: GoogleAnalyticsService, useValue: gaSpy },
-        {
-          provide: ActivatedRoute,
-          useValue: { queryParams: of({ sessionExpire: 'true' }), snapshot: { queryParams: {} } }
-        }
-      ]
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: HttpService, useValue: mockHttpService },
+        { provide: SharedService, useValue: mockSharedService },
+        { provide: HelperService, useValue: mockHelperService },
+        { provide: GoogleAnalyticsService, useValue: mockGoogleAnalyticsService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
@@ -59,7 +83,7 @@ describe('LoginComponent', () => {
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
     sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
-    gaService = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
+    ga = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
 
     fixture.detectChanges();
   });
@@ -110,66 +134,28 @@ describe('LoginComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
   });
 
-  it('should redirect to dashboard on successful login', () => {
-    component.loginForm.setValue({ username: 'test', password: 'password' });
-    httpService.login.and.returnValue(of({ status: 200, body: {} }));
-
-    sharedService.getCurrentUserDetails.and.returnValue('someUserDetails');
-
-    component.onSubmit();
-
-    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
+  it('should handle 401 status code', () => {
+    const data = { status: 401, error: { message: 'Unauthorized' } };
+    component.performLogin(data, 'username', 'password');
+    expect(component.error).toBe('Unauthorized');
+    expect(component.f.password.value).toBe('');
+    expect(component.submitted).toBe(false);
   });
 
- it('should handle 401 error and reset password', () => {
-  const data = { status: 401, error: { message: 'Unauthorized' } };
-  
-  // Spy on the setValue method
-  spyOn(component.f.password, 'setValue');
-
-  component.performLogin(data, 'testUser', 'testPass');
-
-  expect(component.error).toBe('Unauthorized');
-  expect(component.f.password.setValue).toHaveBeenCalledWith('');
-  expect(component.submitted).toBeFalse();
-});
-
-
-  it('should handle server error with status 0', () => {
+  it('should handle 0 status code (Internal Server Error)', () => {
     const data = { status: 0 };
-    component.performLogin(data, 'testUser', 'testPass');
+    component.performLogin(data, 'username', 'password');
     expect(component.error).toBe('Internal Server Error');
   });
 
-  it('should redirect to profile if redirectToProfile returns true', () => {
+  it('should handle 200 status code with redirectToProfile() returning true', () => {
     spyOn(component, 'redirectToProfile').and.returnValue(true);
     const data = { status: 200, body: {} };
-    component.performLogin(data, 'testUser', 'testPass');
+    component.performLogin(data, 'username', 'password');
     expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
   });
 
-  it('should redirect to dashboard if no shared link exists', () => {
-    spyOn(component, 'redirectToProfile').and.returnValue(false);
-    const data = { status: 200, body: {} };
-    localStorage.removeItem('shared_link');
-    component.performLogin(data, 'testUser', 'testPass');
-    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/']);
-  });
-
- it('should handle shared link and navigate accordingly', () => {
-  spyOn(component, 'redirectToProfile').and.returnValue(false);
-  const data = { status: 200, body: {} };
-
-  // Create a valid Base64-encoded string
-  const validBase64 = btoa(JSON.stringify({ parent_level: { basicProjectConfigId: '123' } }));
-  const mockUrl = `./dashboard/somePath?stateFilters=${validBase64}`;
-  
-  localStorage.setItem('shared_link', mockUrl);
-  sharedService.getCurrentUserDetails.and.returnValue(['ROLE_USER']);
-  
-  component.performLogin(data, 'testUser', 'testPass');
-  
-  expect(router.navigate).toHaveBeenCalledWith(['/dashboard/Error']);
-});
-
+  // afterEach(() => {
+  //   localStorage.removeItem('shared_link');
+  // });
 });

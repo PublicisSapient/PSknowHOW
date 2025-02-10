@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,7 +182,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 			log.info("Fetching data for project : {}", proBasicConfig.getProjectName());
 			List<ProcessorToolConnection> azurePipelineJobList = processorToolConnectionService
 					.findByToolAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, proBasicConfig.getId());
-
+			int count1 = 0;
 			for (ProcessorToolConnection azurePipelineServer : azurePipelineJobList) {
 
 				String instanceUrl = AzurePipelineUtils.encodeSpaceInUrl(azurePipelineServer.getUrl());
@@ -196,12 +197,13 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 					long lastStartTimeOfJobs = lastStartTime(proBasicConfig, processorExecutionTraceLog, processor,
 							azurePipelineServer, deploymentJobs);
 					if (azurePipelineServer.getJobType().equalsIgnoreCase(BUILD)) {
-						count = buildJobs(processor, startTime, count, azurePipelineServer, lastStartTimeOfJobs,
+						count1 = buildJobs(processor, startTime, count1, azurePipelineServer, lastStartTimeOfJobs,
 								proBasicConfig);
 					} else {
-						count = deployJobs(processor, startTime, deploymentJobs, activeDeployJobs, azurePipelineServer,
+						count1 += deployJobs(processor, startTime, deploymentJobs, activeDeployJobs, azurePipelineServer,
 								lastStartTimeOfJobs, proBasicConfig);
 					}
+					count += count1;
 					log.info("Finished : {}", startTime);
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(true);
@@ -216,7 +218,10 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 					log.error(String.format("Error getting jobs for: %s", instanceUrl), exception);
 				}
-
+			}
+			if (count1 > 0) {
+				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, CommonConstant.JENKINS,
+						proBasicConfig.getId().toString());
 			}
 		}
 		MDC.put(TOTAL_UPDATED_COUNT, String.valueOf(count));
@@ -478,6 +483,47 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 			log.error("[AZUREPIPELINE-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
 
+	}
+
+	/**
+	 * Cleans the cache in the Custom API
+	 *
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param param1
+	 *            parameter 1
+	 * @param param2
+	 *            parameter 2
+	 */
+	private void cacheRestClient(String cacheEndPoint, String param1, String param2) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+		if (StringUtils.isNoneEmpty(param1)) {
+			cacheEndPoint = cacheEndPoint.replace("param1", param1);
+		}
+		if (StringUtils.isNoneEmpty(param2)) {
+			cacheEndPoint = cacheEndPoint.replace("param2", param2);
+		}
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(azurePipelineConfig.getCustomApiBaseUrl());
+		uriBuilder.path("/");
+		uriBuilder.path(cacheEndPoint);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
+		} catch (RestClientException e) {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+		}
+
+		if (null != response && response.getStatusCode().is2xxSuccessful()) {
+			log.info("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache for: {} and {} ", param1, param2);
+		} else {
+			log.error("[JENKINS-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache for: {} and {} ", param1, param2);
+		}
 	}
 
 	/**

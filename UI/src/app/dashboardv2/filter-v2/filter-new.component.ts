@@ -14,6 +14,7 @@ import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
   templateUrl: './filter-new.component.html',
   styleUrls: ['./filter-new.component.css']
 })
+
 export class FilterNewComponent implements OnInit, OnDestroy {
   filterDataArr = {};
   masterData = {};
@@ -553,6 +554,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName }
       }
     }
+    this.colorObj = {...this.colorObj,immediateParentDisplayName:this.getImmediateParentDisplayName(this.colorObj)}
     if (Object.keys(this.colorObj).length) {
       this.service.setColorObj(this.colorObj);
     }
@@ -607,9 +609,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   getImmediateParentDisplayName(child) {
     let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
-    let selectedLevel = typeof this.selectedLevel === 'string' ? this.selectedLevel : this.selectedLevel.nodeType;
+    let selectedLevel = typeof this.selectedLevel === 'string' ? this.selectedLevel : this.selectedLevel?.nodeType;
     let selectedLevelNode = completeHiearchyData?.filter(x => x.hierarchyLevelName === selectedLevel);
-    let level = selectedLevelNode[0].level;
+    let level = selectedLevelNode[0]?.level;
     if (level > 1) {
       let parentLevel = level - 1;
       let parentLevelNode = completeHiearchyData?.filter(x => x.level === parentLevel);
@@ -1419,11 +1421,30 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   copyUrlToClipboard(event: Event) {
     event.stopPropagation();
     const url = window.location.href; // Get the current URL
-    navigator.clipboard.writeText(url).then(() => {
-      this.showSuccess();
-    }).catch(err => {
-      console.error('Failed to copy URL: ', err);
+    const queryParams = new URLSearchParams(url.split('?')[1]);
+    const stateFilters = queryParams.get('stateFilters');
+    const kpiFilters = queryParams.get('kpiFilters');
+    const payload = {
+      "longStateFiltersString": stateFilters,
+      "longKPIFiltersString": kpiFilters
+    };
+    this.httpService.handleUrlShortener(payload).subscribe((response: any) => {
+      console.log(response);
+      const shortStateFilterString = response.data.shortStateFiltersString;
+      const shortKPIFilterString = response.data.shortKPIFilterString;
+      const shortUrl = `${url.split('?')[0]}?stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}`;
+      navigator.clipboard.writeText(shortUrl).then(() => {
+        this.showSuccess();
+      }).catch(err => {
+        console.error('Failed to copy URL: ', err);
+      });
     });
+
+    // navigator.clipboard.writeText(url).then(() => {
+    //   this.showSuccess();
+    // }).catch(err => {
+    //   console.error('Failed to copy URL: ', err);
+    // });
   }
 
   showSuccess() {
@@ -1474,7 +1495,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         const selectedProject = projects.filter(x => x.nodeId === selectedSprints[0].parentId);
 
         this.filterApplyData['selectedMap']['project'] = [selectedProject[0].nodeId];
-        this.filterApplyData['selectedMap']['sprint'] = [selectedSprints[0].nodeId];
+        // this.filterApplyData['selectedMap']['sprint'] = [selectedSprints[0].nodeId];
 
       }
     })
