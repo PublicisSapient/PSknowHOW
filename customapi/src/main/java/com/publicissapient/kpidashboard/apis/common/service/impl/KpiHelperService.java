@@ -565,22 +565,11 @@ public class KpiHelperService { // NOPMD
 	 *            the kpi request
 	 * @return map
 	 */
-	public Map<String, Object> fetchSprintVelocityDataFromDb(KpiRequest kpiRequest,
-			Map<ObjectId, List<String>> projectWiseSprintsForFilter, List<SprintDetails> sprintDetails) {
+	public Map<String, Object> fetchSprintVelocityDataFromDb(KpiRequest kpiRequest, List<String> basicProjectConfigIds,
+			List<SprintDetails> sprintDetails) {
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
-
-		List<String> sprintList = new ArrayList<>();
-		Set<String> basicProjectConfigIds = new HashSet<>();
-
-		projectWiseSprintsForFilter.entrySet().forEach(entry -> {
-			ObjectId basicProjectConfigId = entry.getKey();
-
-			sprintList.addAll(entry.getValue());
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-
-		});
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
@@ -2057,13 +2046,15 @@ public class KpiHelperService { // NOPMD
 	}
 
 	public String updateKPISource(ObjectId basicProjectConfId, ObjectId projectToolConfigId) {
-		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService.cacheProjectToolConfigMapData();
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
+				.cacheProjectToolConfigMapData();
 
 		String source = "";
 		if (MapUtils.isNotEmpty(toolMap) && toolMap.get(basicProjectConfId) != null) {
 			List<ProjectToolConfig> allToolConfigs = new ArrayList<>();
 			toolMap.get(basicProjectConfId).values().forEach(allToolConfigs::addAll);
-			ProjectToolConfig projectToolConfig = allToolConfigs.stream().filter(a -> a.getId().equals(projectToolConfigId)).toList().get(0);
+			ProjectToolConfig projectToolConfig = allToolConfigs.stream()
+					.filter(a -> a.getId().equals(projectToolConfigId)).toList().get(0);
 			return projectToolConfig.getToolName();
 		}
 		return source;

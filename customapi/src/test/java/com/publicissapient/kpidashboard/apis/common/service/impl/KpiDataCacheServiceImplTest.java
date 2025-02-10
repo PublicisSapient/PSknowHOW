@@ -18,19 +18,19 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,10 +39,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.support.SimpleValueWrapper;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.model.application.Build;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiDataCacheServiceImplTest {
@@ -136,6 +138,14 @@ public class KpiDataCacheServiceImplTest {
 		when(kpiDataProvider.fetchSprintPredictabilityDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
 		Map<String, Object> result = kpiDataCacheService.fetchSprintPredictabilityData(new KpiRequest(), new ObjectId(),
 				new ArrayList<>(), "kpi5");
+		assertNotNull(result);
+	}
+
+	@Test
+	public void fetchSprintVelocityData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result = kpiDataCacheService.fetchSprintVelocityData(new KpiRequest(), new ObjectId(),
+				new ArrayList<>(), "kpi39");
 		assertNotNull(result);
 	}
 
