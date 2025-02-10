@@ -17,18 +17,24 @@
 
 package com.publicissapient.kpidashboard.apis.report.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode
-public class KPIDTO {
-
-    @NotNull(message = "KPI ID cannot be null")
-    @NotEmpty(message = "KPI ID cannot be empty")
+public class ReportRequest {
     private String id;
-    private String chartData;
-    private Object metadata;
+    @NotNull(message = "Report name cannot be null")
+    @NotEmpty(message = "Report name cannot be empty")
+    private String name;
+
+    @NotNull(message = "KPIs cannot be null")
+    @NotEmpty(message = "KPIs cannot be empty")
+    @Valid
+    private List<KpiRequest> kpis;
 }

@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.report.entity;
+package com.publicissapient.kpidashboard.apis.report.domain;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -29,20 +30,21 @@ import java.util.List;
 
 @Data
 @Document(collection = "reports")
-public class Report {
-    @Id
-    private String id;
+public class Report extends BasicModel {
 
-    @NotNull(message = "Report name cannot be null")
-    @NotEmpty(message = "Report name cannot be empty")
     private String name;
+
+    @CreatedBy
     private String createdBy;
+
+    @LastModifiedBy
     private String updatedBy;
+
+    @CreatedDate
     private LocalDateTime createdAt;
+
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @NotNull(message = "KPIs cannot be null")
-    @NotEmpty(message = "KPIs cannot be empty")
-    @Valid
     private List<KPI> kpis;
 }

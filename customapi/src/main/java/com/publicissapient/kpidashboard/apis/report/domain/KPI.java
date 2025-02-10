@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.report.entity;
+package com.publicissapient.kpidashboard.apis.report.domain;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class KPI {
-    @NotNull(message = "KPI ID cannot be null")
-    @NotEmpty(message = "KPI ID cannot be empty")
     private String id;
     private String chartData;
     private Object metadata;

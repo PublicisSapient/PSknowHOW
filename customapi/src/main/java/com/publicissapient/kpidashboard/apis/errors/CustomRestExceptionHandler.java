@@ -291,9 +291,4 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(ReportNotFoundException.class)
-	public ResponseEntity<ServiceResponse> handleReportNotFoundException(ReportNotFoundException ex, WebRequest request) {
-		ServiceResponse response = new ServiceResponse(false, ex.getMessage(), null);
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-	}
 }
