@@ -242,7 +242,7 @@ public class UserBoardConfigServiceImplTest {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getOrPrepareBoardConfig(ConfigLevel.PROJECT,
 				projId);
 		assertNotNull(userBoardConfigDTO);
-		assertEquals(userBoardConfigDTO.getUsername(), username);
+		assertEquals(userBoardConfigDTO.getBasicProjectConfigId(), projId);
 	}
 
 	@Test
@@ -253,7 +253,7 @@ public class UserBoardConfigServiceImplTest {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getOrPrepareBoardConfig(ConfigLevel.PROJECT,
 				projId);
 		assertNotNull(userBoardConfigDTO);
-		assertEquals(userBoardConfigDTO.getUsername(), username);
+		assertEquals(userBoardConfigDTO.getBasicProjectConfigId(), projId);
 	}
 
 	@Test
