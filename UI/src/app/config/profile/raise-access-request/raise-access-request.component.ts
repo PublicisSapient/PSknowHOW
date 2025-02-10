@@ -116,7 +116,6 @@ export class RaiseAccessRequestComponent implements OnInit {
 
   projectSelectedEvent(accessItem): void {
     if (accessItem && accessItem.value && accessItem.value.length) {
-      this.roleList.filter((role) => role.roleName === 'ROLE_SUPERADMIN')[0].disabled = true;
       this.roleList.forEach(element => {
         element.active = false;
       });
@@ -133,7 +132,6 @@ export class RaiseAccessRequestComponent implements OnInit {
 
     } else {
       this.requestData['accessNode'] = {};
-      this.roleList.filter((role) => role.roleName === 'ROLE_SUPERADMIN')[0].disabled = false;
     }
   }
 }
