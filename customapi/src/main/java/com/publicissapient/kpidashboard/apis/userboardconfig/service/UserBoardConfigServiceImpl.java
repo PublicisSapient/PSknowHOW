@@ -633,7 +633,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		log.info("UserBoardConfigServiceImpl::deleteUser start");
 		userBoardConfigRepository.deleteByUsername(userName);
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
-		log.info("{} deleted Successfully from user_board_config", userName.replaceAll("[\n\r]", ""));
+		log.info("{} deleted Successfully from user_board_config", userName.replaceAll("[^a-zA-Z0-9_-]", ""));
 	}
 
 	/**
