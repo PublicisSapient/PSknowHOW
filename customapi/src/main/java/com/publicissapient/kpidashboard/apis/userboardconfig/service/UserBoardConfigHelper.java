@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.apis.userboardconfig.service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,6 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
 
 import lombok.extern.slf4j.Slf4j;
-
 
 /**
  * The Class UserBoardConfigHelper.
@@ -175,7 +175,7 @@ public final class UserBoardConfigHelper {
 				.collect(Collectors.toMap(BoardKpis::getKpiId, kpi -> false, (a, b) -> b));
 
 		log.info("Disabled KPIs {} for user {} wrt selected projectIds {}", kpiWiseIsShownFlag,
-				userBoardConfig.getUsername(), listOfRequestedProj.getBasicProjectConfigIds());
+				userBoardConfig.getUsername(), sanitizeProjectIds(listOfRequestedProj.getBasicProjectConfigIds()));
 
 		Stream.of(userBoardConfig.getScrum(), userBoardConfig.getKanban(), userBoardConfig.getOthers())
 				.flatMap(Collection::stream).forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
@@ -184,4 +184,17 @@ public final class UserBoardConfigHelper {
 				}));
 	}
 
+	/**
+	 * Sanitizes the Projects IDs for log injection prevention.
+	 *
+	 * @param projectIds
+	 *            the list of project IDs to sanitize
+	 * @return a sanitized list of project IDs with newline and carriage return
+	 *         characters removed
+	 */
+	public static List<String> sanitizeProjectIds(List<String> projectIds) {
+		return projectIds == null ? Collections.emptyList()
+				: projectIds.stream().filter(Objects::nonNull).map(id -> id.replaceAll("[\\r\\n]", ""))
+						.collect(Collectors.toList());
+	}
 }
