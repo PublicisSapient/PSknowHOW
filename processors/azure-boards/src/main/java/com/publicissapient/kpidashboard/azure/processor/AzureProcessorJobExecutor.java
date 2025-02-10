@@ -157,6 +157,7 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
             azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_SOURCE_ENDPOINT, CommonConstant.JIRA_KPI,
                     "");
 
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_KPI_DATA);
 		}
 		if (kanbanIssueCount.get() > 0) {
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,

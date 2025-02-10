@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.bson.types.ObjectId;
@@ -47,6 +46,9 @@ public class KpiDataProvider {
 	public static final String SPRINT_DETAILS = "sprintDetails";
 	public static final String SCOPE_CHANGE_ISSUE_HISTORY = "scopeChangeIssuesHistories";
 	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
+	private static final String COD_DATA = "costOfDelayData";
+	private static final String COD_DATA_HISTORY = "costOfDelayDataHistory";
+	private static final String FIELD_MAPPING = "fieldMapping";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -367,6 +369,42 @@ public class KpiDataProvider {
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		}
+		return resultListMap;
+	}
+
+	public Map<String, Object> fetchCostOfDelayData(ObjectId basicProjectConfigId) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+		Map<String, List<String>> closedStatusMap = new HashMap<>();
+		Map<String, Object> mapOfFilters = new LinkedHashMap<>();
+		List<String> basicProjectConfigIds = List.of(basicProjectConfigId.toString());
+
+		FieldMapping fieldMapping = fieldMappingMap.get(basicProjectConfigId);
+		List<String> jiraCloseStatuses = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(fieldMapping.getClosedIssueStatusToConsiderKpi113())) {
+			jiraCloseStatuses.addAll(fieldMapping.getClosedIssueStatusToConsiderKpi113());
+		}
+		List<String> jiraIssueType = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(fieldMapping.getIssueTypesToConsiderKpi113())) {
+			jiraIssueType.addAll(fieldMapping.getIssueTypesToConsiderKpi113());
+		}
+		closedStatusMap.put(basicProjectConfigId.toString(),
+				jiraCloseStatuses.stream().map(String::toLowerCase).toList());
+		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),jiraIssueType);
+		mapOfFilters.put(JiraFeature.STATUS.getFieldValueInFeature(), jiraCloseStatuses);
+		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigIds.stream().distinct().toList());
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfFilters);
+
+		List<JiraIssue> codList = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(new HashMap<>(), uniqueProjectMap);
+		List<JiraIssueCustomHistory> codHistory = jiraIssueCustomHistoryRepository
+				.findByStoryIDInAndBasicProjectConfigIdIn(
+						codList.stream().map(JiraIssue::getNumber).toList(), new ArrayList<>(uniqueProjectMap.keySet()));
+		resultListMap.put(COD_DATA, codList);
+		resultListMap.put(COD_DATA_HISTORY, codHistory);
+		resultListMap.put(FIELD_MAPPING, closedStatusMap);
+
 		return resultListMap;
 	}
 }

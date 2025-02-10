@@ -95,7 +95,7 @@ public class JiraIssueSprintJobListenerTest {
 		assertTrue(fetchDetails.isFetchSuccessful());
 
 		// Verify that the cache is cleared
-		verify(processorCacheEvictor, times(2)).evictCache(anyString(), anyString());
+		verify(processorCacheEvictor, times(3)).evictCache(anyString(), anyString());
 
 		// Verify that the sprint trace log is saved
 		verify(sprintTraceLogRepository, times(1)).save(fetchDetails);

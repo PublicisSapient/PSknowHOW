@@ -42,7 +42,7 @@ export class RaiseAccessRequestComponent implements OnInit {
   requestData = {};
   raiseRequestResponse = {};
   roleSelected = false;
-  constructor(private httpService: HttpService, private messageService: MessageService, private router: Router,private sharedService : SharedService) { }
+  constructor(private httpService: HttpService, private messageService: MessageService, private router: Router, private sharedService: SharedService) { }
 
   ngOnInit() {
     this.getRolesList();
@@ -78,6 +78,7 @@ export class RaiseAccessRequestComponent implements OnInit {
         this.rolesData = roles;
         if (this.rolesData['success']) {
           this.roleList = roles.data;
+          this.roleList = this.roleList.filter(role => role.roleName !== 'ROLE_SUPERADMIN');
         } else {
           // show error message
           this.messageService.add({ severity: 'error', summary: 'Error in fetching roles. Please try after some time.' });
@@ -125,12 +126,10 @@ export class RaiseAccessRequestComponent implements OnInit {
         accessLevel: accessItem.accessType
       };
 
-        this.requestData['accessNode']['accessItems'] = accessItem.value.map((item) => {
-          return {
-            itemId: item.itemId,
-            itemName : item.itemName
-          };
-        });
+      this.requestData['accessNode']['accessItems'] = accessItem.value.map((item) => ({
+        itemId: item.itemId,
+        itemName: item.itemName
+      }));
 
     } else {
       this.requestData['accessNode'] = {};

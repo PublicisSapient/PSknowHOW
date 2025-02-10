@@ -841,8 +841,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   // post request of Jira(scrum) hygiene
+/**
+   * Posts KPI data for the current iteration to the Jira service and processes the response.
+   * Updates local KPI data and handles errors appropriately.
+   * 
+   * @param postData - The data to be posted to the Jira service.
+   * @param source - The source identifier for the KPI data.
+   * @returns void
+   * @throws Handles errors internally and calls handleKPIError on failure.
+   */
   postJiraKPIForIteration(postData, source): void {
-    this.jiraKpiRequest = this.httpService.postKpiNonTrend(postData, source)
+    this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id

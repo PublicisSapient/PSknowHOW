@@ -106,7 +106,8 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 		Map<String, List<String>> kpiMap = new HashMap<>();
 		kpiMap.put(KPISource.JIRA.name(),
 				List.of(KPICode.ISSUE_COUNT.getKpiId(), KPICode.COMMITMENT_RELIABILITY.getKpiId(),
-						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId()));
+						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId(),
+						KPICode.COST_OF_DELAY.getKpiId()));
 		kpiMap.put(KPISource.JIRAKANBAN.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONAR.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONARKANBAN.name(), new ArrayList<>());
@@ -160,6 +161,13 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 		log.info("Fetching Commitment Reliability KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
 				kpiId);
 		return kpiDataProvider.fetchCommitmentReliabilityData(kpiRequest, basicProjectConfigId, sprintList);
+	}
+
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public Map<String, Object> fetchCostOfDelayData(ObjectId basicProjectConfigId, String kpiId) {
+		log.info("Fetching Cost of Delay KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchCostOfDelayData(basicProjectConfigId);
 	}
 
 }
