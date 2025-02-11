@@ -601,4 +601,14 @@ public final class CommonUtils {
 	public static String getStringWithDelimiters(String sValue) {
 		return CommonConstant.OPENING_DELIMITER + sValue + CommonConstant.CLOSING_DELIMITER;
 	}
+
+	/**
+	 * Sanitizes input by removing newline characters.
+	 *
+	 * @param input the input string
+	 * @return the sanitized string
+	 */
+	public static String sanitize(String input) {
+		return input.replace("\n", "").replace("\r", "");
+	}
 }
