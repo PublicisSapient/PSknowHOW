@@ -724,10 +724,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Unit Coverage",
       "order": 2,
@@ -750,10 +750,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName" : "Violation Type",
       "order" : 2,
@@ -781,10 +781,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Tech Debt (in days)",
       "order": 2,
@@ -1158,10 +1158,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Unit Coverage",
       "order": 2,
@@ -1184,10 +1184,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName" : "Violation Type",
       "order" : 2,
@@ -1216,10 +1216,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Tech Debt (in days)",
       "order": 2,
