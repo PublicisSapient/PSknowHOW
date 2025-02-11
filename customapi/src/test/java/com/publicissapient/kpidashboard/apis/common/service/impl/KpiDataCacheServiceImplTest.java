@@ -149,4 +149,9 @@ public class KpiDataCacheServiceImplTest {
 		assertNotNull(kpiDataCacheService.fetchCostOfDelayData(new ObjectId(), KPICode.COST_OF_DELAY.getKpiId()));
 	}
 
+	@Test
+	public void testFetchProjectReleaseData() {
+		when(kpiDataProvider.fetchProjectReleaseData(any())).thenReturn(new ArrayList<>());
+		assertNotNull(kpiDataCacheService.fetchProjectReleaseData(new ObjectId(), KPICode.PROJECT_RELEASES.getKpiId()));
+	}
 }

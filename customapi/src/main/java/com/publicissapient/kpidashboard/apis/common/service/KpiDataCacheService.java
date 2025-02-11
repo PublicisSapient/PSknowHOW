@@ -24,6 +24,7 @@ import java.util.Map;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import org.bson.types.ObjectId;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -138,4 +139,7 @@ public interface KpiDataCacheService {
 
     @Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
     Map<String, Object> fetchCostOfDelayData(ObjectId basicProjectConfigId, String kpiId);
+
+    @Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+    List<ProjectRelease> fetchProjectReleaseData(ObjectId basicProjectConfigId, String kpiId);
 }
