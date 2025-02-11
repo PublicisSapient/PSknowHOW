@@ -38,7 +38,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -91,6 +90,13 @@ public class KpiDataProviderTest {
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	private List<JiraIssue> totalIssueList = new ArrayList<>();
+	List<JiraIssue> previousTotalIssueList = new ArrayList<>();
+	private final static String SPRINT_VELOCITY_KEY = "sprintVelocityKey";
+	private static final String SUB_GROUP_CATEGORY = "subGroupCategory";
+	private static final String SPRINT_WISE_SPRINT_DETAIL_MAP = "sprintWiseSprintDetailMap";
+	private static final String PREVIOUS_SPRINT_WISE_DETAILS = "previousSprintWiseDetails";
+	private static final String PREVIOUS_SPRINT_VELOCITY = "previousSprintvelocity";
+
 
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -214,6 +220,32 @@ public class KpiDataProviderTest {
 		Map<String, Object> result = kpiDataProvider.fetchSprintPredictabilityDataFromDb(kpiRequest, basicProjectConfigId,
 				sprintList);
 		assertThat(result.get(SPRINT_WISE_PREDICTABILITY), equalTo(sprintWiseStoryList));
+	}
+
+	@Test
+	public void fetchSprintVelocityDataFromDb_shouldReturnCorrectData_whenValidInput() {
+		List<String> sprintList = List.of("sprint1", "sprint2");
+		ObjectId basicProjectConfigId = new ObjectId("6335363749794a18e8a4479b");
+		String kpiId = "kpiId";
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		totalIssueList = jiraIssueDataFactory.getBugs();
+		previousTotalIssueList = jiraIssueDataFactory.getStories();
+
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(SPRINT_VELOCITY_KEY, totalIssueList);
+		resultListMap.put(SUB_GROUP_CATEGORY, "sprint");
+		resultListMap.put(SPRINT_WISE_SPRINT_DETAIL_MAP, sprintDetailsList);
+		resultListMap.put(PREVIOUS_SPRINT_VELOCITY, previousTotalIssueList);
+		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
+		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
+		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(), anyList(),anyLong()))
+				.thenReturn(sprintDetailsList);
+		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
+
+		Map<String, Object> result = kpiDataProvider.fetchSprintVelocityDataFromDb(kpiRequest, basicProjectConfigId);
+		assertThat("Velocity value :", ((List<JiraIssue>) (result.get(SPRINT_VELOCITY_KEY))).size(),
+				equalTo(20));
 	}
 
 	@Test
