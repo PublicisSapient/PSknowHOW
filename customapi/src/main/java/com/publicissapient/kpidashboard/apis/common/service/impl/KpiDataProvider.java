@@ -166,7 +166,7 @@ public class KpiDataProvider {
 	 * @param endDate
 	 * @return
 	 */
-	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate) {
+	public List<Build> fetchBuildFrequencyData(ObjectId basicProjectConfigId, String startDate, String endDate) {
 		List<String> statusList = List.of(BuildStatus.SUCCESS.name());
 		Map<String, List<String>> mapOfFilters = new HashMap<>();
 		mapOfFilters.put("buildStatus", statusList);
@@ -258,6 +258,45 @@ public class KpiDataProvider {
 		}
 
 		return resultListMap;
+	}
+
+
+	/**
+	 * Fetches sprint Velocity data from the database for the given project and
+	 * sprints combination.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @return A map containing estimate time, story list, sprint details, and
+	 *         JiraIssue history.
+	 */
+	public Map<String, Object> fetchSprintVelocityDataFromDb(KpiRequest kpiRequest, ObjectId basicProjectConfigId) {
+
+		Map<String, Object> resultListMap = new HashMap<>();
+		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
+		basicProjectConfigObjectIds.add(basicProjectConfigId);
+		List<String> basicProjectConfigIds = new ArrayList<>();
+		basicProjectConfigIds.add(basicProjectConfigId.toString());
+
+		List<String> sprintStatusList = new ArrayList<>();
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
+		long time2 = System.currentTimeMillis();
+		List<SprintDetails> totalSprintDetails = sprintRepositoryCustom
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+						sprintStatusList,
+						(long) customApiConfig.getSprintVelocityLimit() + customApiConfig.getSprintCountForFilters());
+		log.info("Sprint Velocity findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc method time taking {}",
+				System.currentTimeMillis() - time2);
+
+		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
+			resultListMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest, basicProjectConfigIds,
+					totalSprintDetails);
+		}
+		return resultListMap;
+
 	}
 
 	/**

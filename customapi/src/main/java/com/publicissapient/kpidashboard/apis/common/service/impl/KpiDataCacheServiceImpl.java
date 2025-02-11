@@ -109,7 +109,7 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 				List.of(KPICode.ISSUE_COUNT.getKpiId(), KPICode.COMMITMENT_RELIABILITY.getKpiId(),
 						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId(),
 						KPICode.COST_OF_DELAY.getKpiId(), KPICode.SPRINT_PREDICTABILITY.getKpiId(),
-						KPICode.PROJECT_RELEASES.getKpiId()));
+						KPICode.SPRINT_VELOCITY.getKpiId(), KPICode.PROJECT_RELEASES.getKpiId()));
 		kpiMap.put(KPISource.JIRAKANBAN.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONAR.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONARKANBAN.name(), new ArrayList<>());
@@ -142,10 +142,18 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
-	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate,
+	public Map<String, Object> fetchSprintVelocityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			String kpiId) {
+		log.info("Fetching Sprint Velocity KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		return kpiDataProvider.fetchSprintVelocityDataFromDb(kpiRequest, basicProjectConfigId);
+	}
+
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public List<Build> fetchBuildFrequencyData(ObjectId basicProjectConfigId, String startDate, String endDate,
 			String kpiId) {
 		log.info("Fetching Build Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
-		return kpiDataProvider.fetchBuildFrequencydata(basicProjectConfigId, startDate, endDate);
+		return kpiDataProvider.fetchBuildFrequencyData(basicProjectConfigId, startDate, endDate);
 	}
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")

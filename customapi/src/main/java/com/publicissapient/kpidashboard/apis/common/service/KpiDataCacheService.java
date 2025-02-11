@@ -95,8 +95,22 @@ public interface KpiDataCacheService {
 			List<String> sprintList, String kpiId);
 
 	/**
+	 * Fetches Sprint velocity data from DB and caches the result
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param kpiId
+	 *            The KPI ID.
+	 * @return A map returns sprint wise jira issues list and project wise sprint
+	 *         details
+	 */
+	Map<String, Object> fetchSprintVelocityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId, String kpiId);
+
+	/**
 	 * Fetches Build Frequency KPI data from DB and caches the result
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 *            The project config ID.
 	 * @param startDate
@@ -107,7 +121,7 @@ public interface KpiDataCacheService {
 	 *            the KPI id
 	 * @return list of builds.
 	 */
-	List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate, String kpiId);
+	List<Build> fetchBuildFrequencyData(ObjectId basicProjectConfigId, String startDate, String endDate, String kpiId);
 
 	/**
 	 * Fetches sprint capacity utilization kpi data from the database and caches the
@@ -163,7 +177,7 @@ public interface KpiDataCacheService {
 
 	/**
 	 * Fetches Cost of Delay kpi data from the database and caches the * result.
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 *            The project config ID.
 	 * @param kpiId
@@ -174,7 +188,7 @@ public interface KpiDataCacheService {
 
 	/**
 	 * Fetches Release Frequency kpi data from the database and caches the * result.
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 *            The project config ID.
 	 * @param kpiId
