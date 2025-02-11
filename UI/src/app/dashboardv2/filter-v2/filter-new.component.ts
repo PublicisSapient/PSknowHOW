@@ -1264,6 +1264,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    */
   showHideKPIs() {
     const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
+    const currentTabAllKPis = [...this.dashConfigData[this.selectedType].filter(board => board.boardSlug === this.selectedTab)[0]['kpis']];
     let enabledKPIs = [];
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
@@ -1282,7 +1283,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let obj = Object.assign({}, this.dashConfigData);
     delete obj['configDetails'];
     delete obj['enabledKPIs'];
-    this.httpService.submitShowHideOnDashboard(obj).subscribe(
+
+    let copyObj = JSON.parse(JSON.stringify(obj));
+    copyObj = this.showHideDataManipulationFORBEOnly(copyObj,currentTabAllKPis);
+    this.httpService.submitShowHideOnDashboard(copyObj).subscribe(
       (response) => {
         if (response.success === true) {
           this.messageService.add({
@@ -1314,7 +1318,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   findEnabledKPIs(previousDashConfig, newMasterData) {
     let result = [];
     previousDashConfig.forEach((element, index) => {
-      if (!element.isEnabled && newMasterData[index].isEnabled) {
+      if (!element.isEnabled && newMasterData[index]?.isEnabled) {
         result.push(newMasterData[index]);
       }
     });
@@ -1476,4 +1480,30 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       return numB - numA;
     });
   }
+
+
+  showHideDataManipulationFORBEOnly(obj,currentTabAllKPis){
+    for (let key in obj){
+      const current = obj[key];
+      if(Array.isArray(current) ){
+        current.forEach(board => {
+          if(board.boardSlug === this.selectedTab){
+            const enabledKPIID = []
+            this.masterDataCopy['kpiList'].forEach(kpiD => enabledKPIID.push(kpiD.kpiId))
+            currentTabAllKPis.forEach(element => {
+              if(!enabledKPIID.includes(element.kpiId)){
+                board['kpis'].push(element);
+              }
+            });
+          }
+          board['kpis'].forEach(kpiDetails=>{
+            kpiDetails.shown = true;
+          })
+         });
+      }
+       
+    }
+    return obj;
+  }
+  
 }
