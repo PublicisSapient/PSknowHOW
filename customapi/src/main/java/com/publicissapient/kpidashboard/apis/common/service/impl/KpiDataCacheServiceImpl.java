@@ -18,7 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
@@ -104,7 +108,8 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 		kpiMap.put(KPISource.JIRA.name(),
 				List.of(KPICode.ISSUE_COUNT.getKpiId(), KPICode.COMMITMENT_RELIABILITY.getKpiId(),
 						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId(),
-						KPICode.COST_OF_DELAY.getKpiId()));
+						KPICode.COST_OF_DELAY.getKpiId(), KPICode.SPRINT_PREDICTABILITY.getKpiId(),
+						KPICode.PROJECT_RELEASES.getKpiId()));
 		kpiMap.put(KPISource.JIRAKANBAN.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONAR.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONARKANBAN.name(), new ArrayList<>());
@@ -124,6 +129,15 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 			List<String> sprintList, String kpiId) {
 		log.info("Fetching Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchIssueCountDataFromDB(kpiRequest, basicProjectConfigId, sprintList);
+	}
+
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public Map<String, Object> fetchSprintPredictabilityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId) {
+		log.info("Fetching Sprint Predictability KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
+				kpiId);
+		return kpiDataProvider.fetchSprintPredictabilityDataFromDb(kpiRequest, basicProjectConfigId, sprintList);
 	}
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
@@ -170,7 +184,8 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public List<ProjectRelease> fetchProjectReleaseData(ObjectId basicProjectConfigId, String kpiId) {
-		log.info("Fetching Release Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
+		log.info("Fetching Release Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
+				kpiId);
 		return kpiDataProvider.fetchProjectReleaseData(basicProjectConfigId);
 	}
 

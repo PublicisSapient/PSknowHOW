@@ -132,6 +132,14 @@ public class KpiDataCacheServiceImplTest {
 	}
 
 	@Test
+	public void fetchSprintPredictabilityData_shouldReturnCorrectData_whenValidInput() {
+		when(kpiDataProvider.fetchSprintPredictabilityDataFromDb(any(), any(), any())).thenReturn(new HashMap<>());
+		Map<String, Object> result = kpiDataCacheService.fetchSprintPredictabilityData(new KpiRequest(), new ObjectId(),
+				new ArrayList<>(), "kpi5");
+		assertNotNull(result);
+	}
+
+	@Test
 	public void testFetchScopeChurnData() {
 		when(kpiDataProvider.fetchScopeChurnData(any(), any(), any())).thenReturn(new HashMap<>());
 		assertNotNull(kpiDataCacheService.fetchScopeChurnData(new KpiRequest(), new ObjectId(), new ArrayList<>(), "kpi1"));

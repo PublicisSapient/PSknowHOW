@@ -371,6 +371,8 @@ export class ExportExcelComponent implements OnInit {
       colData.map((item) => {
         if (this.typeOf(item) && item?.hasOwnProperty('hyperlink')) {
           tempText.push(item.text)
+        }else{
+          tempText.push(item)
         }
       })
       return { name: this.blankValues.includes((tempText).join(','))?'(Blanks)':(tempText).join(','), value: colData };
@@ -392,8 +394,8 @@ export class ExportExcelComponent implements OnInit {
         if (typeof updatedRow[colName] === 'string') {
           updatedRow[colName] = updatedRow[colName].trim();
         }
-        if(Array.isArray(updatedRow[colName]) && typeof updatedRow[colName] !=='object'){
-            updatedRow[colName] = (updatedRow[colName] as any[]).join(',')
+        if(Array.isArray(updatedRow[colName])){
+            updatedRow[colName] =(typeof updatedRow[colName] !=='object')? (updatedRow[colName] as any[]).join(','): updatedRow[colName].join(',')
         }
         if (this.blankValues.includes(updatedRow[colName])) {
           updatedRow[colName] = '';
