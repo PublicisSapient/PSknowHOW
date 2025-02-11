@@ -131,7 +131,8 @@ export class ParentFilterComponent implements OnChanges {
  * @param {any} $event - The event object from the dropdown change.
  * @returns {void}
  */
-  onDropdownChange($event:any){
+  onDropdownChange($event: any) {
+    console.log('onDropdownChange', $event);
     if($event){
       localStorage.setItem('selectedTrend', JSON.stringify($event.value));
     }

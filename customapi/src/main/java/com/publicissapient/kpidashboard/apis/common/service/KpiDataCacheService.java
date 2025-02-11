@@ -21,12 +21,13 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.bson.types.ObjectId;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.model.application.Build;
 
 /**
  * A Service to manage cache.
@@ -54,7 +55,7 @@ public interface KpiDataCacheService {
 	 */
 	void clearCache(String basicProjectConfigId, String kpiId);
 
-    void clearCacheForProject(String basicProjectConfigId);
+	void clearCacheForProject(String basicProjectConfigId);
 
 	void clearCacheForSource(String source);
 
@@ -73,6 +74,35 @@ public interface KpiDataCacheService {
 	 */
 	Map<String, Object> fetchIssueCountData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId);
+
+	/**
+	 * Fetches Sprint Predictability data from DB and caches the result
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @param kpiId
+	 *            The KPI ID.
+	 * @return A map returns sprint wise jira issues list and project wise sprint
+	 *         details
+	 */
+	Map<String, Object> fetchSprintPredictabilityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+			List<String> sprintList, String kpiId);
+
+	/**
+	 * Fetches Sprint velocity data from DB and caches the result
+	 *
+	 * @param kpiRequest           The KPI request object.
+	 * @param basicProjectConfigId The project config ID.
+	 * @param kpiId                The KPI ID.
+	 * @return A map returns sprint wise jira issues list and project wise sprint
+	 * details
+	 */
+	Map<String, Object> fetchSprintVelocityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+												String kpiId);
 
 	/**
 	 *
@@ -136,6 +166,6 @@ public interface KpiDataCacheService {
 	Map<String, Object> fetchCommitmentReliabilityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList, String kpiId);
 
-    @Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
-    Map<String, Object> fetchCostOfDelayData(ObjectId basicProjectConfigId, String kpiId);
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	Map<String, Object> fetchCostOfDelayData(ObjectId basicProjectConfigId, String kpiId);
 }

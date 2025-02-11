@@ -1,28 +1,32 @@
-<header class="">
-  <nav class="p-d-flex p-align-center p-jc-between">
+<header class="" role="banner">
+  <nav class="p-d-flex p-align-center p-jc-between" aria-label="Main Header">
 
     <div class="logo p-pt-1 p-pb-1 p-d-flex">
       <div class="position-relative p-mr-2 die-container" *ngIf="auth_service && isSpeedSuite">
-        <img src="assets/img/Switchplatforms.svg" class="icon-dice" (click)="appItems.toggle($event)" alt="Switch" width="50"/>
-        <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
+        <button (click)="appItems.toggle($event)" aria-haspopup="true" aria-expanded="false" aria-label="Switch Applications" tabindex="0">
+          <img src="assets/img/Switchplatforms.svg" class="icon-dice" alt="Switch" width="50"/>
+          <div class="down-arrow cursor-pointer" ></div>
+        </button>
         <p-menu [model]="appList" [popup]="true" #appItems class="app-switch"></p-menu>
      </div>
-      <img src="assets/img/PSKnowHowLogo.svg" alt="Logo"/>
+      <img src="assets/img/PSKnowHowLogo.svg" alt="PSKnowHOW Logo" tabindex="0" />
     </div>
 
     <!-- Report and Dashboard Navigation -->
     <div class="tab-container" *ngIf="reportModuleEnabled">
-      <div class="tab-buttons">
+      <div class="tab-buttons" role="tablist">
         <div class="tab-button" *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')">
           <button pButton pRipple class="p-button-outlined" [disabled]="backToDashboardLoader" routerLinkActive="active"
             icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="DASHBOARD"
-            (click)="navigateToDashboard()"></button>
+            (click)="navigateToDashboard()" tabindex="0" aria-label="Return to Dashboard"></button>
         </div>
         <div class="tab-button">
-          <button [ngClass]="{active: router.url.indexOf('Report') === -1 }" routerLink="['/dashboard/{{sharedService.getSelectedTab()}}']" label="DASHBOARD">Dashboard</button>
+          <button [ngClass]="{active: router.url.indexOf('Report') === -1 }" routerLink="['/dashboard/{{sharedService.getSelectedTab()}}']" label="DASHBOARD" tabindex="0" role="tab"
+          aria-selected="{{ router.url.indexOf('Report') === -1 }}">Dashboard</button>
         </div>
         <div class="tab-button">
-          <button routerLinkActive="active" [routerLink]="['/dashboard/Report/default-report']" [routerLinkActiveOptions]="{ exact: true }" label="REPORTS">Reports</button>
+          <button routerLinkActive="active" [routerLink]="['/dashboard/Report/default-report']" [routerLinkActiveOptions]="{ exact: true }" label="REPORTS"
+          tabindex="0" role="tab" aria-selected="{{ router.url.indexOf('Report') !== -1 }}">Reports</button>
         </div>
       </div>
     </div>
@@ -34,33 +38,36 @@
       <app-recent-comments></app-recent-comments>
 
       <div class="p-p-2 rounded p-mr-3 position-relative filter-btn" role="button"
+      tabindex="0" aria-label="Open Notifications" (keydown.enter)="notification.toggle($event)"
         (click)="notification.toggle($event)">
         <img src="../../../assets/img/ico-notifications.svg" alt="Notification" />
-        <span *ngIf="notificationCount > 0" class="count noti-count">{{notificationCount}}</span>
+        <span *ngIf="notificationCount > 0" class="count noti-count" aria-label="Number of unread notifications">{{notificationCount}}</span>
       </div>
       <p-menu #notification [popup]="true" [model]="notificationList" class="custom-menu"></p-menu>
 
-      <div class="back-btn-wraper" *ngIf="userDetails['authorities']?.includes('ROLE_PROJECT_ADMIN') || userDetails['authorities']?.includes('ROLE_SUPERADMIN') || userDetails['authorities']?.includes('ROLE_PROJECT_VIEWER')">
+      <div class="back-btn-wraper" *ngIf="userDetails['authorities']?.includes('ROLE_PROJECT_ADMIN') || userDetails['authorities']?.includes('ROLE_SUPERADMIN') || userDetails['authorities']?.includes('ROLE_PROJECT_VIEWER')"
+      role="region" aria-label="Back to Dashboard">
         <div *ngIf="router.url.split('/').includes('Config') || router.url.split('/').includes('Help')"
           class="back-btn-container rounded p-mr-3">
           <button pButton pRipple class="back-btn" [ngClass]="noToolsConfigured ? 'p-d-none' : ''" [disabled]="backToDashboardLoader" routerLinkActive="active"
             icon="{{ backToDashboardLoader ? 'pi pi-spin pi-spinner' : '' }}" iconPos="left" label="DASHBOARD"
-            (click)="navigateToDashboard()" ></button>
+            (click)="navigateToDashboard()" tabindex="0" aria-label="Return to Dashboard" [attr.aria-disabled]="backToDashboardLoader"></button>
         </div>
       </div>
 
-      <div class="p-d-flex p-align-center p-jc-between" role="button" (click)="usermenu.toggle($event)">
-        <i class="far fa-user custom-user p-ml-2 p-mr-2"></i>
+      <div class="p-d-flex p-align-center p-jc-between" role="button" (click)="usermenu.toggle($event)"
+      tabindex="0" aria-label="Open User Menu" (keydown.enter)="usermenu.toggle($event)">
+        <i class="far fa-user custom-user p-ml-2 p-mr-2"aria-hidden="true"></i>
         <div class="cursor-pointer">
-          <div>
+          <div aria-label="Current User">
             {{userDetails['user_name']}}
           </div>
         </div>
       </div>
       <p-menu #usermenu [popup]="true" [model]="userMenuItems">
         <ng-template pTemplate="item" let-item>
-          <div>
-            <i [class]="item.icon"></i>
+          <div role="menuitem" tabindex="0">
+            <i [class]="item.icon"aria-hidden="true"></i>
             <span> {{ item.label }}</span>
           </div>
         </ng-template>
