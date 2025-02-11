@@ -1,11 +1,18 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.bson.types.ObjectId;
@@ -201,10 +208,12 @@ public class KpiDataProvider {
 		uniqueProjectMapForSubTask.put(basicProjectConfigId.toString(), mapOfProjectFiltersForSubTask);
 
 		Map<String, Object> capacityMapOfFilters = new HashMap<>();
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, capacityMapOfFilters, filterHelperService);
+
 		capacityMapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 				sprintList.stream().distinct().toList());
 		capacityMapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().toList());
+				basicProjectConfigIds.stream().map(ObjectId::new).distinct().toList());
 		resultListMap.put(ESTIMATE_TIME,
 				capacityKpiDataRepository.findByFilters(capacityMapOfFilters, new HashMap<>()));
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
