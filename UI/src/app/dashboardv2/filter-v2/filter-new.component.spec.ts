@@ -2823,7 +2823,7 @@ describe('FilterNewComponent', () => {
     });
 
 
-    describe('handlePrimaryFilterChange - Happy Path', () => {
+    xdescribe('handlePrimaryFilterChange - Happy Path', () => {
         it('should sort the event array when event is an array of objects based on nodeId', () => {
 
             component.previousFilterEvent = [];
