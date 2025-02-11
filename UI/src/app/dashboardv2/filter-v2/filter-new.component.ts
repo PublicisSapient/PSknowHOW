@@ -1476,4 +1476,14 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       return numB - numA;
     });
   }
+
+  onRefreshDialogShow() {
+    // Ensure first button (Cancel) gets focus when dialog opens
+    setTimeout(() => {
+      const dialogButtons = document.querySelectorAll('.ui-dialog-buttonpane button');
+      if (dialogButtons.length > 0) {
+        (dialogButtons[0] as HTMLButtonElement).focus();
+      }
+    });
+  }
 }
