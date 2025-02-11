@@ -19,6 +19,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TrendIndicatorV2Component } from './trend-indicator-v2.component';
+import { SimpleChange, SimpleChanges } from '@angular/core';
 describe('TrendIndicatorV2Component', () => {
   let component: TrendIndicatorV2Component;
   let fixture: ComponentFixture<TrendIndicatorV2Component>;
@@ -63,4 +64,101 @@ describe('TrendIndicatorV2Component', () => {
     const result = component.getMaturityValue(trend);
     expect(result).toBe('NA');
   });
+
+describe('ngOnChanges', () => {
+  let component: TrendIndicatorV2Component;
+  let fixture: ComponentFixture<TrendIndicatorV2Component>;
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TrendIndicatorV2Component);
+    component = fixture.componentInstance;
+  });
+  afterEach(() => {
+    TestBed.resetTestingModule(); // Reset the module after each test to prevent conflicts
+  });
+
+  it('should do nothing if trendData is empty', () => {
+    const changes: SimpleChanges = {
+      trendData: new SimpleChange([], [], false)
+    };
+
+    component.ngOnChanges(changes);
+
+    expect(component.dataObj).toEqual([]);
+    expect(component.headerObj).toEqual([]);
+  });
+
+  it('should update dataObj and headerObj when trendData is available', () => {
+    // Mock color object
+    component.colorObj = {
+      '1': { nodeId: '1', color: 'red' },
+      '2': { nodeId: '2', color: 'blue' }
+    };
+
+    // Mock trendData
+    component.trendData = [
+      { hierarchyName: 'Project A', hierarchyId: '1', value: '50', trend: 'up' },
+      { hierarchyName: 'Project B', hierarchyId: '2', value: '30', trend: 'down' }
+    ];
+
+    // Spy on methods
+    spyOn(component, 'getMaturityValue').and.returnValue('High');
+    spyOn(component, 'generateFlatArray').and.callFake((data) => data);
+
+    const changes: SimpleChanges = {
+      trendData: new SimpleChange(null, component.trendData, true)
+    };
+
+    component.ngOnChanges(changes);
+
+    expect(component.dataObj.length).toBe(2);
+    expect(component.headerObj).toEqual(['Project', 'Latest Trend', 'KPI Maturity']);
+
+    expect(component.dataObj[0]).toEqual({
+      'Project': 'red',
+      'Latest Trend': '50 (up)',
+      'KPI Maturity': 'High'
+    });
+
+    expect(component.dataObj[1]).toEqual({
+      'Project': 'blue',
+      'Latest Trend': '30 (down)',
+      'KPI Maturity': 'High'
+    });
+
+    expect(component.getMaturityValue).toHaveBeenCalledTimes(2);
+    expect(component.generateFlatArray).toHaveBeenCalled();
+  });
+
+  xit('should handle empty hierarchyName gracefully', () => {
+    component.colorObj = {
+      '1': { nodeId: '1', color: 'red' }
+    };
+
+    component.trendData = [
+      { hierarchyId: '1', value: '50', trend: 'up' },
+      { hierarchyName: 'Project B', hierarchyId: '2', value: '30', trend: 'down' }
+    ];
+
+    spyOn(component, 'getMaturityValue').and.returnValue('Medium');
+    spyOn(component, 'generateFlatArray').and.callFake((data) => data);
+
+    const changes: SimpleChanges = {
+      trendData: new SimpleChange(null, component.trendData, true)
+    };
+
+    component.ngOnChanges(changes);
+
+    expect(component.dataObj.length).toBe(2);
+    expect(component.dataObj[0]).toEqual({});
+    expect(component.dataObj[1]).toEqual({
+      'Project': undefined,
+      'Latest Trend': '30 (down)',
+      'KPI Maturity': 'Medium'
+    });
+
+    expect(component.generateFlatArray).toHaveBeenCalled();
+  });
+});
+
 });
