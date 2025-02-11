@@ -182,7 +182,7 @@ export class ProjectFilterComponent implements OnInit {
   findUniques(data, propertyArray) {
     data = this.helper.sortByField(data, ['name']);
     const seen = Object.create(null);
-    return data.filter(o => {
+    return data?.filter(o => {
       const key = propertyArray.map(k => o[k]).join('|');
       if (!seen[key]) {
         seen[key] = true;

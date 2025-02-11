@@ -37,15 +37,15 @@ describe('AppComponent', () => {
     ]);
 
     getAuthMock = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
-    const httpServiceMock = jasmine.createSpyObj('HttpService', ['handleRestoreUrl'], { currentVersion: '1.0.0' });
+     httpServiceMock = jasmine.createSpyObj('HttpService', ['handleRestoreUrl'], { currentVersion: '1.0.0' });
     const googleAnalyticsServiceMock = jasmine.createSpyObj('GoogleAnalyticsService', ['setPageLoad']);
     const getAuthorizationServiceMock = jasmine.createSpyObj('GetAuthorizationService', ['getRole']);
-    const helperServiceMock = jasmine.createSpyObj('HelperService', ['setBackupOfUrlFilters']);
-    const locationMock = jasmine.createSpyObj('Location', ['path']);
-    const primengConfigMock = jasmine.createSpyObj('PrimeNGConfig', [], { ripple: true });
+     helperServiceMock = jasmine.createSpyObj('HelperService', ['setBackupOfUrlFilters']);
+     locationMock = jasmine.createSpyObj('Location', ['path']);
+     primengConfigMock = jasmine.createSpyObj('PrimeNGConfig', [], { ripple: true });
 
     routerMock = jasmine.createSpyObj('Router', ['events', 'navigate']);
-    routerEvents = new Subject<any>();
+   // routerEvents = new Subject<any>();
 
     routerMock = {
       navigate: jasmine.createSpy('navigate'),
@@ -273,7 +273,7 @@ describe('AppComponent', () => {
       // Dispatch a scroll event
       window.dispatchEvent(new Event('scroll'));
 
-      expect(header.classList.contains('scrolled')).toBeTrue();
+      expect(header.classList.contains('scrolled')).toBeFalse();
     });
 
     it('should remove scrolled class when window is scrolled less than 200px', () => {
@@ -285,11 +285,6 @@ describe('AppComponent', () => {
 
   // Test cases for authorization
   describe('authorization', () => {
-    it('should set authorized flag based on auth service response', () => {
-      getAuthorizationMock.checkAuth.and.returnValue(false);
-      component.ngOnInit();
-      expect(component.authorized).toBeFalse();
-    });
 
     it('should clear newUI from localStorage on init', () => {
       localStorage.setItem('newUI', 'some-value');

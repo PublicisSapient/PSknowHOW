@@ -21,218 +21,268 @@ import { ProjectFilterComponent } from './project-filter.component';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { MessageService } from 'primeng/api';
+import { HelperService } from 'src/app/services/helper.service';
 import { of } from 'rxjs';
-
-const allProjectsData = require('../../../test/resource/projectFilterAllProjects.json');
 
 describe('ProjectFilterComponent', () => {
   let component: ProjectFilterComponent;
   let fixture: ComponentFixture<ProjectFilterComponent>;
-  let httpService: jasmine.SpyObj<HttpService>;
-  let sharedService: jasmine.SpyObj<SharedService>;
-  let messageService: jasmine.SpyObj<MessageService>;
+  let httpServiceMock: jasmine.SpyObj<HttpService>;
+  let sharedServiceMock: jasmine.SpyObj<SharedService>;
+  let messageServiceMock: jasmine.SpyObj<MessageService>;
+  let helperMock: jasmine.SpyObj<HelperService>;
 
   beforeEach(async () => {
-    const httpSpy = jasmine.createSpyObj('HttpService', ['getAllProjects']);
-    const sharedSpy = jasmine.createSpyObj('SharedService', ['sendProjectData']);
-    const messageSpy = jasmine.createSpyObj('MessageService', ['add']);
+    httpServiceMock = jasmine.createSpyObj('HttpService', ['getAllProjects']);
+    sharedServiceMock = jasmine.createSpyObj('SharedService', ['sendProjectData']);
+    messageServiceMock = jasmine.createSpyObj('MessageService', ['add']);
+    helperMock = jasmine.createSpyObj('HelperService', ['sortByField']);
+
+    httpServiceMock.getAllProjects.and.returnValue(of({
+      data: [
+        {
+          id: 'P1',
+          hierarchy: [
+            { hierarchyLevel: { hierarchyLevelId: 'Level1' }, value: 'Node 1' }
+          ]
+        }
+      ]
+    }));
 
     await TestBed.configureTestingModule({
       declarations: [ProjectFilterComponent],
       providers: [
-        { provide: HttpService, useValue: httpSpy },
-        { provide: SharedService, useValue: sharedSpy },
-        { provide: MessageService, useValue: messageSpy }
+        { provide: HttpService, useValue: httpServiceMock },
+        { provide: SharedService, useValue: sharedServiceMock },
+        { provide: MessageService, useValue: messageServiceMock },
+        { provide: HelperService, useValue: helperMock }
       ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(ProjectFilterComponent);
     component = fixture.componentInstance;
-    component.selectedVal = {
-      level1: [{ name: 'Alpha' }, { name: 'Beta' }],
-      level2: [{ name: 'Gamma' }]
-    };
-    component.data = [
-      {
-        id: '1',
-        projectName: 'Project One',
-        hierarchy: [{ hierarchyLevel: { hierarchyLevelId: 'level1' }, value: 'Value1' }]
-      }
-    ];
-    component.hierarchyData = {
-      level1: [{ code: 'Value1' }]
-    };
-    component.hierarchyArray = ['level1'];
-    
-    httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
-    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
-    messageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
+    fixture.detectChanges();
   });
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should populate dropdowns', () => {
-    httpService.getAllProjects.and.returnValue(of(allProjectsData));
-    component.getProjects();
-    expect(httpService.getAllProjects).toHaveBeenCalledTimes(1);
-    fixture.detectChanges();
-    expect(component.data).toEqual(allProjectsData.data);
+  it('should call getProjects() on init', () => {
+    spyOn(component, 'getProjects');
+    component.ngOnInit();
+    expect(component.getProjects).toHaveBeenCalled();
   });
 
-  it('should fetch projects on init', () => {
-    const mockProjects = {
+  it('should fetch projects and set data in getProjects()', () => {
+    const mockProjectData = {
       data: [
         {
+          id: 'P1',
           hierarchy: [
-            { hierarchyLevel: { hierarchyLevelId: 'level1' }, value: 'Value1' }
+            { hierarchyLevel: { hierarchyLevelId: 'Level1' }, value: 'Node 1' }
           ]
         }
       ]
     };
-    httpService.getAllProjects.and.returnValue(of(mockProjects));
 
-    component.ngOnInit();
+    httpServiceMock.getAllProjects.and.returnValue(of(mockProjectData));
 
-    expect(httpService.getAllProjects).toHaveBeenCalled();
-    expect(component.data).toEqual(mockProjects.data);
-    expect(component.hierarchyArray).toEqual(['level1']);
-    expect(sharedService.sendProjectData).toHaveBeenCalledWith(mockProjects.data);
+    component.getProjects();
+    expect(component.data.length).toBe(1);
+    expect(component.hierarchyArray).toEqual(['Level1']);
+    expect(sharedServiceMock.sendProjectData).toHaveBeenCalledWith(mockProjectData.data);
   });
 
-  it('should handle error when fetching projects', () => {
-    const mockError = { error: true };
-    httpService.getAllProjects.and.returnValue(of(mockError));
+  it('should show error message when getProjects() fails', () => {
+    httpServiceMock.getAllProjects.and.returnValue(of({ error: true }));
 
-    component.ngOnInit();
-
-    expect(messageService.add).toHaveBeenCalledWith({
+    component.getProjects();
+    expect(messageServiceMock.add).toHaveBeenCalledWith({
       severity: 'error',
       summary: 'User needs to be assigned a project for the access to work on dashboards.'
     });
   });
 
-  it('should populate data lists correctly', () => {
-    const mockData = [
-      {
-        hierarchy: [
-          { hierarchyLevel: { hierarchyLevelId: 'level1' }, value: 'Value1', orgHierarchyNodeId: '1' }
-        ]
-      }
-    ];
+  it('should remove filter from selectedVal in filterData()', () => {
+    const eventMock = { stopPropagation: () => {} };
+    spyOn(eventMock, 'stopPropagation');
 
-    component.populateDataLists(mockData, 'all');
+    component.selectedVal['Level1'] = [{ name: 'Node 1', code: 'L1', parent: 'Parent1' }];
 
-    expect(component.hierarchyData['level1']).toEqual([{ name: 'Value1', code: '1' }]);
+    component.filterData(eventMock, 'Level1', 'L1', 'Node 1', 'Parent1');
+
+    expect(eventMock.stopPropagation).toHaveBeenCalled();
+    expect(component.selectedVal['Level1']).toBeUndefined();
   });
 
-  it('should emit projectSelected event with hierarchy values', () => {
-    component.hierarchyArray = ['level1'];
+  it('should clear all filters in clearFilters()', () => {
+    component.selectedVal = { Level1: [{ name: 'Node 1', code: 'L1' }] };
+    component.projects = [{ id: 'P1', hierarchy: [] }];
+
+    component.clearFilters();
+
+    expect(component.selectedVal).toEqual({});
+    expect(component.projects.length).toBe(1);
+  });
+
+  it('should sort selectedVal in sortFilters()', () => {
     component.selectedVal = {
-      level1: [{ code: '1', name: 'Value1' }]
+      Level2: [{ name: 'Node 2', code: 'L2' }],
+      Level1: [{ name: 'Node 1', code: 'L1' }]
     };
+    component.hierarchyArray = ['Level1', 'Level2'];
+
+    component.sortFilters();
+
+    expect(Object.keys(component.selectedVal)).toEqual(['Level1', 'Level2']);
+  });
+
+  it('should emit project selection event in projectSelected()', () => {
     spyOn(component.projectSelectedEvent, 'emit');
+
+    component.hierarchyArray = ['Level1'];
+    component.selectedVal['Level1'] = [{ name: 'Node 1', code: 'L1' }];
+    component.valueRemoved = { removedKey: 'Some Value' };
 
     component.projectSelected();
 
-    expect(component.projectSelectedEvent.emit).toHaveBeenCalled();
+    expect(component.projectSelectedEvent.emit).toHaveBeenCalledWith(jasmine.objectContaining({
+      accessType: 'Level1',
+      value: [{ itemId: 'L1', itemName: 'Node 1' }],
+      hierarchyArr: ['Level1'],
+      valueRemoved: { removedKey: 'Some Value' }
+    }));
   });
 
-  it('should emit projectSelected event with project values', () => {
-    component.selectedValProjects = [{ id: 'P1', projectName: 'Project One' }];
-    spyOn(component.projectSelectedEvent, 'emit');
+  it('should return selected template values in getSelectedValTemplateValue()', () => {
+    component.selectedVal['Level1'] = [{ name: 'Node 1' }, { name: 'Node 2' }];
 
-    component.projectSelected();
+    const result = component.getSelectedValTemplateValue('Level1');
 
-    expect(component.projectSelectedEvent.emit).toHaveBeenCalled();
+    expect(result).toBe('Node 1, Node 2');
   });
 
-  it('should match hierarchy correctly', () => {
+  it('should return true when hierarchy matches', () => {
     component.selectedVal = {
-      level1: [{ code: 'Value1' }]
+      Level1: [{ code: 'L1', name: 'Node 1' }],
+      Level2: [{ code: 'L2', name: 'Node 2' }]
     };
+
     const project = {
       hierarchy: [
-        { hierarchyLevel: { hierarchyLevelId: 'level1' }, value: 'Value1' }
+        { hierarchyLevel: { hierarchyLevelId: 'Level1' }, orgHierarchyNodeId: 'L1', value: 'Node 1' },
+        { hierarchyLevel: { hierarchyLevelId: 'Level2' }, orgHierarchyNodeId: 'L2', value: 'Node 2' }
       ]
     };
 
     expect(component.hierarchyMatch(project)).toBeTrue();
   });
 
-  it('should not match hierarchy if values differ', () => {
+  it('should return false when no hierarchy matches', () => {
     component.selectedVal = {
-      level1: [{ code: 'Value2' }]
+      Level1: [{ code: 'L3', name: 'Node 3' }]
     };
+
     const project = {
       hierarchy: [
-        { hierarchyLevel: { hierarchyLevelId: 'level1' }, value: 'Value1' }
+        { hierarchyLevel: { hierarchyLevelId: 'Level1' }, orgHierarchyNodeId: 'L1', value: 'Node 1' }
+      ]
+    };
+
+    expect(component.hierarchyMatch(project)).toBeFalse();
+  });
+  it('should return false when project hierarchy is empty', () => {
+    component.selectedVal = {
+      Level1: [{ code: 'L1', name: 'Node 1' }]
+    };
+
+    const project = { hierarchy: [] };
+
+    expect(component.hierarchyMatch(project)).toBeFalse();
+  });
+  it('should return false when hierarchyLevelId is missing', () => {
+    component.selectedVal = {
+      Level1: [{ code: 'L1', name: 'Node 1' }]
+    };
+
+    const project = {
+      hierarchy: [
+        { hierarchyLevel: {}, orgHierarchyNodeId: 'L1', value: 'Node 1' }
+      ]
+    };
+
+    expect(component.hierarchyMatch(project)).toBeFalse();
+  });
+  it('should return false when selectedVal is empty', () => {
+    component.selectedVal = {};
+
+    const project = {
+      hierarchy: [
+        { hierarchyLevel: { hierarchyLevelId: 'Level1' }, orgHierarchyNodeId: 'L1', value: 'Node 1' }
       ]
     };
 
     expect(component.hierarchyMatch(project)).toBeFalse();
   });
 
-  it('should filter data when filterType is available', () => {
-    component.valueRemoved = {};
-    const event = {
-      stopPropagation: jasmine.createSpy('stopPropagation')
-    };
-    component.data = allProjectsData.data;
-    const filterType = 'hierarchyLevelOne';
-    const filterValueCode = 'Sample One';
-    const filterValueName = 'Sample One';
-    component.filteredData = [];
-    component.selectedVal = {};
-    component.filterData(event, filterType, filterValueCode, filterValueName);
-    expect(component.filteredData).toEqual(component.data);
+describe('ProjectFilterComponent - findUniques()', () => {
+  let component: ProjectFilterComponent;
+  let mockHelperService: jasmine.SpyObj<HelperService>;
+
+  beforeEach(() => {
+    mockHelperService = jasmine.createSpyObj('HelperService', ['sortByField']);
+    component = new ProjectFilterComponent(null, null, null, mockHelperService);
+
+    // Mock implementation of sortByField
+    mockHelperService.sortByField.and.callFake((data, field) => {
+      return data.sort((a, b) => (a[field] > b[field] ? 1 : -1));
+    });
   });
 
-  it('should return a comma-separated string of names for a valid hierarchy level', () => {
-    const result = component.getSelectedValTemplateValue('level1');
-    expect(result).toEqual('Alpha, Beta');
+  it('should return unique objects based on the given properties', () => {
+    const data = [
+      { name: 'Alpha', code: 'A1', parent: 'P1' },
+      { name: 'Beta', code: 'B1', parent: 'P2' },
+      { name: 'Alpha', code: 'A1', parent: 'P1' }, // Duplicate
+      { name: 'Gamma', code: 'G1', parent: 'P3' }
+    ];
+    const propertyArray = ['name', 'code'];
+
+    const result = component.findUniques(data, propertyArray);
+
+    expect(result.length).toBe(3);
+    expect(result).toEqual([
+      { name: 'Alpha', code: 'A1' },
+      { name: 'Beta', code: 'B1' },
+      { name: 'Gamma', code: 'G1' }
+    ]);
   });
 
-  it('should return a single name for a hierarchy level with one entry', () => {
-    const result = component.getSelectedValTemplateValue('level2');
-    expect(result).toEqual('Gamma');
+  it('should return an empty array when input data is empty', () => {
+    const data = [];
+    const propertyArray = ['name', 'code'];
+
+    const result = component.findUniques(data, propertyArray);
+
+    expect(result).toEqual([]);
   });
-// spal test
-it('should add a new filter value', () => {
-  const event = { stopPropagation: jasmine.createSpy('stopPropagation') };
-  component.filterData(event, 'level1', 'Value1', 'Value1');
-  expect(component.selectedVal['level1']).toEqual([{ name: 'Value1', code: 'Value1' }]);
-  expect(event.stopPropagation).toHaveBeenCalled();
-});
 
-it('should remove an existing filter value', () => {
-  component.selectedVal['level1'] = [{ name: 'Value1', code: 'Value1' }];
-  const event = { stopPropagation: jasmine.createSpy('stopPropagation') };
-  component.filterData(event, 'level1', 'Value1', 'Value1');
-  expect(component.selectedVal['level1']).toBeUndefined();
-});
+  it('should handle large datasets efficiently', () => {
+    const data = Array.from({ length: 1000 }, (_, i) => ({
+      name: `Item ${i % 10}`,
+      code: `Code ${i % 10}`,
+      parent: `Parent ${i % 5}`
+    }));
+    const propertyArray = ['name', 'code'];
 
-it('should clear filters if no selected values', () => {
-  const event = { stopPropagation: jasmine.createSpy('stopPropagation') };
-  component.selectedVal = {};
-  component.filterData(event, 'level1', 'Value1', 'Value1');
-  expect(component.filtersApplied).toBe(true);
-});
+    const result = component.findUniques(data, propertyArray);
 
-it('should apply filters and update filteredData', () => {
-  component.selectedVal['level1'] = [{ name: 'Value1', code: 'Value1' }];
-  const event = { stopPropagation: jasmine.createSpy('stopPropagation') };
-  component.filterData(event, 'level1', 'Value1', 'Value1');
-  expect(component.filteredData).toEqual(component.data);
-});
-
-it('should call projectSelected if filters are applied', () => {
-  spyOn(component, 'projectSelected');
-  component.selectedVal['level1'] = [{ name: 'Value1', code: 'Value1' }];
-  const event = { stopPropagation: jasmine.createSpy('stopPropagation') };
-  component.filterData(event, 'level1', 'Value1', 'Value1');
-  expect(component.projectSelected).toHaveBeenCalled();
-});
+    expect(result.length).toBe(10);
+  });
 
 });
+});
+
