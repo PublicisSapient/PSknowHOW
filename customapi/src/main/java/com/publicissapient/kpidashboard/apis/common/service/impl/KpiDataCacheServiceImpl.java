@@ -141,7 +141,7 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public Map<String, Object> fetchSprintVelocityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-															 List<String> sprintList, String kpiId) {
+													   String kpiId) {
 		log.info("Fetching Sprint Velocity KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
 				kpiId);
 		return kpiDataProvider.fetchSprintVelocityDataFromDb(kpiRequest, basicProjectConfigId);

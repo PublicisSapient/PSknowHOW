@@ -145,7 +145,7 @@ public class KpiDataCacheServiceImplTest {
 	public void fetchSprintVelocityData_shouldReturnCorrectData_whenValidInput() {
 		when(kpiDataProvider.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(new HashMap<>());
 		Map<String, Object> result = kpiDataCacheService.fetchSprintVelocityData(new KpiRequest(), new ObjectId(),
-				new ArrayList<>(), "kpi39");
+				"kpi39");
 		assertNotNull(result);
 	}
 

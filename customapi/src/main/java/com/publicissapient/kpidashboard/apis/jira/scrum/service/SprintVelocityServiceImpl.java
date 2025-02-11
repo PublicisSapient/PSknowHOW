@@ -184,7 +184,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		projectWiseSprints.forEach((basicProjectConfigId, sprintList) -> {
 			Map<String, Object> result;
 			if (fetchCachedData) {// fetch data from cache only if Filter is selected till Sprint level.
-				result = kpiDataCacheService.fetchSprintVelocityData(kpiRequest, basicProjectConfigId, sprintIdList,
+				result = kpiDataCacheService.fetchSprintVelocityData(kpiRequest, basicProjectConfigId,
 						KPICode.SPRINT_VELOCITY.getKpiId());
 			} else {// fetch data from DB if filters below Sprint level (i.e. additional filters)
 				result = kpiDataProvider.fetchSprintVelocityDataFromDb(kpiRequest, basicProjectConfigId);
