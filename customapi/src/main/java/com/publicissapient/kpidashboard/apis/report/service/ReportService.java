@@ -56,7 +56,7 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     public static final String REPORTS_BY_ID = "reportsById";
-    public static final String REPORTS_BY_NAME = "reportsByName";
+    public static final String REPORTS_CREATED_BY = "createdBy";
     private final AuthenticationService authenticationService;
 
     @Autowired
@@ -72,7 +72,7 @@ public class ReportService {
      * @return the created report data transfer object
      * @throws DuplicateReportException if a report with the same attributes already exists
      */
-    @CacheEvict(value = REPORTS_BY_NAME, allEntries = true)
+    @CacheEvict(value = REPORTS_CREATED_BY, allEntries = true)
     public ServiceResponse create(ReportRequest reportRequest) {
         log.info("Creating a new report with name: {}", CommonUtils.sanitize(reportRequest.getName()));
         // Get the current user
@@ -107,7 +107,7 @@ public class ReportService {
      * @return the updated report data transfer object
      * @throws ReportNotFoundException if the report is not found
      */
-    @CacheEvict(value = {REPORTS_BY_NAME, REPORTS_BY_ID}, key = "#id")
+    @CacheEvict(value = {REPORTS_CREATED_BY, REPORTS_BY_ID}, key = "#id")
     public ServiceResponse update(String id, ReportRequest reportRequest) throws EntityNotFoundException {
         log.info("Updating report with ID: {}", CommonUtils.sanitize(id));
         validateKpiIds(reportRequest.getKpis());
@@ -145,7 +145,7 @@ public class ReportService {
      *
      * @param id the report ID
      */
-    @CacheEvict(value = {REPORTS_BY_NAME, REPORTS_BY_ID}, key = "#id")
+    @CacheEvict(value = {REPORTS_CREATED_BY, REPORTS_BY_ID}, key = "#id")
     public void delete(String id) {
         log.info("Deleting report with ID: {}", CommonUtils.sanitize(id));
         reportRepository.deleteById(id);
@@ -219,7 +219,7 @@ public class ReportService {
      * @return a page of report data transfer objects
      * @throws ReportNotFoundException if no reports are found with the given createdBy
      */
-    @Cacheable(value = REPORTS_BY_NAME, key = "{#createdBy, #page, #size}")
+    @Cacheable(value = REPORTS_CREATED_BY, key = "{#createdBy, #page, #size}")
     public ServiceResponse getReportsByCreatedBy(String createdBy, int page, int size) {
         log.info("Fetching reports by createdBy: {}, page: {}, size: {}", CommonUtils.sanitize(createdBy), page, size);
         final ModelMapper modelMapper = new ModelMapper();
