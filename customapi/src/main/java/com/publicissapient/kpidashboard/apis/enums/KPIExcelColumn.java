@@ -135,11 +135,11 @@ public enum KPIExcelColumn {
 
 	INSPRINT_AUTOMATION_COVERAGE("kpi16", Arrays.asList("Sprint Name", "Test Case ID", "Linked Story ID", "Automated")),
 
-	UNIT_TEST_COVERAGE("kpi17", Arrays.asList("Project", "Job Name", "Unit Coverage", "Weeks")),
+	UNIT_TEST_COVERAGE("kpi17", Arrays.asList("Project", "Job Name / Pipeline Name", "Unit Coverage", "Weeks")),
 
-	SONAR_VIOLATIONS("kpi38", Arrays.asList("Project", "Job Name", "Violation Type", "Violation Severity", "Weeks")),
+	SONAR_VIOLATIONS("kpi38", Arrays.asList("Project", "Job Name / Pipeline Name", "Violation Type", "Violation Severity", "Weeks")),
 
-	SONAR_TECH_DEBT("kpi27", Arrays.asList("Project", "Job Name", "Tech Debt (in days)", "Weeks")),
+	SONAR_TECH_DEBT("kpi27", Arrays.asList("Project", "Job Name / Pipeline Name", "Tech Debt (in days)", "Weeks")),
 
 	CHANGE_FAILURE_RATE("kpi116", Arrays.asList("Project", "Job Name / Pipeline Name", "Total Build Count", "Total Build Failure Count",
 			"Build Failure Percentage", "Weeks")), CHANGE_FAILURE_RATE_KANBAN(
@@ -175,11 +175,11 @@ public enum KPIExcelColumn {
 	PRODUCTION_DEFECTS_AGEING("kpi127",
 			Arrays.asList("Project Name", "Defect ID", "Issue Description", "Priority", "Created Date", "Status")),
 
-	UNIT_TEST_COVERAGE_KANBAN("kpi62", Arrays.asList("Project", "Job Name", "Unit Coverage", "Day/Week/Month")),
+	UNIT_TEST_COVERAGE_KANBAN("kpi62", Arrays.asList("Project", "Job Name / Pipeline Name", "Unit Coverage", "Day/Week/Month")),
 
-	SONAR_VIOLATIONS_KANBAN("kpi64", Arrays.asList("Project", "Job Name", "Sonar Violations", "Day/Week/Month")),
+	SONAR_VIOLATIONS_KANBAN("kpi64", Arrays.asList("Project", "Job Name / Pipeline Name", "Sonar Violations", "Day/Week/Month")),
 
-	SONAR_TECH_DEBT_KANBAN("kpi67", Arrays.asList("Project", "Job Name", "Tech Debt (in days)", "Day/Week/Month")),
+	SONAR_TECH_DEBT_KANBAN("kpi67", Arrays.asList("Project", "Job Name / Pipeline Name", "Tech Debt (in days)", "Day/Week/Month")),
 
 	TEST_EXECUTION_KANBAN("kpi71", Arrays.asList("Project", "Execution Date", "Total Test", "Executed Test",
 			"Execution %", "Passed Test", "Passed %")),
@@ -345,7 +345,7 @@ public enum KPIExcelColumn {
 	MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Weeks", "Story ID", "Issue Type", "Issue Description",
 			"Created Date", "Completion Date", "Time to Recover (In Hours)")),
 
-	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month")), FLOW_EFFICIENCY("kpi170",
+	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name / Pipeline Name", "Code Quality", "Month")), FLOW_EFFICIENCY("kpi170",
 			Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size (In Story Points)", "Wait Time",
 					"Total Time", "Flow Efficiency")),
 
