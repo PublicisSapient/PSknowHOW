@@ -177,7 +177,7 @@ public class KpiDataProviderTest {
 		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/non-JiraProcessors/build_details.json");
 		List<Build> buildList = buildDataFactory.getbuildDataList();
 		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
-		List<Build> list = kpiDataProvider.fetchBuildFrequencydata(new ObjectId(), "", "");
+		List<Build> list = kpiDataProvider.fetchBuildFrequencyData(new ObjectId(), "", "");
 		assertThat(list.size(), equalTo(18));
 	}
 

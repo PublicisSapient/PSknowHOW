@@ -119,7 +119,7 @@ public class KpiDataCacheServiceImplTest {
 
 	@Test
 	public void testfetchBuildFrequencydata() {
-		when(kpiDataProvider.fetchBuildFrequencydata(any(), any(), any())).thenReturn(new ArrayList<>());
+		when(kpiDataProvider.fetchBuildFrequencyData(any(), any(), any())).thenReturn(new ArrayList<>());
 		List<Build> result = kpiDataCacheService.fetchBuildFrequencyData(new ObjectId(), "",
 				"", "kpi1");
 		assertNotNull(result);
