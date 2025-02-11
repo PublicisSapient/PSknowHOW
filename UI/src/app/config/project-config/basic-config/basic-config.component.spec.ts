@@ -585,4 +585,116 @@ describe('BasicConfigComponent', () => {
   });
 
   // ----------------------- getHierarchy ------------------------------
+  describe('getNodeDisplayNameById', () => {
+    it('should return the correct node display name when nodeId is found', () => {
+      component.formData = [
+        { list: [{ nodeId: '1', nodeDisplayName: 'Node A' }] },
+        { list: [{ nodeId: '2', nodeDisplayName: 'Node B' }] }
+      ];
+
+      const result = component.getNodeDisplayNameById('1', component.formData[1]);
+      expect(result).toBe('(Node A)');
+    });
+
+    it('should return undefined if the previous index does not have a list', () => {
+      component.formData = [
+        {},
+        { list: [{ nodeId: '2', nodeDisplayName: 'Node B' }] }
+      ];
+
+      const result = component.getNodeDisplayNameById('1', component.formData[1]);
+      expect(result).toBeUndefined();
+    });
+  });
+  describe('getButtonLabel', () => {
+    it('should return "Clone" when clone is "true"', () => {
+      component.clone = 'true';
+      expect(component.getButtonLabel()).toBe('Clone');
+    });
+
+    it('should return "Save" when clone is not "true"', () => {
+      component.clone = 'false';
+      expect(component.getButtonLabel()).toBe('Save');
+
+      component.clone = null;
+      expect(component.getButtonLabel()).toBe('Save');
+    });
+  });
+  describe('getConeStatusFlag', () => {
+    it('should return true when clone is "true"', () => {
+      component.clone = 'true';
+      expect(component.getConeStatusFlag()).toBeTrue();
+    });
+
+    it('should return false when clone is not "true"', () => {
+      component.clone = 'false';
+      expect(component.getConeStatusFlag()).toBeFalse();
+
+      component.clone = null;
+      expect(component.getConeStatusFlag()).toBeFalse();
+    });
+  });
+  describe('prefillForm', () => {
+    beforeEach(() => {
+      component.formData = [
+        {
+          hierarchyLevelId: 'project',
+          list: [{ nodeDisplayName: 'Project A' }]
+        },
+        {
+          hierarchyLevelId: 'level1',
+          list: [{ nodeDisplayName: 'Level 1 Data' }]
+        }
+      ];
+
+      component.selectedProject = {
+        name: 'Project A',
+        type: 'Kanban',
+        saveAssigneeDetails: true,
+        developerKpiEnabled: false,
+        level1: 'Level 1 Data'
+      };
+
+      spyOn(component.form, 'patchValue');
+    });
+
+    it('should patch correct form values when selectedProject is defined', () => {
+      component.prefillForm();
+
+      expect(component.form.patchValue).toHaveBeenCalledWith({
+        projectName: 'Clone_Project A',
+        kanban: true,
+        assigneeDetails: true,
+        developerKpiEnabled: false,
+        project: { nodeDisplayName: 'Project A' },
+        level1: { nodeDisplayName: 'Level 1 Data' }
+      });
+    });
+
+    it('should not patch values if selectedProject is not defined', () => {
+      component.selectedProject = null;
+
+      component.prefillForm();
+
+      expect(component.form.patchValue).not.toHaveBeenCalled();
+    });
+
+    it('should handle missing fields gracefully', () => {
+      component.selectedProject = {
+        name: 'Project B',
+        type: 'Scrum'
+      };
+
+      component.prefillForm();
+
+      expect(component.form.patchValue).toHaveBeenCalledWith({
+        projectName: 'Clone_Project B',
+        kanban: false,
+        assigneeDetails: undefined,
+        developerKpiEnabled: undefined,
+        project: undefined,
+        level1: undefined
+      });
+    });
+  });
 });
