@@ -15,72 +15,159 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { HTTP_INTERCEPTORS, HttpClient, HttpRequest } from '@angular/common/http';
+import { HttpsRequestInterceptor } from './interceptor.module';
 import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
 import { HttpService } from '../services/http.service';
-import { environment } from '../../environments/environment';
-import { HttpsRequestInterceptor } from './interceptor.module';
+import { Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 describe('HttpsRequestInterceptor', () => {
-  let httpMock: HttpTestingController;
   let httpClient: HttpClient;
-  let router: jasmine.SpyObj<Router>;
-  let getAuthService: jasmine.SpyObj<GetAuthService>;
-  let sharedService: jasmine.SpyObj<SharedService>;
-  let httpService: jasmine.SpyObj<HttpService>;
+  let httpMock: HttpTestingController;
+  let interceptor: HttpsRequestInterceptor;
+  let mockGetAuthService: jasmine.SpyObj<GetAuthService>;
+  let mockSharedService: jasmine.SpyObj<SharedService>;
+  let mockHttpService: jasmine.SpyObj<HttpService>;
+  let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const getAuthSpy = jasmine.createSpyObj('GetAuthService', ['getAuthDetails']);
-    const sharedSpy = jasmine.createSpyObj('SharedService', ['clearAllCookies']);
-    const httpSpy = jasmine.createSpyObj('HttpService', ['setCurrentUserDetails', 'getAuthDetails']);
+    mockGetAuthService = jasmine.createSpyObj('GetAuthService', ['checkAuth']);
+    mockSharedService = jasmine.createSpyObj('SharedService', ['getCurrentUserDetails', 'clearAllCookies']);
+    mockHttpService = jasmine.createSpyObj('HttpService', ['setCurrentUserDetails']);
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: HttpsRequestInterceptor, multi: true },
-        { provide: Router, useValue: routerSpy },
-        { provide: GetAuthService, useValue: getAuthSpy },
-        { provide: SharedService, useValue: sharedSpy },
-        { provide: HttpService, useValue: httpSpy }
+        HttpsRequestInterceptor,
+        { provide: GetAuthService, useValue: mockGetAuthService },
+        { provide: SharedService, useValue: mockSharedService },
+        { provide: HttpService, useValue: mockHttpService },
+        { provide: Router, useValue: mockRouter },
+        { provide: HTTP_INTERCEPTORS, useClass: HttpsRequestInterceptor, multi: true }
       ]
     });
 
-    httpMock = TestBed.inject(HttpTestingController);
     httpClient = TestBed.inject(HttpClient);
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    getAuthService = TestBed.inject(GetAuthService) as jasmine.SpyObj<GetAuthService>;
-    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
-    httpService = TestBed.inject(HttpService) as jasmine.SpyObj<HttpService>;
+    httpMock = TestBed.inject(HttpTestingController);
+    //interceptor = TestBed.inject(HttpsRequestInterceptor);
   });
 
   afterEach(() => {
     httpMock.verify();
   });
 
-  it('should add Content-Type header for JSON requests', () => {
-    httpClient.get('/test').subscribe();
+  it('should add withCredentials and requestId header', () => {
+    const mockUrl = '/api/test';
+    const requestIdPattern = /^[0-9a-fA-F-]{36}$/; // UUID format
 
-    const req = httpMock.expectOne('/test');
-    expect(req.request.headers.get('Content-Type')).toBe('application/json');
+    httpClient.get(mockUrl).subscribe();
+
+    const req = httpMock.expectOne(mockUrl);
+    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.headers.has('request-Id')).toBeTrue();
+    expect(req.request.headers.get('request-Id')).toMatch(requestIdPattern);
+
+    req.flush({});
   });
 
+  it('should remove httpErrorHandler and requestArea headers if present', () => {
+    const mockUrl = '/api/test';
 
-  it('should handle 403 error by navigating to unauthorized access', () => {
-    environment.SSO_LOGIN = true;
-    httpClient.get('/test').subscribe(
-      () => fail('should have failed with 403 error'),
-      () => {
-        expect(router.navigate).toHaveBeenCalledWith(['/dashboard/unauthorized-access']);
+    httpClient.get(mockUrl, {
+      headers: {
+        httpErrorHandler: 'local',
+        requestArea: 'external'
       }
-    );
+    }).subscribe();
 
-    const req = httpMock.expectOne('/test');
-    req.flush({}, { status: 403, statusText: 'Forbidden' });
+    const req = httpMock.expectOne(mockUrl);
+    expect(req.request.headers.has('httpErrorHandler')).toBeFalse();
+    expect(req.request.headers.has('requestArea')).toBeFalse();
+
+    req.flush({});
   });
+
+  it('should set content-type header to application/json for non-upload requests', () => {
+    const mockUrl = '/api/test';
+
+    httpClient.get(mockUrl).subscribe();
+
+    const req = httpMock.expectOne(mockUrl);
+    expect(req.request.headers.get('Content-Type')).toBe('application/json');
+
+    req.flush({});
+  });
+
+  it('should set content-type header to text/csv for emm-feed requests', () => {
+    const mockUrl = '/api/emm-feed/test';
+
+    httpClient.get(mockUrl).subscribe();
+
+    const req = httpMock.expectOne(mockUrl);
+    expect(req.request.headers.get('Content-Type')).toBe('text/csv');
+
+    req.flush({});
+  });
+
+  it('should handle 401 unauthorized error and navigate to login', () => {
+    const mockUrl = '/api/test';
+    const mockErrorResponse = { status: 401, statusText: 'Unauthorized' };
+
+    httpClient.get(mockUrl).subscribe({
+      error: () => {
+        expect(mockHttpService.setCurrentUserDetails).toHaveBeenCalledWith({});
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['./authentication/login'], { queryParams: { sessionExpire: true } });
+      }
+    });
+
+    httpMock.expectOne(mockUrl).flush(null, mockErrorResponse);
+  });
+
+  it('should handle 403 forbidden error and navigate to unauthorized page', () => {
+    const mockUrl = '/api/test';
+    const mockErrorResponse = { status: 403, statusText: 'Forbidden' };
+
+    httpClient.get(mockUrl).subscribe({
+      error: () => {
+        expect(mockHttpService.unauthorisedAccess).toBeUndefined();
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['./dashboard/Error']);
+      }
+    });
+
+    httpMock.expectOne(mockUrl).flush(null, mockErrorResponse);
+  });
+
+  it('should navigate to error page if request is blocked', () => {
+    const mockUrl = '/api/test';
+    const mockErrorResponse = { status: 500, statusText: 'Internal Server Error' };
+
+    httpClient.get(mockUrl).subscribe({
+      error: () => {
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['./dashboard/Error']);
+      }
+    });
+
+    httpMock.expectOne(mockUrl).flush(null, mockErrorResponse);
+  });
+
+  it('should not navigate to error page if request URL is in redirectExceptions', () => {
+    const mockUrl = environment.baseUrl + '/api/jira/kpi';
+    const mockErrorResponse = { status: 500, statusText: 'Internal Server Error' };
+
+    httpClient.get(mockUrl).subscribe({
+      error: () => {
+        expect(mockRouter.navigate).not.toHaveBeenCalled();
+      }
+    });
+
+    httpMock.expectOne(mockUrl).flush(null, mockErrorResponse);
+  });
+
 });
+
