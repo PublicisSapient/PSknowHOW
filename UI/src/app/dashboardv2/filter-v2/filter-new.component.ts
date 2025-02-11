@@ -80,6 +80,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
   buttonStyleClass = 'default';
   isSuccess: boolean = false;
+  dashConfigDataDeepCopyBackup : any
 
   constructor(
     private httpService: HttpService,
@@ -450,6 +451,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             data = this.setLevelNames(data);
             data['configDetails'] = response.data.configDetails;
             this.dashConfigData = data;
+            this.dashConfigDataDeepCopyBackup = JSON.parse(JSON.stringify(data));
             this.service.setDashConfigData(data, false);
             this.masterData['kpiList'] = [];
             this.masterDataCopy['kpiList'] = [];
@@ -1264,7 +1266,6 @@ export class FilterNewComponent implements OnInit, OnDestroy {
    */
   showHideKPIs() {
     const kpiArray = this.dashConfigData[this.selectedType].concat(this.dashConfigData['others']);
-    const currentTabAllKPis = [...this.dashConfigData[this.selectedType].filter(board => board.boardSlug === this.selectedTab)[0]['kpis']];
     let enabledKPIs = [];
     this.assignUserNameForKpiData();
     for (let i = 0; i < kpiArray.length; i++) {
@@ -1285,7 +1286,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     delete obj['enabledKPIs'];
 
     let copyObj = JSON.parse(JSON.stringify(obj));
-    copyObj = this.showHideDataManipulationFORBEOnly(copyObj,currentTabAllKPis);
+    copyObj = this.showHideDataManipulationFORBEOnly(copyObj);
     this.httpService.submitShowHideOnDashboard(copyObj).subscribe(
       (response) => {
         if (response.success === true) {
@@ -1482,7 +1483,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   }
 
 
-  showHideDataManipulationFORBEOnly(obj,currentTabAllKPis){
+  showHideDataManipulationFORBEOnly(obj){
+    const currentTabAllKPis = JSON.parse(JSON.stringify(this.dashConfigDataDeepCopyBackup[this.selectedType].filter(board => board.boardSlug === this.selectedTab)[0]['kpis']));
     for (let key in obj){
       const current = obj[key];
       if(Array.isArray(current) ){
