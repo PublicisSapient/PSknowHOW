@@ -1184,10 +1184,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
-      "order": 1,
-      "isShown": true,
-      "isDefault": false
+      "columnName" : "Job Name / Pipeline Name",
+      "order" : 1,
+      "isShown" : true,
+      "isDefault" : false
     }, {
       "columnName" : "Violation Type",
       "order" : 2,
