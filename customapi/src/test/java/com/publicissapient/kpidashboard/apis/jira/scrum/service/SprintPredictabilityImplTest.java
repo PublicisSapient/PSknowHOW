@@ -201,7 +201,7 @@ public class SprintPredictabilityImplTest {
 		projectConfigList.forEach(projectConfigs -> {
 			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
 		});
-		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+		when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 	}
 
