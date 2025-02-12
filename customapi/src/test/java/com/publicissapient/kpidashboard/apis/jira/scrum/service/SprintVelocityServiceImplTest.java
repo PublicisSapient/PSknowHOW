@@ -207,10 +207,6 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetailsList);
 		resultListMap.put(PREVIOUS_SPRINT_VELOCITY, previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
-		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
-		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(), anyList(),anyLong()))
-				.thenReturn(sprintDetailsList);
-		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
         when(kpiDataProvider.fetchSprintVelocityDataFromDb((eq(kpiRequest)), any()))
                 .thenReturn(resultListMap);
 
@@ -252,8 +248,6 @@ public class SprintVelocityServiceImplTest {
 //				.thenReturn(sprintDetailsList);
         when(kpiDataProvider.fetchSprintVelocityDataFromDb((eq(kpiRequest)), any()))
                 .thenReturn(resultListMap);
-
-        when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -291,7 +285,6 @@ public class SprintVelocityServiceImplTest {
 //				.thenReturn(sprintDetailsList);
         when(kpiDataProvider.fetchSprintVelocityDataFromDb((eq(kpiRequest)), any()))
                 .thenReturn(resultListMap);
-		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
