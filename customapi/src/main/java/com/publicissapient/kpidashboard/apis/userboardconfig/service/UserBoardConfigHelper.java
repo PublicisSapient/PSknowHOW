@@ -18,7 +18,6 @@
 package com.publicissapient.kpidashboard.apis.userboardconfig.service;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.owasp.encoder.Encode;
 
 import com.publicissapient.kpidashboard.apis.enums.UserBoardConfigEnum;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
@@ -172,10 +172,11 @@ public final class UserBoardConfigHelper {
 				.flatMap(config -> Stream.of(config.getScrum(), config.getKanban(), config.getOthers())
 						.flatMap(Collection::stream).flatMap(board -> board.getKpis().stream()))
 				.filter(kpi -> !kpi.isShown())
-				.collect(Collectors.toMap(BoardKpis::getKpiId, kpi -> false, (a, b) -> b));
+				.collect(Collectors.toMap(BoardKpis::getKpiId, kpi -> false, (a, b) -> a && b));
 
-		log.info("Disabled KPIs {} for user {} wrt selected projectIds {}", kpiWiseIsShownFlag,
-				userBoardConfig.getUsername(), sanitizeProjectIds(listOfRequestedProj.getBasicProjectConfigIds()));
+		log.debug("Applying project configuration: Disabled KPIs {} for user {} with selected project IDs {}",
+				kpiWiseIsShownFlag, userBoardConfig.getUsername(),
+				listOfRequestedProj.getBasicProjectConfigIds().stream().map(Encode::forJava).toList());
 
 		Stream.of(userBoardConfig.getScrum(), userBoardConfig.getKanban(), userBoardConfig.getOthers())
 				.flatMap(Collection::stream).forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
@@ -184,17 +185,4 @@ public final class UserBoardConfigHelper {
 				}));
 	}
 
-	/**
-	 * Sanitizes the Projects IDs for log injection prevention.
-	 *
-	 * @param projectIds
-	 *            the list of project IDs to sanitize
-	 * @return a sanitized list of project IDs with newline and carriage return
-	 *         characters removed
-	 */
-	public static List<String> sanitizeProjectIds(List<String> projectIds) {
-		return projectIds == null ? Collections.emptyList()
-				: projectIds.stream().filter(Objects::nonNull).map(id -> id.replaceAll("[\\r\\n]", ""))
-						.collect(Collectors.toList());
-	}
 }

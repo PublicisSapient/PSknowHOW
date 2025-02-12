@@ -19,10 +19,8 @@ import static com.publicissapient.kpidashboard.apis.userboardconfig.service.User
 import static com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigHelper.checkCategories;
 import static com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigHelper.checkKPIAddOrRemoveForExistingUser;
 import static com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigHelper.checkKPISubCategory;
-import static com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigHelper.sanitizeProjectIds;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +35,7 @@ import java.util.stream.StreamSupport;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -616,8 +615,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		boardConfig = userBoardConfigRepository.save(boardConfig);
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
 		log.info("Successfully saved {} BoardConfig: {}", configLevel,
-				configLevel == ConfigLevel.PROJECT ? sanitizeProjectIds(Collections.singletonList(basicProjectConfigId))
-						: loggedInUser);
+				configLevel == ConfigLevel.PROJECT ? Encode.forJava(basicProjectConfigId) : loggedInUser);
 		return new ServiceResponse(true, "Successfully Saved board Configuration",
 				userBoardConfigMapper.toDto(boardConfig));
 	}
@@ -633,7 +631,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		log.info("UserBoardConfigServiceImpl::deleteUser start");
 		userBoardConfigRepository.deleteByUsername(userName);
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
-		log.info("{} deleted Successfully from user_board_config", userName.replaceAll("[^a-zA-Z0-9_-]", ""));
+		log.info("{} deleted Successfully from user_board_config", Encode.forJava(userName));
 	}
 
 	/**
@@ -646,7 +644,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	public void deleteProjectBoardConfig(String basicProjectConfigId) {
 		userBoardConfigRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
-		log.info("Successfully deleted project board config: {}", basicProjectConfigId);
+		log.info("Successfully deleted project board config: {}", Encode.forJava(basicProjectConfigId));
 	}
 
 	/**
