@@ -916,7 +916,7 @@ export class HelperService {
 
   isDropdownElementSelected($event: any): boolean {
     try {
-      if ($event.originalEvent.type === 'click') {
+      if ($event.originalEvent.type === 'click' || $event.originalEvent.type === 'keydown') {
         return true;
       } else {
         return false;

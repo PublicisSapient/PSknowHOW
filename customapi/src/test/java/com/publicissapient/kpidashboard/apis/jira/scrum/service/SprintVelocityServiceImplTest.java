@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiDataProvider;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -40,7 +43,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -113,6 +115,10 @@ public class SprintVelocityServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiConfig;
+	@Mock
+	KpiDataProvider kpiDataProvider;
+	@Mock
+	KpiDataCacheService kpiDataCacheService;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
@@ -166,7 +172,7 @@ public class SprintVelocityServiceImplTest {
 		map.put(KPICode.SPRINT_VELOCITY.getKpiId(), Arrays.asList("1-2", "2-3", "3-4", "4-5", "5-6"));
 		when(configHelperService.calculateMaturity()).thenReturn(map);
 
-		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+		when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 	}
 
@@ -205,7 +211,10 @@ public class SprintVelocityServiceImplTest {
 		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(), anyList(),anyLong()))
 				.thenReturn(sprintDetailsList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
-		Map<String, Object> velocityListMap = sprintVelocityServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
+        when(kpiDataProvider.fetchSprintVelocityDataFromDb((eq(kpiRequest)), any()))
+                .thenReturn(resultListMap);
+
+        Map<String, Object> velocityListMap = sprintVelocityServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertThat("Velocity value :", ((List<JiraIssue>) (velocityListMap.get(SPRINTVELOCITYKEY))).size(),
 				equalTo(20));
@@ -241,7 +250,10 @@ public class SprintVelocityServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 //		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(any(), any()))
 //				.thenReturn(sprintDetailsList);
-		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
+        when(kpiDataProvider.fetchSprintVelocityDataFromDb((eq(kpiRequest)), any()))
+                .thenReturn(resultListMap);
+
+        when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -275,6 +287,10 @@ public class SprintVelocityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+//		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(any(), any()))
+//				.thenReturn(sprintDetailsList);
+        when(kpiDataProvider.fetchSprintVelocityDataFromDb((eq(kpiRequest)), any()))
+                .thenReturn(resultListMap);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

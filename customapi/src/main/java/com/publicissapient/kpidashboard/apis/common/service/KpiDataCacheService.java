@@ -93,6 +93,18 @@ public interface KpiDataCacheService {
 			List<String> sprintList, String kpiId);
 
 	/**
+	 * Fetches Sprint velocity data from DB and caches the result
+	 *
+	 * @param kpiRequest           The KPI request object.
+	 * @param basicProjectConfigId The project config ID.
+	 * @param kpiId                The KPI ID.
+	 * @return A map returns sprint wise jira issues list and project wise sprint
+	 * details
+	 */
+	Map<String, Object> fetchSprintVelocityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
+												String kpiId);
+
+	/**
 	 *
 	 * @param basicProjectConfigId
 	 * @param startDate
