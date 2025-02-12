@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -72,7 +73,7 @@ public class ProjectReleaseServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
-	ProjectReleaseRepo projectReleaseRepo;
+	private KpiDataCacheService kpiDataCacheService;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -131,8 +132,6 @@ public class ProjectReleaseServiceImplTest {
 	@After
 	public void cleanup() {
 
-		projectReleaseRepo.deleteAll();
-
 	}
 
 	@Test
@@ -144,7 +143,7 @@ public class ProjectReleaseServiceImplTest {
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		when(projectReleaseRepo.findByConfigIdIn(any())).thenReturn(releaseList);
+		when(kpiDataCacheService.fetchProjectReleaseData(any(), any())).thenReturn(releaseList);
 		Map<String, Object> storyDataListMap = projectVersionService.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertThat("Total Release : ", storyDataListMap.size(), equalTo(1));
@@ -155,7 +154,7 @@ public class ProjectReleaseServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(projectReleaseRepo.findByConfigIdIn(any())).thenReturn(releaseList);
+		when(kpiDataCacheService.fetchProjectReleaseData(any(), any())).thenReturn(releaseList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);

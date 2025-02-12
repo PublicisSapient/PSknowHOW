@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,7 +61,7 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
-	private ProjectReleaseRepo projectReleaseRepo;
+	private KpiDataCacheService kpiDataCacheService;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -84,7 +84,8 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.PROJECT_RELEASES);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -100,9 +101,12 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 
 		Map<String, Object> resultListMap = new HashMap<>();
 		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
+		List<ProjectRelease> releaseList = new ArrayList<>();
 
 		leafNodeList.forEach(leaf -> basicProjectConfigIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
-		resultListMap.put(PROJECT_RELEASE_DETAIL, projectReleaseRepo.findByConfigIdIn(basicProjectConfigIds));
+		basicProjectConfigIds.forEach(basicProjectConfigId -> releaseList.addAll(kpiDataCacheService
+				.fetchProjectReleaseData(basicProjectConfigId, KPICode.PROJECT_RELEASES.getKpiId())));
+		resultListMap.put(PROJECT_RELEASE_DETAIL, releaseList);
 		return resultListMap;
 	}
 
@@ -149,7 +153,6 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	/**
 	 * Gets the KPI value for project node.
 	 *
-	 * @param kpiElement
 	 * @param projectRelease
 	 * @param trendValueList
 	 * @param projectName

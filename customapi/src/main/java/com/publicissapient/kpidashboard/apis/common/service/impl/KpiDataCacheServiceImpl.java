@@ -25,6 +25,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,12 +40,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.common.model.application.Build;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -107,7 +108,8 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 		kpiMap.put(KPISource.JIRA.name(),
 				List.of(KPICode.ISSUE_COUNT.getKpiId(), KPICode.COMMITMENT_RELIABILITY.getKpiId(),
 						KPICode.SPRINT_CAPACITY_UTILIZATION.getKpiId(), KPICode.SCOPE_CHURN.getKpiId(),
-						KPICode.COST_OF_DELAY.getKpiId(), KPICode.SPRINT_PREDICTABILITY.getKpiId(), KPICode.SPRINT_VELOCITY.getKpiId()));
+						KPICode.COST_OF_DELAY.getKpiId(), KPICode.SPRINT_PREDICTABILITY.getKpiId(),
+						KPICode.SPRINT_VELOCITY.getKpiId(), KPICode.PROJECT_RELEASES.getKpiId()));
 		kpiMap.put(KPISource.JIRAKANBAN.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONAR.name(), new ArrayList<>());
 		kpiMap.put(KPISource.SONARKANBAN.name(), new ArrayList<>());
@@ -141,17 +143,17 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
 	public Map<String, Object> fetchSprintVelocityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
-													   String kpiId) {
-		log.info("Fetching Sprint Velocity KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
-				kpiId);
+			String kpiId) {
+		log.info("Fetching Sprint Velocity KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchSprintVelocityDataFromDb(kpiRequest, basicProjectConfigId);
 	}
+
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
 	@Override
-	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate,
+	public List<Build> fetchBuildFrequencyData(ObjectId basicProjectConfigId, String startDate, String endDate,
 			String kpiId) {
 		log.info("Fetching Build Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
-		return kpiDataProvider.fetchBuildFrequencydata(basicProjectConfigId, startDate, endDate);
+		return kpiDataProvider.fetchBuildFrequencyData(basicProjectConfigId, startDate, endDate);
 	}
 
 	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
@@ -185,6 +187,14 @@ public class KpiDataCacheServiceImpl implements KpiDataCacheService {
 	public Map<String, Object> fetchCostOfDelayData(ObjectId basicProjectConfigId, String kpiId) {
 		log.info("Fetching Cost of Delay KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(), kpiId);
 		return kpiDataProvider.fetchCostOfDelayData(basicProjectConfigId);
+	}
+
+	@Cacheable(value = Constant.CACHE_PROJECT_KPI_DATA, key = "#basicProjectConfigId.toString().concat('_').concat(#kpiId)")
+	@Override
+	public List<ProjectRelease> fetchProjectReleaseData(ObjectId basicProjectConfigId, String kpiId) {
+		log.info("Fetching Release Frequency KPI Data for Project {} and KPI {}", basicProjectConfigId.toString(),
+				kpiId);
+		return kpiDataProvider.fetchProjectReleaseData(basicProjectConfigId);
 	}
 
 }

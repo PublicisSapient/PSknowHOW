@@ -2155,6 +2155,11 @@ describe('FilterNewComponent', () => {
         describe('Happy Path', () => {
             it('should successfully save KPI configuration', () => {
                 // Arrange
+                component.dashConfigDataDeepCopyBackup = {
+                    scrum: [{ boardSlug: 'iteration', kpis: [] }],
+                        others: [],
+                        configDetails: {},
+                }
                 component.dashConfigData = {
                     scrum: [{ boardSlug: 'iteration', kpis: [] }],
                     others: [],
@@ -2188,6 +2193,11 @@ describe('FilterNewComponent', () => {
         describe('Edge Cases', () => {
             it('should handle error when saving KPI configuration fails', async () => {
                 // Arrange
+                component.dashConfigDataDeepCopyBackup = {
+                    scrum: [{ boardSlug: 'iteration', kpis: [] }],
+                        others: [],
+                        configDetails: {},
+                }
                 component.dashConfigData = {
                     scrum: [{ boardSlug: 'iteration', kpis: [] }],
                     others: [],

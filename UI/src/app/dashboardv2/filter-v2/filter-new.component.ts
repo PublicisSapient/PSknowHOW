@@ -80,6 +80,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
   buttonStyleClass = 'default';
   isSuccess: boolean = false;
+  dashConfigDataDeepCopyBackup : any
 
   constructor(
     private httpService: HttpService,
@@ -450,6 +451,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
             data = this.setLevelNames(data);
             data['configDetails'] = response.data.configDetails;
             this.dashConfigData = data;
+            this.dashConfigDataDeepCopyBackup = JSON.parse(JSON.stringify(data));
             this.service.setDashConfigData(data, false);
             this.masterData['kpiList'] = [];
             this.masterDataCopy['kpiList'] = [];
@@ -1314,7 +1316,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let obj = Object.assign({}, this.dashConfigData);
     delete obj['configDetails'];
     delete obj['enabledKPIs'];
-    this.httpService.submitShowHideOnDashboard(obj).subscribe(
+
+    let copyObj = JSON.parse(JSON.stringify(obj));
+    copyObj = this.showHideDataManipulationFORBEOnly(copyObj);
+    this.httpService.submitShowHideOnDashboard(copyObj).subscribe(
       (response) => {
         if (response.success === true) {
           this.messageService.add({
@@ -1346,7 +1351,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   findEnabledKPIs(previousDashConfig, newMasterData) {
     let result = [];
     previousDashConfig.forEach((element, index) => {
-      if (!element.isEnabled && newMasterData[index].isEnabled) {
+      if (!element.isEnabled && newMasterData[index]?.isEnabled) {
         result.push(newMasterData[index]);
       }
     });
@@ -1508,4 +1513,31 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       return numB - numA;
     });
   }
+
+
+  showHideDataManipulationFORBEOnly(obj){
+    const currentTabAllKPis = JSON.parse(JSON.stringify(this.dashConfigDataDeepCopyBackup[this.selectedType].filter(board => board.boardSlug === this.selectedTab)[0]['kpis']));
+    for (let key in obj){
+      const current = obj[key];
+      if(Array.isArray(current) ){
+        current.forEach(board => {
+          if(board.boardSlug === this.selectedTab){
+            const enabledKPIID = []
+            this.masterDataCopy['kpiList'].forEach(kpiD => enabledKPIID.push(kpiD.kpiId))
+            currentTabAllKPis.forEach(element => {
+              if(!enabledKPIID.includes(element.kpiId)){
+                board['kpis'].push(element);
+              }
+            });
+          }
+          board['kpis'].forEach(kpiDetails=>{
+            kpiDetails.shown = true;
+          })
+         });
+      }
+       
+    }
+    return obj;
+  }
+  
 }

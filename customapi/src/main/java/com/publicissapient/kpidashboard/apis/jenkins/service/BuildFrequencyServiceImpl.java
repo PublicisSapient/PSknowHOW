@@ -148,7 +148,7 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 		mapOfFilters.put("buildStatus", statusList);
 		List<Build> buildList = new ArrayList<>();
 		projectBasicConfigIds
-				.forEach(projectBasicConfigId -> buildList.addAll(kpiDataCacheService.fetchBuildFrequencydata(
+				.forEach(projectBasicConfigId -> buildList.addAll(kpiDataCacheService.fetchBuildFrequencyData(
 						projectBasicConfigId, startDate, endDate, KPICode.BUILD_FREQUENCY.getKpiId())));
 
 		if (CollectionUtils.isEmpty(buildList)) {

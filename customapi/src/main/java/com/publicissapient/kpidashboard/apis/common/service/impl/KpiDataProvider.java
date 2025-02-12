@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.bson.types.ObjectId;
@@ -83,6 +85,8 @@ public class KpiDataProvider {
 	private BuildRepository buildRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private ProjectReleaseRepo projectReleaseRepo;
 
 	/**
 	 * Fetches data from DB for the given project and sprints combination.
@@ -162,7 +166,7 @@ public class KpiDataProvider {
 	 * @param endDate
 	 * @return
 	 */
-	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate) {
+	public List<Build> fetchBuildFrequencyData(ObjectId basicProjectConfigId, String startDate, String endDate) {
 		List<String> statusList = List.of(BuildStatus.SUCCESS.name());
 		Map<String, List<String>> mapOfFilters = new HashMap<>();
 		mapOfFilters.put("buildStatus", statusList);
@@ -563,5 +567,10 @@ public class KpiDataProvider {
 		resultListMap.put(FIELD_MAPPING, closedStatusMap);
 
 		return resultListMap;
+	}
+
+	public List<ProjectRelease> fetchProjectReleaseData(ObjectId basicProjectConfigId) {
+		log.info("Fetching Release Frequency KPI Data for Project {}", basicProjectConfigId.toString());
+		return projectReleaseRepo.findByConfigIdIn(List.of(basicProjectConfigId));
 	}
 }
