@@ -192,4 +192,20 @@
         <heap unit="MB">50</heap>
     </cache>
 
+    <cache alias="createdBy">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
+    <cache alias="reportsById">
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+
+        <heap unit="MB">50</heap>
+    </cache>
+
 </config>
