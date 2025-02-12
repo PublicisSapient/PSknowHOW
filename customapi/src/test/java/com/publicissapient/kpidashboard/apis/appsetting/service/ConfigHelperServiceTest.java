@@ -131,7 +131,8 @@ public class ConfigHelperServiceTest {
 		userBoardConfig.setUsername("PSK");
 		userBoardConfigs.add(userBoardConfig);
 		Mockito.when(userBoardConfigRepository.findAll()).thenReturn(userBoardConfigs);
-		Assertions.assertEquals("PSK", configHelperService.loadUserBoardConfig().get(0).getUsername());
+		String username = configHelperService.loadUserBoardConfig().values().stream().findFirst().orElse(new UserBoardConfig()).getUsername();
+		Assertions.assertEquals("PSK", username);
 	}
 
 	@Test

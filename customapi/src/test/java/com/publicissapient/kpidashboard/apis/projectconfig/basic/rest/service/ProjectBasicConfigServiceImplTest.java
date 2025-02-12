@@ -41,7 +41,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -69,6 +68,7 @@ import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterServ
 import com.publicissapient.kpidashboard.apis.cleanup.AgileDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
@@ -83,6 +83,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.
 import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
+import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -188,6 +189,8 @@ public class ProjectBasicConfigServiceImplTest {
 	private CapacityMasterService capacityMasterService;
 	@Mock
 	private TestExecutionService testExecutionService;
+	@Mock
+	private UserBoardConfigService userBoardConfigService;
 	@Mock
 	private ProjectToolConfigServiceImpl projectToolConfigService;
 	private ProjectBasicConfig basicConfig;

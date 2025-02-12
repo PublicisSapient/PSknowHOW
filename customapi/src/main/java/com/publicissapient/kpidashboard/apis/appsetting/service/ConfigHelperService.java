@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -353,9 +354,11 @@ public class ConfigHelperService {
 	}
 
 	@Cacheable(CommonConstant.CACHE_USER_BOARD_CONFIG)
-	public List<UserBoardConfig> loadUserBoardConfig() {
+	public Map<Pair<String, String>, UserBoardConfig> loadUserBoardConfig() {
 		log.info("loading UserBoarConfig");
-		return userBoardConfigRepository.findAll();
+		return userBoardConfigRepository.findAll().stream()
+				.collect(Collectors.toMap(config -> Pair.of(config.getUsername(), config.getBasicProjectConfigId()),
+						Function.identity(), (existing, replacement) -> existing));
 	}
 
 	@Cacheable(CommonConstant.CACHE_PROJECT_TOOL_CONFIG)
