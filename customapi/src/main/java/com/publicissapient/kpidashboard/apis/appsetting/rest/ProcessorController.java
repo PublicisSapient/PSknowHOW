@@ -162,4 +162,17 @@ public class ProcessorController {
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 
+	@PostMapping(path = "/metadata/step/{projectBasicConfigId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission(#projectBasicConfigId, 'TRIGGER_PROCESSOR')")
+	public ResponseEntity<ServiceResponse> triggerMetaDataStep(@PathVariable String projectBasicConfigId) {
+		ServiceResponse response = processorService.runMetadataStep(projectBasicConfigId);
+		HttpStatus responseStatus = HttpStatus.OK;
+		if (null == response) {
+			responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+			log.warn("Did not get successful response from the service: {} ", response);
+		}
+		return ResponseEntity.status(responseStatus).body(response);
+
+	}
+
 }

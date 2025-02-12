@@ -41,7 +41,7 @@ import com.publicissapient.kpidashboard.common.model.application.AdditionalFilte
 @SuppressWarnings("java:S1192")
 public enum KPIExcelColumn {
 
-	CODE_BUILD_TIME("kpi8", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration",
+	CODE_BUILD_TIME("kpi8", Arrays.asList("Project Name", "Job Name / Pipeline Name", "Start Time", "End Time", "Duration",
 			"Build Status", "Build Url", "Weeks")), ISSUE_COUNT(
 					"kpi40",
 					Arrays.asList("Squad", "Sprint Name", "Issue ID", "Issue Description", "Issue Type", "Priority",
@@ -135,18 +135,18 @@ public enum KPIExcelColumn {
 
 	INSPRINT_AUTOMATION_COVERAGE("kpi16", Arrays.asList("Sprint Name", "Test Case ID", "Linked Story ID", "Automated")),
 
-	UNIT_TEST_COVERAGE("kpi17", Arrays.asList("Project", "Job Name", "Unit Coverage", "Weeks")),
+	UNIT_TEST_COVERAGE("kpi17", Arrays.asList("Project", "Job Name / Pipeline Name", "Unit Coverage", "Weeks")),
 
-	SONAR_VIOLATIONS("kpi38", Arrays.asList("Project", "Job Name", "Violation Type", "Violation Severity", "Weeks")),
+	SONAR_VIOLATIONS("kpi38", Arrays.asList("Project", "Job Name / Pipeline Name", "Violation Type", "Violation Severity", "Weeks")),
 
-	SONAR_TECH_DEBT("kpi27", Arrays.asList("Project", "Job Name", "Tech Debt (in days)", "Weeks")),
+	SONAR_TECH_DEBT("kpi27", Arrays.asList("Project", "Job Name / Pipeline Name", "Tech Debt (in days)", "Weeks")),
 
-	CHANGE_FAILURE_RATE("kpi116", Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
+	CHANGE_FAILURE_RATE("kpi116", Arrays.asList("Project", "Job Name / Pipeline Name", "Total Build Count", "Total Build Failure Count",
 			"Build Failure Percentage", "Weeks")), CHANGE_FAILURE_RATE_KANBAN(
 					"kpi184",
-					Arrays.asList("Project", "Job Name", "Total Build Count", "Total Build Failure Count",
+					Arrays.asList("Project", "Job Name / Pipeline Name", "Total Build Count", "Total Build Failure Count",
 							"Build Failure Percentage", "Weeks")), BUILD_FREQUENCY("kpi172",
-									Arrays.asList("Project Name", "Job Name", "Weeks", "Start Date", "Build Url")),
+									Arrays.asList("Project Name", "Job Name / Pipeline Name", "Weeks", "Start Date", "Build Url")),
 
 	TEST_EXECUTION_AND_PASS_PERCENTAGE("kpi70",
 			Arrays.asList("Sprint Name", "Total Test", "Executed Test", "Execution %", "Passed Test", "Passed %")),
@@ -161,9 +161,9 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
 	DEPLOYMENT_FREQUENCY("kpi118",
-			Arrays.asList("Project Name", "Date", "Job Name", "Pipeline Name", "Weeks",
+			Arrays.asList("Project Name", "Job Name / Pipeline Name","Date", "Weeks",
 					"Environment")), DEPLOYMENT_FREQUENCY_KANBAN("kpi183",
-							Arrays.asList("Project Name", "Date", "Job Name", "Pipeline Name", "Weeks", "Environment")),
+							Arrays.asList("Project Name", "Job Name / Pipeline Name","Date", "Weeks", "Environment")),
 
 	DEFECTS_WITHOUT_STORY_LINK("kpi80",
 			Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
@@ -175,11 +175,11 @@ public enum KPIExcelColumn {
 	PRODUCTION_DEFECTS_AGEING("kpi127",
 			Arrays.asList("Project Name", "Defect ID", "Issue Description", "Priority", "Created Date", "Status")),
 
-	UNIT_TEST_COVERAGE_KANBAN("kpi62", Arrays.asList("Project", "Job Name", "Unit Coverage", "Day/Week/Month")),
+	UNIT_TEST_COVERAGE_KANBAN("kpi62", Arrays.asList("Project", "Job Name / Pipeline Name", "Unit Coverage", "Day/Week/Month")),
 
-	SONAR_VIOLATIONS_KANBAN("kpi64", Arrays.asList("Project", "Job Name", "Sonar Violations", "Day/Week/Month")),
+	SONAR_VIOLATIONS_KANBAN("kpi64", Arrays.asList("Project", "Job Name / Pipeline Name", "Sonar Violations", "Day/Week/Month")),
 
-	SONAR_TECH_DEBT_KANBAN("kpi67", Arrays.asList("Project", "Job Name", "Tech Debt (in days)", "Day/Week/Month")),
+	SONAR_TECH_DEBT_KANBAN("kpi67", Arrays.asList("Project", "Job Name / Pipeline Name", "Tech Debt (in days)", "Day/Week/Month")),
 
 	TEST_EXECUTION_KANBAN("kpi71", Arrays.asList("Project", "Execution Date", "Total Test", "Executed Test",
 			"Execution %", "Passed Test", "Passed %")),
@@ -207,7 +207,7 @@ public enum KPIExcelColumn {
 	TICKET_VELOCITY("kpi49",
 			Arrays.asList("Project Name", "Day/Week/Month", "Ticket Issue ID", "Issue Type", "Size (In Story Points)")),
 
-	CODE_BUILD_TIME_KANBAN("kpi66", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration",
+	CODE_BUILD_TIME_KANBAN("kpi66", Arrays.asList("Project Name", "Job Name / Pipeline Name", "Start Time", "End Time", "Duration",
 			"Build Status", "Build Url")),
 
 	CODE_COMMIT_MERGE_KANBAN("kpi65", Arrays.asList("Project Name", "Repo", "Branch", "Days/Weeks", "No Of Commit")),
@@ -345,7 +345,7 @@ public enum KPIExcelColumn {
 	MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Weeks", "Story ID", "Issue Type", "Issue Description",
 			"Created Date", "Completion Date", "Time to Recover (In Hours)")),
 
-	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month")), FLOW_EFFICIENCY("kpi170",
+	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name / Pipeline Name", "Code Quality", "Month")), FLOW_EFFICIENCY("kpi170",
 			Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size (In Story Points)", "Wait Time",
 					"Total Time", "Flow Efficiency")),
 

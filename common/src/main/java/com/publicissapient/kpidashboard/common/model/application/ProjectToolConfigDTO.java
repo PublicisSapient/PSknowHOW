@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
@@ -101,7 +102,8 @@ public class ProjectToolConfigDTO {
 	private String parameterNameForEnvironment;
 
 	// template ID
-	private String metadataTemplateCode;
+	private String metadataTemplateCode; //custom template
+	private String originalTemplateCode; //setting original template code
 	// workflows ID for github Action processor
 	private String workflowID;
 

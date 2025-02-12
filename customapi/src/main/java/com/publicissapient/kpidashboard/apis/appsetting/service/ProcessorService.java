@@ -61,4 +61,14 @@ public interface ProcessorService {
 	 * 		repo tool response status
 	 */
 	void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse);
+
+	/**
+	 * run the metadata step of processor, to get the options of fieldmapping
+	 *
+	 * @param projectBasicConfigId
+	 *            id of the project
+	 * @return {@code ServiceResponse}
+	 */
+	ServiceResponse runMetadataStep(String projectBasicConfigId);
+
 }

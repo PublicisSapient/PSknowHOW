@@ -133,8 +133,7 @@ public class JobListenerScrum implements JobExecutionListener {
 		log.info("********in scrum JobExecution listener - finishing job *********");
 		// Sync the sprint hierarchy
 		projectHierarchySyncService.syncScrumSprintHierarchy(new ObjectId(projectId));
-		Map<String, List<String>> projOutlierSprintMap = outlierSprintStrategy
-				.execute(new ObjectId(projectId));
+		Map<String, List<String>> projOutlierSprintMap = outlierSprintStrategy.execute(new ObjectId(projectId));
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
@@ -142,6 +141,8 @@ public class JobListenerScrum implements JobExecutionListener {
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, projectId,
+				CommonConstant.JIRA_KPI);
 		try {
 			if (jobExecution.getStatus() == BatchStatus.FAILED) {
 				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(),
@@ -216,8 +217,7 @@ public class JobListenerScrum implements JobExecutionListener {
 							.map(entry -> new IterationData(entry.getKey(), entry.getValue()))
 							.collect(Collectors.toList()));
 					// sending mail
-					String outlierSprintIssuesTable = outlierSprintStrategy
-							.printSprintIssuesTable(outlierSprintMap);
+					String outlierSprintIssuesTable = outlierSprintStrategy.printSprintIssuesTable(outlierSprintMap);
 					try {
 						sendNotification(outlierSprintIssuesTable, JiraConstants.OUTLIER_NOTIFICATION_SUBJECT_KEY,
 								JiraConstants.OUTLIER_MAIL_TEMPLATE_KEY);

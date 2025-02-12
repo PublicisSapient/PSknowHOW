@@ -103,7 +103,8 @@ public class ProjectToolConfig extends BasicModel implements Cloneable {
 	private String parameterNameForEnvironment;
 
 	// template ID
-	private String metadataTemplateCode;
+	private String metadataTemplateCode; //custom template
+	private String originalTemplateCode; //setting original template code
 	// workflows ID for github Action processor
 	private String workflowID;
 
