@@ -119,8 +119,8 @@ public class KpiDataCacheServiceImplTest {
 
 	@Test
 	public void testfetchBuildFrequencydata() {
-		when(kpiDataProvider.fetchBuildFrequencydata(any(), any(), any())).thenReturn(new ArrayList<>());
-		List<Build> result = kpiDataCacheService.fetchBuildFrequencydata(new ObjectId(), "",
+		when(kpiDataProvider.fetchBuildFrequencyData(any(), any(), any())).thenReturn(new ArrayList<>());
+		List<Build> result = kpiDataCacheService.fetchBuildFrequencyData(new ObjectId(), "",
 				"", "kpi1");
 		assertNotNull(result);
 	}
@@ -167,4 +167,9 @@ public class KpiDataCacheServiceImplTest {
 		assertNotNull(kpiDataCacheService.fetchCostOfDelayData(new ObjectId(), KPICode.COST_OF_DELAY.getKpiId()));
 	}
 
+	@Test
+	public void testFetchProjectReleaseData() {
+		when(kpiDataProvider.fetchProjectReleaseData(any())).thenReturn(new ArrayList<>());
+		assertNotNull(kpiDataCacheService.fetchProjectReleaseData(new ObjectId(), KPICode.PROJECT_RELEASES.getKpiId()));
+	}
 }
