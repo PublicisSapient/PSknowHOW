@@ -42,12 +42,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -62,6 +60,10 @@ import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryMappingData
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.Board;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.BoardKpis;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.ConfigLevel;
@@ -213,7 +215,8 @@ public class UserBoardConfigServiceImplTest {
 		when(userBoardConfigMapper.toDto(any())).thenReturn(userBoardConfigDTO);
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
 
-		assertNotNull(userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER, projId).getData());
+		assertNotNull(
+				userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO, ConfigLevel.USER, projId).getData());
 	}
 
 	@Test
@@ -281,6 +284,7 @@ public class UserBoardConfigServiceImplTest {
 				listOfReqProjects);
 		assertNotNull(userBoardConfigDTO);
 	}
+
 	@Test
 	public void testGetBoardConfig_user() {
 		String username = "testuser";
@@ -295,7 +299,7 @@ public class UserBoardConfigServiceImplTest {
 		assertNotNull(userBoardConfigDTO);
 	}
 
-		@Test
+	@Test
 	public void testGetUserBoardConfig_NoOrPrepareBoardConfigFound_success() {
 		String username = "testuser";
 		doReturn(username).when(authenticationService).getLoggedInUser();
@@ -334,7 +338,6 @@ public class UserBoardConfigServiceImplTest {
 		when(userBoardConfigRepository.save(data)).thenReturn(data);
 		when(userBoardConfigMapper.toEntity(userBoardConfigDTO1)).thenReturn(data);
 		when(userBoardConfigMapper.toDto(any())).thenReturn(userBoardConfigDTO1);
-
 
 		ServiceResponse response = userBoardConfigServiceImpl.saveBoardConfig(userBoardConfigDTO1, ConfigLevel.USER,
 				projId);
@@ -447,53 +450,43 @@ public class UserBoardConfigServiceImplTest {
 	}
 
 	private List<UserInfo> createDummyAdminUsers() {
-		//Arrays.asList("proj1","proj2")
+		// Arrays.asList("proj1","proj2")
 		List<UserInfo> users = Arrays.asList(
-				createUserInfo("poorao", Arrays.asList(
-						createProjectAccess("ROLE_PROJECT_ADMIN", Arrays.asList(
-								createAccessNode("project", Arrays.asList(
-										createAccessItem("proj1", "proj1"),
-										createAccessItem("proj2", "proj2")
-								))
-						))
-				)),
-				createUserInfo("andtejas", Arrays.asList(
-						createProjectAccess("ROLE_PROJECT_ADMIN", Arrays.asList(
-								createAccessNode("project", Arrays.asList(
-										createAccessItem("proj2", "proj2")
-								))
-						))
-				)),
-				createUserInfo("palaggar2", Arrays.asList(
-						createProjectAccess("ROLE_SUPERADMIN", Arrays.asList(
-								createAccessNode("project", Arrays.asList(
-										createAccessItem("proj2","proj2" )
-								))
-						))
-				))
-		);
+				createUserInfo("poorao",
+						Arrays.asList(createProjectAccess("ROLE_PROJECT_ADMIN",
+								Arrays.asList(createAccessNode("project",
+										Arrays.asList(createAccessItem("proj1", "proj1"),
+												createAccessItem("proj2", "proj2"))))))),
+				createUserInfo("andtejas",
+						Arrays.asList(createProjectAccess("ROLE_PROJECT_ADMIN",
+								Arrays.asList(createAccessNode("project",
+										Arrays.asList(createAccessItem("proj2", "proj2"))))))),
+				createUserInfo("palaggar2", Arrays.asList(createProjectAccess("ROLE_SUPERADMIN", Arrays
+						.asList(createAccessNode("project", Arrays.asList(createAccessItem("proj2", "proj2"))))))));
 		return users;
 	}
 
-	private UserInfo createUserInfo(String name, List<ProjectsAccess> projectsAccess){
-		UserInfo info= new UserInfo();
+	private UserInfo createUserInfo(String name, List<ProjectsAccess> projectsAccess) {
+		UserInfo info = new UserInfo();
 		info.setUsername(name);
 		info.setProjectsAccess(projectsAccess);
 		return info;
 	}
-	private ProjectsAccess createProjectAccess(String name, List<AccessNode> list){
-		ProjectsAccess node= new ProjectsAccess();
+
+	private ProjectsAccess createProjectAccess(String name, List<AccessNode> list) {
+		ProjectsAccess node = new ProjectsAccess();
 		node.setRole(name);
 		node.setAccessNodes(list);
 		return node;
 	}
 
-	private AccessNode createAccessNode(String name, List<AccessItem> list){
-		AccessNode node= new AccessNode();
+	private AccessNode createAccessNode(String name, List<AccessItem> list) {
+		AccessNode node = new AccessNode();
 		node.setAccessLevel(name);
 		node.setAccessItems(list);
 		return node;
 	}
+
 	private AccessItem createAccessItem(String id, String name) {
 		AccessItem accessItem = new AccessItem();
 		accessItem.setItemId(id);
