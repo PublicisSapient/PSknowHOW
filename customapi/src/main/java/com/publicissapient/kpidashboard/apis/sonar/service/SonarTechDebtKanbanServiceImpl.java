@@ -251,19 +251,18 @@ public class SonarTechDebtKanbanServiceImpl
 	 * 
 	 * @param history
 	 * @param date
-	 * @param projectNodeId
+	 * @param projectName
 	 * @param projectList
 	 * @param debtList
 	 * @param projectWiseDataMap
 	 * @param versionDate
 	 * @return
 	 */
-	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
 		Map<String, Object> key = new HashMap<>();
 		List<Long> dateWiseDebtList = new ArrayList<>();
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		history.forEach((keyName, sonarDetails) -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)

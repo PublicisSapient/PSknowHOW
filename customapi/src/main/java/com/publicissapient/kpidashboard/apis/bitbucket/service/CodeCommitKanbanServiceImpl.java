@@ -166,7 +166,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 				log.error("[CODE_COMMIT_KANBAN]. No Jobs found for this project {}", node.getProjectFilter());
 				return;
 			}
-			String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+			String projectName = node.getName();
 			Map<String, Long> filterValueMap = filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(reposList,
 					dateRange, commitListItemId, projectName, repoToolValidationDataList);
 

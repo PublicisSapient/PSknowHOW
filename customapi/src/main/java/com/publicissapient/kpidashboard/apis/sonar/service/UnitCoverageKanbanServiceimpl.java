@@ -230,11 +230,10 @@ public class UnitCoverageKanbanServiceimpl
 	}
 
 	private Map<String, Object> prepareCoverageList(Map<String, SonarHistory> history, String date,
-			String projectNodeId, List<String> projectList, List<String> debtList,
+			String projectName, List<String> projectList, List<String> debtList,
 			Map<String, List<DataCount>> projectWiseDataMap, List<String> versionDate) {
 		Map<String, Object> key = new HashMap<>();
 		List<Double> dateWiseCoverageList = new ArrayList<>();
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		history.forEach((keyName, sonarDetails) -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
