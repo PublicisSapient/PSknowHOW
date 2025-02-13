@@ -23,7 +23,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<description>Jira Test Processor Microservice</description>
 	<packaging>jar</packaging>
-	<version>12.1.0-SNAPSHOT</version>
+	<version>12.2.0</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -422,6 +422,6 @@
 	</build>
 
 	<scm>
-		<tag>4.6.1</tag>
+		<tag>12.2.0</tag>
 	</scm>
 </project>
