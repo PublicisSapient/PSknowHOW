@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -76,8 +77,6 @@ public class CostOfDelayServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
-	JiraIssueRepository jiraIssueRepository;
-	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
@@ -94,13 +93,18 @@ public class CostOfDelayServiceImplTest {
 	@Mock
 	FilterHelperService filterHelperService;
 	@Mock
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	private KpiDataCacheService kpiDataCacheService;
+
 	private Map<String, Object> filterLevelMap;
 	private List<JiraIssue> codList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> codHistoryList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+
+	private static final String COD_DATA = "costOfDelayData";
+	private static final String COD_DATA_HISTORY = "costOfDelayDataHistory";
+	private static final String FIELD_MAPPING = "fieldMapping";
 
 	@Before
 	public void setup() {
@@ -141,7 +145,6 @@ public class CostOfDelayServiceImplTest {
 
 	@After
 	public void cleanup() {
-		jiraIssueRepository.deleteAll();
 
 	}
 
@@ -154,6 +157,12 @@ public class CostOfDelayServiceImplTest {
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(COD_DATA, codList);
+		resultListMap.put(COD_DATA_HISTORY, codHistoryList);
+		resultListMap.put(FIELD_MAPPING, new HashMap<>());
+		when(kpiDataCacheService.fetchCostOfDelayData(Mockito.any(), Mockito.any())).thenReturn(resultListMap);
+
 		Map<String, Object> dataList = costOfDelayServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Total Release : ", dataList.size(), equalTo(3));
@@ -164,14 +173,19 @@ public class CostOfDelayServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(Mockito.any(), Mockito.any())).thenReturn(codList);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
 		when(costOfDelayServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
-				.thenReturn(codHistoryList);
+
+		Map<String, List<String>> closedStatusMap = new HashMap<>();
+		closedStatusMap.put("6335363749794a18e8a4479b", List.of("closed"));
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(COD_DATA, codList);
+		resultListMap.put(COD_DATA_HISTORY, codHistoryList);
+		resultListMap.put(FIELD_MAPPING, closedStatusMap);
+		when(kpiDataCacheService.fetchCostOfDelayData(Mockito.any(), Mockito.any())).thenReturn(resultListMap);
 
 		try {
 			KpiElement kpiElement = costOfDelayServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -193,6 +207,15 @@ public class CostOfDelayServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(costOfDelayServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+
+		Map<String, List<String>> closedStatusMap = new HashMap<>();
+		closedStatusMap.put("6335363749794a18e8a4479b", List.of("closed"));
+		Map<String, Object> resultListMap = new HashMap<>();
+		resultListMap.put(COD_DATA, codList);
+		resultListMap.put(COD_DATA_HISTORY, codHistoryList);
+		resultListMap.put(FIELD_MAPPING, closedStatusMap);
+		when(kpiDataCacheService.fetchCostOfDelayData(Mockito.any(), Mockito.any())).thenReturn(resultListMap);
+
 		try {
 			KpiElement kpiElement = costOfDelayServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

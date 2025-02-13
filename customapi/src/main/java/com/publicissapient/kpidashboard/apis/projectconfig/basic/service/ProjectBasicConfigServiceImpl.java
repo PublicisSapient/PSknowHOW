@@ -62,6 +62,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.ser
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
+import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -160,6 +161,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private ProjectToolConfigServiceImpl projectToolConfigService;
+
+	@Autowired
+	private UserBoardConfigService userBoardConfigService;
 
 	/**
 	 * method to save basic configuration
@@ -504,6 +508,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			deleteAssigneeDetails(projectBasicConfig);
 			deleteHappinessKpiDetails(projectBasicConfig);
 			addToTraceLog(projectBasicConfig);
+			deleteProjectBoardConfig(projectBasicConfig);
 			cleanAllCache();
 
 		}
@@ -593,6 +598,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	private void addToTraceLog(ProjectBasicConfig projectBasicConfig) {
 		deleteProjectTraceLogService.save(projectBasicConfig);
 		log.info("traceLog saved for project {}", projectBasicConfig.getProjectName());
+	}
+
+	private void deleteProjectBoardConfig(ProjectBasicConfig projectBasicConfig) {
+		log.info("Deleting project board config for project: {}", projectBasicConfig.getProjectName());
+		userBoardConfigService.deleteProjectBoardConfig(projectBasicConfig.getId().toString());
 	}
 
 	private void cleanAllCache() {

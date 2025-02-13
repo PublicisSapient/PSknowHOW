@@ -17,31 +17,40 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.userboardconfig;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
 /**
- * Represents boards config - user/ project admin can customize KPIs config on each board
- * if basicProjectConfigId is there then it is proj level config set by admin/superAdmin
- * else if basicProjectConfigId is null then it is user level config details
+ * Stores board configuration details of user/project
+ * 
  * @author yasbano
- *
  */
-
 @Data
 @Document(collection = "user_board_config")
 public class UserBoardConfig {
 	@Id
 	private ObjectId id;
 	private String username;
-	private String basicProjectConfigId;// will be used to save proj level configs
+	private String basicProjectConfigId;// for proj level configs
 	private List<Board> scrum;
 	private List<Board> kanban;
 	private List<Board> others;
-
+	@CreatedBy
+	private String createdBy;
+	@LastModifiedBy
+	private String updatedBy;
+	@CreatedDate
+	private LocalDateTime createdAt;
+	@LastModifiedDate
+	private LocalDateTime updatedAt;
 }
