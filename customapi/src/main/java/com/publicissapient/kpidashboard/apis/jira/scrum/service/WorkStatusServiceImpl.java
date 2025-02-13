@@ -239,6 +239,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			data.setValue(Double.valueOf(issue.getOriginalEstimateMinutes()));
 		}
 		data.setCategoryWiseDelay(new HashMap<>());
+		data.setMarker(Constant.BLANK);
 	}
 
 	/**
@@ -759,7 +760,6 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 	private void setKpiSpecificData(IssueKpiModalValue jiraIssueModalObject,
 			Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue, Map<String, Object> jiraIssueData,
 			Map<String, Object> actualCompletionData, boolean isPlanned) {
-		String markerValue = Constant.BLANK;
 		jiraIssueModalObject.setDevCompletionDate(DateUtil.dateTimeConverter(
 				(String) jiraIssueData.get(DEV_COMPLETION_DATE), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null)
@@ -774,20 +774,26 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		} else
 			jiraIssueModalObject.setActualStartDate(Constant.BLANK);
-		if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
-			jiraIssueModalObject.setDelayInDays(jiraIssueData.get(ISSUE_DELAY) + "d");
-		} else {
-			jiraIssueModalObject.setDelayInDays(Constant.BLANK);
-		}
+
 		if (isPlanned) {
 			if (DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					.isAfter(LocalDate.now().minusDays(1))) {
-				markerValue = Constant.GREEN;
+				jiraIssueModalObject.setMarker(Constant.GREEN);
+			}
+			if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+				jiraIssueModalObject.setDelayInDays(jiraIssueData.get(ISSUE_DELAY) + "d");
+			} else {
+				jiraIssueModalObject.setDelayInDays(Constant.BLANK);
 			}
 		} else {
 			if (DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 					.isAfter(LocalDate.now().minusDays(1))) {
-				markerValue = Constant.GREEN;
+				jiraIssueModalObject.setMarker(Constant.GREEN);
+			}
+			if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+				jiraIssueModalObject.setDevDelayInDays(jiraIssueData.get(ISSUE_DELAY) + "d");
+			} else {
+				jiraIssueModalObject.setDevDelayInDays(Constant.BLANK);
 			}
 		}
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
@@ -800,7 +806,7 @@ public class WorkStatusServiceImpl extends JiraIterationKPIService {
 			jiraIssueModalObject.setPotentialDelay(Constant.BLANK);
 			jiraIssueModalObject.setPredictedCompletionDate(Constant.BLANK);
 		}
-		jiraIssueModalObject.setMarker(markerValue);
+
 	}
 
 }

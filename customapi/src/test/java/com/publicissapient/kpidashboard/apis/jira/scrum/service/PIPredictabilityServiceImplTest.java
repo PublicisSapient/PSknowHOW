@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -82,32 +83,20 @@ public class PIPredictabilityServiceImplTest {
 	private CacheService cacheService;
 
 	@Mock
-	private KPIHelperUtil kpiHelperUtil;
+	private KpiDataCacheService kpiDataCacheService;
 
-	@Mock
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Mock
-	private FieldMappingRepository fieldMappingRepository;
 	@Mock
 	private CustomApiConfig customApiSetting;
 
 	@Mock
-	private JiraServiceR jiraKPIService;
+	private FilterHelperService filterHelperService;
 
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-
 	private KpiRequest kpiRequest;
 	private Map<String, Object> filterLevelMap;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	private List<DataCount> dataCountList = new ArrayList<>();
-	@Mock
-	private FilterHelperService filterHelperService;
-
 	private List<ReleaseWisePI> releaseWisePIList = new ArrayList<>();
-
 	List<JiraIssue> piWiseEpicList = new ArrayList<>();
 
 	@Before
@@ -147,8 +136,6 @@ public class PIPredictabilityServiceImplTest {
 	@After
 	public void cleanup() {
 		piWiseEpicList = null;
-		jiraIssueRepository.deleteAll();
-
 	}
 
 	@Test
@@ -163,9 +150,8 @@ public class PIPredictabilityServiceImplTest {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		List<JiraIssue> piWiseEpicList = jiraIssueDataFactory.getJiraIssues();
 
-		when(jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(Mockito.any())).thenReturn(releaseWisePIList);
-		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(kpiDataCacheService.fetchPiPredictabilityData(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
+
 		Map<String, Object> defectDataListMap = piPredictabilityService.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertNotNull(defectDataListMap);
@@ -222,10 +208,8 @@ public class PIPredictabilityServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(piPredictabilityService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		List<ReleaseWisePI> releaseWisePIList = new ArrayList<>();
 		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
-		when(jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(Mockito.any())).thenReturn(releaseWisePIList);
-		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
+		when(kpiDataCacheService.fetchPiPredictabilityData(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
 		try {
 			KpiElement kpiElement = piPredictabilityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
