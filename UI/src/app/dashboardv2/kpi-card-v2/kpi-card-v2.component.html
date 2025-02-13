@@ -58,32 +58,34 @@
 <ng-template #cardWithOutRawJsonTemplate>
   <div class="kpi-card-container">
     <div class="kpi-card-header p-pr-5 p-pl-5 p-jc-between">
-      <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
+      <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader role="region" aria-label="KPI Card Header">
         <div class="kpi-card-title-container">
-          <h3 *ngIf="kpiData">{{kpiData?.kpiName}}</h3>
-          <span *ngIf="kpiData?.kpiDetail?.kpiInfo" aria-hidden="true" class="info-icon" (mouseover)="showTooltip(true)"
-            (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}">
-            <img alt="info" class="" src="../../../assets/img/Info.svg" />
+          <h3 *ngIf="kpiData" tabindex="0" [attr.aria-label]="kpiData?.kpiName + ' KPI Details'">{{kpiData?.kpiName}}</h3>
+          <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="info-icon" (mouseover)="showTooltip(true)"
+            (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}"
+            role="button" tabindex="0" aria-label="Show KPI Information" (keydown.enter)="showTooltip(true)">
+            <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true" />
             <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
               (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
               [kpiName]="kpiData?.kpiName"></app-tooltip-v2>
           </span>
         </div>
         <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'"
-          (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}">
-          <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
+          (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}"
+          role="alert" tabindex="0" aria-label="Show KPI Warning Information" (keydown.enter)="showWarning(true)">
+          <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning" aria-hidden="true"
             src="../../../assets/img/Warning.svg" />
           <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
             [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true"></app-tooltip-v2>
         </span>
       </div>
-      <div class="kpi-menu-container" (click)="toggleMenu($event)">
-        <i class="pi pi-ellipsis-v" style="font-size: 20px"></i>
+      <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Open KPI Menu" (keydown.enter)="toggleMenu($event)">
+        <i class="pi pi-ellipsis-v" style="font-size: 20px" aria-hidden="true"></i>
       </div>
-      <p-menu #kpimenu id="menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems">
+      <p-menu #kpimenu id="menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems" aria-label="KPI Actions Menu">
         <ng-template pTemplate="item" let-item>
-          <div>
-            <i [class]="item.icon"></i>
+          <div role="menuitem" tabindex="0" [attr.aria-label]="item.label">
+            <i [class]="item.icon" aria-hidden="true"></i>
             <span> {{ item.label }}</span>
           </div>
         </ng-template>
@@ -164,18 +166,19 @@
       *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
     <ng-template #noData>
       <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport">
-        <div class="p-w-100  p-d-flex p-justify-center">
-          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport"
+        role="region" aria-label="KPI Data Status">
+        <div class="p-w-100  p-d-flex p-justify-center" role="img" aria-label="No Data Found">
+          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" aria-hidden="true"/>
         </div>
-        <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
-          <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run
+        <div class="p-w-100" [ngSwitch]="kpiDataStatusCode" role="region" aria-label="KPI Data Details">
+          <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0" role="alert">KPI Analysis failed. Contact your administrator.</h4>
+          <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0" role="alert">Please check the required tool configuration and run
             processor.</h4>
-          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
+          <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0" role="alert">Mandatory Field Mapping not configured. Contact your
             administrator.</h4>
-          <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
-          <div *ngSwitchCase="'500'" class="p-text-center">
+          <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0" role="alert">No Data Available.</h4>
+          <div *ngSwitchCase="'500'" tabindex="0" role="alert" class="p-text-center">
             <span>
               <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
               <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded  p-mt-3"
@@ -185,29 +188,31 @@
         </div>
       </div>
       <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected">
-        <div class="p-w-100  p-d-flex p-justify-center">
-          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" />
+        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected"
+        role="region" aria-label="KPI Data Status">
+        <div class="p-w-100  p-d-flex p-justify-center" role="img" aria-label="No Data Found">
+          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" aria-hidden="true"/>
         </div>
         <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
-          <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'202'" class="p-text-center">Please check the required tool configuration and run
+          <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0" role="alert">KPI Analysis failed. Contact your administrator.</h4>
+          <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0" role="alert">Please check the required tool configuration and run
             processor.</h4>
-          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
+          <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0" role="alert">Mandatory Field Mapping not configured. Contact your
             administrator.</h4>
-          <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
+          <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0" role="alert">No Data Available.</h4>
           <div *ngSwitchCase="'500'" class="p-text-center">
             <span>
-              <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
+              <h4 class="p-text-center p-m-0" tabindex="0" role="alert">An error has occurred. Please retry or contact administrator.</h4>
               <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-mt-3"
-              (click)="reloadKPI()"></button>
+              (click)="reloadKPI()" tabindex="0" role="button" (keydown.enter)="reloadKPI()"></button>
             </span>
 
             </div>
           </div>
         </div>
-        <div class="min-ht" *ngIf="!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected">
-          <div class="err squad-err-msg">KPI cannot be measured for a Squad</div>
+        <div class="min-ht" *ngIf="!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected"
+        role="region" aria-label="KPI Data Status">
+          <div class="err squad-err-msg" tabindex="0" role="alert">KPI cannot be measured for a Squad</div>
         </div>
       </ng-template>
       <div class="overlay loader" *ngIf="loader || immediateLoader">
@@ -224,16 +229,15 @@
 </ng-template>
 
 <p-dialog [(visible)]="displaySprintDetailsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
-  styleClass="sprint-details-overlay">
-  <div class="p-mb-3 overlay-heading">
+  styleClass="sprint-details-overlay" role="dialog" aria-labelledby="sprint-details-title" aria-describedby="sprint-details-description">
+  <div class="p-mb-3 overlay-heading" id="sprint-details-title" tabindex="0">
     {{kpiData?.kpiName}}
   </div>
-  <div class="dialog-body p-mb-4">
-    <p-tabView [(activeIndex)]="selectedTabIndex">
-
+  <div class="dialog-body p-mb-4" role="region" aria-label="Sprint Details">
+    <p-tabView [(activeIndex)]="selectedTabIndex" role="tablist" aria-label="Project Tabs">
       <ng-container *ngFor="let project of projectList;  let i = index;">
         <p-tabPanel header="{{project.length > 15 ? project.substring(0,15)+'..' : project}}"
-          [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
+          [headerStyleClass]="getColorCssClasses(selectedTabIndex)" role="tabpanel" [attr.aria-label]="'Project' + project">
           <p-table
             *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage"
             [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']"
