@@ -800,11 +800,10 @@ export class HelperService {
         this.sharedService.setSelectedProject(null);
         this.httpService.setCurrentUserDetails({});
         this.sharedService.setUserDetailsAsBlankObj();
-        this.sharedService.setVisibleSideBar(false);
         this.sharedService.setAddtionalFilterBackup({});
         this.sharedService.setKpiSubFilterObj({});
         this.sharedService.setBackupOfFilterSelectionState(null); // -> SENDING NULL SO THAT SELECTED FILTERS ARE RESET ON LOGOUT
-        localStorage.clear();
+        // localStorage.clear();
         this.router.navigate(['./authentication/login']).then(() => {
           // window.location.reload();
         });
@@ -1040,7 +1039,7 @@ export class HelperService {
 
     let stateFilterObj = [];
 
-    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && stateFiltersObjLocal['parent_level'] && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
       stateFilterObj = [stateFiltersObjLocal['parent_level']];
     } else {
       stateFilterObj = stateFiltersObjLocal['primary_level'];

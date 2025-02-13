@@ -202,4 +202,77 @@ export class LoginComponent implements OnInit {
       }
     }
   }
+
+  ngOnDestroy() {
+    this.route.queryParams
+      .subscribe(params => {
+        if (!this.refreshCounter) {
+          let stateFiltersParam = params['stateFilters'];
+          let kpiFiltersParam = params['kpiFilters'];
+
+          if (stateFiltersParam?.length) {
+            let selectedTab = decodeURIComponent(this.location.path());
+            selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+            this.selectedTab = selectedTab.split('?statefilters=')[0];
+            this.sharedService.setSelectedBoard(this.selectedTab);
+
+            if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
+              this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
+                .pipe(
+                  catchError((error) => {
+                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                    setTimeout(() => {
+                      this.sharedService.raiseError({
+                        status: 900,
+                        message: error.message || 'Invalid URL.'
+                      });
+                    });
+
+                    return throwError(error);  // Re-throw the error so it can be caught by a global error handler if needed
+                  })
+                )
+                .subscribe((response: any) => {
+                  if (response.success) {
+                    const longKPIFiltersString = response.data['longKPIFiltersString'];
+                    const longStateFiltersString = response.data['longStateFiltersString'];
+                    stateFiltersParam = atob(longStateFiltersString);
+                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
+
+                    // const kpiFiltersParam = params['kpiFilters'];
+                    if (longKPIFiltersString) {
+                      const kpiFilterParamDecoded = atob(longKPIFiltersString);
+
+                      const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.sharedService.getKpiSubFilterObj();
+                      this.sharedService.setKpiSubFilterObj(kpiFilterValFromUrl);
+                    }
+
+                    this.sharedService.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+                    this.refreshCounter++;
+                  }
+                });
+            } else {
+              try {
+                stateFiltersParam = atob(stateFiltersParam);
+                if (kpiFiltersParam) {
+                  const kpiFilterParamDecoded = atob(kpiFiltersParam);
+                  const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.sharedService.getKpiSubFilterObj();
+                  this.sharedService.setKpiSubFilterObj(kpiFilterValFromUrl);
+                }
+                this.sharedService.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+                this.refreshCounter++;
+              } catch (error) {
+                this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                setTimeout(() => {
+                  this.sharedService.raiseError({
+                    status: 900,
+                    message: 'Invalid URL.'
+                  });
+                }, 100);
+              }
+            }
+          }
+        }
+      });
+  }
 }
