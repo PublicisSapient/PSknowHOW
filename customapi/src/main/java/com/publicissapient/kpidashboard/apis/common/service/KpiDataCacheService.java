@@ -21,10 +21,13 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -196,4 +199,15 @@ public interface KpiDataCacheService {
 	 * @return list of project releases.
 	 */
 	List<ProjectRelease> fetchProjectReleaseData(ObjectId basicProjectConfigId, String kpiId);
+
+	/**
+	 * Fetches PI Predictability KPI data from the database and caches the * result.
+	 *
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param kpiId
+	 *            The KPI ID.
+	 * @return list of Jira Issues.
+	 */
+	List<JiraIssue> fetchPiPredictabilityData(ObjectId basicProjectConfigId, String kpiId);
 }
