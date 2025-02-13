@@ -23,7 +23,7 @@
   <description>GitLab processor service</description>
   <packaging>jar</packaging>
   <artifactId>gitlab-processor</artifactId>
-  <version>12.1.0-SNAPSHOT</version>
+  <version>12.2.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>

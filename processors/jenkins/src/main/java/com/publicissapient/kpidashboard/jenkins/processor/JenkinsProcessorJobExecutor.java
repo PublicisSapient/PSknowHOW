@@ -201,8 +201,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 				}
 			}
 			if (count1 > 0) {
-				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, CommonConstant.JENKINS,
-						proBasicConfig.getId().toString());
+				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, proBasicConfig.getId().toString(),
+						CommonConstant.JENKINS);
 			}
 		}
 

@@ -20,6 +20,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
@@ -351,5 +352,29 @@ public class KpiDataProviderTest {
 		when(projectReleaseRepo.findByConfigIdIn(any())).thenReturn(releaseList);
 		List<ProjectRelease> list = kpiDataProvider.fetchProjectReleaseData(new ObjectId("6335363749794a18e8a4479b"));
 		assertThat("Total Release : ", list.size(), equalTo(1));
+	}
+
+	@Test
+	public void testFetchPiPredictabilityData() {
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> piWiseEpicList = jiraIssueDataFactory.getJiraIssues();
+
+		List<ReleaseWisePI> releaseWisePIList = new ArrayList<>();
+		ReleaseWisePI release1 = new ReleaseWisePI();
+		release1.setBasicProjectConfigId("6335363749794a18e8a4479b");
+		release1.setReleaseName(new ArrayList<>(Collections.singleton("KnowHOW v7.0.0")));
+		release1.setUniqueTypeName("Story");
+		releaseWisePIList.add(release1);
+
+		ReleaseWisePI release2 = new ReleaseWisePI();
+		release2.setBasicProjectConfigId("6335363749794a18e8a4479b");
+		release2.setReleaseName(new ArrayList<>(Collections.singleton("KnowHOW PI-11")));
+		release2.setUniqueTypeName("Epic");
+		releaseWisePIList.add(release2);
+
+		when(jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(Mockito.any())).thenReturn(releaseWisePIList);
+		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
+		List<JiraIssue> list = kpiDataProvider.fetchPiPredictabilityData(new ObjectId("6335363749794a18e8a4479b"));
+		assertThat("Total Release : ", list.size(), equalTo(48));
 	}
 }

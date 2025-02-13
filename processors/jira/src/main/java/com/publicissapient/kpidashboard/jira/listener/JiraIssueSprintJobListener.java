@@ -17,7 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
-import com.publicissapient.kpidashboard.jira.service.JiraClientService;
+import java.io.IOException;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -30,10 +31,9 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.service.JiraClientService;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.IOException;
 
 @Component
 @Slf4j
