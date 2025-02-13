@@ -595,7 +595,7 @@
     "basicProjectConfigId": null,
     "kpiId": "kpi136",
     "kpiColumnDetails": [{
-      "columnName": "Defect ID",
+      "columnName": "Issue Id",
       "order": 0,
       "isShown": true,
       "isDefault": false
@@ -620,7 +620,7 @@
       "isShown": true,
       "isDefault": true
     }, {
-      "columnName": "Root Cause",
+      "columnName": "Root Cause List",
       "order": 5,
       "isShown": true,
       "isDefault": false
@@ -632,6 +632,11 @@
     }, {
       "columnName": "Assignee",
       "order": 7,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Created during Iteration",
+      "order": 8,
       "isShown": true,
       "isDefault": false
     }]
@@ -719,10 +724,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Unit Coverage",
       "order": 2,
@@ -745,10 +750,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName" : "Violation Type",
       "order" : 2,
@@ -776,10 +781,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Tech Debt (in days)",
       "order": 2,
@@ -956,46 +961,32 @@
       "isShown": true,
       "isDefault": true
     }, {
-      "columnName": "Issue Status",
+      "columnName": "Size(story point/hours)",
       "order": 3,
       "isShown": true,
       "isDefault": true
     }, {
-      "columnName": "Size(story point/hours)",
+      "columnName": "Priority",
       "order": 4,
-      "isShown": true,
-      "isDefault": true
-    }, {
-      "columnName": "Planned Completion Date (Due Date)",
-      "order": 5,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Actual Completion Date",
-      "order": 6,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Remaining Estimate",
-      "order": 7,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Potential Delay(in days)",
-      "order": 8,
-      "isShown": true,
-      "isDefault": false
-    }, {
-      "columnName": "Predicted Completion Date",
-      "order": 9,
       "isShown": true,
       "isDefault": false
     }, {
       "columnName": "Assignee",
-      "order": 10,
+      "order": 5,
       "isShown": true,
       "isDefault": false
-    }]
+    }, {
+      "columnName": "Issue Status",
+      "order": 6,
+      "isShown": true,
+      "isDefault": true
+    }, {
+      "columnName": "Due Date",
+      "order": 6,
+      "isShown": true,
+      "isDefault": true
+    }
+    ]
   },
 
   {
@@ -1167,10 +1158,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Unit Coverage",
       "order": 2,
@@ -1193,10 +1184,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName" : "Violation Type",
       "order" : 2,
@@ -1225,10 +1216,10 @@
       "isShown": true,
       "isDefault": false
     }, {
-      "columnName": "Job Name",
+      "columnName": "Job Name / Pipeline Name",
       "order": 1,
       "isShown": true,
-      "isDefault": false
+      "isDefault": true
     }, {
       "columnName": "Tech Debt (in days)",
       "order": 2,
@@ -1764,6 +1755,11 @@
       "order": 4,
       "isShown": true,
       "isDefault": false
+    }, {
+      "columnName": "Category",
+      "order": 5,
+      "isShown": true,
+      "isDefault": false
     }]
   },
 
@@ -2233,6 +2229,11 @@
     }, {
       "columnName": "Assignee",
       "order": 14,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Category",
+      "order": 15,
       "isShown": true,
       "isDefault": false
     }]
@@ -3189,6 +3190,11 @@
     }, {
       "columnName": "Assignee",
       "order": 6,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Category",
+      "order": 7,
       "isShown": true,
       "isDefault": false
     }]

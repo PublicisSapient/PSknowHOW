@@ -311,8 +311,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 			}
 		}
 		if (count > 0 || !activeDeployJobs.isEmpty()) {
-			cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, CommonConstant.JENKINS,
-					proBasicConfig.getId().toString());
+			cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, proBasicConfig.getId().toString(),
+					CommonConstant.JENKINS);
 		}
 	}
 

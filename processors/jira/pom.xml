@@ -15,7 +15,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<artifactId>jira-processor</artifactId>
 	<description>Jira processor fetches data from JIRA api</description>
-	<version>12.1.0-SNAPSHOT</version>
+	<version>12.2.0-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
