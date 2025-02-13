@@ -1055,7 +1055,7 @@ export class HelperService {
     const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
     const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
 
-    localStorage.removeItem('shared_link');
+    // localStorage.removeItem('shared_link');
     if (hasAccessToAll) {
       this.router.navigate([url]);
     } else {
