@@ -166,7 +166,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 		FieldMapping mapping = fieldMappingRepository.save(fieldMapping);
 		clearCache();
-		kpiDataCacheService.clearCacheForProject(basicProjectConfigId.toString());
 		return mapping;
 	}
 
@@ -381,6 +380,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		cacheService.clearCache(CommonConstant.SONAR_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
+		cacheService.clearCache(Constant.CACHE_PROJECT_KPI_DATA);
 	}
 
 	/**

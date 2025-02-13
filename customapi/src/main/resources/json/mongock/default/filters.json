@@ -174,7 +174,7 @@
     ]
   },
   {
-    "boardId": 15,
+    "boardId": 8,
     "projectTypeSwitch": {
       "enabled": false,
       "visible": true
@@ -209,7 +209,7 @@
     }
   },
   {
-    "boardId": 16,
+    "boardId": 9,
     "projectTypeSwitch": {
       "enabled": false,
       "visible": true
@@ -224,7 +224,7 @@
     "parentFilter": null
   },
   {
-    "boardId": 17,
+    "boardId": 19,
     "projectTypeSwitch": {
       "enabled": true,
       "visible": true
