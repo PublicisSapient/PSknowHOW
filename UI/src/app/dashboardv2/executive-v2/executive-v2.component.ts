@@ -23,7 +23,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Router } from '@angular/router';
-import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
+import { distinctUntilChanged, isEmpty, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
 
@@ -2327,7 +2327,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   generateColorObj(kpiId, arr) {
     // If the arr is empty, return an empty array
-    if (!arr?.length) return [];
+    if (this.isObjectArrayEmpty(arr)) return [];
 
     const finalArr = [];
     this.chartColorList[kpiId] = [];
@@ -2335,7 +2335,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     for (let i = 0; i < arr?.length; i++) {
       for (const key in this.colorObj) {
 
-        let selectedNode = this.filterData.filter(x => x.nodeId === key);
+        let selectedNode = this.filterData.filter(x => x.nodeDisplayName === arr[i].value[0].sprojectName);
         let selectedId = selectedNode[0]?.nodeId;
 
         if (kpiId == 'kpi17' && this.colorObj[key]?.nodeId == selectedId) {
@@ -2350,6 +2350,23 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
     }
     return finalArr;
+  }
+
+  isObjectArrayEmpty(value) {
+    if (value === null || value === undefined) {
+      return true;
+    }
+    if (Array.isArray(value)) {
+      return value.length === 0 || value.every(isEmpty); // Recursively check all elements
+    }
+    if (typeof value === 'object') {
+      const keys = Object.keys(value);
+      if (keys.length === 0) {
+        return true; // Empty object
+      }
+      return false; // Not empty if it has other keys
+    }
+    return false; // For other data types like numbers, strings, booleans
   }
 
   /** get array of the kpi level filter */
