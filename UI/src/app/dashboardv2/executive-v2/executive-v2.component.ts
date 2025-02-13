@@ -2327,7 +2327,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   generateColorObj(kpiId, arr) {
     // If the arr is empty, return an empty array
-    if (this.isObjectArrayEmpty(arr)) return [];
+    if (!arr?.length) return [];
 
     const finalArr = [];
     this.chartColorList[kpiId] = [];
@@ -2352,22 +2352,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     return finalArr;
   }
 
-  isObjectArrayEmpty(value) {
-    if (value === null || value === undefined) {
-      return true;
-    }
-    if (Array.isArray(value)) {
-      return value.length === 0 || value.every(isEmpty); // Recursively check all elements
-    }
-    if (typeof value === 'object') {
-      const keys = Object.keys(value);
-      if (keys.length === 0) {
-        return true; // Empty object
-      }
-      return false; // Not empty if it has other keys
-    }
-    return false; // For other data types like numbers, strings, booleans
-  }
 
   /** get array of the kpi level filter */
   getDropdownArray(kpiId) {
