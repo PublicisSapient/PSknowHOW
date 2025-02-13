@@ -166,10 +166,7 @@ public class PIPredictabilityServiceImplTest {
 		List<JiraIssue> piWiseEpicList = jiraIssueDataFactory.getJiraIssues();
 
         when(kpiDataCacheService.fetchPiPredictabilityData(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
-        when(jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(Mockito.any())).thenReturn(releaseWisePIList);
-		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = piPredictabilityService.fetchKPIDataFromDb(leafNodeList, startDate,
+      	Map<String, Object> defectDataListMap = piPredictabilityService.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
@@ -193,10 +190,6 @@ public class PIPredictabilityServiceImplTest {
 		List<ReleaseWisePI> objects = new ArrayList<>();
 
 		objects.add(release1);
-
-		when(jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(Mockito.any())).thenReturn(objects);
-		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = piPredictabilityService.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertNotNull(defectDataListMap);
@@ -256,8 +249,6 @@ public class PIPredictabilityServiceImplTest {
 		List<ReleaseWisePI> releaseWisePIList = new ArrayList<>();
 		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
         when(kpiDataCacheService.fetchPiPredictabilityData(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
-		when(jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(Mockito.any())).thenReturn(releaseWisePIList);
-		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
 		try {
 			KpiElement kpiElement = piPredictabilityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -271,17 +262,12 @@ public class PIPredictabilityServiceImplTest {
 	public void inAccurateReleaseData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		String kpiRequestTrackerId = "5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(piPredictabilityService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		List<ReleaseWisePI> releaseWisePIList = new ArrayList<>();
-		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
-		when(jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(Mockito.any())).thenReturn(releaseWisePIList);
 		piWiseEpicList.stream().filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions()))
 				.forEach(jiraIssue -> jiraIssue.getReleaseVersions().get(0).setReleaseDate(null));
-		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
 		try {
 			KpiElement kpiElement = piPredictabilityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -299,8 +285,6 @@ public class PIPredictabilityServiceImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping1 = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMapping1.setJiraIssueEpicTypeKPI153(null);
-		when(configHelperService.getFieldMappingMap())
-				.thenReturn(Map.of(fieldMapping.getBasicProjectConfigId(), fieldMapping1));
 		try {
 			KpiElement kpiElement = piPredictabilityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
