@@ -806,7 +806,7 @@ export class HelperService {
         this.sharedService.setBackupOfFilterSelectionState(null); // -> SENDING NULL SO THAT SELECTED FILTERS ARE RESET ON LOGOUT
         localStorage.clear();
         this.router.navigate(['./authentication/login']).then(() => {
-          window.location.reload();
+          // window.location.reload();
         });
       } else {
         let redirect_uri = window.location.href;

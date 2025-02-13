@@ -17,13 +17,15 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { HttpService } from '../../services/http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { first } from 'rxjs/operators';
+import { catchError, first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { HelperService } from 'src/app/services/helper.service';
+import { throwError } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -39,9 +41,14 @@ export class LoginComponent implements OnInit {
   adLogin = true;
   loginConfig = {};
 
+  refreshCounter: number = 0;
+  self: any = this;
+  selectedTab: string = '';
 
 
-  constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService, private ga: GoogleAnalyticsService, private helperService: HelperService) {
+
+  constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService,
+    private ga: GoogleAnalyticsService, private helperService: HelperService, private location: Location) {
   }
 
   ngOnInit() {
@@ -60,6 +67,77 @@ export class LoginComponent implements OnInit {
 
     /* get return url from route parameters or default to '/' */
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+
+    this.route.queryParams
+      .subscribe(params => {
+        if (!this.refreshCounter) {
+          let stateFiltersParam = params['stateFilters'];
+          let kpiFiltersParam = params['kpiFilters'];
+
+          if (stateFiltersParam?.length) {
+            let selectedTab = decodeURIComponent(this.location.path());
+            selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+            this.selectedTab = selectedTab.split('?statefilters=')[0];
+            this.sharedService.setSelectedBoard(this.selectedTab);
+
+            if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
+              this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
+                .pipe(
+                  catchError((error) => {
+                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                    setTimeout(() => {
+                      this.sharedService.raiseError({
+                        status: 900,
+                        message: error.message || 'Invalid URL.'
+                      });
+                    });
+
+                    return throwError(error);  // Re-throw the error so it can be caught by a global error handler if needed
+                  })
+                )
+                .subscribe((response: any) => {
+                  if (response.success) {
+                    const longKPIFiltersString = response.data['longKPIFiltersString'];
+                    const longStateFiltersString = response.data['longStateFiltersString'];
+                    stateFiltersParam = atob(longStateFiltersString);
+                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
+
+                    // const kpiFiltersParam = params['kpiFilters'];
+                    if (longKPIFiltersString) {
+                      const kpiFilterParamDecoded = atob(longKPIFiltersString);
+
+                      const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.sharedService.getKpiSubFilterObj();
+                      this.sharedService.setKpiSubFilterObj(kpiFilterValFromUrl);
+                    }
+
+                    this.sharedService.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+                    this.refreshCounter++;
+                  }
+                });
+            } else {
+              try {
+                stateFiltersParam = atob(stateFiltersParam);
+                if (kpiFiltersParam) {
+                  const kpiFilterParamDecoded = atob(kpiFiltersParam);
+                  const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.sharedService.getKpiSubFilterObj();
+                  this.sharedService.setKpiSubFilterObj(kpiFilterValFromUrl);
+                }
+                this.sharedService.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+                this.refreshCounter++;
+              } catch (error) {
+                this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                setTimeout(() => {
+                  this.sharedService.raiseError({
+                    status: 900,
+                    message: 'Invalid URL.'
+                  });
+                }, 100);
+              }
+            }
+          }
+        }
+      });
   }
 
   /* convenience getter for easy access to form fields*/
