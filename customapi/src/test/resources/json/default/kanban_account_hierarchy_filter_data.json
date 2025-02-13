@@ -3,10 +3,10 @@
     "node": [
       {
         "groupName": "hierarchyLevelOne",
-        "accountHierarchyKanban": {
+        "projectHierarchy": {
           "nodeName": "Sample One",
           "path": "",
-          "createdDate": "2022-09-29T11:39:06.262",
+          "createdDat": "2022-09-29T11:39:06.262",
           "isDeleted": "False",
           "filterCategoryId": "632814ec8d7e06a0cfd669bc",
           "basicProjectConfigId": "6335368249794a18e8a4479f",
@@ -21,10 +21,10 @@
       },
       {
         "groupName": "hierarchyLevelTwo",
-        "accountHierarchyKanban": {
+        "projectHierarchy": {
           "nodeName": "Sample Two",
           "path": "Sample One_hierarchyLevelOne",
-          "createdDate": "2022-09-29T11:39:06.262",
+          "createdDat": "2022-09-29T11:39:06.262",
           "isDeleted": "False",
           "filterCategoryId": "632814ec8d7e06a0cfd669bd",
           "basicProjectConfigId": "6335368249794a18e8a4479f",
@@ -39,10 +39,10 @@
       },
       {
         "groupName": "hierarchyLevelThree",
-        "accountHierarchyKanban": {
+        "projectHierarchy": {
           "nodeName": "Sample Three",
           "path": "Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
-          "createdDate": "2022-09-29T11:39:06.262",
+          "createdDat": "2022-09-29T11:39:06.262",
           "isDeleted": "False",
           "filterCategoryId": "632814ec8d7e06a0cfd669be",
           "basicProjectConfigId": "6335368249794a18e8a4479f",
@@ -57,10 +57,10 @@
       },
       {
         "groupName": "project",
-        "accountHierarchyKanban": {
+        "projectHierarchy": {
           "nodeName": "Kanban Project",
           "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
-          "createdDate": "2022-09-29T11:39:06.262",
+          "createdDat": "2022-09-29T11:39:06.262",
           "isDeleted": "False",
           "filterCategoryId": null,
           "basicProjectConfigId": "6335368249794a18e8a4479f",

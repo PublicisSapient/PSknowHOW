@@ -131,7 +131,7 @@ public class ProjectVersionKanbanServiceImpl extends JiraKPIService<Double, List
 			String projectNodeId = node.getProjectFilter().getId();
 			ProjectRelease projectRelease = filterWiseDataMap.get(projectNodeId);
 			if (projectRelease != null) {
-				String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+				String projectName = node.getProjectFilter().getName();
 				Map<String, Double> dateCount = getLastNMonth(customApiConfig.getJiraXaxisMonthCount());
 				List<DataCount> dc = new ArrayList<>();
 				List<ProjectVersion> projectVersionList = Lists.newArrayList();

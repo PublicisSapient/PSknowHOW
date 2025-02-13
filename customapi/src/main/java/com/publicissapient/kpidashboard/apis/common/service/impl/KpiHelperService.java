@@ -130,6 +130,8 @@ public class KpiHelperService { // NOPMD
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
+	private static final String STORY_LIST = "stories";
+	private static final String SPRINTSDETAILS = "sprints";
 	private static final String AZURE_REPO = "AzureRepository";
 	private static final String BITBUCKET = "Bitbucket";
 	private static final String GITLAB = "GitLab";
@@ -706,6 +708,83 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
+	 * Fetches sprint capacity data from db based upon leaf node list.
+	 *
+	 * @param leafNodeList
+	 *            the leaf node list
+	 * @return the list
+	 */
+	public Map<String, Object> fetchSprintCapacityDataFromDb(KpiRequest kpiRequest, List<Node> leafNodeList) {
+
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+
+		List<String> sprintList = new ArrayList<>();
+		List<String> basicProjectConfigIds = new ArrayList<>();
+
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMapForSubTask = new HashMap<>();
+		Map<String, Object> resultListMap = new HashMap<>();
+
+		/** additional filter **/
+		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, CommonConstant.QA,
+				flterHelperService);
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+			Map<String, Object> mapOfProjectFiltersForSubTask = new LinkedHashMap<>();
+
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+
+			List<String> capacityIssueType = fieldMapping.getJiraSprintCapacityIssueTypeKpi46();
+			if (CollectionUtils.isEmpty(capacityIssueType)) {
+				capacityIssueType = new ArrayList<>();
+				capacityIssueType.add("Story");
+			}
+
+			List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
+			sprintList.add(leaf.getSprintFilter().getId());
+			basicProjectConfigIds.add(basicProjectConfigId.toString());
+
+			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(capacityIssueType));
+			mapOfProjectFilters.putAll(mapOfFilters);
+			mapOfProjectFiltersForSubTask.put(JiraFeature.ORIGINAL_ISSUE_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(taskType));
+			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			uniqueProjectMapForSubTask.put(basicProjectConfigId.toString(), mapOfProjectFiltersForSubTask);
+
+		});
+
+		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		Set<String> totalIssue = new HashSet<>();
+		sprintDetails.forEach(dbSprintDetail -> {
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getTotalIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
+						CommonConstant.TOTAL_ISSUES));
+			}
+		});
+
+		if (CollectionUtils.isNotEmpty(totalIssue)) {
+			List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(totalIssue,
+					uniqueProjectMap, CommonConstant.NUMBER);
+			List<JiraIssue> subTaskList = jiraIssueRepository.findIssueByNumberOrParentStoryIdAndType(
+					jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet()),
+					uniqueProjectMapForSubTask, CommonConstant.PARENT_STORY_ID);
+			List<JiraIssue> jiraIssues = new ArrayList<>();
+			jiraIssues.addAll(subTaskList);
+			jiraIssues.addAll(jiraIssueList);
+			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
+					.findByStoryIDInAndBasicProjectConfigIdIn(jiraIssues.stream().map(JiraIssue::getNumber).toList(),
+							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+			resultListMap.put(STORY_LIST, jiraIssues);
+			resultListMap.put(SPRINTSDETAILS, sprintDetails);
+			resultListMap.put(JIRA_ISSUE_HISTORY_DATA, jiraIssueCustomHistoryList);
+		}
+
+		return resultListMap;
+	}
+
+	/**
 	 * Fetch capacity data from db based upon leaf node list.
 	 *
 	 * @param leafNodeList
@@ -730,10 +809,7 @@ public class KpiHelperService { // NOPMD
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
-		List<CapacityKpiData> byFilters = capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
-
-		return byFilters;
+		return capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
 	}
 
 	/**
@@ -1772,7 +1848,7 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * get kpi data from repo tools api
+	 * get kpi data from repo tools api, for project level hierarchy only
 	 *
 	 * @param endDate
 	 *            end date
@@ -1791,7 +1867,7 @@ public class KpiHelperService { // NOPMD
 
 		List<String> projectCodeList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(tools)) {
-			projectCodeList.add(node.getId());
+			projectCodeList.add(node.getProjectFilter().getBasicProjectConfigId().toString());
 		}
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();

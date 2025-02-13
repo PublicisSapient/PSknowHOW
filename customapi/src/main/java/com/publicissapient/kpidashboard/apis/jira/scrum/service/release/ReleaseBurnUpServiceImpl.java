@@ -354,7 +354,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 		List<KPIExcelData> excelData = new ArrayList<>();
 		String startDate = latestRelease.getReleaseFilter().getStartDate();
 		String endDate = latestRelease.getReleaseFilter().getEndDate();
-		String releaseState = Optional.ofNullable(latestRelease.getAccountHierarchy().getReleaseState()).orElse("");
+		String releaseState = Optional.ofNullable(latestRelease.getProjectHierarchy().getReleaseState()).orElse("");
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 		List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);

@@ -205,7 +205,7 @@ export class AppComponent implements OnInit {
 
     let stateFilterObj = [];
     let projectLevelSelected = false;
-    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && stateFiltersObjLocal['parent_level'] && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
       stateFilterObj = [stateFiltersObjLocal['parent_level']];
     } else {
       stateFilterObj = stateFiltersObjLocal['primary_level'];

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.bamboo.processor;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -311,7 +312,7 @@ public class BambooProcessorJobExecuterTests {
 			Map<ObjectId, Set<Build>> jobs = new HashMap<>();
 			jobs.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 //			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(jobs);
-//			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+//			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 //			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 //					.thenReturn(twoBambooJob());
 //			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
@@ -328,7 +329,7 @@ public class BambooProcessorJobExecuterTests {
 			Map<ObjectId, Set<Build>> jobs = new HashMap<>();
 			jobs.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 //			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(jobs);
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(pt);
 			when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(any(), any()))
@@ -354,7 +355,7 @@ public class BambooProcessorJobExecuterTests {
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 //			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(buildMap);
 //			when(bambooClient.getBuildDetailsFromServer(any(), any(), any())).thenReturn(build);
-//			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+//			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);
 //			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(pt);
 //			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
@@ -393,7 +394,7 @@ public class BambooProcessorJobExecuterTests {
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 //			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(buildMap);
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(twoBambooJob());
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
@@ -468,7 +469,7 @@ public class BambooProcessorJobExecuterTests {
 		try {
 			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(deploymentList)));
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(twoBambooDeployJob());
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientDeploy);
@@ -484,7 +485,7 @@ public class BambooProcessorJobExecuterTests {
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);// ek mili jo queued hai
 			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(serverList)));
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(twoBambooDeployJob());
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientDeploy);
@@ -500,7 +501,7 @@ public class BambooProcessorJobExecuterTests {
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);// ek mili jo queued hai
 			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(maxDeployment)));
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(twoBambooDeployJob());
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientDeploy);
@@ -516,7 +517,7 @@ public class BambooProcessorJobExecuterTests {
 			when(deploymentRepository.findAll()).thenReturn(new ArrayList<>());
 			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(serverList)));
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(twoBambooDeployJob());
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientDeploy);
@@ -532,7 +533,7 @@ public class BambooProcessorJobExecuterTests {
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);// ek tool Extra
 			when(bambooClientDeploy.getDeployJobsFromServer(any(), any())).thenReturn(oneDeployJob(
 					Pair.of(new ObjectId("6296661b307f0239477f1e9e"), "190709761"), new HashSet<>(serverList)));
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+			when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(oneLessTool());
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientDeploy);

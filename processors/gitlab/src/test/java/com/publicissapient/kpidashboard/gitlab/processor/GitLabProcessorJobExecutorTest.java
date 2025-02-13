@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.gitlab.processor;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -155,7 +156,7 @@ public class GitLabProcessorJobExecutorTest {
 		commitDetailList.add(commitDetails);
 		Mockito.when(gitLabRepository.findActiveRepos(PROCESSORID)).thenReturn(gitLabRepos);
 
-		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
+		doReturn(getProjectConfigList()).when(projectConfigRepository).findActiveProjects(anyBoolean());
 
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
 		connectionDetail.setRepositoryName("release");

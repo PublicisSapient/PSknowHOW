@@ -116,7 +116,7 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.MONTH,
-				Long.valueOf(customApiConfig.getSonarMonthCount()))).forEach((projectNodeId, projectData) -> {
+				Long.valueOf(customApiConfig.getSonarMonthCount()))).forEach((projectNodePair, projectData) -> {
 					List<String> projectList = new ArrayList<>();
 					List<String> debtList = new ArrayList<>();
 					List<String> versionDate = new ArrayList<>();
@@ -145,15 +145,15 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 								history = prepareEmptyJobWiseHistoryMap(projectData, endms);
 							}
 
-							prepareSqualeList(history, date, projectNodeId, projectList, debtList, projectWiseDataMap,
+							prepareSqualeList(history, date, projectNodePair, projectList, debtList, projectWiseDataMap,
 									versionDate);
 
 							endDateTime = endDateTime.minusMonths(1);
 						}
-						tempMap.get(projectNodeId).setValue(projectWiseDataMap);
+						tempMap.get(projectNodePair.getKey()).setValue(projectWiseDataMap);
 						if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 							KPIExcelUtility.populateSonarKpisExcelData(
-									tempMap.get(projectNodeId).getProjectFilter().getName(), projectList, debtList,
+									tempMap.get(projectNodePair.getKey()).getProjectFilter().getName(), projectList, debtList,
 									versionDate, excelData, KPICode.SONAR_CODE_QUALITY.getKpiId());
 						}
 					}
@@ -203,8 +203,8 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 *            sonarhistory
 	 * @param date
 	 *            node date
-	 * @param projectNodeId
-	 *            projectNodeId
+	 * @param projectNodePair
+	 *            projectNodePair
 	 * @param projectList
 	 *            projectList
 	 * @param debtList
@@ -214,10 +214,9 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 * @param versionDate
 	 *            versionDate
 	 */
-	private void prepareSqualeList(Map<String, SonarHistory> history, String date, String projectNodeId,
-			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
-			List<String> versionDate) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+	private void prepareSqualeList(Map<String, SonarHistory> history, String date, Pair<String, String> projectNodePair,
+								   List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
+								   List<String> versionDate) {
 		List<Long> dateWiseDebtList = new ArrayList<>();
 		history.values().forEach(sonarDetails -> {
 
@@ -226,8 +225,8 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 					.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
 
 			final Long squaleRatingValue = getSqualeRatingValue(metricMap.get(SQALE_RATING));
-			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-			DataCount dcObj = getDataCount(squaleRatingValue, projectName, date);
+			String keyName = prepareSonarKeyName(projectNodePair.getValue(), sonarDetails.getName(), sonarDetails.getBranch());
+			DataCount dcObj = getDataCount(squaleRatingValue, projectNodePair.getValue(), date);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);
 			versionDate.add(date);
@@ -236,7 +235,7 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 
 		});
 		DataCount dcObj = getDataCount(calculateKpiValue(dateWiseDebtList, KPICode.SONAR_CODE_QUALITY.getKpiId()),
-				projectName, date);
+				projectNodePair.getValue(), date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 

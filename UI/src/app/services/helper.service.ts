@@ -406,18 +406,18 @@ export class HelperService {
   }*/
 
 
-  sortAlphabetically(objArray) {
-    if (objArray && objArray.length > 1) {
-      objArray.sort((a, b) => {
-        const aName = a.nodeName || a.data || a.date || a;
-        const bName = b.nodeName || b.data || b.date || b;
-        if (typeof aName === 'string' && typeof bName === 'string') {
-          return aName.localeCompare(bName);
+    sortAlphabetically(objArray) {
+        if (objArray && objArray.length > 1) {
+            objArray.sort((a, b) => {
+                const aName = a.nodeDisplayName || a.nodeName || a.data || a.date || a;
+                const bName = b.nodeDisplayName || b.nodeName || b.data || b.date || b;
+                if (typeof aName === 'string' && typeof bName === 'string') {
+                    return aName.localeCompare(bName);
+                }
+            });
         }
-      });
+        return objArray;
     }
-    return objArray;
-  }
 
   sortByField(objArray, propArr): any {
     objArray.sort((a, b) => {
@@ -800,13 +800,12 @@ export class HelperService {
         this.sharedService.setSelectedProject(null);
         this.httpService.setCurrentUserDetails({});
         this.sharedService.setUserDetailsAsBlankObj();
-        this.sharedService.setVisibleSideBar(false);
         this.sharedService.setAddtionalFilterBackup({});
         this.sharedService.setKpiSubFilterObj({});
         this.sharedService.setBackupOfFilterSelectionState(null); // -> SENDING NULL SO THAT SELECTED FILTERS ARE RESET ON LOGOUT
-        localStorage.clear();
+        // localStorage.clear();
         this.router.navigate(['./authentication/login']).then(() => {
-          window.location.reload();
+          // window.location.reload();
         });
       } else {
         let redirect_uri = window.location.href;
@@ -1040,7 +1039,7 @@ export class HelperService {
 
     let stateFilterObj = [];
 
-    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && stateFiltersObjLocal['parent_level'] && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
       stateFilterObj = [stateFiltersObjLocal['parent_level']];
     } else {
       stateFilterObj = stateFiltersObjLocal['primary_level'];
@@ -1055,7 +1054,7 @@ export class HelperService {
     const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
     const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
 
-    localStorage.removeItem('shared_link');
+    // localStorage.removeItem('shared_link');
     if (hasAccessToAll) {
       this.router.navigate([url]);
     } else {

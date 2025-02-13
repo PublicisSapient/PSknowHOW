@@ -16,10 +16,8 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -45,6 +43,7 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.jira.dataFactories.AccountHierarchiesKanbanDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
@@ -73,6 +72,8 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
 	@InjectMocks
 	private KanbanJiraIssueAccountHierarchyProcessorImpl createKanbanAccountHierarchy;
+	@Mock
+	ProjectHierarchyService service;
 
 	@Before
 	public void setup() {
@@ -89,7 +90,6 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 	@Test
 	public void createAccountHierarchy() {
 		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
-		when(kanbanAccountHierarchyRepo.findByBasicProjectConfigId(any())).thenReturn(accountHierarchyList);
 		Assert.assertEquals(1, createKanbanAccountHierarchy
 				.createKanbanAccountHierarchy(kanbanJiraIssues.get(0), createProjectConfig()).size());
 	}

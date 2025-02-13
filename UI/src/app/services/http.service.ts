@@ -182,6 +182,7 @@ export class HttpService {
   currentUserDetails = null;
   private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
+  private organizationHierarchy = this.baseUrl + '/api/organizationHierarchy';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -689,8 +690,8 @@ export class HttpService {
     return forkJoin([projectList]);
   }
 
-  getUserProjects(): Observable<any> {
-    return this.http.get(this.basicConfigUrl);
+  getUserProjects(queryParams?): Observable<any> {
+    return this.http.get(`${this.basicConfigUrl}?${queryParams}`);
   }
 
   /** add basic config */
@@ -1185,6 +1186,10 @@ export class HttpService {
 
   getRecommendations(data) {
     return this.http.post<object>(this.recommendationsUrl, data);
+  }
+
+  getOrganizationHierarchy() {
+    return this.http.get<any>(this.organizationHierarchy);
   }
 
   fetchJiramappingBE(basicConfigID){

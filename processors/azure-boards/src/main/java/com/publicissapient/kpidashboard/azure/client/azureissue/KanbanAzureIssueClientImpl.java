@@ -36,7 +36,6 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -63,8 +62,8 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.SystemAssignedTo;
@@ -80,13 +79,13 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
-import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -105,10 +104,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	/** The azure processor repository. */
 	@Autowired
 	private AzureProcessorRepository azureProcessorRepository;
-
-	/** The kanban account hierarchy repo. */
-	@Autowired
-	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
 
 	/** The kanban jira repo. */
 	@Autowired
@@ -142,6 +137,8 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorToolConnectionService processorToolConnectionService;
+	@Autowired
+	private ProjectHierarchyService projectHierarchyService;
 
 	/**
 	 * Explicitly updates queries for the source system, and initiates the update to
@@ -410,7 +407,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		// Saving back to MongoDB
 		kanbanJiraRepo.saveAll(kanbanIssuesToSave);
 		kanbanIssueHistoryRepo.saveAll(kanbanIssueHistoryToSave);
-		saveKanbanAccountHierarchy(kanbanIssuesToSave, hierarchyLevelList);
+		saveKanbanAccountHierarchy(kanbanIssuesToSave, hierarchyLevelList, projectConfig);
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		return kanbanIssuesToSave.size();
 	}
@@ -636,32 +633,29 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 
 	/**
 	 * Save kanban account hierarchy.
-	 *
+	 * 
 	 * @param jiraIssueList
 	 *            Jiraissue list to be saved in DB
 	 * @param hierarchyLevelList
-	 *            Kanban Filter category list
+	 * @param projectConfig
 	 */
 	private void saveKanbanAccountHierarchy(List<KanbanJiraIssue> jiraIssueList, // NOPMD
-																				 // //NOSONAR
-			List<HierarchyLevel> hierarchyLevelList) { // NOSONAR
+			// //NOSONAR
+			List<HierarchyLevel> hierarchyLevelList, ProjectConfFieldMapping projectConfig) { // NOSONAR
 
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel projectHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
-		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = getKanbanAccountHierarchy();
-		Set<KanbanAccountHierarchy> accHierarchyToSave = new HashSet<>();
+		Map<String, ProjectHierarchy> existingKanbanHierarchy = projectHierarchyService
+				.getProjectHierarchyMapByConfigId(projectConfig.getBasicProjectConfigId().toString());
+		Set<ProjectHierarchy> accHierarchyToSave = new HashSet<>();
 
 		for (KanbanJiraIssue kanbanJiraIssue : jiraIssueList) {
 			if (StringUtils.isNotBlank(kanbanJiraIssue.getProjectName())) {
-				KanbanAccountHierarchy projectHierarchy = kanbanAccountHierarchyRepo
-						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
-								new ObjectId(kanbanJiraIssue.getBasicProjectConfigId()))
-						.get(0);
-
-				List<KanbanAccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
-						kanbanJiraIssue, projectHierarchy, projectHierarchyLevel, hierarchyLevelList);
+				List<ProjectHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
+						kanbanJiraIssue, projectConfig.getProjectBasicConfig(), projectHierarchyLevel,
+						hierarchyLevelList);
 
 				additionalFiltersHierarchies.forEach(accountHierarchy -> accHierarchyToSave(accountHierarchy,
 						existingKanbanHierarchy, accHierarchyToSave));
@@ -669,19 +663,8 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			}
 		}
 		if (CollectionUtils.isNotEmpty(accHierarchyToSave)) {
-			kanbanAccountHierarchyRepo.saveAll(accHierarchyToSave);
+			projectHierarchyService.saveAll(accHierarchyToSave);
 		}
-	}
-
-	/**
-	 * Fetches all saved kanban account hierarchy.
-	 *
-	 * @return Map<Pair < String, String>, KanbanAccountHierarchy>
-	 */
-	private Map<Pair<String, String>, KanbanAccountHierarchy> getKanbanAccountHierarchy() {
-		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
-		return accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
 	}
 
 	/**
@@ -1178,10 +1161,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 
 	private void setProjectSpecificDetails(ProjectConfFieldMapping projectConfig, KanbanJiraIssue jiraIssue) {
 		String name = projectConfig.getProjectName();
-		String id = new StringBuffer(name).append(CommonConstant.UNDERSCORE)
-				.append(projectConfig.getBasicProjectConfigId().toString()).toString();
-
-		jiraIssue.setProjectID(id);
+		jiraIssue.setProjectID(projectConfig.getProjectBasicConfig().getProjectNodeId());
 		jiraIssue.setProjectName(name);
 		jiraIssue.setProjectKey(projectConfig.getProjectKey());
 		jiraIssue.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
@@ -1193,47 +1173,42 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		jiraIssue.setProjectPath("");
 	}
 
-	private List<KanbanAccountHierarchy> accountHierarchiesForAdditionalFilters(KanbanJiraIssue jiraIssue,
-			KanbanAccountHierarchy projectHierarchy, HierarchyLevel projectHierarchyLevel,
+	private List<ProjectHierarchy> accountHierarchiesForAdditionalFilters(KanbanJiraIssue jiraIssue,
+			ProjectBasicConfig projectBasicConfig, HierarchyLevel projectHierarchyLevel,
 			List<HierarchyLevel> hierarchyLevelList) {
 
-		List<KanbanAccountHierarchy> accountHierarchies = new ArrayList<>();
+		List<ProjectHierarchy> projectHierarchyList = new ArrayList<>();
 		List<AdditionalFilter> additionalFilters = ListUtils.emptyIfNull(jiraIssue.getAdditionalFilters());
 
 		List<String> additionalFilterCategoryIds = hierarchyLevelList.stream()
 				.filter(x -> x.getLevel() > projectHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
-				.collect(Collectors.toList());
+				.toList();
 
 		additionalFilters.forEach(additionalFilter -> {
 			if (additionalFilterCategoryIds.contains(additionalFilter.getFilterId())) {
 				String labelName = additionalFilter.getFilterId();
 				additionalFilter.getFilterValues().forEach(additionalFilterValue -> {
-					KanbanAccountHierarchy adFilterAccountHierarchy = new KanbanAccountHierarchy();
-					adFilterAccountHierarchy.setLabelName(labelName);
+					ProjectHierarchy adFilterAccountHierarchy = new ProjectHierarchy();
+					adFilterAccountHierarchy.setHierarchyLevelId(labelName);
 					adFilterAccountHierarchy.setNodeId(additionalFilterValue.getValueId());
 					adFilterAccountHierarchy.setNodeName(additionalFilterValue.getValue());
-					adFilterAccountHierarchy.setParentId(projectHierarchy.getNodeId());
-					adFilterAccountHierarchy.setPath(projectHierarchy.getNodeId()
-							+ CommonConstant.ACC_HIERARCHY_PATH_SPLITTER + projectHierarchy.getPath());
+					adFilterAccountHierarchy.setNodeDisplayName(additionalFilterValue.getValue());
+					adFilterAccountHierarchy.setParentId(projectBasicConfig.getProjectNodeId());
 					adFilterAccountHierarchy.setBasicProjectConfigId(new ObjectId(jiraIssue.getBasicProjectConfigId()));
-					accountHierarchies.add(adFilterAccountHierarchy);
+					projectHierarchyList.add(adFilterAccountHierarchy);
 				});
 			}
 
 		});
 
-		return accountHierarchies;
+		return projectHierarchyList;
 	}
 
-	private void accHierarchyToSave(KanbanAccountHierarchy accountHierarchy,
-			Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy,
-			Set<KanbanAccountHierarchy> accHierarchyToSave) {
-		if (StringUtils.isNotBlank(accountHierarchy.getParentId())
-				|| (StringUtils.isBlank(accountHierarchy.getParentId()))) {
-			KanbanAccountHierarchy exHiery = existingKanbanHierarchy
-					.get(Pair.of(accountHierarchy.getNodeId(), accountHierarchy.getPath()));
-
-			if (null == exHiery) {
+	private void accHierarchyToSave(ProjectHierarchy accountHierarchy,
+			Map<String, ProjectHierarchy> existingSquadHierarchy, Set<ProjectHierarchy> accHierarchyToSave) {
+		if (StringUtils.isNotBlank(accountHierarchy.getParentId())) {
+			ProjectHierarchy exHiery = existingSquadHierarchy.get(accountHierarchy.getNodeId());
+			if (null == exHiery || !exHiery.getParentId().equalsIgnoreCase(accountHierarchy.getParentId())) {
 				accountHierarchy.setCreatedDate(LocalDateTime.now());
 				accHierarchyToSave.add(accountHierarchy);
 			}

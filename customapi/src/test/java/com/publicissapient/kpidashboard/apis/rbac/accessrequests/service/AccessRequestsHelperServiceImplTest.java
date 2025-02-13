@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDTO;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -38,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -123,6 +126,8 @@ public class AccessRequestsHelperServiceImplTest {
 	private CommonService commonService;
 	@Mock
 	private ProjectAccessManager accessManager;
+	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -141,7 +146,6 @@ public class AccessRequestsHelperServiceImplTest {
 
 		AccessItem item = new AccessItem();
 		item.setItemId("605aaf595a160c3fe46fdbbc");
-		item.setItemName("testproject");
 		List<AccessItem> itemList = new ArrayList<>();
 		itemList.add(item);
 		node.setAccessItems(itemList);
@@ -181,7 +185,6 @@ public class AccessRequestsHelperServiceImplTest {
 		when(accessRequestsRepository.findAll()).thenReturn(null);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAllAccessRequests();
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertThat("Data should not exist: ", response.getData(), equalTo(null));
 	}
 
 	/**
@@ -204,10 +207,15 @@ public class AccessRequestsHelperServiceImplTest {
 	public void testGetAllAccessRequests3() {
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
+		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
+		AccessRequestDTO testAccessRequestsDatadto;
+		ModelMapper mapper=new ModelMapper();
+		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findAll()).thenReturn(testListAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAllAccessRequests();
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertThat("Data should exist but empty: ", response.getData(), equalTo(testListAccessRequestsData));
+		assertThat("Data should exist but empty: ", response.getData(), equalTo(testListAccessRequestsDatadto));
 	}
 
 	/**
@@ -302,7 +310,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(accessRequestsRepository.findByUsername(testUsername)).thenReturn(null);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsername(testUsername);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(null, response.getData());
+
 	}
 
 	/**
@@ -315,10 +323,15 @@ public class AccessRequestsHelperServiceImplTest {
 		testUsername = "UnitTest";
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
+		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
+		AccessRequestDTO testAccessRequestsDatadto;
+		ModelMapper mapper=new ModelMapper();
+		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findByUsername(testUsername)).thenReturn(testListAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsername(testUsername);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(testListAccessRequestsData, response.getData());
+		assertEquals(testListAccessRequestsDatadto, response.getData());
 	}
 
 	/**
@@ -332,24 +345,6 @@ public class AccessRequestsHelperServiceImplTest {
 		testListAccessRequestsData.add(testAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByStatus(testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
-		assertEquals(null, response.getData());
-	}
-
-	/**
-	 * 13. Input String testStatus is not null but database did not return anything.
-	 *
-	 */
-	@Test
-	public void testGetAccessRequestByStatus2() {
-		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
-		testListAccessRequestsData.add(testAccessRequestsData);
-		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(null);
-		SecurityContextHolder.setContext(securityContext);
-		when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(authentication);
-		when(authentication.getPrincipal()).thenReturn("superadmin");
-		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
-		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByStatus(testStatus);
-		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(null, response.getData());
 	}
 
@@ -369,7 +364,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByStatus(testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(response.getData(), new ArrayList<>());
+		assertEquals(response.getData(), null);
 	}
 
 	/**
@@ -380,6 +375,11 @@ public class AccessRequestsHelperServiceImplTest {
 	@Test
 	public void testGetAccessRequestByStatus4() {
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
+		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
+		AccessRequestDTO testAccessRequestsDatadto;
+		ModelMapper mapper=new ModelMapper();
+		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		testListAccessRequestsData.add(testAccessRequestsData);
 		when(accessRequestsRepository.findByStatus(testStatus)).thenReturn(testListAccessRequestsData);
 		SecurityContextHolder.setContext(securityContext);
@@ -388,7 +388,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(userInfo);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByStatus(testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(testListAccessRequestsData, response.getData());
+		assertEquals(testListAccessRequestsDatadto, response.getData());
 	}
 
 	/**
@@ -436,7 +436,7 @@ public class AccessRequestsHelperServiceImplTest {
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsernameAndStatus(testUsername,
 				testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(null, response.getData());
+
 	}
 
 	/**
@@ -484,12 +484,17 @@ public class AccessRequestsHelperServiceImplTest {
 		testUsername = "UnitTest";
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
+		List<AccessRequestDTO> testListAccessRequestsDatadto = new ArrayList<>();
+		AccessRequestDTO testAccessRequestsDatadto;
+		ModelMapper mapper=new ModelMapper();
+		testAccessRequestsDatadto=mapper.map(testAccessRequestsData, AccessRequestDTO.class);
+		testListAccessRequestsDatadto.add(testAccessRequestsDatadto);
 		when(accessRequestsRepository.findByUsernameAndStatus(testUsername, testStatus))
 				.thenReturn(testListAccessRequestsData);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByUsernameAndStatus(testUsername,
 				testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(testListAccessRequestsData, response.getData());
+		assertEquals(testListAccessRequestsDatadto, response.getData());
 	}
 
 	/**

@@ -28,11 +28,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -178,11 +181,27 @@ public class KPIExcelDataService {
 		List<String> idAndLabel = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(PROJECT).stream().toList())) {
-			idAndLabel.addAll(kpiRequest.getSelectedMap().get(PROJECT).stream().toList());
+			List<String> projectNodeIds = kpiRequest.getSelectedMap().get(PROJECT);
+			projectNodeIds.forEach(project->{
+				if(configHelperService.getProjectNodeIdWiseProjectConfig(project)!=null) {
+					idAndLabel.add(configHelperService.getProjectNodeIdWiseProjectConfig(project).getId().toString());
+				}
+			});
 		} else if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap().get(SPRINT).stream().toList())) {
-			idAndLabel.addAll(kpiRequest.getSelectedMap().get(SPRINT).stream().toList());
+			List<ObjectId> projectNodeIds = configHelperService.getProjectHierarchyProjectConfigMap(kpiRequest.getSelectedMap().get(SPRINT).stream().toList());
+			projectNodeIds.forEach(project->{
+				if(configHelperService.getProjectConfig(project.toString())!=null) {
+					idAndLabel.add(configHelperService.getProjectConfig(project.toString()).getId().toString());
+				}
+			});
+
 		} else {
-			idAndLabel.addAll(kpiRequest.getSelectedMap().get(RELEASE).stream().toList());
+			List<ObjectId> projectNodeIds = configHelperService.getProjectHierarchyProjectConfigMap(kpiRequest.getSelectedMap().get(RELEASE).stream().toList());
+			projectNodeIds.forEach(project->{
+				if(configHelperService.getProjectConfig(project.toString())!=null) {
+					idAndLabel.add(configHelperService.getProjectConfig(project.toString()).getId().toString());
+				}
+			});
 		}
 		return idAndLabel;
 	}
@@ -382,7 +401,7 @@ public class KPIExcelDataService {
 
 		if ((label.equalsIgnoreCase("Project") || label.equalsIgnoreCase("SQD") || label.equalsIgnoreCase("Sprint")
 				|| label.equalsIgnoreCase("Release")) && projectIds.size() < 2) {
-			String projectBasicConfigID = projectIds.get(0).substring(projectIds.get(0).lastIndexOf("_") + 1);
+			String projectBasicConfigID = projectIds.get(0);
 			kpiColumnConfigDTO = kpiColumnConfigService.getByKpiColumnConfig(projectBasicConfigID,
 					totalKpiElementList.get(0).getKpiId());
 			kpiColumnConfigDTO.setSaveFlag(true);

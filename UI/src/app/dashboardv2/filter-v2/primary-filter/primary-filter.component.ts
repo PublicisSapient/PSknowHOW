@@ -318,6 +318,21 @@ export class PrimaryFilterComponent implements OnChanges {
     return retValue;
   }
 
+  getImmediateParentDisplayName(child) {
+    let completeHiearchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedType.toLowerCase()];
+    let selectedLevelNode = completeHiearchyData?.filter(x => x.hierarchyLevelName === this.selectedLevel);
+    let level = selectedLevelNode[0].level;
+    if (level > 1) {
+      let parentLevel = level - 1;
+      let parentLevelNode = completeHiearchyData?.filter(x => x.level === parentLevel);
+      let parentLevelName = parentLevelNode[0].hierarchyLevelName;
+
+      let immediateParent = this.filterData[parentLevelName].find(x => x.nodeId === child.parentId);
+      return immediateParent?.nodeDisplayName;
+    }
+    return undefined;
+  }
+
   preventDropdownClose(event: Event) {
     // event.stopPropagation();
     console.log('preventDropdownClose');

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.sonar.processor;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -151,7 +152,7 @@ public class SonarProcessorJobExecutorTest {
 		Mockito.when(sonarProcessorRepository.save(sonarProcessor)).thenReturn(sonarProcessor);
 		when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
 				.thenReturn(PLAIN_TEXT_PASSWORD);
-		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		when(projectConfigRepository.findActiveProjects(anyBoolean())).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.any(), Mockito.any()))
 				.thenReturn(connList);
 		when(sonarProjectRepository.findEnabledProjectsForTool(any(), any(), anyString()))

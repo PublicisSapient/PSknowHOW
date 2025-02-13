@@ -343,7 +343,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		}
 
 		if (CollectionUtils.isEmpty(bitbucketJob)) {
-			log.error("[BITBUCKET]. No repository found for this project {}", node.getAccountHierarchy());
+			log.error("[BITBUCKET]. No repository found for this project {}", node.getProjectHierarchy());
 		}
 
 		return bitbucketJob;
