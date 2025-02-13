@@ -242,11 +242,10 @@ public class CodeViolationsKanbanServiceImpl
 
 	}
 
-	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<List<String>> violations, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
 
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseViolationsList = new ArrayList<>();
 		List<Map<String, Object>> globalSonarViolationsHoverMapBySeverity = new ArrayList<>();
 		List<Map<String, Object>> globalSonarViolationsHoverMapByType = new ArrayList<>();
@@ -267,7 +266,7 @@ public class CodeViolationsKanbanServiceImpl
 			Long sonarViolations = sonarViolationsHoverMapBySeverity.values().stream().map(Integer.class::cast)
 					.mapToLong(val -> val).sum();
 
-			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
+			String keyName = prepareSonarKeyName(projectName, sonarDetails.getName(), sonarDetails.getBranch());
 			String kpiGroup = keyName + "#" + SEVERITY;
 			DataCount dcObjSeverety = getDataCountObject(sonarViolations, sonarViolationsHoverMapBySeverity,
 					projectName, date, kpiGroup);
