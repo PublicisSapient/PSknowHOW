@@ -193,6 +193,13 @@ export class LoginComponent implements OnInit {
       this.error = 'Internal Server Error';
 
     } else if (data['status'] === 200) {
+
+      this.httpService.getAllProjects().subscribe(projectsData => {
+        if (projectsData[0] !== 'error' && !projectsData.error && projectsData?.data) {
+          localStorage.setItem('projectWithHierarchy', JSON.stringify(projectsData?.data));
+        }
+      });
+
       /*After successfully login redirect form to dashboard router(Executive page)*/
       this.ga.setLoginMethod(data.body, 'standard');
       if (this.redirectToProfile()) {
