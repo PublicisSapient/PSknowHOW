@@ -135,6 +135,7 @@ import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-
 import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 import { KpiHelperService } from './services/kpi-helper.service';
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 
 /******************************************************/
@@ -237,7 +238,8 @@ export function initializeApp(appInitializerService: AppInitializerService) {
         SkeletonModule,
         BlockUIModule,
         InputTextModule,
-        ScrollTopModule
+        ScrollTopModule,
+        SelectButtonModule
     ],
     providers: [
         ExcelService,

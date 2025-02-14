@@ -17,7 +17,6 @@ export class StickyHeaderV2Component implements AfterViewChecked, OnDestroy {
   constructor( public service: SharedService, private helperService: HelperService, private cdr: ChangeDetectorRef) { 
     this.subscriptions.push(
       this.service.onTabSwitch.subscribe((data)=>{
-      //  this.isIteration = data.selectedTab === 'iteration'?true:false;
         this.fields.set('Selected Dashboard ', JSON.parse(JSON.stringify(data.selectedBoard)));
       }))
   }

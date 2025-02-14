@@ -205,8 +205,6 @@ export class BasicConfigComponent implements OnInit {
     } else {
       filteredFieldsByParentId = field.list
     }
-    console.log(parentNode, filteredFieldsByParentId)
-    // const list = field.filteredSuggestions && field.filteredSuggestions.length? field.filteredSuggestions: field.list;
     for (let i = 0; i < filteredFieldsByParentId.length; i++) {
       const listItem = filteredFieldsByParentId[i];
       if (listItem?.nodeDisplayName?.toLowerCase().indexOf(query?.toLowerCase()) >= 0) {
@@ -392,13 +390,6 @@ export class BasicConfigComponent implements OnInit {
     if (hierarchyMap) {
       hierarchyMap['project'] = 'Project';
     }
-    /* const hierarchyMap = {
-        bu: "Business Unit",
-        ver: "Vertical",
-        acc: "Account",
-        port: "Engagement",
-        project: "Project"
-    }; */
     this.http.getOrganizationHierarchy()?.subscribe(formFieldData => {
       const flatData = formFieldData?.data;
 

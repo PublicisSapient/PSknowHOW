@@ -73,7 +73,6 @@ export class AppInitializerService {
           }
         },
         { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
-        { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
         { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
       ], canActivate: [AuthGuard],
@@ -88,7 +87,6 @@ export class AppInitializerService {
       path: 'dashboard', component: DashboardV2Component,
       children: [
         ...this.commonRoutes,
-        { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
         { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
         {
           path: 'Config',
@@ -177,7 +175,7 @@ export class AppInitializerService {
             if (localStorage.getItem('shared_link')) {
               this.helperService.urlShorteningRedirection();
             } else {
-              this.router.navigate(['/dashboard/iteration']);
+              this.router.navigate(['/dashboard']);
             }
           }
         }, error => {

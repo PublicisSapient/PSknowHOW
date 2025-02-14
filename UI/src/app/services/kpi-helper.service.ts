@@ -54,10 +54,6 @@ export class KpiHelperService {
       unit = selectedDataGroup?.unit;
     }
 
-    // if (!dataGroup1 || dataGroup1.length === 0) {
-    //   throw new Error('Invalid data: Missing dataGroup1');
-    // }
-
     if (!dataGroup1 || dataGroup1.length === 0) {
       return { chartData: [], totalCount: 0 };
     }

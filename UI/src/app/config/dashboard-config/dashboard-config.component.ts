@@ -49,11 +49,6 @@
      }
      ngOnInit() {
       this.userName = this.service.getCurrentUserDetails('user_name');
-        //  this.service.currentUserDetailsObs.subscribe(details=>{
-        //   if(details){
-        //     this.userName = details['user_name'];
-        //   }
-        // });
         this.getProjects();
     }
     getKpisData(projectID) {
@@ -214,7 +209,6 @@
 
      // on kpicategory flag change,  setting all of its kpi flag
     handleKpiCategoryChange(event, boardData) {
-         const boardSlug = boardData.boardName;
          const modifiedObj = {...boardData};
          const targetSelector = event.originalEvent?.target?.closest('.kpi-category-header')?.querySelector('.kpis-list');
          if(modifiedObj.boardName?.toLowerCase() === 'iteration'){

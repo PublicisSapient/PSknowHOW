@@ -80,7 +80,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
   buttonStyleClass = 'default';
   isSuccess: boolean = false;
-  dashConfigDataDeepCopyBackup : any
+  dashConfigDataDeepCopyBackup: any;
+  refreshCounter: number = 0;
 
   constructor(
     private httpService: HttpService,
@@ -93,7 +94,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
 
   async ngOnInit() {
-    this.selectedTab = this.service.getSelectedTab() || 'iteration';
+    // this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = this.service.getBackupOfFilterSelectionState('selected_type') ? this.service.getBackupOfFilterSelectionState('selected_type') : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
 
@@ -137,21 +138,21 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTabSwitch
         .subscribe(data => {
-          setTimeout(() => {
-            this.selectedTab = JSON.parse(JSON.stringify(data.selectedBoard));
-            if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
-              this.showChart = 'chart';
-              this.service.setShowTableView(this.showChart);
-            }
-            this.service.setSelectedDateFilter(this.selectedDayType);
+          // setTimeout(() => {
+          this.selectedTab = JSON.parse(JSON.stringify(data.selectedBoard));
+          if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
+            this.showChart = 'chart';
+            this.service.setShowTableView(this.showChart);
+          }
+          this.service.setSelectedDateFilter(this.selectedDayType);
 
-            // To DO
-            if (Object.keys(this.boardData)?.length) {
-              this.processBoardData(this.boardData);
-            } else {
-              this.setHierarchyLevels();
-            }
-          }, 0);
+          // To DO
+          if (Object.keys(this.boardData)?.length) {
+            this.processBoardData(this.boardData);
+          } else {
+            this.setHierarchyLevels();
+          }
+          // }, 0);
 
 
         }),
@@ -170,11 +171,28 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.firstLoadFilterCheck(false);
 
     this.service.setScrumKanban(this.selectedType);
-    this.service.setSelectedBoard(this.selectedTab);
+    // this.service.setSelectedBoard(this.selectedTab);
 
     this.subscriptions.push(this.service.noSprintsObs.subscribe((res) => {
       this.noFilterApplyData = res;
     }));
+
+    if (!this.refreshCounter) {
+      this.selectedTab = JSON.parse(JSON.stringify(this.service.getSelectedTab()));
+      if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
+        this.showChart = 'chart';
+        this.service.setShowTableView(this.showChart);
+      }
+      this.service.setSelectedDateFilter(this.selectedDayType);
+
+      // To DO
+      if (Object.keys(this.boardData)?.length) {
+        this.processBoardData(this.boardData);
+      } else {
+        this.setHierarchyLevels();
+      }
+      this.refreshCounter++;
+    }
   }
 
   setDateFilter() {
@@ -260,9 +278,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   processBoardData(boardData) {
     this.boardData = boardData;
-    this.selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    this.selectedBoard = boardData[this.selectedType ? this.selectedType : 'scrum'].filter((board => board.boardSlug.toLowerCase() === this.selectedTab?.toLowerCase()))[0];
     if (!this.selectedBoard) {
-      this.selectedBoard = boardData['others']?.filter((board => board.boardSlug.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+      this.selectedBoard = boardData['others']?.filter((board => board.boardSlug.toLowerCase() === this.selectedTab?.toLowerCase()))[0];
     }
 
     if (this.selectedBoard) {
@@ -379,7 +397,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       dataCopy[level.hierarchyLevelName] = this.filterDataArr[this.selectedType][level.hierarchyLevelId];
     });
     dataCopy = this.removeUndefinedProperties(dataCopy);
-    if(dataCopy['Project']){dataCopy['Project'] = dataCopy['Project']?.map(proj => {return {...proj, typeName: this.service.getSelectedType()}});}
+    if (dataCopy['Project']) { dataCopy['Project'] = dataCopy['Project']?.map(proj => { return { ...proj, typeName: this.service.getSelectedType() } }); }
     this.filterDataArr[this.selectedType] = dataCopy;
     if (this.filterDataArr[this.selectedType][this.selectedLevel]?.length) {
       if (!this.service.getSelectedTrends()?.length || this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
@@ -552,13 +570,22 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
+      let projectHierarchy=this.service.getProjectWithHierarchy().filter(x=>x.projectNodeId === data[i].nodeId)[0]?.hierarchy;
       if (data[i]?.nodeId) {
-        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName,immediateParentDisplayName:this.getImmediateParentDisplayName(data[i]) }
+        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName,immediateParentDisplayName:this.getImmediateParentDisplayName(data[i]),
+          tooltip:this.service.extractHierarchyData(projectHierarchy)
+         }
       }
     }
     if (Object.keys(this.colorObj).length) {
-      this.service.setColorObj(this.colorObj);
+      setTimeout(() => {
+        this.service.setColorObj(this.colorObj);
+      });
     }
+  }
+
+  getTooltipText(tooltipData): string {
+    return this.service.getTooltipTextFromObject(tooltipData);
   }
 
   objectKeys(obj): any[] {
@@ -767,9 +794,9 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       });
     } else {
       this.sendDataToDashboard(event);
-      if(this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project'){
+      if (this.service.getSelectedTrends()[0]?.labelName?.toLowerCase() === 'project') {
         this.buttonStyleClass = 'default';
-      }else{
+      } else {
         this.buttonStyleClass = 'disabled'
       }
     }
@@ -965,7 +992,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     } else {
       if (this.selectedTab?.toLowerCase() === 'iteration') {
         this.filterApplyData['selectedMap']['sprint'] = [];
-        let sprints = this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['nodeId'] === event[0].parentId );
+        let sprints = this.filterDataArr[this.selectedType]['Sprint']?.filter((x) => x['nodeId'] === event[0].parentId);
         sprints = this.helperService.sortByField(sprints, ['sprintState', 'sprintStartDate']);
 
         if (sprints.length) {
@@ -1429,26 +1456,20 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     const stateFilters = queryParams.get('stateFilters');
     const kpiFilters = queryParams.get('kpiFilters');
     const payload = {
-      "longStateFiltersString": stateFilters,
-      "longKPIFiltersString": kpiFilters
+      "longStateFiltersString": stateFilters || '',
+      "longKPIFiltersString": kpiFilters || ''
     };
     this.httpService.handleUrlShortener(payload).subscribe((response: any) => {
       console.log(response);
       const shortStateFilterString = response.data.shortStateFiltersString;
       const shortKPIFilterString = response.data.shortKPIFilterString;
-      const shortUrl = `${url.split('?')[0]}?stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}`;
+      const shortUrl = `${url.split('?')[0]}?stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}&selectedTab=${this.selectedTab}`;
       navigator.clipboard.writeText(shortUrl).then(() => {
         this.showSuccess();
       }).catch(err => {
         console.error('Failed to copy URL: ', err);
       });
     });
-
-    // navigator.clipboard.writeText(url).then(() => {
-    //   this.showSuccess();
-    // }).catch(err => {
-    //   console.error('Failed to copy URL: ', err);
-    // });
   }
 
   showSuccess() {
@@ -1506,38 +1527,38 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   }
 
-  sortRecordDesc(data){
+  sortRecordDesc(data) {
     return data.sort((a, b) => {
-      const numA = parseInt(a.parentId.split('_')[0],10);
-      const numB = parseInt(b.parentId.split('_')[0],10);
+      const numA = parseInt(a.parentId.split('_')[0], 10);
+      const numB = parseInt(b.parentId.split('_')[0], 10);
       return numB - numA;
     });
   }
 
 
-  showHideDataManipulationFORBEOnly(obj){
+  showHideDataManipulationFORBEOnly(obj) {
     const currentTabAllKPis = JSON.parse(JSON.stringify(this.dashConfigDataDeepCopyBackup[this.selectedType].filter(board => board.boardSlug === this.selectedTab)[0]['kpis']));
-    for (let key in obj){
+    for (let key in obj) {
       const current = obj[key];
-      if(Array.isArray(current) ){
+      if (Array.isArray(current)) {
         current.forEach(board => {
-          if(board.boardSlug === this.selectedTab){
+          if (board.boardSlug === this.selectedTab) {
             const enabledKPIID = []
             this.masterDataCopy['kpiList'].forEach(kpiD => enabledKPIID.push(kpiD.kpiId))
             currentTabAllKPis.forEach(element => {
-              if(!enabledKPIID.includes(element.kpiId)){
+              if (!enabledKPIID.includes(element.kpiId)) {
                 board['kpis'].push(element);
               }
             });
           }
-          board['kpis'].forEach(kpiDetails=>{
+          board['kpis'].forEach(kpiDetails => {
             kpiDetails.shown = true;
           })
-         });
+        });
       }
-       
+
     }
     return obj;
   }
-  
+
 }

@@ -39,7 +39,6 @@
         <ng-template let-hierarchy pTemplate="item">
           <div class="option" (click)="filterData($event,field.hierarchyLevel.hierarchyLevelId, hierarchy.code, hierarchy.name, hierarchy.parent)">
             {{hierarchy.name}}
-            <!-- <span class="parent_item"> ({{ getParent(hierarchy, field.hierarchyLevel.hierarchyLevelId) }})</span> -->
             <span class="parent_item" style="color:green;"> {{ hierarchy.parent }} </span>
           </div>
         </ng-template>
