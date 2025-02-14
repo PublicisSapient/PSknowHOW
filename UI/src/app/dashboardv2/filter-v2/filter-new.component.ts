@@ -178,8 +178,8 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }));
 
     if (!this.refreshCounter) {
-      this.selectedTab = JSON.parse(JSON.stringify(this.service.getSelectedTab()));
-      if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab.toLowerCase())) {
+      this.selectedTab = this.service.getSelectedTab() || 'iteration';
+      if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab?.toLowerCase())) {
         this.showChart = 'chart';
         this.service.setShowTableView(this.showChart);
       }
@@ -570,11 +570,12 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
-      let projectHierarchy=this.service.getProjectWithHierarchy().filter(x=>x.projectNodeId === data[i].nodeId)[0]?.hierarchy;
-      if (data[i]?.nodeId) {
-        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName,immediateParentDisplayName:this.getImmediateParentDisplayName(data[i]),
-          tooltip:this.service.extractHierarchyData(projectHierarchy)
-         }
+      let projectHirearchy = this.service.getProjectWithHierarchy().filter(x => x.projectNodeId === data[i].nodeId)[0]?.hierarchy;
+      if (data[i]?.nodeId && projectHirearchy?.length) {
+        this.colorObj[data[i].nodeId] = {
+          nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName, immediateParentDisplayName: this.getImmediateParentDisplayName(data[i]),
+          tooltip: this.service.extractHierarchyData(projectHirearchy)
+        }
       }
     }
     if (Object.keys(this.colorObj).length) {
@@ -1126,7 +1127,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.additionalFiltersArr['filter' + (index + 1)] = uniqueObjArr;
       });
       if (this.selectedTab !== 'iteration') {
-        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState.toUpperCase() === 'CLOSED');
+        this.additionalFiltersArr['filter1'] = this.additionalFiltersArr['filter1']?.filter(f => f.sprintState?.toUpperCase() === 'CLOSED');
       }
       this.service.setAdditionalFilters(this.additionalFiltersArr);
     }

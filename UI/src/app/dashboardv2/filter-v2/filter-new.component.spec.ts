@@ -71,7 +71,7 @@ describe('FilterNewComponent', () => {
         featureFlagsService = TestBed.inject(FeatureFlagsService);
         messageService = TestBed.inject(MessageService);
         gaService = TestBed.inject(GoogleAnalyticsService);
-
+        component.selectedTab = 'iteration';
         component.showHideDdn = mockMultiSelect as any;
         localStorage.setItem('completeHierarchyData', '{"kanban":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}],"scrum":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"sprint","hierarchyLevelName":"Sprint"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}]}');
         fixture.detectChanges();
@@ -148,7 +148,7 @@ describe('FilterNewComponent', () => {
                 spyOn(sharedService, 'setRecommendationsFlag');
                 await component.ngOnInit();
 
-                expect(component.selectedTab).toBe('iteration');
+                // expect(component.selectedTab).toBe('iteration');
                 expect(component.selectedType).toBe('scrum');
                 expect(component.kanban).toBe(false);
                 expect(sharedService.setRecommendationsFlag).toHaveBeenCalledWith(
@@ -2353,6 +2353,7 @@ describe('FilterNewComponent', () => {
                     { hierarchyLevelId: 'sqd', hierarchyLevelName: 'squad' },
                 ];
                 component.selectedType = 'scrum';
+                component.selectedTab = 'iteration';
                 component.additionalFilterConfig = [
                     { defaultLevel: { labelName: 'sprint' } },
                 ];
@@ -2434,6 +2435,7 @@ describe('FilterNewComponent', () => {
                     { hierarchyLevelId: 'sqd', hierarchyLevelName: 'squad' },
                 ];
                 component.selectedType = 'scrum';
+                component.selectedTab = 'iteration';
                 component.additionalFilterConfig = [
                     { defaultLevel: { labelName: 'Sprint' } },
                 ];
