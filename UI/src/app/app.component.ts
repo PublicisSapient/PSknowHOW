@@ -60,78 +60,6 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     localStorage.removeItem('newUI');
 
-    /** Fetch projectId and sprintId from query param and save it to global object */
-    this.route.queryParams
-      .subscribe(params => {
-        if (!this.refreshCounter) {
-          let stateFiltersParam = params['stateFilters'];
-          let kpiFiltersParam = params['kpiFilters'];
-
-          if (stateFiltersParam?.length) {
-            let selectedTab = decodeURIComponent(this.location.path());
-            selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-            selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
-            this.selectedTab = selectedTab.split('?statefilters=')[0];
-            this.service.setSelectedBoard(this.selectedTab);
-
-            if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
-              this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
-                .pipe(
-                  catchError((error) => {
-                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                    setTimeout(() => {
-                      this.service.raiseError({
-                        status: 900,
-                        message: error.message || 'Invalid URL.'
-                      });
-                    });
-
-                    return throwError(error);  // Re-throw the error so it can be caught by a global error handler if needed
-                  })
-                )
-                .subscribe((response: any) => {
-                  if (response.success) {
-                    const longKPIFiltersString = response.data['longKPIFiltersString'];
-                    const longStateFiltersString = response.data['longStateFiltersString'];
-                    stateFiltersParam = atob(longStateFiltersString);
-                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
-
-                    // const kpiFiltersParam = params['kpiFilters'];
-                    if (longKPIFiltersString) {
-                      const kpiFilterParamDecoded = atob(longKPIFiltersString);
-
-                      const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
-                      this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
-                    }
-
-                    this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
-                    this.refreshCounter++;
-                  }
-                });
-            } else {
-              try {
-                stateFiltersParam = atob(stateFiltersParam);
-                if (kpiFiltersParam) {
-                  const kpiFilterParamDecoded = atob(kpiFiltersParam);
-                  const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
-                  this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
-                }
-                this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
-                this.refreshCounter++;
-              } catch (error) {
-                this.router.navigate(['/dashboard/Error']); // Redirect to the error page
-                setTimeout(() => {
-                  this.service.raiseError({
-                    status: 900,
-                    message: 'Invalid URL.'
-                  });
-                }, 100);
-              }
-            }
-          }
-        }
-      });
-
     this.primengConfig.ripple = true;
     this.authorized = this.getAuth.checkAuth();
     this.router.events.subscribe(event => {
@@ -156,7 +84,7 @@ export class AppComponent implements OnInit {
     });
 
     const url = localStorage.getItem('shared_link');
-    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects;
+    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
     const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities?.includes('ROLE_SUPERADMIN');
     if (url) {
       // Extract query parameters
@@ -166,7 +94,6 @@ export class AppComponent implements OnInit {
 
       if (stateFilters && stateFilters.length > 0) {
         let decodedStateFilters: string = '';
-        // let stateFiltersObj: Object = {};
 
         if (stateFilters?.length <= 8) {
           this.httpService.handleRestoreUrl(stateFilters, kpiFilters)
@@ -214,7 +141,7 @@ export class AppComponent implements OnInit {
     projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
 
     // Check if user has access to all project in stateFiltersObjLocal['primary_level']
-    const hasAllProjectAccess = stateFilterObj.every(filter =>
+    const hasAllProjectAccess = stateFilterObj?.every(filter =>
       currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
     );
 

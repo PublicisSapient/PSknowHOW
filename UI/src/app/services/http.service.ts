@@ -189,12 +189,6 @@ export class HttpService {
     @Inject(APP_CONFIG) private config: IAppConfig,
     private sharedService: SharedService,
   ) {
-    // this.sharedService.currentUserDetailsObs.subscribe((details) => {
-    //   if (details) {
-    //     this.userName = details['user_name'];
-    //     this.userEmail = details['user_email'];
-    //   }
-    // });
   }
 
 
