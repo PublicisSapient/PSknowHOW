@@ -21,6 +21,11 @@ export class DecodeUrlGuard implements CanActivate {
             return false; // Prevent further navigation until the URL is corrected
         }
 
+        // hack
+        if(state.url.indexOf('undefined') !== -1) {
+            return false;
+        }
+
         // Allow navigation
         return true;
     }

@@ -132,7 +132,6 @@ export class SharedService {
   selectedFilterArray: any = [];
   selectedFilters: any = {};
   selectedUrlFilters: string = '{}';
-  refreshCounter: number = 0;
 
   constructor(private router: Router, private route: ActivatedRoute) {
     this.passDataToDashboard = new EventEmitter();
@@ -176,7 +175,9 @@ export class SharedService {
 
   setSelectedBoard(selectedBoard) {
     this.selectedTab = selectedBoard;
-    this.onTabSwitch.next({ selectedBoard });
+    if (selectedBoard) {
+      this.onTabSwitch.next({ selectedBoard });
+    }
   }
 
   setSelectedTab(selectedTab) {
@@ -377,16 +378,13 @@ export class SharedService {
     const hasConfig = segments && segments.includes('Config');
     const hasHelp = segments && segments.includes('Help');
     const hasError = segments && segments.includes('Error');
-    if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj)[0] === 'selected_type') {
+
+    if (selectedFilterObj && Object.keys(selectedFilterObj).length === 1 && Object.keys(selectedFilterObj).includes('selected_type')) {
       this.selectedFilters = { ...selectedFilterObj };
     } else if (selectedFilterObj) {
       this.selectedFilters = { ...this.selectedFilters, ...selectedFilterObj };
     } else {
       this.selectedFilters = null;
-    }
-
-    if (this.refreshCounter === 0) {
-      this.refreshCounter++;
     }
 
     // Navigate and update query parameters
@@ -395,12 +393,31 @@ export class SharedService {
 
     // NOTE: Do not navigate if the state filters are same as previous, this is to reduce the number of navigation calls, hence refactoring the code
     if ((this.tempStateFilters !== stateFilterEnc) && (!hasConfig && !hasError && !hasHelp)) {
-      this.router.navigate([], {
-        queryParams: { 'stateFilters': stateFilterEnc },
-        relativeTo: this.route
-      });
       this.tempStateFilters = stateFilterEnc;
+      setTimeout(() => {
+        this.router.navigate(['/dashboard/' + this.selectedTab], {
+          queryParams: { 'stateFilters': stateFilterEnc, 'selectedTab': this.selectedTab },
+          relativeTo: this.route
+        });
+      });
     }
+  }
+
+  isObjectArrayEmpty(value) {
+    if (value === null || value === undefined) {
+      return true;
+    }
+    if (Array.isArray(value)) {
+      return value.length === 0 || value.every(x => this.isObjectArrayEmpty(x)); // Recursively check all elements
+    }
+    if (typeof value === 'object') {
+      const keys = Object.keys(value);
+      if (keys.length === 0) {
+        return true; // Empty object
+      }
+      return false; // Not empty if it has other keys
+    }
+    return false; // For other data types like numbers, strings, booleans
   }
 
   getBackupOfFilterSelectionState(prop = null) {
@@ -447,7 +464,7 @@ export class SharedService {
 
     if (!hasConfig && !hasError && !hasHelp) {
       this.router.navigate([], {
-        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr }, // Pass the object here
+        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr, 'selectedTab': this.selectedTab }, // Pass the object here
         relativeTo: this.route,
       });
     }
@@ -704,7 +721,7 @@ export class SharedService {
     ];
   }
 
-  setUserDetailsAsBlankObj(){
+  setUserDetailsAsBlankObj() {
     this.currentUserDetails = {}
   }
 
