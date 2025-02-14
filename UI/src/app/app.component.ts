@@ -94,7 +94,6 @@ export class AppComponent implements OnInit {
 
       if (stateFilters && stateFilters.length > 0) {
         let decodedStateFilters: string = '';
-        // let stateFiltersObj: Object = {};
 
         if (stateFilters?.length <= 8) {
           this.httpService.handleRestoreUrl(stateFilters, kpiFilters)

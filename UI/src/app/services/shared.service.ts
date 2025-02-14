@@ -143,7 +143,6 @@ export class SharedService {
     // For additional filters
     this.populateAdditionalFilters = new EventEmitter();
     this.triggerAdditionalFilters = new EventEmitter();
-    // this.selectedTrendsEvent = new EventEmitter();
 
     this.selectedTrendsEventSubject = new Subject<any>();
     // Observable to subscribe to
@@ -529,7 +528,6 @@ export class SharedService {
       }
     });
     this.selectedTrends = values;
-    // this.selectedTrendsEvent.emit(values);
     this.selectedTrendsEventSubject.next(values);
   }
   getSelectedTrends() {
@@ -675,6 +673,36 @@ export class SharedService {
 
   setRecommendationsFlag(value: boolean) {
     this.isRecommendationsEnabledSubject.next(value);
+  }
+
+  getProjectWithHierarchy(){
+    return JSON.parse(localStorage.getItem('projectWithHierarchy') || '{}');
+  }
+
+  extractHierarchyData(hierarchyArray) {
+    let result = {};
+    if (!Array.isArray(hierarchyArray)) {
+        console.error("Invalid input: hierarchyArray should be an array.");
+        return result; // Return empty object if input is not an array
+    }
+    hierarchyArray.forEach(item => {
+        if (item && typeof item === 'object' && item.hierarchyLevel && item.value) {
+            if (item.hierarchyLevel.hierarchyLevelName) {
+                result[item.hierarchyLevel.hierarchyLevelName] = item.value;
+            } else {
+                console.warn("Missing hierarchyLevelName in:", item);
+            }
+        } else {
+            console.warn("Invalid item structure:", item);
+        }
+    });
+    return result;
+  }
+
+  getTooltipTextFromObject(tooltipData): string {
+    return Object?.entries(tooltipData)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
   }
 
   //#region  can be remove after iteraction component removal

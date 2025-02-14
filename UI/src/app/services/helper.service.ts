@@ -793,7 +793,6 @@ export class HelperService {
 
   logoutHttp() {
     this.httpService.logout().subscribe((responseData) => {
-      // if (responseData?.success) {
       if (!environment['AUTHENTICATION_SERVICE']) {
         this.isKanban = false;
         // Set blank selectedProject after logged out state
@@ -842,7 +841,6 @@ export class HelperService {
         if (Array.isArray(item.data) && item.data?.length) {
           ++dataCount;
         } else if (item.data && !isNaN(parseInt(item.data))) {
-          // dataCount += item?.data;
           ++dataCount;
         } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
           if (item.value[0]?.hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
@@ -1006,7 +1004,6 @@ export class HelperService {
       const selectedTab = queryParams.get('selectedTab');
       if (stateFilters) {
         let decodedStateFilters: string = '';
-        // let stateFiltersObj: Object = {};
 
         if (stateFilters?.length <= 8) {
           this.httpService.handleRestoreUrl(stateFilters, kpiFilters)
@@ -1062,7 +1059,6 @@ export class HelperService {
     const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
     const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
 
-    // localStorage.removeItem('shared_link');
     if (hasAccessToAll) {
       this.router.navigate([url]);
     } else {

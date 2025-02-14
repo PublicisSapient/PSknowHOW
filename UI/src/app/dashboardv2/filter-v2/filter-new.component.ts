@@ -570,8 +570,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     let colorsArr = ['#6079C5', '#FFB587', '#D48DEF', '#A4F6A5', '#FBCF5F', '#9FECFF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
+      let projectHierarchy=this.service.getProjectWithHierarchy().filter(x=>x.projectNodeId === data[i].nodeId)[0]?.hierarchy;
       if (data[i]?.nodeId) {
-        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName, immediateParentDisplayName: this.getImmediateParentDisplayName(data[i]) }
+        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName,immediateParentDisplayName:this.getImmediateParentDisplayName(data[i]),
+          tooltip:this.service.extractHierarchyData(projectHierarchy)
+         }
       }
     }
     if (Object.keys(this.colorObj).length) {
@@ -579,6 +582,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
         this.service.setColorObj(this.colorObj);
       });
     }
+  }
+
+  getTooltipText(tooltipData): string {
+    return this.service.getTooltipTextFromObject(tooltipData);
   }
 
   objectKeys(obj): any[] {

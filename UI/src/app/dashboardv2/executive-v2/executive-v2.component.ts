@@ -154,7 +154,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.processedKPI11Value = {};
     this.selectedBranchFilter = 'Select';
     this.serviceObject = {};
-    // this.selectedtype = 'scrum';
   }
 
   setGlobalConfigData(globalConfig) {
@@ -2485,6 +2484,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     }
     return finalArr;
   }
+
 
   /** get array of the kpi level filter */
   getDropdownArray(kpiId) {

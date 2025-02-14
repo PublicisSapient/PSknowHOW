@@ -90,7 +90,7 @@ export class KpiCardV2Component implements OnInit, OnChanges {
   copyCardData: any;
   currentChartData;
   KpiCategory;
-  colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];//d3.schemeCategory10;//['#167a26', '#4ebb1a', '#f53535'];
+  colorPalette = ['#FBCF5F', '#6079C5', '#A4F6A5'];
   selectedButtonValue;
   cardData;
   reportModuleEnabled: boolean = false;
@@ -145,10 +145,6 @@ export class KpiCardV2Component implements OnInit, OnChanges {
       this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
     /** assign 1st value to radio button by default */
-    // if (this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length && this.dropdownArr[0]?.options.length) {
-    //   console.log('default first radio')
-    //   this.radioOption = this.dropdownArr[0]?.options[0];
-    // }
   }
 
   async initializeMenu() {
