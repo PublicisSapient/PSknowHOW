@@ -394,7 +394,7 @@ export class SharedService {
     if ((this.tempStateFilters !== stateFilterEnc) && (!hasConfig && !hasError && !hasHelp)) {
       this.tempStateFilters = stateFilterEnc;
       setTimeout(() => {
-        this.router.navigate(['/dashboard/' + this.selectedTab], {
+        this.router.navigate([], {
           queryParams: { 'stateFilters': stateFilterEnc, 'selectedTab': this.selectedTab },
           relativeTo: this.route
         });
@@ -443,6 +443,7 @@ export class SharedService {
   removeQueryParams() {
     this.router.navigate([], {
       queryParams: {}, // Clear query params
+      relativeTo: this.route
     });
   }
 
@@ -676,7 +677,7 @@ export class SharedService {
   }
 
   getProjectWithHierarchy(){
-    return JSON.parse(localStorage.getItem('projectWithHierarchy') || '{}');
+    return JSON.parse(localStorage.getItem('projectWithHierarchy') || '[]');
   }
 
   extractHierarchyData(hierarchyArray) {

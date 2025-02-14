@@ -63,6 +63,8 @@ export class DashboardV2Component implements AfterContentInit {
         this.selectedTab = data.selectedBoard;
       }
     });
+
+    // this.service.setSelectedBoard('iteration');
   }
 
   ngAfterContentInit() {

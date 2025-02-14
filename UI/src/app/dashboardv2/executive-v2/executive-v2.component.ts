@@ -445,7 +445,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.refreshCounter = 0;
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-    this.queryParamsSubscription.unsubscribe();
+    if (this.queryParamsSubscription) {
+      this.queryParamsSubscription.unsubscribe();
+    }
   }
 
   /**
