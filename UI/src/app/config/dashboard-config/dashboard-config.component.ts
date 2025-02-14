@@ -258,20 +258,11 @@
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
             that.userProjects = [];
-            const all = {
-              name: "ALL",
-              id: "all",
-              type : 'common',
-              isSort : false
-            };
             that.userProjects = response.data.map((filteredProj) => ({
                 name: filteredProj.projectName,
                 id: filteredProj.id,
                 type : filteredProj.kanban ? 'kanban' : 'scrum'
               }));
-              if(this.userProjects && that.userProjects.length){
-                that.userProjects.unshift(all);
-              }  
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = [];
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
