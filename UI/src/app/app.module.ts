@@ -38,7 +38,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ScrollTopModule } from 'primeng/scrolltop';
-import { ActivatedRoute } from '@angular/router';
 /******************************************************/
 
 /******************* components   ***********************/
@@ -48,11 +47,11 @@ import { CircularProgressComponent } from './component/circular-progress/circula
 import { ProgressbarComponent } from './component/progressbar/progressbar.component';
 import { CircularchartComponent } from './component/circularchart/circularchart.component';
 import { NumberchartComponent } from './component/numberchart/numberchart.component';
-import { BarchartComponent } from './component/barchart/barchart.component';
+
 import { LineBarChartComponent } from './component/line-bar-chart/line-bar-chart.component';
 import { LineBarChartWithHowerComponent } from './component/line-bar-chart-with-hover/line-bar-chart-with-hover.component';
 import { GaugechartComponent } from './component/gaugechart/gaugechart.component';
-import { MultilineComponent } from './component/multiline/multiline.component';
+
 import { MaturityComponent } from './dashboard/maturity/maturity.component';
 import { GroupstackchartComponent } from './component/groupedstackchart/groupstackchart.component';
 import { GroupstackchartComponentv2 } from './component/groupedstackchart-v2/groupstackchart-v2.component';
@@ -124,15 +123,9 @@ import { PrimaryFilterComponent } from './dashboardv2/filter-v2/primary-filter/p
 import { AdditionalFilterComponent } from './dashboardv2/filter-v2/additional-filter/additional-filter.component';
 import { ExecutiveV2Component } from './dashboardv2/executive-v2/executive-v2.component';
 import { KpiCardV2Component } from './dashboardv2/kpi-card-v2/kpi-card-v2.component';
-import { MultilineV2Component } from './component/multiline-v2/multiline-v2.component';
-import { TrendIndicatorV2Component } from './dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
-import { GroupedColumnPlusLineChartV2Component } from './component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
-import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
-import { TooltipV2Component } from './component/tooltip-v2/tooltip-v2.component';
-import { HorizontalPercentBarChartv2Component } from './component/horizontal-percent-bar-chartv2/horizontal-percent-bar-chartv2.component';
+
 import { RecommendationsComponent } from './component/recommendations/recommendations.component';
-import { ChartWithFiltersComponent } from './component/chart-with-filters/chart-with-filters.component';
-import { KpiAdditionalFilterComponent } from './component/kpi-additional-filter/kpi-additional-filter.component';
+
 import { StickyHeaderV2Component } from './dashboardv2/sticky-header-v2/sticky-header-v2.component';
 import { KpiHelperService } from './services/kpi-helper.service';
 import { SelectButtonModule } from 'primeng/selectbutton';
