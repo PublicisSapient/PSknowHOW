@@ -95,7 +95,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     const shared_link = localStorage.getItem('shared_link');
-    const queryParams = new URLSearchParams(shared_link.split('?')[1]);
+    const queryParams = new URLSearchParams(shared_link?.split('?')[1]);
     const selectedType = queryParams.get('selectedType');
     // this.selectedTab = this.service.getSelectedTab() || 'iteration';
     this.selectedType = selectedType ? selectedType : 'scrum';
