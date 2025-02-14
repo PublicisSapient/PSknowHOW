@@ -30,7 +30,7 @@ export class AppInitializerService {
   constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService, private helperService: HelperService) {
   }
   commonRoutes: Routes = [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    { path: '', redirectTo: 'iteration', pathMatch: 'full' },
     { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
     // {
     //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],

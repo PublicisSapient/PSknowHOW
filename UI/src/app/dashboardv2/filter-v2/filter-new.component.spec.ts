@@ -72,8 +72,10 @@ describe('FilterNewComponent', () => {
         messageService = TestBed.inject(MessageService);
         gaService = TestBed.inject(GoogleAnalyticsService);
         component.selectedTab = 'iteration';
+        component.selectedType = 'scrum';
         component.showHideDdn = mockMultiSelect as any;
         localStorage.setItem('completeHierarchyData', '{"kanban":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}],"scrum":[{"id":"6442815917ed167d8157f0f5","level":1,"hierarchyLevelId":"bu","hierarchyLevelName":"BU","hierarchyInfo":"Business Unit"},{"id":"6442815917ed167d8157f0f6","level":2,"hierarchyLevelId":"ver","hierarchyLevelName":"Vertical","hierarchyInfo":"Industry"},{"id":"6442815917ed167d8157f0f7","level":3,"hierarchyLevelId":"acc","hierarchyLevelName":"Account","hierarchyInfo":"Account"},{"id":"6442815917ed167d8157f0f8","level":4,"hierarchyLevelId":"port","hierarchyLevelName":"Engagement","hierarchyInfo":"Engagement"},{"level":5,"hierarchyLevelId":"project","hierarchyLevelName":"Project"},{"level":6,"hierarchyLevelId":"sprint","hierarchyLevelName":"Sprint"},{"level":6,"hierarchyLevelId":"release","hierarchyLevelName":"Release"},{"level":7,"hierarchyLevelId":"sqd","hierarchyLevelName":"Squad"}]}');
+        localStorage.setItem('shared_link', '/dashboard/speed?stateFilters=fRB6gVl_&kpiFilters=47DEQpj8&selectedTab=speed&selectedType=scrum');
         fixture.detectChanges();
     });
 
@@ -673,7 +675,7 @@ describe('FilterNewComponent', () => {
                     { level: 1, labelName: 'Project', nodeId: '123', nodeName: 'def', basicProjectConfigId: '123' }
                 ]));
                 spyOn(httpService, 'getFilterData').and.returnValue(of(mockFilterData));
-
+                component.selectedTab = 'iteration';
                 // Act
                 component.getFiltersData();
 

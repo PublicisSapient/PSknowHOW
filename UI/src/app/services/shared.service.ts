@@ -395,7 +395,7 @@ export class SharedService {
       this.tempStateFilters = stateFilterEnc;
       setTimeout(() => {
         this.router.navigate([], {
-          queryParams: { 'stateFilters': stateFilterEnc, 'selectedTab': this.selectedTab },
+          queryParams: { 'stateFilters': stateFilterEnc, 'selectedTab': this.selectedTab, 'selectedType': this.selectedtype },
           relativeTo: this.route
         });
       });
@@ -464,7 +464,7 @@ export class SharedService {
 
     if (!hasConfig && !hasError && !hasHelp) {
       this.router.navigate([], {
-        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr, 'selectedTab': this.selectedTab }, // Pass the object here
+        queryParams: { 'stateFilters': this.tempStateFilters, 'kpiFilters': kpiFilterParamStr, 'selectedTab': this.selectedTab, 'selectedType': this.selectedtype }, // Pass the object here
         relativeTo: this.route,
       });
     }
