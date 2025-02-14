@@ -178,7 +178,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     }));
 
     if (!this.refreshCounter) {
-      this.selectedTab = this.service.getSelectedTab() || 'iteration';
+      this.selectedTab = this.service.getSelectedTab();
       if (['iteration', 'backlog', 'release', 'dora', 'developer', 'kpi-maturity'].includes(this.selectedTab?.toLowerCase())) {
         this.showChart = 'chart';
         this.service.setShowTableView(this.showChart);

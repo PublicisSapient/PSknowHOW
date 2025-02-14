@@ -30,7 +30,7 @@ export class AppInitializerService {
   constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService, private helperService: HelperService) {
   }
   commonRoutes: Routes = [
-    { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
     // {
     //     // path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
@@ -73,6 +73,7 @@ export class AppInitializerService {
           }
         },
         { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [DecodeUrlGuard] },
+        { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
         { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
 
       ], canActivate: [AuthGuard],
@@ -87,6 +88,7 @@ export class AppInitializerService {
       path: 'dashboard', component: DashboardV2Component,
       children: [
         ...this.commonRoutes,
+        { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
         { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
         {
           path: 'Config',
@@ -175,7 +177,7 @@ export class AppInitializerService {
             if (localStorage.getItem('shared_link')) {
               this.helperService.urlShorteningRedirection();
             } else {
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(['/dashboard/iteration']);
             }
           }
         }, error => {
