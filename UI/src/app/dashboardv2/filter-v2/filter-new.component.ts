@@ -94,8 +94,11 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
 
   async ngOnInit() {
+    const shared_link = localStorage.getItem('shared_link');
+    const queryParams = new URLSearchParams(shared_link.split('?')[1]);
+    const selectedType = queryParams.get('selectedType');
     // this.selectedTab = this.service.getSelectedTab() || 'iteration';
-    this.selectedType = this.service.getBackupOfFilterSelectionState('selected_type') ? this.service.getBackupOfFilterSelectionState('selected_type') : 'scrum';
+    this.selectedType = selectedType ? selectedType : 'scrum';
     this.kanban = this.selectedType.toLowerCase() === 'kanban' ? true : false;
 
     this.dateRangeFilter = {
@@ -1456,6 +1459,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     const queryParams = new URLSearchParams(url.split('?')[1]);
     const stateFilters = queryParams.get('stateFilters');
     const kpiFilters = queryParams.get('kpiFilters');
+    const selectedTypeParam = queryParams.get('selectedType');
     const payload = {
       "longStateFiltersString": stateFilters || '',
       "longKPIFiltersString": kpiFilters || ''
@@ -1464,7 +1468,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
       console.log(response);
       const shortStateFilterString = response.data.shortStateFiltersString;
       const shortKPIFilterString = response.data.shortKPIFilterString;
-      const shortUrl = `${url.split('?')[0]}?stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}&selectedTab=${this.selectedTab}`;
+      const shortUrl = `${url.split('?')[0]}?stateFilters=${shortStateFilterString}&kpiFilters=${shortKPIFilterString}&selectedTab=${this.selectedTab}&selectedType=${selectedTypeParam}`;
       navigator.clipboard.writeText(shortUrl).then(() => {
         this.showSuccess();
       }).catch(err => {
