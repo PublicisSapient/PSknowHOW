@@ -571,10 +571,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       let projectHirearchy = this.service.getProjectWithHierarchy().filter(x => x.projectNodeId === data[i].nodeId)[0]?.hierarchy;
-      if (data[i]?.nodeId && projectHirearchy?.length) {
+      if (data[i]?.nodeId) {
         this.colorObj[data[i].nodeId] = {
           nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId, labelName: data[i].labelName, nodeDisplayName: data[i].nodeDisplayName, immediateParentDisplayName: this.getImmediateParentDisplayName(data[i]),
-          tooltip: this.service.extractHierarchyData(projectHirearchy)
+          tooltip: projectHirearchy?.length ? this.service.extractHierarchyData(projectHirearchy) : {}
         }
       }
     }
