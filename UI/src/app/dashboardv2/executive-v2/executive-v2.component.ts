@@ -147,7 +147,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.processedKPI11Value = {};
     this.selectedBranchFilter = 'Select';
     this.serviceObject = {};
-    // this.selectedtype = 'scrum';
   }
 
   setGlobalConfigData(globalConfig) {

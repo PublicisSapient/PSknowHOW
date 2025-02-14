@@ -101,7 +101,6 @@ export class LoginComponent implements OnInit {
                     const longKPIFiltersString = response.data['longKPIFiltersString'];
                     const longStateFiltersString = response.data['longStateFiltersString'];
                     stateFiltersParam = atob(longStateFiltersString);
-                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
 
                     // const kpiFiltersParam = params['kpiFilters'];
                     if (longKPIFiltersString) {

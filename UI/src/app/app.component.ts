@@ -94,9 +94,7 @@ export class AppComponent implements OnInit {
                     const longKPIFiltersString = response.data['longKPIFiltersString'];
                     const longStateFiltersString = response.data['longStateFiltersString'];
                     stateFiltersParam = atob(longStateFiltersString);
-                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
 
-                    // const kpiFiltersParam = params['kpiFilters'];
                     if (longKPIFiltersString) {
                       const kpiFilterParamDecoded = atob(longKPIFiltersString);
 
@@ -166,7 +164,6 @@ export class AppComponent implements OnInit {
 
       if (stateFilters && stateFilters.length > 0) {
         let decodedStateFilters: string = '';
-        // let stateFiltersObj: Object = {};
 
         if (stateFilters?.length <= 8) {
           this.httpService.handleRestoreUrl(stateFilters, kpiFilters)

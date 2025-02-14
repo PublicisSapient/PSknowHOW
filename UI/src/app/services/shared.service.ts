@@ -144,7 +144,6 @@ export class SharedService {
     // For additional filters
     this.populateAdditionalFilters = new EventEmitter();
     this.triggerAdditionalFilters = new EventEmitter();
-    // this.selectedTrendsEvent = new EventEmitter();
 
     this.selectedTrendsEventSubject = new Subject<any>();
     // Observable to subscribe to
@@ -512,7 +511,6 @@ export class SharedService {
       }
     });
     this.selectedTrends = values;
-    // this.selectedTrendsEvent.emit(values);
     this.selectedTrendsEventSubject.next(values);
   }
   getSelectedTrends() {

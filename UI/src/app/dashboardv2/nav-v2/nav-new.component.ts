@@ -57,7 +57,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
       (response) => {
 
         this.setBoards(response);
-        // this.setBoards(this.dummyData);
       },
       (error) => {
         this.messageService.add({
@@ -108,7 +107,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
         });
         data['configDetails'] = response.data.configDetails;
         if (!this.helperService.deepEqual(this.dashConfigData, data)) {
-          // this.sharedService.setDashConfigData(data);
           this.dashConfigData = data;
         }
 
@@ -140,7 +138,6 @@ export class NavNewComponent implements OnInit, OnDestroy {
   handleMenuTabFunctionality(obj) {
     this.selectedTab = obj['boardSlug'];
     if (this.selectedTab !== 'unauthorized access') {
-      // this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
       this.sharedService.setSelectedBoard(this.selectedTab);
     }
     if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
