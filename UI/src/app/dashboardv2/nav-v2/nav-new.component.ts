@@ -20,6 +20,7 @@ export class NavNewComponent implements OnInit, OnDestroy {
   subscriptions: any[] = [];
   dashConfigData: any;
   selectedBasicConfigIds: any[] = [];
+  previousSelectedTrend: any;
   dummyData = require('../../../test/resource/board-config-PSKnowHOW.json');
 
   constructor(public httpService: HttpService, public sharedService: SharedService, public messageService: MessageService, public router: Router, public helperService: HelperService) {
@@ -28,15 +29,20 @@ export class NavNewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.sharedService.setScrumKanban(this.selectedType);
-
+    this.selectedTab = this.sharedService.getSelectedTab();
     this.sharedService.onTabSwitch
       .subscribe(data => {
         this.selectedTab = data.selectedBoard;
+        // this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+        // this.router.navigate(['/dashboard/' + this.activeItem['slug']]);
       });
 
     this.sharedService.primaryFilterChangeSubject.subscribe(x => {
       if (this.sharedService.getSelectedTrends() && this.sharedService.getSelectedTrends()[0]) {
-        this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+        if (!this.helperService.deepEqual(this.previousSelectedTrend, this.sharedService.getSelectedTrends()[0])) {
+          this.previousSelectedTrend = this.sharedService.getSelectedTrends()[0];
+          this.getBoardConfig([...this.sharedService.getSelectedTrends().map(proj => proj['basicProjectConfigId'])]);
+        }
       } else {
         this.getBoardConfig([]);
       }
@@ -140,10 +146,13 @@ export class NavNewComponent implements OnInit, OnDestroy {
     if (this.selectedTab !== 'unauthorized access') {
       this.sharedService.setSelectedBoard(this.selectedTab);
     }
-    if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
-      || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
-      this.sharedService.setBackupOfFilterSelectionState({ 'additional_level': null });
+    if (this.selectedTab) {
+      if (this.selectedTab === 'iteration' || this.selectedTab === 'release' || this.selectedTab === 'backlog'
+        || this.selectedTab === 'dora' || this.selectedTab === 'kpi-maturity') {
+        this.sharedService.setBackupOfFilterSelectionState({ 'additional_level': null });
+      }
     }
+    this.sharedService.setBackupOfFilterSelectionState({ 'selected_tab': obj['boardSlug'] });
     this.router.navigate(['/dashboard/' + obj['boardSlug']]);
   }
 }

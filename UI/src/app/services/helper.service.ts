@@ -406,18 +406,18 @@ export class HelperService {
   }*/
 
 
-    sortAlphabetically(objArray) {
-        if (objArray && objArray.length > 1) {
-            objArray.sort((a, b) => {
-                const aName = a.nodeDisplayName || a.nodeName || a.data || a.date || a;
-                const bName = b.nodeDisplayName || b.nodeName || b.data || b.date || b;
-                if (typeof aName === 'string' && typeof bName === 'string') {
-                    return aName.localeCompare(bName);
-                }
-            });
+  sortAlphabetically(objArray) {
+    if (objArray && objArray.length > 1) {
+      objArray.sort((a, b) => {
+        const aName = a.nodeDisplayName || a.nodeName || a.data || a.date || a;
+        const bName = b.nodeDisplayName || b.nodeName || b.data || b.date || b;
+        if (typeof aName === 'string' && typeof bName === 'string') {
+          return aName.localeCompare(bName);
         }
-        return objArray;
+      });
     }
+    return objArray;
+  }
 
   sortByField(objArray, propArr): any {
     objArray.sort((a, b) => {
@@ -799,13 +799,19 @@ export class HelperService {
         this.sharedService.setSelectedProject(null);
         this.httpService.setCurrentUserDetails({});
         this.sharedService.setUserDetailsAsBlankObj();
-        this.sharedService.setVisibleSideBar(false);
         this.sharedService.setAddtionalFilterBackup({});
+
+        this.sharedService.setSelectedBoard(null);
+        this.sharedService.selectedTab = null;
         this.sharedService.setKpiSubFilterObj({});
         this.sharedService.setBackupOfFilterSelectionState(null); // -> SENDING NULL SO THAT SELECTED FILTERS ARE RESET ON LOGOUT
         localStorage.clear();
-        this.router.navigate(['./authentication/login']).then(() => {
-        });
+        this.router.navigate(['/authentication/login'])
+          .then(() => {
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
+          });
       } else {
         let redirect_uri = window.location.href;
         window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
@@ -995,7 +1001,7 @@ export class HelperService {
       const queryParams = new URLSearchParams(shared_link.split('?')[1]);
       const stateFilters = queryParams.get('stateFilters');
       const kpiFilters = queryParams.get('kpiFilters');
-
+      const selectedTab = queryParams.get('selectedTab');
       if (stateFilters) {
         let decodedStateFilters: string = '';
 
@@ -1025,8 +1031,10 @@ export class HelperService {
           this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
         }
       }
+    } else if (window.location.hash.indexOf('selectedTab') !== -1) {
+      this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });
     } else {
-      this.router.navigate(['./dashboard/']);
+      this.router.navigate(['./dashboard/iteration']);
     }
   }
 
@@ -1036,14 +1044,14 @@ export class HelperService {
 
     let stateFilterObj = [];
 
-    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && stateFiltersObjLocal['parent_level'] && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
       stateFilterObj = [stateFiltersObjLocal['parent_level']];
     } else {
       stateFilterObj = stateFiltersObjLocal['primary_level'];
     }
 
     // Check if user has access to all project in stateFiltersObjLocal['primary_level']
-    const hasAllProjectAccess = stateFilterObj.every(filter =>
+    const hasAllProjectAccess = stateFilterObj?.every(filter =>
       currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
     );
 

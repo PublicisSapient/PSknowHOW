@@ -3431,6 +3431,7 @@ describe('ExecutiveV2Component', () => {
     component.tooltip = {
       sprintCountForKpiCalculation: 2
     }
+    component.selectedTab = 'my-knowhow';
     component.filterApplyData = {
       label: 'project',
       selectedMap: {
@@ -7531,6 +7532,7 @@ describe('ExecutiveV2Component', () => {
     component.filterApplyData = {
       label: 'project'
     }
+    component.selectedTab = 'my-knowhow';
     // spyOn(component, 'getLastConfigurableTrendingListData');
     const jiraKpiData = {
       kpi14: {
@@ -12609,7 +12611,7 @@ describe('ExecutiveV2Component', () => {
 
         const event = { filter1: 'option1' };
         const selectedFilterBackup = { filter1: ['option2'] };
-
+        component.selectedTab = 'backlog';
         component.kpiSelectedFilterObj = {};
         component.kpiSelectedFilterObj[kpi.kpiId] = selectedFilterBackup;
 
@@ -12986,8 +12988,9 @@ describe('ExecutiveV2Component', () => {
     it('should call the necessary group functions and set showCommentIcon to true', () => {
       component.service.setSelectedType('scrum');
       component.selectedtype = 'scrum';
+      component.selectedTab = 'my-knowhow';
       component.filterData = [];
-      component.filterApplyData = { level: 'level1' };
+      component.filterApplyData = { selectedMap: { sprint: 'level1' } };
       component.configGlobalData = [{ boardName: 'Tab1', kpis: [] }];
       component.selectedtype = 'Type1';
       component.hierarchyLevel = [{ hierarchyLevelId: 'level1' }];
@@ -13028,6 +13031,7 @@ describe('ExecutiveV2Component', () => {
     component.filterApplyData = { level: 'level1' };
     component.configGlobalData = [{ boardName: 'Tab1', kpis: [] }];
     component.selectedtype = 'kanban';
+    component.selectedTab = 'my-knowhow';
     component.hierarchyLevel = [{ hierarchyLevelId: 'level1' }];
 
     spyOn(component, 'groupJiraKanbanKpi');
@@ -13833,7 +13837,7 @@ describe('ExecutiveV2Component', () => {
   describe('ExecutiveV2Component.postJiraKPIForIteration() postJiraKPIForIteration method', () => {
     describe('Happy Paths', () => {
       it('should process data correctly when valid data is returned', () => {
-        const postData =  {
+        const postData = {
           "kpiList": [
             {
               "id": "65793ddb127be336160bc0fe",

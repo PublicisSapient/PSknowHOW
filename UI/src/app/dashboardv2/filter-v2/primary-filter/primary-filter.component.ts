@@ -43,7 +43,8 @@ export class PrimaryFilterComponent implements OnChanges {
     const selectedTypeChanged = changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType'].previousValue && !changes['selectedType']?.firstChange;
     const selectedTabChanged = changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab'].previousValue && !changes['selectedTab']?.firstChange;
 
-    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged || selectedTabChanged) {
+    if (selectedLevelChanged || primaryFilterConfigChanged || selectedTypeChanged) // || selectedTabChanged) 
+    {
       this.applyDefaultFilters();
       return;
     }
@@ -57,7 +58,7 @@ export class PrimaryFilterComponent implements OnChanges {
     this.populateFilters();
     setTimeout(() => {
       this.stateFilters = (this.service.getBackupOfUrlFilters() && JSON.parse(this.service.getBackupOfUrlFilters())['primary_level']) ? JSON.parse(this.service.getBackupOfUrlFilters()) : this.service.getBackupOfFilterSelectionState();
-      if (Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig &&
+      if (this.stateFilters && Object.keys(this.stateFilters).length > 0 && this.primaryFilterConfig &&
         this.primaryFilterConfig['defaultLevel'] && this.primaryFilterConfig['defaultLevel']['labelName']) {
         if (this.filters?.length && this.filters[0] && this.filters[0]?.labelName.toLowerCase() === this.primaryFilterConfig['defaultLevel']['labelName'].toLowerCase() ||
           this.hierarchyLevels.map(x => x.toLowerCase()).includes(this.filters[0]?.labelName.toLowerCase())) {
@@ -119,6 +120,9 @@ export class PrimaryFilterComponent implements OnChanges {
         }
         // PROBLEM AREA END
         this.applyPrimaryFilters({});
+      } else {
+        // this.selectedFilters = [this.filters[0]];
+        // this.applyPrimaryFilters({});
       }
     }, 100);
   }
@@ -215,7 +219,8 @@ export class PrimaryFilterComponent implements OnChanges {
           this.applyFilters = false;
 
           if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'sprint' || this.selectedFilters[0]?.labelName?.toLowerCase() === 'release') {
-             this.service.setSelectedTrends(this.filterData['Project'].filter(x => this.selectedFilters.map(s=>s.parentId).includes(x.nodeId)));
+            this.service.setSelectedTrends(this.filterData['Project'].filter(x => this.selectedFilters.map(s=>s.parentId).includes(x.nodeId)));
+            // this.service.setSelectedTrends(this.selectedFilters);
           } else if (this.selectedFilters[0]?.labelName?.toLowerCase() === 'project') {
             this.service.setSelectedTrends(this.selectedFilters);
           }
@@ -225,7 +230,11 @@ export class PrimaryFilterComponent implements OnChanges {
       if (this.multiSelect?.overlayVisible) {
         this.multiSelect.close(event);
       }
-    }
+    } 
+    // else {
+    //   this.onPrimaryFilterChange.emit([...this.selectedFilters]);
+    //   this.service.setBackupOfFilterSelectionState({ 'primary_level': [...this.selectedFilters] });
+    // }
   }
 
   compareObjects(obj1, obj2) {

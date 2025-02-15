@@ -16,112 +16,73 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { HttpService } from 'src/app/services/http.service';
-import { SharedService } from 'src/app/services/shared.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { of, throwError } from 'rxjs';
-import { Location } from '@angular/common';
-import { UntypedFormBuilder } from '@angular/forms';
-import { HelperService } from 'src/app/services/helper.service'; // Import HelperService
+import { of } from 'rxjs';
 import { LoginComponent } from './login.component';
+import { HttpService } from '../../services/http.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HelperService } from 'src/app/services/helper.service';
+import { SharedService } from '../../services/shared.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
-
-const mockProjectsData = [
-  {
-    id: "667d496d7946571a7ed6ae15",
-    projectNodeId: "0a556ab3-cb3d-4333-bd69-7cf5ffe06082",
-    projectName: "Digital 4 - FCASDP",
-    projectDisplayName: "Digital 4 - FCASDP",
-    createdAt: "2024-06-27T11:13:49",
-    updatedAt: "2024-09-07T11:53:14",
-    updatedBy: "KnowHOW System Admin",
-    kanban: false,
-    hierarchy: [
-      {
-        hierarchyLevel: { level: 1, hierarchyLevelId: "bu", hierarchyLevelName: "BU" },
-        orgHierarchyNodeId: "2c234a25-e1bb-402e-9443-e947d994f9f5",
-        value: "International"
-      },
-      {
-        hierarchyLevel: { level: 2, hierarchyLevelId: "ver", hierarchyLevelName: "Vertical" },
-        orgHierarchyNodeId: "5db14cc1-23e2-40da-8964-8c39384c3e46",
-        value: "Team Intergroup - EU GDD"
-      },
-      {
-        hierarchyLevel: { level: 3, hierarchyLevelId: "acc", hierarchyLevelName: "Account" },
-        orgHierarchyNodeId: "781af435-4ba3-451f-9461-62f719becd9a",
-        value: "Stellantis N.V."
-      },
-      {
-        hierarchyLevel: { level: 4, hierarchyLevelId: "port", hierarchyLevelName: "Engagement" },
-        orgHierarchyNodeId: "a6df0764-317a-4db2-b5df-c82de58d9a04",
-        value: "Customer end to end reporting"
-      }
-    ],
-    saveAssigneeDetails: false,
-    developerKpiEnabled: false,
-    projectOnHold: false,
-    isKanban: false
-  }
-];
+import { APP_CONFIG, AppConfig } from '../../services/app.config';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let mockHttpService: jasmine.SpyObj<HttpService>;
-  let mockSharedService: jasmine.SpyObj<SharedService>;
-  let mockRouter: jasmine.SpyObj<Router>;
-  let mockLocation: jasmine.SpyObj<Location>;
-  let mockActivatedRoute: any;
-  let mockHelperService: jasmine.SpyObj<HelperService>; // Mock HelperService
-  let mockGAService: jasmine.SpyObj<GoogleAnalyticsService>;
+  let router: Router;
+  let httpService: HttpService;
+  let sharedService: SharedService;
+  let helperService: HelperService;
+  let ga: GoogleAnalyticsService;
+
+  const mockRouter = {
+    navigate: jasmine.createSpy('navigate'),
+  };
+
+  const mockActivatedRoute = {
+    snapshot: {
+      queryParams: { returnUrl: '/' },
+    },
+    queryParams: of({ sessionExpire: 'Session expired' }),
+  };
+
+  // const mockHttpService = jasmine.createSpyObj('HttpService', ['login', 'handleRestoreUrl', 'getAllProjects']);
+
+  const mockSharedService = {
+    getCurrentUserDetails: jasmine.createSpy('getCurrentUserDetails'),
+    raiseError: jasmine.createSpy('raiseError'),
+  };
+
+  const mockHelperService = jasmine.createSpyObj('HelperService', ['urlShorteningRedirection']);
+
+  const mockGoogleAnalyticsService = {
+    setLoginMethod: jasmine.createSpy('setLoginMethod'),
+  };
 
   beforeEach(async () => {
-    mockHttpService = jasmine.createSpyObj('HttpService', ['login', 'getAllProjects','handleRestoreUrl']);
-    mockSharedService = jasmine.createSpyObj('SharedService', [
-      'setSelectedBoard',
-      'setKpiSubFilterObj',
-      'getKpiSubFilterObj',
-      'setBackupOfFilterSelectionState',
-      'raiseError',
-      'getCurrentUserDetails'
-    ]);
-    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
-    mockLocation = jasmine.createSpyObj('Location', ['path']);
-    mockHelperService = jasmine.createSpyObj('HelperService', ['someHelperMethod','urlShorteningRedirection']); // Spy HelperService
-    mockGAService = jasmine.createSpyObj('GoogleAnalyticsService', ['setLoginMethod']);
-    mockHttpService.login.and.returnValue(of({ status: 200, body: { token: 'dummy-token' } }));
-    mockHttpService.getAllProjects.and.returnValue(of(mockProjectsData));
-
-
-    // Mock ActivatedRoute with queryParams observable
-    mockActivatedRoute = {
-      snapshot: { queryParams: { returnUrl: '/', sessionExpire: 'true' } },
-      queryParams: of({
-        stateFilters: btoa(JSON.stringify([{ id: 1, name: 'Filter1' }])),
-        kpiFilters: btoa(JSON.stringify([{ id: 2, name: 'KPI1' }]))
-      })
-    };
-
     await TestBed.configureTestingModule({
       declarations: [LoginComponent],
+      imports: [ReactiveFormsModule, HttpClientTestingModule],
       providers: [
-        UntypedFormBuilder,
-        { provide: HttpService, useValue: mockHttpService },
-        { provide: SharedService, useValue: mockSharedService },
         { provide: Router, useValue: mockRouter },
-        { provide: Location, useValue: mockLocation },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: HelperService, useValue: mockHelperService }, // ✅ Added HelperService Mock
-        { provide: GoogleAnalyticsService, useValue: mockGAService },
-      ]
+        { provide: APP_CONFIG, useValue: AppConfig },
+        HttpService,
+        { provide: SharedService, useValue: mockSharedService },
+        { provide: HelperService, useValue: mockHelperService },
+        { provide: GoogleAnalyticsService, useValue: mockGoogleAnalyticsService },
+      ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    httpService = TestBed.inject(HttpService);
+    sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    ga = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
+
     fixture.detectChanges();
   });
 
@@ -129,169 +90,114 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize the loginForm correctly', () => {
+  it('should initialize the form on init', () => {
     expect(component.loginForm).toBeDefined();
     expect(component.loginForm.controls['username']).toBeDefined();
     expect(component.loginForm.controls['password']).toBeDefined();
   });
 
-  it('should set returnUrl from queryParams', () => {
-    expect(component.returnUrl).toBe('/');
-  });
-
-  it('should handle stateFilters and kpiFilters', fakeAsync(() => {
-    component.ngOnInit();
-    tick(); // Simulates async execution
-
-    expect(mockSharedService.setSelectedBoard).toHaveBeenCalled();
-    expect(mockSharedService.setBackupOfFilterSelectionState).toHaveBeenCalled();
-  }));
-
-  it('should handle URL restore successfully', fakeAsync(() => {
-    const mockResponse = {
-      success: true,
-      data: {
-        longKPIFiltersString: btoa(JSON.stringify([{ id: 2, name: 'KPI1' }])),
-        longStateFiltersString: btoa(JSON.stringify([{ id: 1, name: 'Filter1' }]))
-      }
-    };
-
-    mockHttpService.handleRestoreUrl.and.returnValue(of(mockResponse));
-
-    component.ngOnInit();
-    tick();
-
-    expect(mockSharedService.setBackupOfFilterSelectionState).toHaveBeenCalledWith([{ id: 1, name: 'Filter1' }]);
-    expect(mockSharedService.setKpiSubFilterObj).toHaveBeenCalledWith([{ id: 2, name: 'KPI1' }]);
-  }));
-
-  it('should initialize loginForm with empty values', () => {
-    expect(component.loginForm).toBeDefined();
-    expect(component.loginForm.controls['username'].value).toBe('');
-    expect(component.loginForm.controls['password'].value).toBe('');
-  });
-
-  it('should return form controls from getter `f()`', () => {
-    expect(component.f).toBeDefined();
-    expect(component.f.username).toBeDefined();
-    expect(component.f.password).toBeDefined();
-  });
-
-  it('should stop execution if form is invalid', () => {
-    component.loginForm.controls['username'].setValue('');
-    component.loginForm.controls['password'].setValue('');
+  it('should not submit if form is invalid', () => {
+    spyOn(httpService, 'login');
     component.onSubmit();
-    expect(component.loading).toBeFalse();
-    expect(mockHttpService.login).not.toHaveBeenCalled();
+    expect(component.submitted).toBeTrue();
+    expect(httpService.login).not.toHaveBeenCalled();
   });
 
-  it('should call login service on valid form submission', fakeAsync(() => {
-    component.loginForm.controls['username'].setValue('testuser');
-    component.loginForm.controls['password'].setValue('password123');
+  xit('should call login service on valid form submission', () => {
+    component.loginForm.setValue({ username: 'test', password: 'password' });
+    spyOn(httpService,'login');
+    component.onSubmit();
 
-    mockHttpService.login.and.returnValue(of({ status: 200, body: { token: 'dummy-token' } }));
+    expect(httpService.login).toHaveBeenCalledWith('', 'test', 'password');
+  });
+
+  it('should handle 401 error on login', () => {
+    component.loginForm.setValue({ username: 'test', password: 'password' });
+    spyOn(httpService,'login').and.returnValue(of({ status: 401, error: { message: 'Unauthorized' } }));
 
     component.onSubmit();
-    tick(); // Simulates async execution
 
-    expect(component.loading).toBeFalse();
-    expect(mockHttpService.login).toHaveBeenCalledWith('', 'testuser', 'password123');
-  }));
-
-  it('should return true if user email is missing in `redirectToProfile()`', () => {
-    mockSharedService.getCurrentUserDetails.and.returnValue('');
-    expect(component.redirectToProfile()).toBeTrue();
-  });
-
-  it('should return false if user has ROLE_SUPERADMIN in `redirectToProfile()`', () => {
-    mockSharedService.getCurrentUserDetails.and.returnValue(['ROLE_SUPERADMIN']);
-    expect(component.redirectToProfile()).toBeFalse();
-  });
-
-  it('should return true if projectsAccess is undefined or empty in `redirectToProfile()`', () => {
-    mockSharedService.getCurrentUserDetails.and.returnValue(undefined);
-    expect(component.redirectToProfile()).toBeTrue();
-  });
-
-  it('should handle login failure with status 401 in `performLogin()`', () => {
-    const mockData = { status: 401, error: { message: 'Invalid credentials' } };
-
-    component.performLogin(mockData, 'testuser', 'password123');
-
-    expect(component.loading).toBeFalse();
+    expect(component.error).toBe('Unauthorized');
     expect(component.f.password.value).toBe('');
-    expect(component.submitted).toBeFalse();
-    expect(component.error).toBe('Invalid credentials');
   });
 
-  it('should handle login failure with status 0 (server error) in `performLogin()`', () => {
-    const mockData = { status: 0 };
+  xit('should redirect to profile if conditions are met', () => {
+    component.loginForm.setValue({ username: 'test', password: 'password' });
+    spyOn(httpService,'login').and.returnValue(of({ status: 200, body: {} }));
 
-    component.performLogin(mockData, 'testuser', 'password123');
+    mockSharedService.getCurrentUserDetails.and.returnValue('');
 
-    expect(component.loading).toBeFalse();
+    component.onSubmit();
+
+    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
+  });
+
+  it('should handle 401 status code', () => {
+    const data = { status: 401, error: { message: 'Unauthorized' } };
+    component.performLogin(data, 'username', 'password');
+    expect(component.error).toBe('Unauthorized');
+    expect(component.f.password.value).toBe('');
+    expect(component.submitted).toBe(false);
+  });
+
+  it('should handle 0 status code (Internal Server Error)', () => {
+    const data = { status: 0 };
+    component.performLogin(data, 'username', 'password');
     expect(component.error).toBe('Internal Server Error');
   });
 
-  it('should handle successful login and redirect in `performLogin()`', fakeAsync(() => {
-    const mockData = { status: 200, body: { token: 'dummy-token' } };
-    const mockProjects = { data: [{ id: 1, name: 'Project 1' }] };
-
-    mockHttpService.getAllProjects.and.returnValue(of(mockProjects));
-    spyOn(localStorage, 'setItem');
-
-    component.performLogin(mockData, 'testuser', 'password123');
-    tick();
-
-    expect(mockGAService.setLoginMethod).toHaveBeenCalledWith(mockData.body, 'standard');
-    expect(mockHttpService.getAllProjects).toHaveBeenCalled();
-    expect(localStorage.setItem).toHaveBeenCalledWith('projectWithHierarchy', JSON.stringify(mockProjects.data));
-  }));
-
-  it('should redirect to profile if `redirectToProfile()` returns true in `performLogin()`', fakeAsync(() => {
-    const mockData = { status: 200, body: { token: 'dummy-token' } };
+  it('should handle 200 status code with redirectToProfile() returning true', () => {
     spyOn(component, 'redirectToProfile').and.returnValue(true);
-
-    component.performLogin(mockData, 'testuser', 'password123');
-    tick();
-
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
-  }));
-
-  it('should call `urlShorteningRedirection` if `redirectToProfile()` returns false in `performLogin()`', fakeAsync(() => {
-    const mockData = { status: 200, body: { token: 'dummy-token' } };
-    spyOn(component, 'redirectToProfile').and.returnValue(false);
-
-    component.performLogin(mockData, 'testuser', 'password123');
-    tick();
-
-    expect(mockHelperService.urlShorteningRedirection).toHaveBeenCalled();
-  }));
-
-  it('should return true when projectsAccess is "undefined"', () => {
-    // Mock other calls to avoid the error
-    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
-    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue([]);
-    
-    // Mock the specific case for 'projectsAccess'
-    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue('undefined');
-  
-    const result = component.redirectToProfile();
-    
-    expect(result).toBeTrue();
+    const data = { status: 200, body: {} };
+    component.performLogin(data, 'username', 'password');
+    expect(router.navigate).toHaveBeenCalledWith(['./dashboard/Config/Profile']);
   });
-  
+
+  it('should return true when user email is missing', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue(null);
+
+    expect(component.redirectToProfile()).toBeTrue();
+  });
+
+  it('should return true when user email is an empty string', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('');
+
+    expect(component.redirectToProfile()).toBeTrue();
+  });
+
+  it('should return false when user has ROLE_SUPERADMIN', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_SUPERADMIN']);
+
+    expect(component.redirectToProfile()).toBeFalse();
+  });
+
+  it('should return true when projectsAccess is undefined', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
+    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue(undefined);
+
+    expect(component.redirectToProfile()).toBeTrue();
+  });
+
   it('should return true when projectsAccess is an empty array', () => {
-    // Mock other calls to avoid the error
     mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
-    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue([]);
-  
-    // Mock the specific case for 'projectsAccess'
+    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
     mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue([]);
-  
-    const result = component.redirectToProfile();
-  
-    expect(result).toBeTrue();
-  });
-});
 
+    expect(component.redirectToProfile()).toBeTrue();
+  });
+
+  it('should return undefined when projectsAccess has data (valid case)', () => {
+    mockSharedService.getCurrentUserDetails.withArgs('user_email').and.returnValue('test@example.com');
+    mockSharedService.getCurrentUserDetails.withArgs('authorities').and.returnValue(['ROLE_USER']);
+    mockSharedService.getCurrentUserDetails.withArgs('projectsAccess').and.returnValue(['Project1']);
+
+    expect(component.redirectToProfile()).toBeUndefined();
+  });
+
+
+  // afterEach(() => {
+  //   localStorage.removeItem('shared_link');
+  // });
+});

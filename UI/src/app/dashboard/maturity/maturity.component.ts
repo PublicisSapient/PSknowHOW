@@ -27,8 +27,10 @@ import * as d3 from 'd3';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { HelperService } from '../../services/helper.service';
-import { Router } from '@angular/router';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
+import { catchError, distinctUntilChanged } from 'rxjs/operators';
+import { Location } from '@angular/common';
+import { Subscription, throwError } from 'rxjs';
 
 
 @Component({
@@ -85,7 +87,10 @@ export class MaturityComponent implements OnInit, OnDestroy {
   noProjects = false;
   isKanban = false;
   updatedGlobalConfigData: Array<object> = [];
-  constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService, private router: Router) {
+  queryParamsSubscription!: Subscription;
+  refreshCounter: number = 0;
+  constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService,
+    private router: Router, private route: ActivatedRoute, private location: Location) {
     this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       this.configGlobalData = globalConfig;
       this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer' && board?.boardName.toLowerCase() !== 'dora' && board?.boardName.toLowerCase() !== 'release' && board?.boardName.toLowerCase() !== 'backlog');
@@ -116,6 +121,129 @@ export class MaturityComponent implements OnInit, OnDestroy {
       this.showNoDataMsg = false;
     }));
 
+    this.route.queryParams
+      // .pipe(first())
+      .subscribe(params => {
+        if (!this.refreshCounter) {
+          let stateFiltersParam = params['stateFilters'];
+          let kpiFiltersParam = params['kpiFilters'];
+          let tabParam = params['selectedTab'];
+          if (!tabParam) {
+            if (!this.service.getSelectedTab()) {
+              let selectedTab = decodeURIComponent(this.location.path());
+              selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+              selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+              this.selectedTab = selectedTab.split('?statefilters=')[0];
+              this.service.setSelectedBoard(this.selectedTab);
+            } else {
+              this.selectedTab = this.service.getSelectedTab();
+              this.service.setSelectedBoard(this.selectedTab);
+            }
+          } else {
+            this.selectedTab = tabParam;
+            this.service.setSelectedBoard(this.selectedTab);
+          }
+          if (stateFiltersParam?.length) {
+            if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
+              this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
+                .pipe(
+                  catchError((error) => {
+                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                    setTimeout(() => {
+                      this.service.raiseError({
+                        status: 900,
+                        message: error.message || 'Invalid URL.'
+                      });
+                    });
+
+                    return throwError(error);  // Re-throw the error so it can be caught by a global error handler if needed
+                  })
+                )
+                .subscribe((response: any) => {
+                  if (response.success) {
+                    const longKPIFiltersString = response.data['longKPIFiltersString'];
+                    const longStateFiltersString = response.data['longStateFiltersString'];
+                    stateFiltersParam = atob(longStateFiltersString);
+                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
+
+                    // const kpiFiltersParam = params['kpiFilters'];
+                    if (longKPIFiltersString) {
+                      const kpiFilterParamDecoded = atob(longKPIFiltersString);
+
+                      const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+                      this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+                    }
+
+                    // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+
+                    this.urlRedirection(stateFiltersParam);
+                    this.refreshCounter++;
+                  }
+                });
+            } else {
+              try {
+                stateFiltersParam = atob(stateFiltersParam);
+                if (kpiFiltersParam) {
+                  const kpiFilterParamDecoded = atob(kpiFiltersParam);
+                  const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+                  this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+                }
+                // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+                this.urlRedirection(stateFiltersParam);
+                this.refreshCounter++;
+              } catch (error) {
+                this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                setTimeout(() => {
+                  this.service.raiseError({
+                    status: 900,
+                    message: 'Invalid URL.'
+                  });
+                }, 100);
+              }
+            }
+          }
+        }
+      });
+
+  }
+
+  urlRedirection(decodedStateFilters) {
+    const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
+    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
+    const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities?.includes('ROLE_SUPERADMIN');
+    let stateFilterObj = [];
+    let projectLevelSelected = false;
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && stateFiltersObjLocal['parent_level'] && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+      stateFilterObj = [stateFiltersObjLocal['parent_level']];
+    } else {
+      stateFilterObj = stateFiltersObjLocal['primary_level'];
+    }
+
+    projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
+
+    // Check if user has access to all project in stateFiltersObjLocal['primary_level']
+    const hasAllProjectAccess = stateFilterObj?.every(filter =>
+      currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
+    );
+
+    // Superadmin have all project access hence no need to check project for superadmin
+    const hasAccessToAll = ifSuperAdmin || hasAllProjectAccess;
+
+    if (projectLevelSelected) {
+      if (hasAccessToAll) {
+        this.service.setBackupOfFilterSelectionState(stateFiltersObjLocal);
+      } else {
+        this.service.setBackupOfFilterSelectionState(null);
+        this.queryParamsSubscription.unsubscribe();
+        this.router.navigate(['/dashboard/Error']);
+        setTimeout(() => {
+          this.service.raiseError({
+            status: 901,
+            message: 'No project access.',
+          });
+        }, 100);
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -177,7 +305,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
 
     this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
-      this.isKanban = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+      this.isKanban = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
     }));
 
     if (!this.service.getFilterObject()) {

@@ -112,7 +112,7 @@
       </div>
       <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext"
-        *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
+        *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
         <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
           <i class="pi pi-pause" style="font-size: 1rem"></i>
         </span>
