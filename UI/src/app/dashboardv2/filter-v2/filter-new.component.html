@@ -32,9 +32,10 @@
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
     <ng-container *ngIf="objectKeys(colorObj).length">
       <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
-        <li class="selectedfilter cursor-pointer p-mr-3" pTooltip="{{ getTooltipText(item.tooltip) }}" tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
+        <li class="selectedfilter cursor-pointer p-mr-3" pTooltip="{{ getTooltipText(item.tooltip) }}"
+          tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
           <div class="selected-node">
-            <div class="selected-node-label p-pl-0" >
+            <div class="selected-node-label p-pl-0">
               <span class="align-list-marker" [ngStyle]="{'background':item?.color}"></span>
               <span class="p-l-1">{{filterType | uppercase}} {{ item?.nodeDisplayName?.length<= 20 ?
                   item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
@@ -46,6 +47,9 @@
       </ng-container>
     </ng-container>
   </ul>
+
+
+
   <ng-container>
     <div class="p-d-flex p-col-fixed p-jc-end p-pl-0 p-pr-0 duration-container" *ngIf="additionalData">
       <div class="p-d-inline-block p-mr-2">
@@ -80,7 +84,16 @@
       </div>
 
     </div>
+
     <div class="p-d-flex p-jc-between p-ai-center">
+      
+      <div class="show-hide-container cursor-pointer" pTooltip="Sprint Goals" tooltipPosition="top" tooltipEvent="hover"
+        tooltipStyleClass="tooltiptext">
+        <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleSprintGoals()">
+          <i class="pi pi-check-square" style="font-size: 1rem"></i>
+        </span>
+      </div>
+
       <div class="view-tabs p-pl-2 p-pr-2"
         *ngIf="this.selectedTab?.toLowerCase()  !== 'release' && this.selectedTab?.toLowerCase()  !== 'backlog' && this.selectedTab?.toLowerCase()  !== 'dora'&& this.selectedTab?.toLowerCase()  !== 'developer' && this.selectedTab?.toLowerCase()  !== 'iteration' && this.selectedTab?.toLowerCase()  !== 'kpi-maturity'">
         <div aria-hidden="true" pTooltip="Chart View" tooltipPosition="top" tooltipEvent="hover"
@@ -163,10 +176,17 @@
           </div>
         </div>
       </div>
+
+
     </div>
   </ng-container>
+
 </div>
 
+
+<div *ngIf="showSprintGoalsPanel" class="p-col-12 p-p-2">
+  <app-collapsible-panel></app-collapsible-panel>
+</div>
 <p-dialog [(visible)]="displayModal" [modal]="true">
   <p-header>Are you sure you want to refresh?</p-header>
   <p-footer>

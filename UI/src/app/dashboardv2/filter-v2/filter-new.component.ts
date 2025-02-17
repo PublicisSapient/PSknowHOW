@@ -82,6 +82,7 @@ export class FilterNewComponent implements OnInit, OnDestroy {
   isSuccess: boolean = false;
   dashConfigDataDeepCopyBackup: any;
   refreshCounter: number = 0;
+  showSprintGoalsPanel: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -1564,6 +1565,10 @@ export class FilterNewComponent implements OnInit, OnDestroy {
 
     }
     return obj;
+  }
+
+  toggleSprintGoals() {
+    this.showSprintGoalsPanel = !this.showSprintGoalsPanel;
   }
 
 }
