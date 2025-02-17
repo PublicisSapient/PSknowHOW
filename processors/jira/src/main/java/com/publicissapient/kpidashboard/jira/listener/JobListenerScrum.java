@@ -137,12 +137,16 @@ public class JobListenerScrum implements JobExecutionListener {
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_SPRINT_HIERARCHY);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.CACHE_PROJECT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
-		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT,
-				CommonConstant.JIRA_KPI, projectId);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, projectId,
+				CommonConstant.JIRA_KPI);
 		try {
 			if (jobExecution.getStatus() == BatchStatus.FAILED) {
 				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(),

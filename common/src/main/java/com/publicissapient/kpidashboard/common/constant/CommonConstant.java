@@ -33,12 +33,16 @@ public final class CommonConstant {
 	public static final String TESTING_KPI_CACHE = "testingKpiCache";
 	public static final String JIRAKANBAN_KPI_CACHE = "jiraKanbanKpiCache";
 	public static final String CACHE_ACCOUNT_HIERARCHY = "accountHierarchy";
+
+	public static final String CACHE_ORGANIZATION_HIERARCHY = "organizationHierarchies";
+	public static final String CACHE_PROJECT_HIERARCHY = "projectHierarchies";
 	public static final String CACHE_SPRINT_HIERARCHY = "sprintHierarchy";
 	public static final String CACHE_ACCOUNT_HIERARCHY_KANBAN = "accountHierarchyKanban";
 	public static final String CACHE_TOOL_CONFIG_MAP = "toolItemMap";
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
 	public static final String CACHE_BOARD_META_DATA_MAP = "boardMetaDataMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
+	public static final String CACHE_ALL_PROJECT_CONFIG_MAP = "allProjectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
 	public static final String CACHE_PROJECT_KPI_DATA = "project_kpi_data_cache";
 
@@ -118,7 +122,6 @@ public final class CommonConstant {
 	public static final String BLANK = "";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
-	public static final String CACHE_HIERARCHY_LEVEL_VALUE = "cache_hierarchy_level_value";
 	public static final String CACHE_PROJECT_BASIC_TREE = "cache_project_basic_tree";
 	public static final String CACHE_USER_BOARD_CONFIG = "cache_user_board_config";
 

@@ -35,6 +35,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { environment } from 'src/environments/environment';
 import { of, throwError } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 describe('ProjectListComponent', () => {
   let component: ProjectListComponent;
@@ -68,6 +69,7 @@ describe('ProjectListComponent', () => {
         'Ontario',
         'Texas',
         'Washinton'
+        
       ]
     },
     {
@@ -191,7 +193,8 @@ describe('ProjectListComponent', () => {
         HttpClientTestingModule,
         TableModule,
         DropdownModule,
-        ToolbarModule
+        ToolbarModule,
+        FormsModule // Add this line to import FormsModule
       ],
       providers: [
         HttpService,

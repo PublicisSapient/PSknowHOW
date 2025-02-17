@@ -2082,45 +2082,6 @@ describe('CapacityPlanningComponent', () => {
     });
   });
 
-  // describe('makeUniqueArrayList', () => {
-  //   it('should return an empty array if the input array is empty', () => {
-  //     const result = component.makeUniqueArrayList([]);
-  //     expect(result).toEqual([]);
-  //   });
-
-  //   it('should return an array with unique elements based on the "nodeId" property', () => {
-  //     const input = [
-  //       { nodeId: 1, path: 'path1', parentId: 1 },
-  //       { nodeId: 2, path: 'path2', parentId: 2 },
-  //       { nodeId: 1, path: 'path3', parentId: 3 },
-  //       { nodeId: 3, path: 'path4', parentId: 1 },
-  //     ];
-  //     const expectedOutput = [
-  //       { nodeId: 1, path: ['path1', 'path3'], parentId: [1, 3] },
-  //       { nodeId: 2, path: ['path2'], parentId: [2] },
-  //       { nodeId: 3, path: ['path4'], parentId: [1] },
-  //     ];
-  //     const result = component.makeUniqueArrayList(input);
-  //     expect(result).toEqual(expectedOutput);
-  //   });
-
-  //   it('should group the "path" and "parentId" properties for elements with the same "nodeId"', () => {
-  //     const input = [
-  //       { nodeId: 1, path: 'path1', parentId: 1 },
-  //       { nodeId: 2, path: 'path2', parentId: 2 },
-  //       { nodeId: 1, path: 'path3', parentId: 3 },
-  //       { nodeId: 3, path: 'path4', parentId: 1 },
-  //     ];
-  //     const expectedOutput = [
-  //       { nodeId: 1, path: ['path1', 'path3'], parentId: [1, 3] },
-  //       { nodeId: 2, path: ['path2'], parentId: [2] },
-  //       { nodeId: 3, path: ['path4'], parentId: [1] },
-  //     ];
-  //     const result = component.makeUniqueArrayList(input);
-  //     expect(result).toEqual(expectedOutput);
-  //   });
-  // });
-
   describe('checkDefaultFilterSelection', () => {
     it('should call getProjectBasedData if flag is false', () => {
       component.getProjectBasedData = jasmine.createSpy();
@@ -2984,4 +2945,99 @@ describe('CapacityPlanningComponent', () => {
     component.createAdditionalFilterCapacityList(squadCapacityMap)
     expect(spy).toEqual(additionalFilterCapacityList);
   })
+
+
+  it('should return kanban columns when kanban is true', () => {
+    component.kanban = true;
+    component.cols = { capacityKanbanKeys: ['col1', 'col2'], capacityScrumKeys: ['scrum1', 'scrum2'] };
+    
+    expect(component.getGridColumns()).toEqual(['col1', 'col2']);
+  });
+
+  it('should return scrum columns when kanban is false', () => {
+    component.kanban = false;
+    component.cols = { capacityKanbanKeys: ['col1', 'col2'], capacityScrumKeys: ['scrum1', 'scrum2'] };
+    
+    expect(component.getGridColumns()).toEqual(['scrum1', 'scrum2']);
+  });
+
+  // Test Case 2: checkIfGridDataIdEmpty()
+  it('should return true when capacityKanbanData has data and kanban is true', () => {
+    component.kanban = true;
+    component.capacityKanbanData = [{ id: 1 }, { id: 2 }];
+    
+    expect(component.checkIfGridDataIdEmpty()).toBeTrue();
+  });
+
+  it('should return false when capacityKanbanData is empty and kanban is true', () => {
+    component.kanban = true;
+    component.capacityKanbanData = [];
+    
+    expect(component.checkIfGridDataIdEmpty()).toBeFalse();
+  });
+
+  it('should return true when capacityScrumData has data and kanban is false', () => {
+    component.kanban = false;
+    component.capacityScrumData = [{ id: 1 }, { id: 2 }];
+    
+    expect(component.checkIfGridDataIdEmpty()).toBeTrue();
+  });
+
+  it('should return false when capacityScrumData is empty and kanban is false', () => {
+    component.kanban = false;
+    component.capacityScrumData = [];
+    
+    expect(component.checkIfGridDataIdEmpty()).toBeFalse();
+  });
+
+  // Test Case 3: getGridData()
+  it('should return kanban data when kanban is true', () => {
+    component.kanban = true;
+    component.capacityKanbanData = [{ id: 1 }];
+    
+    expect(component.getGridData()).toEqual([{ id: 1 }]);
+  });
+
+  it('should return scrum data when kanban is false', () => {
+    component.kanban = false;
+    component.capacityScrumData = [{ id: 2 }];
+    
+    expect(component.getGridData()).toEqual([{ id: 2 }]);
+  });
+
+  // Test Case 4: getDataKey()
+  it('should return "startDate" when kanban is true', () => {
+    component.kanban = true;
+    expect(component.getDataKey()).toBe('startDate');
+  });
+
+  it('should return "sprintNodeId" when kanban is false', () => {
+    component.kanban = false;
+    expect(component.getDataKey()).toBe('sprintNodeId');
+  });
+
+  // Test Case 5: getExpandedClass()
+  it('should return correct classes when kanban is true', () => {
+    component.kanban = true;
+    
+    const result = component.getExpandedClass(true, true);
+    
+    expect(result).toEqual({ 'tr-active': true, 'row-expanded': true });
+  });
+
+  it('should return correct classes when kanban is false and sprintState is active', () => {
+    component.kanban = false;
+    
+    const result = component.getExpandedClass({ sprintState: 'active' }, true);
+    
+    expect(result).toEqual({ 'tr-active': true, 'row-expanded': true });
+  });
+
+  it('should return correct classes when kanban is false and sprintState is not active', () => {
+    component.kanban = false;
+    
+    const result = component.getExpandedClass({ sprintState: 'closed' }, true);
+    
+    expect(result).toEqual({ 'tr-active': false, 'row-expanded': true });
+  });
 });

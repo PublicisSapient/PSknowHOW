@@ -390,7 +390,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	}
 
 	private void setProjectMeta(CapacityMaster capacityMaster, ProjectBasicConfig project) {
-		capacityMaster.setProjectNodeId(project.getProjectName() + "_" + project.getId().toHexString());
+		capacityMaster.setProjectNodeId(project.getProjectNodeId());
 		capacityMaster.setProjectName(project.getProjectName());
 		capacityMaster.setBasicProjectConfigId(project.getId());
 		capacityMaster.setKanban(project.getIsKanban());

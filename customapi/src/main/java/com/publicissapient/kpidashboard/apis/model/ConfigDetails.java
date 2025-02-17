@@ -28,7 +28,6 @@ public class ConfigDetails {
 	private Double percentile;
 	private int hierarchySelectionCount;
 	private DateRangeFilter dateRangeFilter;
-	private int noOfDataPoints;
 	private boolean gitlabToolFieldFlag;
 	private int sprintCountForKpiCalculation;
 
@@ -95,7 +94,6 @@ public class ConfigDetails {
 	}
 
 	public void setNoOfDataPoints(int noOfDataPoints) {
-		this.noOfDataPoints = noOfDataPoints;
 	}
 
 	public void setSprintCountForKpiCalculation(int sprintCountForKpiCalculation) {

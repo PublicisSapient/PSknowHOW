@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -44,6 +46,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -77,6 +80,7 @@ public class SonarTechDebtServiceImplTest {
 	private static Tool tool2;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 	@Mock
 	ConfigHelperService configHelperService;
 	@InjectMocks
@@ -87,11 +91,14 @@ public class SonarTechDebtServiceImplTest {
 	private CustomApiConfig customApiConfig;
 	@Mock
 	CacheService cacheService;
+	@Mock
+	private CommonService commonService;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
 	private Map<String, List<Tool>> toolGroup = new HashMap<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+	private List<DataCount> trendValues = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
@@ -116,13 +123,46 @@ public class SonarTechDebtServiceImplTest {
 
 		setMockFieldMapping();
 
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectBasicConfig.setIsKanban(true);
+		projectBasicConfig.setProjectName("Scrum Project");
+		projectBasicConfig.setProjectNodeId("Scrum Project_6335363749794a18e8a4479b");
+		projectConfigList.add(projectBasicConfig);
+
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
 		fieldMappingList.forEach(fieldMapping -> {
 			fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		});
+
+		projectConfigList.add(projectBasicConfig);
+
+		projectConfigList.forEach(projectConfigs -> {
+			projectConfigMap.put(projectConfigs.getProjectName(), projectConfigs);
+		});
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
+
+
+		List<DataCount> dataCountList = new ArrayList<>();
+		dataCountList.add(createDataCount("2022-07-26", 0l));
+		dataCountList.add(createDataCount("2022-07-27", 35l));
+		dataCountList.add(createDataCount("2022-07-28", 44l));
+		dataCountList.add(createDataCount("2022-07-29", 0l));
+		dataCountList.add(createDataCount("2022-07-30", 0l));
+		dataCountList.add(createDataCount("2022-07-31", 12l));
+		dataCountList.add(createDataCount("2022-08-01", 0l));
+		DataCount dataCount = createDataCount(null, 0l);
+		dataCount.setData("");
+		dataCount.setValue(dataCountList);
+		trendValues.add(dataCount);
+		trendValueMap.put("Overall", trendValues);
+		trendValueMap.put("BRANCH1->PR_10304", trendValues);
+
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 	}
 
 	private void setToolMap() {
@@ -398,6 +438,16 @@ public class SonarTechDebtServiceImplTest {
 	@Test
 	public void testThresold(){
 		assertEquals(Double.valueOf(0), stdServiceImpl.calculateThresholdValue(new FieldMapping()));
+	}
+
+	private DataCount createDataCount(String date, Long data) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(data.toString());
+		dataCount.setSProjectName("PR_10304");
+		dataCount.setDate(date);
+		dataCount.setHoverValue(new HashMap<>());
+		dataCount.setValue(Long.valueOf(data));
+		return dataCount;
 	}
 
 

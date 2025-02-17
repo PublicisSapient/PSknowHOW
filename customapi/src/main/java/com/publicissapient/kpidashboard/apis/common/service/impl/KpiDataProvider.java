@@ -31,10 +31,13 @@ import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -83,14 +86,19 @@ public class KpiDataProvider {
 	private BuildRepository buildRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private ProjectReleaseRepo projectReleaseRepo;
 
 	/**
 	 * Fetches data from DB for the given project and sprints combination.
 	 *
 	 * @param kpiRequest
+	 *            The KPI request object.
 	 * @param basicProjectConfigId
+	 *            The project config ID.
 	 * @param sprintList
-	 * @return
+	 *            The list of sprint IDs.
+	 * @return A map containing story list, sprint details, and JiraIssue history.
 	 */
 	public Map<String, Object> fetchIssueCountDataFromDB(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList) {
@@ -158,11 +166,14 @@ public class KpiDataProvider {
 	 * Fetch data from data for given project.
 	 *
 	 * @param basicProjectConfigId
+	 *            The project config ID.
 	 * @param startDate
+	 *            The start date
 	 * @param endDate
-	 * @return
+	 *            The end date
+	 * @return The list of Build
 	 */
-	public List<Build> fetchBuildFrequencydata(ObjectId basicProjectConfigId, String startDate, String endDate) {
+	public List<Build> fetchBuildFrequencyData(ObjectId basicProjectConfigId, String startDate, String endDate) {
 		List<String> statusList = List.of(BuildStatus.SUCCESS.name());
 		Map<String, List<String>> mapOfFilters = new HashMap<>();
 		mapOfFilters.put("buildStatus", statusList);
@@ -193,7 +204,7 @@ public class KpiDataProvider {
 		Map<String, Map<String, Object>> uniqueProjectMapForSubTask = new HashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 
-		/** additional filter **/
+		// additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, CommonConstant.QA,
 				filterHelperService);
 
@@ -220,10 +231,12 @@ public class KpiDataProvider {
 		uniqueProjectMapForSubTask.put(basicProjectConfigId.toString(), mapOfProjectFiltersForSubTask);
 
 		Map<String, Object> capacityMapOfFilters = new HashMap<>();
+		KpiDataHelper.createAdditionalFilterMapForCapacity(kpiRequest, capacityMapOfFilters, filterHelperService);
+
 		capacityMapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 				sprintList.stream().distinct().toList());
 		capacityMapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().toList());
+				basicProjectConfigIds.stream().map(ObjectId::new).distinct().toList());
 		resultListMap.put(ESTIMATE_TIME,
 				capacityKpiDataRepository.findByFilters(capacityMapOfFilters, new HashMap<>()));
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
@@ -255,7 +268,6 @@ public class KpiDataProvider {
 
 		return resultListMap;
 	}
-
 
 	/**
 	 * Fetches sprint Velocity data from the database for the given project and
@@ -321,7 +333,7 @@ public class KpiDataProvider {
 
 		List<SprintDetails> totalSprintDetails = sprintRepositoryCustom
 				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
-						sprintStatusList, Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT);
+						sprintStatusList, (long) customApiConfig.getSprintCountForFilters() + SP_CONSTANT);
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
@@ -351,9 +363,8 @@ public class KpiDataProvider {
 			List<SprintDetails> projectWiseSprintDetails = new ArrayList<>();
 			projectWiseTotalSprintDetails.forEach((projectConfigId, sprintDetailsList) -> {
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
-						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
-						.collect(Collectors.toList());
-				sprintDetails.stream().forEach(dbSprintDetail -> {
+						.limit((long) customApiConfig.getSprintCountForFilters() + SP_CONSTANT).toList();
+				sprintDetails.forEach(dbSprintDetail -> {
 					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 							.get(dbSprintDetail.getBasicProjectConfigId());
 					// to modify sprintdetails on the basis of configuration for the project
@@ -378,7 +389,7 @@ public class KpiDataProvider {
 					sprintList.stream().distinct().collect(Collectors.toList()));
 		}
 
-		/** additional filter **/
+		// additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, filterHelperService);
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
@@ -392,6 +403,19 @@ public class KpiDataProvider {
 		return resultListMap;
 	}
 
+	/**
+	 * Fetches Scope Churn KPI data from the database for the given project and
+	 * sprints combination.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @return A map containing story list, sprint details, and Scope change issue
+	 *         history.
+	 */
 	public Map<String, Object> fetchScopeChurnData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList) {
 		log.info("Fetching Scope Churn KPI Data for Project {}", basicProjectConfigId.toString());
@@ -440,7 +464,7 @@ public class KpiDataProvider {
 			}
 		});
 
-		/** additional filter **/
+		// additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, filterHelperService);
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
@@ -461,6 +485,18 @@ public class KpiDataProvider {
 		return resultListMap;
 	}
 
+	/**
+	 * Fetches Commitment Reliability KPI data from the database for the given
+	 * project and sprints combination.
+	 *
+	 * @param kpiRequest
+	 *            The KPI request object.
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @param sprintList
+	 *            The list of sprint IDs.
+	 * @return A map containing story list, sprint details.
+	 */
 	public Map<String, Object> fetchCommitmentReliabilityData(KpiRequest kpiRequest, ObjectId basicProjectConfigId,
 			List<String> sprintList) {
 		log.info("Fetching Commitment Reliability KPI Data for Project {}", basicProjectConfigId.toString());
@@ -492,7 +528,7 @@ public class KpiDataProvider {
 
 		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(dbSprintDetail -> {
+		sprintDetails.forEach(dbSprintDetail -> {
 			FieldMapping fieldMapping = fieldMappingMap.get(dbSprintDetail.getBasicProjectConfigId());
 			// to modify sprintdetails on the basis of configuration for the project
 			SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
@@ -513,7 +549,7 @@ public class KpiDataProvider {
 
 		});
 
-		/** additional filter **/
+		// additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, filterHelperService);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().toList());
@@ -525,6 +561,14 @@ public class KpiDataProvider {
 		return resultListMap;
 	}
 
+	/**
+	 * Fetches Cost of Delay KPI data from the database for the given project and
+	 * sprints combination.
+	 *
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @return A map containing cost of delay data.
+	 */
 	public Map<String, Object> fetchCostOfDelayData(ObjectId basicProjectConfigId) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
@@ -560,5 +604,77 @@ public class KpiDataProvider {
 		resultListMap.put(FIELD_MAPPING, closedStatusMap);
 
 		return resultListMap;
+	}
+
+	/**
+	 * Fetches Release Frequency KPI data from the database for the given project
+	 * and sprints combination.
+	 *
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @return A list containing Project releases data.
+	 */
+	public List<ProjectRelease> fetchProjectReleaseData(ObjectId basicProjectConfigId) {
+		log.info("Fetching Release Frequency KPI Data for Project {}", basicProjectConfigId.toString());
+		return projectReleaseRepo.findByConfigIdIn(List.of(basicProjectConfigId));
+	}
+
+	/**
+	 * Fetches PI Predictability KPI data from the database for the given project
+	 * and sprints combination.
+	 *
+	 * @param basicProjectConfigId
+	 *            The project config ID.
+	 * @return A list containing Project releases data.
+	 */
+	public List<JiraIssue> fetchPiPredictabilityData(ObjectId basicProjectConfigId) {
+		log.info("Fetching PI Predictability KPI Data for Project {}", basicProjectConfigId.toString());
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		List<String> issueTypeList;
+		if (Optional.ofNullable(fieldMapping.getJiraIssueEpicTypeKPI153()).isPresent()) {
+			issueTypeList = fieldMapping.getJiraIssueEpicTypeKPI153();
+		} else {
+			issueTypeList = new ArrayList<>();
+		}
+
+		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				List.of(basicProjectConfigId.toString()));
+		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), issueTypeList);
+
+		Map<String, List<String>> projectWisePIList = new HashMap<>();
+		List<ReleaseWisePI> releaseWisePIList = jiraIssueRepository
+				.findUniqueReleaseVersionByUniqueTypeName(mapOfFilters);
+		Map<String, List<ReleaseWisePI>> projectWiseData = releaseWisePIList.stream()
+				.collect(Collectors.groupingBy(ReleaseWisePI::getBasicProjectConfigId));
+
+		projectWiseData.forEach((projectId, releaseWiseData) -> {
+			Map<String, List<ReleaseWisePI>> versionWiseData = releaseWiseData.stream()
+					.filter(releaseWisePI -> CollectionUtils.isNotEmpty(releaseWisePI.getReleaseName()))
+					.collect(Collectors.groupingBy(releaseWisePI -> releaseWisePI.getReleaseName().get(0)));
+			versionWiseData.forEach((version, piData) -> {
+				if (CollectionUtils.isNotEmpty(piData) && CollectionUtils.isNotEmpty(issueTypeList) && piData.stream()
+						.anyMatch(releaseWisePI -> issueTypeList.contains(releaseWisePI.getUniqueTypeName()))) {
+					projectWisePIList.putIfAbsent(projectId, new ArrayList<>());
+					projectWisePIList.computeIfPresent(projectId, (k, v) -> {
+						Optional<ReleaseWisePI> epicPIData = piData.stream()
+								.filter(releaseWisePI -> issueTypeList.contains(releaseWisePI.getUniqueTypeName()))
+								.findFirst();
+						epicPIData.ifPresent(releaseWisePI -> v.add(releaseWisePI.getReleaseName().get(0)));
+						return v;
+					});
+				}
+			});
+		});
+
+		projectWisePIList.forEach((projectId, piDataList) -> {
+			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+			mapOfProjectFilters.put(CommonConstant.RELEASE, CommonUtils.convertToPatternListForSubString(piDataList));
+			uniqueProjectMap.put(projectId, mapOfProjectFilters);
+		});
+
+		return jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
 	}
 }

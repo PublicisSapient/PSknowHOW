@@ -175,6 +175,8 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 						CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 				azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+				azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_ALL_PROJECT_CONFIG_MAP);
 			}
 			MDC.put("Fetched metadata", String.valueOf(isSuccess));
 			long end = System.currentTimeMillis();

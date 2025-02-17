@@ -43,12 +43,12 @@
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
     <ng-container *ngIf="objectKeys(colorObj).length">
       <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
-        <li class="selectedfilter p-mr-3" role="listitem">
+        <li class="selectedfilter cursor-pointer p-mr-3" role="listitem" pTooltip="{{ getTooltipText(item.tooltip) }}" tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
           <div class="selected-node">
-            <div class="selected-node-label p-pl-0" [title]="colorObj[item]?.nodeName" tabindex="0" [attr.aria-label]="colorObj[item]?.nodeName">
+            <div class="selected-node-label p-pl-0" [title]="item?.nodeDisplayName" tabindex="0" [attr.aria-label]="item?.nodeDisplayName">
               <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"tabindex="0" [attr.aria-label]="colorObj[item]?.color"></span>
-              <span class="p-l-1">{{filterType | uppercase}} {{ colorObj[item]?.nodeName?.length<= 20 ?
-                  colorObj[item]?.nodeName : colorObj[item]?.nodeName?.slice(0,20)+'...'}} <span class="remove-node"
+              <span class="p-l-1">{{filterType | uppercase}} {{ item?.nodeDisplayName?.length<= 20 ?
+                  item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
                   (click)="removeFilter(colorObj[item]?.nodeId)" tabindex="0" (keydown.enter)="removeFilter(colorObj[item]?.nodeId)">&times;</span>
               </span>
             </div>
@@ -143,7 +143,7 @@
       <!-- NOTE: Multiselect Dropdown limitation same as Multiselect Filter dropdowns which is currently ON HOLD due NGPrime default behavior -->
       <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="bottom" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext" role="region" aria-label="KPI Visibility Control"
-        *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
+        *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
         <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)" role="button" tabindex="0" aria-label="Toggle Show/Hide KPI Menu"
         (keydown.enter)="toggleShowHideMenu($event)" (keydown.space)="toggleShowHideMenu($event)">
           <i class="pi pi-pause" style="font-size: 1rem" aria-hidden="true"></i>

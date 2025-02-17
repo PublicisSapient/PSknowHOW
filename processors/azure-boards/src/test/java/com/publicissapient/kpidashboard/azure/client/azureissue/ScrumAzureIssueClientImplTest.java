@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
@@ -118,6 +121,11 @@ public class ScrumAzureIssueClientImplTest {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+	@Mock
+	private ProjectHierarchyService projectHierarchyService;
+	@Mock
+	private ProcessorToolConnectionService processorToolConnectionService;
+
 	private ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 	private ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 	// AzureUpdatesModel azureUpdatesModel=new AzureUpdatesModel();

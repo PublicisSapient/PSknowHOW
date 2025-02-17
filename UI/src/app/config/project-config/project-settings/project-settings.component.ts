@@ -105,11 +105,6 @@ export class ProjectSettingsComponent implements OnInit {
       },
     ];
 
-    // this.sharedService.currentUserDetailsObs.subscribe(details => {
-    //   if (details) {
-    //     this.userName = details['user_name'];
-    //   }
-    // });
     this.userName = this.sharedService.getCurrentUserDetails('user_name');
 
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();

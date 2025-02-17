@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { HttpService } from '../../services/http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
@@ -24,6 +25,7 @@ import { first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { HelperService } from 'src/app/services/helper.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -39,13 +41,19 @@ export class LoginComponent implements OnInit {
   adLogin = true;
   loginConfig = {};
 
+  refreshCounter: number = 0;
+  self: any = this;
+  selectedTab: string = '';
 
 
-  constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService, private ga: GoogleAnalyticsService, private helperService: HelperService) {
+
+  constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService,
+    private ga: GoogleAnalyticsService, private helperService: HelperService, private location: Location) {
   }
 
   ngOnInit() {
     /* if token exists for user then redirect to dashboard route(Executive page)*/
+    // this.sharedService.setSelectedTab(null);
     this.submitted = false;
     this.route.queryParams.subscribe(params => {
       this.sessionMsg = params['sessionExpire'];
@@ -115,6 +123,13 @@ export class LoginComponent implements OnInit {
       this.error = 'Internal Server Error';
 
     } else if (data['status'] === 200) {
+
+      this.httpService.getAllProjects().subscribe(projectsData => {
+        if (projectsData[0] !== 'error' && !projectsData.error && projectsData?.data) {
+          localStorage.setItem('projectWithHierarchy', JSON.stringify(projectsData?.data));
+        }
+      });
+
       /*After successfully login redirect form to dashboard router(Executive page)*/
       this.ga.setLoginMethod(data.body, 'standard');
       if (this.redirectToProfile()) {

@@ -200,8 +200,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 						count1 = buildJobs(processor, startTime, count1, azurePipelineServer, lastStartTimeOfJobs,
 								proBasicConfig);
 					} else {
-						count1 += deployJobs(processor, startTime, deploymentJobs, activeDeployJobs, azurePipelineServer,
-								lastStartTimeOfJobs, proBasicConfig);
+						count1 += deployJobs(processor, startTime, deploymentJobs, activeDeployJobs,
+								azurePipelineServer, lastStartTimeOfJobs, proBasicConfig);
 					}
 					count += count1;
 					log.info("Finished : {}", startTime);
@@ -220,8 +220,8 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				}
 			}
 			if (count1 > 0) {
-				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, CommonConstant.JENKINS,
-						proBasicConfig.getId().toString());
+				cacheRestClient(CommonConstant.CACHE_CLEAR_PROJECT_SOURCE_ENDPOINT, proBasicConfig.getId().toString(),
+						CommonConstant.JENKINS);
 			}
 		}
 		MDC.put(TOTAL_UPDATED_COUNT, String.valueOf(count));
@@ -533,7 +533,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();

@@ -182,7 +182,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		leafNodeList.forEach(node -> {
 
 			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			String projectName = node.getId().substring(0, node.getId().lastIndexOf(CommonConstant.UNDERSCORE));
+			String projectName = node.getProjectFilter().getName();
 			Map<String, KanbanTestExecution> existingTestExecutionsByDates = projectWiseTestExecutions
 					.get(projectNodeId);
 

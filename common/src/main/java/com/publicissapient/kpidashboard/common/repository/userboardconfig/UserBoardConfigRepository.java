@@ -80,4 +80,12 @@ public interface UserBoardConfigRepository extends MongoRepository<UserBoardConf
 	 */
 	List<UserBoardConfig> findByBasicProjectConfigId(String basicProjectConfigId);
 
+	/**
+	 * Deletes the project board configuration by the given basic project configuration
+	 * ID.
+	 *
+	 * @param basicProjectConfigId
+	 *            the ID of the basic project configuration
+	 */
+	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 }

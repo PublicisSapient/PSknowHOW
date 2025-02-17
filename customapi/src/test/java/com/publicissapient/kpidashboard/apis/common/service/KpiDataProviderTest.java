@@ -17,10 +17,13 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -85,6 +88,8 @@ public class KpiDataProviderTest {
 	private BuildRepository buildRepository;
 	@Mock
 	CustomApiConfig customApiConfig;
+	@Mock
+	private ProjectReleaseRepo projectReleaseRepo;
 
 	private Map<String, Object> filterLevelMap;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
@@ -173,7 +178,7 @@ public class KpiDataProviderTest {
 		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/non-JiraProcessors/build_details.json");
 		List<Build> buildList = buildDataFactory.getbuildDataList();
 		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
-		List<Build> list = kpiDataProvider.fetchBuildFrequencydata(new ObjectId(), "", "");
+		List<Build> list = kpiDataProvider.fetchBuildFrequencyData(new ObjectId(), "", "");
 		assertThat(list.size(), equalTo(18));
 	}
 
@@ -340,4 +345,36 @@ public class KpiDataProviderTest {
 		assertThat("Data : ", result.size(), equalTo(3));
 	}
 
+	@Test
+	public void testFetchProjectReleaseData() {
+		ProjectReleaseDataFactory projectReleaseDataFactory = ProjectReleaseDataFactory.newInstance();
+		List<ProjectRelease> releaseList = projectReleaseDataFactory.findByBasicProjectConfigId("6335363749794a18e8a4479b");
+		when(projectReleaseRepo.findByConfigIdIn(any())).thenReturn(releaseList);
+		List<ProjectRelease> list = kpiDataProvider.fetchProjectReleaseData(new ObjectId("6335363749794a18e8a4479b"));
+		assertThat("Total Release : ", list.size(), equalTo(1));
+	}
+
+	@Test
+	public void testFetchPiPredictabilityData() {
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		List<JiraIssue> piWiseEpicList = jiraIssueDataFactory.getJiraIssues();
+
+		List<ReleaseWisePI> releaseWisePIList = new ArrayList<>();
+		ReleaseWisePI release1 = new ReleaseWisePI();
+		release1.setBasicProjectConfigId("6335363749794a18e8a4479b");
+		release1.setReleaseName(new ArrayList<>(Collections.singleton("KnowHOW v7.0.0")));
+		release1.setUniqueTypeName("Story");
+		releaseWisePIList.add(release1);
+
+		ReleaseWisePI release2 = new ReleaseWisePI();
+		release2.setBasicProjectConfigId("6335363749794a18e8a4479b");
+		release2.setReleaseName(new ArrayList<>(Collections.singleton("KnowHOW PI-11")));
+		release2.setUniqueTypeName("Epic");
+		releaseWisePIList.add(release2);
+
+		when(jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(Mockito.any())).thenReturn(releaseWisePIList);
+		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(piWiseEpicList);
+		List<JiraIssue> list = kpiDataProvider.fetchPiPredictabilityData(new ObjectId("6335363749794a18e8a4479b"));
+		assertThat("Total Release : ", list.size(), equalTo(48));
+	}
 }

@@ -473,7 +473,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		List<SprintDetails> sprintDetailsBasedOnBoard = new ArrayList<>();
 		List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
 		if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-			Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
+			Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);//TODO OPTIMIZE
 			sprintDetailsBasedOnBoard
 					.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false, processorId));
 		}
@@ -561,8 +561,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 				sprintDetails.setOriginalSprintId(sprintJson.get(ID).toString());
 				sprintDetails.setState(sprintJson.get(STATE).toString().toUpperCase());
 				String sprintId = sprintDetails.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL
-						+ projectConfig.getProjectName() + JiraConstants.COMBINE_IDS_SYMBOL
-						+ projectConfig.getBasicProjectConfigId();
+						+ projectConfig.getProjectBasicConfig().getProjectNodeId();
 				sprintDetails.setSprintID(sprintId);
 				sprintDetails.setStartDate(sprintJson.get(STARTDATE) == null ? null
 						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(STARTDATE).toString()));
