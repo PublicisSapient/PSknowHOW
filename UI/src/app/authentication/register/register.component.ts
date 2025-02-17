@@ -40,7 +40,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         private formBuilder: UntypedFormBuilder,
         private router: Router,
         private httpService: HttpService,
-        private readonly messageService: MessageService) { }
+    ) { }
     ngOnInit() {
         // Set validation for registration-form elements
         this.registorForm = this.formBuilder.group({
@@ -79,10 +79,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
         this.error = '';
         this.success =  '';
 
-        this.messageService.add({
-            severity: 'success',
-            summary: 'Your access request has been sent for approval',
-          });
+        // this.messageService.add({
+        //     severity: 'success',
+        //     summary: 'Your access request has been sent for approval',
+        //   });
         // call registration service
         this.httpService.register(this.f.username.value, this.f.password.value, this.f.email.value)
         .pipe(takeUntil(this.destroy$))
