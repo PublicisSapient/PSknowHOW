@@ -367,32 +367,12 @@ export class ProjectSettingsComponent implements OnInit {
 
   updateProjectDetails(successMsg) {
 
-    let hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'))[this.selectedProject?.type?.toLowerCase()];
-
-    const updatedDetails = {};
-    updatedDetails['projectName'] = this.selectedProject?.name || this.selectedProject?.Project;
-    updatedDetails['kanban'] = this.selectedProject?.type === 'Kanban' ? true : false;
-    updatedDetails['hierarchy'] = [];
+    const updatedDetails = {...this.projectList.filter(x => x.projectDisplayName === this.selectedProject.name)[0]};
     updatedDetails['saveAssigneeDetails'] = this.isAssigneeSwitchChecked;
-    updatedDetails['id'] = this.selectedProject?.id;
     updatedDetails["createdAt"] = new Date().toISOString();
     updatedDetails["developerKpiEnabled"] = this.developerKpiEnabled;
     updatedDetails["projectOnHold"] = this.projectOnHold;
-
-    for (let element of hierarchyData) {
-      if (element.hierarchyLevelId == 'project') {
-        break;
-      }
-
-      updatedDetails['hierarchy'].push({
-        hierarchyLevel: {
-          level: element.level,
-          hierarchyLevelId: element.hierarchyLevelId,
-          hierarchyLevelName: element.hierarchyLevelName
-        },
-        value: this.selectedProject[element.hierarchyLevelName]
-      });
-    }
+    console.log(updatedDetails)
 
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
 
