@@ -372,7 +372,6 @@ export class ProjectSettingsComponent implements OnInit {
     updatedDetails["createdAt"] = new Date().toISOString();
     updatedDetails["developerKpiEnabled"] = this.developerKpiEnabled;
     updatedDetails["projectOnHold"] = this.projectOnHold;
-    console.log(updatedDetails)
 
     this.httpService.updateProjectDetails(updatedDetails, this.selectedProject.id).subscribe(response => {
 
