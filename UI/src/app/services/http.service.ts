@@ -182,18 +182,13 @@ export class HttpService {
   currentUserDetails = null;
   private saveMetaDataStepURL = this.baseUrl + '/api/processor/metadata/step/';
 
+  private organizationHierarchy = this.baseUrl + '/api/organizationHierarchy';
   constructor(
     private router: Router,
     private http: HttpClient,
     @Inject(APP_CONFIG) private config: IAppConfig,
     private sharedService: SharedService,
   ) {
-    // this.sharedService.currentUserDetailsObs.subscribe((details) => {
-    //   if (details) {
-    //     this.userName = details['user_name'];
-    //     this.userEmail = details['user_email'];
-    //   }
-    // });
   }
 
 
@@ -689,8 +684,8 @@ export class HttpService {
     return forkJoin([projectList]);
   }
 
-  getUserProjects(): Observable<any> {
-    return this.http.get(this.basicConfigUrl);
+  getUserProjects(queryParams?): Observable<any> {
+    return this.http.get(`${this.basicConfigUrl}?${queryParams}`);
   }
 
   /** add basic config */
@@ -1185,6 +1180,10 @@ export class HttpService {
 
   getRecommendations(data) {
     return this.http.post<object>(this.recommendationsUrl, data);
+  }
+
+  getOrganizationHierarchy() {
+    return this.http.get<any>(this.organizationHierarchy);
   }
 
   fetchJiramappingBE(basicConfigID){

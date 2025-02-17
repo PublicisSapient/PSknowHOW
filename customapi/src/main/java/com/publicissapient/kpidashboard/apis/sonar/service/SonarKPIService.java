@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -149,12 +150,12 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	 * @param currentDate
 	 * @return
 	 */
-	public Map<String, List<SonarHistory>> getSonarHistoryForAllProjects(List<Node> projectList,
+	public Map<Pair<String, String>, List<SonarHistory>> getSonarHistoryForAllProjects(List<Node> projectList,
 			LocalDate currentDate) {
-		Map<String, List<SonarHistory>> map = new HashMap<>();
+		Map<Pair<String, String>, List<SonarHistory>> map = new HashMap<>();
 		projectList.stream().filter(
 				node -> null != node.getProjectFilter() && null != node.getProjectFilter().getBasicProjectConfigId())
-				.forEach(node -> map.put(node.getId(),
+				.forEach(node -> map.put(Pair.of(node.getId(), node.getProjectFilter().getName()),
 						getSonarHistoryBasedOnProject(node.getProjectFilter().getBasicProjectConfigId(), currentDate)));
 		return map;
 	}
@@ -191,16 +192,15 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 	/**
 	 * Prepare sonar key name considering multiple project can have same sonar key
 	 *
-	 * @param projectNodeId
-	 *            projectNodeId
+	 * @param projectName
+	 *            projectName
 	 * @param sonarKeyName
 	 *            sonarKeyName
 	 * @param branchName
 	 *            sonar branch name
 	 * @return modified keyname
 	 */
-	public String prepareSonarKeyName(String projectNodeId, String sonarKeyName, String branchName) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+	public String prepareSonarKeyName(String projectName, String sonarKeyName, String branchName) {
 		String sonarKey = sonarKeyName + CommonConstant.ARROW + projectName;
 		if (StringUtils.isNotEmpty(branchName)) {
 			sonarKey = sonarKeyName + CommonConstant.ARROW + branchName + CommonConstant.ARROW + projectName;

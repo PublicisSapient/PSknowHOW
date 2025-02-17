@@ -409,8 +409,8 @@ export class HelperService {
   sortAlphabetically(objArray) {
     if (objArray && objArray.length > 1) {
       objArray.sort((a, b) => {
-        const aName = a.nodeName || a.data || a.date || a;
-        const bName = b.nodeName || b.data || b.date || b;
+        const aName = a.nodeDisplayName || a.nodeName || a.data || a.date || a;
+        const bName = b.nodeDisplayName || b.nodeName || b.data || b.date || b;
         if (typeof aName === 'string' && typeof bName === 'string') {
           return aName.localeCompare(bName);
         }
@@ -793,21 +793,25 @@ export class HelperService {
 
   logoutHttp() {
     this.httpService.logout().subscribe((responseData) => {
-      // if (responseData?.success) {
       if (!environment['AUTHENTICATION_SERVICE']) {
         this.isKanban = false;
         // Set blank selectedProject after logged out state
         this.sharedService.setSelectedProject(null);
         this.httpService.setCurrentUserDetails({});
         this.sharedService.setUserDetailsAsBlankObj();
-        this.sharedService.setVisibleSideBar(false);
         this.sharedService.setAddtionalFilterBackup({});
+
+        this.sharedService.setSelectedBoard(null);
+        this.sharedService.selectedTab = null;
         this.sharedService.setKpiSubFilterObj({});
         this.sharedService.setBackupOfFilterSelectionState(null); // -> SENDING NULL SO THAT SELECTED FILTERS ARE RESET ON LOGOUT
         localStorage.clear();
-        this.router.navigate(['./authentication/login']).then(() => {
-          window.location.reload();
-        });
+        this.router.navigate(['/authentication/login'])
+          .then(() => {
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
+          });
       } else {
         let redirect_uri = window.location.href;
         window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
@@ -837,7 +841,6 @@ export class HelperService {
         if (Array.isArray(item.data) && item.data?.length) {
           ++dataCount;
         } else if (item.data && !isNaN(parseInt(item.data))) {
-          // dataCount += item?.data;
           ++dataCount;
         } else if (item.value && (this.checkIfArrayHasData(item) || Object.keys(item.value)?.length)) {
           if (item.value[0]?.hasOwnProperty('data') && this.checkAllValues(item.value, 'data', chartType)) {
@@ -998,10 +1001,9 @@ export class HelperService {
       const queryParams = new URLSearchParams(shared_link.split('?')[1]);
       const stateFilters = queryParams.get('stateFilters');
       const kpiFilters = queryParams.get('kpiFilters');
-
+      const selectedTab = queryParams.get('selectedTab');
       if (stateFilters) {
         let decodedStateFilters: string = '';
-        // let stateFiltersObj: Object = {};
 
         if (stateFilters?.length <= 8) {
           this.httpService.handleRestoreUrl(stateFilters, kpiFilters)
@@ -1029,8 +1031,10 @@ export class HelperService {
           this.urlRedirection(decodedStateFilters, currentUserProjectAccess, shared_link);
         }
       }
+    } else if (window.location.hash.indexOf('selectedTab') !== -1) {
+      this.router.navigate(['./dashboard/'], { queryParamsHandling: 'merge' });
     } else {
-      this.router.navigate(['./dashboard/']);
+      this.router.navigate(['./dashboard/iteration']);
     }
   }
 
@@ -1040,14 +1044,14 @@ export class HelperService {
 
     let stateFilterObj = [];
 
-    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && stateFiltersObjLocal['parent_level'] && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
       stateFilterObj = [stateFiltersObjLocal['parent_level']];
     } else {
       stateFilterObj = stateFiltersObjLocal['primary_level'];
     }
 
     // Check if user has access to all project in stateFiltersObjLocal['primary_level']
-    const hasAllProjectAccess = stateFilterObj.every(filter =>
+    const hasAllProjectAccess = stateFilterObj?.every(filter =>
       currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
     );
 
@@ -1055,7 +1059,6 @@ export class HelperService {
     const getAuthorities = this.sharedService.getCurrentUserDetails('authorities');
     const hasAccessToAll = Array.isArray(getAuthorities) && getAuthorities?.includes('ROLE_SUPERADMIN') || hasAllProjectAccess;
 
-    localStorage.removeItem('shared_link');
     if (hasAccessToAll) {
       this.router.navigate([url]);
     } else {

@@ -25,7 +25,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -69,12 +69,12 @@ public class IssueKanbanProcessor implements ItemProcessor<ReadData, CompositeRe
 			kanbanCompositeResult = new CompositeResult();
 			KanbanIssueCustomHistory kanbanIssueCustomHistory = convertIssueToKanbanIssueHistory(readData,
 					kanbanJiraIssue);
-			Set<KanbanAccountHierarchy> accountHierarchies = createKanbanAccountHierarchies(kanbanJiraIssue, readData);
+			Set<ProjectHierarchy> accountHierarchies = createKanbanAccountHierarchies(kanbanJiraIssue, readData);
 			AssigneeDetails assigneeDetails = createAssigneeDetails(readData, kanbanJiraIssue);
 			kanbanCompositeResult.setKanbanJiraIssue(kanbanJiraIssue);
 			kanbanCompositeResult.setKanbanIssueCustomHistory(kanbanIssueCustomHistory);
 			if (CollectionUtils.isNotEmpty(accountHierarchies)) {
-				kanbanCompositeResult.setKanbanAccountHierarchies(accountHierarchies);
+				kanbanCompositeResult.setProjectHierarchies(accountHierarchies);
 			}
 			if (null != assigneeDetails) {
 				kanbanCompositeResult.setAssigneeDetails(assigneeDetails);
@@ -94,8 +94,7 @@ public class IssueKanbanProcessor implements ItemProcessor<ReadData, CompositeRe
 				readData.getProjectConfFieldMapping(), kanbanJiraIssue);
 	}
 
-	private Set<KanbanAccountHierarchy> createKanbanAccountHierarchies(KanbanJiraIssue kanbanJiraIssue,
-			ReadData readData) {
+	private Set<ProjectHierarchy> createKanbanAccountHierarchies(KanbanJiraIssue kanbanJiraIssue, ReadData readData) {
 		return kanbanJiraIssueAccountHierarchyProcessor.createKanbanAccountHierarchy(kanbanJiraIssue,
 				readData.getProjectConfFieldMapping());
 

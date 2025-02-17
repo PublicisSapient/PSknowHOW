@@ -23,6 +23,8 @@ import java.util.Map;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
@@ -71,7 +73,7 @@ public interface ProjectBasicConfigService {
 	 * 
 	 * @return {@code List<ProjectBasicConfig>} : empty list incase no data found
 	 */
-	List<ProjectBasicConfig> getAllProjectsBasicConfigs();
+	List<ProjectBasicConfig> getFilteredProjectsBasicConfigs(boolean includeAll);
 
 	/**
 	 * Service to fetch the list of all project basic configuration in the
@@ -79,7 +81,7 @@ public interface ProjectBasicConfigService {
 	 * 
 	 * @return {@code List<ProjectBasicConfig>} : empty list in case no data found
 	 */
-	List<ProjectBasicConfig> getAllProjectsBasicConfigsWithoutPermission();
+	List<ProjectBasicConfig> getAllProjectBasicConfigs(boolean includeAll);
 
 	/**
 	 * Delete basic project congig
@@ -145,19 +147,17 @@ public interface ProjectBasicConfigService {
 	 */
 	void findLeaf(ProjectBasicConfigNode node, List<ProjectBasicConfigNode> leafNodes);
 
-	/**
-	 * sort based on Hierarchy Level
-	 * 
-	 * @param projectBasicConfig
-	 * @return
-	 */
-	void projectBasicConfigSortedBasedOnHierarchyLevel(ProjectBasicConfig projectBasicConfig);
-
 	List<HierarchyResponseDTO> getHierarchyData();
+
+	List<HierarchyValue> getHierarchy(List<HierarchyLevel> hierarchyLevels, String nodeId);
+
+	ProjectBasicConfig getProjectBasicConfig(String projectBasicConfigId);
+
+	List<ProjectBasicConfig> getAllProjectsBasicConfigs(boolean isKanban);
 
 	/**
 	 * Method to filter the hierarchy DTOs with atLeast one connected tools
-	 * 
+	 *
 	 * @param hierarchyData
 	 *            hierarchy data
 	 * @return a list of HierarchyResponseDTOs with at least one connected tool

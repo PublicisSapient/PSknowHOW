@@ -41,6 +41,7 @@ public class AccountFilteredData {
 
 	private String nodeId;
 	private String nodeName;
+	private String nodeDisplayName;
 	private String sprintStartDate;
 	private String sprintEndDate;
 	private String releaseDate;

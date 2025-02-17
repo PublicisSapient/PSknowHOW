@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +41,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.item.Chunk;
 
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -76,6 +77,9 @@ public class IssueScrumWriterTest {
     @InjectMocks
     private IssueScrumWriter issueScrumWriter;
 
+    @Mock
+    private ProjectHierarchyService projectHierarchyService;
+
     @Test
     public void testWrite() throws Exception {
         // Mock data
@@ -93,7 +97,7 @@ public class IssueScrumWriterTest {
     private Chunk<CompositeResult> createMockScrumCompositeResults() {
         CompositeResult compositeResult = new CompositeResult();
         compositeResult.setJiraIssue(new ArrayList<>(createMockJiraItems()).get(0));
-        compositeResult.setAccountHierarchies((createMockAccountHierarchies()));
+        compositeResult.setProjectHierarchies((createMockAccountHierarchies()));
         compositeResult.setAssigneeDetails(createMockAssigneesToSave().get("0"));
         compositeResult.setJiraIssueCustomHistory(createMockScrumIssueCustomHistory().get(0));
         SprintDetails sprintDetails=new SprintDetails();
@@ -122,10 +126,10 @@ public class IssueScrumWriterTest {
         return kanbanIssueCustomHistoryList;
     }
 
-    private Set<AccountHierarchy> createMockAccountHierarchies() {
-        AccountHierarchy kanbanAccountHierarchy = new AccountHierarchy();
+    private Set<ProjectHierarchy> createMockAccountHierarchies() {
+        ProjectHierarchy kanbanAccountHierarchy = new ProjectHierarchy();
         kanbanAccountHierarchy.setId(new ObjectId("63bfa0f80b28191677615735"));
-        Set<AccountHierarchy> accountHierarchies = new HashSet<>();
+        Set<ProjectHierarchy> accountHierarchies = new HashSet<>();
         accountHierarchies.add(kanbanAccountHierarchy);
         // Create mock KanbanAccountHierarchy objects and add them to the set
         return accountHierarchies;

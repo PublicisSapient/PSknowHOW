@@ -32,13 +32,13 @@
   <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
     <ng-container *ngIf="objectKeys(colorObj).length">
       <ng-container *ngFor="let item of objectKeys(colorObj); let i = index;">
-        <li class="selectedfilter p-mr-3">
+        <li class="selectedfilter cursor-pointer p-mr-3" pTooltip="{{ getTooltipText(item.tooltip) }}" tooltipPosition="bottom" [tooltipEscape]="false" tooltipEvent="hover">
           <div class="selected-node">
-            <div class="selected-node-label p-pl-0" [title]="colorObj[item]?.nodeName">
-              <span class="align-list-marker" [ngStyle]="{'background':colorObj[item]?.color}"></span>
-              <span class="p-l-1">{{filterType | uppercase}} {{ colorObj[item]?.nodeName?.length<= 20 ?
-                  colorObj[item]?.nodeName : colorObj[item]?.nodeName?.slice(0,20)+'...'}} <span class="remove-node"
-                  (click)="removeFilter(colorObj[item]?.nodeId)">&times;</span>
+            <div class="selected-node-label p-pl-0" >
+              <span class="align-list-marker" [ngStyle]="{'background':item?.color}"></span>
+              <span class="p-l-1">{{filterType | uppercase}} {{ item?.nodeDisplayName?.length<= 20 ?
+                  item?.nodeDisplayName : item?.nodeDisplayName?.slice(0,20)+'...'}} <span class="remove-node"
+                  (click)="removeFilter(item?.nodeId)">&times;</span>
               </span>
             </div>
           </div>
@@ -112,7 +112,7 @@
       </div>
       <div class="show-hide-container cursor-pointer" pTooltip="Show/Hide" tooltipPosition="top" tooltipEvent="hover"
         tooltipStyleClass="tooltiptext"
-        *ngIf="selectedTab !== 'iteration' && selectedTab.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
+        *ngIf="selectedTab !== 'iteration' && selectedTab?.toLowerCase() !== 'kpi-maturity' && !noFilterApplyData">
         <span class="icon-container p-d-inline-block p-mr-2" (click)="toggleShowHideMenu($event)">
           <i class="pi pi-pause" style="font-size: 1rem"></i>
         </span>

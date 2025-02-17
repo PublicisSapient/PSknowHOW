@@ -198,7 +198,7 @@ public class NetOpenTicketCountByPriorityServiceImpl
 					String date = getRange(dateRange, kpiRequest);
 
 					populateProjectFilterWiseDataMap(projectWisePriorityCountMap, trendValueMap,
-							node.getProjectFilter().getId(), date);
+							node, date);
 
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 
@@ -266,12 +266,14 @@ public class NetOpenTicketCountByPriorityServiceImpl
 	 *
 	 * @param projectWisePriorityMap
 	 * @param projectFilterWiseDataMap
-	 * @param projectNodeId
+	 * @param node
 	 * @param date
 	 */
 	private void populateProjectFilterWiseDataMap(Map<String, Long> projectWisePriorityMap,
-			Map<String, List<DataCount>> projectFilterWiseDataMap, String projectNodeId, String date) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+												  Map<String, List<DataCount>> projectFilterWiseDataMap, Node node, String date) {
+
+		String projectName = node.getProjectFilter().getName();
+		String projectNodeId = node.getProjectFilter().getId();
 
 		Map<String, Object> hoverValueMap = new HashMap<>();
 		projectWisePriorityMap.forEach((key, value) -> {
@@ -361,7 +363,7 @@ public class NetOpenTicketCountByPriorityServiceImpl
 			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& MapUtils.isNotEmpty(jiraHistoryPriorityAndDateWiseIssueMap)) {
-			String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
+			String dateProjectKey = node.getProjectHierarchy().getNodeDisplayName();
 			String date = getRange(
 					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
 					kpiRequest);

@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.Lists;
@@ -50,11 +51,8 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.Hierarchy
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyLevelDTO;
-import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyValueDTO;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
-import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestionsService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -74,6 +72,7 @@ public class ProjectBasicConfigController {
 	public static final String ADDING_PROJECT_CONFIGURATIONS = "Adding project configurations: {}";
 	public static final String UPDATING_PROJECT_CONFIGURATIONS = "Updating project configurations: {}";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
+	public static final String FETCHED_SUCCESSFULLY = "Fetched successfully";
 	@Autowired
 	HttpServletRequest contextreq;
 	@Autowired
@@ -87,9 +86,6 @@ public class ProjectBasicConfigController {
 
 	@Autowired
 	private AuthenticationService authenticationService;
-
-	@Autowired
-	private HierarchyLevelSuggestionsService hierarchyLevelSuggestionService;
 	
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -107,7 +103,7 @@ public class ProjectBasicConfigController {
 		basicProjectConfigId = CommonUtils.handleCrossScriptingTaintedValue(basicProjectConfigId);
 		log.info("List project configuration request recieved for : {}", basicProjectConfigId);
 		boolean isSuccess = true;
-		String message = "Fetched successfully";
+		String message = FETCHED_SUCCESSFULLY;
 		Object returnObj = null;
 
 		if (Optional.ofNullable(basicProjectConfigId).isPresent()) {
@@ -120,7 +116,7 @@ public class ProjectBasicConfigController {
 			}
 
 		} else {
-			returnObj = projectBasicConfigService.getAllProjectsBasicConfigs();
+			returnObj = projectBasicConfigService.getFilteredProjectsBasicConfigs(Boolean.TRUE);
 
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(isSuccess, message, returnObj));
@@ -133,8 +129,21 @@ public class ProjectBasicConfigController {
 	 * @return ResponseEntity
 	 */
 	@GetMapping
-	public ResponseEntity<ServiceResponse> getProjectBasicConfig() {
-		return getProjectBasicConfig(null);
+	public ResponseEntity<ServiceResponse> getProjectBasicConfig(@RequestParam(value = "includeAll", defaultValue = "true") Boolean includeAll) {
+		try {
+			// Call the service layer
+			Object result = projectBasicConfigService.getFilteredProjectsBasicConfigs(includeAll);
+
+			// Return a successful response
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, FETCHED_SUCCESSFULLY, result));
+
+		} catch (Exception ex) {
+			// Handle unexpected exceptions
+			String message = "An error occurred while fetching project configurations.";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ServiceResponse(false, message, null));
+		}
 	}
 
 	/**
@@ -147,16 +156,6 @@ public class ProjectBasicConfigController {
 			@RequestBody ProjectBasicConfigDTO projectBasicConfigDTO, HttpServletResponse response) {
 
 		policy.checkPermission(projectBasicConfigDTO, "ADD_PROJECT");
-
-		// add Hierarchy Level Value if not in db HierarchyLevelSuggestion collection
-		List<HierarchyValueDTO> hierarchyValueDTOList = projectBasicConfigDTO.getHierarchy();
-		if (CollectionUtils.isNotEmpty(hierarchyValueDTOList)) {
-			hierarchyValueDTOList.stream().forEach(hierarchy -> {
-				HierarchyLevelDTO hierarchyLevelDTO = hierarchy.getHierarchyLevel();
-				hierarchyLevelSuggestionService.addIfNotPresent(hierarchyLevelDTO.getHierarchyLevelId(),
-						hierarchy.getValue());
-			});
-		}
 
 		log.info(ADDING_PROJECT_CONFIGURATIONS, projectBasicConfigDTO.toString());
 
@@ -205,7 +204,7 @@ public class ProjectBasicConfigController {
 
 		ServiceResponse response = new ServiceResponse(false, "No record found", null);
 		if (CollectionUtils.isNotEmpty(configsList)) {
-			response = new ServiceResponse(true, "Fetched successfully", configsList);
+			response = new ServiceResponse(true, FETCHED_SUCCESSFULLY, configsList);
 		}
 		return response;
 	}

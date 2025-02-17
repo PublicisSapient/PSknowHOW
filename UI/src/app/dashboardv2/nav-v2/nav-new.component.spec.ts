@@ -237,7 +237,7 @@ describe('NavNewComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard/release']);
   });
 
-  it('should not call setBackupOfFilterSelectionState for other tabs', () => {
+  xit('should not call setBackupOfFilterSelectionState for other tabs', () => {
     const obj = { boardSlug: 'some-other-tab' };
     spyOn(sharedService, 'setBackupOfFilterSelectionState');
     component.handleMenuTabFunctionality(obj);

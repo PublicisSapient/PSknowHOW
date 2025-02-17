@@ -23,9 +23,12 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { faList, faChartPie } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Router } from '@angular/router';
-import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, first, mergeMap } from 'rxjs/operators';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { ExcelService } from 'src/app/services/excel.service';
+import { throwError } from 'rxjs';
+import { Location } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-executive-v2',
@@ -124,9 +127,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   selectedTrend: any = [];
   iterationKPIData = {};
   dailyStandupKPIDetails = {};
+  refreshCounter: number = 0;
+  queryParamsSubscription!: Subscription;
 
   constructor(public service: SharedService, private httpService: HttpService, public helperService: HelperService,
-    private route: ActivatedRoute, private excelService: ExcelService, private cdr: ChangeDetectorRef, private router: Router) {
+    private route: ActivatedRoute, private excelService: ExcelService,
+    private cdr: ChangeDetectorRef, private router: Router,
+    private location: Location) {
 
   }
 
@@ -147,7 +154,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     this.processedKPI11Value = {};
     this.selectedBranchFilter = 'Select';
     this.serviceObject = {};
-    // this.selectedtype = 'scrum';
   }
 
   setGlobalConfigData(globalConfig) {
@@ -196,8 +202,8 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
+    // const selectedTab = window.location.hash.substring(1);
+    // this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'my-knowhow';
 
     this.subscriptions.push(this.service.onScrumKanbanSwitch.subscribe((data) => {
       this.resetToDefaults();
@@ -238,15 +244,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       this.maturityTableKpiList = [];
       this.colorObj = x;
       this.trendBoxColorObj = { ...x };
-      let tempObj = {};
+      this.kpiTableDataObj = {};
       for (const key in this.trendBoxColorObj) {
         const idx = key.lastIndexOf('_');
         const nodeName = key.slice(0, idx);
         this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-        tempObj[nodeName] = [];
+        this.kpiTableDataObj[key] = []
       }
       this.projectCount = Object.keys(this.trendBoxColorObj)?.length;
-      this.kpiTableDataObj = { ...tempObj };
       if (!this.kpiChartData || Object.keys(this.kpiChartData)?.length <= 0) return this.service.passDataToDashboard;
       for (const key in this.kpiChartData) {
         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
@@ -310,11 +315,147 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       });
     }));
 
+
+    this.queryParamsSubscription = this.route.queryParams
+      // .pipe(first())
+      .subscribe(params => {
+        if (!this.refreshCounter) {
+          let stateFiltersParam = params['stateFilters'];
+          let kpiFiltersParam = params['kpiFilters'];
+          let tabParam = params['selectedTab'];
+          if (!tabParam) {
+            if (!this.service.getSelectedTab()) {
+              let selectedTab = decodeURIComponent(this.location.path());
+              selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+              selectedTab = selectedTab?.split(' ').join('-').toLowerCase();
+              this.selectedTab = selectedTab.split('?statefilters=')[0];
+              this.service.setSelectedBoard(this.selectedTab);
+            } else {
+              this.selectedTab = this.service.getSelectedTab();
+              this.service.setSelectedBoard(this.selectedTab);
+            }
+          } else {
+            this.selectedTab = tabParam;
+            this.service.setSelectedBoard(this.selectedTab);
+          }
+
+          if (this.selectedTab === 'kpi-maturity') {
+            setTimeout(() => {
+              this.router.navigate([`dashboard/${this.selectedTab}`], {
+                queryParams: { 'stateFilters': stateFiltersParam, 'kpiFilters': kpiFiltersParam, 'selectedTab': this.selectedTab }, // Pass the object here
+              });
+            });
+          }
+          if (stateFiltersParam?.length) {
+            if (stateFiltersParam?.length <= 8 && kpiFiltersParam?.length <= 8) {
+              this.httpService.handleRestoreUrl(stateFiltersParam, kpiFiltersParam)
+                .pipe(
+                  catchError((error) => {
+                    this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                    setTimeout(() => {
+                      this.service.raiseError({
+                        status: 900,
+                        message: error.message || 'Invalid URL.'
+                      });
+                    });
+
+                    return throwError(error);  // Re-throw the error so it can be caught by a global error handler if needed
+                  })
+                )
+                .subscribe((response: any) => {
+                  if (response.success) {
+                    const longKPIFiltersString = response.data['longKPIFiltersString'];
+                    const longStateFiltersString = response.data['longStateFiltersString'];
+                    stateFiltersParam = atob(longStateFiltersString);
+                    // stateFiltersParam = stateFiltersParam.replace(/###/gi, '___');
+
+                    // const kpiFiltersParam = params['kpiFilters'];
+                    if (longKPIFiltersString) {
+                      const kpiFilterParamDecoded = atob(longKPIFiltersString);
+
+                      const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+                      this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+                    }
+
+                    // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+
+                    this.urlRedirection(stateFiltersParam);
+                    this.refreshCounter++;
+                  }
+                });
+            } else {
+              try {
+                stateFiltersParam = atob(stateFiltersParam);
+                if (kpiFiltersParam) {
+                  const kpiFilterParamDecoded = atob(kpiFiltersParam);
+                  const kpiFilterValFromUrl = (kpiFilterParamDecoded && JSON.parse(kpiFilterParamDecoded)) ? JSON.parse(kpiFilterParamDecoded) : this.service.getKpiSubFilterObj();
+                  this.service.setKpiSubFilterObj(kpiFilterValFromUrl);
+                }
+                // this.service.setBackupOfFilterSelectionState(JSON.parse(stateFiltersParam));
+                this.urlRedirection(stateFiltersParam);
+                this.refreshCounter++;
+              } catch (error) {
+                this.router.navigate(['/dashboard/Error']); // Redirect to the error page
+                setTimeout(() => {
+                  this.service.raiseError({
+                    status: 900,
+                    message: 'Invalid URL.'
+                  });
+                }, 100);
+              }
+            }
+          }
+        }
+      });
+
+  }
+
+  urlRedirection(decodedStateFilters) {
+    const stateFiltersObjLocal = JSON.parse(decodedStateFilters);
+    const currentUserProjectAccess = JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess?.length ? JSON.parse(localStorage.getItem('currentUserDetails'))?.projectsAccess[0]?.projects : [];
+    const ifSuperAdmin = JSON.parse(localStorage.getItem('currentUserDetails'))?.authorities?.includes('ROLE_SUPERADMIN');
+    let stateFilterObj = [];
+    let projectLevelSelected = false;
+    if (typeof stateFiltersObjLocal['parent_level'] === 'object' && stateFiltersObjLocal['parent_level'] && Object.keys(stateFiltersObjLocal['parent_level']).length > 0) {
+      stateFilterObj = [stateFiltersObjLocal['parent_level']];
+    } else {
+      stateFilterObj = stateFiltersObjLocal['primary_level'];
+    }
+
+    projectLevelSelected = stateFilterObj?.length && stateFilterObj[0]?.labelName?.toLowerCase() === 'project';
+
+    // Check if user has access to all project in stateFiltersObjLocal['primary_level']
+    const hasAllProjectAccess = stateFilterObj?.every(filter =>
+      currentUserProjectAccess?.some(project => project.projectId === filter.basicProjectConfigId)
+    );
+
+    // Superadmin have all project access hence no need to check project for superadmin
+    const hasAccessToAll = ifSuperAdmin || hasAllProjectAccess;
+
+    if (projectLevelSelected) {
+      if (hasAccessToAll) {
+        this.service.setBackupOfFilterSelectionState(stateFiltersObjLocal);
+      } else {
+        this.service.setBackupOfFilterSelectionState(null);
+        this.queryParamsSubscription.unsubscribe();
+        this.router.navigate(['/dashboard/Error']);
+        setTimeout(() => {
+          this.service.raiseError({
+            status: 901,
+            message: 'No project access.',
+          });
+        }, 100);
+      }
+    }
   }
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
+    this.refreshCounter = 0;
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    if (this.queryParamsSubscription) {
+      this.queryParamsSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -377,7 +518,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       for (const key in this.colorObj) {
         const idx = key.lastIndexOf('_');
         const nodeName = key.slice(0, idx);
-        this.kpiTableDataObj[nodeName] = [];
+        this.kpiTableDataObj[key] = [];
       }
 
       this.service.setAddtionalFilterBackup({});
@@ -842,15 +983,15 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   }
 
   // post request of Jira(scrum) hygiene
-/**
-   * Posts KPI data for the current iteration to the Jira service and processes the response.
-   * Updates local KPI data and handles errors appropriately.
-   * 
-   * @param postData - The data to be posted to the Jira service.
-   * @param source - The source identifier for the KPI data.
-   * @returns void
-   * @throws Handles errors internally and calls handleKPIError on failure.
-   */
+  /**
+     * Posts KPI data for the current iteration to the Jira service and processes the response.
+     * Updates local KPI data and handles errors appropriately.
+     * 
+     * @param postData - The data to be posted to the Jira service.
+     * @param source - The source identifier for the KPI data.
+     * @returns void
+     * @throws Handles errors internally and calls handleKPIError on failure.
+     */
   postJiraKPIForIteration(postData, source): void {
     this.httpService.postKpiNonTrend(postData, source)
       .subscribe(getData => {
@@ -1083,7 +1224,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     // this block populates additional filters on developer dashboard because on developer dashboard, the
     // additional filters depend on KPI response
     let developerBopardKpis = this.globalConfig[this.selectedtype?.toLowerCase()]?.filter((item) => (item.boardSlug?.toLowerCase() === 'developer') || (item.boardName.toLowerCase() === 'developer'))[0]?.kpis?.map(x => x.kpiId);
-    if (this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis?.includes(kpiId)) {
+    if (this.selectedTab && this.selectedTab.toLowerCase() === 'developer' && developerBopardKpis?.includes(kpiId)) {
       this.service.setBackupOfFilterSelectionState({ 'additional_level': null });
       if (!trendValueList?.length) {
         this.additionalFiltersArr = {};
@@ -1109,6 +1250,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
               return {
                 nodeId: f,
                 nodeName: f,
+                nodeDisplayName: f,
                 labelName: filterProp === 'filter1' ? 'branch' : filterProp === 'filter' ? 'branch' : 'developer'
               }
             })
@@ -1655,15 +1797,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
         }
       }
-      let filtersApplied = Object.keys(this.colorObj);
-
-      filtersApplied = filtersApplied.map((x) => {
-        let parts = x.split('_');
-        return parts.slice(0, parts.length - 1).join('_');
-      });
+      let filtersApplied = [];
 
 
-      filtersApplied.forEach((hierarchyName) => {
+      for (const key in this.colorObj) {
+        filtersApplied.push(this.colorObj[key].nodeId)
+      }
+
+      filtersApplied.forEach((hierarchyId) => {
         let obj = {
           'kpiId': kpiId,
           'kpiName': this.allKpiArray[idx]?.kpiName,
@@ -1672,9 +1813,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           'hoverText': [],
           'order': enabledKpi?.order
         }
-        let chosenItem = iterativeEle?.filter((item) => item['data'] == hierarchyName)[0];
+        let chosenItem = iterativeEle?.filter((item) => item['data'] == this.colorObj[hierarchyId]?.nodeDisplayName)[0];
 
-        let trendData = this.kpiTrendsObj[kpiId]?.filter(x => x['hierarchyName']?.toLowerCase() == hierarchyName?.toLowerCase())[0];
+        let trendData = this.kpiTrendsObj[kpiId]?.filter(x => x['hierarchyId']?.toLowerCase() == hierarchyId?.toLowerCase())[0];
         obj['latest'] = trendData?.value || '-';
         obj['trend'] = trendData?.trend || '-';
         obj['maturity'] = trendData?.maturity || '-';
@@ -1694,14 +1835,14 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
 
         }
-        let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
+        let kpiIndex = this.kpiTableDataObj[hierarchyId]?.findIndex((x) => x.kpiId == kpiId);
         if (kpiIndex > -1) {
-          this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+          this.kpiTableDataObj[hierarchyId]?.splice(kpiIndex, 1);
         }
-        if (enabledKpi?.isEnabled && enabledKpi?.shown && this.kpiTableDataObj[hierarchyName]) {
-          this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
+        if (enabledKpi?.isEnabled && enabledKpi?.shown && this.kpiTableDataObj[hierarchyId]) {
+          this.kpiTableDataObj[hierarchyId] = [...this.kpiTableDataObj[hierarchyId], obj];
         }
-        this.sortingRowsInTable(hierarchyName);
+        this.sortingRowsInTable(hierarchyId);
       })
     } else {
       /** when no data available */
@@ -2275,7 +2416,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       }
 
       else if ((this.kpiStatusCodeArr[kpi.kpiId] === '200' || this.kpiStatusCodeArr[kpi.kpiId] === '201' || this.kpiStatusCodeArr[kpi.kpiId] === '203') && (kpi.kpiId === 'kpi171')) {
-        if (this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
+        if (this.kpiChartData[kpi.kpiId] && this.kpiChartData[kpi.kpiId][0] && this.kpiChartData[kpi.kpiId][0]?.data?.length > 0) {
           return true;
         } else {
           return false;
@@ -2335,19 +2476,25 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
     for (let i = 0; i < arr?.length; i++) {
       for (const key in this.colorObj) {
-        if (kpiId == 'kpi17' && this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName) {
-          this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-          finalArr.push(JSON.parse(JSON.stringify(arr[i])));
+        if (arr[i].value?.length) {
+          let selectedNode = this.filterData.filter(x => x.nodeDisplayName === arr[i].value[0].sprojectName);
+          let selectedId = selectedNode[0]?.nodeId;
+
+          if (kpiId == 'kpi17' && this.colorObj[key]?.nodeId == selectedId) {
+            this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+            finalArr.push(JSON.parse(JSON.stringify(arr[i])));
+          }
+          else if (this.colorObj[key]?.nodeId == selectedId) {
+            this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+            finalArr.push(arr[i]);
+          }
+          else continue;
         }
-        else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
-          this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-          finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
-        }
-        else continue;
       }
     }
     return finalArr;
   }
+
 
   /** get array of the kpi level filter */
   getDropdownArray(kpiId) {
@@ -2696,8 +2843,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             let trendObj = {};
             const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
             if (isNaN(Number(this.kpiChartData[kpiId][i]?.data))) {
+              let selectedNode = this.filterData.filter(x => x.nodeDisplayName === this.kpiChartData[kpiId][i]?.data);
+              let selectedId = selectedNode[0].nodeId;
               trendObj = {
                 "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                "hierarchyId": selectedId,
                 "value": latest,
                 "trend": trend,
                 "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
@@ -2710,7 +2860,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
             if (kpiId === 'kpi997') {
               trendObj['value'] = 'NA';
             }
-            this.kpiTrendsObj[kpiId]?.push(trendObj);
+            if (!this.kpiTrendsObj[kpiId].map(x => x.hierarchyId).includes(trendObj['hierarchyId'])) {
+              this.kpiTrendsObj[kpiId]?.push(trendObj);
+            }
           }
         }
       } else {
@@ -2718,8 +2870,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (averageCoverageIdx > -1) {
           let trendObj = {};
           const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][averageCoverageIdx]);
+          let selectedNode = this.filterData.filter(x => x.nodeName === this.kpiChartData[kpiId][averageCoverageIdx]?.data);
+          let selectedId = selectedNode[0].nodeId;
           trendObj = {
             "hierarchyName": this.kpiChartData[kpiId][averageCoverageIdx]?.data,
+            "hiearchyId": selectedId,
             "value": latest,
             "trend": trend,
             "maturity": this.checkMaturity(this.kpiChartData[kpiId][averageCoverageIdx]),

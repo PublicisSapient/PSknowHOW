@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -45,7 +46,10 @@ import lombok.Setter;
 @Document(collection = "project_basic_configs")
 public class ProjectBasicConfig extends BasicModel {
 
+	@Deprecated
 	private String emmUpdatedOn;
+
+	@Deprecated
 	private String consumerCreatedOn;
 
 	// link with Hierarchy Master nodeId where Level Is project
@@ -60,10 +64,15 @@ public class ProjectBasicConfig extends BasicModel {
 	private String updatedAt;
 	private String updatedBy;
 	private boolean kanban;
+
+	// hierarchy will not read/write in DB
+	//@Transient
 	private List<HierarchyValue> hierarchy;
+
 	private boolean saveAssigneeDetails;
 	private boolean developerKpiEnabled;
 	private boolean projectOnHold;
+
 	private ObjectId clonedFrom;
 
 	/**

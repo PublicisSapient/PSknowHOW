@@ -122,8 +122,6 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 								jiraIssue -> {
 									PiWiseLatestEpicData releaseWiseLatestEpicData = new PiWiseLatestEpicData();
 									releaseWiseLatestEpicData
-											.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
-									releaseWiseLatestEpicData
 											.setPiName(jiraIssue.getReleaseVersions().get(0).getReleaseName());
 									releaseWiseLatestEpicData
 											.setPiEndDate(jiraIssue.getReleaseVersions().get(0).getReleaseDate());
@@ -251,7 +249,6 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 	@Getter
 	@Setter
 	public class PiWiseLatestEpicData {
-		private String basicProjectConfigId;
 		private String piName;
 		private DateTime piEndDate;
 		private List<JiraIssue> epicList = new ArrayList<>();
