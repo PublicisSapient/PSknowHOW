@@ -19,10 +19,13 @@ package com.publicissapient.kpidashboard.common.model.rbac;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 @Getter
 @Setter
 public class AccessItem {
+
+	@Indexed(unique = true)
 	private String itemId;
 	private String itemName;
 

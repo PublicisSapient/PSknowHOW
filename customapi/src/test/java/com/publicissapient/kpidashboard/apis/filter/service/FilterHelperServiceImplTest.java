@@ -159,7 +159,7 @@ public class FilterHelperServiceImplTest {
 	@Test
 	public void getFilteredBuilds() {
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+				.newInstance("/json/default/project_hierarchy_filter_data.json");
 		List<AccountHierarchyData> accountHierarchyDataList = accountHierarchyFilterDataFactory
 				.getAccountHierarchyDataList();
 		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);

@@ -146,7 +146,6 @@ public class JiraIssueRepositoryImplTest {
 		mockV1JiraIssue.setProjectBeginDate(generalUseDate);
 		mockV1JiraIssue.setProjectChangeDate(generalUseDate);
 		mockV1JiraIssue.setProjectEndDate(generalUseDate);
-		mockV1JiraIssue.setProjectID("Scope:231870");
 		mockV1JiraIssue.setProjectIsDeleted("False");
 		mockV1JiraIssue.setProjectName("Test Scope 1");
 		mockV1JiraIssue.setProjectPath("Top -> Middle -> Bottome -> " + mockV1JiraIssue.getProjectName());
@@ -195,7 +194,6 @@ public class JiraIssueRepositoryImplTest {
 		mockJiraJiraIssue.setProjectBeginDate(maxDateWinner);
 		mockJiraJiraIssue.setProjectChangeDate(maxDateWinner);
 		mockJiraJiraIssue.setProjectEndDate(maxDateWinner);
-		mockJiraJiraIssue.setProjectID("583482");
 		mockJiraJiraIssue.setProjectIsDeleted("False");
 		mockJiraJiraIssue.setProjectName("Saiya-jin Warriors");
 		mockJiraJiraIssue.setProjectPath("");
@@ -246,7 +244,6 @@ public class JiraIssueRepositoryImplTest {
 		mockJiraJiraIssue2.setProjectBeginDate(maxDateLoser);
 		mockJiraJiraIssue2.setProjectChangeDate(maxDateLoser);
 		mockJiraJiraIssue2.setProjectEndDate(maxDateLoser);
-		mockJiraJiraIssue2.setProjectID("583483");
 		mockJiraJiraIssue2.setProjectIsDeleted("False");
 		mockJiraJiraIssue2.setProjectName("Not Cell!");
 		mockJiraJiraIssue2.setProjectPath("");
@@ -297,7 +294,6 @@ public class JiraIssueRepositoryImplTest {
 		mockJiraJiraIssue3.setProjectBeginDate(maxDateLoser);
 		mockJiraJiraIssue3.setProjectChangeDate(maxDateLoser);
 		mockJiraJiraIssue3.setProjectEndDate(maxDateLoser);
-		mockJiraJiraIssue3.setProjectID("583483");
 		mockJiraJiraIssue3.setProjectIsDeleted("False");
 		mockJiraJiraIssue3.setProjectName("Not Cell!");
 		mockJiraJiraIssue3.setProjectPath("");
@@ -348,7 +344,6 @@ public class JiraIssueRepositoryImplTest {
 		mockJiraJiraIssue4.setProjectBeginDate(maxDateLoser);
 		mockJiraJiraIssue4.setProjectChangeDate(maxDateLoser);
 		mockJiraJiraIssue4.setProjectEndDate(maxDateLoser);
-		mockJiraJiraIssue4.setProjectID("583483");
 		mockJiraJiraIssue4.setProjectIsDeleted("False");
 		mockJiraJiraIssue4.setProjectName("Not Cell!");
 		mockJiraJiraIssue4.setProjectPath("");
@@ -399,7 +394,6 @@ public class JiraIssueRepositoryImplTest {
 		mockJiraJiraIssue5.setProjectBeginDate(maxDateLoser);
 		mockJiraJiraIssue5.setProjectChangeDate(maxDateLoser);
 		mockJiraJiraIssue5.setProjectEndDate(maxDateLoser);
-		mockJiraJiraIssue5.setProjectID("583483");
 		mockJiraJiraIssue5.setProjectIsDeleted("False");
 		mockJiraJiraIssue5.setProjectName("SRDEVOPSDA-TEST");
 		mockJiraJiraIssue5.setProjectPath("");
@@ -452,7 +446,6 @@ public class JiraIssueRepositoryImplTest {
 		mockJiraJiraIssue6.setProjectBeginDate(maxDateLoser);
 		mockJiraJiraIssue6.setProjectChangeDate(maxDateLoser);
 		mockJiraJiraIssue6.setProjectEndDate(maxDateLoser);
-		mockJiraJiraIssue6.setProjectID("583483");
 		mockJiraJiraIssue6.setProjectIsDeleted("False");
 		mockJiraJiraIssue6.setProjectName("SR_ DevOps Dashboard");
 		mockJiraJiraIssue6.setProjectPath("");

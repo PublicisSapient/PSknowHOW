@@ -22,7 +22,7 @@ import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse, HttpRespo
 import { GetAuthService } from '../services/getauth.service';
 import { SharedService } from '../services/shared.service';
 import { catchError, tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import * as uuid from 'uuid';
 import { HttpService } from '../services/http.service';
@@ -31,7 +31,7 @@ declare let $: any;
 @Injectable()
 
 export class HttpsRequestInterceptor implements HttpInterceptor {
-    constructor(private getAuth: GetAuthService, private router: Router, private service: SharedService, private httpService: HttpService) { }
+    constructor(private getAuth: GetAuthService, private router: Router, private route: ActivatedRoute, private service: SharedService, private httpService: HttpService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler) {
         const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
@@ -110,37 +110,37 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                         this.redirectToLogin();
                                     } else {
                                         this.httpService.setCurrentUserDetails({});
-                                        this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
+                                        this.router.navigate(['./authentication/login'], { queryParams: this.route.snapshot.queryParams });
                                     }
                                 }
                             }
 
 
-                        if (environment?.['SSO_LOGIN']) {
-                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
-                                window.location.reload();
-                            });
-                        }
-                    } else if(err.status === 403 && environment?.['SSO_LOGIN']){
-                        this.httpService.unauthorisedAccess =true;
-                        this.router.navigate(['/dashboard/unauthorized-access']);
-                    } else {
-                        if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
-                            this.service.clearAllCookies();
-                            this.router.navigate(['./dashboard/my-knowhow']).then(success => {
-                                window.location.reload();
-                            });
-                        }else{
-                            if (httpErrorHandler !== 'local') {
-                                if (requestArea === 'internal') {
-                                    if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                        if(!environment?.['SSO_LOGIN'] || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
-                                        this.router.navigate(['./dashboard/Error']);
+                            if (environment?.['SSO_LOGIN']) {
+                                this.router.navigate(['./dashboard/my-knowhow']).then(success => {
+                                    window.location.reload();
+                                });
+                            }
+                        } else if (err.status === 403 && environment?.['SSO_LOGIN']) {
+                            this.httpService.unauthorisedAccess = true;
+                            this.router.navigate(['/dashboard/unauthorized-access']);
+                        } else {
+                            if (err?.status === 0 && err?.statusText === 'Unknown Error' && environment.SSO_LOGIN) {
+                                this.service.clearAllCookies();
+                                this.router.navigate(['./dashboard/my-knowhow']).then(success => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                if (httpErrorHandler !== 'local') {
+                                    if (requestArea === 'internal') {
+                                        if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
+                                            if (!environment?.['SSO_LOGIN'] || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))) {
+                                                this.router.navigate(['./dashboard/Error']);
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
                         }
                     }
                     // error thrown here needs to catch in  error block of subscribe

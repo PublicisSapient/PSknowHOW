@@ -129,7 +129,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 			SprintDetails sprintDetails;
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(leafNode.getAccountHierarchy().getBasicProjectConfigId());
+						.get(leafNode.getProjectHierarchy().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
@@ -139,7 +139,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI125(),
 						fieldMapping.getJiraIterationCompletionStatusKPI125(),
-						leafNode.getAccountHierarchy().getBasicProjectConfigId());
+						leafNode.getProjectHierarchy().getBasicProjectConfigId());
 
 				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 						DATE_TIME_FORMATTER);
@@ -362,8 +362,8 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 
 		String requestTrackerId = getRequestTrackerId();
 
-		Object basicProjectConfigId = sprintLeafNode.getAccountHierarchy().getBasicProjectConfigId();
-		String sprintID = sprintLeafNode.getAccountHierarchy().getNodeId();
+		Object basicProjectConfigId = sprintLeafNode.getProjectHierarchy().getBasicProjectConfigId();
+		String sprintID = sprintLeafNode.getProjectHierarchy().getNodeId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);

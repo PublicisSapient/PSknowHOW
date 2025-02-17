@@ -20,12 +20,17 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.Objects;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class HierarchyValue {
 
 	private HierarchyLevel hierarchyLevel;
+	private String orgHierarchyNodeId;
 	private String value;
 
 	@Override
@@ -35,6 +40,7 @@ public class HierarchyValue {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		HierarchyValue that = (HierarchyValue) o;
+		//todo change of value to orgHierarchyNodeId
 		return Objects.equals(hierarchyLevel, that.hierarchyLevel) && Objects.equals(value, that.value);
 	}
 

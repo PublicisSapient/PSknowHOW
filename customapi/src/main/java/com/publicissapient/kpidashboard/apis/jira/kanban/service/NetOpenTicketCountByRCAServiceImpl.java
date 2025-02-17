@@ -195,7 +195,7 @@ public class NetOpenTicketCountByRCAServiceImpl
 					String date = getRange(dateRange, kpiRequest);
 
 					populateProjectFilterWiseDataMap(projectWiseRCACountMap, trendValueMap,
-							node.getProjectFilter().getId(), date);
+							node.getProjectFilter().getName(), date);
 
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 
@@ -262,24 +262,23 @@ public class NetOpenTicketCountByRCAServiceImpl
 	 *
 	 * @param projectWiseRCAMap
 	 * @param projectFilterWiseDataMap
-	 * @param projectNodeId
+	 * @param projectName
 	 * @param date
 	 */
 	private void populateProjectFilterWiseDataMap(Map<String, Long> projectWiseRCAMap,
-			Map<String, List<DataCount>> projectFilterWiseDataMap, String projectNodeId, String date) {
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+			Map<String, List<DataCount>> projectFilterWiseDataMap, String projectName, String date) {
 
 		Map<String, Object> hoverValueMap = new HashMap<>();
 		projectWiseRCAMap.forEach((key, value) -> {
 			hoverValueMap.put(key, value.intValue());
-			DataCount dcObj = getDataCountObject(value, projectName, date, projectNodeId, key, hoverValueMap);
+			DataCount dcObj = getDataCountObject(value, projectName, date, projectName, key, hoverValueMap);
 			projectFilterWiseDataMap.computeIfAbsent(key, k -> new ArrayList<>()).add(dcObj);
 		});
 
 		Long aggLineValue = projectWiseRCAMap.values().stream().mapToLong(p -> p).sum();
 
 		projectFilterWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(getDataCountObject(
-				aggLineValue, projectName, date, projectNodeId, CommonConstant.OVERALL, hoverValueMap));
+				aggLineValue, projectName, date, projectName, CommonConstant.OVERALL, hoverValueMap));
 	}
 
 	/**
@@ -368,7 +367,7 @@ public class NetOpenTicketCountByRCAServiceImpl
 			List<KPIExcelData> excelData, KpiRequest kpiRequest) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& MapUtils.isNotEmpty(jiraHistoryRCAAndDateWiseIssueMap)) {
-			String dateProjectKey = node.getAccountHierarchyKanban().getNodeName();
+			String dateProjectKey = node.getProjectHierarchy().getNodeDisplayName();
 			String date = getRange(
 					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
 					kpiRequest);

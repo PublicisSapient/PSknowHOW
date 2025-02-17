@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -75,6 +75,7 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.hierarchy.service.OrganizationHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.model.HierarchyResponseDTO;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.DeleteProjectTraceLogService;
@@ -87,12 +88,10 @@ import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardCo
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
@@ -106,9 +105,11 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
@@ -127,9 +128,6 @@ public class ProjectBasicConfigServiceImplTest {
 	private MockMvc mockMvc;
 	@InjectMocks
 	private ProjectBasicConfigServiceImpl projectBasicConfigServiceImpl;
-
-	@Mock
-	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
 
 	@Mock
 	private ContextAwarePolicyEnforcement policy;
@@ -190,6 +188,15 @@ public class ProjectBasicConfigServiceImplTest {
 	@Mock
 	private TestExecutionService testExecutionService;
 	@Mock
+	private OrganizationHierarchyService organizationHierarchyService;
+	@Mock
+	private ProjectHierarchyRepository projectHierarchyRepository;
+	@Mock
+	private OrganizationHierarchyRepository organizationHierarchyRepository;
+	@Mock
+	private HierarchyLevelRepository hierarchyLevelRepository;
+
+	@Mock
 	private UserBoardConfigService userBoardConfigService;
 	@Mock
 	private ProjectToolConfigServiceImpl projectToolConfigService;
@@ -199,13 +206,6 @@ public class ProjectBasicConfigServiceImplTest {
 	private UserInfo userInfo;
 	private UserInfo nonSuperadminUserInfo;
 	private UserInfo projectViewerUserInfo;
-	private HierarchyLevelSuggestion hierarchyLevelSuggestion;
-	private AccountHierarchy accountHierarchy1;
-	private AccountHierarchy accountHierarchy2;
-	private AccountHierarchy accountHierarchy3;
-	private KanbanAccountHierarchy accountHierarchy4;
-	private KanbanAccountHierarchy accountHierarchy5;
-	private KanbanAccountHierarchy accountHierarchy6;
 
 	private ModelMapper modelMapper = new ModelMapper();
 
@@ -286,49 +286,6 @@ public class ProjectBasicConfigServiceImplTest {
 		viewerProjectAccess.setAccessNodes(Lists.newArrayList());
 		projectViewerUserInfo.setProjectsAccess(Lists.newArrayList(viewerProjectAccess));
 
-		hierarchyLevelSuggestion = new HierarchyLevelSuggestion();
-		TreeSet<String> values = new TreeSet<>();
-		values.add("hierarchyLevel1Value1");
-		values.add("hierarchyLevel1Value2");
-		hierarchyLevelSuggestion.setHierarchyLevelId("hierarchyLevel1Id");
-		hierarchyLevelSuggestion.setValues(values);
-
-		accountHierarchy1 = new AccountHierarchy();
-		accountHierarchy1.setPath("FCA,FCA,fs");
-		accountHierarchy1.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e34"));
-		accountHierarchy1.setLabelName("Project");
-		accountHierarchy1.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-
-		accountHierarchy2 = new AccountHierarchy();
-		accountHierarchy2.setPath("FCA,fs");
-		accountHierarchy2.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e35"));
-		accountHierarchy2.setLabelName("");
-		accountHierarchy2.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-
-		accountHierarchy3 = new AccountHierarchy();
-		accountHierarchy3.setPath("FCA,fs");
-		accountHierarchy3.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e36"));
-		accountHierarchy3.setLabelName("hierarchyLevel3Id");
-		accountHierarchy3.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e37"));
-
-		accountHierarchy4 = new KanbanAccountHierarchy();
-		accountHierarchy4.setPath("FCA,FCA,fs");
-		accountHierarchy4.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e34"));
-		accountHierarchy4.setLabelName("Project");
-		accountHierarchy4.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-
-		accountHierarchy5 = new KanbanAccountHierarchy();
-		accountHierarchy5.setPath("FCA,fs");
-		accountHierarchy5.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e35"));
-		accountHierarchy5.setLabelName("hierarchyLevel3Id");
-		accountHierarchy5.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e34"));
-
-		accountHierarchy6 = new KanbanAccountHierarchy();
-		accountHierarchy6.setPath("FCA,fs");
-		accountHierarchy6.setFilterCategoryId(new ObjectId("5ca455aa70c53c4f50076e36"));
-		accountHierarchy6.setLabelName("hierarchyLevel3Id");
-		accountHierarchy6.setBasicProjectConfigId(new ObjectId("5ca455aa70c53c4f50076e37"));
-
 	}
 
 	/**
@@ -361,7 +318,7 @@ public class ProjectBasicConfigServiceImplTest {
 	 */
 	@Test
 	public void addConfigTest_projectNameAlreadyExist_failure() {
-		when(basicConfigRepository.findByProjectName(any(String.class))).thenReturn(basicConfig);
+		when(basicConfigRepository.findByProjectNodeId(any())).thenReturn(basicConfig);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
@@ -371,7 +328,7 @@ public class ProjectBasicConfigServiceImplTest {
 	 */
 	@Test
 	public void addConfigTest_saveOperation_failure() {
-		when(basicConfigRepository.findByProjectName(any())).thenReturn(basicConfig);
+		when(basicConfigRepository.findByProjectNodeId(any())).thenReturn(basicConfig);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
@@ -474,8 +431,15 @@ public class ProjectBasicConfigServiceImplTest {
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
 		List<ProcessorExecutionTraceLog> traceLogs= new ArrayList<>();
 		traceLogs.add(new ProcessorExecutionTraceLog());
+		List<ProjectHierarchy> ph = new ArrayList<>();
+		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
+		projectHierarchy.setNodeId("ABCD12");
+		projectHierarchy.setNodeName("ABCD");
+		projectHierarchy.setNodeDisplayName("ABCD");
+		ph.add(projectHierarchy);
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),anyList())).thenReturn(traceLogs);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(new AssigneeDetails());
+		when(projectHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(ph);
 		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
 				basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
@@ -487,9 +451,17 @@ public class ProjectBasicConfigServiceImplTest {
 	@Test
 	public void updateConfigTest_kanbanHierarchy_success() {
 		basicConfig.setIsKanban(true);
+		List<ProjectHierarchy> ph = new ArrayList<>();
+		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
+		projectHierarchy.setNodeId("ABCD12");
+		projectHierarchy.setNodeName("ABCD");
+		projectHierarchy.setNodeDisplayName("ABCD");
+		ph.add(projectHierarchy);
+
 		when(basicConfigRepository.findById(any())).thenReturn(basicConfigOpt);
 		when(basicConfigRepository.findByProjectNameAndIdNot(any(), any())).thenReturn(null);
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
+		when(projectHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(ph);
 		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
 				basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
@@ -539,8 +511,10 @@ public class ProjectBasicConfigServiceImplTest {
 		List<ProjectBasicConfig> listOfProjectDetails = new ArrayList<>();
 		Mockito.when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		listOfProjectDetails.add(new ProjectBasicConfig());
-		Mockito.when(basicConfigRepository.findAll()).thenReturn(listOfProjectDetails);
-		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigs();
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(UUID.randomUUID().toString(), new ProjectBasicConfig());
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
+		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getFilteredProjectsBasicConfigs(Boolean.FALSE);
 		assertThat("response list size: ", list.size(), equalTo(1));
 
 	}
@@ -555,7 +529,9 @@ public class ProjectBasicConfigServiceImplTest {
 		ProjectBasicConfig project = new ProjectBasicConfig();
 		project.setId(projectId);
 		Optional<ProjectBasicConfig> projectOpt = Optional.of(project);
-		Mockito.when(basicConfigRepository.findById(projectId)).thenReturn(projectOpt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(projectId.toString(), project);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		ProjectBasicConfig config = projectBasicConfigServiceImpl.getProjectBasicConfigs(projectId.toString());
 		assertThat("response : ", config.getId(), equalTo(projectId));
 	}
@@ -573,7 +549,9 @@ public class ProjectBasicConfigServiceImplTest {
 		Set<String> userProjIds = new HashSet<>();
 		userProjIds.add(projectId.toString());
 		Mockito.when(tokenAuthenticationService.getUserProjects()).thenReturn(userProjIds);
-		Mockito.when(basicConfigRepository.findById(projectId)).thenReturn(userprojectOpt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(projectId.toString(), userproject);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		ProjectBasicConfig config = projectBasicConfigServiceImpl.getProjectBasicConfigs(projectId.toString());
 		assertThat("response : ", config.getId(), equalTo(projectId));
 	}
@@ -609,9 +587,8 @@ public class ProjectBasicConfigServiceImplTest {
 		Mockito.when(tokenAuthenticationService.getUserProjects()).thenReturn(userProjIds);
 		Set<ObjectId> projIdSet = new HashSet<>();
 		projIdSet.add(projectId);
-		Mockito.when(basicConfigRepository.findByIdIn(projIdSet)).thenReturn(userprojectList);
-		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigs();
-		assertThat("response list size: ", list.size(), equalTo(1));
+		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getFilteredProjectsBasicConfigs(Boolean.FALSE);
+		assertThat("response list size: ", list.size(), equalTo(0));
 	}
 
 	/**
@@ -632,16 +609,6 @@ public class ProjectBasicConfigServiceImplTest {
 	 */
 
 	@Test
-	public void getAllProjectsBasicConfigsWithoutPermission() {
-		List<ProjectBasicConfig> listOfProjectDetails = new ArrayList<>();
-		listOfProjectDetails.add(new ProjectBasicConfig());
-		Mockito.when(basicConfigRepository.findAll()).thenReturn(listOfProjectDetails);
-		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigsWithoutPermission();
-		assertThat("response list size: ", list.size(), equalTo(1));
-
-	}
-
-	@Test
 	public void deleteProject_Success() {
 		String id = "5fc4d61f80b6350f048a93e5";
 		ObjectId basicProjectConfigId = new ObjectId(id);
@@ -649,12 +616,15 @@ public class ProjectBasicConfigServiceImplTest {
 		ProjectBasicConfig p1 = new ProjectBasicConfig();
 		p1.setId(basicProjectConfigId);
 		p1.setProjectName("Test");
+		p1.setProjectNodeId("Test Project_6335368249794a18e8a4479f");
 
 		Optional<ProjectBasicConfig> p1Opt = Optional.of(p1);
 		AccessRequest accessRequestsData = createAccessRequestData();
 		when(toolRepository.findByBasicProjectConfigId(any(ObjectId.class))).thenReturn(createTools());
 		when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(basicConfigRepository.findById(any(ObjectId.class))).thenReturn(p1Opt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		when(dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA)).thenReturn(agileDataCleanUpService);
 		doNothing().when(agileDataCleanUpService).clean(anyString());
 		doNothing().when(toolRepository).deleteById(any(ObjectId.class));
@@ -684,7 +654,9 @@ public class ProjectBasicConfigServiceImplTest {
 		AccessRequest accessRequestsData = createAccessRequestData();
 		when(toolRepository.findByBasicProjectConfigId(any(ObjectId.class))).thenReturn(createTools());
 		when(userAuthorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(basicConfigRepository.findById(any(ObjectId.class))).thenReturn(p1Opt);
+		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
+		mapOfProjectDetails.put(p1.getId().toString(), p1);
+		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(anyString())).thenReturn(new AssigneeDetails());
 		when(dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA)).thenReturn(agileDataCleanUpService);
 		doNothing().when(agileDataCleanUpService).clean(anyString());
@@ -746,7 +718,7 @@ public class ProjectBasicConfigServiceImplTest {
 	 * Test getAllProjectsBasicConfigsDTOWithoutPermissionTest method
 	 */
 	@Test
-	public void getAllProjectsBasicConfigsDTOWithoutPermissionTest() {
+	public void getFilteredProjectsBasicConfigsDTOWithoutPermissionTest() {
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
 		mapOfProjectDetails.put(basicConfig.getId().toHexString(), basicConfig);
 		mapOfProjectDetails.put(diffbasicConfig.getId().toHexString(), diffbasicConfig);
@@ -826,7 +798,6 @@ public class ProjectBasicConfigServiceImplTest {
 
 	@Test
 	public void creatTree(){
-		Mockito.when(basicConfigRepository.findAll()).thenReturn(Arrays.asList(basicConfig));
 		projectBasicConfigServiceImpl.getBasicConfigTree();
 	}
 
@@ -836,6 +807,24 @@ public class ProjectBasicConfigServiceImplTest {
 		SecurityContextHolder.setContext(securityContext);
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(projectAccessManager.getAccessRoleOfNearestParent(any(),any())).thenReturn(Constant.ROLE_SUPERADMIN);
+		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
+		assertThat("Status: ", response.getSuccess(), equalTo(true));
+	}
+
+	/**
+	 * test add config
+	 */
+	@Test
+	public void addConfigTest_projectNodeIdIsNull_success() {
+		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
+		SecurityContextHolder.setContext(securityContext);
+		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("GUEST");
+		userInfo.setAuthType(AuthType.STANDARD);
+		userInfo.setAuthorities(Lists.newArrayList("ROLE_GUEST"));
+		when(projectAccessManager.getUserInfo(any())).thenReturn(userInfo);
+		basicConfigDTO.setProjectNodeId(null);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}

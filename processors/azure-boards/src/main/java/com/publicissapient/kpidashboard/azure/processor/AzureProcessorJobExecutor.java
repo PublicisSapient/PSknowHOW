@@ -149,15 +149,23 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_SPRINT_HIERARCHY);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-					CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+					CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
+					CommonConstant.CACHE_PROJECT_HIERARCHY);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,	CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
+            azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_SOURCE_ENDPOINT, CommonConstant.JIRA_KPI,
+                    "");
+
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_KPI_DATA);
 		}
 		if (kanbanIssueCount.get() > 0) {
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-					CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+					CommonConstant.CACHE_ORGANIZATION_HIERARCHY);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,	CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
+			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,	CommonConstant.CACHE_PROJECT_HIERARCHY);
 			azureRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
 					CommonConstant.JIRAKANBAN_KPI_CACHE);
 		}
@@ -171,7 +179,7 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
+		List<ProjectBasicConfig> allProjects = projectConfigRepository.findActiveProjects(false);
 		MDC.put("TotalConfiguredProject", String.valueOf(CollectionUtils.emptyIfNull(allProjects).size()));
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {

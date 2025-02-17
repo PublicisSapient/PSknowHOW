@@ -326,10 +326,8 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	private void setProjectSpecificDetails(ProjectConfFieldMapping projectConfig, KanbanJiraIssue jiraIssue,
 			Issue issue) {
 		String name = projectConfig.getProjectName();
-		String id = new StringBuffer(name).append(CommonConstant.UNDERSCORE)
-				.append(projectConfig.getBasicProjectConfigId().toString()).toString();
 
-		jiraIssue.setProjectID(id);
+		jiraIssue.setProjectID(projectConfig.getProjectBasicConfig().getProjectNodeId());
 		jiraIssue.setProjectName(name);
 		jiraIssue.setProjectKey(issue.getProject().getKey());
 		jiraIssue.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());

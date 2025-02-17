@@ -23,6 +23,7 @@ import {
 } from '@angular/core';
 import { GetAuthService } from '../../services/getauth.service';
 import { Router } from '@angular/router';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-dashboard-v2',
@@ -45,14 +46,25 @@ export class DashboardV2Component implements AfterContentInit {
   headerStyle;
   sideNavStyle;
   goToTopButton: HTMLElement;
+  selectedTab;
+  refreshCounter: number = 0;
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public router: Router,
     private getAuth: GetAuthService,
+    public service: SharedService
   ) {
     this.sideNavStyle = { 'toggled': this.isApply };
     this.authorized = this.getAuth.checkAuth();
+
+    this.service.onTabSwitch.subscribe((data) => {
+      if (data?.selectedBoard) {
+        this.selectedTab = data.selectedBoard;
+      }
+    });
+
+    // this.service.setSelectedBoard('iteration');
   }
 
   ngAfterContentInit() {

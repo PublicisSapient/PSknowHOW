@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.bson.types.ObjectId;
 
 import lombok.AllArgsConstructor;
@@ -39,13 +40,20 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProjectBasicConfigDTO {
 	private ObjectId id;
+	private String projectNodeId;
+
 	private String projectName;
+	private String projectDisplayName;
+
 	private String createdAt;
 	private String createdBy;
 	private String updatedAt;
 	private String updatedBy;
+
+	@Deprecated
 	private String consumerCreatedOn;
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;
@@ -53,6 +61,7 @@ public class ProjectBasicConfigDTO {
 	private boolean developerKpiEnabled;
 	private boolean projectOnHold;
 	private ObjectId clonedFrom;
+
 
 	/**
 	 * @return isKanban value

@@ -68,10 +68,9 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class SonarTechDebtKanbanServiceImpl
-		extends SonarKPIService<Long, List<Object>, Map<String, List<SonarHistory>>> {
+		extends SonarKPIService<Long, List<Object>, Map<Pair<String, String>, List<SonarHistory>>> {
 
 	private static final String SQALE_INDEX = "sqale_index";
-
 
 	/**
 	 * Gets KPICode's <tt>SONAR_TECH_DEBT_KANBAN</tt> enum
@@ -85,7 +84,7 @@ public class SonarTechDebtKanbanServiceImpl
 	 * @param sonarDetailsMap
 	 */
 	@Override
-	public Long calculateKPIMetrics(Map<String, List<SonarHistory>> sonarDetailsMap) {
+	public Long calculateKPIMetrics(Map<Pair<String, String>, List<SonarHistory>> sonarDetailsMap) {
 		return null;
 	}
 
@@ -159,17 +158,17 @@ public class SonarTechDebtKanbanServiceImpl
 		String startDate = dateRange.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		String endDate = dateRange.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-		Map<String, List<SonarHistory>> sonarDetailsForAllProjects = fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
+		Map<Pair<String, String>, List<SonarHistory>> sonarDetailsForAllProjects = fetchKPIDataFromDb(leafNodeList,
+				startDate, endDate, kpiRequest);
 
 		kpiWithFilter(sonarDetailsForAllProjects, mapTmp, kpiElement, kpiRequest);
 
 	}
 
-	private void kpiWithFilter(Map<String, List<SonarHistory>> sonarDetailsForAllProjects, Map<String, Node> mapTmp,
-			KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void kpiWithFilter(Map<Pair<String, String>, List<SonarHistory>> sonarDetailsForAllProjects,
+			Map<String, Node> mapTmp, KpiElement kpiElement, KpiRequest kpiRequest) {
 		List<KPIExcelData> excelData = new ArrayList<>();
-		sonarDetailsForAllProjects.forEach((projectName, projectData) -> {
+		sonarDetailsForAllProjects.forEach((projectNodePair, projectData) -> {
 			if (CollectionUtils.isNotEmpty(projectData)) {
 				List<String> projectList = new ArrayList<>();
 				List<String> debtList = new ArrayList<>();
@@ -185,16 +184,17 @@ public class SonarTechDebtKanbanServiceImpl
 					Long endms = dateRange.getEndDate().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
 							.toEpochMilli();
 					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
-							projectName);
+							projectNodePair.getRight());
 					String date = getRange(dateRange, kpiRequest);
-					prepareSqualeList(history, date, projectName, projectList, debtList, projectWiseDataMap,
-							versionDate);
+					prepareSqualeList(history, date, projectNodePair.getRight(), projectList, debtList,
+							projectWiseDataMap, versionDate);
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 				}
-				mapTmp.get(projectName).setValue(projectWiseDataMap);
+				mapTmp.get(projectNodePair.getLeft()).setValue(projectWiseDataMap);
 				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectName).getProjectFilter().getName(),
-							projectList, debtList, versionDate, excelData, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
+					KPIExcelUtility.populateSonarKpisExcelData(
+							mapTmp.get(projectNodePair.getLeft()).getProjectFilter().getName(), projectList, debtList,
+							versionDate, excelData, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
 				}
 			}
 		});
@@ -225,8 +225,8 @@ public class SonarTechDebtKanbanServiceImpl
 	 * @return {@code Map<ObjectId, List<SonarDetails>>}
 	 */
 	@Override
-	public Map<String, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+	public Map<Pair<String, String>, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate,
+			String endDate, KpiRequest kpiRequest) {
 		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
@@ -251,19 +251,18 @@ public class SonarTechDebtKanbanServiceImpl
 	 * 
 	 * @param history
 	 * @param date
-	 * @param projectNodeId
+	 * @param projectName
 	 * @param projectList
 	 * @param debtList
 	 * @param projectWiseDataMap
 	 * @param versionDate
 	 * @return
 	 */
-	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectNodeId,
+	private Map<String, Object> prepareSqualeList(Map<String, SonarHistory> history, String date, String projectName,
 			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
 		Map<String, Object> key = new HashMap<>();
 		List<Long> dateWiseDebtList = new ArrayList<>();
-		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		history.forEach((keyName, sonarDetails) -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
@@ -353,10 +352,10 @@ public class SonarTechDebtKanbanServiceImpl
 		return calculateKpiValueForLong(valueList, kpiId);
 	}
 
-
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI67(),KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI67(),
+				KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId());
 	}
 
 }

@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import static org.mockito.Mockito.when;
@@ -37,11 +36,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.OrganizationHierarchyDataFactory;
 import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.OrganizationHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
@@ -50,8 +51,9 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FiltersRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import com.publicissapient.kpidashboard.common.repository.application.OrganizationHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
@@ -64,6 +66,7 @@ public class ConfigHelperServiceTest {
 	CacheService cacheService;
 	List<ProjectBasicConfig> projectList = null;
 	List<FieldMapping> fieldMappingList = null;
+	List<OrganizationHierarchy> organizationHierarchyList = null;
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
@@ -78,7 +81,7 @@ public class ConfigHelperServiceTest {
 	@Mock
 	ProjectToolConfigRepository projectToolConfigRepository;
 	@Mock
-	HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
+	OrganizationHierarchyRepository organizationHierarchyRepository;
 	@Mock
 	ProjectBasicConfigService projectBasicConfigService;
 	@Mock
@@ -87,15 +90,19 @@ public class ConfigHelperServiceTest {
 	private ConfigHelperService configHelperService;
 	@Mock
 	private FiltersRepository filtersRepository;
+	@Mock
+	private HierarchyLevelRepository hierarchyLevelRepository;
 
 	@Before
 	public void setUp() {
 		projectList = ProjectBasicConfigDataFactory.newInstance("").getProjectBasicConfigs();
 		fieldMappingList = FieldMappingDataFactory.newInstance("").getFieldMappings();
+		organizationHierarchyList = OrganizationHierarchyDataFactory.newInstance("").getOrganizationHierarchies();
 	}
 
 	@Test
 	public void loadConfigData() {
+		Mockito.when(hierarchyLevelRepository.findAllByOrderByLevel()).thenReturn(new ArrayList<>());
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectList);
 		Mockito.when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
 		configHelperService.loadConfigData();
@@ -148,12 +155,6 @@ public class ConfigHelperServiceTest {
 	}
 
 	@Test
-	public void loadHierarchyLevelSuggestion() {
-		Mockito.when(hierarchyLevelSuggestionRepository.findAll()).thenReturn(new ArrayList<>());
-		Assertions.assertNotNull(configHelperService.loadHierarchyLevelSuggestion().getClass());
-	}
-
-	@Test
 	public void loadProjectBasicTree() {
 		ProjectBasicConfigNode projectBasicConfigNode = new ProjectBasicConfigNode();
 		projectBasicConfigNode.setValue("Test");
@@ -169,7 +170,8 @@ public class ConfigHelperServiceTest {
 		kpiMaster.setAggregationCircleCriteria("criteriaX");
 		kpiMasters.add(kpiMaster);
 		Mockito.when(kpiMasterRepository.findAll()).thenReturn(kpiMasters);
-		Assertions.assertEquals("criteriaX", configHelperService.calculateCriteriaForCircleKPI().get("5fd9ab0995fe13000165d0ba"));
+		Assertions.assertEquals("criteriaX",
+				configHelperService.calculateCriteriaForCircleKPI().get("5fd9ab0995fe13000165d0ba"));
 	}
 
 	@Test
@@ -193,7 +195,8 @@ public class ConfigHelperServiceTest {
 		kpiMaster.setMaturityRange(maturityRange);
 		kpiMasters.add(kpiMaster);
 		Mockito.when(kpiMasterRepository.findAll()).thenReturn(kpiMasters);
-		Assertions.assertEquals("criteriaX", configHelperService.calculateMaturity().get("5fd9ab0995fe13000165d0ba").get(0));
+		Assertions.assertEquals("criteriaX",
+				configHelperService.calculateMaturity().get("5fd9ab0995fe13000165d0ba").get(0));
 	}
 
 	@Test
@@ -210,8 +213,14 @@ public class ConfigHelperServiceTest {
 	}
 
 	@Test
-	public void loadAllFilters(){
+	public void loadAllFilters() {
 		when(filtersRepository.findAll()).thenReturn(null);
 		Assertions.assertNull(configHelperService.loadAllFilters());
+	}
+
+	@Test
+	public void loadAllOrganizationHierarchy() {
+		when(organizationHierarchyRepository.findAll()).thenReturn(organizationHierarchyList);
+		Assertions.assertNotNull(configHelperService.loadAllOrganizationHierarchy());
 	}
 }

@@ -92,7 +92,7 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets access request which has the project id
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @return access requests
 	 */

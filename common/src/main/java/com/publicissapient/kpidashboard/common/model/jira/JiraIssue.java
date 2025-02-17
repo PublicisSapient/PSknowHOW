@@ -161,7 +161,6 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	private String projectEndDate;
 	private String projectBeginDate;
 	private String projectName;
-	private String projectID;
 	private String projectKey;
 	private String jiraProjectName;
 	private Integer bufferedEstimateTime; // buffered estimate in days

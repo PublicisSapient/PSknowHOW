@@ -20,33 +20,49 @@ package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceKanbanImpl;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectHierarchy;
 import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProjectHierarchyService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.SimpleValueWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -73,6 +89,12 @@ public class CacheServiceImplTest {
     @InjectMocks
     private CacheServiceImpl cacheService;
 
+    @Mock
+    private ProjectHierarchyService projectHierarchyService;
+
+    @Mock
+    private Cache cache;
+
     @Test
     public void testClearCache_ValidCacheName_CacheCleared() {
         String cacheName = "exampleCache";
@@ -89,6 +111,15 @@ public class CacheServiceImplTest {
     public void testCacheAccountHierarchyData_ValidInput_ReturnsData() {
         when(accountHierarchyService.createHierarchyData()).thenReturn(new ArrayList<>());
         Object result = cacheService.cacheAccountHierarchyData();
+        assertNotNull(result);
+    }
+    @Test
+    public void testCacheSprintHierarchyData_ValidInput_ReturnsData() {
+        AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
+                .newInstance("/json/default/project_hierarchy_filter_data.json");
+        List<AccountHierarchyData> accountHierarchyDataList;
+        cacheService.accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+        Object result = cacheService.cacheSprintLevelData();
         assertNotNull(result);
     }
 
@@ -174,6 +205,12 @@ public class CacheServiceImplTest {
         cacheService.cacheProjectConfigMapData();
         verify(configHelperService).loadConfigData();
     }
+    @Test
+    public void testUpdateCacheProjectConfigMapData_ValidInput_ReturnsData() {
+        doNothing().when(configHelperService).loadConfigData();
+        cacheService.cacheProjectConfigMapData();
+        verify(configHelperService).loadConfigData();
+    }
 
     @Test
     public void testCacheFieldMappingMapData_ValidInput_ReturnsData() {
@@ -234,4 +271,144 @@ public class CacheServiceImplTest {
         verify(cache, times(1)).put("key1key2JIRA123sprint1sprint2", value);
     }
 
+
+    @Test
+    public void testGetAllProjectHierarchy() {
+        List<ProjectHierarchy> expectedHierarchies = Arrays.asList(new ProjectHierarchy());
+        // Mock the service call
+        when(projectHierarchyService.findAll()).thenReturn(expectedHierarchies);
+        // Verify interactions and assertions
+        assertEquals(expectedHierarchies, cacheService.getAllProjectHierarchy());
+    }
+
+    @Test
+    public void testGetFromApplicationCache_CacheHit() {
+        // Mock data
+        String key = "testKey";
+        String expectedValue = "testValue";
+        String cacheName = "testCache";
+
+        // Mock the cache and value wrapper
+        SimpleValueWrapper valueWrapper = new SimpleValueWrapper(expectedValue);
+        when(cacheManager.getCache(cacheName)).thenReturn(cache);
+        when(cache.get(key)).thenReturn(valueWrapper);
+
+        // Mock CommonUtils.getCacheName
+        try (var mockedStatic = mockStatic(CommonUtils.class)) {
+            mockedStatic.when(() -> CommonUtils.getCacheName(Constant.KPI_REQUEST_TRACKER_ID_KEY))
+                    .thenReturn(cacheName);
+
+            // Call the method
+            String actualValue = cacheService.getFromApplicationCache(key);
+
+            // Verify interactions and assertions
+            assertEquals(expectedValue, actualValue);
+            verify(cacheManager, times(1)).getCache(cacheName);
+            verify(cache, times(1)).get(key);
+        }
+    }
+
+    @Test
+    public void testGetFromApplicationCache_CacheMiss() {
+        // Mock data
+        String key = "testKey";
+        String cacheName = "testCache";
+
+        // Mock the cache returning null
+        when(cacheManager.getCache(cacheName)).thenReturn(cache);
+        when(cache.get(key)).thenReturn(null);
+
+        // Mock CommonUtils.getCacheName
+        try (var mockedStatic = mockStatic(CommonUtils.class)) {
+            mockedStatic.when(() -> CommonUtils.getCacheName(Constant.KPI_REQUEST_TRACKER_ID_KEY))
+                    .thenReturn(cacheName);
+
+            // Call the method
+            String actualValue = cacheService.getFromApplicationCache(key);
+
+            // Verify interactions and assertions
+            assertEquals("", actualValue); // Cache miss returns an empty string
+            verify(cacheManager, times(1)).getCache(cacheName);
+            verify(cache, times(1)).get(key);
+        }
+    }
+
+    @Test
+    public void testGetFromApplicationCache_NullCache() {
+        // Mock data
+        String key = "testKey";
+        String cacheName = "testCache";
+
+        // Mock the cacheManager returning null
+        when(cacheManager.getCache(cacheName)).thenReturn(null);
+
+        // Mock CommonUtils.getCacheName
+        try (var mockedStatic = mockStatic(CommonUtils.class)) {
+            mockedStatic.when(() -> CommonUtils.getCacheName(Constant.KPI_REQUEST_TRACKER_ID_KEY))
+                    .thenReturn(cacheName);
+
+            // Call the method
+            String actualValue = cacheService.getFromApplicationCache(key);
+
+            // Verify interactions and assertions
+            assertEquals("", actualValue); // Null cache returns an empty string
+            verify(cacheManager, times(1)).getCache(cacheName);
+            verifyNoInteractions(cache); // Ensure the cache itself is not interacted with
+        }
+    }
+
+
+    @Test
+    public void testCacheBoardMetaDataMapData() {
+        // Mocked data
+        Object expectedConfigMap = new Object(); // Replace with the expected return type
+        String cacheKey = CommonConstant.CACHE_BOARD_META_DATA_MAP;
+
+        // Mock the service methods
+        doNothing().when(configHelperService).loadBoardMetaData();
+        when(configHelperService.getConfigMapData(cacheKey)).thenReturn(expectedConfigMap);
+
+        // Call the method
+        Object actualConfigMap = cacheService.cacheBoardMetaDataMapData();
+
+        // Verify interactions and assertions
+        assertEquals(expectedConfigMap, actualConfigMap);
+        verify(configHelperService, times(1)).loadBoardMetaData();
+        verify(configHelperService, times(1)).getConfigMapData(cacheKey);
+    }
+
+    @Test
+    public void testUpdateCacheProjectConfigMapData() {
+        when(configHelperService.getConfigMapData(anyString())).thenReturn(Map.of("", new ProjectBasicConfig()));
+        cacheService.updateCacheProjectConfigMapData();
+
+    }
+
+    @Test
+    public void testUpdateAllCacheProjectConfigMapData() {
+
+        String cacheKey = CommonConstant.CACHE_PROJECT_CONFIG_MAP;
+
+        // Mock the method
+        when(configHelperService.getConfigMapData(anyString())).thenReturn(new Object());
+        // Verify the results
+        cacheService.updateAllCacheProjectConfigMapData();
+        verify(configHelperService, times(1)).getConfigMapData(cacheKey);
+    }
+
+    @Test
+    public void testCacheAllProjectConfigMapData() {
+        // Mocked data
+        String cacheKey = CommonConstant.CACHE_PROJECT_CONFIG_MAP;
+
+        // Mock the methods
+        doNothing().when(configHelperService).loadConfigData();
+        when(configHelperService.getConfigMapData(anyString())).thenReturn(new Object());
+
+        // Call the method
+        cacheService.cacheAllProjectConfigMapData();
+        // Verify interactions
+        verify(configHelperService, times(1)).loadConfigData();
+        verify(configHelperService, times(1)).getConfigMapData(cacheKey);
+    }
 }

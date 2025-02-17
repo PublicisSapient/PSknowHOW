@@ -33,3 +33,7 @@ div.option {
 :host ::ng-deep .ui-float-label .p-multiselect{
     width: 100%;
 }
+
+:host ::ng-deep .p-component .p-multiselect-panel .p-multiselect-items .p-multiselect-item .option .parent_item {
+    color: green;
+}

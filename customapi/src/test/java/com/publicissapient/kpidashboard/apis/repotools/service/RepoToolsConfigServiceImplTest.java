@@ -186,8 +186,6 @@ public class RepoToolsConfigServiceImplTest {
         when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId("GitHub",
                 new ObjectId("5fb364612064a31c9ccd517a"))).thenReturn(Arrays.asList(projectToolConfig));
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
-        when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
-                .thenReturn(projectBasicConfig);
         when(repoToolsClient.triggerScanCall(anyString(), anyString(), anyString())).thenReturn(HttpStatus.OK.value());
 
         int result = repoToolsConfigService.triggerScanRepoToolProject("GitHub", "5fb364612064a31c9ccd517a");
