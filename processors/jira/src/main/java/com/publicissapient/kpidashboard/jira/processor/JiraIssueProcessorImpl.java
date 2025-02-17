@@ -817,7 +817,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				sprintsList.add(sprint.getOriginalSprintId());
 				jiraIssue.setSprintIdList(sprintsList);
 				sprint.setSprintID(
-						sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + projectNodeId);
+						sprint.getOriginalSprintId() + CommonConstant.ADDITIONAL_FILTER_VALUE_ID_SEPARATOR + projectNodeId);
 			}
 			// Use the latest sprint
 			// if any sprint date is blank set that sprint to JiraIssue
