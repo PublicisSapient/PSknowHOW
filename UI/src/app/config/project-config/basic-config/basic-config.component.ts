@@ -118,7 +118,8 @@ export class BasicConfigComponent implements OnInit {
         hierarchyLevelName: 'Project Methodology',
         inputType: 'switch',
         value: false,
-        required: true
+        required: true,
+        disabled : this.clone
       });
 
       if (this.clone !== 'true') {

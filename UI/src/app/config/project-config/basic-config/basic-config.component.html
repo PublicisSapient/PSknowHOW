@@ -87,6 +87,7 @@
                       optionValue="value"
                       [multiple]="false"
                       required
+                      [disabled] = 'field.disabled'
                       id="{{ field.hierarchyLevelId }}"
                       [formControlName]="field.hierarchyLevelId"
                     >
