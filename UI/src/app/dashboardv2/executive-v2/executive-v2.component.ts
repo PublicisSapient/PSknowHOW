@@ -2870,7 +2870,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (averageCoverageIdx > -1) {
           let trendObj = {};
           const [latest, trend, unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][averageCoverageIdx]);
-          let selectedNode = this.filterData.filter(x => x.nodeName === this.kpiChartData[kpiId][averageCoverageIdx]?.data);
+          let selectedNode = this.filterData.filter(x => x.nodeDisplayName === this.kpiChartData[kpiId][averageCoverageIdx]?.data);
           let selectedId = selectedNode[0].nodeId;
           trendObj = {
             "hierarchyName": this.kpiChartData[kpiId][averageCoverageIdx]?.data,
