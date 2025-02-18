@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.bitbucket.service.BitBucketServiceR;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
@@ -76,6 +77,7 @@ public class KpiIntegrationServiceImpl {
 	private static final String KPI_SOURCE_SONAR = "Sonar";
 	private static final String KPI_SOURCE_ZEPHYR = "Zypher";
 	private static final String KPI_SOURCE_JENKINS = "Jenkins";
+	private static final String KPI_SOURCE_DEVELOPER = "BitBucket";
 	private static final String SPRINT_CLOSED = "CLOSED";
 	private static final String RNR_API_HEADER = "X-Custom-Authentication";
 
@@ -101,6 +103,11 @@ public class KpiIntegrationServiceImpl {
 	NonTrendServiceFactory serviceFactory;
 
 	@Autowired
+	private BitBucketServiceR bitBucketServiceR;
+
+
+
+	@Autowired
 	private CustomApiConfig customApiConfig;
 
 	@Autowired
@@ -122,7 +129,7 @@ public class KpiIntegrationServiceImpl {
 		sourceWiseKpiList.forEach((source, kpiList) -> {
 			try {
 				kpiRequest.setKpiList(sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement)
-						.collect(Collectors.toList()));
+						.toList());
 				switch (source) {
 				case KPI_SOURCE_JIRA:
 					kpiElements.addAll(getJiraKpiMaturity(kpiRequest));
@@ -135,6 +142,9 @@ public class KpiIntegrationServiceImpl {
 					break;
 				case KPI_SOURCE_JENKINS:
 					kpiElements.addAll(getJenkinsKpiMaturity(kpiRequest));
+					break;
+				case KPI_SOURCE_DEVELOPER:
+					kpiElements.addAll(getDeveloperKpiMaturity(kpiRequest));
 					break;
 				default:
 					log.error("Invalid Kpi");
@@ -281,6 +291,26 @@ public class KpiIntegrationServiceImpl {
 		MDC.put("JenkinsRequestStartTime", String.valueOf(jenkinsRequestStartTime));
 		List<KpiElement> responseList = jenkinsServiceR.processWithExposedApiToken(kpiRequest);
 		MDC.put("TotalJenkinsRequestTime", String.valueOf(System.currentTimeMillis() - jenkinsRequestStartTime));
+		MDC.clear();
+		return responseList;
+	}
+
+	/**
+	 * get kpi data for source jenkins
+	 *
+	 * @param kpiRequest
+	 * 		kpiRequest to fetch kpi data
+	 * @return list of sonar KpiElement
+	 * @throws EntityNotFoundException
+	 * 		entity not found exception for jenkins service method
+	 */
+	private List<KpiElement> getDeveloperKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
+		MDC.put("DeveloperKpiRequest", kpiRequest.getRequestTrackerId());
+		log.info("Received Developer KPI request {}", kpiRequest);
+		long developerRequestStartTime = System.currentTimeMillis();
+		MDC.put("JenkinsRequestStartTime", String.valueOf(developerRequestStartTime));
+		List<KpiElement> responseList = bitBucketServiceR.processWithExposedApiToken(kpiRequest);
+		MDC.put("TotalJenkinsRequestTime", String.valueOf(System.currentTimeMillis() - developerRequestStartTime));
 		MDC.clear();
 		return responseList;
 	}
