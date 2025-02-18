@@ -4,6 +4,11 @@ header {
   padding: 0 20px;
 }
 
+.icon-dice-container {
+  border: none;
+  background: transparent;
+}
+
 .logo>img {
   height: 40px;
 }

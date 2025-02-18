@@ -1,7 +1,7 @@
 <ng-container *ngIf="selectedTab === 'iteration'; else cardWithOutRawJsonTemplate">
   <div class="kpi-card-container-v2">
-    <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"  (actionTriggered)="handleAction($event)"
-    ></app-ps-kpi-card-header>
+    <app-ps-kpi-card-header [cardHeaderData]="kpiHeaderData"
+      (actionTriggered)="handleAction($event)"></app-ps-kpi-card-header>
 
     <div class="kpi-card-body">
       <ng-container
@@ -58,12 +58,14 @@
 <ng-template #cardWithOutRawJsonTemplate>
   <div class="kpi-card-container">
     <div class="kpi-card-header p-pr-5 p-pl-5 p-jc-between">
-      <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader role="region" aria-label="KPI Card Header">
+      <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader role="region"
+        aria-label="KPI Card Header">
         <div class="kpi-card-title-container">
-          <h3 *ngIf="kpiData" tabindex="0" [attr.aria-label]="kpiData?.kpiName + ' KPI Details'">{{kpiData?.kpiName}}</h3>
+          <h3 *ngIf="kpiData" tabindex="0" [attr.aria-label]="kpiData?.kpiName + ' KPI Details'">{{kpiData?.kpiName}}
+          </h3>
           <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="info-icon" (mouseover)="showTooltip(true)"
-            (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}"
-            role="button" tabindex="0" aria-label="Show KPI Information" (keydown.enter)="showTooltip(true)">
+            (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}" role="button" tabindex="0"
+            aria-label="Show KPI Information" (keydown.enter)="showTooltip(true)">
             <img alt="info" class="" src="../../../assets/img/Info.svg" aria-hidden="true" />
             <app-tooltip-v2 *ngIf="isTooltip" class="p-mt-3" [data]="kpiData?.kpiDetail?.kpiInfo"
               (mouseleave)="showTooltip(false)" [showChartView]="showChartView"
@@ -73,13 +75,14 @@
         <span class="warning-icon" *ngIf="kpiDataStatusCode === '201' || kpiDataStatusCode === '203'"
           (mouseover)="showWarning(true)" (mouseleave)="showWarning(false)" [style]="{'position': 'relative'}"
           role="alert" tabindex="0" aria-label="Show KPI Warning Information" (keydown.enter)="showWarning(true)">
-          <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning" aria-hidden="true"
-            src="../../../assets/img/Warning.svg" />
+          <img height="25px" style="display: block; margin-top: -3px; margin-left: 2px;" alt="warning"
+            aria-hidden="true" src="../../../assets/img/Warning.svg" />
           <app-tooltip-v2 *ngIf="warning" class="p-mt-3 p-ml-1" [data]="warning" (mouseleave)="showWarning(false)"
             [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" [allText]="true"></app-tooltip-v2>
         </span>
       </div>
-      <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Open KPI Menu" (keydown.enter)="toggleMenu($event)">
+      <div class="kpi-menu-container" (click)="toggleMenu($event)" role="button" tabindex="0" aria-label="Open KPI Menu"
+        (keydown.enter)="toggleMenu($event)">
         <i class="pi pi-ellipsis-v" style="font-size: 20px" aria-hidden="true"></i>
       </div>
       <p-menu #kpimenu id="menu-{{kpiData?.kpiId}}" [popup]="true" [model]="menuItems" aria-label="KPI Actions Menu">
@@ -95,14 +98,17 @@
     <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()"
       *ngIf="kpiData?.kpiDetail?.chartType !== 'stacked-area'"
       [ngClass]="{ 'hidden': selectedTab.toLowerCase() === 'developer' || (loader || immediateLoader || (!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)) }"
-      class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer>
+      class="kpi-filter p-pr-5 p-pl-5" #kpiFilterContainer role="region" aria-label="KPI Filter">
       <div *ngSwitchCase="'dropdown'" class="p-d-flex p-jc-end">
         <ng-container *ngFor="let filter of dropdownArr;let k = index">
           <p-dropdown *ngIf="dropdownArr?.length && filter?.options?.length" [options]="filter?.options"
             [(ngModel)]="filterOptions['filter'+(k+1)]" [autoDisplayFirst]="true"
             [style]="{'margin-left': '5px', 'height': '32px'}" (onChange)="handleChange('single',k)"
             [virtualScroll]="true" [virtualScrollItemSize]="30"
-            [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"></p-dropdown>
+            [panelStyle]="{ 'min-width': 'min(100vw, 300px)', 'overflow-x': 'hidden' }"
+            [attr.aria-label]="filter?.filterType + ' dropdown'"
+            role="listbox"
+            [tabindex]="0"></p-dropdown>
         </ng-container>
       </div>
       <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-jc-end">
@@ -110,108 +116,119 @@
           <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
             [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" [filter]="false"
             [showHeader]="false" (change)="handleChange('multi')" [placeholder]="filter?.filterType" [clearable]="false"
-            class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
+            class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}"
+            [attr.aria-label]="filter?.filterType + ' multi-select'" role="listbox" [tabindex]="0">
             <ng-container *ngFor="let item of filter?.options; index as i">
-              <ng-option [value]="item">
+              <ng-option [value]="item" role="option">
                 {{item}}
               </ng-option>
             </ng-container>
           </ng-select>
 
-        <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
-          inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
-          [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
-          (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
-          [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
-          [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
-        </p-multiSelect>
-      </ng-container>
-    </div>
-    <ng-container *ngSwitchCase="'radiobutton'">
-      <ng-container *ngIf="dropdownArr && dropdownArr.length && dropdownArr[0]?.options?.length">
-        <p-selectButton [options]="dropdownArr[0]?.options" [(ngModel)]="radioOption"
-          (onChange)="handleChange('radio', $event)"></p-selectButton>
-      </ng-container>
-    </ng-container>
-
-    <ng-container *ngSwitchCase="'multitypefilters'">
-      <div class="multi-filter-section">
-        <ng-container *ngFor="let filter of dropdownArr;let k = index">
-          <ng-container *ngIf="filter.filterType?.toLowerCase() === 'radiobtn'; else dropdown">
-            <ng-container *ngIf="filter?.options && filter?.options.length ">
-              <p-selectButton [options]="filter?.options" [(ngModel)]="radioOption"
-                (onChange)="handleChange('radio', $event,k)"></p-selectButton>
-            </ng-container>
-          </ng-container>
-          <ng-template #dropdown>
-            <div>
-              <p-multiSelect *ngIf="filter?.options?.length" #multiSelect1
-              inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
-              [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
-              (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
-              [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
-              [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }">
-            </p-multiSelect>
-            </div>
-          </ng-template>
+          <p-multiSelect *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" #multiSelect
+            inputId="multiselectFilter" [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]"
+            [maxSelectedLabels]="3" selectedItemsLabel="{0} items selected"
+            (onChange)="handleChange('multi', $event, k)" (onClear)="handleClearAll('filter'+(k+1))" [filter]="false"
+            [showHeader]="false" [showClear]="true" [style]="{'height': '32px', 'margin-left': '5px'}"
+            defaultLabel="{{filter?.filterType}}" [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }"
+            [attr.aria-label]="filter?.filterType + ' multi-select'" role="listbox" [tabindex]="0">
+          </p-multiSelect>
         </ng-container>
       </div>
-    </ng-container>
-    
-  </div>
-  <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : kpiData.kpiDetail.chartType === 'stacked-area' ? '270px' : '220px',
-  'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
-    <!--place for chart to be rendered-->
-    <ng-content
-      *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
-    <ng-template #noData>
-      <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport"
-        role="region" aria-label="KPI Data Status">
-        <div class="p-w-100  p-d-flex p-justify-center" role="img" aria-label="No Data Found">
-          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" aria-hidden="true"/>
+      <ng-container *ngSwitchCase="'radiobutton'">
+        <ng-container *ngIf="dropdownArr && dropdownArr.length && dropdownArr[0]?.options?.length">
+          <p-selectButton [options]="dropdownArr[0]?.options" [(ngModel)]="radioOption"
+            (onChange)="handleChange('radio', $event)" [attr.aria-label]="'Select option'" role="radiogroup"
+            [tabindex]="0" (keydown.enter)="handleKeyboardSelect($event)"></p-selectButton>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'multitypefilters'">
+        <div class="multi-filter-section">
+          <ng-container *ngFor="let filter of dropdownArr;let k = index">
+            <ng-container *ngIf="filter.filterType?.toLowerCase() === 'radiobtn'; else dropdown">
+              <ng-container *ngIf="filter?.options && filter?.options.length ">
+                <p-selectButton [options]="filter?.options" [(ngModel)]="radioOption"
+                  (onChange)="handleChange('radio', $event,k)" [attr.aria-label]="'Select option'" role="radiogroup"
+                  [tabindex]="0" (keydown.enter)="handleKeyboardSelect($event)"></p-selectButton>
+              </ng-container>
+            </ng-container>
+            <ng-template #dropdown>
+              <div>
+                <p-multiSelect *ngIf="filter?.options?.length" #multiSelect1 inputId="multiselectFilter"
+                  [options]="filter?.options" [(ngModel)]="filterOptions['filter'+(k+1)]" [maxSelectedLabels]="3"
+                  selectedItemsLabel="{0} items selected" (onChange)="handleChange('multi', $event, k)"
+                  (onClear)="handleClearAll('filter'+(k+1))" [filter]="false" [showHeader]="false" [showClear]="true"
+                  [style]="{'height': '32px', 'margin-left': '5px'}" defaultLabel="{{filter?.filterType}}"
+                  [panelStyle]="{ 'min-width': 'min(100vw, 300px)' }" [attr.aria-label]="filter?.filterType + ' multi-select'" role="listbox" [tabindex]="0">
+                </p-multiSelect>
+              </div>
+            </ng-template>
+          </ng-container>
         </div>
-        <div class="p-w-100" [ngSwitch]="kpiDataStatusCode" role="region" aria-label="KPI Data Details">
-          <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0" role="alert">KPI Analysis failed. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0" role="alert">Please check the required tool configuration and run
-            processor.</h4>
-          <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0" role="alert">Mandatory Field Mapping not configured. Contact your
-            administrator.</h4>
-          <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0" role="alert">No Data Available.</h4>
-          <div *ngSwitchCase="'500'" tabindex="0" role="alert" class="p-text-center">
-            <span>
-              <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
-              <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded  p-mt-3"
-              (click)="reloadKPI()"></button>
-            </span>
+      </ng-container>
+
+    </div>
+    <div class="kpi-card-body p-pr-5 p-pl-5" [ngStyle]="{'height': kpiSize === 12 ? '250px' : kpiData.kpiDetail.chartType === 'stacked-area' ? '270px' : '220px',
+  'min-height': !(showChartView === 'table')  ? '220px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
+      <!--place for chart to be rendered-->
+      <ng-content
+        *ngIf="!loader && !immediateLoader && (checkIfDataPresent(kpiDataStatusCode) || partialData) && (!iSAdditionalFilterSelected || (kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected)); else noData"></ng-content>
+      <ng-template #noData>
+        <div class="min-ht"
+          *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && kpiData?.kpiDetail?.isAdditionalFilterSupport"
+          role="region" aria-label="KPI Data Status">
+          <div class="p-w-100  p-d-flex p-justify-center" role="img" aria-label="No Data Found">
+            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" aria-hidden="true" />
+          </div>
+          <div class="p-w-100" [ngSwitch]="kpiDataStatusCode" role="region" aria-label="KPI Data Details">
+            <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0" role="alert">KPI Analysis failed. Contact your
+              administrator.</h4>
+            <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0" role="alert">Please check the required tool
+              configuration and run
+              processor.</h4>
+            <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0" role="alert">Mandatory Field Mapping not
+              configured. Contact your
+              administrator.</h4>
+            <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0" role="alert">No Data Available.</h4>
+            <div *ngSwitchCase="'500'" tabindex="0" role="alert" class="p-text-center">
+              <span>
+                <h4 class="p-text-center p-m-0">An error has occurred. Please retry or contact administrator.</h4>
+                <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded  p-mt-3"
+                  (click)="reloadKPI()"></button>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="min-ht"
-        *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected"
-        role="region" aria-label="KPI Data Status">
-        <div class="p-w-100  p-d-flex p-justify-center" role="img" aria-label="No Data Found">
-          <img alt="no-data" src="../../../assets/img/NoDataFound.svg" aria-hidden="true"/>
-        </div>
-        <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
-          <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0" role="alert">KPI Analysis failed. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0" role="alert">Please check the required tool configuration and run
-            processor.</h4>
-          <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0" role="alert">Mandatory Field Mapping not configured. Contact your
-            administrator.</h4>
-          <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0" role="alert">No Data Available.</h4>
-          <div *ngSwitchCase="'500'" class="p-text-center">
-            <span>
-              <h4 class="p-text-center p-m-0" tabindex="0" role="alert">An error has occurred. Please retry or contact administrator.</h4>
-              <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-mt-3"
-              (click)="reloadKPI()" tabindex="0" role="button" (keydown.enter)="reloadKPI()"></button>
-            </span>
+        <div class="min-ht"
+          *ngIf="!loader && !immediateLoader && (!checkIfDataPresent(kpiDataStatusCode)) && !kpiData?.kpiDetail?.isAdditionalFilterSupport && !iSAdditionalFilterSelected"
+          role="region" aria-label="KPI Data Status">
+          <div class="p-w-100  p-d-flex p-justify-center" role="img" aria-label="No Data Found">
+            <img alt="no-data" src="../../../assets/img/NoDataFound.svg" aria-hidden="true" />
+          </div>
+          <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
+            <h4 *ngSwitchCase="'400'" class="p-text-center" tabindex="0" role="alert">KPI Analysis failed. Contact your
+              administrator.</h4>
+            <h4 *ngSwitchCase="'202'" class="p-text-center" tabindex="0" role="alert">Please check the required tool
+              configuration and run
+              processor.</h4>
+            <h4 *ngSwitchCase="'201'" class="p-text-center" tabindex="0" role="alert">Mandatory Field Mapping not
+              configured. Contact your
+              administrator.</h4>
+            <h4 *ngSwitchCase="'200'" class="p-text-center" tabindex="0" role="alert">No Data Available.</h4>
+            <div *ngSwitchCase="'500'" class="p-text-center">
+              <span>
+                <h4 class="p-text-center p-m-0" tabindex="0" role="alert">An error has occurred. Please retry or contact
+                  administrator.</h4>
+                <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-mt-3"
+                  (click)="reloadKPI()" tabindex="0" role="button" (keydown.enter)="reloadKPI()"></button>
+              </span>
 
             </div>
           </div>
         </div>
         <div class="min-ht" *ngIf="!kpiData?.kpiDetail?.isAdditionalFilterSupport && iSAdditionalFilterSelected"
-        role="region" aria-label="KPI Data Status">
+          role="region" aria-label="KPI Data Status">
           <div class="err squad-err-msg" tabindex="0" role="alert">KPI cannot be measured for a Squad</div>
         </div>
       </ng-template>
@@ -229,24 +246,28 @@
 </ng-template>
 
 <p-dialog [(visible)]="displaySprintDetailsModal" [dismissableMask]="true" [modal]="true" [autoZIndex]="true"
-  styleClass="sprint-details-overlay" role="dialog" aria-labelledby="sprint-details-title" aria-describedby="sprint-details-description">
-  <div class="p-mb-3 overlay-heading" id="sprint-details-title" tabindex="0">
+  styleClass="sprint-details-overlay" role="dialog" aria-labelledby="sprint-details-title"
+  aria-describedby="sprint-details-description" [closeOnEscape]="true" [focusOnShow]="true">
+  <div class="p-mb-3 overlay-heading" id="sprint-details-title" tabindex="0" role="heading" aria-level="2">
     {{kpiData?.kpiName}}
   </div>
-  <div class="dialog-body p-mb-4" role="region" aria-label="Sprint Details">
-    <p-tabView [(activeIndex)]="selectedTabIndex" role="tablist" aria-label="Project Tabs">
+  <div class="dialog-body p-mb-4" role="region" aria-label="Sprint Details" id="sprint-details-description">
+    <p-tabView [(activeIndex)]="selectedTabIndex" role="tablist" aria-label="Project Tabs" (onChange)="onTabChange($event)">
       <ng-container *ngFor="let project of projectList;  let i = index;">
         <p-tabPanel header="{{project.length > 15 ? project.substring(0,15)+'..' : project}}"
-          [headerStyleClass]="getColorCssClasses(selectedTabIndex)" role="tabpanel" [attr.aria-label]="'Project' + project">
+          [headerStyleClass]="getColorCssClasses(selectedTabIndex)" role="tabpanel"
+          [attr.aria-label]="'Project' + project" [id]="'project-tab-' + i">
           <p-table
             *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage"
             [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']"
-            styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px">
+            styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px"
+            aria-label="Sprint Details Table" role="table">
             <ng-template pTemplate="header" let-columns>
-              <tr>
+              <tr role="row">
                 <ng-container *ngFor="let col of columns">
                   <th *ngIf="hasData(col.field)" [pSortableColumn]="col.field"
-                    [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                    [ngClass]="{'kpi-value-center': col.field ==='value'}" role="columnheader"
+                    [attr.aria-label]="col.header + ' column'">
                     {{ col.header }}
                     <p-sortIcon *ngIf="col.field === 'value'" [field]="col.field"></p-sortIcon>
                   </th>
@@ -254,11 +275,12 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-columns="columns">
-              <tr>
+              <tr role="row">
                 <ng-container *ngFor="let col of columns">
                   <td *ngIf="hasData(col.field)"
                     [innerHTML]="col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field]"
-                    class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                    class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}" role="cell" tabindex="0"
+                    [attr.aria-label]="col.header + ': ' + (col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field])">
                   </td>
                 </ng-container>
               </tr>
@@ -269,13 +291,15 @@
         </p-tabPanel>
       </ng-container>
       <ng-template #showNoDataMessage>
-        <img alt="no-data" src="../../../assets/img/setting-icon.svg" />
-        <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
-          <h4 *ngSwitchCase="'400'" class="p-text-center">KPI Analysis failed. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'202'" class="p-text-center">Required Tool not configured. Contact your administrator.</h4>
-          <h4 *ngSwitchCase="'201'" class="p-text-center">Mandatory Field Mapping not configured. Contact your
-            administrator.</h4>
-          <h4 *ngSwitchCase="'200'" class="p-text-center">No Data Available.</h4>
+        <div role="alert" aria-live="assertive">
+          <img alt="no-data" src="../../../assets/img/setting-icon.svg" />
+          <div class="p-w-100" [ngSwitch]="kpiDataStatusCode">
+            <h4 *ngSwitchCase="'400'" class="p-text-center" role="alert">KPI Analysis failed. Contact your administrator.</h4>
+            <h4 *ngSwitchCase="'202'" class="p-text-center" role="alert">Required Tool not configured. Contact your administrator.</h4>
+            <h4 *ngSwitchCase="'201'" class="p-text-center" role="alert">Mandatory Field Mapping not configured. Contact your
+              administrator.</h4>
+            <h4 *ngSwitchCase="'200'" class="p-text-center" role="alert">No Data Available.</h4>
+          </div>
         </div>
       </ng-template>
     </p-tabView>
@@ -284,27 +308,30 @@
   </div>
 </p-dialog>
 
-<p-dialog [(visible)]="displayConfigModel" [modal]="true" styleClass="field-mapping">
+<p-dialog [(visible)]="displayConfigModel" [modal]="true" styleClass="field-mapping"
+  role="dialog" aria-labelledby="config-dialog-title" [closeOnEscape]="true" [focusOnShow]="true">
   <ng-template pTemplate="header">
-    <div class="inline-flex align-items-center justify-content-center gap-2">
-      <p class="font-bold white-space-nowrap">{{kpiData?.kpiName}}</p>
+    <div class="inline-flex align-items-center justify-content-center gap-2" role="heading" aria-level="2">
+      <p id="config-dialog-title" class="font-bold white-space-nowrap" tabindex="0">{{kpiData?.kpiName}}</p>
       <span class="font-bold white-space-nowrap"
-        [ngClass]="{'green': isSyncPassedOrFailed === true, 'red' : ((isSyncPassedOrFailed === false)&& (lastSyncTime !== 'NA'))}">Last
-        Sync: {{lastSyncTime}}
+        [ngClass]="{'green': isSyncPassedOrFailed === true, 'red' : ((isSyncPassedOrFailed === false)&& (lastSyncTime !== 'NA'))}"
+        aria-live="polite" tabindex="0"
+        [attr.aria-label]="'Last Sync: ' + lastSyncTime + (isSyncPassedOrFailed === true ? ' Successful' : ' Failed')">
+        Last Sync: {{lastSyncTime}}
         <span *ngIf="lastSyncTime !== 'NA'">
           <img *ngIf="isSyncPassedOrFailed === true" src="../../../assets/img/icon-success.svg" alt="Success"
-            class="p-mr-1" />
+            class="p-mr-1" role="img" />
           <img *ngIf="isSyncPassedOrFailed === false" src="../../../assets/img/icon-failure.svg" alt="Failure"
-            class="p-mr-1" />
+            class="p-mr-1" role="img" />
         </span>
       </span>
 
     </div>
   </ng-template>
-  <hr>
-  <div class="p-d-flex p-mt-4 p-mb-4">
-    <b class="p-mr-5"><span>*</span>Mandatory Fields</b>
-    <b><i class="fas fa-sync-alt p-mr-1"></i>Requires processor run</b>
+  <hr aria-hidden="true">
+  <div class="p-d-flex p-mt-4 p-mb-4" role="region" aria-label="Field Information">
+    <b class="p-mr-5" tabindex="0"><span>*</span>Mandatory Fields</b>
+    <b tabindex="0"><i class="fas fa-sync-alt p-mr-1" aria-hidden="true"></i>Requires processor run</b>
   </div>
   <ng-template pTemplate="content">
     <app-field-mapping-form #fieldMappingForm
@@ -313,15 +340,16 @@
       [fieldMappingConfig]="fieldMappingConfig" [formData]="selectedFieldMapping" [selectedConfig]="selectedConfig"
       [selectedToolConfig]="selectedToolConfig" (reloadKPI)="reloadKPI()"
       [thresholdUnit]="kpiData['kpiDetail']['kpiUnit']" [kpiId]="kpiData?.kpiId"
-      [metaDataTemplateCode]="metaDataTemplateCode" [nodeId]="nodeId" [parentComp]="'kpicard'"></app-field-mapping-form>
+      [metaDataTemplateCode]="metaDataTemplateCode" [nodeId]="nodeId" [parentComp]="'kpicard'"
+      aria-label="Field Mapping Configuration Form"></app-field-mapping-form>
   </ng-template>
   <ng-template pTemplate="footer"></ng-template>
   <ng-container *ngIf=" noDataKPIConfig && !loadingKPIConfig">
-    <h2 class="p-text-center">No Configuration Available</h2>
+    <h2 class="p-text-center" role="alert" aria-live="assertive" tabindex="0">No Configuration Available</h2>
   </ng-container>
   <ng-container *ngIf="loadingKPIConfig">
-    <div class="overlay">
-      <div class="loading-img"></div>
+    <div class="overlay" role="status" aria-label="Loading configuration">
+      <div class="loading-img" aria-hidden="true"></div>
     </div>
   </ng-container>
 </p-dialog>
