@@ -28,15 +28,13 @@ import com.publicissapient.kpidashboard.apis.model.Logo;
  * board.
  *
  * @author pkum34
- *
  */
 public interface FileStorageService {
 	/**
 	 * Uploads image file as log
-	 * 
+	 *
 	 * @param file
 	 * @return BaseResponse
-	 * 
 	 */
 	BaseResponse upload(MultipartFile file);
 
@@ -45,20 +43,19 @@ public interface FileStorageService {
 	 *
 	 * @param file
 	 * @return BaseResponse
-	 *
 	 */
 	BaseResponse upload(String type, MultipartFile file);
 
 	/**
 	 * Gets logo image
-	 * 
+	 *
 	 * @return lOGO
 	 */
 	Logo getLogo();
 
 	/**
 	 * Delete logo image
-	 * 
+	 *
 	 * @return boolean
 	 */
 	boolean deleteLogo();

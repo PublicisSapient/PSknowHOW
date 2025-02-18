@@ -30,9 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
 
-/**
- * The type Zephyr util.
- */
+/** The type Zephyr util. */
 @Component
 public class ZephyrUtil {
 
@@ -55,7 +53,7 @@ public class ZephyrUtil {
 	 * properties
 	 *
 	 * @param credentials
-	 *            the credentials
+	 *          the credentials
 	 * @return Auth Header {@link HttpEntity}
 	 */
 	public HttpEntity<String> buildAuthenticationHeader(String credentials) {
@@ -68,9 +66,9 @@ public class ZephyrUtil {
 	 * Build the API url as per the configurations given in the app properties
 	 *
 	 * @param url
-	 *            the url
+	 *          the url
 	 * @param api
-	 *            the api
+	 *          the api
 	 * @return {@link UriComponentsBuilder}
 	 */
 	public UriComponentsBuilder buildAPIUrl(String url, String api) {
@@ -79,8 +77,7 @@ public class ZephyrUtil {
 	}
 
 	private String getProtocol() {
-		return StringUtils.isBlank(processorConfiguration.getProtocol()) ? PROTOCOL
-				: processorConfiguration.getProtocol();
+		return StringUtils.isBlank(processorConfiguration.getProtocol()) ? PROTOCOL : processorConfiguration.getProtocol();
 	}
 
 	private String getHost(String url) {
@@ -102,7 +99,7 @@ public class ZephyrUtil {
 	 * then remove the last slash from the url
 	 *
 	 * @param toolUrl
-	 *            tool url
+	 *          tool url
 	 * @return
 	 */
 	public String getZephyrUrl(String toolUrl) {

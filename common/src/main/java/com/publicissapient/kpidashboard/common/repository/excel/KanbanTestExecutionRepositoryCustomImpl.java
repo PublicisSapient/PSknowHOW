@@ -17,7 +17,6 @@ import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExe
 /**
  * Provides implementation for methods available in interface
  * KanbanTestExecutionDetailRepository.
- *
  */
 public class KanbanTestExecutionRepositoryCustomImpl implements KanbanTestExecutionRepositoryCustom {
 
@@ -62,5 +61,4 @@ public class KanbanTestExecutionRepositoryCustomImpl implements KanbanTestExecut
 
 		return operations.find(query, KanbanTestExecution.class);
 	}
-
 }

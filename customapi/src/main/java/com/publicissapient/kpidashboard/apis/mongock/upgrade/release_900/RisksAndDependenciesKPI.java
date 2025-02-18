@@ -17,17 +17,19 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_900;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * @author purgupta2
@@ -69,15 +71,15 @@ public class RisksAndDependenciesKPI {
 	}
 
 	public void insertKpiColumnConfig() {
-		Document document = Document.parse("{\n" + "    \"kpiId\": \"kpi176\",\n" + "    \"kpiColumnDetails\": [{\n"
-				+ "      \"columnName\": \"Issue Id\",\n" + "      \"order\": 0,\n" + STR
-				+ "      \"columnName\": \"Issue Type\",\n" + "      \"order\": 1,\n" + STR
-				+ "      \"columnName\": \"Issue Description\",\n" + "      \"order\": 2,\n" + STR
-				+ "      \"columnName\": \"Issue Status\",\n" + "      \"order\": 3,\n" + STR
-				+ "      \"columnName\": \"Priority\",\n" + "      \"order\": 4,\n" + STR
-				+ "      \"columnName\": \"Created Date\",\n" + "      \"order\": 5,\n" + STR
-				+ "      \"columnName\": \"Assignee\",\n" + "      \"order\": 6,\n" + "      \"isShown\": true,\n"
-				+ "      \"isDefault\": false\n" + "    }]\n" + "  }");
+		Document document = Document.parse("{\n" + "    \"kpiId\": \"kpi176\",\n" + "    \"kpiColumnDetails\": [{\n" +
+				"      \"columnName\": \"Issue Id\",\n" + "      \"order\": 0,\n" + STR +
+				"      \"columnName\": \"Issue Type\",\n" + "      \"order\": 1,\n" + STR +
+				"      \"columnName\": \"Issue Description\",\n" + "      \"order\": 2,\n" + STR +
+				"      \"columnName\": \"Issue Status\",\n" + "      \"order\": 3,\n" + STR +
+				"      \"columnName\": \"Priority\",\n" + "      \"order\": 4,\n" + STR +
+				"      \"columnName\": \"Created Date\",\n" + "      \"order\": 5,\n" + STR +
+				"      \"columnName\": \"Assignee\",\n" + "      \"order\": 6,\n" + "      \"isShown\": true,\n" +
+				"      \"isDefault\": false\n" + "    }]\n" + "  }");
 
 		mongoTemplate.insert(document, "kpi_column_configs");
 	}
@@ -87,7 +89,8 @@ public class RisksAndDependenciesKPI {
 		Document filterQuery = new Document("templateCode", new Document("$in", templateCodes));
 
 		Document metaDataIdentifierRisk = new Document("type", RISK_ISSUETYPE).append("value", List.of("Risk"));
-		Document metaDataIdentifierDependency = new Document("type", DEPENPENCY_ISSUETYPE).append("value", List.of("Dependency"));
+		Document metaDataIdentifierDependency = new Document("type", DEPENPENCY_ISSUETYPE).append("value",
+				List.of("Dependency"));
 
 		Document updateOperation = new Document("$push", new Document(ISSUES, metaDataIdentifierRisk));
 		Document updateOperation1 = new Document("$push", new Document(ISSUES, metaDataIdentifierDependency));
@@ -100,15 +103,14 @@ public class RisksAndDependenciesKPI {
 	public void addToKpiMaster() {
 
 		Document kpiDocument = new Document().append(KPI_ID, "kpi176").append("kpiName", "Risks And Dependencies")
-				.append("maxValue", "").append("kpiUnit", "Count").append("isDeleted", "False")
-				.append("defaultOrder", 6).append("kpiCategory", "Iteration").append("kpiSource", "Jira")
-				.append("groupId", 8).append("thresholdValue", "").append("kanban", false).append("chartType", "")
-				.append("yAxisLabel", "").append("xAxisLabel", "").append("isAdditionalfFilterSupport", false)
-				.append("kpiFilter", "radioButton").append("calculateMaturity", false)
+				.append("maxValue", "").append("kpiUnit", "Count").append("isDeleted", "False").append("defaultOrder", 6)
+				.append("kpiCategory", "Iteration").append("kpiSource", "Jira").append("groupId", 8)
+				.append("thresholdValue", "").append("kanban", false).append("chartType", "").append("yAxisLabel", "")
+				.append("xAxisLabel", "").append("isAdditionalfFilterSupport", false).append("kpiFilter", "radioButton")
+				.append("calculateMaturity", false)
 				.append("kpiInfo", new Document()
 						.append(DEFINITION, "It displayed all the risks and dependencies tagged in a sprint")
-						.append("details", Collections.singletonList(new Document("type", "link").append(
-								"kpiLinkDetail",
+						.append("details", Collections.singletonList(new Document("type", "link").append("kpiLinkDetail",
 								new Document().append("text", "Detailed Information at").append("link",
 										"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/102891521/Risks+and+Dependencies")))))
 				.append("kpiSubCategory", "Iteration Review");
@@ -129,7 +131,6 @@ public class RisksAndDependenciesKPI {
 		updateDocument(kpiMaster, "kpi140", 16);
 		updateDocument(kpiMaster, "kpi124", 22);
 		updateDocument(kpiMaster, "kpi75", 23);
-
 	}
 
 	private void updateDocument(MongoCollection<Document> kpiMaster, String kpiId, int defaultOrder) {
@@ -145,9 +146,8 @@ public class RisksAndDependenciesKPI {
 
 	public void updateFieldMappingStructure() {
 		Document jiraIterationCompletionStatusKPI176 = new Document().append(FIELD_NAME, DELIVERED_STATUS)
-				.append(FIELD_LABEL, "Custom Completion status/es").append(FIELD_TYPE, CHIPS)
-				.append(FIELD_CATEGORY, "workflow").append(SECTION, "WorkFlow Status Mapping")
-				.append(TOOL_TIP, new Document(DEFINITION,
+				.append(FIELD_LABEL, "Custom Completion status/es").append(FIELD_TYPE, CHIPS).append(FIELD_CATEGORY, "workflow")
+				.append(SECTION, "WorkFlow Status Mapping").append(TOOL_TIP, new Document(DEFINITION,
 						"All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"));
 
 		Document jiraIssueRiskTypeKPI176 = new Document().append(FIELD_NAME, RISK_ISSUETYPE)
@@ -162,8 +162,8 @@ public class RisksAndDependenciesKPI {
 				.append(TOOL_TIP, new Document(DEFINITION, "This field is used to identify Dependency Issue type."))
 				.append(MANDATORY, true);
 
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).insertMany(Arrays
-				.asList(jiraIterationCompletionStatusKPI176, jiraIssueRiskTypeKPI176, jiraIssueDependencyTypeKPI176));
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).insertMany(
+				Arrays.asList(jiraIterationCompletionStatusKPI176, jiraIssueRiskTypeKPI176, jiraIssueDependencyTypeKPI176));
 	}
 
 	@RollbackExecution
@@ -192,9 +192,8 @@ public class RisksAndDependenciesKPI {
 	}
 
 	private void deleteFieldMappingRollback() {
-		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE)
-				.deleteMany(Filters.or(Filters.eq(FIELD_NAME, RISK_ISSUETYPE),
-						Filters.eq(FIELD_NAME, DEPENPENCY_ISSUETYPE), Filters.eq(FIELD_NAME, DELIVERED_STATUS)));
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).deleteMany(Filters.or(Filters.eq(FIELD_NAME, RISK_ISSUETYPE),
+				Filters.eq(FIELD_NAME, DEPENPENCY_ISSUETYPE), Filters.eq(FIELD_NAME, DELIVERED_STATUS)));
 	}
 
 	public void deleteMetadataEntries() {
@@ -211,5 +210,4 @@ public class RisksAndDependenciesKPI {
 		metadataIdentifierCollection.updateMany(filterQuery, updateOperation);
 		metadataIdentifierCollection.updateMany(filterQuery, updateOperation1);
 	}
-
 }

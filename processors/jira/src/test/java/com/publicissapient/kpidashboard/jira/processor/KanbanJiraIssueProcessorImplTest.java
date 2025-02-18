@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +36,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -85,6 +83,7 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
@@ -145,8 +144,8 @@ public class KanbanJiraIssueProcessorImplTest {
 		Assignee assignee1 = Assignee.builder().assigneeId("24324").assigneeName("User 2").build();
 		assigneeSetToSave.add(assignee);
 		assigneeSetToSave.add(assignee1);
-		AssigneeDetails assigneeDetailsToBeSave = new AssigneeDetails("63c04dc7b7617e260763ca4e",
-				ProcessorConstants.JIRA, assigneeSetToSave, 3);
+		AssigneeDetails assigneeDetailsToBeSave = new AssigneeDetails("63c04dc7b7617e260763ca4e", ProcessorConstants.JIRA,
+				assigneeSetToSave, 3);
 		when(assigneeDetails.getBasicProjectConfigId()).thenReturn("63c04dc7b7617e260763ca4e");
 		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
 				.thenReturn(assigneeDetailsToBeSave);
@@ -157,20 +156,28 @@ public class KanbanJiraIssueProcessorImplTest {
 	@Test
 	public void convertToJiraIssue() throws JSONException {
 		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
-		when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(any(), any())).thenReturn(new KanbanJiraIssue());
-//		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+		when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(any(), any()))
+				.thenReturn(new KanbanJiraIssue());
+		//		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code",
+		// "coding"));
 		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
 				.thenReturn(getMockAdditionalFilterFromJiraIssue());
-		Assert.assertEquals(KanbanJiraIssue.class, (transformFetchedIssueToKanbanJiraIssue
-				.convertToKanbanJiraIssue(issues.get(0), projectConfFieldMapping, "111", new ObjectId("5e16c126e4b098db673cc372"))).getClass());
-
+		Assert.assertEquals(
+				KanbanJiraIssue.class,
+				(transformFetchedIssueToKanbanJiraIssue.convertToKanbanJiraIssue(
+								issues.get(0),
+								projectConfFieldMapping,
+								"111",
+								new ObjectId("5e16c126e4b098db673cc372")))
+						.getClass());
 	}
+
 	@Test
 	public void convertToJiraIssueWhenException() throws JSONException {
-		Assert.assertEquals(null, (transformFetchedIssueToKanbanJiraIssue
-				.convertToKanbanJiraIssue(null, projectConfFieldMapping, "111", new ObjectId("5e16c126e4b098db673cc372"))));
-
+		Assert.assertEquals(null, (transformFetchedIssueToKanbanJiraIssue.convertToKanbanJiraIssue(null,
+				projectConfFieldMapping, "111", new ObjectId("5e16c126e4b098db673cc372"))));
 	}
+
 	@Test
 	public void updateAssigneeDetailsToggleWise() {
 		transformFetchedIssueToKanbanJiraIssue.updateAssigneeDetailsToggleWise(new KanbanJiraIssue(),
@@ -178,8 +185,7 @@ public class KanbanJiraIssueProcessorImplTest {
 	}
 
 	private Optional<Connection> getMockConnection() {
-		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-				.newInstance("/json/default/connections.json");
+		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory.newInstance("/json/default/connections.json");
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
@@ -220,8 +226,7 @@ public class KanbanJiraIssueProcessorImplTest {
 		Map<String, URI> avatarMap = new HashMap<>();
 		avatarMap.put("48x48", new URI("value"));
 		URI uri = new URI("https://dummy.com/jira/rest/api/2/user?username=user1");
-		User user1 = new User(uri, "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
-				null);
+		User user1 = new User(uri, "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap, null);
 
 		List<IssueField> issueFields = new ArrayList<>();
 
@@ -254,7 +259,7 @@ public class KanbanJiraIssueProcessorImplTest {
 		IssueField issueField4 = new IssueField("aggregatetimespent", "aggregatetimespent", null, 300);
 		issueFields.add(issueField4);
 
-		IssueField issueField5=new IssueField("epicLick","epicLick",null,"epic");
+		IssueField issueField5 = new IssueField("epicLick", "epicLick", null, "epic");
 		issueFields.add(issueField5);
 
 		TimeTracking timeTracking = new TimeTracking(8, 8, 8);
@@ -267,8 +272,7 @@ public class KanbanJiraIssueProcessorImplTest {
 		Worklog worklog = new Worklog(new URI("self"), new URI("self"), basicUser, basicUser, null, DateTime.now(),
 				DateTime.now(), DateTime.now(), 60, null);
 		List<Worklog> workLogs = Arrays.asList(worklog);
-		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "field1", "from", "fromString", "to",
-				"toString");
+		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "field1", "from", "fromString", "to", "toString");
 		ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 
 		Collection<Version> fixVersions = new ArrayList<>();
@@ -277,15 +281,15 @@ public class KanbanJiraIssueProcessorImplTest {
 		fixVersions.add(version);
 
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), fixVersions, new ArrayList<>(), timeTracking, issueFields, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
+				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(), DateTime.now(),
+				new ArrayList<>(), fixVersions, new ArrayList<>(), timeTracking, issueFields, comments, null,
+				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 
 		Issue issue1 = new Issue("summary1", new URI("self"), "key2", 1l, basicProj, issueType3, status1, "epic",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), fixVersions, new ArrayList<>(), timeTracking, issueFields, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
+				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(), DateTime.now(),
+				new ArrayList<>(), fixVersions, new ArrayList<>(), timeTracking, issueFields, comments, null,
+				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label2")));
 		issues.add(issue);
 		issues.add(issue1);
@@ -366,8 +370,9 @@ public class KanbanJiraIssueProcessorImplTest {
 		when(jiraProcessorConfig.getExcludeLinks()).thenReturn(Arrays.asList("Blocks"));
 		KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
 		jiraIssue.setTypeName("Bug");
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setStoryLinkWithDefect", Issue.class,
-				KanbanJiraIssue.class);
+		Method method =
+				KanbanJiraIssueProcessorImpl.class.getDeclaredMethod(
+						"setStoryLinkWithDefect", Issue.class, KanbanJiraIssue.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToKanbanJiraIssue, issues.get(0), jiraIssue);
 	}
@@ -382,7 +387,8 @@ public class KanbanJiraIssueProcessorImplTest {
 	}
 
 	@Test
-	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
+	public void testGetRootCauses()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
 		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("getRootCauses", FieldMapping.class,
 				Map.class);
 		method.setAccessible(true);
@@ -403,14 +409,20 @@ public class KanbanJiraIssueProcessorImplTest {
 	}
 
 	@Test
-	public void testSetAssigneeName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(),any())).thenReturn(null);
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setAssigneeName", String.class, String.class);
+	public void testSetAssigneeName()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(null);
+		Method method =
+				KanbanJiraIssueProcessorImpl.class.getDeclaredMethod(
+						"setAssigneeName", String.class, String.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToKanbanJiraIssue, "assigneeId", "basicProjectConfigId");
 	}
+
 	@Test
-	public void setEpicLinkedTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
+	public void setEpicLinkedTest()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
 		KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setRootCause("code_issue");
@@ -425,19 +437,28 @@ public class KanbanJiraIssueProcessorImplTest {
 		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
 		Map<String, IssueField> fields = new HashMap<>();
 		fields.put("code_issue", issueField);
-		fields.put("Epic123",issueField);
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked",FieldMapping.class,KanbanJiraIssue.class,Map.class);
+		fields.put("Epic123", issueField);
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked", FieldMapping.class,
+				KanbanJiraIssue.class, Map.class);
 		method.setAccessible(true);
-		method.invoke(transformFetchedIssueToKanbanJiraIssue,fieldMapping,jiraIssue,fields);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
 	}
+
 	@Test
 	public void testCalculateEstimationForActualEstimation() throws Exception {
 		when(issueField.getValue()).thenReturn(7200);
 
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class, String.class);
+		Method method =
+				KanbanJiraIssueProcessorImpl.class.getDeclaredMethod(
+						"calculateEstimation", IssueField.class, String.class);
 		method.setAccessible(true);
 
-		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, JiraConstants.ACTUAL_ESTIMATION);
+		Double estimation =
+				(Double)
+						method.invoke(
+								transformFetchedIssueToKanbanJiraIssue,
+								issueField,
+								JiraConstants.ACTUAL_ESTIMATION);
 		Assert.assertEquals(2.0, estimation, 0.001);
 	}
 
@@ -445,10 +466,17 @@ public class KanbanJiraIssueProcessorImplTest {
 	public void testCalculateEstimationForBufferedEstimation() throws Exception {
 		when(issueField.getValue()).thenReturn(3600);
 
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class, String.class);
+		Method method =
+				KanbanJiraIssueProcessorImpl.class.getDeclaredMethod(
+						"calculateEstimation", IssueField.class, String.class);
 		method.setAccessible(true);
 
-		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, JiraConstants.BUFFERED_ESTIMATION);
+		Double estimation =
+				(Double)
+						method.invoke(
+								transformFetchedIssueToKanbanJiraIssue,
+								issueField,
+								JiraConstants.BUFFERED_ESTIMATION);
 		Assert.assertEquals(1.0, estimation, 0.001);
 	}
 
@@ -456,16 +484,22 @@ public class KanbanJiraIssueProcessorImplTest {
 	public void testCalculateEstimationForStoryPoint() throws Exception {
 		when(issueField.getValue()).thenReturn("3.0");
 
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class, String.class);
+		Method method =
+				KanbanJiraIssueProcessorImpl.class.getDeclaredMethod(
+						"calculateEstimation", IssueField.class, String.class);
 		method.setAccessible(true);
 
-		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, JiraConstants.STORY_POINT);
+		Double estimation =
+				(Double)
+						method.invoke(
+								transformFetchedIssueToKanbanJiraIssue, issueField, JiraConstants.STORY_POINT);
 		Assert.assertEquals(3.0, estimation, 0.001);
 	}
 
 	@Test
 	public void testCalculateEstimationForUnknownCriteria() throws Exception {
-		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class, String.class);
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation", IssueField.class,
+				String.class);
 		method.setAccessible(true);
 
 		Double estimation = (Double) method.invoke(transformFetchedIssueToKanbanJiraIssue, issueField, "UnknownCriteria");

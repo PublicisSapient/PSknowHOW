@@ -47,7 +47,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
- *
  */
 @Slf4j
 @Service
@@ -68,17 +67,15 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 		String projectNodeId = projectConfig.getProjectBasicConfig().getProjectNodeId();
 		Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
 		IssueField sprintField = fields.get(fieldMapping.getSprintName());
-		if (null != sprintField && null != sprintField.getValue()
-				&& !JiraConstants.EMPTY_STR.equals(sprintField.getValue())) {
+		if (null != sprintField && null != sprintField.getValue() &&
+				!JiraConstants.EMPTY_STR.equals(sprintField.getValue())) {
 			Object sValue = sprintField.getValue();
 			try {
 				List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
 				if (CollectionUtils.isNotEmpty(sprints)) {
 					for (SprintDetails sprint : sprints) {
-						sprint.setSprintID(
-								sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + projectNodeId);
+						sprint.setSprintID(sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + projectNodeId);
 						sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-
 					}
 					sprintDetailsSet.addAll(sprints);
 				}

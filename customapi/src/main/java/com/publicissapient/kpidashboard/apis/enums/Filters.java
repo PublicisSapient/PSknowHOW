@@ -22,15 +22,13 @@ import java.util.Arrays;
 
 /**
  * @author tauakram
- *
  */
 public enum Filters {
-
 	PROJECT, SPRINT, RELEASE, INVALID, ROOT;
 
 	/**
 	 * Returns list view of Filter enums
-	 * 
+	 *
 	 * @param filter
 	 * @return Filters
 	 */
@@ -39,5 +37,4 @@ public enum Filters {
 		return Arrays.asList(Filters.values()).stream().filter(f -> f.name().equalsIgnoreCase(filter)).findAny()
 				.orElse(INVALID);
 	}
-
 }

@@ -24,9 +24,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.ApiToken;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 import com.publicissapient.kpidashboard.common.util.EncryptionException;
 
-/**
- * The interface Api token service.
- */
+/** The interface Api token service. */
 public interface ApiTokenService {
 	/**
 	 * Gets api tokens.
@@ -39,14 +37,14 @@ public interface ApiTokenService {
 	 * Gets api token.
 	 *
 	 * @param apiUser
-	 *            the api user
+	 *          the api user
 	 * @param expirationDt
-	 *            the expiration dt
+	 *          the expiration dt
 	 * @return the api token
 	 * @throws EncryptionException
-	 *             the encryption exception
+	 *           the encryption exception
 	 * @throws ApplicationException
-	 *             the application exception
+	 *           the application exception
 	 */
 	String getApiToken(String apiUser, Long expirationDt) throws EncryptionException, ApplicationException;
 
@@ -54,9 +52,9 @@ public interface ApiTokenService {
 	 * Authenticate user.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return the org . springframework . security . core . authentication
 	 */
 	org.springframework.security.core.Authentication authenticate(String username, String password);

@@ -50,9 +50,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Document(collection = "authentication")
 public class Authentication extends BasicModel {
-	/**
-	 * The Hash prefix.
-	 */
+	/** The Hash prefix. */
 	private static final String HASH_PREFIX = "sha512:";
 
 	@Indexed(unique = true)
@@ -77,25 +75,24 @@ public class Authentication extends BasicModel {
 	 * Instantiates a new Authentication.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @param email
-	 *            the email
+	 *          the email
 	 */
 	public Authentication(String username, String password, String email) {
 		super();
 		this.username = username;
 		this.password = hash(password);
 		this.email = email;
-
 	}
 
 	/**
 	 * Hash string.
 	 *
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return the string
 	 */
 	public static String hash(String password) {
@@ -109,7 +106,7 @@ public class Authentication extends BasicModel {
 	 * Sets password.
 	 *
 	 * @param password
-	 *            the password
+	 *          the password
 	 */
 	public void setPassword(String password) {
 		this.password = hash(password);
@@ -132,7 +129,7 @@ public class Authentication extends BasicModel {
 	 * Check password boolean.
 	 *
 	 * @param password
-	 *            the password
+	 *          the password
 	 * @return the boolean
 	 */
 	public boolean checkPassword(String password) {
@@ -143,5 +140,4 @@ public class Authentication extends BasicModel {
 	public String toString() {
 		return "Authentication [username=" + username + ", password=" + password + ", approved=" + approved + " ]";
 	}
-
 }

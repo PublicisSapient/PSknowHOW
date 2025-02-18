@@ -45,7 +45,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author purgupta2
- *
  */
 @Slf4j
 @Service
@@ -59,8 +58,7 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 	public Set<ProjectHierarchy> createKanbanAccountHierarchy(KanbanJiraIssue kanbanJiraIssue,
 			ProjectConfFieldMapping projectConfig) {
 		log.info("Creating kanban_account_hierarchy for the project : {}", projectConfig.getProjectName());
-		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
-				.getFullHierarchyLevels(projectConfig.isKanban());
+		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService.getFullHierarchyLevels(projectConfig.isKanban());
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel projectHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
@@ -80,14 +78,13 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 		Set<ProjectHierarchy> accHierarchyToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(kanbanJiraIssue.getProjectName())) {
 
-			List<ProjectHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
-					kanbanJiraIssue, projectBasicConfig, additionalFilterCategoryIds);
-			additionalFiltersHierarchies.forEach(
-					accountHierarchy -> accHierarchyToSave(accountHierarchy, existingHierarchy, accHierarchyToSave));
+			List<ProjectHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(kanbanJiraIssue,
+					projectBasicConfig, additionalFilterCategoryIds);
+			additionalFiltersHierarchies
+					.forEach(accountHierarchy -> accHierarchyToSave(accountHierarchy, existingHierarchy, accHierarchyToSave));
 		}
 
 		return accHierarchyToSave;
-
 	}
 
 	private List<ProjectHierarchy> accountHierarchiesForAdditionalFilters(KanbanJiraIssue jiraIssue,
@@ -110,7 +107,6 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 					projectHierarchyList.add(adFilterAccountHierarchy);
 				});
 			}
-
 		});
 
 		return projectHierarchyList;
@@ -126,5 +122,4 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 			}
 		}
 	}
-
 }

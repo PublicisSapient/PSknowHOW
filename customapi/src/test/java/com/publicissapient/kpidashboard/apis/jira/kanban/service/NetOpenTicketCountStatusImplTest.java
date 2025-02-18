@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -68,6 +66,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
@@ -134,12 +133,10 @@ public class NetOpenTicketCountStatusImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -208,8 +205,8 @@ public class NetOpenTicketCountStatusImplTest {
 		Map<String, Map<String, Map<String, Set<String>>>> projectWiseJiraHistoryStatusAndDateWiseIssueMap = prepareProjectWiseJiraHistoryByStatusAndDate();
 		when(kpiHelperService.computeProjectWiseJiraHistoryByStatusAndDate(anyMap(), anyString(), anyMap()))
 				.thenReturn(projectWiseJiraHistoryStatusAndDateWiseIssueMap);
-		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory
-				.newInstance().getKanbanIssueCustomHistoryDataList();
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory.newInstance()
+				.getKanbanIssueCustomHistoryDataList();
 
 		Map<String, List<String>> projectWiseDoneStatus = new HashMap<>();
 		projectWiseDoneStatus.put("6335368249794a18e8a4479f", Arrays.asList("Closed"));
@@ -230,19 +227,17 @@ public class NetOpenTicketCountStatusImplTest {
 			KpiElement kpiElement = totalTicketCountImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String status = dc.getFilter();
 				switch (status) {
-				case "In Analysis":
-					assertThat("Ticket Analysis Count Value :", dc.getValue().size(), equalTo(7));
-					break;
-				case "Open":
-					assertThat("Ticket Open Count Value :", dc.getValue().size(), equalTo(8));
-					break;
-				default:
-					break;
+					case "In Analysis" :
+						assertThat("Ticket Analysis Count Value :", dc.getValue().size(), equalTo(7));
+						break;
+					case "Open" :
+						assertThat("Ticket Open Count Value :", dc.getValue().size(), equalTo(8));
+						break;
+					default :
+						break;
 				}
-
 			});
 		} catch (ApplicationException e) {
 			e.printStackTrace();
@@ -277,5 +272,4 @@ public class NetOpenTicketCountStatusImplTest {
 	public void testGetQualifierType() {
 		assertThat("Kpi Name :", totalTicketCountImpl.getQualifierType(), equalTo("NET_OPEN_TICKET_COUNT_BY_STATUS"));
 	}
-
 }

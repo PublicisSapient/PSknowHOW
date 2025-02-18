@@ -20,11 +20,9 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 /**
  * Interface to hold methods for encryption.
- * 
- * @author prijain3
- * 
- * @deprecated
  *
+ * @author prijain3
+ * @deprecated
  */
 @Deprecated
 public interface EncryptionService {
@@ -33,9 +31,8 @@ public interface EncryptionService {
 	 * Encrypts a string.
 	 *
 	 * @param message
-	 *            to encrypt
+	 *          to encrypt
 	 * @return encrypted message
 	 */
 	String encrypt(String message);
-
 }

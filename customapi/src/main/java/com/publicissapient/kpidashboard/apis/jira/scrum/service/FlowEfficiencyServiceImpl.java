@@ -34,9 +34,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +42,14 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -59,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.BacklogKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -92,17 +91,13 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	@Autowired
 	KpiHelperService kpiHelperService;
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getQualifierType() {
 		return KPICode.FLOW_EFFICIENCY.name();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
@@ -141,13 +136,12 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	}
 
 	/**
-	 *
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param leafNode
-	 *            leaf
+	 *          leaf
 	 * @param kpiRequest
-	 *            kpiRequest
+	 *          kpiRequest
 	 */
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node leafNode,
 			KpiRequest kpiRequest) {
@@ -213,8 +207,8 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().toList());
 
-		resultListMap.put(HISTORY, jiraIssueCustomHistoryRepository
-				.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters, uniqueProjectMap, startDate, endDate));
+		resultListMap.put(HISTORY, jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters,
+				uniqueProjectMap, startDate, endDate));
 
 		return resultListMap;
 	}
@@ -224,19 +218,19 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	 * map
 	 *
 	 * @param xAxisRange
-	 *            x axis data points
+	 *          x axis data points
 	 * @param projectWiseJiraIssueList
-	 *            list of jiraIssueCustomHistory
+	 *          list of jiraIssueCustomHistory
 	 * @param rangeWiseJiraIssuesMap
-	 *            map of jira issues by data points
+	 *          map of jira issues by data points
 	 * @param flowEfficiencyMap
-	 *            map of jira issue and flow efficiency
+	 *          map of jira issue and flow efficiency
 	 * @param waitTimeList
-	 *            list of wait time per issue
+	 *          list of wait time per issue
 	 * @param totalTimeList
-	 *            list of total time per issue
+	 *          list of total time per issue
 	 * @param fieldMapping
-	 *            field mapping
+	 *          field mapping
 	 */
 	private void filterDataBasedOnXAxisRangeWise(List<String> xAxisRange,
 			List<JiraIssueCustomHistory> projectWiseJiraIssueList,
@@ -248,8 +242,8 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 
 		projectWiseJiraIssueList.forEach(issue -> {
 			if (!flowEfficiencyMap.containsKey(issue))
-				calculateFlowEfficiency(issue, fieldMapping, waitTimeList, totalTimeList, flowEfficiencyMap,
-						monthRangeMap, rangeWiseJiraIssuesMap);
+				calculateFlowEfficiency(issue, fieldMapping, waitTimeList, totalTimeList, flowEfficiencyMap, monthRangeMap,
+						rangeWiseJiraIssuesMap);
 		});
 	}
 
@@ -257,15 +251,15 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	 * calculate flow efficiency for each jira issue
 	 *
 	 * @param issueCustomHistory
-	 *            jira issue custom history
+	 *          jira issue custom history
 	 * @param fieldMapping
-	 *            field mapping
+	 *          field mapping
 	 * @param waitTimeList
-	 *            list of wait time per issue
+	 *          list of wait time per issue
 	 * @param totalTimeList
-	 *            list of total time per issue
+	 *          list of total time per issue
 	 * @param flowEfficiencyMap
-	 *            map of jira issue and flow efficiency
+	 *          map of jira issue and flow efficiency
 	 */
 	private void calculateFlowEfficiency(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping,
 			List<String> waitTimeList, List<String> totalTimeList,
@@ -286,8 +280,7 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 				if (fieldMapping.getJiraIssueClosedStateKPI170().contains(nextChangeLog.getChangedTo())) {
 					closedDate = nextChangeLog.getUpdatedOn();
 					totalTime = calculateWaitedTime(
-							LocalDateTime.ofInstant(issueCustomHistory.getCreatedDate().toDate().toInstant(),
-									ZoneId.systemDefault()),
+							LocalDateTime.ofInstant(issueCustomHistory.getCreatedDate().toDate().toInstant(), ZoneId.systemDefault()),
 							closedDate);
 				}
 			}
@@ -307,9 +300,9 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	 * calculate time between two dates excluding weekends
 	 *
 	 * @param start
-	 *            start date
+	 *          start date
 	 * @param end
-	 *            end date
+	 *          end date
 	 * @return hours between start date and end date
 	 */
 	private long calculateWaitedTime(LocalDateTime start, LocalDateTime end) {
@@ -317,11 +310,10 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	}
 
 	/**
-	 *
 	 * @param waitedTime
-	 *            wait time
+	 *          wait time
 	 * @param totalTime
-	 *            total time
+	 *          total time
 	 * @return percentage of wait time byt total time
 	 */
 	private double calculatePercentage(long waitedTime, long totalTime) {
@@ -332,19 +324,19 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 
 	public double calculateAverage(List<JiraIssueCustomHistory> jiraIssueList,
 			Map<JiraIssueCustomHistory, Double> flowEfficiencyMap) {
-		return jiraIssueList.stream().filter(flowEfficiencyMap::containsKey).mapToDouble(flowEfficiencyMap::get)
-				.average().orElse(0.0);
+		return jiraIssueList.stream().filter(flowEfficiencyMap::containsKey).mapToDouble(flowEfficiencyMap::get).average()
+				.orElse(0.0);
 	}
 
 	/**
 	 * create trendValueMap of DataCounts
 	 *
 	 * @param rangeAndStatusWiseJiraIssueMap
-	 *            map of jira issue by range
+	 *          map of jira issue by range
 	 * @param flowEfficiencyMap
-	 *            map of flow efficiency by issue
+	 *          map of flow efficiency by issue
 	 * @param leafNode
-	 *            project node
+	 *          project node
 	 * @return data count map by filter
 	 */
 	private LinkedHashMap<String, List<DataCount>> setDataCountMap(
@@ -352,19 +344,18 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, Node leafNode, Set<String> issueTypesSet) {
 		LinkedHashMap<String, List<DataCount>> dataCountMap = new LinkedHashMap<>();
 		List<String> totalIssueTypeString = rangeAndStatusWiseJiraIssueMap.values().stream()
-				.flatMap(innerMap -> innerMap.values().stream().flatMap(List::stream))
-				.map(JiraIssueCustomHistory::getStoryType).distinct().collect(Collectors.toList());
+				.flatMap(innerMap -> innerMap.values().stream().flatMap(List::stream)).map(JiraIssueCustomHistory::getStoryType)
+				.distinct().collect(Collectors.toList());
 		rangeAndStatusWiseJiraIssueMap.forEach((dateRange, statusWiseJiraIssues) -> {
 			totalIssueTypeString.forEach(issueType -> {
 				issueTypesSet.add(issueType);
-				List<JiraIssueCustomHistory> typeWiseIssues = statusWiseJiraIssues.getOrDefault(issueType,
-						new ArrayList<>());
+				List<JiraIssueCustomHistory> typeWiseIssues = statusWiseJiraIssues.getOrDefault(issueType, new ArrayList<>());
 				double average = calculateAverage(typeWiseIssues, flowEfficiencyMap);
 				setDataCount(leafNode.getProjectFilter().getName(), issueType, dateRange, average, dataCountMap,
 						typeWiseIssues.size());
 			});
-			List<JiraIssueCustomHistory> totalRangeWiseIssues = statusWiseJiraIssues.values().stream()
-					.flatMap(List::stream).collect(Collectors.toList());
+			List<JiraIssueCustomHistory> totalRangeWiseIssues = statusWiseJiraIssues.values().stream().flatMap(List::stream)
+					.collect(Collectors.toList());
 			double average = calculateAverage(totalRangeWiseIssues, flowEfficiencyMap);
 			setDataCount(leafNode.getProjectFilter().getName(), OVERALL, dateRange, average, dataCountMap,
 					totalRangeWiseIssues.size());
@@ -377,17 +368,17 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	 * create DataCount by Filter
 	 *
 	 * @param projectName
-	 *            project name
+	 *          project name
 	 * @param filter
-	 *            filter
+	 *          filter
 	 * @param dateRange
-	 *            date range
+	 *          date range
 	 * @param value
-	 *            average flow efficiency
+	 *          average flow efficiency
 	 * @param dataCountMap
-	 *            data count by filter
+	 *          data count by filter
 	 * @param count
-	 *            no of issues for range
+	 *          no of issues for range
 	 */
 	public void setDataCount(String projectName, String filter, String dateRange, double value,
 			Map<String, List<DataCount>> dataCountMap, int count) {
@@ -409,15 +400,15 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	 * populate excel data
 	 *
 	 * @param requestTrackerId
-	 *            tracker id for kpi request
+	 *          tracker id for kpi request
 	 * @param excelData
-	 *            excel data
+	 *          excel data
 	 * @param flowEfficiencyMap
-	 *            map of flow efficiency by jira issue
+	 *          map of flow efficiency by jira issue
 	 * @param waitTimeList
-	 *            wait time list
+	 *          wait time list
 	 * @param totalTimeList
-	 *            total time list
+	 *          total time list
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, List<String> waitTimeList,
@@ -426,12 +417,10 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateFlowEfficiency(flowEfficiencyMap, waitTimeList, totalTimeList, excelData);
 		}
-
 	}
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI170(), KPICode.FLOW_EFFICIENCY.getKpiId());
 	}
-
 }

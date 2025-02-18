@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -50,7 +49,8 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 @Component
 public class NetOpenTicketCountStatusImpl
-		extends JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
+		extends
+			JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetOpenTicketCountStatusImpl.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -89,8 +89,8 @@ public class NetOpenTicketCountStatusImpl
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 
 		LOGGER.info("NET-OPEN-TICKET-COUNT-BY-STATUS {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
@@ -160,7 +160,7 @@ public class NetOpenTicketCountStatusImpl
 	public Map<String, Map<String, Map<String, Set<String>>>> fetchKPIDataFromDb(List<Node> leafNodeList,
 			String startDate, String endDate, KpiRequest kpiRequest) {
 
-		Map<ObjectId,Map<String,Object>> projectWiseMapping=new HashMap<>();
+		Map<ObjectId, Map<String, Object>> projectWiseMapping = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
@@ -172,8 +172,8 @@ public class NetOpenTicketCountStatusImpl
 			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
 			projectWiseMapping.put(basicProjectConfigId, fieldWise);
 		});
-		historyDataResultMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate,
-				endDate, kpiRequest, FIELD_STATUS, projectWiseMapping);
+		historyDataResultMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate, endDate,
+				kpiRequest, FIELD_STATUS, projectWiseMapping);
 		CustomDateRange dateRangeForCumulative = KpiDataHelper.getStartAndEndDatesForCumulative(kpiRequest);
 		// get start and end date in yyyy-mm-dd format
 		String cumulativeStartDate = dateRangeForCumulative.getStartDate().format(DATE_FORMATTER);
@@ -183,7 +183,6 @@ public class NetOpenTicketCountStatusImpl
 
 		return kpiHelperService.computeProjectWiseJiraHistoryByStatusAndDate(projectWiseNonClosedTickets,
 				cumulativeStartDate, historyDataResultMap);
-
 	}
 
 	/**
@@ -194,7 +193,6 @@ public class NetOpenTicketCountStatusImpl
 	 * @param leafNodeList
 	 * @param kpiElement
 	 * @param kpiRequest
-	 *
 	 */
 	@SuppressWarnings("unchecked")
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
@@ -208,8 +206,8 @@ public class NetOpenTicketCountStatusImpl
 		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
 
 		// past all tickets and given range ticket data fetch from db
-		Map<String, Map<String, Map<String, Set<String>>>> projectWiseDbData = fetchKPIDataFromDb(leafNodeList,
-				startDate, endDate, kpiRequest);
+		Map<String, Map<String, Map<String, Set<String>>>> projectWiseDbData = fetchKPIDataFromDb(leafNodeList, startDate,
+				endDate, kpiRequest);
 
 		kpiWithFilter(projectWiseDbData, mapTmp, leafNodeList, kpiElement, kpiRequest);
 	}
@@ -224,11 +222,10 @@ public class NetOpenTicketCountStatusImpl
 		leafNodeList.forEach(node -> {
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
 			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			Map<String, Map<String, Set<String>>> statusWiseDateData = projectWiseStatusDateData
-					.getOrDefault(projectNodeId, new HashMap<>());
+			Map<String, Map<String, Set<String>>> statusWiseDateData = projectWiseStatusDateData.getOrDefault(projectNodeId,
+					new HashMap<>());
 
-			Set<String> doneStatus = new HashSet<>(
-					projectWiseDoneStatus.getOrDefault(projectNodeId, new ArrayList<>()));
+			Set<String> doneStatus = new HashSet<>(projectWiseDoneStatus.getOrDefault(projectNodeId, new ArrayList<>()));
 
 			if (MapUtils.isNotEmpty(statusWiseDateData)) {
 				Set<String> projectWiseStatusList = getStatusOtherThanDone(statusWiseDateData, doneStatus);
@@ -252,12 +249,10 @@ public class NetOpenTicketCountStatusImpl
 							node.getProjectFilter().getName(), date);
 
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
-
 				}
 				// Populates data in Excel for validation for tickets created before
 				populateExcelDataObject(requestTrackerId, statusWiseDateData, node, projectWiseStatusList,
-						new HashSet<>(
-								(List<KanbanIssueCustomHistory>) historyDataResultMap.get(JIRA_ISSUE_HISTORY_DATA)),
+						new HashSet<>((List<KanbanIssueCustomHistory>) historyDataResultMap.get(JIRA_ISSUE_HISTORY_DATA)),
 						excelData, kpiRequest);
 				mapTmp.get(node.getId()).setValue(dataCountMap);
 			}
@@ -275,7 +270,6 @@ public class NetOpenTicketCountStatusImpl
 	}
 
 	/**
-	 *
 	 * @param statusWiseDateData
 	 * @param statusList
 	 * @param currentDate
@@ -286,8 +280,8 @@ public class NetOpenTicketCountStatusImpl
 
 		Map<String, Long> projectStatusMap = new HashMap<>();
 		statusList.forEach(status -> {
-			Set<String> ids = statusWiseDateData.get(status).getOrDefault(currentDate.toString(), new HashSet<>())
-					.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+			Set<String> ids = statusWiseDateData.get(status).getOrDefault(currentDate.toString(), new HashSet<>()).stream()
+					.filter(Objects::nonNull).collect(Collectors.toSet());
 			projectStatusMap.put(status, Long.valueOf(ids.size()));
 		});
 
@@ -305,8 +299,8 @@ public class NetOpenTicketCountStatusImpl
 	 * @param date
 	 */
 	private void populateProjectFilterWiseDataMap(Map<String, Long> projectWiseStatusCountMap,
-			Set<String> projectWiseStatusList, Map<String, List<DataCount>> projectFilterWiseDataMap,
-			String projectName, String date) {
+			Set<String> projectWiseStatusList, Map<String, List<DataCount>> projectFilterWiseDataMap, String projectName,
+			String date) {
 		Map<String, Long> finalMap = new HashMap<>();
 		Map<String, Object> hoverValueMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(projectWiseStatusList)) {
@@ -323,7 +317,6 @@ public class NetOpenTicketCountStatusImpl
 			DataCount dcObj = getDataCountObject(value, projectName, date, status, hoverValueMap);
 			projectFilterWiseDataMap.computeIfAbsent(status, k -> new ArrayList<>()).add(dcObj);
 		});
-
 	}
 
 	/**
@@ -354,8 +347,8 @@ public class NetOpenTicketCountStatusImpl
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to " +
+					DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
@@ -401,13 +394,10 @@ public class NetOpenTicketCountStatusImpl
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String projectName = node.getProjectHierarchy().getNodeDisplayName();
 			String date = getRange(
-					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
-					kpiRequest);
-			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(projectName, projectWiseFeatureList,
-					projectWiseStatusList, kanbanJiraIssues, excelData, date,
-					KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.getKpiId());
+					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()), kpiRequest);
+			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(projectName, projectWiseFeatureList, projectWiseStatusList,
+					kanbanJiraIssues, excelData, date, KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.getKpiId());
 		}
-
 	}
 
 	@Override
@@ -415,5 +405,4 @@ public class NetOpenTicketCountStatusImpl
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI48(),
 				KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.getKpiId());
 	}
-
 }

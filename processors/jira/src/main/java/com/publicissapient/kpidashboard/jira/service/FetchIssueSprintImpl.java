@@ -82,8 +82,8 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 	JiraIssueRepository jiraIssueRepository;
 
 	@Override
-	public List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient client, int pageNumber, String sprintId) throws InterruptedException {
+	public List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client,
+			int pageNumber, String sprintId) throws InterruptedException {
 
 		SprintDetails updatedSprintDetails = sprintRepository.findBySprintID(sprintId);
 
@@ -94,9 +94,8 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 		issuesToUpdate.addAll(Optional.ofNullable(updatedSprintDetails.getPuntedIssues()).map(Collection::stream)
 				.orElse(Stream.empty()).map(SprintIssue::getNumber).collect(Collectors.toSet()));
 
-		issuesToUpdate.addAll(
-				Optional.ofNullable(updatedSprintDetails.getCompletedIssuesAnotherSprint()).map(Collection::stream)
-						.orElse(Stream.empty()).map(SprintIssue::getNumber).collect(Collectors.toSet()));
+		issuesToUpdate.addAll(Optional.ofNullable(updatedSprintDetails.getCompletedIssuesAnotherSprint())
+				.map(Collection::stream).orElse(Stream.empty()).map(SprintIssue::getNumber).collect(Collectors.toSet()));
 
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 
@@ -107,8 +106,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
 			if (CollectionUtils.isNotEmpty(issuesToUpdate)) {
-				SearchResult searchResult = getIssuesSprint(projectConfig, client, pageNumber,
-						new ArrayList<>(issuesToUpdate));
+				SearchResult searchResult = getIssuesSprint(projectConfig, client, pageNumber, new ArrayList<>(issuesToUpdate));
 				issues = JiraHelper.getIssuesFromResult(searchResult);
 			} else {
 				log.info("No issuesToUpdate found in Sprint {}", updatedSprintDetails.getSprintName());
@@ -130,8 +128,8 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 
 				query.append(JiraProcessorUtil.processJqlForSprintFetch(issueKeys));
 				if (StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getBoardQuery())) {
-					query.append(" and (").append(
-							projectConfig.getJira().getBoardQuery().toLowerCase().split(JiraConstants.ORDERBY)[0])
+					query.append(" and (")
+							.append(projectConfig.getJira().getBoardQuery().toLowerCase().split(JiraConstants.ORDERBY)[0])
 							.append(")");
 				}
 				log.info("jql query :{}", query);
@@ -155,7 +153,6 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 				}
 				throw e;
 			}
-
 		}
 
 		return searchResult;
@@ -188,15 +185,13 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 			mapOfFilters.put("basicProjectConfigId", Collections.singletonList(basicProjConfigId));
 
 			// fetched all defects which is linked to current sprint report stories
-			List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
-					totalSprintReportStories, uniqueProjectMap);
+			List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters, totalSprintReportStories,
+					uniqueProjectMap);
 
 			// filter defects which is issue type not coming in sprint report
 			List<JiraIssue> subTaskDefects = linkedDefects.stream()
-					.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber()))
-					.collect(Collectors.toList());
-			Set<String> subTaskDefectsKey = subTaskDefects.stream().map(JiraIssue::getNumber)
-					.collect(Collectors.toSet());
+					.filter(jiraIssue -> !totalSprintReportDefects.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+			Set<String> subTaskDefectsKey = subTaskDefects.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
 			issuesToUpdate.addAll(subTaskDefectsKey);
 		}
 	}
@@ -205,12 +200,9 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 		List<Pattern> regexList = new ArrayList<>();
 		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(stringList)) {
 			for (String value : stringList) {
-				regexList.add(
-						Pattern.compile(TILDA_SYMBOL + Pattern.quote(value) + DOLLAR_SYMBOL, Pattern.CASE_INSENSITIVE));
-
+				regexList.add(Pattern.compile(TILDA_SYMBOL + Pattern.quote(value) + DOLLAR_SYMBOL, Pattern.CASE_INSENSITIVE));
 			}
 		}
 		return regexList;
 	}
-
 }

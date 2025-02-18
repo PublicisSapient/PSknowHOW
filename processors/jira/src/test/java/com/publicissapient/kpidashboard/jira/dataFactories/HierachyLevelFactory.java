@@ -85,5 +85,4 @@ public class HierachyLevelFactory {
 	public List<HierarchyLevel> getHierarchyLevels() {
 		return hierarchyLevels;
 	}
-
 }

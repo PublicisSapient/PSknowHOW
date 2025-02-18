@@ -28,20 +28,21 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
-/**
- * The interface Kanban feature history repository.
- */
+/** The interface Kanban feature history repository. */
 @Repository
-public interface KanbanJiraIssueHistoryRepository extends CrudRepository<KanbanIssueCustomHistory, ObjectId>,
-		QuerydslPredicateExecutor<KanbanIssueCustomHistory>, KanbanJiraIssueHistoryRepoCustom {
+public interface KanbanJiraIssueHistoryRepository
+		extends
+			CrudRepository<KanbanIssueCustomHistory, ObjectId>,
+			QuerydslPredicateExecutor<KanbanIssueCustomHistory>,
+			KanbanJiraIssueHistoryRepoCustom {
 
 	/**
 	 * Find by story id list.
 	 *
 	 * @param storyID
-	 *            the story id
+	 *          the story id
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return the KanbanIssueCustomHistory
 	 */
 	@Query(fields = "{ 'storyID' : 1, 'createdDate' : 1, 'estimate' : 1, 'bufferedEstimateTime': 1 }")
@@ -49,11 +50,11 @@ public interface KanbanJiraIssueHistoryRepository extends CrudRepository<KanbanI
 
 	/**
 	 * Deletes all documents that matches with given projectID.
-	 * 
+	 *
 	 * @param projectID
-	 *            String projectID
+	 *          String projectID
 	 */
 	void deleteByBasicProjectConfigId(String projectID);
 
-    List<KanbanIssueCustomHistory> findByBasicProjectConfigId(String basicProjectConfigId);
+	List<KanbanIssueCustomHistory> findByBasicProjectConfigId(String basicProjectConfigId);
 }

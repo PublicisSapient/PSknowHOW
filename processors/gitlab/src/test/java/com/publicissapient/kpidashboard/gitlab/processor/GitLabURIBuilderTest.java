@@ -65,5 +65,4 @@ public class GitLabURIBuilderTest {
 		String expected = "http://localhost:9999/api/v4/projects/577/repository/commits?ref_name=release%2Fcore-r4.4&per_page=100";
 		Assert.assertEquals(expected, url);
 	}
-
 }

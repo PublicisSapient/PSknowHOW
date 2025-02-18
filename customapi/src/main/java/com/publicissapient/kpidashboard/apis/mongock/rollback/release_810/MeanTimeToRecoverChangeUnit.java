@@ -93,13 +93,14 @@ public class MeanTimeToRecoverChangeUnit {
 	public void removeLinkDetailFromLeadTimeForChange() {
 		Query kpiQuery = new Query(Criteria.where("kpiId").is("kpi156"));
 
-		Update kpiUpdate = new Update()
-				.pull("kpiInfo.details", new Document("type", "link")
-						.append("kpiLinkDetail", new Document("text", "Detailed Information at")
-								.append("link", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes")));
+		Update kpiUpdate = new Update().pull("kpiInfo.details",
+				new Document("type", "link").append("kpiLinkDetail", new Document("text", "Detailed Information at").append(
+						"link",
+						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes")));
 
 		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
 	}
+
 	@RollbackExecution
 	public void rollback() {
 		insertMeanTimeToRecover();
@@ -167,9 +168,8 @@ public class MeanTimeToRecoverChangeUnit {
 	public void storyToIdentifyFieldMapping() {
 		Document document = new Document("fieldName", "jiraStoryIdentificationKPI166")
 				.append("fieldLabel", "Issue type to identify Production incidents").append("fieldType", "chips")
-				.append("fieldCategory", "Issue_Type").append("section", "Issue Types Mapping")
-				.append("tooltip", new Document("definition",
-						"All issue types that are used as/equivalent to Production incidents."));
+				.append("fieldCategory", "Issue_Type").append("section", "Issue Types Mapping").append("tooltip",
+						new Document("definition", "All issue types that are used as/equivalent to Production incidents."));
 		mongoTemplate.insert(document, "field_mapping_structure");
 	}
 
@@ -182,48 +182,45 @@ public class MeanTimeToRecoverChangeUnit {
 				.append("options",
 						Arrays.asList(new Document("label", "CustomField").append("value", "CustomField"),
 								new Document("label", "Labels").append("value", "Labels")))
-				.append("nestedFields", Arrays.asList(new Document("fieldName", "jiraProdIncidentRaisedByCustomField")
-						.append("fieldLabel", "Production Incident Custom Field").append("fieldType", "text")
-						.append("fieldCategory", "fields").append("filterGroup", Arrays.asList("CustomField"))
-						.append("tooltip", new Document("definition",
-								"Provide customfield name to identify Production Incident. <br> Example: customfield_13907<hr>")),
+				.append("nestedFields", Arrays.asList(
+						new Document("fieldName", "jiraProdIncidentRaisedByCustomField")
+								.append("fieldLabel", "Production Incident Custom Field").append("fieldType", "text")
+								.append("fieldCategory", "fields").append("filterGroup", Arrays.asList("CustomField"))
+								.append("tooltip", new Document("definition",
+										"Provide customfield name to identify Production Incident. <br> Example: customfield_13907<hr>")),
 						new Document("fieldName", "jiraProdIncidentRaisedByValue")
 								.append("fieldLabel", "Production Incident Values").append("fieldType", "chips")
-								.append("filterGroup", Arrays.asList("CustomField", "Labels"))
-								.append("tooltip", new Document("definition",
-										"Provide label name to identify Production Incident Example: PROD_INCIDENT <hr>"))));
+								.append("filterGroup", Arrays.asList("CustomField", "Labels")).append("tooltip", new Document(
+										"definition", "Provide label name to identify Production Incident Example: PROD_INCIDENT <hr>"))));
 
 		mongoTemplate.insert(field1, "field_mapping_structure");
 	}
 
 	public void dodStatusFieldMapping() {
 		Document document = new Document("fieldName", "jiraDodKPI166").append("fieldLabel", "DOD Status")
-				.append("fieldType", "chips").append("fieldCategory", "workflow")
-				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document("definition",
+				.append("fieldType", "chips").append("fieldCategory", "workflow").append("section", "WorkFlow Status Mapping")
+				.append("tooltip", new Document("definition",
 						"Status/es that identify that an issue is completed based on Definition of Done (DoD)."));
 		mongoTemplate.insert(document, "field_mapping_structure");
 	}
 
 	public void insertKpiColumnConfig() {
-		Document document = new Document("basicProjectConfigId", null).append("kpiId", "kpi166").append(
-				"kpiColumnDetails",
+		Document document = new Document("basicProjectConfigId", null).append("kpiId", "kpi166").append("kpiColumnDetails",
 				Arrays.asList(
-						new Document("columnName", "Project Name").append("order", 0).append("isShown", true)
-								.append("isDefault", true),
-						new Document("columnName", "Date").append("order", 1).append("isShown", true)
-								.append("isDefault", true),
-						new Document("columnName", "Story ID").append("order", 2).append("isShown", true)
-								.append("isDefault", true),
-						new Document("columnName", "Issue Type").append("order", 3).append("isShown", true)
-								.append("isDefault", true),
+						new Document("columnName", "Project Name").append("order", 0).append("isShown", true).append("isDefault",
+								true),
+						new Document("columnName", "Date").append("order", 1).append("isShown", true).append("isDefault", true),
+						new Document("columnName", "Story ID").append("order", 2).append("isShown", true).append("isDefault", true),
+						new Document("columnName", "Issue Type").append("order", 3).append("isShown", true).append("isDefault",
+								true),
 						new Document("columnName", "Issue Description").append("order", 4).append("isShown", true)
 								.append("isDefault", true),
-						new Document("columnName", "Created Date").append("order", 5).append("isShown", true)
-								.append("isDefault", true),
-						new Document("columnName", "Completion Date").append("order", 6).append("isShown", true)
-								.append("isDefault", true),
-						new Document("columnName", "Time to Recover (In Hours)").append("order", 7)
-								.append("isShown", true).append("isDefault", true)));
+						new Document("columnName", "Created Date").append("order", 5).append("isShown", true).append("isDefault",
+								true),
+						new Document("columnName", "Completion Date").append("order", 6).append("isShown", true).append("isDefault",
+								true),
+						new Document("columnName", "Time to Recover (In Hours)").append("order", 7).append("isShown", true)
+								.append("isDefault", true)));
 		mongoTemplate.insert(document, "kpi_column_configs");
 	}
 
@@ -241,12 +238,11 @@ public class MeanTimeToRecoverChangeUnit {
 	public void addLinkDetailToLeadTimeForChange() {
 		Query kpiQuery = new Query(Criteria.where("kpiId").is("kpi156"));
 
-		Update kpiUpdate = new Update()
-				.push("kpiInfo.details", new Document("type", "link")
-						.append("kpiLinkDetail", new Document("text", "Detailed Information at")
-								.append("link", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes")));
+		Update kpiUpdate = new Update().push("kpiInfo.details",
+				new Document("type", "link").append("kpiLinkDetail", new Document("text", "Detailed Information at").append(
+						"link",
+						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes")));
 
 		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
 	}
-
 }

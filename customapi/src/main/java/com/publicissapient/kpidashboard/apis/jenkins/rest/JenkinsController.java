@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
@@ -23,7 +22,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,10 +75,10 @@ public class JenkinsController {
 	 * Gets jenkins aggregated metrics.
 	 *
 	 * @param kpiRequest
-	 *            the kpi request
+	 *          the kpi request
 	 * @return the jenkins aggregated metrics
 	 * @throws Exception
-	 *             the exception
+	 *           the exception
 	 */
 	@RequestMapping(value = "/jenkins/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
@@ -107,21 +105,20 @@ public class JenkinsController {
 		} else {
 			return ResponseEntity.ok().body(responseList);
 		}
-
 	}
 
 	/**
 	 * Gets jenkins kanban aggregated metrics.
 	 *
 	 * @param kpiRequest
-	 *            the kpi request
+	 *          the kpi request
 	 * @return the jenkins kanban aggregated metrics
 	 * @throws Exception
-	 *             the exception
+	 *           the exception
 	 */
 	@RequestMapping(value = "/jenkinskanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<List<KpiElement>> getJenkinsKanbanAggregatedMetrics(
-			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
+	public ResponseEntity<List<KpiElement>> getJenkinsKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
+			throws Exception { // NOSONAR
 		MDC.put("JenkinsKanbanKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received Jenkins Kanban KPI request {}", kpiRequest);
 		long jenkinsKanbanRequestStartTime = System.currentTimeMillis();
@@ -144,13 +141,11 @@ public class JenkinsController {
 		} else {
 			return ResponseEntity.ok().body(responseList);
 		}
-
 	}
 
 	/**
-	 *
 	 * @param connectionId
-	 *            the jenkins server connection details
+	 *          the jenkins server connection details
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/jenkins/jobName/{connectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -170,5 +165,4 @@ public class JenkinsController {
 			return ResponseEntity.ok().body(new ServiceResponse(true, "Fetched Jobs Successfully", jobNameList));
 		}
 	}
-
 }

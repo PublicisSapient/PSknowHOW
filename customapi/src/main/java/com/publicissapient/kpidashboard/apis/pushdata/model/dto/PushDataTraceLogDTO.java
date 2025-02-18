@@ -31,10 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * PushDataTraceLogDTO
- */
-
+/** PushDataTraceLogDTO */
 @Data
 @Getter
 @Setter
@@ -44,25 +41,36 @@ public class PushDataTraceLogDTO extends BasicModel {
 
 	@JsonProperty("Push Api Source")
 	private String pushApiSource;
+
 	@JsonProperty("Project Name")
 	private String projectName;
+
 	private ObjectId basicProjectConfigId;
+
 	@JsonProperty("User Name")
 	private String userName;
+
 	@JsonProperty("Request Time")
 	private String requestTime;
+
 	@JsonProperty("Response Status")
 	private String responseStatus;
+
 	@JsonProperty("Response Code")
 	private String responseCode;
+
 	@JsonProperty("Total Records")
 	private int totalRecord;
+
 	@JsonProperty("Total Saved Records")
 	private int totalSavedRecord;
+
 	@JsonProperty("Total Failed Records")
 	private int totalFailedRecord;
+
 	@JsonProperty("Message")
 	private String errorMessage;
+
 	@JsonProperty("Push Details Info")
 	private List<PushDataDetail> pushDataDetails;
 }

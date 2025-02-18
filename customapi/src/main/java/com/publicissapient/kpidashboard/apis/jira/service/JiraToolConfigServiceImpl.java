@@ -23,8 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +42,8 @@ import com.publicissapient.kpidashboard.apis.connection.service.ConnectionServic
 import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
 import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.ProjectAccessUtil;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.exceptions.ClientErrorMessageEnum;
@@ -64,7 +64,6 @@ import lombok.extern.slf4j.Slf4j;
  * class for jira tool config fetch data api
  *
  * @author Hirenkumar babariya
- *
  */
 @Service
 @Slf4j
@@ -104,8 +103,7 @@ public class JiraToolConfigServiceImpl {
 	public ResponseEntity<ServiceResponse> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
 
 		List<BoardDetailsDTO> responseList = new ArrayList<>();
-		Optional<Connection> optConnection = connectionRepository
-				.findById(new ObjectId(boardRequestDTO.getConnectionId()));
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(boardRequestDTO.getConnectionId()));
 		try {
 			if (optConnection.isPresent()) {
 				Connection connection = optConnection.get();
@@ -124,8 +122,8 @@ public class JiraToolConfigServiceImpl {
 			isClientException(optConnection, exception);
 			log.error("exception occured while trying to hit api.");
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
-				"Not found any configure board details with provided connection details", null));
+		return ResponseEntity.status(HttpStatus.OK).body(
+				new ServiceResponse(false, "Not found any configure board details with provided connection details", null));
 	}
 
 	/**
@@ -135,10 +133,10 @@ public class JiraToolConfigServiceImpl {
 	 * @param exception
 	 */
 	private void isClientException(Optional<Connection> optConnection, RestClientException exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			optConnection.ifPresent(connection -> connectionService.updateBreakingConnection(connection, errMsg));
 		}
 	}
@@ -171,11 +169,10 @@ public class JiraToolConfigServiceImpl {
 				}
 
 			} catch (Exception exception) {
-				if (exception instanceof HttpClientErrorException
-						&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+				if (exception instanceof HttpClientErrorException &&
+						((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
 					String errMsg = ClientErrorMessageEnum
-							.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
-							.getReasonPhrase();
+							.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
 					connectionService.updateBreakingConnection(connection, errMsg);
 				}
 				log.error("Error while fetching boardList for projectKey Id {}:  {}", boardRequestDTO.getProjectKey(),
@@ -198,9 +195,8 @@ public class JiraToolConfigServiceImpl {
 		String password = "";
 		HttpHeaders headers = new HttpHeaders();
 		if (connection.isJaasKrbAuth()) {
-			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
-					connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
-					connection.getBaseUrl());
+			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
+					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
 			client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
 					customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
 			password = client.getCookies();
@@ -222,7 +218,6 @@ public class JiraToolConfigServiceImpl {
 			headers = restAPIUtils.getHeaders(username, password);
 		}
 		return new HttpEntity<>(headers);
-
 	}
 
 	public AssigneeResponseDTO getProjectAssigneeDetails(String projectConfigId) {
@@ -237,8 +232,8 @@ public class JiraToolConfigServiceImpl {
 				assigneeDetailsDTO.setDisplayName(assignee.getAssigneeName());
 				assigneeDetailsDTOResponseList.add(assigneeDetailsDTO);
 			});
-			Collections.sort(assigneeDetailsDTOResponseList, (AssigneeDetailsDTO o1, AssigneeDetailsDTO o2) -> o1
-					.getDisplayName().compareTo(o2.getDisplayName()));
+			Collections.sort(assigneeDetailsDTOResponseList,
+					(AssigneeDetailsDTO o1, AssigneeDetailsDTO o2) -> o1.getDisplayName().compareTo(o2.getDisplayName()));
 		}
 		assigneeResponseDTO.setBasicProjectConfigId(new ObjectId(projectConfigId));
 		assigneeResponseDTO.setAssigneeDetailsList(assigneeDetailsDTOResponseList);

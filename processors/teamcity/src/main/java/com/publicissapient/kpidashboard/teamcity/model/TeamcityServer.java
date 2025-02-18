@@ -22,9 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * The connection configuration properties for Teamcity server.
- */
+/** The connection configuration properties for Teamcity server. */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,5 +31,4 @@ public class TeamcityServer {
 	private String ipAddress;
 	private String username;
 	private String password;
-
 }

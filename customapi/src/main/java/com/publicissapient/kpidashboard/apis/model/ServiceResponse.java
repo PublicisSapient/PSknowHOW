@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-/**
- * Class used for common response from All services
- */
+/** Class used for common response from All services */
 public class ServiceResponse extends BaseResponse {
 
 	private Object data;
@@ -31,7 +29,6 @@ public class ServiceResponse extends BaseResponse {
 
 	// --- auth-N-auth required code end here --------------
 	/**
-	 * 
 	 * @param isSuccess
 	 * @param msg
 	 * @param data
@@ -44,7 +41,6 @@ public class ServiceResponse extends BaseResponse {
 	}
 
 	/**
-	 * 
 	 * @return data
 	 */
 	public Object getData() {
@@ -53,11 +49,10 @@ public class ServiceResponse extends BaseResponse {
 
 	/**
 	 * Sets data
-	 * 
+	 *
 	 * @param data
 	 */
 	public void setData(Object data) {
 		this.data = data;
 	}
-
 }

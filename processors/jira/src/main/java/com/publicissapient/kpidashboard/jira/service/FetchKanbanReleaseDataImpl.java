@@ -74,12 +74,10 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 		if (isKanban) {
 			saveProjectRelease(projectConfig, krb5Client);
 		}
-
 	}
 
 	/**
 	 * @param confFieldMapping
-	 *
 	 * @return
 	 */
 	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, KerberosClient krb5Client)
@@ -119,7 +117,7 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 						setToSave.add(hierarchy);
 					} else if (!exHiery.equals(hierarchy)) {
 						exHiery.setBeginDate(hierarchy.getBeginDate());
-						exHiery.setNodeName(hierarchy.getNodeName());// release name changed
+						exHiery.setNodeName(hierarchy.getNodeName()); // release name changed
 						exHiery.setEndDate(hierarchy.getEndDate());
 						exHiery.setReleaseState(hierarchy.getReleaseState());
 						setToSave.add(exHiery);
@@ -127,8 +125,7 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 				}
 			});
 		}
-        projectHierarchySyncService.syncReleaseHierarchy(projectConfig.getId(),
-                hierarchyForRelease);
+		projectHierarchySyncService.syncReleaseHierarchy(projectConfig.getId(), hierarchyForRelease);
 
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			projectHierarchyService.saveAll(setToSave);
@@ -156,16 +153,16 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 				releaseHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
 				releaseHierarchy.setHierarchyLevelId(hierarchyLevel.getHierarchyLevelId());
 				String versionName = projectVersion.getName() + JiraConstants.COMBINE_IDS_SYMBOL;
-				String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
-						+ projectBasicConfig.getProjectNodeId();
+				String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL +
+						projectBasicConfig.getProjectNodeId();
 				releaseHierarchy.setNodeId(versionId);
 				releaseHierarchy.setNodeName(versionName + projectBasicConfig.getProjectName());
 				releaseHierarchy.setNodeDisplayName(versionName + projectBasicConfig.getProjectDisplayName());
-				releaseHierarchy.setReleaseState(
-						(projectVersion.isReleased()) ? CommonConstant.RELEASED : CommonConstant.UNRELEASED);
-				releaseHierarchy.setBeginDate(
-						ObjectUtils.isNotEmpty(projectVersion.getStartDate()) ? projectVersion.getStartDate().toString()
-								: CommonConstant.BLANK);
+				releaseHierarchy
+						.setReleaseState((projectVersion.isReleased()) ? CommonConstant.RELEASED : CommonConstant.UNRELEASED);
+				releaseHierarchy.setBeginDate(ObjectUtils.isNotEmpty(projectVersion.getStartDate())
+						? projectVersion.getStartDate().toString()
+						: CommonConstant.BLANK);
 				releaseHierarchy.setEndDate(ObjectUtils.isNotEmpty(projectVersion.getReleaseDate())
 						? projectVersion.getReleaseDate().toString()
 						: CommonConstant.BLANK);

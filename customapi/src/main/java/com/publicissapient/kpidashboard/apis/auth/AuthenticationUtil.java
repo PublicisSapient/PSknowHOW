@@ -25,7 +25,7 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 
 /**
  * This class provides utility methods for authentication.
- * 
+ *
  * @author anisingh4
  */
 public final class AuthenticationUtil {
@@ -66,5 +66,4 @@ public final class AuthenticationUtil {
 	private static Authentication getAuthentication() {
 		return SecurityContextHolder.getContext().getAuthentication();
 	}
-
 }

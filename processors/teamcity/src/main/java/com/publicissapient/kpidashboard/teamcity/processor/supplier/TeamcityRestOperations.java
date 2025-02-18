@@ -24,15 +24,11 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 
-/**
- * Supplier that returns an instance of RestOperations.
- */
+/** Supplier that returns an instance of RestOperations. */
 @Component
 public class TeamcityRestOperations implements RestOperationsFactory<RestOperations> {
 
-	/**
-	 * Instantiate RestTemplate.
-	 */
+	/** Instantiate RestTemplate. */
 	@Override
 	public RestOperations getTypeInstance() {
 		return new RestTemplate();

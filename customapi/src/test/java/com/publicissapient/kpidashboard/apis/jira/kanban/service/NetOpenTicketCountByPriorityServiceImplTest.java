@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.jira.kanban.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -112,8 +111,7 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		accountHierarchyDataKanbanList = accountHierarchyKanbanFilterDataFactory.getAccountHierarchyKanbanDataList();
 
 		KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory.newInstance();
-		kanbanJiraIssueDataList = kanbanJiraIssueDataFactory
-				.getKanbanJiraIssueDataListByTypeName(Arrays.asList("Story"));
+		kanbanJiraIssueDataList = kanbanJiraIssueDataFactory.getKanbanJiraIssueDataListByTypeName(Arrays.asList("Story"));
 
 		setMockProjectConfig();
 		setMockFieldMapping();
@@ -143,12 +141,10 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		p1.setProjectNodeId("Kanban Project_6335368249794a18e8a4479f");
 		mapOfProjectDetails.put(p1.getId().toString(), p1);
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	private void setMockProjectConfig() {
@@ -210,8 +206,8 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		when(kpiHelperService.computeProjectWiseJiraHistoryByFieldAndDate(anyMap(), anyString(), anyMap(), anyString()))
 				.thenReturn(projectWiseJiraHistoryPriorityAndDateWiseIssueMap);
 
-		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory
-				.newInstance().getKanbanIssueCustomHistoryDataList();
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory.newInstance()
+				.getKanbanIssueCustomHistoryDataList();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
 		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
@@ -225,32 +221,30 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		try {
-			KpiElement kpiElement = netOpenTicketCountByPriorityImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			KpiElement kpiElement = netOpenTicketCountByPriorityImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
 				String priority = dc.getFilter();
 				switch (priority) {
-				case "P1":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P2":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P3":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "P4":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
-				case "MISC":
-					assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
-					break;
+					case "P1" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P2" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P3" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "P4" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
+					case "MISC" :
+						assertThat("Ticket Priority Count Value :", dc.getValue().size(), equalTo(1));
+						break;
 
-				default:
-					break;
+					default :
+						break;
 				}
-
 			});
 		} catch (ApplicationException e) {
 			e.printStackTrace();
@@ -284,5 +278,4 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 	public void testCalculateKPIMetrics() {
 		assertThat(netOpenTicketCountByPriorityImpl.calculateKPIMetrics(null), equalTo(0L));
 	}
-
 }

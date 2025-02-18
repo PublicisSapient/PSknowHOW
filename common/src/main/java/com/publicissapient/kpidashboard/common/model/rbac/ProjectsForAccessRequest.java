@@ -30,9 +30,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Represents the project data used in access requests.
- */
+/** Represents the project data used in access requests. */
 @Data
 @Builder
 @Getter
@@ -45,5 +43,4 @@ public class ProjectsForAccessRequest {
 	private String projectName;
 	private String projectId;
 	private List<HierarchyValue> hierarchy;
-
 }

@@ -52,24 +52,20 @@ public class ProjectHierarchyServiceImpl implements ProjectHierarchyService {
 	public Map<String, ProjectHierarchy> getProjectHierarchyMapByConfigId(String projectConfigId) {
 		return getProjectRelatedHierachy(projectConfigId).stream().collect(
 				Collectors.toMap(OrganizationHierarchy::getNodeId, p -> p, (existingValue, newValue) -> existingValue));
-
 	}
 
 	@Override
 	public Map<String, List<ProjectHierarchy>> getProjectHierarchyMapByConfig(String projectConfigId) {
-		return getProjectRelatedHierachy(projectConfigId).stream().collect(
-				Collectors.groupingBy(OrganizationHierarchy::getNodeId));
-
+		return getProjectRelatedHierachy(projectConfigId).stream()
+				.collect(Collectors.groupingBy(OrganizationHierarchy::getNodeId));
 	}
 
 	@Override
 	public Map<String, ProjectHierarchy> getProjectHierarchyMapByConfigIdAndHierarchyLevelId(String projectConfigId,
 			String hierarchyLevelId) {
 		return getProjectRelatedHierachy(projectConfigId).stream()
-				.filter(hierarchy -> hierarchy.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId))
-				.collect(Collectors.toMap(OrganizationHierarchy::getNodeId, p -> p,
-						(existingValue, newValue) -> existingValue));
-
+				.filter(hierarchy -> hierarchy.getHierarchyLevelId().equalsIgnoreCase(hierarchyLevelId)).collect(
+						Collectors.toMap(OrganizationHierarchy::getNodeId, p -> p, (existingValue, newValue) -> existingValue));
 	}
 
 	@Override

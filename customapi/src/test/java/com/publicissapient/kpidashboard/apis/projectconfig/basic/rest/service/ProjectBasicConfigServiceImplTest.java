@@ -119,7 +119,6 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 
 /**
  * @author narsingh9
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectBasicConfigServiceImplTest {
@@ -219,17 +218,14 @@ public class ProjectBasicConfigServiceImplTest {
 	FieldMapping fieldMapping;
 	BoardMetadata boardMetadata;
 
-
-	/**
-	 * method includes pre processes for test cases
-	 */
+	/** method includes pre processes for test cases */
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(projectBasicConfigServiceImpl).build();
 		basicConfigDTO = new ProjectBasicConfigDTO();
 		basicConfig = ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json")
 				.getProjectBasicConfigs().get(0);
-		boardMetadata=new BoardMetadata();
+		boardMetadata = new BoardMetadata();
 		boardMetadata.setProjectBasicConfigId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
 		boardMetadata.setProjectToolConfigId(new ObjectId("5fa0023dbb5fa781ccd5ac2c"));
 		boardMetadata.setMetadataTemplateCode("10");
@@ -242,12 +238,13 @@ public class ProjectBasicConfigServiceImplTest {
 		listProjectTool.setBranch("test1");
 		listProjectTool.setJobName("testing1");
 
-		fieldMapping=FieldMappingDataFactory.newInstance("/json/default/project_field_mappings.json").getFieldMappings().get(0);
+		fieldMapping = FieldMappingDataFactory.newInstance("/json/default/project_field_mappings.json").getFieldMappings()
+				.get(0);
 
 		basicConfigOpt = Optional.of(basicConfig);
 
-		diffbasicConfig = ProjectBasicConfigDataFactory
-				.newInstance("/json/basicConfig/project_basic_config_request.json").getProjectBasicConfigs().get(0);
+		diffbasicConfig = ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json")
+				.getProjectBasicConfigs().get(0);
 		diffbasicConfig.setId(new ObjectId("5f855dec29cf840345f2d222"));
 		diffbasicConfig.setProjectName("project2");
 
@@ -285,20 +282,15 @@ public class ProjectBasicConfigServiceImplTest {
 		viewerProjectAccess.setRole("ROLE_SUPERADMIN");
 		viewerProjectAccess.setAccessNodes(Lists.newArrayList());
 		projectViewerUserInfo.setProjectsAccess(Lists.newArrayList(viewerProjectAccess));
-
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		mockMvc = null;
 	}
 
-	/**
-	 * test add config
-	 */
+	/** test add config */
 	@Test
 	public void addConfigTest_superAdminAddProject_success() {
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
@@ -313,9 +305,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * test add config when project with same name already exist.
-	 */
+	/** test add config when project with same name already exist. */
 	@Test
 	public void addConfigTest_projectNameAlreadyExist_failure() {
 		when(basicConfigRepository.findByProjectNodeId(any())).thenReturn(basicConfig);
@@ -323,9 +313,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
 
-	/**
-	 * test add config when save operation return null.
-	 */
+	/** test add config when save operation return null. */
 	@Test
 	public void addConfigTest_saveOperation_failure() {
 		when(basicConfigRepository.findByProjectNodeId(any())).thenReturn(basicConfig);
@@ -333,9 +321,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
 
-	/**
-	 * test add config non superadmin.
-	 */
+	/** test add config non superadmin. */
 	@Test
 	public void addConfigTest_nonSuperadminProjectViewerAddProject_success() {
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
@@ -350,9 +336,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * test add config non superadmin.
-	 */
+	/** test add config non superadmin. */
 	@Test
 	public void addConfigTest_nonSuperadminAdd_success() {
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
@@ -402,9 +386,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * test add config non superadmin project viewer.
-	 */
+	/** test add config non superadmin project viewer. */
 	@Test
 	public void addConfigTest_nonSuperadmin_success() {
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
@@ -419,9 +401,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * test update config for scrum
-	 */
+	/** test update config for scrum */
 	@Test
 	public void updateConfigTest_scrumHierarchy_success() {
 		basicConfig.setSaveAssigneeDetails(true);
@@ -429,7 +409,7 @@ public class ProjectBasicConfigServiceImplTest {
 		when(basicConfigRepository.findById(any())).thenReturn(basicConfigOpt);
 		when(basicConfigRepository.findByProjectNameAndIdNot(any(), any())).thenReturn(null);
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
-		List<ProcessorExecutionTraceLog> traceLogs= new ArrayList<>();
+		List<ProcessorExecutionTraceLog> traceLogs = new ArrayList<>();
 		traceLogs.add(new ProcessorExecutionTraceLog());
 		List<ProjectHierarchy> ph = new ArrayList<>();
 		ProjectHierarchy projectHierarchy = new ProjectHierarchy();
@@ -437,7 +417,8 @@ public class ProjectBasicConfigServiceImplTest {
 		projectHierarchy.setNodeName("ABCD");
 		projectHierarchy.setNodeDisplayName("ABCD");
 		ph.add(projectHierarchy);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),anyList())).thenReturn(traceLogs);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
+				.thenReturn(traceLogs);
 		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(new AssigneeDetails());
 		when(projectHierarchyRepository.findByBasicProjectConfigId(any())).thenReturn(ph);
 		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
@@ -445,9 +426,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * test update config for kanban
-	 */
+	/** test update config for kanban */
 	@Test
 	public void updateConfigTest_kanbanHierarchy_success() {
 		basicConfig.setIsKanban(true);
@@ -467,45 +446,37 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * test update config when referenced object not found.
-	 */
+	/** test update config when referenced object not found. */
 	@Test
 	public void updateConfigTest_configNotFoundInDB_failure() {
 		when(basicConfigRepository.findById(any())).thenReturn(Optional.ofNullable(null));
-		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
-				basicConfigDTO);
+		ServiceResponse response =
+				projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef", basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
 
-	/**
-	 * test update config when project name to be updated already present.
-	 */
+	/** test update config when project name to be updated already present. */
 	@Test
 	public void updateConfigTest_diffIdSameName_failure() {
 		when(basicConfigRepository.findById(any())).thenReturn(basicConfigOpt);
 		when(basicConfigRepository.findByProjectNameAndIdNot(any(String.class), any(ObjectId.class)))
 				.thenReturn(diffbasicConfig);
-		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
-				basicConfigDTO);
+		ServiceResponse response =
+				projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef", basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
 
-	/**
-	 * test update config when save method return false.
-	 */
+	/** test update config when save method return false. */
 	@Test
 	public void updateConfigTest_updateNotOccured_failure() {
 		when(basicConfigRepository.findById(any())).thenReturn(basicConfigOpt);
 		when(basicConfigRepository.findByProjectNameAndIdNot(any(), any())).thenReturn(basicConfig);
-		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
-				basicConfigDTO);
+		ServiceResponse response =
+				projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef", basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(false));
 	}
 
-	/**
-	 * test list all configs
-	 */
+	/** test list all configs */
 	@Test
 	public void listAllProjectConfigsTestSuperAdminRole() {
 		List<ProjectBasicConfig> listOfProjectDetails = new ArrayList<>();
@@ -516,12 +487,9 @@ public class ProjectBasicConfigServiceImplTest {
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
 		List<ProjectBasicConfig> list = projectBasicConfigServiceImpl.getFilteredProjectsBasicConfigs(Boolean.FALSE);
 		assertThat("response list size: ", list.size(), equalTo(1));
-
 	}
 
-	/**
-	 * test list particular project config for superadmin role
-	 */
+	/** test list particular project config for superadmin role */
 	@Test
 	public void listProjectConfigTestSuperAdminRole() {
 		ObjectId projectId = new ObjectId();
@@ -536,9 +504,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("response : ", config.getId(), equalTo(projectId));
 	}
 
-	/**
-	 * test list particular project config for non-superadmin role
-	 */
+	/** test list particular project config for non-superadmin role */
 	@Test
 	public void listProjectConfigTestNonSuperAdminRole() {
 		ObjectId projectId = new ObjectId();
@@ -556,9 +522,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("response : ", config.getId(), equalTo(projectId));
 	}
 
-	/**
-	 * test list particular project config for non-superadmin role
-	 */
+	/** test list particular project config for non-superadmin role */
 	@Test
 	public void listProjectConfigTestNonSuperAdminRoleNotMatching() {
 		ObjectId projectId = new ObjectId();
@@ -571,10 +535,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertNull(config);
 	}
 
-	/**
-	 * test list a project config for non-superadmin role
-	 */
-
+	/** test list a project config for non-superadmin role */
 	@Test
 	public void listAllProjectConfigTestNonSuperAdminRole() {
 		ObjectId projectId = new ObjectId();
@@ -591,9 +552,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertThat("response list size: ", list.size(), equalTo(0));
 	}
 
-	/**
-	 * test list particular project config for non-superadmin role
-	 */
+	/** test list particular project config for non-superadmin role */
 	@Test
 	public void listProjectConfigTestNonSuperAdminRoleNoProject() {
 		ObjectId projectId = new ObjectId();
@@ -604,10 +563,7 @@ public class ProjectBasicConfigServiceImplTest {
 		assertNull(config);
 	}
 
-	/**
-	 * test list particular project config withoutPermission
-	 */
-
+	/** test list particular project config withoutPermission */
 	@Test
 	public void deleteProject_Success() {
 		String id = "5fc4d61f80b6350f048a93e5";
@@ -637,9 +593,7 @@ public class ProjectBasicConfigServiceImplTest {
 
 		verify(basicConfigRepository, times(1)).delete(p1);
 		verify(toolRepository, times(1)).deleteById(new ObjectId("5fc4d61f80b6350f048a93e6"));
-
 	}
-
 
 	@Test
 	public void deleteAssigneeDetails() {
@@ -670,10 +624,7 @@ public class ProjectBasicConfigServiceImplTest {
 
 		verify(basicConfigRepository, times(1)).delete(p1);
 		verify(toolRepository, times(1)).deleteById(new ObjectId("5fc4d61f80b6350f048a93e6"));
-
 	}
-
-
 
 	private AccessRequest createAccessRequestData() {
 		AccessRequest accessRequestsData = new AccessRequest();
@@ -690,7 +641,6 @@ public class ProjectBasicConfigServiceImplTest {
 		accessRequestsData.setRole("ROLE_PROJECT_VIEWER");
 
 		return accessRequestsData;
-
 	}
 
 	@Test(expected = ProjectNotFoundException.class)
@@ -700,7 +650,6 @@ public class ProjectBasicConfigServiceImplTest {
 		ProjectBasicConfig p1 = new ProjectBasicConfig();
 		p1.setId(basicProjectConfigId);
 		projectBasicConfigServiceImpl.deleteProject(id);
-
 	}
 
 	private List<ProjectToolConfig> createTools() {
@@ -711,12 +660,9 @@ public class ProjectBasicConfigServiceImplTest {
 		tools.add(t1);
 
 		return tools;
-
 	}
 
-	/**
-	 * Test getAllProjectsBasicConfigsDTOWithoutPermissionTest method
-	 */
+	/** Test getAllProjectsBasicConfigsDTOWithoutPermissionTest method */
 	@Test
 	public void getFilteredProjectsBasicConfigsDTOWithoutPermissionTest() {
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
@@ -724,14 +670,11 @@ public class ProjectBasicConfigServiceImplTest {
 		mapOfProjectDetails.put(diffbasicConfig.getId().toHexString(), diffbasicConfig);
 
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
-		List<ProjectBasicConfigDTO> list = projectBasicConfigServiceImpl
-				.getAllProjectsBasicConfigsDTOWithoutPermission();
+		List<ProjectBasicConfigDTO> list = projectBasicConfigServiceImpl.getAllProjectsBasicConfigsDTOWithoutPermission();
 		assertThat("response list size: ", list.size(), equalTo(2));
 	}
 
-	/**
-	 * Test getAllProjectsBasicConfigsDTOWithoutPermissionTest map method
-	 */
+	/** Test getAllProjectsBasicConfigsDTOWithoutPermissionTest map method */
 	@Test
 	public void getBasicConfigsDTOMapWithoutPermissionTest() {
 		Map<String, ProjectBasicConfig> mapOfProjectDetails = new HashMap<>();
@@ -739,11 +682,9 @@ public class ProjectBasicConfigServiceImplTest {
 		mapOfProjectDetails.put(diffbasicConfig.getId().toHexString(), diffbasicConfig);
 
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(mapOfProjectDetails);
-		Map<String, ProjectBasicConfigDTO> list = projectBasicConfigServiceImpl
-				.getBasicConfigsDTOMapWithoutPermission();
+		Map<String, ProjectBasicConfigDTO> list = projectBasicConfigServiceImpl.getBasicConfigsDTOMapWithoutPermission();
 		assertThat("response list size: ", list.size(), equalTo(2));
 	}
-
 
 	@Test
 	public void testFindLeaf() {
@@ -784,7 +725,7 @@ public class ProjectBasicConfigServiceImplTest {
 
 		// Call the findLeaf method
 		projectBasicConfigServiceImpl.findLeaf(root, leafNodes);
-		projectBasicConfigServiceImpl.findParents(Arrays.asList(child1,child2), parentNode);
+		projectBasicConfigServiceImpl.findParents(Arrays.asList(child1, child2), parentNode);
 		projectBasicConfigServiceImpl.findChildren(child1, childNodes);
 		ProjectBasicConfigNode node = projectBasicConfigServiceImpl.findNode(root, "root", "root");
 		ProjectBasicConfigNode childNode = projectBasicConfigServiceImpl.findNode(root, "child2", "child2");
@@ -797,7 +738,7 @@ public class ProjectBasicConfigServiceImplTest {
 	}
 
 	@Test
-	public void creatTree(){
+	public void creatTree() {
 		projectBasicConfigServiceImpl.getBasicConfigTree();
 	}
 
@@ -806,14 +747,13 @@ public class ProjectBasicConfigServiceImplTest {
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
 		SecurityContextHolder.setContext(securityContext);
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
-		when(projectAccessManager.getAccessRoleOfNearestParent(any(),any())).thenReturn(Constant.ROLE_SUPERADMIN);
+		when(projectAccessManager.getAccessRoleOfNearestParent(any(), any()))
+				.thenReturn(Constant.ROLE_SUPERADMIN);
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
-	/**
-	 * test add config
-	 */
+	/** test add config */
 	@Test
 	public void addConfigTest_projectNodeIdIsNull_success() {
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
@@ -828,7 +768,6 @@ public class ProjectBasicConfigServiceImplTest {
 		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
-
 
 	@Test
 	public void testFilterHierarchyDTOsWithConnectedTools() {
@@ -861,7 +800,8 @@ public class ProjectBasicConfigServiceImplTest {
 		List<HierarchyResponseDTO> hierarchyResponseDTOS = Arrays.asList(dto1, dto2);
 
 		// Call the method
-		List<HierarchyResponseDTO> result = projectBasicConfigServiceImpl.filterHierarchyDTOsWithConnectedTools(hierarchyResponseDTOS);
+		List<HierarchyResponseDTO> result = projectBasicConfigServiceImpl
+				.filterHierarchyDTOsWithConnectedTools(hierarchyResponseDTOS);
 
 		// Assert the result
 		assertEquals(2, result.size());

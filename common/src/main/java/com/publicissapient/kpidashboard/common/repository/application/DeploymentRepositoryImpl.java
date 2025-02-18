@@ -65,7 +65,6 @@ public class DeploymentRepositoryImpl implements DeploymentRepositoryCustom {
 	}
 
 	/**
-	 *
 	 * @param mapOfFilters
 	 * @param criteria
 	 * @return
@@ -79,5 +78,4 @@ public class DeploymentRepositoryImpl implements DeploymentRepositoryCustom {
 		}
 		return theCriteria;
 	}
-
 }

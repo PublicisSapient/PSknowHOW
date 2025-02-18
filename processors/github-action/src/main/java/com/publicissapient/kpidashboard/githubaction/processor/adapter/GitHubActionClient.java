@@ -34,5 +34,4 @@ public interface GitHubActionClient {
 
 	Map<Deployment, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection gitHubServer,
 			ProjectBasicConfig proBasicConfig) throws FetchingBuildException;
-
 }

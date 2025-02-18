@@ -48,7 +48,6 @@ public class RemoveMandatoryUpgrade {
 	@Execution
 	public void execution() {
 		updateMandatoryFields(false);
-
 	}
 
 	@RollbackExecution
@@ -57,12 +56,10 @@ public class RemoveMandatoryUpgrade {
 	}
 
 	private void updateMandatoryFields(boolean isMandatory) {
-		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate
-				.getCollection(FIELD_MAPPING_STRUCTURE);
+		final MongoCollection<Document> fieldMappingStructCollection = mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE);
 		Document updateDocument = new Document("$set", new Document("mandatory", isMandatory));
 		for (String fieldName : FIELD_NAME_LIST) {
 			fieldMappingStructCollection.updateOne(new Document(FIELD_NAME, fieldName), updateDocument);
 		}
 	}
-
 }

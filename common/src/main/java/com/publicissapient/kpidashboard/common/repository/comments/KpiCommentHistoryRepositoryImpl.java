@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.comments;//NOPMD
+package com.publicissapient.kpidashboard.common.repository.comments; // NOPMD
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -39,5 +39,4 @@ public class KpiCommentHistoryRepositoryImpl implements KpiCommentHistoryReposit
 		Update update = new Update().set("commentsInfo.$.isDeleted", true);
 		mongoTemplate.updateMulti(query, update, KpiCommentsHistory.class);
 	}
-
 }

@@ -90,8 +90,11 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 	@Test
 	public void createAccountHierarchy() {
 		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
-		Assert.assertEquals(1, createKanbanAccountHierarchy
-				.createKanbanAccountHierarchy(kanbanJiraIssues.get(0), createProjectConfig()).size());
+		Assert.assertEquals(
+				1,
+				createKanbanAccountHierarchy
+						.createKanbanAccountHierarchy(kanbanJiraIssues.get(0), createProjectConfig())
+						.size());
 	}
 
 	private List<HierarchyLevel> getMockHierarchyLevel() {
@@ -109,8 +112,8 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 	private List<KanbanAccountHierarchy> getMockAccountHierarchyByLabelNameAndBasicProjectConfigId() {
 		AccountHierarchiesKanbanDataFactory accountHierarchiesDataFactory = AccountHierarchiesKanbanDataFactory
 				.newInstance("/json/default/account_hierarchy_kanban.json");
-		return accountHierarchiesDataFactory.findByLabelNameAndBasicProjectConfigId(
-				CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, "6335368249794a18e8a4479f");
+		return accountHierarchiesDataFactory
+				.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, "6335368249794a18e8a4479f");
 	}
 
 	private List<KanbanJiraIssue> getMockKanbanJiraIssue() {
@@ -154,8 +157,7 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 	}
 
 	private Optional<Connection> getMockConnection() {
-		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-				.newInstance("/json/default/connections.json");
+		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory.newInstance("/json/default/connections.json");
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
@@ -164,5 +166,4 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 				.newInstance("/json/default/kanban_project_field_mappings.json");
 		return fieldMappingDataFactory.findByBasicProjectConfigId("6335368249794a18e8a4479f");
 	}
-
 }

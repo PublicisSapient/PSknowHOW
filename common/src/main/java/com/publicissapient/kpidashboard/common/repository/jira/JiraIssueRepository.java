@@ -29,20 +29,21 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
-/**
- * Repository for FeatureCollector.
- */
+/** Repository for FeatureCollector. */
 @Repository
 public interface JiraIssueRepository
-		extends CrudRepository<JiraIssue, ObjectId>, QuerydslPredicateExecutor<JiraIssue>, JiraIssueRepositoryCustom {
+		extends
+			CrudRepository<JiraIssue, ObjectId>,
+			QuerydslPredicateExecutor<JiraIssue>,
+			JiraIssueRepositoryCustom {
 	/**
 	 * This essentially returns the max change date from the collection, based on
 	 * the last change date (or default delta change date property) available
 	 *
 	 * @param processorId
-	 *            Processor ID of source system processor
+	 *          Processor ID of source system processor
 	 * @param changeDate
-	 *            Last available change date or delta begin date property
+	 *          Last available change date or delta begin date property
 	 * @return A single Change Date value that is the maximum value of the existing
 	 *         collection
 	 */
@@ -56,11 +57,11 @@ public interface JiraIssueRepository
 	 * available
 	 *
 	 * @param processorId
-	 *            Processor ID of source system processor
+	 *          Processor ID of source system processor
 	 * @param projectKey
-	 *            projectKey of the project
+	 *          projectKey of the project
 	 * @param changeDate
-	 *            Last available change date or delta begin date property
+	 *          Last available change date or delta begin date property
 	 * @return A single Change Date value that is the maximum value of the existing
 	 *         collection
 	 */
@@ -73,13 +74,13 @@ public interface JiraIssueRepository
 	 * This essentially returns the max change date from the collection, based on
 	 * the projectkey and last change date (or default delta change date property)
 	 * available
-	 * 
+	 *
 	 * @param processorId
-	 *            processor id
+	 *          processor id
 	 * @param basicProjectConfigId
-	 *            config project name
+	 *          config project name
 	 * @param changeDate
-	 *            change date
+	 *          change date
 	 * @return A single Change Date value that is the maximum value of the existing
 	 *         collection
 	 */
@@ -91,15 +92,15 @@ public interface JiraIssueRepository
 	 * This essentially returns the max change date from the collection, based on
 	 * the basicProjectConfigId(projectConfigId from projectConfig) and last change
 	 * date
-	 * 
+	 *
 	 * @param processorId
-	 *            processorId
+	 *          processorId
 	 * @param basicProjectConfigId
-	 *            projectCOnfigId of project config
+	 *          projectCOnfigId of project config
 	 * @param typeName
-	 *            issue type
+	 *          issue type
 	 * @param changeDate
-	 *            change date
+	 *          change date
 	 * @return JiraIssue object
 	 */
 	@Query
@@ -110,9 +111,9 @@ public interface JiraIssueRepository
 	 * Gets feature id by id.
 	 *
 	 * @param issueId
-	 *            the s id
+	 *          the s id
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return the feature id by id
 	 */
 	@Query(fields = "{'issueId' : 1}")
@@ -122,7 +123,7 @@ public interface JiraIssueRepository
 	 * Gets story by number.
 	 *
 	 * @param number
-	 *            the s number
+	 *          the s number
 	 * @return the story by number
 	 */
 	@Query(" {'number' : ?0 }")
@@ -132,28 +133,28 @@ public interface JiraIssueRepository
 
 	/**
 	 * Find one document for given basicProjectConfigId.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @return JiraIssue
 	 */
 	JiraIssue findTopByBasicProjectConfigId(String basicProjectConfigId);
 
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 
 	/*
 	 * Find documents for given numbers and basicProjectConfigId.
-	 * 
+	 *
 	 * @param numberIds List of numbers
-	 * 
+	 *
 	 * @param basicProjectConfigId basicProjectConfigId
-	 * 
+	 *
 	 * @return JiraIssue
 	 */
 	List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
@@ -186,17 +187,17 @@ public interface JiraIssueRepository
 	 */
 	List<JiraIssue> findByBasicProjectConfigIdAndOriginalTypeIn(String basicProjectConfigId, List<String> typeName);
 
-    List<JiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
+	List<JiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
 
 	/**
 	 * Find set of jira Issues of particular types
 	 *
 	 * @param numberIds
-	 *            numberIds
+	 *          numberIds
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 * @param typeName
-	 *            typeName
+	 *          typeName
 	 * @return set of jiraIssues
 	 */
 	@Query(value = "{ 'number' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'typeName' : ?2  }", fields = "{ 'number' : 1, 'basicProjectConfigId' : 1,'url':1, 'name':1, 'status':1, 'createdDate':1 }")
@@ -213,7 +214,7 @@ public interface JiraIssueRepository
 	 * Finds distinct sprint IDs by the given basic project configuration ID.
 	 *
 	 * @param basicProjectConfigId
-	 *            the basic project configuration ID
+	 *          the basic project configuration ID
 	 * @return a list of distinct sprint IDs
 	 */
 	@Query(value = "{ 'basicProjectConfigId': ?0 }", fields = "{ 'sprintID': 1 } , '_id':0}")
@@ -223,9 +224,9 @@ public interface JiraIssueRepository
 	 * Finds Jira issues by sprint IDs and basic project configuration ID.
 	 *
 	 * @param sprintIDs
-	 *            the sprint IDs
+	 *          the sprint IDs
 	 * @param basicProjectConfigId
-	 *            the basic project configuration ID
+	 *          the basic project configuration ID
 	 * @return a list of Jira issues
 	 */
 	@Query(value = "{ 'sprintID': { $in: ?0 }, 'basicProjectConfigId': ?1 }", fields = "{ 'sprintID': 1, 'number': 1, '_id': 0 }")

@@ -1,7 +1,6 @@
 package com.publicissapient.kpidashboard.common.constant;
 
 public enum NotificationEnum {
-
 	PROJECT_ACCESS("Project Access Request"), USER_APPROVAL("User Access Request");
 
 	private String value;
@@ -13,5 +12,4 @@ public enum NotificationEnum {
 	public String getValue() {
 		return value;
 	}
-
 }

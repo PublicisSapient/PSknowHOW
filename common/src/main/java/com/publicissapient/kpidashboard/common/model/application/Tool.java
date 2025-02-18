@@ -31,9 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents non jira tool.
- */
+/** Represents non jira tool. */
 @SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
@@ -51,5 +49,4 @@ public class Tool {
 	private String repoSlug;
 	private String repositoryName;
 	private List<ProcessorItem> processorItemList;
-
 }

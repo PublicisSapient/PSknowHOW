@@ -25,24 +25,22 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 
-/**
- * Repository for TestCaseDetails.
- */
-
+/** Repository for TestCaseDetails. */
 @Repository
 public interface TestCaseDetailsRepository
-		extends MongoRepository<TestCaseDetails, ObjectId>, TestCaseDetailsRepositoryCustom {
+		extends
+			MongoRepository<TestCaseDetails, ObjectId>,
+			TestCaseDetailsRepositoryCustom {
 
 	List<TestCaseDetails> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
 
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
-	 * 
+	 *
 	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 *          basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 
 	TestCaseDetails findTopByBasicProjectConfigId(String basicProjectConfigId);
-
 }

@@ -75,7 +75,6 @@ public class FetchEpicDataImpl implements FetchEpicData {
 					startIndex = epicList.size();
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				} while (!isLast);
-
 			}
 		} catch (RestClientException rce) {
 			log.error("Client exception when loading epic data", rce);
@@ -169,5 +168,4 @@ public class FetchEpicDataImpl implements FetchEpicData {
 		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
 		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 	}
-
 }

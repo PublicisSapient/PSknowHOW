@@ -22,12 +22,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
+import com.publicissapient.kpidashboard.common.model.rbac.UserAccessApprovalResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
@@ -45,7 +45,7 @@ public interface UserInfoService {
 	 * Gets authorities.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @return the authorities
 	 */
 	Collection<GrantedAuthority> getAuthorities(String username);
@@ -54,9 +54,9 @@ public interface UserInfoService {
 	 * Gets user info.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param authType
-	 *            the auth type
+	 *          the auth type
 	 * @return the user info
 	 */
 	UserInfo getUserInfo(String username, AuthType authType);
@@ -81,16 +81,16 @@ public interface UserInfoService {
 	 * Demote from admin user info.
 	 *
 	 * @param username
-	 *            the username
+	 *          the username
 	 * @param authType
-	 *            the auth type
+	 *          the auth type
 	 * @return the user info
 	 */
 	UserInfo demoteFromAdmin(String username, AuthType authType);
 
 	/**
 	 * update user info if already present
-	 * 
+	 *
 	 * @param userInfo
 	 * @return updated {@link UserInfo} object or null
 	 */
@@ -98,20 +98,20 @@ public interface UserInfoService {
 
 	/**
 	 * This method is updateAccessOfUserInfo() change the role of user
-	 * 
+	 *
 	 * @param username
 	 * @param userInfo
 	 * @return Updated user details
-	 **/
+	 */
 	ServiceResponse updateUserRole(String username, UserInfo userInfo);
 
 	/**
 	 * Return userinfo along with email in case of standardlogin
-	 * 
+	 *
 	 * @param username
-	 *            username
+	 *          username
 	 * @param authType
-	 *            authtype enum
+	 *          authtype enum
 	 * @return userinfo
 	 */
 	public UserInfo getUserInfoWithEmail(String username, AuthType authType);
@@ -124,7 +124,7 @@ public interface UserInfoService {
 	 * This method is for deleting the users
 	 *
 	 * @param username
-	 *            username
+	 *          username
 	 */
 	ServiceResponse deleteUser(String username, boolean centralAuthService);
 
@@ -132,7 +132,7 @@ public interface UserInfoService {
 
 	/**
 	 * get user details for profile screen and response will be same as login api
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 */
@@ -140,7 +140,7 @@ public interface UserInfoService {
 
 	/**
 	 * This method return user info dto object comparing username,authtype and email
-	 * 
+	 *
 	 * @param username
 	 * @param authType
 	 * @param email
@@ -151,7 +151,7 @@ public interface UserInfoService {
 	/**
 	 * This method return user info object by comparing username, auth type and
 	 * authorities
-	 * 
+	 *
 	 * @param userName
 	 * @param authType
 	 * @param authorities
@@ -174,7 +174,7 @@ public interface UserInfoService {
 
 	/**
 	 * update notification email alert flag user wise
-	 * 
+	 *
 	 * @param loggedUserName
 	 * @param notificationEmail
 	 * @return
@@ -182,8 +182,8 @@ public interface UserInfoService {
 	UserInfo updateNotificationEmail(String loggedUserName, Map<String, Boolean> notificationEmail);
 
 	/**
-	 * all unapproved users from central auth and also flag which is not whitelist domain as per properties
+	 * all unapproved users from central auth and also flag which is not whitelist
+	 * domain as per properties
 	 */
 	List<UserAccessApprovalResponseDTO> findAllUnapprovedUsers();
-
 }

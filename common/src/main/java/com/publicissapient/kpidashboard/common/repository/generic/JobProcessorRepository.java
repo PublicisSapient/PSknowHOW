@@ -29,18 +29,18 @@ import com.publicissapient.kpidashboard.common.model.generic.JobProcessorItem;
  * The interface Job repository.
  *
  * @param <T>
- *            the type parameter
+ *          the type parameter
  */
 public interface JobProcessorRepository<T extends JobProcessorItem> extends ProcessorItemRepository<T> {
 	/**
 	 * Find job t.
 	 *
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @param instanceUrl
-	 *            the instance url
+	 *          the instance url
 	 * @param jobName
-	 *            the job name
+	 *          the job name
 	 * @return the t
 	 */
 	@Query("{ 'processorId' : ?0, 'toolDetailsMap.instanceUrl' : ?1, 'toolDetailsMap.jobName' : ?2}")
@@ -50,11 +50,11 @@ public interface JobProcessorRepository<T extends JobProcessorItem> extends Proc
 	 * Find job t.
 	 *
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @param instanceUrl
-	 *            the instance url
+	 *          the instance url
 	 * @param jobName
-	 *            the job name
+	 *          the job name
 	 * @return the t
 	 */
 	@Query("{ 'processorId' : ?0, 'toolDetailsMap.instanceUrl' : ?1, 'toolDetailsMap.jobName' : ?2, 'toolConfigId' : ?3}")
@@ -64,9 +64,9 @@ public interface JobProcessorRepository<T extends JobProcessorItem> extends Proc
 	 * Find enabled jobs list.
 	 *
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @param instanceUrl
-	 *            the instance url
+	 *          the instance url
 	 * @return the list
 	 */
 	@Query("{ 'processorId' : ?0, 'toolDetailsMap.instanceUrl' : ?1, 'isActive': true}")
@@ -76,7 +76,7 @@ public interface JobProcessorRepository<T extends JobProcessorItem> extends Proc
 	 * Find by processor id list.
 	 *
 	 * @param processorId
-	 *            the processor id
+	 *          the processor id
 	 * @return the list
 	 */
 	@Override

@@ -34,7 +34,7 @@ import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * provide rollback scripts
- * 
+ *
  * @author shi6
  */
 @SuppressWarnings("java:S1192")
@@ -59,13 +59,12 @@ public class LeadTimeLine {
 
 		// Define the update using the Updates class
 		Document update = new Document("$set", new Document().append("thresholdValue", "20").append("kpiUnit", "Days")
-				.append("chartType", "")
-				.append( "kpiFilter", "multiSelectDropDown")
+				.append("chartType", "").append("kpiFilter", "multiSelectDropDown")
 				.append("kpiInfo.definition",
 						"Measures Total time between a request was made and  all work on this item is completed and the request was delivered .")
 				.append("kpiInfo.formula",
-						Arrays.asList(new Document("lhs",
-								"It is calculated as the sum Ideation time, Development time & Release time")))
+						Arrays.asList(
+								new Document("lhs", "It is calculated as the sum Ideation time, Development time & Release time")))
 				.append("kpiInfo.details", Arrays.asList()).append("yAxisLabel", "").append("xAxisLabel", "")
 				.append("kpiWidth", 100).append("showTrend", false).append("aggregationCriteria", null)
 				.append("lowerThresholdBG", null).append("upperThresholdBG", null).append("boxType", "2_column")
@@ -92,7 +91,6 @@ public class LeadTimeLine {
 		kpiMaster.updateOne(filter, pushObjects);
 		fieldMappingStructure.deleteOne(new Document("fieldName", "thresholdValueKPI3"));
 		return true;
-
 	}
 
 	@RollbackExecution
@@ -104,5 +102,4 @@ public class LeadTimeLine {
 	public void rollbackBeforeExecution() {
 		// do not require the implementation
 	}
-
 }

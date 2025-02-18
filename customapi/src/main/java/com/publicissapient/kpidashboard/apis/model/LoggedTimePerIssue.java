@@ -19,7 +19,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This class is used to store logged work of each issue based on projectConfigId, sprintId , storyId.
+ * This class is used to store logged work of each issue based on
+ * projectConfigId, sprintId , storyId.
  *
  * @author purgupta2
  */
@@ -27,9 +28,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class LoggedTimePerIssue {
-    private String projectConfigId;
-    private String sprintId;
-    private String storyId;
-    private Double loggedTimeInHours;
+	private String projectConfigId;
+	private String sprintId;
+	private String storyId;
+	private Double loggedTimeInHours;
 }
-

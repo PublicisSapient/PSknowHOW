@@ -21,9 +21,9 @@ public class AdditionalFilterConfig {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		AdditionalFilterConfig that = (AdditionalFilterConfig) o;
-		return filterId.equalsIgnoreCase(that.filterId) && identifyFrom.equalsIgnoreCase(that.identifyFrom)
-				&& identificationField.equalsIgnoreCase(that.identificationField)
-				&& CollectionUtils.isEqualCollection(that.values, values);
+		return filterId.equalsIgnoreCase(that.filterId) && identifyFrom.equalsIgnoreCase(that.identifyFrom) &&
+				identificationField.equalsIgnoreCase(that.identificationField) &&
+				CollectionUtils.isEqualCollection(that.values, values);
 	}
 
 	@Override

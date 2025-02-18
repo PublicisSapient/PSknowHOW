@@ -18,18 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
-import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.util.TestUtil;
-import com.publicissapient.kpidashboard.common.model.rbac.Permissions;
-import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -43,17 +39,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.service.UserNameRequest;
+import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.util.TestUtil;
+import com.publicissapient.kpidashboard.common.model.rbac.Permissions;
+import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 /**
  * @author narsingh9
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UserInfoControlllerTest {
@@ -89,9 +89,7 @@ public class UserInfoControlllerTest {
 	@Mock
 	AuthProperties authProperties;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void before() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(this.userInfoController).build();
@@ -122,9 +120,7 @@ public class UserInfoControlllerTest {
 		authorities.add("ROLE_GUEST");
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void after() {
 		this.mockMvc = null;
@@ -133,11 +129,11 @@ public class UserInfoControlllerTest {
 	/**
 	 * method to test /userinfo restPoint ;
 	 *
+	 * <p>
 	 * Get all userinfo
 	 *
 	 * @throws Exception
 	 */
-
 	@Test
 	public void testGetAllUserInfo() throws Exception {
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/userinfo").contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -147,21 +143,23 @@ public class UserInfoControlllerTest {
 	/**
 	 * method to test /updateAccessOfUserInfo restPoint ;
 	 *
+	 * <p>
 	 * update the user role
 	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testupdateUserRole() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/userinfo/updateUserRole")
-				.content(TestUtil.convertObjectToJsonBytes(testRoleData)).contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc
+				.perform(MockMvcRequestBuilders.post("/userinfo/updateUserRole")
+						.content(TestUtil.convertObjectToJsonBytes(testRoleData)).contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
 	/**
 	 * method to test /userinfo restPoint ;
-	 * <p>
-	 * Delete User
+	 *
+	 * <p>Delete User
 	 *
 	 * @throws Exception
 	 */
@@ -170,16 +168,18 @@ public class UserInfoControlllerTest {
 		when(userNameRequest.getUsername()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
-		doReturn(new ServiceResponse(true, "Deleted Successfully", "Ok")).when(userInfoService).deleteUser("testuser", false);
+		doReturn(new ServiceResponse(true, "Deleted Successfully", "Ok"))
+				.when(userInfoService)
+				.deleteUser("testuser", false);
 		ServiceResponse response = userInfoController.deleteUser(userNameRequest).getBody();
 		assert response != null;
 		assertEquals(true, response.getSuccess());
 	}
+
 	/**
 	 * method to test /userinfo restPoint ;
-	 * <p>
-	 * Delete User SuperAdmin
 	 *
+	 * <p>Delete User SuperAdmin
 	 */
 	@Test
 	public void testdeleteSuperAdminUser() {
@@ -191,12 +191,10 @@ public class UserInfoControlllerTest {
 		assertEquals(false, response.getSuccess());
 	}
 
-
 	/**
 	 * method to test /userinfo restPoint ;
-	 * <p>
-	 * Delete User SuperAdmin
 	 *
+	 * <p>Delete User SuperAdmin
 	 */
 	@Test
 	public void testDelete_UserFromCentral() {
@@ -210,20 +208,18 @@ public class UserInfoControlllerTest {
 
 	/**
 	 * method to test /userinfo restPoint ;
-	 * <p>
-	 * Delete User SuperAdmin
 	 *
+	 * <p>Delete User SuperAdmin
 	 */
 	@Test
 	public void testDelete_UserFromCentralForSuperAdmin() {
 		when(userNameRequest.getUsername()).thenReturn("testuser");
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
 		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
-		when(userInfoService.deleteUser("testuser" , true) )
+		when(userInfoService.deleteUser("testuser", true))
 				.thenReturn(new ServiceResponse(true, "Deleted Successfully", "Ok"));
 		ServiceResponse response = userInfoController.deleteUserFromCentral(userNameRequest).getBody();
 		assert response != null;
 		assertEquals(true, response.getSuccess());
 	}
-
 }

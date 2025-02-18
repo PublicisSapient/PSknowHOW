@@ -55,8 +55,7 @@ public class AzureToolConfigServiceImpl {
 	@Autowired
 	private ConnectionService connectionService;
 
-	public List<AzurePipelinesResponseDTO> getAzurePipelineNameAndDefinitionIdList(String connectionId,
-			String version) {
+	public List<AzurePipelinesResponseDTO> getAzurePipelineNameAndDefinitionIdList(String connectionId, String version) {
 
 		List<AzurePipelinesResponseDTO> responseList = new ArrayList<>();
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
@@ -67,14 +66,12 @@ public class AzureToolConfigServiceImpl {
 			String password = connection.getPat() == null ? null : restAPIUtils.decryptPassword(connection.getPat());
 
 			StringBuilder urlBuilder = new StringBuilder();
-			String finalUrl = String.format(urlBuilder.append(baseUrl).append(DEFINITIONS_URL_SUFFIX).toString(),
-					version);
+			String finalUrl = String.format(urlBuilder.append(baseUrl).append(DEFINITIONS_URL_SUFFIX).toString(), version);
 
 			try {
 				connectionService.validateConnectionFlag(connection);
 				HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
-				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
-						String.class);
+				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity, String.class);
 
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONArray jsonArray = restAPIUtils.convertJSONArrayFromResponse(response.getBody(), VALUE);
@@ -88,8 +85,7 @@ public class AzureToolConfigServiceImpl {
 					}
 				} else {
 					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching ProjectsAndPlanKeyList from {}. with status {}", finalUrl,
-							statusCode);
+					log.error("Error while fetching ProjectsAndPlanKeyList from {}. with status {}", finalUrl, statusCode);
 				}
 
 			} catch (Exception exception) {
@@ -102,19 +98,18 @@ public class AzureToolConfigServiceImpl {
 
 	/**
 	 * this method check for the client exception
-	 * 
+	 *
 	 * @param connection
-	 *            connection
+	 *          connection
 	 * @param exception
-	 *            exception
+	 *          exception
 	 */
 	private void isClientException(Connection connection, Exception exception) {
-		if (exception instanceof HttpClientErrorException
-				&& ((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
-			String errMsg = ClientErrorMessageEnum
-					.fromValue(((HttpClientErrorException) exception).getStatusCode().value()).getReasonPhrase();
+		if (exception instanceof HttpClientErrorException &&
+				((HttpClientErrorException) exception).getStatusCode().is4xxClientError()) {
+			String errMsg = ClientErrorMessageEnum.fromValue(((HttpClientErrorException) exception).getStatusCode().value())
+					.getReasonPhrase();
 			connectionService.updateBreakingConnection(connection, errMsg);
-
 		}
 	}
 
@@ -143,8 +138,7 @@ public class AzureToolConfigServiceImpl {
 
 			try {
 				HttpEntity<?> httpEntity = new HttpEntity<>(restAPIUtils.getHeaders(username, password));
-				ResponseEntity<String> response = restTemplate.exchange(resultUrl, HttpMethod.GET, httpEntity,
-						String.class);
+				ResponseEntity<String> response = restTemplate.exchange(resultUrl, HttpMethod.GET, httpEntity, String.class);
 
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONArray jsonArray = restAPIUtils.convertJSONArrayFromResponse(response.getBody(), VALUE);
@@ -158,13 +152,11 @@ public class AzureToolConfigServiceImpl {
 					}
 				} else {
 					String resultCode = response.getStatusCode().toString();
-					log.error("Error while fetching ReleasesAndDefinitionIdList from {}. with status {}", resultUrl,
-							resultCode);
+					log.error("Error while fetching ReleasesAndDefinitionIdList from {}. with status {}", resultUrl, resultCode);
 				}
 
 			} catch (Exception exception) {
-				log.error("Error while fetching ReleasesAndDefinitionIdList from {}:  {}", resultUrl,
-						exception.getMessage());
+				log.error("Error while fetching ReleasesAndDefinitionIdList from {}:  {}", resultUrl, exception.getMessage());
 			}
 		} else {
 			log.error("Connection Base Url cannot be null");
@@ -195,8 +187,7 @@ public class AzureToolConfigServiceImpl {
 			try {
 				connectionService.validateConnectionFlag(optConnection.get());
 				HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity,
-						String.class);
+				ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.GET, httpEntity, String.class);
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONArray jsonArray = restAPIUtils.convertJSONArrayFromResponse(response.getBody(), VALUE);
 					for (Object job : jsonArray) {

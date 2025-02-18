@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author anisingh4
  */
-
 @Slf4j
 public class TestExecutionDataFactory {
 	private static final String FILE_PATH_TEST_CASE_DETAILS = "/json/default/test_execution.json";

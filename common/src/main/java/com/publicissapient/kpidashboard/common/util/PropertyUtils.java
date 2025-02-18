@@ -31,9 +31,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Utils class.
- */
+/** Utils class. */
 @Component
 @Slf4j
 public class PropertyUtils {
@@ -42,9 +40,9 @@ public class PropertyUtils {
 	 * Trim props.
 	 *
 	 * @param fields
-	 *            the fields
+	 *          the fields
 	 * @param propertyInstance
-	 *            the property instance
+	 *          the property instance
 	 */
 	public void trimProps(Field[] fields, Object propertyInstance) {
 		log.info("trimProps started for : {}", propertyInstance.getClass());
@@ -74,11 +72,11 @@ public class PropertyUtils {
 	 * Trim map props.
 	 *
 	 * @param propertyInstance
-	 *            the property instance
+	 *          the property instance
 	 * @param field
-	 *            the field
+	 *          the field
 	 * @throws IllegalAccessException
-	 *             the illegal access exception
+	 *           the illegal access exception
 	 */
 	private void trimMapProps(Object propertyInstance, Field field) throws IllegalAccessException {
 		Map<Object, Object> orgMap = (Map<Object, Object>) field.get(propertyInstance);
@@ -99,11 +97,11 @@ public class PropertyUtils {
 	 * Trim list props.
 	 *
 	 * @param propertyInstance
-	 *            the property instance
+	 *          the property instance
 	 * @param field
-	 *            the field
+	 *          the field
 	 * @throws IllegalAccessException
-	 *             the illegal access exception
+	 *           the illegal access exception
 	 */
 	private void trimListProps(Object propertyInstance, Field field) throws IllegalAccessException {
 		List<Object> orgList = (List<Object>) field.get(propertyInstance);
@@ -125,7 +123,7 @@ public class PropertyUtils {
 	 * Checks if is map.
 	 *
 	 * @param field
-	 *            the field
+	 *          the field
 	 * @return true, if is map
 	 */
 	private boolean isMap(Field field) {
@@ -136,7 +134,7 @@ public class PropertyUtils {
 	 * Checks if is list.
 	 *
 	 * @param field
-	 *            the field
+	 *          the field
 	 * @return true, if is list
 	 */
 	private boolean isList(Field field) {
@@ -147,7 +145,7 @@ public class PropertyUtils {
 	 * Checks if is string type.
 	 *
 	 * @param field
-	 *            the field
+	 *          the field
 	 * @return true, if is string type
 	 */
 	private boolean isStringType(Field field) {
@@ -159,7 +157,7 @@ public class PropertyUtils {
 	 * Trim collection.
 	 *
 	 * @param obj
-	 *            the obj
+	 *          the obj
 	 * @return the collection
 	 */
 	private Collection<String> trimCollection(Object obj) {
@@ -174,7 +172,7 @@ public class PropertyUtils {
 	 * Trim string.
 	 *
 	 * @param obj
-	 *            the obj
+	 *          the obj
 	 * @return the string
 	 */
 	private String trimString(Object obj) {

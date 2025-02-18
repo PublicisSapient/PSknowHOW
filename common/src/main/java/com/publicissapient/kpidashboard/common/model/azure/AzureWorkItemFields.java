@@ -30,34 +30,49 @@ import lombok.Data;
 public class AzureWorkItemFields {
 	@JsonProperty("System.AreaPath")
 	private String areaPath;
+
 	@JsonProperty("System.TeamProject")
 	private String teamProject;
+
 	@JsonProperty("System.IterationPath")
 	private String iterationPath;
+
 	@JsonProperty("System.WorkItemType")
 	private String workItemType;
+
 	@JsonProperty("System.State")
 	private String workItemState;
+
 	@JsonProperty("System.AssignedTo")
 	private JSONObject assignedTo;
+
 	@JsonProperty("System.CreatedBy")
 	private JSONObject createdBy;
+
 	@JsonProperty("System.CreatedDate")
 	private Date createdDate;
+
 	@JsonProperty("System.ChangedBy")
 	private JSONObject changedBy;
+
 	@JsonProperty("System.ChangedDate")
 	private Date changedDate;
+
 	@JsonProperty("System.Title")
 	private String title;
+
 	@JsonProperty("System.Description")
 	private String description;
+
 	@JsonProperty("System.Reason")
 	private String reason;
+
 	@JsonProperty("Microsoft.VSTS.Common.Priority")
 	private Long priority;
+
 	@JsonProperty("System.CommentCount")
 	private Long commentCount;
+
 	@JsonProperty("Microsoft.VSTS.Common.StateChangeDate")
 	private Date StateChangeDate;
 }

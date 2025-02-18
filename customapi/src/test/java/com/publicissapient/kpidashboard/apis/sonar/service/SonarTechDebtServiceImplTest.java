@@ -16,9 +16,7 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
+/** */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,9 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.common.service.CommonService;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -50,12 +45,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SonarHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -71,7 +69,6 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 
 /**
  * @author prigupta8
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SonarTechDebtServiceImplTest {
@@ -146,7 +143,6 @@ public class SonarTechDebtServiceImplTest {
 		});
 		Mockito.when(cacheService.cacheProjectConfigMapData()).thenReturn(projectConfigMap);
 
-
 		List<DataCount> dataCountList = new ArrayList<>();
 		dataCountList.add(createDataCount("2022-07-26", 0l));
 		dataCountList.add(createDataCount("2022-07-27", 35l));
@@ -217,12 +213,10 @@ public class SonarTechDebtServiceImplTest {
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);
 		fieldMappingList.add(projectThree);
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -251,7 +245,7 @@ public class SonarTechDebtServiceImplTest {
 
 	/**
 	 * agg criteria sum
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -277,12 +271,11 @@ public class SonarTechDebtServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	/**
 	 * agg criteria median
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -306,12 +299,11 @@ public class SonarTechDebtServiceImplTest {
 		} catch (Exception exception) {
 
 		}
-
 	}
 
 	/**
 	 * agg criteria percentile
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -336,7 +328,6 @@ public class SonarTechDebtServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -361,7 +352,6 @@ public class SonarTechDebtServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -386,7 +376,6 @@ public class SonarTechDebtServiceImplTest {
 		} catch (Exception exception) {
 
 		}
-
 	}
 
 	@Test
@@ -412,7 +401,6 @@ public class SonarTechDebtServiceImplTest {
 		} catch (Exception enfe) {
 
 		}
-
 	}
 
 	@Test
@@ -436,7 +424,7 @@ public class SonarTechDebtServiceImplTest {
 	}
 
 	@Test
-	public void testThresold(){
+	public void testThresold() {
 		assertEquals(Double.valueOf(0), stdServiceImpl.calculateThresholdValue(new FieldMapping()));
 	}
 
@@ -449,6 +437,4 @@ public class SonarTechDebtServiceImplTest {
 		dataCount.setValue(Long.valueOf(data));
 		return dataCount;
 	}
-
-
 }

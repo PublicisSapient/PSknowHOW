@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 CapitalOne, LLC. 
+ * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,8 +74,8 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail)
+			throws ApplicationException {
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -83,7 +83,6 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
-
 		});
 
 		log.debug("[TEST-EXECUTION-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -125,7 +124,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 		});
-		/** additional filter **/
+		/** additional filter * */
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, QA, flterHelperService);
 
 		mapOfFilters.put(SPRINT_ID, sprintList.stream().distinct().collect(Collectors.toList()));
@@ -140,25 +139,25 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 
 	/**
 	 * Calculate KPI value for selected sprint nodes.
-	 * 
+	 *
 	 * @param mapTmp
-	 *            key-value pair of node id aand node object
+	 *          key-value pair of node id aand node object
 	 * @param sprintLeafNodeList
-	 *            list of sprint leaf nodes
+	 *          list of sprint leaf nodes
 	 * @param trendValueList
-	 *            list containing data to show on KPI
+	 *          list containing data to show on KPI
 	 * @param kpiElement
-	 *            kpiElement
+	 *          kpiElement
 	 * @param kpiRequest
-	 *            KpiRequest
+	 *          KpiRequest
 	 */
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		log.info("[TEST-EXECUTION-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}");
-		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
-				.compareTo(o2.getSprintFilter().getStartDate()));
+		Collections.sort(sprintLeafNodeList,
+				(Node o1, Node o2) -> o1.getSprintFilter().getStartDate().compareTo(o2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
@@ -190,12 +189,11 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.TEST_EXECUTION_AND_PASS_PERCENTAGE.getColumns());
-
 	}
 
 	/**
 	 * * Gets the KPI value for sprint node.
-	 * 
+	 *
 	 * @param executionDetail
 	 * @param trendValueList
 	 * @param trendLineName
@@ -226,14 +224,13 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 			KPIExcelUtility.populateTestExcecutionExcelData(node.getSprintFilter().getName(), executionDetail, null,
 					executionPerc, passedPerc, excelData);
 		}
-
 	}
 
 	/**
 	 * return map of data
-	 * 
+	 *
 	 * @param detail
-	 *            detail
+	 *          detail
 	 * @return
 	 */
 	private Map<String, Object> getHoverValue(TestExecution detail) {
@@ -253,8 +250,8 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 	 */
 	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
 		return resultList.stream()
-				.filter(testExecution -> testExecution.getExecutedTestCase() != null
-						&& testExecution.getTotalTestCases() != null && testExecution.getPassedTestCase() != null)
+				.filter(testExecution -> testExecution.getExecutedTestCase() != null &&
+						testExecution.getTotalTestCases() != null && testExecution.getPassedTestCase() != null)
 				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 
@@ -268,5 +265,4 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI70(),
 				KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE.getKpiId());
 	}
-
 }

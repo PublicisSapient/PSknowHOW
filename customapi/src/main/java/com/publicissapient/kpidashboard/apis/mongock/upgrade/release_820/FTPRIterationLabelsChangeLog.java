@@ -63,5 +63,4 @@ public class FTPRIterationLabelsChangeLog {
 	public void rollbackFieldMappingStructure() {
 		// provide rollback script
 	}
-
 }

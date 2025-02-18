@@ -149,7 +149,8 @@ public class IssueSprintReaderTest {
 
 	@Test
 	public void testReadData() throws Exception {
-		when(fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, null, 0, null)).thenReturn(issues);
+		when(fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, null, 0, null))
+				.thenReturn(issues);
 		// Arrange
 		ReadData mockReadData = IssueReaderUtil.getMockReadData(boardId, projectConfFieldMapping);
 
@@ -159,5 +160,4 @@ public class IssueSprintReaderTest {
 		// Assert
 		assertEquals(mockReadData.getIssue(), result.getIssue());
 	}
-
 }

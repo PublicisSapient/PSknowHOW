@@ -39,14 +39,13 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * @author pankumar8
- *
  */
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 // @SpringBootApplication - uncomment this line and remove above line when
 // spring job repository implemented for mongodb
 @EnableCaching
-@ComponentScan(basePackages = { "com.publicissapient" })
-@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
+@ComponentScan(basePackages = {"com.publicissapient"})
+@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
 @EnableBatchProcessing
 @EnableAsync
 @EnableScheduling
@@ -63,8 +62,7 @@ public class JiraProcessorApplication {
 	public DataSource dataSource() {
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
 				.addScript("classpath:org/springframework/batch/core/schema-drop-h2.sql")
-				.addScript("classpath:org/springframework/batch/core/schema-h2.sql")
-				.build();
+				.addScript("classpath:org/springframework/batch/core/schema-h2.sql").build();
 	}
 
 	@Bean
@@ -72,5 +70,4 @@ public class JiraProcessorApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

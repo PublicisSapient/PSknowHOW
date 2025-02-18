@@ -40,11 +40,8 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 /**
  * @author dilip
- * 
  * @author jagmongr
- *
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionControllerTest {
 	private MockMvc mockMvc;
@@ -56,21 +53,16 @@ public class ConnectionControllerTest {
 	@Mock
 	private ConnectionService connectionService;
 
-	/**
-	 * method includes preprocesses for test cases
-	 */
+	/** method includes preprocesses for test cases */
 	@Before
 	public void setUp() {
 		mockMvc = MockMvcBuilders.standaloneSetup(connectionController).build();
 
 		testconnection = new Connection();
 		testconnection.setId(new ObjectId("5da46000e645ca33dc927b4a"));
-
 	}
 
-	/**
-	 * method includes post processes for test cases
-	 */
+	/** method includes post processes for test cases */
 	@After
 	public void cleanUp() {
 		mockMvc = null;
@@ -79,16 +71,16 @@ public class ConnectionControllerTest {
 	/**
 	 * method to testgetAllConnection()/connection restPoint ;
 	 *
+	 * <p>
 	 * Get all connection
 	 *
 	 * @throws Exception
-	 *             exception
+	 *           exception
 	 */
-
 	@Test
 	public void testgetAllConnection() throws Exception {
-		this.mockMvc.perform(
-				MockMvcRequestBuilders.get("/connections?type=GitLab").contentType(MediaType.APPLICATION_JSON_VALUE))
+		this.mockMvc
+				.perform(MockMvcRequestBuilders.get("/connections?type=GitLab").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
@@ -96,26 +88,26 @@ public class ConnectionControllerTest {
 	 * method to Modify single connection
 	 *
 	 * @throws Exception
-	 *             exception
+	 *           exception
 	 */
 	@Test
 	public void testModifyConnectionById() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.put("/connections/5da46000e645ca33dc927b4a")
-				.content(TestUtil.convertObjectToJsonBytes(testconnection))
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+		mockMvc
+				.perform(MockMvcRequestBuilders.put("/connections/5da46000e645ca33dc927b4a")
+						.content(TestUtil.convertObjectToJsonBytes(testconnection)).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
 	}
 
 	/**
 	 * method to test save restPoint ; Create new connection
 	 *
 	 * @throws Exception
-	 *             exception
+	 *           exception
 	 */
 	@Test
 	public void testSaveConnectionDetails() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.post("/connections").content(TestUtil.convertObjectToJsonBytes(testconnection))
-						.contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc.perform(MockMvcRequestBuilders.post("/connections")
+				.content(TestUtil.convertObjectToJsonBytes(testconnection)).contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
@@ -123,13 +115,13 @@ public class ConnectionControllerTest {
 	 * method to delete single connection
 	 *
 	 * @throws Exception
-	 *             exception
+	 *           exception
 	 */
 	@Test
 	public void testDeleteConnectionById() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/connections/5da46000e645ca33dc927b4a")
-				.content(TestUtil.convertObjectToJsonBytes(testconnection))
-				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+		mockMvc
+				.perform(MockMvcRequestBuilders.delete("/connections/5da46000e645ca33dc927b4a")
+						.content(TestUtil.convertObjectToJsonBytes(testconnection)).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
 	}
-
 }

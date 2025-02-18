@@ -100,11 +100,10 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-										   KerberosClient krb5Client, boolean isSprintFetch, ObjectId jiraProcessorId) throws IOException {
+			KerberosClient krb5Client, boolean isSprintFetch, ObjectId jiraProcessorId) throws IOException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
-			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
-					.collect(Collectors.toList());
+			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID).collect(Collectors.toList());
 			List<SprintDetails> dbSprints = sprintRepository.findBySprintIDIn(sprintIds);
 			Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
 					.collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
@@ -123,8 +122,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
 					} // case 2 : sprint state is active or changed which is present in db
-					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
-							|| !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
+					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE) ||
+							!sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
 					} // fetching for only Iteration data don't change the state of sprint
@@ -149,8 +148,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 						Thread.currentThread().interrupt();
 						throw new RuntimeException(e);
 					}
-					getSprintReport(sprint, projectConfig, boardId, dbSprintDetailMap.get(sprint.getSprintID()),
-							krb5Client);
+					getSprintReport(sprint, projectConfig, boardId, dbSprintDetailMap.get(sprint.getSprintID()), krb5Client);
 					sprintToSave.add(sprint);
 				}
 			}
@@ -161,8 +159,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	private void getSprintReport(SprintDetails sprint, ProjectConfFieldMapping projectConfig, String boardId,
 			SprintDetails dbSprintDetails, KerberosClient krb5Client) throws IOException {
-		if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null
-				&& sprint.getOriginBoardId().stream().anyMatch(id -> id != null && !id.isEmpty())) {
+		if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null &&
+				sprint.getOriginBoardId().stream().anyMatch(id -> id != null && !id.isEmpty())) {
 			// If there's at least one non-null and non-empty string in the list, the
 			// condition is true.
 			getSprintReport(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails, krb5Client);
@@ -200,23 +198,20 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 			boolean otherBoardExist = findIfOtherBoardExist(sprint);
 			Set<SprintIssue> completedIssues = initializeIssues(
-					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getCompletedIssues(), boardId,
-					otherBoardExist);
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getCompletedIssues(), boardId, otherBoardExist);
 			Set<SprintIssue> notCompletedIssues = initializeIssues(
 					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getNotCompletedIssues(), boardId,
 					otherBoardExist);
 			Set<SprintIssue> puntedIssues = initializeIssues(
-					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getPuntedIssues(), boardId,
-					otherBoardExist);
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getPuntedIssues(), boardId, otherBoardExist);
 			Set<SprintIssue> completedIssuesAnotherSprint = initializeIssues(
-					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getCompletedIssuesAnotherSprint(),
-					boardId, otherBoardExist);
-			Set<SprintIssue> totalIssues = initializeIssues(
-					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getTotalIssues(), boardId,
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getCompletedIssuesAnotherSprint(), boardId,
 					otherBoardExist);
+			Set<SprintIssue> totalIssues = initializeIssues(
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getTotalIssues(), boardId, otherBoardExist);
 			Set<String> addedIssues = initializeAddedIssues(
-					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getAddedIssues(), totalIssues,
-					puntedIssues, otherBoardExist);
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getAddedIssues(), totalIssues, puntedIssues,
+					otherBoardExist);
 			try {
 				org.json.simple.JSONObject obj = (org.json.simple.JSONObject) new JSONParser().parse(sprintReportObj);
 				if (null != obj) {
@@ -237,8 +232,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 				setPuntedCompletedAnotherSprint(puntedIssuesJson, puntedIssues, projectConfig, boardId);
 
-				setPuntedCompletedAnotherSprint(completedIssuesAnotherSprintJson, completedIssuesAnotherSprint,
-						projectConfig, boardId);
+				setPuntedCompletedAnotherSprint(completedIssuesAnotherSprintJson, completedIssuesAnotherSprint, projectConfig,
+						boardId);
 
 				addedIssues = setAddedIssues(addedIssuesJson, addedIssues);
 
@@ -287,8 +282,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	private Set<SprintIssue> initializeIssues(Set<SprintIssue> sprintIssues, String boardId, boolean otherBoardExist) {
 		if (otherBoardExist) {
-			return CollectionUtils.emptyIfNull(sprintIssues).stream().filter(
-					issue -> null != issue.getOriginBoardId() && !issue.getOriginBoardId().equalsIgnoreCase(boardId))
+			return CollectionUtils.emptyIfNull(sprintIssues).stream()
+					.filter(issue -> null != issue.getOriginBoardId() && !issue.getOriginBoardId().equalsIgnoreCase(boardId))
 					.collect(Collectors.toSet());
 		} else {
 			return new HashSet<>();
@@ -315,10 +310,10 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	private void populateMetaData(org.json.simple.JSONObject entityDataJson, ProjectConfFieldMapping projectConfig) {
 		JiraIssueMetadata jiraIssueMetadata = new JiraIssueMetadata();
 		if (Objects.nonNull(entityDataJson)) {
-			jiraIssueMetadata.setIssueTypeMap(
-					getMetaDataMap((org.json.simple.JSONObject) entityDataJson.get("types"), "typeName"));
-			jiraIssueMetadata.setStatusMap(
-					getMetaDataMap((org.json.simple.JSONObject) entityDataJson.get("statuses"), "statusName"));
+			jiraIssueMetadata
+					.setIssueTypeMap(getMetaDataMap((org.json.simple.JSONObject) entityDataJson.get("types"), "typeName"));
+			jiraIssueMetadata
+					.setStatusMap(getMetaDataMap((org.json.simple.JSONObject) entityDataJson.get("statuses"), "statusName"));
 			jiraIssueMetadata.setPriorityMap(
 					getMetaDataMap((org.json.simple.JSONObject) entityDataJson.get("priorities"), "priorityName"));
 			projectConfig.setJiraIssueMetadata(jiraIssueMetadata);
@@ -380,8 +375,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		if (null != timeEstimateFieldId) {
 			Object timeTrackingObject = getStatistics((org.json.simple.JSONObject) obj.get("trackingStatistic"),
 					"statFieldValue", "value");
-			issue.setRemainingEstimate(
-					timeTrackingObject == null ? null : Double.valueOf(timeTrackingObject.toString()));
+			issue.setRemainingEstimate(timeTrackingObject == null ? null : Double.valueOf(timeTrackingObject.toString()));
 		}
 	}
 
@@ -428,17 +422,17 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		if (null != obj) {
 			JiraIssueMetadata metadata = projectConfig.getJiraIssueMetadata();
 			switch (entityDataKey) {
-			case PRIORITYID:
-				name = metadata.getPriorityMap().getOrDefault(obj.toString(), null);
-				break;
-			case STATUSID:
-				name = metadata.getStatusMap().getOrDefault(obj.toString(), null);
-				break;
-			case TYPEID:
-				name = metadata.getIssueTypeMap().getOrDefault(obj.toString(), null);
-				break;
-			default:
-				break;
+				case PRIORITYID :
+					name = metadata.getPriorityMap().getOrDefault(obj.toString(), null);
+					break;
+				case STATUSID :
+					name = metadata.getStatusMap().getOrDefault(obj.toString(), null);
+					break;
+				case TYPEID :
+					name = metadata.getIssueTypeMap().getOrDefault(obj.toString(), null);
+					break;
+				default :
+					break;
 			}
 		}
 		return name;
@@ -464,7 +458,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		serverURL = serverURL.replace("{rapidViewId}", boardId).replace("{sprintId}", sprintId);
 		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
 		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
-
 	}
 
 	@Override
@@ -473,9 +466,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		List<SprintDetails> sprintDetailsBasedOnBoard = new ArrayList<>();
 		List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
 		if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-			Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);//TODO OPTIMIZE
-			sprintDetailsBasedOnBoard
-					.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false, processorId));
+			Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList); // TODO OPTIMIZE
+			sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false, processorId));
 		}
 		return sprintDetailsBasedOnBoard;
 	}
@@ -508,14 +500,12 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 					startIndex = sprintDetailsList.size();
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				} while (!isLast);
-
 			}
 		} catch (RestClientException rce) {
-			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400
-					&& rce.getStatusCode().get() < 500) {
+			if (rce.getStatusCode().isPresent() && rce.getStatusCode().get() >= 400 && rce.getStatusCode().get() < 500) {
 				String errMsg = ClientErrorMessageEnum.fromValue(rce.getStatusCode().get()).getReasonPhrase();
-				processorToolConnectionService
-						.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(), errMsg);
+				processorToolConnectionService.updateBreakingConnection(projectConfig.getProjectToolConfig().getConnectionId(),
+						errMsg);
 			}
 			log.error("Client exception when fetching sprints for board", rce);
 			throw rce;
@@ -560,16 +550,20 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 				sprintDetails.setOriginBoardId(boardList);
 				sprintDetails.setOriginalSprintId(sprintJson.get(ID).toString());
 				sprintDetails.setState(sprintJson.get(STATE).toString().toUpperCase());
-				String sprintId = sprintDetails.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL
-						+ projectConfig.getProjectBasicConfig().getProjectNodeId();
+				String sprintId = sprintDetails.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL +
+						projectConfig.getProjectBasicConfig().getProjectNodeId();
 				sprintDetails.setSprintID(sprintId);
-				sprintDetails.setStartDate(sprintJson.get(STARTDATE) == null ? null
+				sprintDetails.setStartDate(sprintJson.get(STARTDATE) == null
+						? null
 						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(STARTDATE).toString()));
-				sprintDetails.setEndDate(sprintJson.get(ENDDATE) == null ? null
+				sprintDetails.setEndDate(sprintJson.get(ENDDATE) == null
+						? null
 						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(ENDDATE).toString()));
-				sprintDetails.setCompleteDate(sprintJson.get(COMPLETEDATE) == null ? null
+				sprintDetails.setCompleteDate(sprintJson.get(COMPLETEDATE) == null
+						? null
 						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(COMPLETEDATE).toString()));
-				sprintDetails.setActivatedDate(sprintJson.get(ACTIVATEDDATE) == null ? null
+				sprintDetails.setActivatedDate(sprintJson.get(ACTIVATEDDATE) == null
+						? null
 						: JiraProcessorUtil.getFormattedDateForSprintDetails(sprintJson.get(ACTIVATEDDATE).toString()));
 				sprintDetails.setGoal(sprintJson.get(GOAL) == null ? null : sprintJson.get(GOAL).toString());
 				sprintDetailsSet.add(sprintDetails);
@@ -586,5 +580,4 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
 		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 	}
-
 }

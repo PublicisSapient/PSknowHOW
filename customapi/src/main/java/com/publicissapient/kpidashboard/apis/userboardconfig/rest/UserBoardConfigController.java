@@ -16,15 +16,11 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
-
+/** */
 package com.publicissapient.kpidashboard.apis.userboardconfig.rest;
 
 import java.util.ArrayList;
 import java.util.Optional;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +45,8 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 
 /**
  * Rest controller for user board config
- * 
- * @author narsingh9
  *
+ * @author narsingh9
  */
 @RestController
 @RequestMapping("/user-board-config")
@@ -90,9 +85,9 @@ public class UserBoardConfigController {
 
 	/**
 	 * Api to save user based config
-	 * 
+	 *
 	 * @param userBoardConfigDTO
-	 *            userBoardConfigDTO
+	 *          userBoardConfigDTO
 	 * @return response
 	 */
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -127,7 +122,7 @@ public class UserBoardConfigController {
 	 * Api to save project board config
 	 *
 	 * @param userBoardConfigDTO
-	 *            userBoardConfigDTO
+	 *          userBoardConfigDTO
 	 * @return response
 	 */
 	@PostMapping(value = "/saveAdmin/{basicProjectConfigId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -137,5 +132,4 @@ public class UserBoardConfigController {
 				basicProjectConfigId);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
 }

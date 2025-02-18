@@ -38,25 +38,25 @@ import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepo
 @ExtendWith(SpringExtension.class)
 public class BoardMetadataServiceImplTest {
 
-    @Mock
-    private BoardMetadataRepository boardMetadataRepository;
+	@Mock
+	private BoardMetadataRepository boardMetadataRepository;
 
-    @InjectMocks
-    private BoardMetadataServiceImpl boardMetadataService;
+	@InjectMocks
+	private BoardMetadataServiceImpl boardMetadataService;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@BeforeEach
+	public void setup() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-    @Test
-    public void testFindAll() {
-        List<BoardMetadata> expectedBoardMetadata = Arrays.asList(new BoardMetadata(), new BoardMetadata());
-        when(boardMetadataRepository.findAll()).thenReturn(expectedBoardMetadata);
+	@Test
+	public void testFindAll() {
+		List<BoardMetadata> expectedBoardMetadata = Arrays.asList(new BoardMetadata(), new BoardMetadata());
+		when(boardMetadataRepository.findAll()).thenReturn(expectedBoardMetadata);
 
-        List<BoardMetadata> actualBoardMetadata = boardMetadataService.findAll();
+		List<BoardMetadata> actualBoardMetadata = boardMetadataService.findAll();
 
-        Assertions.assertEquals(expectedBoardMetadata, actualBoardMetadata);
-        verify(boardMetadataRepository, times(1)).findAll();
-    }
+		Assertions.assertEquals(expectedBoardMetadata, actualBoardMetadata);
+		verify(boardMetadataRepository, times(1)).findAll();
+	}
 }

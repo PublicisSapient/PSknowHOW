@@ -55,8 +55,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class AccountHierarchyServiceKanbanImpl// NOPMD
-		implements AccountHierarchyService<List<AccountHierarchyDataKanban>, Set<AccountFilteredData>> {
+public class AccountHierarchyServiceKanbanImpl // NOPMD
+		implements
+			AccountHierarchyService<List<AccountHierarchyDataKanban>, Set<AccountFilteredData>> {
 
 	@Autowired
 	private KanbanAccountHierarchyRepository accountHierarchyRepository;
@@ -93,8 +94,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 				.cacheAccountHierarchyKanbanData();
 		Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
 		if (!authorizedProjectsService.ifSuperAdminUser() && CollectionUtils.isNotEmpty(hierarchyDataAll)) {
-			hierarchyDataAll = hierarchyDataAll.stream()
-					.filter(data -> data.getBasicProjectConfigId()!=null)
+			hierarchyDataAll = hierarchyDataAll.stream().filter(data -> data.getBasicProjectConfigId() != null)
 					.filter(data -> basicProjectConfigIds.contains(data.getBasicProjectConfigId().toHexString()))
 					.collect(Collectors.toList());
 		}
@@ -113,8 +113,8 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 		AccountFilteredData data = null;
 		if (null != acc) {
 			data = AccountFilteredData.builder().nodeId(acc.getNodeId()).nodeName(acc.getNodeName())
-					.nodeDisplayName(acc.getNodeDisplayName()).labelName(acc.getHierarchyLevelId())
-					.parentId(acc.getParentId()).level(level).build();
+					.nodeDisplayName(acc.getNodeDisplayName()).labelName(acc.getHierarchyLevelId()).parentId(acc.getParentId())
+					.level(level).build();
 
 			if (acc.getHierarchyLevelId().equalsIgnoreCase(CommonConstant.PROJECT)) {
 				data.setBasicProjectConfigId(acc.getBasicProjectConfigId());
@@ -124,9 +124,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 		return data;
 	}
 
-	/**
-	 * {Inherit Doc}
-	 */
+	/** {Inherit Doc} */
 	@Override
 	public List<AccountHierarchyDataKanban> createHierarchyData() {
 
@@ -148,8 +146,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 					.forEach(rootData -> {
 						AccountHierarchyDataKanban accountHierarchyData = new AccountHierarchyDataKanban();
 						createHierarchyData(rootData, accountHierarchyData, hierarchyLevelIdMap);
-						traverseRootToLeaf(rootData, parentWiseMap, listHierarchyData, accountHierarchyData,
-								hierarchyLevelIdMap);
+						traverseRootToLeaf(rootData, parentWiseMap, listHierarchyData, accountHierarchyData, hierarchyLevelIdMap);
 					});
 		}
 		return listHierarchyData;
@@ -158,7 +155,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 	/**
 	 * Traverse from root node of Account hierarchy till child node to create a
 	 * Account Hierarchy data from that route
-	 * 
+	 *
 	 * @param hierarchy
 	 * @param parentWiseMap
 	 * @param listHierarchyData
@@ -175,8 +172,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 						AccountHierarchyDataKanban accountHierarchyDataClone = (AccountHierarchyDataKanban) SerializationUtils
 								.clone(accountHierarchyData);
 						createHierarchyData(child, accountHierarchyDataClone, hierarchyLevelIdMap);
-						traverseRootToLeaf(child, parentWiseMap, listHierarchyData, accountHierarchyDataClone,
-								hierarchyLevelIdMap);
+						traverseRootToLeaf(child, parentWiseMap, listHierarchyData, accountHierarchyDataClone, hierarchyLevelIdMap);
 					});
 		} else {
 			accountHierarchyData.setBasicProjectConfigId(hierarchy.getBasicProjectConfigId());
@@ -220,6 +216,5 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 		} else {
 			accountHierarchyData.getNode().add(node);
 		}
-
 	}
 }

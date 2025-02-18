@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;//NOPMD
+package com.publicissapient.kpidashboard.common.model.application; // NOPMD
 
 import java.util.List;
 
@@ -28,9 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The Structure of each FieldMapping is defined
- */
+/** The Structure of each FieldMapping is defined */
 @SuppressWarnings("PMD.TooManyFields")
 @Data
 @Getter
@@ -40,5 +38,4 @@ import lombok.Setter;
 @Document(collection = "field_mapping_structure")
 public class FieldMappingStructure extends BaseFieldMappingStructure {
 	private List<BaseFieldMappingStructure> nestedFields;
-
 }

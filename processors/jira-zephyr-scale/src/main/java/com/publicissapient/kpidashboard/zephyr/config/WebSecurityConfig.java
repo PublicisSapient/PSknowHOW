@@ -17,22 +17,20 @@
  ******************************************************************************/
 
 package com.publicissapient.kpidashboard.zephyr.config;
-import org.springframework.context.annotation.Bean;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+
 /**
  * @author yasbano
  */
 @Configuration
 public class WebSecurityConfig {
 
-	/**
-	 * Added for security
-	 * 
-	 */
+	/** Added for security */
 
-	//TODO:Fix websecurity using new spring boot.
+	// TODO:Fix websecurity using new spring boot.
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring().requestMatchers("/**");

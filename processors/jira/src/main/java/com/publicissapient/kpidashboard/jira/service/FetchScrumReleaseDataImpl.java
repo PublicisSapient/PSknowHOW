@@ -77,7 +77,6 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 
 	/**
 	 * @param confFieldMapping
-	 *
 	 */
 	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, KerberosClient krb5Client)
 			throws IOException, ParseException {
@@ -108,8 +107,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		Set<ProjectHierarchy> setToSave = new HashSet<>();
 		List<ProjectHierarchy> hierarchyForRelease = createScrumHierarchyForRelease(projectRelease, projectConfig);
 		setToSaveAccountHierarchy(setToSave, hierarchyForRelease, existingHierarchy);
-        projectHierarchySyncService.syncReleaseHierarchy(projectConfig.getId(),
-                hierarchyForRelease);
+		projectHierarchySyncService.syncReleaseHierarchy(projectConfig.getId(), hierarchyForRelease);
 		if (CollectionUtils.isNotEmpty(setToSave)) {
 			log.info("Updated Hierarchies {}", setToSave.size());
 			projectHierarchyService.saveAll(setToSave);
@@ -132,7 +130,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 						setToSave.add(hierarchy);
 					} else if (!exHiery.equals(hierarchy)) {
 						exHiery.setBeginDate(hierarchy.getBeginDate());
-						exHiery.setNodeName(hierarchy.getNodeName());// release name changed
+						exHiery.setNodeName(hierarchy.getNodeName()); // release name changed
 						exHiery.setEndDate(hierarchy.getEndDate());
 						exHiery.setReleaseState(hierarchy.getReleaseState());
 						setToSave.add(exHiery);
@@ -171,14 +169,13 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		try {
 			// out of all the releases, fetching only those which are required
 			projectRelease.getListProjectVersion().stream()
-					.filter(projectVersion -> releaseVersions.contains(projectVersion.getName()))
-					.forEach(projectVersion -> {
+					.filter(projectVersion -> releaseVersions.contains(projectVersion.getName())).forEach(projectVersion -> {
 						ProjectHierarchy releaseHierarchy = new ProjectHierarchy();
 						releaseHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
 						releaseHierarchy.setHierarchyLevelId(hierarchyLevel.getHierarchyLevelId());
 						String versionName = projectVersion.getName() + JiraConstants.COMBINE_IDS_SYMBOL;
-						String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
-								+ projectBasicConfig.getProjectNodeId();
+						String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL +
+								projectBasicConfig.getProjectNodeId();
 						releaseHierarchy.setNodeId(versionId);
 						releaseHierarchy.setNodeName(versionName + projectBasicConfig.getProjectName());
 						releaseHierarchy.setNodeDisplayName(versionName + projectBasicConfig.getProjectDisplayName());
@@ -188,8 +185,8 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 						releaseHierarchy.setEndDate(ObjectUtils.isNotEmpty(projectVersion.getReleaseDate())
 								? projectVersion.getReleaseDate().toString()
 								: CommonConstant.BLANK);
-						releaseHierarchy.setReleaseState(
-								(projectVersion.isReleased()) ? CommonConstant.RELEASED : CommonConstant.UNRELEASED);
+						releaseHierarchy
+								.setReleaseState((projectVersion.isReleased()) ? CommonConstant.RELEASED : CommonConstant.UNRELEASED);
 						releaseHierarchy.setParentId(projectBasicConfig.getProjectNodeId());
 						hierarchyArrayList.add(releaseHierarchy);
 					});
@@ -199,5 +196,4 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		}
 		return hierarchyArrayList;
 	}
-
 }

@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author purgupta2
- *
  */
 @Slf4j
 @Service
@@ -46,8 +45,7 @@ public class KanbanJiraIssueAssigneeProcessorImpl implements KanbanJiraIssueAssi
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	@Override
-	public AssigneeDetails createKanbanAssigneeDetails(ProjectConfFieldMapping projectConfig,
-			KanbanJiraIssue jiraIssue) {
+	public AssigneeDetails createKanbanAssigneeDetails(ProjectConfFieldMapping projectConfig, KanbanJiraIssue jiraIssue) {
 		log.info("Creating assignee details for the Kanban project : {}", projectConfig.getProjectName());
 		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
 				projectConfig.getBasicProjectConfigId().toString(), ProcessorConstants.JIRA);
@@ -80,5 +78,4 @@ public class KanbanJiraIssueAssigneeProcessorImpl implements KanbanJiraIssueAssi
 		}
 		return assigneeDetails;
 	}
-
 }

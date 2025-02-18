@@ -29,7 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -42,6 +41,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.common.service.KpiDataCacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -65,7 +65,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectReleaseServiceImplTest {
@@ -126,12 +125,10 @@ public class ProjectReleaseServiceImplTest {
 		releaseList = projectReleaseDataFactory.findByBasicProjectConfigId("6335363749794a18e8a4479b");
 
 		when(customApiSetting.getSprintCountForFilters()).thenReturn(5);
-
 	}
 
 	@After
 	public void cleanup() {
-
 	}
 
 	@Test
@@ -144,8 +141,8 @@ public class ProjectReleaseServiceImplTest {
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
 		when(kpiDataCacheService.fetchProjectReleaseData(any(), any())).thenReturn(releaseList);
-		Map<String, Object> storyDataListMap = projectVersionService.fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
+		Map<String, Object> storyDataListMap = projectVersionService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+				kpiRequest);
 		assertThat("Total Release : ", storyDataListMap.size(), equalTo(1));
 	}
 
@@ -174,5 +171,4 @@ public class ProjectReleaseServiceImplTest {
 		String type = projectVersionService.getQualifierType();
 		assertThat("KPI Name : ", type, equalTo(kpiName));
 	}
-
 }
