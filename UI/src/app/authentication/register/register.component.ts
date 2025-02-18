@@ -31,7 +31,7 @@ import { MessageService } from 'primeng/api';
 export class RegisterComponent implements OnInit, OnDestroy {
 
     registorForm: UntypedFormGroup;
-    private destroy$ = new Subject<void>(); 
+   // private destroy$ = new Subject<void>(); 
     loading = false;
     submitted = false;
     error = '';
@@ -85,7 +85,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         //   });
         // call registration service
         this.httpService.register(this.f.username.value, this.f.password.value, this.f.email.value)
-        .pipe(takeUntil(this.destroy$))
+        //.pipe(takeUntil(this.destroy$))
             .subscribe(
                 (data: any) => {
                     // stop spinner
@@ -113,7 +113,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.destroy$.next();  
-        this.destroy$.complete();
+       // this.destroy$.next();  
+       // this.destroy$.complete();
       }
 }
